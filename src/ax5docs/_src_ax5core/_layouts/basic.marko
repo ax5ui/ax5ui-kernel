@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ax5</title>
+	<!-- plugins -->
+	<script type="text/javascript" src="../../demo-resource/plugins/jquery/jquery.min.js"></script>
+
+	<!-- ax5 -->
+	<link rel="stylesheet" type="text/css" href="../../pub/css/basic/ax5.css" id="ax5-theme" />
+	<script type="text/javascript" src="../../_src/ax5-polyfill.js"></script>
+	<script type="text/javascript" src="../../_src/ax5-core.js"></script>
+	<script type="text/javascript" src="../../_src/ax5-ui.js"></script>
+
+	<!-- demo & menus -->
+	<link rel="stylesheet" type="text/css" href="../../demo-resource/css/demo.css" />
+	<script type="text/javascript" src="../../demo-resource/js/menus.js"></script>
+	<script type="text/javascript" src="../../demo-resource/js/demo.js"></script>
+
+<layout-placeholder name="head-css"/>
+<layout-placeholder name="head-js"/>
+</head>
+<body>
+	<div class="demo-body">
+		<h1 if="data.showHeader !== false">
+			<layout-placeholder name="title"/>
+		</h1>
+		<layout-placeholder name="body"/>
+
+		<div id="demo-menu-print-target"></div>
+	</div>
+	<div class="demo-menu" id="demo-menu"></div>
+<layout-placeholder name="page-js"/>
+</body>
+</html>

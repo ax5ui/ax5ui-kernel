@@ -1,0 +1,28 @@
+<tmpl-metadata>
+	<label>메뉴이름을 정합니다.</label>
+	<desc>페이지의 설명을 작성합니다</desc>
+	<!--url>page url 작성할 경우 해당 페이지의 URL을 결정 할수 있고 작성하지 않으면 페이지의 기본 경로가 자신의 URL값이 됨</url-->
+</tmpl-metadata>
+
+<layout-use template="${data.layout_path}" show-header="$true">
+    <layout-put into="title">Common Index</layout-put>
+    <layout-put into="body">
+
+        내용절
+        커스텀 태그 테스트
+
+
+
+        <my-hello name="World"/>
+
+    </layout-put>
+    <layout-put into="head-css">
+
+    </layout-put>
+    <layout-put into="head-js">
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>

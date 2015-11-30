@@ -1,0 +1,1 @@
+var doc_menu_object = [{"url":"/ax5core/A/index.html","label":"메뉴이름을 정합니다.","desc":"페이지의 설명을 작성합니다"}];
