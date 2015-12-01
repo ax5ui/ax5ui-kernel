@@ -54,7 +54,8 @@
 		info: {
 			ax5docs: {
 				css_src: "src/ax5docs/css",
-				css_dest: "src/ax5docs/css"
+				css_dest: "src/ax5docs/css",
+				ax5core: "src/ax5docs/_assets/lib/ax5core"
 			},
 			ax5core: {
 				src: "src/ax5core/js",
@@ -75,7 +76,7 @@
 			},
 			ax5core: {
 				files: ['<%= info["ax5core"].src %>/**/*.js'],
-				tasks: ['concat:ax5docs', 'uglify:ax5core']
+				tasks: ['concat:ax5docs', 'uglify:ax5core', 'copy:ax5core']
 			},
 			"ax5docs-ax5core": {
 				files: ['<%= info.ax5core.doc_src %>/**/*.html', '<%= info.ax5core.doc_src %>/_layouts/*.*'],
@@ -84,6 +85,14 @@
 			"ax5docs-bootstrap-ax5dialog": {
 				files: ['<%= info["bootstrap-ax5dialog"].doc_src %>/**/*.html', '<%= info["bootstrap-ax5dialog"].doc_src %>/_layouts/*.*'],
 				tasks: ['make-menu:bootstrap-ax5dialog', 'ax_marko:bootstrap-ax5dialog']
+			}
+		},
+		copy: {
+			ax5core: {
+				files: [
+					// includes files within path
+					{expand: true, flatten: true, src: ['<%= info["ax5core"].dest %>/*'], dest: '<%= info["ax5docs"].ax5core %>/', filter: 'isFile'},
+				]
 			}
 		},
 		concat: {
@@ -200,6 +209,7 @@
 		}
 	});
 
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-clean');
@@ -207,7 +217,7 @@
 	grunt.loadNpmTasks('grunt-ax-marko');
 	grunt.loadNpmTasks('grunt-sass');
 
-	grunt.registerTask('ax5core', ['concat:ax5core', 'uglify:ax5core', 'watch:ax5core']);
+	grunt.registerTask('ax5core', ['concat:ax5core', 'uglify:ax5core', 'copy:ax5core', 'watch:ax5core']);
 	grunt.registerTask('sass-ax5docs', ['sass:ax5docs', 'watch:ax5docs']);
 	grunt.registerTask('tmpl-ax5core', ['make-menu:ax5core', 'ax_marko:ax5core', 'watch:ax5docs-ax5core']);
 	grunt.registerTask('tmpl-bootstrap-ax5dialog', ['make-menu:bootstrap-ax5dialog', 'ax_marko:bootstrap-ax5dialog', 'watch:ax5docs-bootstrap-ax5dialog']);
