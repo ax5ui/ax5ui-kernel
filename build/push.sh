@@ -1,5 +1,5 @@
-git merge-to master gh-pages
-
 git checkout master
-git merge gh-pages
-git checkout -
+git checkout gh-pages
+git rebase master
+git push
+git checkout master
