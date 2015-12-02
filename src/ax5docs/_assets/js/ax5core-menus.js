@@ -1,1 +1,1 @@
-var doc_menu_object = [{"url":"/ax5core/A/index.html","label":"메뉴이름을 정합니다.","desc":"페이지의 설명을 작성합니다"}];
+var doc_menu_object = [{"url":"/ax5core/install/index.html","sort":0,"id":"install","title":"Install"},{"title":"ax5","child":[{"url":"/ax5core/info/ax5-info.html","parent":"ax5","sort":1,"id":"ax5.info","title":"info"}]}];

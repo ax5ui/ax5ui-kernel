@@ -40,21 +40,50 @@
 
 			// extend object
 			for (var k in meta) {
-				menu[k] = meta[k];
+				if(k == "sort") menu[k] = Number(meta[k]);
+				else menu[k] = meta[k];
 			}
 			menus.push(menu);
 		});
 
+
+		menus.sort(function(v1, v2){
+			if(v1.sort == v2.sort) return 0;
+			else if(v1.sort > v2.sort) return 1;
+			else return -1;
+		});
+		
+		var trees = [];
+		menus.forEach(function(dn){
+			if(!dn.parent){
+				trees.push(dn);
+			}
+			else{
+				var findMenuIndex = -1;
+				trees.forEach(function(mn, midx){
+					if(mn.title == dn.parent){
+						findMenuIndex = midx;
+						return false;
+					}
+				});
+				if(findMenuIndex == -1){
+					trees.push({title: dn.parent, child:[dn]});
+				}else{
+					trees[findMenuIndex].child.push(dn);
+				}
+			}
+		});
+
 		//grunt.log.writeln(JSON.stringify(menus));
-		grunt.file.write(options.target, "var doc_menu_object = " + JSON.stringify(menus) + ";");
+		grunt.file.write(options.target, "var doc_menu_object = " + JSON.stringify(trees) + ";");
 	});
 
 	// Project configuration.
 	grunt.initConfig({
 		info: {
 			ax5docs: {
-				css_src: "src/ax5docs/css",
-				css_dest: "src/ax5docs/css",
+				css_src: "src/ax5docs/_assets/css",
+				css_dest: "src/ax5docs/_assets/css",
 				ax5core: "src/ax5docs/_assets/lib/ax5core"
 			},
 			ax5core: {
@@ -129,7 +158,7 @@
 			},
 			ax5docs: {
 				files: {
-					'<%= info["ax5docs"].css_dest %>/demo.css': '<%= info["ax5docs"].css_src %>/demo.scss'
+					'<%= info["ax5docs"].css_dest %>/docs.css': '<%= info["ax5docs"].css_src %>/docs.scss'
 				}
 			}
 		},

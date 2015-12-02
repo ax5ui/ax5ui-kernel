@@ -3,33 +3,30 @@
 <head>
 	<meta charset="UTF-8">
 	<title>ax5</title>
-	<!-- plugins -->
-	<script type="text/javascript" src="../../demo-resource/plugins/jquery/jquery.min.js"></script>
 
-	<!-- ax5 -->
-	<link rel="stylesheet" type="text/css" href="../../pub/css/basic/ax5.css" id="ax5-theme" />
-	<script type="text/javascript" src="../../_src/ax5-polyfill.js"></script>
-	<script type="text/javascript" src="../../_src/ax5-core.js"></script>
-	<script type="text/javascript" src="../../_src/ax5-ui.js"></script>
+	<!-- _assets -->
+	<script type="text/javascript" src="../../_assets/lib/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="../../_assets/lib/prettify/prettify.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../_assets/lib/prettify/github.css" />
+	<script type="text/javascript" src="../../_assets/lib/ax5core/ax5core.js"></script>
 
 	<!-- demo & menus -->
-	<link rel="stylesheet" type="text/css" href="../../demo-resource/css/demo.css" />
-	<script type="text/javascript" src="../../demo-resource/js/menus.js"></script>
-	<script type="text/javascript" src="../../demo-resource/js/demo.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../_assets/css/docs.css" />
+	<script type="text/javascript" src="../../_assets/js/ax5core-menus.js"></script>
+	<script type="text/javascript" src="../../_assets/js/docs.js"></script>
 
-<layout-placeholder name="head-css"/>
-<layout-placeholder name="head-js"/>
+	<layout-placeholder name="head-css"/>
+	<layout-placeholder name="head-js"/>
 </head>
 <body>
-	<div class="demo-body">
-		<h1 if="data.showHeader !== false">
-			<layout-placeholder name="title"/>
-		</h1>
-		<layout-placeholder name="body"/>
+<div class="demo-body">
+	<h1 if="data.showHeader !== false">
+		<layout-placeholder name="title"/>
+	</h1>
+	<layout-placeholder name="body"/>
+</div>
+<div class="demo-menu" id="demo-menu-print-target"></div>
 
-		<div id="demo-menu-print-target"></div>
-	</div>
-	<div class="demo-menu" id="demo-menu"></div>
 <layout-placeholder name="page-js"/>
 </body>
 </html>
