@@ -82,9 +82,9 @@
 	grunt.initConfig({
 		info: {
 			ax5docs: {
-				css_src: "src/ax5docs/_assets/css",
-				css_dest: "src/ax5docs/_assets/css",
-				ax5core: "src/ax5docs/_assets/lib/ax5core"
+				css_src: "src/ax5docs/assets/css",
+				css_dest: "src/ax5docs/assets/css",
+				ax5core: "src/ax5docs/assets/lib/ax5core"
 			},
 			ax5core: {
 				src: "src/ax5core/js",
@@ -218,7 +218,7 @@
 			ax5core: {
 				options: {
 					pwd: '',
-					target: 'src/ax5docs/_assets/js/ax5core-menus.js',
+					target: 'src/ax5docs/assets/js/ax5core-menus.js',
 					url_replace: function(url) {
 						return url.replace("src/ax5docs/_src_", "/");
 					},
@@ -228,7 +228,7 @@
 			"bootstrap-ax5dialog": {
 				options: {
 					pwd: '',
-					target: 'src/ax5docs/_assets/js/bootstrap-ax5dialog-menus.js',
+					target: 'src/ax5docs/assets/js/bootstrap-ax5dialog-menus.js',
 					url_replace: function(url) {
 						return url.replace("src/ax5docs/_src_", "/");
 					},
