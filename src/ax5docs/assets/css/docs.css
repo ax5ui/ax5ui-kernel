@@ -1,10 +1,10 @@
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 html, body {
   margin: 0px;
   padding: 0px;
   font-size: 13px;
+  line-height: 1.5em;
   height: 100%;
-  font-family: "Nanum Gothic", serif;
+  font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace;
   background: #f3f3f3; }
 
 .demo-menu {
@@ -62,9 +62,9 @@ html, body {
   overflow: visible; }
   .demo-body h1, .demo-body h2, .demo-body h3, .demo-body h4, .demo-body h5 {
     margin: 0.3em 0;
-    font-family: consolas; }
+    font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace; }
   .demo-body p {
     margin: 0.7em 0;
-    font-family: consolas; }
+    font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace; }
   .demo-body .ax5docs-method {
     margin: 2em 0; }

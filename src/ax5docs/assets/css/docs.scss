@@ -1,18 +1,19 @@
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+//@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 //@import url(http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css);
 //@import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
 
-$demo-font-basic: 'Nanum Gothic', serif;
+$demo-font-basic: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
 //$demo-font-script: 'Nanum Gothic Coding', serif;
 //$demo-font-sun: 'Nanum Myeongjo', serif;
 
-$demo-font-script: consolas;
-$demo-font-sun: consolas;
+$demo-font-script: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+$demo-font-sun: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
 
 html, body {
 	margin: 0px;
 	padding: 0px;
 	font-size: 13px;
+	line-height: 1.5em;
 	height: 100%;
 	font-family: $demo-font-basic;
 	background: #f3f3f3;

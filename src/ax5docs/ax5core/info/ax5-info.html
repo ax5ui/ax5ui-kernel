@@ -1,8 +1,8 @@
 
 
 
-	
-	
+  
+  
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,42 +30,117 @@
 		</h1>
 		
 
-		<section class="ax5docs-method">
-			<h2>ax5.info.version</h2>
-			<p>
-				Version of ax5
-			</p>
+    <section class="ax5docs-method">
+      <h2 data-method>ax5.info.version</h2>
 
-			<pre class="prettyprint linenums">ax5.info.version;</pre>
-		</section>
+      <p>
+        Version of ax5
+      </p>
+
+      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+  console.log(ax5.info.version);
+&lt;/script></pre>
+    </section>
 
 
-		<section class="ax5docs-method">
-			<h2>ax5.info.event_keys</h2>
-			<p>
-				event_keys object key map
-			</p>
-			<pre class="prettyprint linenums">JSON.stringify(ax5.info.event_keys);
-/*
-{ "BACKSPACE": 8, "TAB": 9, "RETURN": 13, "ESC": 27, "LEFT": 37, "UP": 38, "RIGHT": 39, "DOWN": 40, "DELETE": 46, "HOME": 36, "END": 35, "PAGEUP": 33, "PAGEDOWN": 34, "INSERT": 45, "SPACE": 32 }
-*/</pre>
-		</section>
+    <section class="ax5docs-method">
+      <h2 data-method>ax5.info.event_keys</h2>
 
-		<section class="ax5docs-method">
-			<h2>ax5.info.browser</h2>
-			<p>
-				It is user browser infomation
-			</p>
-			<pre class="prettyprint linenums">JSON.stringify(ax5.info.browser);
-// {"name": "chrome", "version": "46.0.2490.86", "mobile": }</pre>
-		</section>
+      <p>
+        event_keys object key map
+      </p>
+      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+  console.log(ax5.info.event_keys);
+  /*
+   { "BACKSPACE": 8, "TAB": 9, "RETURN": 13, "ESC": 27, "LEFT": 37, "UP": 38, "RIGHT": 39, "DOWN": 40, "DELETE":
+   46, "HOME": 36, "END": 35, "PAGEUP": 33, "PAGEDOWN": 34, "INSERT": 45, "SPACE": 32 }
+   */
+&lt;/script></pre>
+    </section>
 
-	
+    <section class="ax5docs-method">
+      <h2 data-method>ax5.info.browser</h2>
+
+      <p>
+        It is user browser infomation
+      </p>
+      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+  console.log(ax5.info.browser);
+  // {"name": "chrome", "version": "46.0.2490.86", "mobile": }
+&lt;/script></pre>
+    </section>
+    
+    <section class="ax5docs-method">
+      <h2 data-method>ax5.info.url_util</h2>
+
+      <p>
+        Return current page's URL Infomation
+      </p>
+      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+  console.log(ax5.info.url_util());
+  /*
+   {
+   "href":"http://ax5ui:2028/ax5core/info/ax5-info.html",
+   "param":"",
+   "referrer":"http://ax5ui:2028/ax5core/util/ax5-util.html",
+   "pathname":"/ax5core/info/ax5-info.html",
+   "hostname":"ax5ui",
+   "port":"2028",
+   "url":"http://ax5ui:2028/ax5core/info/ax5-info.html",
+   "base_url":"http://ax5ui:2028"
+   }
+   */
+&lt;/script></pre>
+    </section>
+
+    <section class="ax5docs-method">
+      <h2 data-method>ax5.info.error_msg</h2>
+
+      <p>
+        When an error occurs in the UI Class, the error message can be customized.
+      </p>
+      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+  // reset user error message
+  ax5.info.error_msg["UI name"]["100"] = "my error 100";
+  ax5.info.error_msg["UI name"]["200"] = "my error 200";
+
+  // or reset all
+  ax5.info.error_msg["UI name"] = {
+    "100": "is 100 error",
+    "200": "is 200 error"
+  };
+&lt;/script></pre>
+    </section>
+
+    <section class="ax5docs-method">
+      <h2 data-method>ax5.info.ETC</h2>
+      <p>
+
+      </p>
+      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+  ax5.info.is_browser; // is borwser ?
+  ax5.info.wheel_enm; // Current browser whell event name
+  console.log(ax5.info.week_names);
+  /*
+   [
+   {label: "SUN"},
+   {label: "MON"},
+   {label: "TUE"},
+   {label: "WED"},
+   {label: "THU"},
+   {label: "FRI"},
+   {label: "SAT"}
+   ]
+  */
+&lt;/script></pre>
+    </section>
+
+  
 	</div>
 	<div class="demo-menu" id="demo-menu-print-target"></div>
 
 
 
-	
+  
 </body>
 </html>

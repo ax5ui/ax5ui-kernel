@@ -1,78 +1,158 @@
 <tmpl-metadata>
-	<parent></parent>
-	<sort>2</sort>
+  <parent></parent>
+  <sort>2</sort>
 
-	<id>ax5.util</id>
-	<title>util</title>
-	<desc></desc>
+  <id>ax5.util</id>
+  <title>util</title>
+  <desc></desc>
 </tmpl-metadata>
 
 <layout-use template="${data.layout_path}" pageTitle="ax5.util" show-header="$true">
-	<layout-put into="body">
+  <layout-put into="body">
 
-		<section class="ax5docs-method">
-			<h2>ax5.util.get_type</h2>
+    <!-- get_type -->
+    <section class="ax5docs-method">
+      <h2 data-method>ax5.util.get_type</h2>
 
-			<p>
-				Return argument object type
-			</p>
-			<ax5docs-code>
-				ax5.util.get_type(1); // "number"
-				ax5.util.get_type("1"); // "string"
-				ax5.util.get_type([0,1,2]); // "array"
-				ax5.util.get_type({a:1}); // "object"
-				ax5.util.get_type(function(){}); // "function"
-				ax5.util.get_type(document.querySelectorAll("div")); // "nodelist"
-				ax5.util.get_type(document.createDocumentFragment()); // "fragment"
-			</ax5docs-code>
-			<p>
-				Javascript object type name is not clear. so <code>util.get_type</code> method very useful.
-			</p>
-		</section>
+      <p>
+        Return argument object type
+      </p>
+      <ax5docs-code>
+        <script type="text/javascript">
+          ax5.util.get_type(1); // "number"
+          ax5.util.get_type("1"); // "string"
+          ax5.util.get_type([0, 1, 2]); // "array"
+          ax5.util.get_type({a: 1}); // "object"
+          ax5.util.get_type(function() {}); // "function"
+          ax5.util.get_type(document.querySelectorAll("div")); // "nodelist"
+          ax5.util.get_type(document.createDocumentFragment()); // "fragment"
+        </script>
+      </ax5docs-code>
+      <p>
+        Javascript object type name is not clear. so <code>util.get_type</code> method very useful.
+      </p>
+    </section>
 
-		<section class="ax5docs-method">
-			<h2>ax5.util.is_[type]</h2>
+    <!-- is_type -->
+    <section class="ax5docs-method">
+      <h2 data-method>ax5.util.is_[type]</h2>
 
-			<p>
-				Return argument object type is [type] result.
-			</p>
-			<ax5docs-code>
-				// return is window.
-				ax5.util.is_window( window );
+      <p>
+        Return argument object type is [type] result.
+      </p>
+      <ax5docs-code>
+        <script type="text/javascript">
+          // return is window.
+          ax5.util.is_window(window);
 
-				// return is element.
-				ax5.util.is_element( document.getElementById("#ax5-util-is-type") );
+          // return is element.
+          ax5.util.is_element(document.getElementById("#ax5-util-is-type"));
 
-				// return is Object.
-				ax5.util.is_object();
+          // return is Object.
+          ax5.util.is_object();
 
-				// return is Array.
-				ax5.util.is_array();
+          // return is Array.
+          ax5.util.is_array();
 
-				// return is Functon.
-				ax5.util.is_function();
+          // return is Functon.
+          ax5.util.is_function();
 
-				// return is String.
-				ax5.util.is_string();
+          // return is String.
+          ax5.util.is_string();
 
-				// return is Number.
-				ax5.util.is_number();
+          // return is Number.
+          ax5.util.is_number();
 
-				// return is nodeList.
-				ax5.util.is_nodelist( document.querySelectorAll(".content") );
+          // return is nodeList.
+          ax5.util.is_nodelist(document.querySelectorAll(".content"));
 
-				// return is undefined.
-				ax5.util.is_undefined();
+          // return is undefined.
+          ax5.util.is_undefined();
 
-				// return is undefined|''|null.
-				ax5.util.is_nothing();
-			</ax5docs-code>
-		</section>
+          // return is undefined|''|null.
+          ax5.util.is_nothing();
+        </script>
+      </ax5docs-code>
+    </section>
 
+    <!-- clone -->
+    <section class="ax5docs-method">
+      <h2 data-method2>ax5.util.clone</h2>
 
+      <p>
+        Return copied new Object
+      </p>
+      <ax5docs-code>
+        <script type="text/javascript">
+          var a = {a: 1};
+          var b = a;
+          console.log("(a == b) => " + (a == b));
+          b = ax5.util.clone(a);
+          console.log("(a == b) => " + (a == b));
+        </script>
+      </ax5docs-code>
+    </section>
 
-	</layout-put>
-	<layout-put into="page-js">
+    <!-- each -->
+    <section class="ax5docs-method">
+      <h2 data-method>ax5.util.each</h2>
 
-	</layout-put>
+      <p>
+        You can cycle through the items processed in an Array or an Object using each.<br/>
+        If the object in each function second argument (key, value) is passed,
+        Array in each function second argument (index, Array item)
+      </p>
+      <ax5docs-code>
+        <script type="text/javascript">
+          var a = {a: "axisj", b: "ax5"};
+          var b = [9, 8, 5, 4, 3, 1];
+
+          var po = [];
+          po.push("* a");
+          ax5.util.each(a, function(k, v) {
+            po.push(k + ":" + v + " | " + this);
+          });
+          po.push("* b");
+
+          ax5.util.each(b, function(index, item) {
+            po.push(index + ":" + item + " | " + this);
+          });
+
+          console.log(po.join('\n'));
+        </script>
+      </ax5docs-code>
+
+      <!-- filter -->
+      <section class="ax5docs-method">
+        <h2 data-method>ax5.util.filter</h2>
+
+        <p>
+          The first item is delivered to the second argument of the filter function.
+          The second argument is an anonymous function, the result is True, the items will be collected.
+        </p>
+        <ax5docs-code>
+          <script type="text/javascript">
+            var result, aarray = [5, 4, 3, 2, 1];
+
+            result = ax5.util.filter(aarray, function() {
+              return this % 2;
+            });
+            console.log(result);
+
+            var list = [
+              {isdel: 1, name: "ax5-1"}, {name: "ax5-2"}, {isdel: 1, name: "ax5-3"}, {name: "ax5-4"}, {name: "ax5-5"}
+            ];
+            result = ax5.util.filter(list, function() {
+              return (this.isdel != 1);
+            });
+            console.log(JSON.stringify(result));
+          </script>
+        </ax5docs-code>
+      </section>
+
+    </section>
+  </layout-put>
+  <layout-put into="page-js">
+
+  </layout-put>
 </layout-use>
