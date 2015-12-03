@@ -1,0 +1,78 @@
+<tmpl-metadata>
+	<parent></parent>
+	<sort>2</sort>
+
+	<id>ax5.util</id>
+	<title>util</title>
+	<desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layout_path}" pageTitle="ax5.util" show-header="$true">
+	<layout-put into="body">
+
+		<section class="ax5docs-method">
+			<h2>ax5.util.get_type</h2>
+
+			<p>
+				Return argument object type
+			</p>
+			<ax5docs-code>
+				ax5.util.get_type(1); // "number"
+				ax5.util.get_type("1"); // "string"
+				ax5.util.get_type([0,1,2]); // "array"
+				ax5.util.get_type({a:1}); // "object"
+				ax5.util.get_type(function(){}); // "function"
+				ax5.util.get_type(document.querySelectorAll("div")); // "nodelist"
+				ax5.util.get_type(document.createDocumentFragment()); // "fragment"
+			</ax5docs-code>
+			<p>
+				Javascript object type name is not clear. so <code>util.get_type</code> method very useful.
+			</p>
+		</section>
+
+		<section class="ax5docs-method">
+			<h2>ax5.util.is_[type]</h2>
+
+			<p>
+				Return argument object type is [type] result.
+			</p>
+			<ax5docs-code>
+				// return is window.
+				ax5.util.is_window( window );
+
+				// return is element.
+				ax5.util.is_element( document.getElementById("#ax5-util-is-type") );
+
+				// return is Object.
+				ax5.util.is_object();
+
+				// return is Array.
+				ax5.util.is_array();
+
+				// return is Functon.
+				ax5.util.is_function();
+
+				// return is String.
+				ax5.util.is_string();
+
+				// return is Number.
+				ax5.util.is_number();
+
+				// return is nodeList.
+				ax5.util.is_nodelist( document.querySelectorAll(".content") );
+
+				// return is undefined.
+				ax5.util.is_undefined();
+
+				// return is undefined|''|null.
+				ax5.util.is_nothing();
+			</ax5docs-code>
+		</section>
+
+
+
+	</layout-put>
+	<layout-put into="page-js">
+
+	</layout-put>
+</layout-use>

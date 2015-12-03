@@ -1,6 +1,4 @@
 @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css);
-@import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
 html, body {
   margin: 0px;
   padding: 0px;
@@ -64,9 +62,9 @@ html, body {
   overflow: visible; }
   .demo-body h1, .demo-body h2, .demo-body h3, .demo-body h4, .demo-body h5 {
     margin: 0.3em 0;
-    font-family: "Nanum Myeongjo", serif; }
+    font-family: consolas; }
   .demo-body p {
     margin: 0.7em 0;
-    font-family: "Nanum Gothic Coding", serif; }
-  .demo-body .ax5demo-method {
+    font-family: consolas; }
+  .demo-body .ax5docs-method {
     margin: 2em 0; }

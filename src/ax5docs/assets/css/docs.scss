@@ -1,10 +1,13 @@
 @import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
-@import url(http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css);
-@import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
+//@import url(http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css);
+//@import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
 
 $demo-font-basic: 'Nanum Gothic', serif;
-$demo-font-script: 'Nanum Gothic Coding', serif;
-$demo-font-sun: 'Nanum Myeongjo', serif;
+//$demo-font-script: 'Nanum Gothic Coding', serif;
+//$demo-font-sun: 'Nanum Myeongjo', serif;
+
+$demo-font-script: consolas;
+$demo-font-sun: consolas;
 
 html, body {
 	margin: 0px;
@@ -101,7 +104,7 @@ $demo-theme-earth: #fbff41;
 
 	}
 
-	.ax5demo-method{
+	.ax5docs-method{
 		margin: 2em 0;
 	}
 

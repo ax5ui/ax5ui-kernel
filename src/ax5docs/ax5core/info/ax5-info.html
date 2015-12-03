@@ -30,68 +30,35 @@
 		</h1>
 		
 
-		<p>
-			ax5.info 오브젝트에 대해 기술합니다
-		</p>
-
-		<section class="ax5demo-method">
+		<section class="ax5docs-method">
 			<h2>ax5.info.version</h2>
-
 			<p>
-				ax5의 버전변수 입니다.
+				Version of ax5
 			</p>
 
-			<pre class="prettyprint linenums">&lt;div id="div-ax5-info-version" class="script-result">&lt;/div>
-&lt;script>
-	(function() {
-		$("#div-ax5-info-version").html('ax5 version is :' + ax5.info.version);
-	})();
-&lt;/script></pre>
+			<pre class="prettyprint linenums">ax5.info.version;</pre>
 		</section>
 
 
-		<section class="ax5demo-method">
+		<section class="ax5docs-method">
 			<h2>ax5.info.event_keys</h2>
 			<p>
-				event_keys 오브젝트의 JSON 구조는 다음과 같습니다.
+				event_keys object key map
 			</p>
-			<pre class="prettyprint linenums">// ax5.info.event_keys
-{
-"BACKSPACE": 8,
-"TAB": 9,
-"RETURN": 13,
-"ESC": 27,
-"LEFT": 37,
-"UP": 38,
-"RIGHT": 39,
-"DOWN": 40,
-"DELETE": 46,
-"HOME": 36,
-"END": 35,
-"PAGEUP": 33,
-"PAGEDOWN": 34,
-"INSERT": 45,
-"SPACE": 32
-}</pre>
+			<pre class="prettyprint linenums">JSON.stringify(ax5.info.event_keys);
+/*
+{ "BACKSPACE": 8, "TAB": 9, "RETURN": 13, "ESC": 27, "LEFT": 37, "UP": 38, "RIGHT": 39, "DOWN": 40, "DELETE": 46, "HOME": 36, "END": 35, "PAGEUP": 33, "PAGEDOWN": 34, "INSERT": 45, "SPACE": 32 }
+*/</pre>
 		</section>
 
-		<section class="ax5demo-method">
+		<section class="ax5docs-method">
 			<h2>ax5.info.browser</h2>
 			<p>
-				browser 오브젝트의 JSON 구조는 다음과 같습니다.
+				It is user browser infomation
 			</p>
-			<pre class="prettyprint linenums">// ax5.info.browser
-{"name": "chrome", "version": "46.0.2490.86", "mobile": }</pre>
-			<p>
-				ax5 코드가 초기화 할 때마다 오브젝트가 생성됩니다.
-			</p>
+			<pre class="prettyprint linenums">JSON.stringify(ax5.info.browser);
+// {"name": "chrome", "version": "46.0.2490.86", "mobile": }</pre>
 		</section>
-
-		<section class="markdown">
-
-		</section>
-
-
 
 	
 	</div>

@@ -1,5 +1,5 @@
 <tmpl-metadata>
-	<parent>ax5</parent>
+	<parent></parent>
 	<sort>1</sort>
 
 	<id>ax5.info</id>
@@ -10,74 +10,41 @@
 <layout-use template="${data.layout_path}" pageTitle="ax5.info" show-header="$true">
 	<layout-put into="body">
 
-		<p>
-			ax5.info 오브젝트에 대해 기술합니다
-		</p>
-
-		<section class="ax5demo-method">
+		<section class="ax5docs-method">
 			<h2>ax5.info.version</h2>
-
 			<p>
-				ax5의 버전변수 입니다.
+				Version of ax5
 			</p>
 
-			<ax5demo-code>
-				<div id="div-ax5-info-version" class="script-result"></div>
-				<script>
-					(function() {
-						$("#div-ax5-info-version").html('ax5 version is :' + ax5.info.version);
-					})();
-				</script>
-			</ax5demo-code>
+			<ax5docs-code>
+				ax5.info.version;
+			</ax5docs-code>
 		</section>
 
 
-		<section class="ax5demo-method">
+		<section class="ax5docs-method">
 			<h2>ax5.info.event_keys</h2>
 			<p>
-				event_keys 오브젝트의 JSON 구조는 다음과 같습니다.
+				event_keys object key map
 			</p>
-			<ax5demo-code>
-				// ax5.info.event_keys
-				{
-				"BACKSPACE": 8,
-				"TAB": 9,
-				"RETURN": 13,
-				"ESC": 27,
-				"LEFT": 37,
-				"UP": 38,
-				"RIGHT": 39,
-				"DOWN": 40,
-				"DELETE": 46,
-				"HOME": 36,
-				"END": 35,
-				"PAGEUP": 33,
-				"PAGEDOWN": 34,
-				"INSERT": 45,
-				"SPACE": 32
-				}
-			</ax5demo-code>
+			<ax5docs-code>
+				JSON.stringify(ax5.info.event_keys);
+				/*
+				{ "BACKSPACE": 8, "TAB": 9, "RETURN": 13, "ESC": 27, "LEFT": 37, "UP": 38, "RIGHT": 39, "DOWN": 40, "DELETE": 46, "HOME": 36, "END": 35, "PAGEUP": 33, "PAGEDOWN": 34, "INSERT": 45, "SPACE": 32 }
+				*/
+			</ax5docs-code>
 		</section>
 
-		<section class="ax5demo-method">
+		<section class="ax5docs-method">
 			<h2>ax5.info.browser</h2>
 			<p>
-				browser 오브젝트의 JSON 구조는 다음과 같습니다.
+				It is user browser infomation
 			</p>
-			<ax5demo-code>
-				// ax5.info.browser
-				{"name": "chrome", "version": "46.0.2490.86", "mobile": }
-			</ax5demo-code>
-			<p>
-				ax5 코드가 초기화 할 때마다 오브젝트가 생성됩니다.
-			</p>
+			<ax5docs-code title="ax5.info.browser" description="브라우저 정보를 가져옵니다." type="js">
+				JSON.stringify(ax5.info.browser);
+				// {"name": "chrome", "version": "46.0.2490.86", "mobile": }
+			</ax5docs-code>
 		</section>
-
-		<section class="markdown">
-
-		</section>
-
-
 
 	</layout-put>
 	<layout-put into="page-js">
