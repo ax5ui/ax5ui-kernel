@@ -17,7 +17,7 @@
       <p>
         Return argument object type
       </p>
-      <ax5docs-code>
+      <ax5docs-js>
         <script type="text/javascript">
           ax5.util.get_type(1); // "number"
           ax5.util.get_type("1"); // "string"
@@ -27,7 +27,7 @@
           ax5.util.get_type(document.querySelectorAll("div")); // "nodelist"
           ax5.util.get_type(document.createDocumentFragment()); // "fragment"
         </script>
-      </ax5docs-code>
+      </ax5docs-js>
       <p>
         Javascript object type name is not clear. so <code>util.get_type</code> method very useful.
       </p>
@@ -40,7 +40,7 @@
       <p>
         Return argument object type is [type] result.
       </p>
-      <ax5docs-code>
+      <ax5docs-js>
         <script type="text/javascript">
           // return is window.
           ax5.util.is_window(window);
@@ -72,7 +72,7 @@
           // return is undefined|''|null.
           ax5.util.is_nothing();
         </script>
-      </ax5docs-code>
+      </ax5docs-js>
     </section>
 
     <!-- clone -->
@@ -82,7 +82,7 @@
       <p>
         Return copied new Object
       </p>
-      <ax5docs-code>
+      <ax5docs-js>
         <script type="text/javascript">
           var a = {a: 1};
           var b = a;
@@ -90,7 +90,7 @@
           b = ax5.util.clone(a);
           console.log("(a == b) => " + (a == b));
         </script>
-      </ax5docs-code>
+      </ax5docs-js>
     </section>
 
     <!-- each -->
@@ -102,7 +102,7 @@
         If the object in each function second argument (key, value) is passed,
         Array in each function second argument (index, Array item)
       </p>
-      <ax5docs-code>
+      <ax5docs-js>
         <script type="text/javascript">
           var a = {a: "axisj", b: "ax5"};
           var b = [9, 8, 5, 4, 3, 1];
@@ -120,7 +120,7 @@
 
           console.log(po.join('\n'));
         </script>
-      </ax5docs-code>
+      </ax5docs-js>
 
       <!-- filter -->
       <section class="ax5docs-method">
@@ -130,7 +130,7 @@
           The first item is delivered to the second argument of the filter function.
           The second argument is an anonymous function, the result is True, the items will be collected.
         </p>
-        <ax5docs-code>
+        <ax5docs-js>
           <script type="text/javascript">
             var result, aarray = [5, 4, 3, 2, 1];
 
@@ -147,7 +147,7 @@
             });
             console.log(JSON.stringify(result));
           </script>
-        </ax5docs-code>
+        </ax5docs-js>
       </section>
 
     </section>

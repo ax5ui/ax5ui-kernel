@@ -59,5 +59,5 @@ $(document.body).ready(function() {
 		fn_docs.menu.print(window.doc_menu_object || []);
 	}
 	
-	prettyPrint();
+	//prettyPrint();
 });

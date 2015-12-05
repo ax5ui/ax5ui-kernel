@@ -1,22 +1,221 @@
 <tmpl-metadata>
-	<parent></parent>
-	<sort>0</sort>
+  <parent></parent>
+  <sort>0</sort>
 
-	<id>install</id>
-	<title>Install</title>
-	<desc></desc>
+  <id>install</id>
+  <title>Install</title>
+  <desc></desc>
 </tmpl-metadata>
 
 <layout-use template="${data.layout_path}" pageTitle="Install" show-header="$true">
-	<layout-put into="body">
+  <layout-put into="body">
 
-		<p>
-			Install
-		</p>
+    <p>
+      Install
+    </p>
 
+    <!-- doc-md Markdown Test -->
+    <section class="ax5docs-section">
+      <ax5docs-md>
+        ## Methods
 
-	</layout-put>
-	<layout-put into="page-js">
+        ### AXBinder.set_model(Object, jQueryObject) : Model
+        바인딩할 자바스크립트 오브젝트로
+        제이쿼리로 검색된 HTML dom 엘리먼트 에 바인딩합니다.
+        바인딩된 모델을 반환합니다.
 
-	</layout-put>
+        ```html
+        <div id="form-target">
+          <input type="text" data-ax-path="name" class="AXInput"/>
+          <input type="text" data-ax-path="email" class="AXInput"/>
+        </div>
+        ```
+      </ax5docs-md>
+    </section>
+
+    <section class="ax5docs-section">
+      <h2>JS</h2>
+
+      <p>
+
+      </p>
+      <ax5docs-js>
+        <script type="text/javascript">
+          function buzz() { return 0; }
+
+          var foo = {
+
+            numbers: ['one', 'two', 'three', 'four', 'five', 'six'],
+            data: {
+              a: {
+                id: 123,
+                type: "String",
+                isAvailable: true
+              },
+              b: {id: 456, type: "Int"}
+            },
+            // fBar : function (x,y);
+            fOne: function(a, b, c, d, e, f, g, h) {
+              var x = a + b + c + d + e + f + g + h;
+              fTwo(a, b, c, fThree(d, e, f, g, h));
+              var z = a == 'Some string' ? 'yes' : 'no';
+              z = a == 10 ? 'yes' : 'no';
+              var colors = ['red', 'green', 'blue', 'black', 'white', 'gray'];
+              for (j = 0; j < 2; j++) i = a;
+              for (var i = 0; i < colors.length; i++)
+                var colorString = this.numbers[i];
+            },
+
+            /**
+             * Function JSDoc. Long lines can be wrapped with 'Comments'/'Wrap at right margin' option
+             * @param {string} a Parameter A description.
+             * @param {string} b Parameter B description. Can extend beyond the right margin.
+             */
+            fTwo: function(a, b, c, d) {
+              foo(a, b, c, d); // Line comment which can be wrapped if long.
+              if (true)
+                return c;
+              if (a == 'one' && (b == 'two' || c == 'three')) {
+                return a + b + c + d;
+              }
+              else return strD;
+              if (a == 'one') {
+                return 1;
+              }
+              else if (a == 'two') {
+                return 2;
+              }
+              var number = -10;
+              while (x < 0) {
+                number = number + 1;
+              }
+              do {
+                number = number + 1;
+              } while (number < 10);
+              return d;
+            },
+
+            fThree: function(strA, strB, strC, strD, strE) {
+              var number = prompt("Enter a number:", 0);
+              switch (number) {
+                case 0 :
+                  alert("Zero");
+                  break;
+                case 1:
+                  alert("One");
+                  break;
+              }
+              try {
+                a[2] = 10;
+              }
+              catch (e) {
+                alert("Failure: " + e.message);
+              }
+              return strA + strB + strC + strD + strE;
+            }
+          };
+        </script>
+      </ax5docs-js>
+    </section>
+
+    <section class="ax5docs-section">
+      <h2>CSS</h2>
+
+      <p>
+
+      </p>
+      <ax5docs-css>
+        <style type='text/css'>
+          /* desert scheme ported from vim to google prettify */
+          code.prettyprint {
+            display: block;
+            padding: 2px;
+            border: 1px solid #888;
+            background-color: #333;
+          }
+
+          .str {
+            color: #ffa0a0;
+          }
+
+          /* string  - pink */
+          .kwd {
+            color: #f0e68c;
+            font-weight: bold;
+          }
+
+          .com {
+            color: #87ceeb;
+          }
+
+          /* comment - skyblue */
+          .typ {
+            color: #98fb98;
+          }
+
+          /* type    - lightgreen */
+          .lit {
+            color: #cd5c5c;
+          }
+
+          /* literal - darkred */
+          .pun {
+            color: #fff;
+          }
+
+          /* punctuation */
+          .pln {
+            color: #fff;
+          }
+
+          /* plaintext */
+          .tag {
+            color: #f0e68c;
+            font-weight: bold;
+          }
+
+          /* html/xml tag    - lightyellow*/
+          .atn {
+            color: #bdb76b;
+            font-weight: bold;
+          }
+
+          /* attribute name  - khaki*/
+          .atv {
+            color: #ffa0a0;
+          }
+
+          /* attribute value - pink */
+          .dec {
+            color: #98fb98;
+          }
+
+          /* decimal         - lightgreen */
+        </style>
+      </ax5docs-css>
+    </section>
+
+    <section class="ax5docs-section">
+      <h2>HTML</h2>
+
+      <p>
+
+      </p>
+      <ax5docs-html>
+        <div style="display: inline-block;">
+          <table>
+            <tbody cellpadding="10">
+            <tr>
+              <td>String</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </ax5docs-html>
+    </section>
+
+  </layout-put>
+  <layout-put into="page-js">
+
+  </layout-put>
 </layout-use>
