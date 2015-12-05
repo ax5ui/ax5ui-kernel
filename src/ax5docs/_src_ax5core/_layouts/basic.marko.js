@@ -10,7 +10,7 @@ function create(__helpers) {
   return function render(data, out) {
     out.w('<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<title>ax5ui / ax5core : ' +
       escapeXml(data.pageTitle) +
-      '</title>\n\n\t\n\t<script type="text/javascript" src="../../assets/lib/jquery/jquery.min.js"></script>\n\t<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css"></script>\n\n\t<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/github.css">\n\t<script type="text/javascript" src="../../assets/lib/ax5core/ax5core.js"></script>\n\n\t\n\t<link rel="stylesheet" type="text/css" href="../../assets/css/docs.css">\n\t<script type="text/javascript" src="../../assets/js/ax5core-menus.js"></script>\n\t<script type="text/javascript" src="../../assets/js/docs.js"></script>\n\n');
+      '</title>\n\n\t\n\t<script type="text/javascript" src="../../assets/lib/jquery/jquery.min.js"></script>\n\t<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css"></script>\n\t<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/github.css">\n\t<script type="text/javascript" src="../../assets/lib/ax5core/ax5core.js"></script>\n\n\t\n\t<link rel="stylesheet" type="text/css" href="../../assets/css/docs.css">\n\t<script type="text/javascript" src="../../assets/js/ax5core-menus.js"></script>\n\t<script type="text/javascript" src="../../assets/js/docs.js"></script>\n\n');
     __tag(out,
       ____________node_modules_marko_node_modules_marko_layout_placeholder_tag_js,
       {

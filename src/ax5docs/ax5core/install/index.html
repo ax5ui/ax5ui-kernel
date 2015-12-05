@@ -12,7 +12,6 @@
 	
 	<script type="text/javascript" src="../../assets/lib/jquery/jquery.min.js"></script>
 	<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css"></script>
-
 	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/github.css">
 	<script type="text/javascript" src="../../assets/lib/ax5core/ax5core.js"></script>
 
@@ -37,7 +36,52 @@
 
     
     <section class="ax5docs-section">
-      <h2>Methods</h2>
+      <h2>Markdown</h2>
+<hr>
+<p><em>기울여쓰기(italic)</em> <em>기울여쓰기(italic)</em>
+<strong>굵게쓰기(bold)</strong> <strong>굵게쓰기(bold)</strong></p>
+<p><a href="http://example.com" title="링크제목">링크</a>.</p>
+<p><a href="http://example.com/" title="링크제목1">링크1</a> 과 <a href="http://example.org/" title="링크제목2">링크2</a>.</p>
+<hr>
+<hr>
+<hr>
+<p>각주 <a href="%EA%B0%81%EC%A3%BC%EB%8B%A4.">^1</a> 는 이렇게 만든다.</p>
+<p>각 라인의 끝에
+2개 이상의 스페이스를 넣으면
+줄 넘기기(개행)가 된다.</p>
+<ul>
+<li>목록</li>
+<li>목록</li>
+</ul>
+<ul>
+<li>목록</li>
+<li>목록</li>
+</ul>
+<ol>
+<li>목록</li>
+<li>목록</li>
+</ol>
+<ul>
+<li>혼합 목록</li>
+<li>혼합 목록</li>
+</ul>
+<ol start="3">
+<li>목록</li>
+</ol>
+<blockquote>
+<p>인용문.</p>
+<blockquote>
+<p>인용문안의 인용문.</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<ul>
+<li>인용 목록</li>
+<li>인용 목록</li>
+</ul>
+</blockquote>
+<p><code>코드이다. [test](http://test.com)</code></p>
+<h2>Methods</h2>
 <h3>AXBinder.set_model(Object, jQueryObject) : Model</h3>
 <p>바인딩할 자바스크립트 오브젝트로
 제이쿼리로 검색된 HTML dom 엘리먼트 에 바인딩합니다.
