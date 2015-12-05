@@ -18,7 +18,7 @@ exports.render = function(input, out) {
 			}
 			text_array.splice(0, i);
 
-			var remove_str_position = text_array[0].search(/[<>()\[\]{}\/a-zA-Z가-힝0-9\#\*\~\'\"]/);
+			var remove_str_position = text_array[0].search(/[^ ^\t]/);
 			var remove_str = text_array[0].substring(0, remove_str_position);
 
 			text_array.forEach(function(s, idx) {
