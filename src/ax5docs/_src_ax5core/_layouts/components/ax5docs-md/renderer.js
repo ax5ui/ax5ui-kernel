@@ -1,5 +1,7 @@
 exports.render = function(input, out) {
 	var _s = "", s, HTML, CSS, JS;
+	var md = require('markdown-it')();
+
 	var _out = {
 		w: function(text) {
 
@@ -38,59 +40,16 @@ exports.render = function(input, out) {
 				}
 			}
 
-			if(input.type == "js") {
-				JS = text_array.join("\n");
-			}
-			else if(input.type == "css") {
-				CSS = text_array.join("\n");
-			}
-			else if(input.type == "html") {
-				HTML = text_array.join("\n");
-			}
-
-			_s = text_array.join("\n").replace(/</g, "&lt;");
+			_s = md.render( text_array.join("\n") );
 		}
 	};
 	if (input.renderBody) {
 		input.renderBody(_out);
 	}
 
-	out.write('<pre class="prettyprint linenums">');
+	//out.write('<pre class="prettyprint linenums">');
 	out.write(_s);
-	out.write('</pre>');
+	//out.write('</pre>');
 
-	/*
-	var data = {
-		title              : input.title || "",
-		description        : input.description || "",
-		html               : HTML,
-		css                : CSS,
-		js                 : JS,
-		
-		html_pre_processor : "none",
-		css_pre_processor  : "none",
-		css_starter        : "neither",
-		css_prefix_free    : false,
-		js_pre_processor   : "none",
-		js_modernizr       : true,
-		js_library         : "",
-		html_classes       : "",
-		css_external       : "",
-		js_external        : "http://ax5.io/assets/lib/ax5core/ax5core.js"
-	};
-
-	var JSONstring = JSON.stringify(data)
-			// Quotes will screw up the JSON
-			.replace(/"/g, "&quot;")
-			.replace(/'/g, "&apos;");
-
-	var form =
-		'<form action="http://codepen.io/pen/define" method="POST" target="codepen">' +
-		'<input type="hidden" name="data" value=\'' + JSONstring + '\'>' +
-		'<input type="image" src="http://s.cdpn.io/3/cp-arrow-right.svg" width="40" height="40" value="Create New Pen with Prefilled Data" class="codepen-mover-button">' +
-		'</form>';
-
-	out.write(form);
-	*/
 
 };

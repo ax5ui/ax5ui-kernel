@@ -108,7 +108,7 @@
 				tasks: ['concat:ax5docs', 'uglify:ax5core', 'copy:ax5core']
 			},
 			"ax5docs-ax5core": {
-				files: ['<%= info.ax5core.doc_src %>/**/*.html', '<%= info.ax5core.doc_src %>/_layouts/*.*'],
+				files: ['<%= info.ax5core.doc_src %>/**/*.html', '<%= info.ax5core.doc_src %>/_layouts/**/*.*'],
 				tasks: ['make-menu:ax5core', 'ax_marko:ax5core']
 			},
 			"ax5docs-bootstrap-ax5dialog": {
@@ -248,6 +248,6 @@
 
 	grunt.registerTask('ax5core', ['concat:ax5core', 'uglify:ax5core', 'copy:ax5core', 'watch:ax5core']);
 	grunt.registerTask('sass-ax5docs', ['sass:ax5docs', 'watch:ax5docs']);
-	grunt.registerTask('tmpl-ax5core', ['make-menu:ax5core', 'ax_marko:ax5core', 'watch:ax5docs-ax5core']);
-	grunt.registerTask('tmpl-bootstrap-ax5dialog', ['make-menu:bootstrap-ax5dialog', 'ax_marko:bootstrap-ax5dialog', 'watch:ax5docs-bootstrap-ax5dialog']);
+	grunt.registerTask('docs-ax5core', ['make-menu:ax5core', 'ax_marko:ax5core', 'watch:ax5docs-ax5core']);
+	grunt.registerTask('docs-bootstrap-ax5dialog', ['make-menu:bootstrap-ax5dialog', 'ax_marko:bootstrap-ax5dialog', 'watch:ax5docs-bootstrap-ax5dialog']);
 };
