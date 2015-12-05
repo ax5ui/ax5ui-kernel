@@ -66,5 +66,6 @@ html, body {
   .demo-body p {
     margin: 0.7em 0;
     font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace; }
-  .demo-body .ax5docs-method {
-    margin: 2em 0; }
+
+.ax5docs-section {
+  margin: 2em 0; }

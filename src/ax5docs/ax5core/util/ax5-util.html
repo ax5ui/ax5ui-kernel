@@ -12,6 +12,7 @@
 	
 	<script type="text/javascript" src="../../assets/lib/jquery/jquery.min.js"></script>
 	<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css"></script>
+
 	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/github.css">
 	<script type="text/javascript" src="../../assets/lib/ax5core/ax5core.js"></script>
 
@@ -37,7 +38,7 @@
       <p>
         Return argument object type
       </p>
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   ax5.util.get_type(1); // "number"
   ax5.util.get_type("1"); // "string"
   ax5.util.get_type([0, 1, 2]); // "array"
@@ -58,7 +59,7 @@
       <p>
         Return argument object type is [type] result.
       </p>
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   // return is window.
   ax5.util.is_window(window);
 
@@ -98,7 +99,7 @@
       <p>
         Return copied new Object
       </p>
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   var a = {a: 1};
   var b = a;
   console.log("(a == b) => " + (a == b));
@@ -116,7 +117,7 @@
         If the object in each function second argument (key, value) is passed,
         Array in each function second argument (index, Array item)
       </p>
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   var a = {a: "axisj", b: "ax5"};
   var b = [9, 8, 5, 4, 3, 1];
 
@@ -142,7 +143,7 @@
           The first item is delivered to the second argument of the filter function.
           The second argument is an anonymous function, the result is True, the items will be collected.
         </p>
-        <pre class="prettyprint linenums">&lt;script type="text/javascript">
+        <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   var result, aarray = [5, 4, 3, 2, 1];
 
   result = ax5.util.filter(aarray, function() {

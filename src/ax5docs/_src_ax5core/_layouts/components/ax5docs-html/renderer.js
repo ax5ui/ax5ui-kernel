@@ -55,7 +55,7 @@ exports.render = function(input, out) {
 		input.renderBody(_out);
 	}
 
-	out.write('<pre class="prettyprint linenums">');
+	out.write('<pre class="prettyprint linenums lang-html">');
 	out.write(_s);
 	out.write('</pre>');
 };

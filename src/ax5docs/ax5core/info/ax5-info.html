@@ -12,6 +12,7 @@
 	
 	<script type="text/javascript" src="../../assets/lib/jquery/jquery.min.js"></script>
 	<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css"></script>
+
 	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/github.css">
 	<script type="text/javascript" src="../../assets/lib/ax5core/ax5core.js"></script>
 
@@ -37,7 +38,7 @@
         Version of ax5
       </p>
 
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   console.log(ax5.info.version);
 &lt;/script></pre>
     </section>
@@ -49,7 +50,7 @@
       <p>
         event_keys object key map
       </p>
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   console.log(ax5.info.event_keys);
   /*
    { "BACKSPACE": 8, "TAB": 9, "RETURN": 13, "ESC": 27, "LEFT": 37, "UP": 38, "RIGHT": 39, "DOWN": 40, "DELETE":
@@ -64,7 +65,7 @@
       <p>
         It is user browser infomation
       </p>
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   console.log(ax5.info.browser);
   // {"name": "chrome", "version": "46.0.2490.86", "mobile": }
 &lt;/script></pre>
@@ -76,7 +77,7 @@
       <p>
         Return current page's URL Infomation
       </p>
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   console.log(ax5.info.url_util());
   /*
    {
@@ -99,7 +100,7 @@
       <p>
         When an error occurs in the UI Class, the error message can be customized.
       </p>
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   // reset user error message
   ax5.info.error_msg["UI name"]["100"] = "my error 100";
   ax5.info.error_msg["UI name"]["200"] = "my error 200";
@@ -117,7 +118,7 @@
       <p>
 
       </p>
-      <pre class="prettyprint linenums">&lt;script type="text/javascript">
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
   ax5.info.is_browser; // is borwser ?
   ax5.info.wheel_enm; // Current browser whell event name
   console.log(ax5.info.week_names);

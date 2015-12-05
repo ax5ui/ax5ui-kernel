@@ -26,6 +26,7 @@ exports.render = function(input, out) {
 			text_array.forEach(function(s, idx) {
 				if (s.substring(0, remove_str_position) == remove_str) {
 					text_array[idx] = s.substr(remove_str_position);
+
 				}
 			});
 
@@ -40,7 +41,12 @@ exports.render = function(input, out) {
 				}
 			}
 
-			_s = md.render( text_array.join("\n") );
+			//console.log(md.render( text_array.join("\n")));
+
+			//<pre><code class="language-html">
+			//<pre><code class="language-html">
+
+			_s = md.render( text_array.join("\n")).replace(/\<pre\>/g, '<pre class="prettyprint linenums">');
 		}
 	};
 	if (input.renderBody) {
