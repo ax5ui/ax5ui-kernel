@@ -41,21 +41,14 @@ exports.render = function(input, out) {
 				}
 			}
 
-			//console.log(md.render( text_array.join("\n")));
-
-			//<pre><code class="language-html">
-			//<pre><code class="language-html">
-
-			_s = md.render( text_array.join("\n")).replace(/\<pre\>/g, '<pre class="prettyprint linenums">');
+			_s = md.render( text_array.join("\n")).replace(/<pre><code class="(.*)">/g, function(match, str){
+				return '<pre class="prettyprint linenums ' + str.replace("language", "lang") + '"><code>';
+			});
 		}
 	};
 	if (input.renderBody) {
 		input.renderBody(_out);
 	}
 
-	//out.write('<pre class="prettyprint linenums">');
 	out.write(_s);
-	//out.write('</pre>');
-
-
 };
