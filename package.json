@@ -15,6 +15,7 @@
 		"marko": "^2.7.7",
 		"grunt-ax-marko": "^0.1.0",
 		"htmlparser": "^1.7.7",
-		"markdown-it": "~5.0.2"
+		"markdown-it": "~5.0.2",
+		"bootstrap-sass": "^3.0.0"
 	}
 }

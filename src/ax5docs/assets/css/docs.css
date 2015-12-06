@@ -7,46 +7,7 @@ html, body {
   font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace;
   background: #f3f3f3; }
 
-.demo-menu {
-  box-sizing: border-box;
-  position: fixed;
-  bottom: 0px;
-  left: 0px;
-  width: 100%;
-  height: 200px;
-  overflow: auto;
-  padding: 20px;
-  background: #888; }
-  .demo-menu .demo-menu-group-container {
-    position: relative; }
-    .demo-menu .demo-menu-group-container .demo-menu-group {
-      display: inline-block;
-      vertical-align: top;
-      padding: 0;
-      padding-right: 30px;
-      margin: 0px; }
-      .demo-menu .demo-menu-group-container .demo-menu-group .demo-menu-group-title {
-        list-style: none;
-        display: block;
-        padding: 5px;
-        font-size: 14px; }
-      .demo-menu .demo-menu-group-container .demo-menu-group .demo-menu-group-child {
-        padding: 0;
-        margin: 0;
-        list-style: none; }
-        .demo-menu .demo-menu-group-container .demo-menu-group .demo-menu-group-child li a {
-          display: inline-block;
-          margin: 0;
-          padding: 3px;
-          border-bottom: 1px solid #eeeeee;
-          text-decoration: none;
-          color: #fff;
-          font-size: 14px; }
-          .demo-menu .demo-menu-group-container .demo-menu-group .demo-menu-group-child li a:hover {
-            color: #fbff41;
-            border-bottom: 1px solid #fbff41; }
-
-.demo-body {
+.docs-body {
   box-sizing: border-box;
   padding: 10px 20px;
   padding-bottom: 250px;
@@ -60,10 +21,10 @@ html, body {
   background: #fff;
   box-shadow: 1px 0px 3px #ccc;
   overflow: visible; }
-  .demo-body h1, .demo-body h2, .demo-body h3, .demo-body h4, .demo-body h5 {
+  .docs-body h1, .docs-body h2, .docs-body h3, .docs-body h4, .docs-body h5 {
     margin: 0.3em 0;
     font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace; }
-  .demo-body p {
+  .docs-body p {
     margin: 0.7em 0;
     font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace; }
 

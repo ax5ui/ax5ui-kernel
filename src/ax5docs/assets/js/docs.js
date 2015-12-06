@@ -7,7 +7,9 @@ var fn_docs = (function() {
 
 				var currentPath = (function() {
 					var pathname = location.pathname;
+					console.log(pathname, pathname.indexOf('/demo'));
 					pathname = pathname.substr(pathname.indexOf('/demo'));
+					console.log(pathname);
 					var paths = pathname.split(/\//g);
 					paths.shift();
 					paths.pop();
@@ -22,11 +24,11 @@ var fn_docs = (function() {
 				};
 				
 				var po = [];
-				po.push('<div class="demo-menu-group-container">');
+				po.push('<div class="docs-menu-group-container">');
 				for (var i = 0, l = menus.length, menu; i < l; i++) {
 					menu = menus[i];
-					po.push('<ul class="demo-menu-group">');
-					po.push('<li class="demo-menu-group-title">');
+					po.push('<ul class="docs-menu-group">');
+					po.push('<li class="docs-menu-group-title">');
 					if (menu.url) {
 						po.push('<a href="' + getUrl(menu.url) + '">' + menu.title + '</a>');
 					}
@@ -36,7 +38,7 @@ var fn_docs = (function() {
 					po.push('</li>');
 					
 					if (menu.child && menu.child.length > 0) {
-						po.push('<ul class="demo-menu-group-child">');
+						po.push('<ul class="docs-menu-group-child">');
 						
 						menu.child.forEach(function(c) {
 							//console.log(currentPath, c.url);
@@ -55,7 +57,7 @@ var fn_docs = (function() {
 
 $(document.body).ready(function() {
 	if (window.fn_docs) {
-		fn_docs._jos["menu-target"] = $("#demo-menu-print-target");
+		fn_docs._jos["menu-target"] = $("#docs-menu-print-target");
 		fn_docs.menu.print(window.doc_menu_object || []);
 	}
 	

@@ -1,13 +1,6 @@
-//@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
-//@import url(http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css);
-//@import url(http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
-
-$demo-font-basic: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
-//$demo-font-script: 'Nanum Gothic Coding', serif;
-//$demo-font-sun: 'Nanum Myeongjo', serif;
-
-$demo-font-script: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
-$demo-font-sun: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+$docs-font-basic: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+$docs-font-script: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+$docs-font-sun: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
 
 html, body {
 	margin: 0px;
@@ -15,68 +8,17 @@ html, body {
 	font-size: 13px;
 	line-height: 1.5em;
 	height: 100%;
-	font-family: $demo-font-basic;
+	font-family: $docs-font-basic;
 	background: #f3f3f3;
 }
 
-$demo-menu-height: 200px;
-$demo-theme-earth: #fbff41;
+$docs-menu-height: 200px;
+$docs-theme-earth: #fbff41;
 
-.demo-menu {
-	box-sizing: border-box;
-	position: fixed;
-	bottom: 0px;
-	left: 0px;
-	width: 100%;
-	height: $demo-menu-height;
-	overflow: auto;
-
-	padding: 20px;
-	background: #888;
-
-	.demo-menu-group-container{
-		position: relative;
-		.demo-menu-group{
-			display: inline-block;
-			vertical-align: top;
-			padding: 0;
-			padding-right: 30px;
-			margin: 0px;
-			//min-width: 80px;
-			.demo-menu-group-title{
-				list-style: none;
-				display: block;
-				padding: 5px;
-				font-size: 14px;
-			}
-			.demo-menu-group-child{
-				padding: 0;
-				margin: 0;
-				list-style: none;
-				li{
-					a {
-						display: inline-block;
-						margin: 0;
-						padding: 3px;
-						border-bottom: 1px solid #eeeeee;
-						text-decoration: none;
-						color: #fff;
-						font-size: 14px;
-						&:hover {
-							color: $demo-theme-earth;
-							border-bottom: 1px solid $demo-theme-earth;
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-.demo-body {
+.docs-body {
 	box-sizing: border-box;
 	padding: 10px 20px;
-	padding-bottom: $demo-menu-height + 50;
+	padding-bottom: $docs-menu-height + 50;
 	min-height: 90%;
 	width: 90%;
 	min-width: 600px;
@@ -94,14 +36,13 @@ $demo-theme-earth: #fbff41;
 
 	h1, h2, h3, h4, h5 {
 		margin: 0.3em 0;
-		font-family: $demo-font-sun;
+		font-family: $docs-font-sun;
 	}
 	p {
 		margin: 0.7em 0;
-		font-family: $demo-font-script;
+		font-family: $docs-font-script;
 	}
 }
-
 
 .ax5docs-section{
 	margin: 2em 0;

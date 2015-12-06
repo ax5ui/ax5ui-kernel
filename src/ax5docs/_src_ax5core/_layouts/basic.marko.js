@@ -26,7 +26,7 @@ function create(__helpers) {
         "content": data.layoutContent
       });
 
-    out.w('\n</head>\n<body>\n\t<div class="demo-body">\n\t\t');
+    out.w('\n</head>\n<body>\n\t<div class="docs-menu" id="docs-menu-print-target"></div>\n\n\t<div class="docs-body">\n\t\t');
 
     if (data.showHeader !== false) {
       out.w('<h1>\n\t\t\t' +
@@ -42,7 +42,7 @@ function create(__helpers) {
         "content": data.layoutContent
       });
 
-    out.w('\n\t</div>\n\t<div class="demo-menu" id="demo-menu-print-target"></div>\n\n');
+    out.w('\n\t</div>\n\n');
     __tag(out,
       ____________node_modules_marko_node_modules_marko_layout_placeholder_tag_js,
       {
