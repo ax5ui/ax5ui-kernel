@@ -1,3 +1,6 @@
+@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables.scss";
+@import "node_modules/bourbon/app/assets/stylesheets/_bourbon.scss";
+
 $docs-font-basic: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
 $docs-font-script: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
 $docs-font-sun: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
@@ -11,6 +14,7 @@ html, body {
 	font-family: $docs-font-basic;
 	background: #f3f3f3;
 }
+
 
 $docs-menu-height: 200px;
 $docs-theme-earth: #fbff41;
