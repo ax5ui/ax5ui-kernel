@@ -31,249 +31,32 @@
 			Install
 		</h1>
 		
-
-    <p>
-      Install
-    </p>
-
-    
     <section class="ax5docs-section">
-      <h2>Markdown</h2>
-<hr>
-<p><em>기울여쓰기(italic)</em> <em>기울여쓰기(italic)</em>
-<strong>굵게쓰기(bold)</strong> <strong>굵게쓰기(bold)</strong></p>
-<p><a href="http://example.com" title="링크제목">링크</a>.</p>
-<p><a href="http://example.com/" title="링크제목1">링크1</a> 과 <a href="http://example.org/" title="링크제목2">링크2</a>.</p>
-<hr>
-<hr>
-<hr>
-<p>각주 <a href="%EA%B0%81%EC%A3%BC%EB%8B%A4.">^1</a> 는 이렇게 만든다.</p>
-<p>각 라인의 끝에
-2개 이상의 스페이스를 넣으면
-줄 넘기기(개행)가 된다.</p>
-<ul>
-<li>목록</li>
-<li>목록</li>
-</ul>
-<ul>
-<li>목록</li>
-<li>목록</li>
-</ul>
-<ol>
-<li>목록</li>
-<li>목록</li>
-</ol>
-<ul>
-<li>혼합 목록</li>
-<li>혼합 목록</li>
-</ul>
-<ol start="3">
-<li>목록</li>
-</ol>
-<blockquote>
-<p>인용문.</p>
-<blockquote>
-<p>인용문안의 인용문.</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<ul>
-<li>인용 목록</li>
-<li>인용 목록</li>
-</ul>
-</blockquote>
-<p><code>코드이다. [test](http://test.com)</code></p>
-<h2>Methods</h2>
-<h3>AXBinder.set_model(Object, jQueryObject) : Model</h3>
-<p>바인딩할 자바스크립트 오브젝트로
-제이쿼리로 검색된 HTML dom 엘리먼트 에 바인딩합니다.
-바인딩된 모델을 반환합니다.</p>
-<pre class="prettyprint linenums lang-html"><code>&lt;div id=&quot;form-target&quot;&gt;
-  &lt;input type=&quot;text&quot; data-ax-path=&quot;name&quot; class=&quot;AXInput&quot;&gt;
-  &lt;input type=&quot;text&quot; data-ax-path=&quot;email&quot; class=&quot;AXInput&quot;&gt;
-&lt;/div&gt;
+      <h3>Insert the &quot;ax5&quot; in the HTML HEAD.</h3>
+<p>Location of the folder can be determined freely in your project. But be careful not to accidentally caused exactly the path.</p>
+<pre class="prettyprint linenums lang-html"><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;../../jquery/jquery.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;../../ax5core/dist/ax5core.min.js&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+  ....
+  &lt;/body&gt;
+&lt;/html&gt;
 </code></pre>
-<pre class="prettyprint linenums lang-js"><code>var a = 1;
-function b(){
-  return a;
-}
+<p>Enjoy &quot;AX5&quot; utility library</p>
+<pre class="prettyprint linenums lang-js"><code>ax5.util.date(&quot;20111111&quot;);
+//Fri Nov 11 2011 23:59:00 GMT+0900 (KST)
+ax5.util.date(&quot;20111111&quot;, {'return':'yyyy/mm/dd'});
+//&quot;2011/11/11&quot;
 </code></pre>
+<p>&quot;AX5&quot; utility is very safe and useful.
+'ax5.info', 'ax5.util', and consists of 'ax5.ui', are among the &quot;ax5.ui&quot; At the same time, perform the parenting role and the root of the UI library.</p>
+<p>If you have any questions, please refer to the following link:</p>
+<ul>
+<li>gitHub</li>
+</ul>
 
-    </section>
-
-    <section class="ax5docs-section">
-      <h2>JS</h2>
-
-      <p>
-
-      </p>
-      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-  function buzz() { return 0; }
-
-  var foo = {
-
-    numbers: ['one', 'two', 'three', 'four', 'five', 'six'],
-    data: {
-      a: {
-        id: 123,
-        type: "String",
-        isAvailable: true
-      },
-      b: {id: 456, type: "Int"}
-    },
-    // fBar : function (x,y);
-    fOne: function(a, b, c, d, e, f, g, h) {
-      var x = a + b + c + d + e + f + g + h;
-      fTwo(a, b, c, fThree(d, e, f, g, h));
-      var z = a == 'Some string' ? 'yes' : 'no';
-      z = a == 10 ? 'yes' : 'no';
-      var colors = ['red', 'green', 'blue', 'black', 'white', 'gray'];
-      for (j = 0; j &lt; 2; j++) i = a;
-      for (var i = 0; i &lt; colors.length; i++)
-        var colorString = this.numbers[i];
-    },
-
-    /**
-     * Function JSDoc. Long lines can be wrapped with 'Comments'/'Wrap at right margin' option
-     * @param {string} a Parameter A description.
-     * @param {string} b Parameter B description. Can extend beyond the right margin.
-     */
-    fTwo: function(a, b, c, d) {
-      foo(a, b, c, d); // Line comment which can be wrapped if long.
-      if (true)
-        return c;
-      if (a == 'one' && (b == 'two' || c == 'three')) {
-        return a + b + c + d;
-      }
-      else return strD;
-      if (a == 'one') {
-        return 1;
-      }
-      else if (a == 'two') {
-        return 2;
-      }
-      var number = -10;
-      while (x &lt; 0) {
-        number = number + 1;
-      }
-      do {
-        number = number + 1;
-      } while (number &lt; 10);
-      return d;
-    },
-
-    fThree: function(strA, strB, strC, strD, strE) {
-      var number = prompt("Enter a number:", 0);
-      switch (number) {
-        case 0 :
-          alert("Zero");
-          break;
-        case 1:
-          alert("One");
-          break;
-      }
-      try {
-        a[2] = 10;
-      }
-      catch (e) {
-        alert("Failure: " + e.message);
-      }
-      return strA + strB + strC + strD + strE;
-    }
-  };
-&lt;/script></pre>
-    </section>
-
-    <section class="ax5docs-section">
-      <h2>CSS</h2>
-
-      <p>
-
-      </p>
-      <pre class="prettyprint linenums lang-css">&lt;style type="text/css">
-  /* desert scheme ported from vim to google prettify */
-  code.prettyprint {
-    display: block;
-    padding: 2px;
-    border: 1px solid #888;
-    background-color: #333;
-  }
-
-  .str {
-    color: #ffa0a0;
-  }
-
-  /* string  - pink */
-  .kwd {
-    color: #f0e68c;
-    font-weight: bold;
-  }
-
-  .com {
-    color: #87ceeb;
-  }
-
-  /* comment - skyblue */
-  .typ {
-    color: #98fb98;
-  }
-
-  /* type    - lightgreen */
-  .lit {
-    color: #cd5c5c;
-  }
-
-  /* literal - darkred */
-  .pun {
-    color: #fff;
-  }
-
-  /* punctuation */
-  .pln {
-    color: #fff;
-  }
-
-  /* plaintext */
-  .tag {
-    color: #f0e68c;
-    font-weight: bold;
-  }
-
-  /* html/xml tag    - lightyellow*/
-  .atn {
-    color: #bdb76b;
-    font-weight: bold;
-  }
-
-  /* attribute name  - khaki*/
-  .atv {
-    color: #ffa0a0;
-  }
-
-  /* attribute value - pink */
-  .dec {
-    color: #98fb98;
-  }
-
-  /* decimal         - lightgreen */
-&lt;/style></pre>
-    </section>
-
-    <section class="ax5docs-section">
-      <h2>HTML</h2>
-
-      <p>
-
-      </p>
-      <pre class="prettyprint linenums lang-html">&lt;div style="display: inline-block;">
-  &lt;table>
-    &lt;tbody cellpadding="10">
-    &lt;tr>
-      &lt;td>String&lt;/td>
-    &lt;/tr>
-    &lt;/tbody>
-  &lt;/table>
-&lt;/div></pre>
     </section>
 
   

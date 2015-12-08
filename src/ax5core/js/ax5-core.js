@@ -4,6 +4,15 @@
 
   // root of function
   var root = this, win = window, doc = document, docElem = document.documentElement,
+
+    re_dot = /\./,
+    re_int = /[-|+]?[\D]/gi,
+    re_not_num = /\D/gi,
+    re_money_split = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
+    re_amp = /&/g,
+    re_eq = /=/,
+    re_class_name_split = /[ ]+/g,
+
     /** @namespace {Object} ax5 */
     ax5 = {}, info, U, dom;
 
