@@ -11,8 +11,17 @@
 
 	
 	<script type="text/javascript" src="../../assets/lib/jquery/jquery.min.js"></script>
-	<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=css"></script>
-	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/github.css">
+
+
+	<script src="../../assets/lib/prettify/prettify.js"></script>
+	<script src="../../assets/lib/prettify/lang-css.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/skins/github.css">
+	<script type="text/javascript">
+		$(document.body).ready(function(){
+			if(window["prettyPrint"]) window["prettyPrint"]();
+		});
+	</script>
+
 	<script type="text/javascript" src="../../assets/lib/ax5core/ax5core.js"></script>
 
 	
@@ -163,6 +172,265 @@
       </section>
 
     </section>
+
+    
+    <section class="ax5docs-section">
+      <h2>ax5.util.filter</h2>
+
+      <p>
+
+      </p>
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+  var result;
+  var aarray = [5, 4, 3, 2, 1];
+  result = ax5.util.filter(aarray, function() {
+    return this % 2;
+  });
+  console.log(result);
+  // [5, 3, 1]
+
+  var list = [
+    {isdel: 1, name: "ax5-1"}, {name: "ax5-2"}, {isdel: 1, name: "ax5-3"}, {name: "ax5-4"}, {name: "ax5-5"}
+  ];
+  result = ax5.util.filter(list, function() {
+    return (this.isdel != 1);
+  });
+  console.log(JSON.stringify(result));
+  // [{"name":"ax5-2"},{"name":"ax5-4"},{"name":"ax5-5"}]
+&lt;/script></pre>
+    </section>
+    
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.search</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.map</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+    
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.merge</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+    
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.reduce</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+    
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.reduce_right</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+    
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.extend</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.extend_all</h2>
+
+    	<p>
+
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.first</h2>
+
+    	<p>
+
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.last</h2>
+
+    	<p>
+
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.left</h2>
+
+    	<p>
+
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.right</h2>
+
+    	<p>
+
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.camel_case</h2>
+
+    	<p>
+
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.snake_case</h2>
+
+    	<p>
+
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+
+&lt;/script></pre>
+    </section>
+    
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.number</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+    
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.param</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.parse_json</h2>
+
+    	<p>
+
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.to_json</h2>
+
+    	<p>
+
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+
+&lt;/script></pre>
+    </section>
+
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.alert</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+    
+    
+    <section class="ax5docs-section">
+    	<h2>ax5.util.to_array</h2>
+    
+    	<p>
+    		
+    	</p>
+    	<pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+	
+&lt;/script></pre>
+    </section>
+
+    // todo : get, set cookie or storage
+
+
   
 	</div>
 

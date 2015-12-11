@@ -72,7 +72,167 @@ function create(__helpers) {
                   out.w('\n          <script type="text/javascript">\n            var result, aarray = [5, 4, 3, 2, 1];\n\n            result = ax5.util.filter(aarray, function() {\n              return this % 2;\n            });\n            console.log(result);\n\n            var list = [\n              {isdel: 1, name: "ax5-1"}, {name: "ax5-2"}, {isdel: 1, name: "ax5-3"}, {name: "ax5-4"}, {name: "ax5-5"}\n            ];\n            result = ax5.util.filter(list, function() {\n              return (this.isdel != 1);\n            });\n            console.log(JSON.stringify(result));\n          </script>\n        ');
                 });
 
-              out.w('\n      </section>\n\n    </section>\n  ');
+              out.w('\n      </section>\n\n    </section>\n\n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.filter</h2>\n\n      <p>\n\n      </p>\n      ');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n        <script type="text/javascript">\n          var result;\n          var aarray = [5, 4, 3, 2, 1];\n          result = ax5.util.filter(aarray, function() {\n            return this % 2;\n          });\n          console.log(result);\n          // [5, 3, 1]\n\n          var list = [\n            {isdel: 1, name: "ax5-1"}, {name: "ax5-2"}, {isdel: 1, name: "ax5-3"}, {name: "ax5-4"}, {name: "ax5-5"}\n          ];\n          result = ax5.util.filter(list, function() {\n            return (this.isdel != 1);\n          });\n          console.log(JSON.stringify(result));\n          // [{"name":"ax5-2"},{"name":"ax5-4"},{"name":"ax5-5"}]\n        </script>\n      ');
+                });
+
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.search</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.map</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.merge</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.reduce</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.reduce_right</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.extend</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.extend_all</h2>\n\n    \t<p>\n\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.first</h2>\n\n    \t<p>\n\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.last</h2>\n\n    \t<p>\n\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.left</h2>\n\n    \t<p>\n\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.right</h2>\n\n    \t<p>\n\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.camel_case</h2>\n\n    \t<p>\n\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.snake_case</h2>\n\n    \t<p>\n\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.number</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.param</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.parse_json</h2>\n\n    \t<p>\n\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.to_json</h2>\n\n    \t<p>\n\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.alert</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n    \t<h2>ax5.util.to_array</h2>\n    \n    \t<p>\n    \t\t\n    \t</p>\n    \t');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n    \t<script type="text/javascript">\n    \t\t\n    \t</script>\n    \t');
+                });
+
+              out.w('\n    </section>\n\n    // todo : get, set cookie or storage\n\n\n  ');
             });
 
           out.w('\n  ');
