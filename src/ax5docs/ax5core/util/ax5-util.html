@@ -241,16 +241,17 @@
       <h2>ax5.util.first</h2>
       
       <p>
-        It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array [0]" rather than using the "first" method.
+        It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array [0]"
+        rather than using the "first" method.
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-  var _arr = ["ax5","axisj"];
-  var _obj = {k:"ax5", z:"axisj"};
+  var _arr = ["ax5", "axisj"];
+  var _obj = {k: "ax5", z: "axisj"};
 
-  console.log( ax5.util.first(_arr) );
+  console.log(ax5.util.first(_arr));
   // ax5
 
-  console.log( ax5.util.to_json( ax5.util.first( _obj) ) );
+  console.log(ax5.util.to_json(ax5.util.first(_obj)));
   // {"k": "ax5"}
 &lt;/script></pre>
     </section>
@@ -263,13 +264,13 @@
         It returns the last element in the Array, or Object.
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-  var _arr = ["ax5","axisj"];
-  var _obj = {k:"ax5", z:"axisj"};
+  var _arr = ["ax5", "axisj"];
+  var _obj = {k: "ax5", z: "axisj"};
 
-  console.log( ax5.util.last(_arr) );
+  console.log(ax5.util.last(_arr));
   // axisj
 
-  console.log( ax5.util.to_json( ax5.util.last( _obj) ) );
+  console.log(ax5.util.to_json(ax5.util.last(_obj)));
   // {"z": "axisj"}
 &lt;/script></pre>
     </section>
@@ -279,10 +280,14 @@
       <h2>ax5.util.left</h2>
       
       <p>
-      
+        Returns. Since the beginning of the string to the index, up to a certain character in a string from the
+        beginning of the string.
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-
+  console.log(ax5.util.left("abcd.efd", 3));
+  // abc
+  console.log(ax5.util.left("abcd.efd", "."));
+  // abcd
 &lt;/script></pre>
     </section>
     
@@ -291,10 +296,13 @@
       <h2>ax5.util.right</h2>
       
       <p>
-      
+        Returns. Up from the end of the string index, up to a certain character in a string from the end of the string
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-
+  console.log(ax5.util.right("abcd.efd", 3));
+  // efd
+  console.log(ax5.util.right("abcd.efd", "."));
+  // efd
 &lt;/script></pre>
     </section>
     
@@ -303,10 +311,16 @@
       <h2>ax5.util.camel_case</h2>
       
       <p>
-      
+        It converts a string to "Camel Case". "a-b", "a_b" will be the "aB".
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-
+  console.log(ax5.util.camel_case("inner-width"));
+  console.log(ax5.util.camel_case("inner_width"));
+  // innerWidth
+  console.log(ax5.util.camel_case("camelCase"));
+  // camelCase
+  console.log(ax5.util.camel_case("a_bc"));
+  // aBc
 &lt;/script></pre>
     </section>
     
@@ -315,10 +329,15 @@
       <h2>ax5.util.snake_case</h2>
       
       <p>
-      
+        It converts a string to "Snake Case". "aB" will be the "a-b".
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-
+  console.log(ax5.util.snake_case("inner-width"));
+  // inner-width
+  console.log(ax5.util.snake_case("camelCase"));
+  // camel-case
+  console.log(ax5.util.snake_case("a_bc"));
+  // a-bc
 &lt;/script></pre>
     </section>
     
@@ -327,10 +346,29 @@
       <h2>ax5.util.number</h2>
       
       <p>
-      
+        When the number covers the development, often it requires multiple steps.
+        The syntax is very complex and it is difficult to maintain.
+        "ax5.util.number" command to convert a number that were resolved by passing a JSON format.
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+  console.log('round(1) : ' + ax5.util.number(123456789.678, {round: 1}));
+  // round(1) : 123456789.7
 
+  console.log('round(1) money() : '
+      + ax5.util.number(123456789.678, {round: 1, money: true}));
+  // round(1) money() : 123,456,789.7
+
+  console.log('round(2) byte() : '
+      + ax5.util.number(123456789.678, {round: 2, byte: true}));
+  // round(2) byte() : 117.7MB
+
+  console.log('abs() round(2) money() : '
+      + ax5.util.number(-123456789.678, {abs: true, round: 2, money: true}));
+  // abs() round(2) money() : 123,456,789.68
+
+  console.log('abs() round(2) money() : '
+      + ax5.util.number("A-1234~~56789.8~888PX", {abs: true, round: 2, money: true}));
+  // abs() round(2) money() : 123,456,789.89
 &lt;/script></pre>
     </section>
     
@@ -339,10 +377,16 @@
       <h2>ax5.util.param</h2>
       
       <p>
-      
+        The parameter values may in some cases be the "Object" or "String".
+        At this time, useing the "param", it can be the same as verifying the parameter value.
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-
+  console.log(ax5.util.param({a: 1, b: '123\'"2&'}, "param"));
+  // a=1&b=123%27%222%26
+  console.log(ax5.util.param("a=1&b=12'\"32", "param"));
+  //a=1&b=12'"32
+  console.log(ax5.util.to_json(util.param("a=1&b=1232")));
+  // {"a": "1", "b": "1232"}
 &lt;/script></pre>
     </section>
     
@@ -351,10 +395,17 @@
       <h2>ax5.util.parse_json</h2>
       
       <p>
-      
+        parsing a little more than the less sensitive the JSON syntax "JSON.parse".
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-
+  console.log(ax5.util.to_json(ax5.util.parse_json("[{'a':'99'},'2','3']")[0]));
+  // {"a": "99"}
+  console.log(ax5.util.parse_json("{a:1}").a);
+  // 1
+  console.log(ax5.util.to_json(ax5.util.parse_json("{'a':1, 'b':function(){return 1;}}", false)));
+  // {"error": 500, "msg": "syntax error"}
+  console.log(ax5.util.to_json(ax5.util.parse_json("{'a':1, 'b':function(){return 1;}}", true)));
+  // {"a": 1, "b": "{Function}"}
 &lt;/script></pre>
     </section>
     
@@ -366,7 +417,20 @@
       
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-
+  console.log(ax5.util.to_json(1));
+  // 1
+  console.log(ax5.util.to_json("A"));
+  // "A"
+  console.log(ax5.util.to_json([1, 2, 3, 'A']));
+  // [1,2,3,"A"]
+  console.log(ax5.util.to_json({a: 'a', x: 'x'}));
+  // {"a": "a", "x": "x"}
+  console.log(ax5.util.to_json([1, {a: 'a', x: 'x'}]));
+  // [1,{"a": "a", "x": "x"}]
+  console.log(ax5.util.to_json({a: 'a', x: 'x', list: [1, 2, 3]}));
+  // {"a": "a", "x": "x", "list": [1,2,3]}
+  console.log(ax5.util.to_json(function() {}));
+  // "{Function}"
 &lt;/script></pre>
     </section>
     
@@ -378,7 +442,7 @@
       
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-
+  ax5.util.alert({a: 1, b: 2});
 &lt;/script></pre>
     </section>
     
@@ -387,15 +451,34 @@
       <h2>ax5.util.to_array</h2>
       
       <p>
-      
+        "nodelist" or on the Array Like such "arguments", has properties such as "length", but you can not use functions
+        defined in Array.prototype. With "to_array" because it is easy to convert an array.
       </p>
       <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-
+  function something() {
+    var arr = ax5.util.to_array(arguments);
+    console.log(ax5.util.to_json(arr));
+  }
+  something("A", "X", "I", "S", "J");
 &lt;/script></pre>
     </section>
+
     
-    // todo : get, set cookie or storage
-  
+    <section class="ax5docs-section">
+      <h2>ax5.get_cookie / set_cookie</h2>
+
+      <p>
+
+      </p>
+      <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+  ax5.util.set_cookie("ax5-cookie", "abcde");
+  ax5.util.set_cookie("ax5-cookie-path", "abcde", 2, {path: "/"});
+  console.log(ax5.util.get_cookie("ax5-cookie"));
+  // abcde
+  console.log(ax5.util.get_cookie("ax5-cookie-path"));
+  // abcde
+&lt;/script></pre>
+    </section>
   
   
 	</div>

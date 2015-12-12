@@ -96,12 +96,12 @@ function create(__helpers) {
                   out.w('\n        <script type="text/javascript">\n          var aarray = [5, 4, 3, 2, 1];\n          console.log(ax5.util.reduce_right(aarray, function(p, n) {\n            return p - n;\n          }));\n          // -13\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.first</h2>\n      \n      <p>\n        It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array [0]" rather than using the "first" method.\n      </p>\n      ');
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.first</h2>\n      \n      <p>\n        It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array [0]"\n        rather than using the "first" method.\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n          var _arr = ["ax5","axisj"];\n          var _obj = {k:"ax5", z:"axisj"};\n\n          console.log( ax5.util.first(_arr) );\n          // ax5\n\n          console.log( ax5.util.to_json( ax5.util.first( _obj) ) );\n          // {"k": "ax5"}\n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          var _arr = ["ax5", "axisj"];\n          var _obj = {k: "ax5", z: "axisj"};\n\n          console.log(ax5.util.first(_arr));\n          // ax5\n\n          console.log(ax5.util.to_json(ax5.util.first(_obj)));\n          // {"k": "ax5"}\n        </script>\n      ');
                 });
 
               out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.last</h2>\n      \n      <p>\n        It returns the last element in the Array, or Object.\n      </p>\n      ');
@@ -109,63 +109,63 @@ function create(__helpers) {
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n          var _arr = ["ax5","axisj"];\n          var _obj = {k:"ax5", z:"axisj"};\n\n          console.log( ax5.util.last(_arr) );\n          // axisj\n\n          console.log( ax5.util.to_json( ax5.util.last( _obj) ) );\n          // {"z": "axisj"}\n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          var _arr = ["ax5", "axisj"];\n          var _obj = {k: "ax5", z: "axisj"};\n\n          console.log(ax5.util.last(_arr));\n          // axisj\n\n          console.log(ax5.util.to_json(ax5.util.last(_obj)));\n          // {"z": "axisj"}\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.left</h2>\n      \n      <p>\n      \n      </p>\n      ');
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.left</h2>\n      \n      <p>\n        Returns. Since the beginning of the string to the index, up to a certain character in a string from the\n        beginning of the string.\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          console.log(ax5.util.left("abcd.efd", 3));\n          // abc\n          console.log(ax5.util.left("abcd.efd", "."));\n          // abcd\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.right</h2>\n      \n      <p>\n      \n      </p>\n      ');
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.right</h2>\n      \n      <p>\n        Returns. Up from the end of the string index, up to a certain character in a string from the end of the string\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          console.log(ax5.util.right("abcd.efd", 3));\n          // efd\n          console.log(ax5.util.right("abcd.efd", "."));\n          // efd\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.camel_case</h2>\n      \n      <p>\n      \n      </p>\n      ');
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.camel_case</h2>\n      \n      <p>\n        It converts a string to "Camel Case". "a-b", "a_b" will be the "aB".\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          console.log(ax5.util.camel_case("inner-width"));\n          console.log(ax5.util.camel_case("inner_width"));\n          // innerWidth\n          console.log(ax5.util.camel_case("camelCase"));\n          // camelCase\n          console.log(ax5.util.camel_case("a_bc"));\n          // aBc\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.snake_case</h2>\n      \n      <p>\n      \n      </p>\n      ');
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.snake_case</h2>\n      \n      <p>\n        It converts a string to "Snake Case". "aB" will be the "a-b".\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          console.log(ax5.util.snake_case("inner-width"));\n          // inner-width\n          console.log(ax5.util.snake_case("camelCase"));\n          // camel-case\n          console.log(ax5.util.snake_case("a_bc"));\n          // a-bc\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.number</h2>\n      \n      <p>\n      \n      </p>\n      ');
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.number</h2>\n      \n      <p>\n        When the number covers the development, often it requires multiple steps.\n        The syntax is very complex and it is difficult to maintain.\n        "ax5.util.number" command to convert a number that were resolved by passing a JSON format.\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          console.log(\'round(1) : \' + ax5.util.number(123456789.678, {round: 1}));\n          // round(1) : 123456789.7\n\n          console.log(\'round(1) money() : \'\n              + ax5.util.number(123456789.678, {round: 1, money: true}));\n          // round(1) money() : 123,456,789.7\n\n          console.log(\'round(2) byte() : \'\n              + ax5.util.number(123456789.678, {round: 2, byte: true}));\n          // round(2) byte() : 117.7MB\n\n          console.log(\'abs() round(2) money() : \'\n              + ax5.util.number(-123456789.678, {abs: true, round: 2, money: true}));\n          // abs() round(2) money() : 123,456,789.68\n\n          console.log(\'abs() round(2) money() : \'\n              + ax5.util.number("A-1234~~56789.8~888PX", {abs: true, round: 2, money: true}));\n          // abs() round(2) money() : 123,456,789.89\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.param</h2>\n      \n      <p>\n      \n      </p>\n      ');
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.param</h2>\n      \n      <p>\n        The parameter values may in some cases be the "Object" or "String".\n        At this time, useing the "param", it can be the same as verifying the parameter value.\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          console.log(ax5.util.param({a: 1, b: \'123\\\'"2&\'}, "param"));\n          // a=1&b=123%27%222%26\n          console.log(ax5.util.param("a=1&b=12\'\\"32", "param"));\n          //a=1&b=12\'"32\n          console.log(ax5.util.to_json(util.param("a=1&b=1232")));\n          // {"a": "1", "b": "1232"}\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.parse_json</h2>\n      \n      <p>\n      \n      </p>\n      ');
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.parse_json</h2>\n      \n      <p>\n        parsing a little more than the less sensitive the JSON syntax "JSON.parse".\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          console.log(ax5.util.to_json(ax5.util.parse_json("[{\'a\':\'99\'},\'2\',\'3\']")[0]));\n          // {"a": "99"}\n          console.log(ax5.util.parse_json("{a:1}").a);\n          // 1\n          console.log(ax5.util.to_json(ax5.util.parse_json("{\'a\':1, \'b\':function(){return 1;}}", false)));\n          // {"error": 500, "msg": "syntax error"}\n          console.log(ax5.util.to_json(ax5.util.parse_json("{\'a\':1, \'b\':function(){return 1;}}", true)));\n          // {"a": 1, "b": "{Function}"}\n        </script>\n      ');
                 });
 
               out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.to_json</h2>\n      \n      <p>\n      \n      </p>\n      ');
@@ -173,7 +173,7 @@ function create(__helpers) {
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          console.log(ax5.util.to_json(1));\n          // 1\n          console.log(ax5.util.to_json("A"));\n          // "A"\n          console.log(ax5.util.to_json([1, 2, 3, \'A\']));\n          // [1,2,3,"A"]\n          console.log(ax5.util.to_json({a: \'a\', x: \'x\'}));\n          // {"a": "a", "x": "x"}\n          console.log(ax5.util.to_json([1, {a: \'a\', x: \'x\'}]));\n          // [1,{"a": "a", "x": "x"}]\n          console.log(ax5.util.to_json({a: \'a\', x: \'x\', list: [1, 2, 3]}));\n          // {"a": "a", "x": "x", "list": [1,2,3]}\n          console.log(ax5.util.to_json(function() {}));\n          // "{Function}"\n        </script>\n      ');
                 });
 
               out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.alert</h2>\n      \n      <p>\n      \n      </p>\n      ');
@@ -181,18 +181,26 @@ function create(__helpers) {
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          ax5.util.alert({a: 1, b: 2});\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.to_array</h2>\n      \n      <p>\n      \n      </p>\n      ');
+              out.w('\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2>ax5.util.to_array</h2>\n      \n      <p>\n        "nodelist" or on the Array Like such "arguments", has properties such as "length", but you can not use functions\n        defined in Array.prototype. With "to_array" because it is easy to convert an array.\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
                 function(out) {
-                  out.w('\n        <script type="text/javascript">\n        \n        </script>\n      ');
+                  out.w('\n        <script type="text/javascript">\n          function something() {\n            var arr = ax5.util.to_array(arguments);\n            console.log(ax5.util.to_json(arr));\n          }\n          something("A", "X", "I", "S", "J");\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    // todo : get, set cookie or storage\n  \n  \n  ');
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n      <h2>ax5.get_cookie / set_cookie</h2>\n\n      <p>\n\n      </p>\n      ');
+              __tag(out,
+                ____layouts_components_ax5docs_js_renderer_js,
+                {},
+                function(out) {
+                  out.w('\n        <script type="text/javascript">\n          ax5.util.set_cookie("ax5-cookie", "abcde");\n          ax5.util.set_cookie("ax5-cookie-path", "abcde", 2, {path: "/"});\n          console.log(ax5.util.get_cookie("ax5-cookie"));\n          // abcde\n          console.log(ax5.util.get_cookie("ax5-cookie-path"));\n          // abcde\n        </script>\n      ');
+                });
+
+              out.w('\n    </section>\n  \n  ');
             });
 
           out.w('\n  ');

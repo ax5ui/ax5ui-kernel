@@ -9,7 +9,7 @@ $docs-font-desc: 'AX5 Lato', Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mon
 html, body {
 	margin: 0px;
 	padding: 0px;
-	font-size: 13px;
+	font-size: 14px;
 	line-height: 1.5em;
 	height: 100%;
 	font-family: $docs-font-basic;
@@ -51,4 +51,17 @@ $docs-theme-earth: #fbff41;
 
 .ax5docs-section{
 	margin: 2em 0;
+}
+
+
+blockquote {
+	background: #f9f9f9;
+	border-left: 10px solid #ccc;
+	margin: 1.5em 10px;
+	padding: 0.5em 10px;
+	quotes: "\201C""\201D""\2018""\2019";
+
+	p {
+		display: inline;
+	}
 }

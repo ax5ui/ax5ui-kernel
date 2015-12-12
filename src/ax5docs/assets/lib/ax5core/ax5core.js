@@ -176,6 +176,10 @@
   // root of function
   var root = this, win = window, doc = document, docElem = document.documentElement,
 
+    re_is_json = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
+    re_ms = /^-ms-/,
+    re_snake_case = /[\-_]([\da-z])/gi,
+    re_camel_case = /([A-Z])/g,
     re_dot = /\./,
     re_int = /[-|+]?[\D]/gi,
     re_not_num = /\D/gi,
