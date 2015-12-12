@@ -1,6 +1,6 @@
 /*
  * ax5ui-kernel - v0.0.1 
- * 2015-12-09 
+ * 2015-12-12 
  */
 
 // 필수 Ployfill 확장 구문
@@ -767,96 +767,6 @@
       else {
         return {error: 500, msg: 'syntax error'};
       }
-    }
-
-    /**
-     * 타겟 오브젝트의 키를 대상 오브젝트의 키만큼 확장합니다.
-     * @method ax5.util.extend
-     * @param {Object} O - 타겟 오브젝트
-     * @param {Object} _O - 대상 오브젝트
-     * @param {Boolean} [overwrite=false] - 덮어쓰기 여부
-     * @returns {Object} extened Object
-     * @example
-     * ```js
-     * var axf = ax5.util;
-     * var obja = {a:1};
-     * axf.extend(obja, {b:2});
-     * axf.extend(obja, {a:2});
-     * axf.extend(obja, {a:2}, true);
-     * ```
-     */
-    function extend(O, _O, overwrite) {
-      if (typeof O !== "object" && typeof O !== "function") O = {};
-      if (typeof _O === "string") O = _O;
-      else {
-        if (overwrite === true) {
-          for (var k in _O) O[k] = _O[k];
-        }
-        else {
-          for (var k in _O) if (typeof O[k] === "undefined") O[k] = _O[k];
-        }
-      }
-      return O;
-    }
-
-    /**
-     * 타겟 오브젝트의 키를 대상 오브젝트의 키만큼 확장합니다. (깊숙히)
-     * @method ax5.util.extend_all
-     * @param {Object} O - 타겟 오브젝트
-     * @param {Object} _O - 대상 오브젝트
-     * @param {Boolean} [overwrite=false] - 덮어쓰기 여부
-     * @returns {Object} extened Object
-     * @example
-     * ```
-     * var aa = {a:1, b:{a:1, b:2}};
-     * ax5.util.extend_all(aa, {b:{a:2, c:3}});
-     * // {"a": 1, "b": {"a": 1, "b": 2, "c": 3}}
-     * // 덮어쓰지 않음.
-     * ax5.util.extend_all(aa, {b:{a:2, c:3}}, true);
-     * // {"a": 1, "b": {"a": 2, "b": 2, "c": 3}}
-     * // 덮어씀.
-     * ```
-     */
-    function extend_all(O, _O, overwrite) {
-      if (typeof O !== "object" && typeof O !== "function") O = {};
-      if (typeof _O === "string") O = _O;
-      else {
-        for (var k in _O) {
-          if (typeof O[k] === "undefined") {
-            O[k] = _O[k];
-          }
-          else if (Object.prototype.toString.call(O[k]) == "[object Object]")
-          {
-            // 키값이 오브젝트인 경우.
-            O[k] = extend_all(O[k], _O[k], overwrite);
-          }
-          else {
-            if (overwrite === true) {
-              O[k] = _O[k];
-            }
-          }
-        }
-      }
-      return O;
-    }
-
-    /**
-     * 타겟 오브젝트를 복제하여 참조를 다르게 합니다.
-     * @method ax5.util.clone
-     * @param {Object} O - 타겟 오브젝트
-     * @returns {Object} clone Object
-     * @example
-     * ```js
-     * var axf = ax5.util;
-     * var obja = {a:1};
-     * var objb = axf.clone( obja );
-     * obja.a = 3; // 원본 오브젝트 수정
-     * console.log(obja, objb);
-     * // Object {a: 3} Object {a: 1}
-     * ```
-     */
-    function clone(O) {
-      return extend({}, O);
     }
 
     /**
@@ -1880,9 +1790,6 @@
       filter: filter,
       to_json: to_json,
       parse_json: parse_json,
-      extend: extend,
-      extend_all: extend_all,
-      clone: clone,
       first: first,
       last: last,
       left: left,
