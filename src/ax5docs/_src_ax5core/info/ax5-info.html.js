@@ -32,7 +32,7 @@ function create(__helpers) {
               "layout": __layoutHelper
             },
             function(out) {
-              out.w('\n\n    <section class="ax5docs-method">\n      <h2 data-method>ax5.info.version</h2>\n\n      <p>\n        Version of ax5\n      </p>\n\n      ');
+              out.w('\n\n    <section class="ax5docs-section">\n      <h2 data-method>ax5.info.version</h2>\n\n      <p>\n        Version of ax5\n      </p>\n\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
@@ -40,7 +40,7 @@ function create(__helpers) {
                   out.w('\n        <script type="text/javascript">\n          console.log(ax5.info.version);\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n\n\n    <section class="ax5docs-method">\n      <h2 data-method>ax5.info.event_keys</h2>\n\n      <p>\n        event_keys object key map\n      </p>\n      ');
+              out.w('\n    </section>\n\n\n    <section class="ax5docs-section">\n      <h2 data-method>ax5.info.event_keys</h2>\n\n      <p>\n        event_keys object key map\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
@@ -48,7 +48,7 @@ function create(__helpers) {
                   out.w('\n        <script type="text/javascript">\n          console.log(ax5.info.event_keys);\n          /*\n           { "BACKSPACE": 8, "TAB": 9, "RETURN": 13, "ESC": 27, "LEFT": 37, "UP": 38, "RIGHT": 39, "DOWN": 40, "DELETE":\n           46, "HOME": 36, "END": 35, "PAGEUP": 33, "PAGEDOWN": 34, "INSERT": 45, "SPACE": 32 }\n           */\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n\n    <section class="ax5docs-method">\n      <h2 data-method>ax5.info.browser</h2>\n\n      <p>\n        It is user browser infomation\n      </p>\n      ');
+              out.w('\n    </section>\n\n    <section class="ax5docs-section">\n      <h2 data-method>ax5.info.browser</h2>\n\n      <p>\n        It is user browser infomation\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
@@ -56,7 +56,7 @@ function create(__helpers) {
                   out.w('\n        <script type="text/javascript">\n          console.log(ax5.info.browser);\n          // {"name": "chrome", "version": "46.0.2490.86", "mobile": }\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n    \n    <section class="ax5docs-method">\n      <h2 data-method>ax5.info.url_util</h2>\n\n      <p>\n        Return current page\'s URL Infomation\n      </p>\n      ');
+              out.w('\n    </section>\n    \n    <section class="ax5docs-section">\n      <h2 data-method>ax5.info.url_util</h2>\n\n      <p>\n        Return current page\'s URL Infomation\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
@@ -64,7 +64,7 @@ function create(__helpers) {
                   out.w('\n        <script type="text/javascript">\n          console.log(ax5.info.url_util());\n          /*\n           {\n           "href":"http://ax5ui:2028/ax5core/info/ax5-info.html",\n           "param":"",\n           "referrer":"http://ax5ui:2028/ax5core/util/ax5-util.html",\n           "pathname":"/ax5core/info/ax5-info.html",\n           "hostname":"ax5ui",\n           "port":"2028",\n           "url":"http://ax5ui:2028/ax5core/info/ax5-info.html",\n           "base_url":"http://ax5ui:2028"\n           }\n           */\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n\n    <section class="ax5docs-method">\n      <h2 data-method>ax5.info.error_msg</h2>\n\n      <p>\n        When an error occurs in the UI Class, the error message can be customized.\n      </p>\n      ');
+              out.w('\n    </section>\n\n    <section class="ax5docs-section">\n      <h2 data-method>ax5.info.error_msg</h2>\n\n      <p>\n        When an error occurs in the UI Class, the error message can be customized.\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
@@ -72,7 +72,7 @@ function create(__helpers) {
                   out.w('\n        <script type="text/javascript">\n          // reset user error message\n          ax5.info.error_msg["UI name"]["100"] = "my error 100";\n          ax5.info.error_msg["UI name"]["200"] = "my error 200";\n\n          // or reset all\n          ax5.info.error_msg["UI name"] = {\n            "100": "is 100 error",\n            "200": "is 200 error"\n          };\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n\n    <section class="ax5docs-method">\n      <h2 data-method>ax5.info.ETC</h2>\n      <p>\n\n      </p>\n      ');
+              out.w('\n    </section>\n\n    <section class="ax5docs-section">\n      <h2 data-method>ax5.info.ETC</h2>\n      <p>\n\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},

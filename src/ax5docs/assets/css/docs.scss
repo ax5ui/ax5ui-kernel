@@ -1,9 +1,10 @@
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables.scss";
 @import "node_modules/bourbon/app/assets/stylesheets/_bourbon.scss";
+@import "../lib/ax5-lato/lato.css";
 
-$docs-font-basic: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
-$docs-font-script: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
-$docs-font-sun: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+$docs-font-basic: 'AX5 Lato', Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+$docs-font-title: 'AX5 Lato', Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+$docs-font-desc: 'AX5 Lato', Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
 
 html, body {
 	margin: 0px;
@@ -39,12 +40,12 @@ $docs-theme-earth: #fbff41;
 	overflow: visible;
 
 	h1, h2, h3, h4, h5 {
-		margin: 0.3em 0;
-		font-family: $docs-font-sun;
+		margin: 0.5em 0;
+		font-family: $docs-font-title;
 	}
 	p {
 		margin: 0.7em 0;
-		font-family: $docs-font-script;
+		font-family: $docs-font-desc;
 	}
 }
 

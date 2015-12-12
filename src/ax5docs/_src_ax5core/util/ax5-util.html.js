@@ -32,7 +32,7 @@ function create(__helpers) {
               "layout": __layoutHelper
             },
             function(out) {
-              out.w('\n    \n    \n    <section class="ax5docs-method">\n      <h2 data-method>ax5.util.get_type</h2>\n      \n      <p>\n        Return argument object type\n      </p>\n      \n      ');
+              out.w('\n    \n    \n    <section class="ax5docs-section">\n      <h2 data-method>ax5.util.get_type</h2>\n      \n      <p>\n        Return argument object type\n      </p>\n      \n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
@@ -40,7 +40,7 @@ function create(__helpers) {
                   out.w('\n        <script type="text/javascript">\n          ax5.util.get_type(1); // "number"\n          ax5.util.get_type("1"); // "string"\n          ax5.util.get_type([0, 1, 2]); // "array"\n          ax5.util.get_type({a: 1}); // "object"\n          ax5.util.get_type(function() {}); // "function"\n          ax5.util.get_type(document.querySelectorAll("div")); // "nodelist"\n          ax5.util.get_type(document.createDocumentFragment()); // "fragment"\n        </script>\n      ');
                 });
 
-              out.w('\n      <p>\n        Javascript object type name is not clear. so <code>util.get_type</code> method very useful.\n      </p>\n    </section>\n    \n    \n    <section class="ax5docs-method">\n      <h2 data-method>ax5.util.is_[type]</h2>\n      \n      <p>\n        Return argument object type is [type] result.\n      </p>\n      ');
+              out.w('\n      <p>\n        Javascript object type name is not clear. so <code>util.get_type</code> method very useful.\n      </p>\n    </section>\n    \n    \n    <section class="ax5docs-section">\n      <h2 data-method>ax5.util.is_[type]</h2>\n      \n      <p>\n        Return argument object type is [type] result.\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},
@@ -48,7 +48,7 @@ function create(__helpers) {
                   out.w('\n        <script type="text/javascript">\n          // return is window.\n          ax5.util.is_window(window);\n          \n          // return is element.\n          ax5.util.is_element(document.getElementById("#ax5-util-is-type"));\n          \n          // return is Object.\n          ax5.util.is_object();\n          \n          // return is Array.\n          ax5.util.is_array();\n          \n          // return is Functon.\n          ax5.util.is_function();\n          \n          // return is String.\n          ax5.util.is_string();\n          \n          // return is Number.\n          ax5.util.is_number();\n          \n          // return is nodeList.\n          ax5.util.is_nodelist(document.querySelectorAll(".content"));\n          \n          // return is undefined.\n          ax5.util.is_undefined();\n          \n          // return is undefined|\'\'|null.\n          ax5.util.is_nothing();\n        </script>\n      ');
                 });
 
-              out.w('\n    </section>\n\n    \n    <section class="ax5docs-method">\n      <h2 data-method>ax5.util.filter</h2>\n      \n      <p>\n        The first item is delivered to the second argument of the filter function.\n        The second argument is an anonymous function, the result is True, the items will be collected.\n      </p>\n      ');
+              out.w('\n    </section>\n\n    \n    <section class="ax5docs-section">\n      <h2 data-method>ax5.util.filter</h2>\n      \n      <p>\n        The first item is delivered to the second argument of the filter function.\n        The second argument is an anonymous function, the result is True, the items will be collected.\n      </p>\n      ');
               __tag(out,
                 ____layouts_components_ax5docs_js_renderer_js,
                 {},

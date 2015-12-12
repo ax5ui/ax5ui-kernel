@@ -1,10 +1,11 @@
+@import url(../lib/ax5-lato/lato.css);
 html, body {
   margin: 0px;
   padding: 0px;
   font-size: 13px;
   line-height: 1.5em;
   height: 100%;
-  font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace;
+  font-family: "AX5 Lato", Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace;
   background: #f3f3f3; }
 
 .docs-body {
@@ -22,11 +23,11 @@ html, body {
   box-shadow: 1px 0px 3px #ccc;
   overflow: visible; }
   .docs-body h1, .docs-body h2, .docs-body h3, .docs-body h4, .docs-body h5 {
-    margin: 0.3em 0;
-    font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace; }
+    margin: 0.5em 0;
+    font-family: "AX5 Lato", Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace; }
   .docs-body p {
     margin: 0.7em 0;
-    font-family: Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace; }
+    font-family: "AX5 Lato", Menlo, "Bitstream Vera Sans Mono", "DejaVu Sans Mono", Monaco, Consolas, monospace; }
 
 .ax5docs-section {
   margin: 2em 0; }
