@@ -1,4 +1,11 @@
 .docs-body{
+	padding-top: $docs-visual-height;
+	max-width: $break-desktop-width;
+	margin: 0 auto;
+
+	.wrapper{
+		padding: 20px 0px;
+	}
 
 	.ax5docs-section{
 		margin: 2em 0;

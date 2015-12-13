@@ -57,10 +57,18 @@ $headings-color:          inherit !default;
 
 /* Bootstrap variables ------------- }} */
 
+$break-mobilewide-width: 640px;
+$break-desktop-width: 950px;
+
 @import "node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 @import "node_modules/bourbon/app/assets/stylesheets/_bourbon.scss";
 
 .docs {
+	$zindex-header: 100;
+	$zindex-body: 90;
+	$zindex-foot: 80;
+	$docs-visual-height: 450px;
+
 	@import "docs/docs-header";
 	@import "docs/docs-nav";
 	@import "docs/docs-body";
