@@ -1,67 +1,68 @@
-@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables.scss";
-@import "node_modules/bourbon/app/assets/stylesheets/_bourbon.scss";
+// 변수만 사용할 경우
+// @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables.scss";
+
+@import "../lib/ax5uicon/style.css";
 @import "../lib/ax5-lato/lato.css";
 
-$docs-font-basic: 'AX5 Lato', Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
-$docs-font-title: 'AX5 Lato', Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
-$docs-font-desc: 'AX5 Lato', Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+/* {{ -------------------- Bootstrap variables */
 
-html, body {
-	margin: 0px;
-	padding: 0px;
-	font-size: 14px;
-	line-height: 1.5em;
-	height: 100%;
-	font-family: $docs-font-basic;
-	background: #f3f3f3;
-}
+//== Colors
+//
+//## Gray and brand colors for use across Bootstrap.
 
+$gray-base:              #000 !default;
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-dark:              lighten($gray-base, 20%) !default;   // #333
+$gray:                   lighten($gray-base, 33.5%) !default; // #555
+$gray-light:             lighten($gray-base, 46.7%) !default; // #777
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
 
-$docs-menu-height: 200px;
-$docs-theme-earth: #fbff41;
+$brand-primary:         darken(#428bca, 6.5%) !default; // #337ab7
+$brand-success:         #5cb85c !default;
+$brand-info:            #5bc0de !default;
+$brand-warning:         #f0ad4e !default;
+$brand-danger:          #d9534f !default;
 
-.docs-body {
-	box-sizing: border-box;
-	padding: 10px 20px;
-	padding-bottom: $docs-menu-height + 50;
-	min-height: 90%;
-	width: 90%;
-	min-width: 600px;
-	max-width: 960px;
-	margin: 0 auto;
-	//margin-top: 20px;
-	//border-top: 1px solid #eeeeee;
-	border-left: 1px solid #eeeeee;
-	border-right: 1px solid #eeeeee;
-	background: #fff;
-	box-shadow: 1px 0px 3px #ccc;
-	//border-radius: 13px;
+//== Typography
+//
+//## Font, line-height, and color for body text, headings, and more.
 
-	overflow: visible;
+$font-family-sans-serif:  'AX5 Lato', Helvetica, Arial, sans-serif;
+$font-family-serif:       Georgia, "Times New Roman", Times, serif;
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+$font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace !default;
+$font-family-base:        $font-family-sans-serif !default;
 
-	h1, h2, h3, h4, h5 {
-		margin: 0.5em 0;
-		font-family: $docs-font-title;
-	}
-	p {
-		margin: 0.7em 0;
-		font-family: $docs-font-desc;
-	}
-}
+$font-size-base:          14px !default;
+$font-size-large:         ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-small:         ceil(($font-size-base * 0.85)) !default; // ~12px
 
-.ax5docs-section{
-	margin: 2em 0;
-}
+$font-size-h1:            floor(($font-size-base * 2.6)) !default; // ~36px
+$font-size-h2:            floor(($font-size-base * 2.15)) !default; // ~30px
+$font-size-h3:            ceil(($font-size-base * 1.7)) !default; // ~24px
+$font-size-h4:            ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-h5:            $font-size-base !default;
+$font-size-h6:            ceil(($font-size-base * 0.85)) !default; // ~12px
 
+//** Unit-less `line-height` for use in components like buttons.
+$line-height-base:        1.428571429 !default; // 20/14
+//** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
+$line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
 
-blockquote {
-	background: #f9f9f9;
-	border-left: 10px solid #ccc;
-	margin: 1.5em 10px;
-	padding: 0.5em 10px;
-	quotes: "\201C""\201D""\2018""\2019";
+//** By default, this inherits from the `<body>`.
+$headings-font-family:    inherit !default;
+$headings-font-weight:    500 !default;
+$headings-line-height:    1.1 !default;
+$headings-color:          inherit !default;
 
-	p {
-		display: inline;
-	}
+/* Bootstrap variables ------------- }} */
+
+@import "node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+@import "node_modules/bourbon/app/assets/stylesheets/_bourbon.scss";
+
+.docs {
+	@import "docs/docs-header";
+	@import "docs/docs-nav";
+	@import "docs/docs-body";
+	@import "docs/docs-foot";
 }
