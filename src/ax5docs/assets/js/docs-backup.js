@@ -51,8 +51,10 @@ var fn_docs = (function() {
         };
 
         var po = [];
+        po.push('<div class="docs-menu-group-container">');
         for (var i = 0, l = menus.length, menu; i < l; i++) {
           menu = menus[i];
+          po.push('<ul class="docs-menu-group">');
           po.push('<li class="docs-menu-group-title">');
           if (menu.url) {
             po.push('<a href="' + getUrl(menu.url) + '">' + menu.title + '</a>');
@@ -71,7 +73,9 @@ var fn_docs = (function() {
             });
             po.push('</ul>');
           }
+          po.push('</ul>');
         }
+        po.push('</div>');
         fn_docs._jos["menu-target"].html(po.join(''));
       }
     }

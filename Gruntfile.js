@@ -173,8 +173,8 @@
 						src_root: '<%= info.ax5core.doc_src %>',
 						src: ['<%= info.ax5core.doc_src %>/**/*.html'],
 						global_data: { // append data
-							layout_index: '<%= info.ax5core.doc_src %>/_layouts/index.marko', // src relative path
-							layout_path: '<%= info.ax5core.doc_src %>/_layouts/basic.marko', // src relative path
+							//layout_index: '<%= info.ax5core.doc_src %>/_layouts/index.marko', // src relative path
+							layout_path: '<%= info.ax5core.doc_src %>/_layouts/index.marko', // src relative path
 							output_type: 'html'
 						},
 						lang: '<%= info.ax5core.doc_src %>/_layouts/ko.json',

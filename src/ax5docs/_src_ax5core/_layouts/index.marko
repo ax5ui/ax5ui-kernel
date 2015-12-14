@@ -33,9 +33,8 @@
 	<layout-placeholder name="head-js"/>
 </head>
 <body>
-<div class="docs">
+<div class="docs ${data.bodyStyle}">
 	<div class="docs-header">
-
 		<div class="docs-header-tool">
 			<nav class="navbar navbar-default">
 				<div class="container-fluid">
@@ -43,16 +42,25 @@
 					<div class="navbar-header">
 						<a class="navbar-brand" href="/ax5core">
 							<i class="icon-ax5"></i>UI
-							<small>/ ax5core</small>
+							<span class="small">/ ax5core</span>
+						</a>
+						<a class="visible-xs-inline-block mobile-menu">
+							<i class="icon-menu"></i>
 						</a>
 					</div>
 
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse">
+
+						<ul class="nav navbar-nav" id="docs-menu-print-target">
+
+						</ul>
+
 						<ul class="nav navbar-nav navbar-right">
-							<li class="active"><a href="#">Home</a></li>
-							<li class=""><a href="#">Docs</a></li>
-							<li class=""><a href="https://github.com/ax5ui">Github</a></li>
+							<li class="">
+								<a href="https://github.com/ax5ui">
+									Github <i class="icon-github"></i></a>
+							</li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
 								   aria-haspopup="true" aria-expanded="false">AX5UI <span class="caret"></span></a>
@@ -63,20 +71,17 @@
 								</ul>
 							</li>
 						</ul>
+
 					</div>
 					<!-- /.navbar-collapse -->
+
 				</div>
 				<!-- /.container-fluid -->
 			</nav>
 		</div>
-
-		<div class="docs-header-visual">
-			<div class="pattern"></div>
-			<div class="section"></div>
-		</div>
 	</div>
-	<div class="docs-nav" id="docs-menu-print-target"></div>
 	<div class="docs-body">
+		<layout-placeholder name="visual"/>
 		<div class="wrapper">
 		<layout-placeholder name="body"/>
 		</div>

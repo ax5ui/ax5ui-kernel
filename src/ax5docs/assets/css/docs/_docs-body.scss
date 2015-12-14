@@ -1,10 +1,30 @@
 .docs-body{
+	position: relative;
 	padding-top: $docs-visual-height;
-	max-width: $break-desktop-width;
-	margin: 0 auto;
+
+	.docs-body-visual{
+		z-index: 1;
+		position: absolute;
+		left:0px;
+		top:0px;
+		width: 100%;
+		height: $docs-visual-height;
+
+		//background-image: linear-gradient(, #82AA16 0%, #3D8EB9 100%);
+		@include gradient-directional(#82AA16, #3D8EB9, 269deg);
+		.pattern{
+			height: 100%;
+			background-image: url("images/ax-bg-pattern.png");
+			background-size: 152px;
+			@include opacity(0.1);
+		}
+	}
 
 	.wrapper{
-		padding: 20px 0px;
+		box-sizing: border-box;
+		max-width: $break-desktop-width;
+		margin: 0 auto;
+		padding: 20px 5px;
 	}
 
 	.ax5docs-section{
@@ -19,6 +39,16 @@
 
 		p {
 			display: inline;
+		}
+	}
+}
+
+// class="docs-body style-sub"
+.style-sub{
+	.docs-body {
+		padding-top: $docs-visual-sm-height;
+		.docs-body-visual {
+			height: $docs-visual-sm-height;
 		}
 	}
 }

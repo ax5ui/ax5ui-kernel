@@ -12,8 +12,19 @@ function create(__helpers) {
     __tag(out,
       _________node_modules_marko_node_modules_marko_layout_use_tag_js,
       {
-        "template": __loadTemplate(data.layout_index, require),
+        "template": __loadTemplate(data.layout_path, require),
         "getContent": function(__layoutHelper) {
+          out.w('\n  ');
+          __tag(out,
+            _________node_modules_marko_node_modules_marko_layout_put_tag_js,
+            {
+              "into": "visual",
+              "layout": __layoutHelper
+            },
+            function(out) {
+              out.w('\n    <div class="docs-body-visual">\n      <div class="pattern"></div>\n      <div class="section">\n\n        AX5UI\n        ax5core\n        <button>Let\'s Play</button>\n\n      </div>\n    </div>\n  ');
+            });
+
           out.w('\n  ');
           __tag(out,
             _________node_modules_marko_node_modules_marko_layout_put_tag_js,
@@ -22,7 +33,7 @@ function create(__helpers) {
               "layout": __layoutHelper
             },
             function(out) {
-              out.w('\n\n\n    asdfasdfasdf <i class="icon-ax5button"></i>\n\n    <h1>\n      \uc81c\ubaa9\n      <i class="icon-ax5"></i>\n    </h1>\n\n    <h1>\n      Title\n      <i class="icon-ax5"></i>\n    </h1>\n\n  ');
+              out.w('\n\n\n\n\n\n  ');
             });
 
           out.w('\n  ');
@@ -33,13 +44,14 @@ function create(__helpers) {
               "layout": __layoutHelper
             },
             function(out) {
-              out.w('\n\n    <script language="javascript">\n      //\twindow.location.href = "/ax5core"\n    </script>\n  ');
+              out.w('\n    <script language="javascript">\n\n    </script>\n  ');
             });
 
           out.w('\n');
         },
         "*": {
-          "pageTitle": "ax5core",
+          "pageTitle": "home",
+          "bodyStyle": "main",
           "showHeader": true
         }
       });

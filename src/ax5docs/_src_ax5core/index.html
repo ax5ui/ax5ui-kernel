@@ -1,24 +1,26 @@
-<layout-use template="${data.layout_index}" pageTitle="ax5core" show-header="$true">
+<layout-use template="${data.layout_path}" pageTitle="home" bodyStyle="main" show-header="$true">
+  <layout-put into="visual">
+    <div class="docs-body-visual">
+      <div class="pattern"></div>
+      <div class="section">
+
+        AX5UI
+        ax5core
+        <button>Let's Play</button>
+
+      </div>
+    </div>
+  </layout-put>
   <layout-put into="body">
 
 
-    asdfasdfasdf <i class="icon-ax5button"></i>
 
-    <h1>
-      제목
-      <i class="icon-ax5"></i>
-    </h1>
 
-    <h1>
-      Title
-      <i class="icon-ax5"></i>
-    </h1>
 
   </layout-put>
   <layout-put into="page-js">
-
     <script language="javascript">
-      //	window.location.href = "/ax5core"
+
     </script>
   </layout-put>
 </layout-use>
