@@ -5821,6 +5821,93 @@ button.close {
   .hidden-print {
     display: none !important; } }
 
+.btn-border.white {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  color: #fff;
+  background: transparent;
+  border: 1px solid #fff;
+  font-weight: 600; }
+
+.DH1 {
+  line-height: 0px;
+  height: 1px; }
+
+.DH10 {
+  line-height: 0px;
+  height: 10px; }
+
+.DH2 {
+  line-height: 0px;
+  height: 2px; }
+
+.DH20 {
+  line-height: 0px;
+  height: 20px; }
+
+.DH3 {
+  line-height: 0px;
+  height: 3px; }
+
+.DH30 {
+  line-height: 0px;
+  height: 30px; }
+
+.DH4 {
+  line-height: 0px;
+  height: 4px; }
+
+.DH40 {
+  line-height: 0px;
+  height: 40px; }
+
+.DH5 {
+  line-height: 0px;
+  height: 5px; }
+
+.DH50 {
+  line-height: 0px;
+  height: 50px; }
+
+.DH6 {
+  line-height: 0px;
+  height: 6px; }
+
+.DH60 {
+  line-height: 0px;
+  height: 60px; }
+
+.DH7 {
+  line-height: 0px;
+  height: 7px; }
+
+.DH70 {
+  line-height: 0px;
+  height: 70px; }
+
+.DH8 {
+  line-height: 0px;
+  height: 8px; }
+
+.DH80 {
+  line-height: 0px;
+  height: 80px; }
+
+.DH9 {
+  line-height: 0px;
+  height: 9px; }
+
+.DH90 {
+  line-height: 0px;
+  height: 90px; }
+
+.DH10 {
+  line-height: 0px;
+  height: 10px; }
+
+.DH100 {
+  line-height: 0px;
+  height: 100px; }
+
 .docs {
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
   text-stroke: 0.6px;
@@ -5830,7 +5917,9 @@ button.close {
   .docs .docs-header {
     z-index: 100;
     position: fixed;
-    width: 100%; }
+    width: 100%;
+    top: 0px;
+    left: 0; }
     .docs .docs-header .docs-header-tool {
       z-index: 10;
       position: absolute;
@@ -5851,11 +5940,12 @@ button.close {
           position: relative;
           color: #fff;
           text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
           font-size: 30px;
           line-height: 50px;
           padding: 0px;
           padding-left: 58px;
-          font-weight: 400;
+          font-weight: 300;
           vertical-align: middle;
           margin-right: 50px; }
           .docs .docs-header .docs-header-tool .navbar .navbar-brand i {
@@ -5910,26 +6000,70 @@ button.close {
     position: absolute;
     bottom: 0px;
     left: 0px; }
-  .docs .docs-body {
-    position: relative;
-    padding-top: 450px; }
-    .docs .docs-body .docs-body-visual {
-      z-index: 1;
+  .docs .docs-visual {
+    z-index: 70;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 450px;
+    background-repeat: repeat-x;
+    background-image: -webkit-linear-gradient(269deg, #82AA16, #3D8EB9);
+    background-image: -o-linear-gradient(269deg, #82AA16, #3D8EB9);
+    background-image: linear-gradient(269deg, #82AA16, #3D8EB9); }
+    .docs .docs-visual .pattern {
       position: absolute;
       left: 0px;
       top: 0px;
       width: 100%;
-      height: 450px;
-      background-repeat: repeat-x;
-      background-image: -webkit-linear-gradient(269deg, #82AA16, #3D8EB9);
-      background-image: -o-linear-gradient(269deg, #82AA16, #3D8EB9);
-      background-image: linear-gradient(269deg, #82AA16, #3D8EB9); }
-      .docs .docs-body .docs-body-visual .pattern {
-        height: 100%;
-        background-image: url("images/ax-bg-pattern.png");
-        background-size: 152px;
-        opacity: 0.1;
-        filter: alpha(opacity=10); }
+      height: 100%;
+      background-image: url("images/ax-bg-pattern.png");
+      background-size: 152px;
+      opacity: 0.1;
+      filter: alpha(opacity=10); }
+    .docs .docs-visual .contents {
+      position: relative;
+      max-width: 950px;
+      margin: 0 auto;
+      height: 100%;
+      padding-top: 50px; }
+      .docs .docs-visual .contents .button-group {
+        margin: 10px auto; }
+      .docs .docs-visual .contents .style-index-visual {
+        padding-top: 100px;
+        text-align: center; }
+        .docs .docs-visual .contents .style-index-visual .brand-title {
+          /* AX5UI: */
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+          font-size: 34px;
+          color: #FFFFFF;
+          line-height: 40px;
+          font-weight: 500; }
+        .docs .docs-visual .contents .style-index-visual .project-name {
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+          font-size: 60px;
+          color: #FFFFFF;
+          line-height: 60px;
+          font-weight: 100; }
+      .docs .docs-visual .contents .style-sub-visual {
+        padding-top: 50px;
+        padding-left: 20px; }
+        .docs .docs-visual .contents .style-sub-visual .title {
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+          font-size: 60px;
+          color: #FFFFFF;
+          line-height: 60px;
+          font-weight: 100; }
+        .docs .docs-visual .contents .style-sub-visual .description {
+          color: #FFFFFF;
+          font-size: 20px; }
+  .docs.style-sub .docs-visual {
+    height: 260px; }
+  .docs .docs-body {
+    z-index: 90;
+    position: relative;
+    margin-top: 450px;
+    background: #fff; }
     .docs .docs-body .wrapper {
       box-sizing: border-box;
       max-width: 950px;
@@ -5945,7 +6079,5 @@ button.close {
       quotes: "“" "”" "‘" "’"; }
       .docs .docs-body blockquote p {
         display: inline; }
-  .docs .style-sub .docs-body {
-    padding-top: 260px; }
-    .docs .style-sub .docs-body .docs-body-visual {
-      height: 260px; }
+  .docs.style-sub .docs-body {
+    margin-top: 260px; }

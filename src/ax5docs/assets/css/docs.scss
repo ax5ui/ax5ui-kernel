@@ -101,6 +101,8 @@ $break-desktop-width: 950px;
 
 @import "node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 @import "node_modules/bourbon/app/assets/stylesheets/_bourbon.scss";
+@import "docs/bootstrap-custom";
+@import "docs/utils";
 
 .docs {
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
@@ -109,14 +111,17 @@ $break-desktop-width: 950px;
 	-webkit-font-smoothing: antialiased;
 
 	$zindex-header: 100;
+	$zindex-visual: 70;
 	$zindex-body: 90;
 	$zindex-foot: 80;
 	$docs-visual-height: 450px;
 	$docs-visual-sm-height: 260px;
 	$docs-header-tool-height: 50px;
+	$docs-font-family-visual: "Helvetica Neue",Helvetica,Arial,sans-serif;
 
 	@import "docs/docs-header";
 	@import "docs/docs-nav";
+	@import "docs/docs-visual";
 	@import "docs/docs-body";
 	@import "docs/docs-foot";
 }

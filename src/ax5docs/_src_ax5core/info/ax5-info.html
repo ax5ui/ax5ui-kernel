@@ -7,7 +7,18 @@
   <desc></desc>
 </tmpl-metadata>
 
-<layout-use template="${data.layout_path}" pageTitle="ax5.info" show-header="$true">
+<layout-use template="${data.layout_path}" pageTitle="ax5.info" bodyStyle="style-sub">
+  <layout-put into="visual">
+
+    <div class="contents">
+      <div class="style-sub-visual">
+        <div class="title">ax5.info</div>
+        <div class="description">"ax5core" is a utility for creating AX5UI Library. need to install on your browser.
+        </div>
+      </div>
+    </div>
+
+  </layout-put>
   <layout-put into="body">
 
     <section class="ax5docs-section">

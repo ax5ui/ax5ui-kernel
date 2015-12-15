@@ -1,0 +1,75 @@
+.docs-visual {
+	z-index: $zindex-visual;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: $docs-visual-height;
+
+	//background-image: linear-gradient(, #82AA16 0%, #3D8EB9 100%);
+	@include gradient-directional(#82AA16, #3D8EB9, 269deg);
+	.pattern {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		background-image: url("images/ax-bg-pattern.png");
+		background-size: 152px;
+		@include opacity(0.1);
+	}
+	.contents {
+		position: relative;
+		max-width: $break-desktop-width;
+		margin: 0 auto;
+		height: 100%;
+		padding-top: $docs-header-tool-height;
+
+		.button-group {
+			margin: 10px auto;
+		}
+
+		// index visual layout
+		.style-index-visual {
+			padding-top: 100px;
+			text-align: center;
+			.brand-title {
+				/* AX5UI: */
+				font-family: $docs-font-family-visual;
+				font-size: 34px;
+				color: #FFFFFF;
+				line-height: 40px;
+				font-weight: 500;
+			}
+			.project-name {
+				font-family: $docs-font-family-visual;
+				font-size: 60px;
+				color: #FFFFFF;
+				line-height: 60px;
+				font-weight: 100;
+			}
+		}
+		.style-sub-visual {
+			padding-top: 50px;
+			padding-left: 20px;
+			.title {
+				font-family: $docs-font-family-visual;
+				font-size: 60px;
+				color: #FFFFFF;
+				line-height: 60px;
+				font-weight: 100;
+			}
+			.description{
+				color: #FFFFFF;
+				font-size: 20px;
+			}
+		}
+	}
+}
+
+// class="docs-body style-sub"
+&.style-sub {
+	.docs-visual {
+		height: $docs-visual-sm-height;
+	}
+}

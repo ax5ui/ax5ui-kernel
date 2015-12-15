@@ -1,0 +1,12 @@
+.btn-border{
+	&.white {
+		font-family: $font-family-monospace;
+		color: #fff;
+		background: transparent;
+		border: 1px solid #fff;
+		font-weight: 600;
+		&:hover {
+			//border: 1px solid $brand-info;
+		}
+	}
+}

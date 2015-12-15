@@ -28,6 +28,17 @@ function create(__helpers) {
           __tag(out,
             ____________node_modules_marko_node_modules_marko_layout_put_tag_js,
             {
+              "into": "visual",
+              "layout": __layoutHelper
+            },
+            function(out) {
+              out.w('\n\n    <div class="contents">\n      <div class="style-sub-visual">\n        <div class="title">ax5.util</div>\n        <div class="description">"ax5core" is a utility for creating AX5UI Library. need to install on your browser.\n        </div>\n      </div>\n    </div>\n\n  ');
+            });
+
+          out.w('\n  ');
+          __tag(out,
+            ____________node_modules_marko_node_modules_marko_layout_put_tag_js,
+            {
               "into": "body",
               "layout": __layoutHelper
             },
@@ -218,7 +229,7 @@ function create(__helpers) {
         },
         "*": {
           "pageTitle": "ax5.util",
-          "showHeader": true
+          "bodyStyle": "style-sub"
         }
       });
   };
