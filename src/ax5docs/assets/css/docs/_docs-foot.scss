@@ -1,3 +1,44 @@
-.docs-foot{
+.docs-foot {
+	.background-type {
+		//clear: both;
+		padding: 40px 0px;
+	}
+	.background-type-0 {
+		background: #ECEFF7;
+		h3, h3 a {
+			font-size: 20px;
+			color: #575859;
+			//line-height: 38px;
+		}
+		p {
+			font-size: 14px;
+			color: #575859;
+		}
+	}
+	.background-type-1 {
+		background: #475577;
+		dl {
+			margin: 0;
+			font-size: 12px;
+			dt {
+				color: #7E8DA9;
+			}
+			dd {
+				color: #fff;
+				font-family: $font-family-monospace;
+				a{
+					color: #fff;
+					font-family: $font-family-monospace;
+				}
+			}
+		}
+	}
+	.background-type-2 {
+		background: #28324E;
+	}
 
+	.wrapper {
+		max-width: $break-desktop-width;
+		margin: 0px auto;
+	}
 }

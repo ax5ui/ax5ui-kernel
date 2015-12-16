@@ -74,7 +74,7 @@
 				}
 			}
 			.navbar-nav > li > a{
-				padding: 15px 20px;
+				padding: 15px 15px;
 				line-height: $docs-header-tool-height - 30;
 				color: #fff;
 				font-size: 16px;
@@ -93,6 +93,49 @@
 					> a, > a:hover, > a:focus{
 						background: none;
 						color: #fff;
+					}
+				}
+			}
+		}
+
+		&.reflection{
+			/* Rectangle 1: */
+			background: #fff;
+			border-bottom: 1px solid #D3D3D3;
+			box-shadow: 0px 0px 5px #D3D3D3;
+
+			$font-color: #575757;
+			$font-color-hover: #6FAFE1;
+			.navbar {
+				.navbar-brand{
+					color: $font-color-hover;
+					text-shadow: none;
+					.small{
+						color: $font-color;
+					}
+				}
+				.mobile-menu{
+					color: $font-color;
+					text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+				}
+				.navbar-nav > li > a{
+					color: $font-color;
+					text-shadow: none;
+					&:hover, &:focus{
+						color: $font-color-hover;
+					}
+				}
+				.navbar-nav{
+					> .active{
+						> a, > a:hover, > a:focus{
+							color: $font-color-hover;
+							border-bottom: 1px solid $font-color-hover;
+						}
+					}
+					> .open{
+						> a, > a:hover, > a:focus{
+							color: $font-color-hover;
+						}
 					}
 				}
 			}

@@ -35,7 +35,7 @@
 <body>
 <div class="docs ${data.bodyStyle}">
 	<div class="docs-header">
-		<div class="docs-header-tool">
+		<div class="docs-header-tool" id="docs-header-tool">
 			<nav class="navbar navbar-default">
 				<div class="container-fluid">
 					<!-- Brand and toggle get grouped for better mobile display -->
@@ -84,13 +84,53 @@
 		<div class="pattern"></div>
 		<layout-placeholder name="visual"/>
 	</div>
-	<div class="docs-body">
+	<div class="docs-body" id="docs-body">
 		<div class="wrapper">
 			<layout-placeholder name="body"/>
 		</div>
 	</div>
 	<div class="docs-foot">
+		<div class="background-type background-type-0">
+			<div class="wrapper row">
+				<div class="col-md-6">
+					<h3>
+						<a href="https://github.com/ax5ui">
+							<i class="icon-github"></i> Get ax5core</a>
+					</h3>
+					<p>
+						"ax5core" source code is being released on Github. When you click the link to move to Github
+						repository.
+						Feel the joy of contributing to open source. We are always waiting for your action.
+					</p>
+				</div>
+				<div class="col-md-6">
+					<h3>
+						<a href="/">
+							<i class="icon-axisj"></i> AX5UI Package</a>
+					</h3>
+					<p>
+						'AX5UI' can be used with Bootstrap theme. The development of the distribution of the various UI plug-in.
+						When you click the link to move to AX5UI index page.
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="background-type background-type-1">
+			<div class="wrapper">
+				<dl class="dl-horizontal">
+					<dt>Code licensed</dt>
+					<dd>MIT</dd>
+					<dt>Mantained by</dt>
+					<dd>Thomas Jang</dd>
+					<dt>Templete design by</dt>
+					<dd>Jorwrney Kim</dd>
 
+					<dt>Copyright</dt>
+					<dd>Opensource Group AXISJ -
+						<a href="https://www.axisj.com">www.axisj.com</a></dd>
+				</dl>
+			</div>
+		</div>
 	</div>
 </div>
 <layout-placeholder name="page-js"/>

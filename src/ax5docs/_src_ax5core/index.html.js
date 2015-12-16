@@ -22,7 +22,7 @@ function create(__helpers) {
               "layout": __layoutHelper
             },
             function(out) {
-              out.w('\n\n    <div class="contents">\n      <div class="style-index-visual">\n        <div class="brand-title">AX5UI</div>\n        <div class="project-name">ax5core</div>\n        <div class="DH10"></div>\n        <div class="button-group">\n          <button class="btn btn-lg btn-border white" onclick="location.href = &#39;https://github.com/ax5ui/ax5core&#39;;">Get\n            ax5core\n          </button>\n          &nbsp;\n          <button class="btn btn-lg btn-border white" onclick="location.href = &#39;/ax5core/install/index.html&#39;;">Docs\n          </button>\n        </div>\n      </div>\n    </div>\n\n  ');
+              out.w('\n\n    <div class="contents">\n      <div class="style-index-visual">\n        <div class="brand-title">AX5UI</div>\n        <div class="project-name">ax5core</div>\n        <div class="DH10"></div>\n        <div class="button-group">\n          <button class="btn btn-lg btn-border white" onclick="location.href = &#39;https://github.com/ax5ui&#39;;">Get\n            ax5core\n          </button>\n          &nbsp;\n          <button class="btn btn-lg btn-border white" onclick="location.href = &#39;/ax5core/install/index.html&#39;;">Documentation\n          </button>\n        </div>\n      </div>\n    </div>\n\n  ');
             });
 
           out.w('\n  ');

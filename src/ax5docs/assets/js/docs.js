@@ -1,29 +1,29 @@
 // takeover console
 /*
-(function() {
-  var console = window.console;
-  if (!console) return;
-  function intercept(method) {
-    var original = console[method];
-    console[method] = function() {
+ (function() {
+ var console = window.console;
+ if (!console) return;
+ function intercept(method) {
+ var original = console[method];
+ console[method] = function() {
 
-      // do sneaky stuff
-      if (original.apply) {
-        // Do this for normal browsers
-        original.apply(console, arguments);
-      }
-      else {
-        // Do this for IE
-        var message = Array.prototype.slice.apply(arguments).join(' ');
-        original(message);
-      }
-    }
-  }
+ // do sneaky stuff
+ if (original.apply) {
+ // Do this for normal browsers
+ original.apply(console, arguments);
+ }
+ else {
+ // Do this for IE
+ var message = Array.prototype.slice.apply(arguments).join(' ');
+ original(message);
+ }
+ }
+ }
 
-  var methods = ['log', 'warn', 'error'];
-  for (var i = 0; i < methods.length; i++) intercept(methods[i]);
-})();
-*/
+ var methods = ['log', 'warn', 'error'];
+ for (var i = 0; i < methods.length; i++) intercept(methods[i]);
+ })();
+ */
 
 var fn_docs = (function() {
   return {
@@ -79,10 +79,24 @@ var fn_docs = (function() {
 })();
 
 $(document.body).ready(function() {
-  if (window.fn_docs) {
-    fn_docs._jos["menu-target"] = $("#docs-menu-print-target");
-    fn_docs.menu.print(window.doc_menu_object || []);
-  }
+  if (!window.fn_docs) return;
 
-  //prettyPrint();
+  fn_docs._jos = (function(){
+    return {
+      "menu-target": $("#docs-menu-print-target"),
+      "docs-header-tool": $("#docs-header-tool"),
+      "docs-body": $("#docs-body")
+    }
+  })();
+  fn_docs._data["doc-heder-tool-change-position"] = ax5.util.number(fn_docs._jos["docs-body"].css("margin-top")) - fn_docs._jos["docs-header-tool"].height();
+
+  fn_docs.menu.print(window.doc_menu_object || []);
+
+  $(window).scroll(function(){
+    if($(window).scrollTop() >= fn_docs._data["doc-heder-tool-change-position"]){
+      fn_docs._jos["docs-header-tool"].addClass("reflection");
+    }else{
+      fn_docs._jos["docs-header-tool"].removeClass("reflection");
+    }
+  });
 });

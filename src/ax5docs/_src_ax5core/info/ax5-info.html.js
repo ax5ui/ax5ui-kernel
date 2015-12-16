@@ -15,7 +15,7 @@ function create(__helpers) {
       ____layouts_components_tmpl_metadata_renderer_js,
       {},
       function(out) {
-        out.w('\n  <parent></parent>\n  <sort>1</sort>\n\n  <id>ax5.info</id>\n  <title>info</title>\n  <desc></desc>\n');
+        out.w('\n  <parent></parent>\n  <sort>1</sort>\n\n  <id>ax5.info</id>\n  <title>ax5.info</title>\n  <desc></desc>\n');
       });
 
     out.w('\n\n');

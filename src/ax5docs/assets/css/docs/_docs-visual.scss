@@ -6,7 +6,6 @@
 	width: 100%;
 	height: $docs-visual-height;
 
-	//background-image: linear-gradient(, #82AA16 0%, #3D8EB9 100%);
 	@include gradient-directional(#82AA16, #3D8EB9, 269deg);
 	.pattern {
 		position: absolute;
@@ -14,6 +13,7 @@
 		top: 0px;
 		width: 100%;
 		height: 100%;
+		background-position: center center;
 		background-image: url("images/ax-bg-pattern.png");
 		background-size: 152px;
 		@include opacity(0.1);
