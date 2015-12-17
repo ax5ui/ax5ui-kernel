@@ -3,13 +3,20 @@ exports.render = function(input, out) {
   var Finder = require('fs-finder');
   var htmlparser = require("htmlparser");
 
+  var projectName = input.projectName;
+  var loadFilePath,  hrefRoot;
+
+  if(projectName == "ax5core"){
+    loadFilePath ="src/ax5docs/_src_ax5core",  hrefRoot= "src/ax5docs/_src_";
+  }
+
   // find files and filter
-  var files = Finder.from(input.file).findFiles('*.html').filter(function(path) {
+  var files = Finder.from(loadFilePath).findFiles('*.html').filter(function(path) {
     return /html$/.test(path);
   });
 
   var url_replace = function(url) {
-    return url.replace(process.cwd() + "/" + input.hrefRoot, "/");
+    return url.replace(process.cwd() + "/" + hrefRoot, "/");
   };
 
   var menus = [], trees = [];

@@ -53,13 +53,16 @@
 
 						<ul class="nav navbar-nav" id="docs-menu-print-target">
 							<!-- file : document root, hrefRoot : link root -->
-							<ax5core-docs-list file="src/ax5docs/_src_ax5core" hrefRoot="src/ax5docs/_src_" activeId="${data.pageId}"></ax5core-docs-list>
+							<ax5docs-get-list projectName="${data.projectName}" activeId="${data.pageId}"></ax5docs-get-list>
 						</ul>
 
 						<ul class="nav navbar-nav navbar-right">
-							<li class="">
+							<li>
 								<a href="https://github.com/ax5ui">
-									Github <i class="icon-github"></i></a>
+									<i class="icon-github"></i>
+									Star
+									<span class="gh-count" id="started-count">000</span>
+								</a>
 							</li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"

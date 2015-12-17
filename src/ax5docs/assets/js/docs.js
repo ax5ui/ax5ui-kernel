@@ -81,6 +81,12 @@ var fn_docs = (function() {
 $(document.body).ready(function() {
   if (!window.fn_docs) return;
 
+  $.ajax({
+    url: "https://api.github.com/repos/ax5ui/ax5core"
+  }).done(function(data) {
+    $("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true})).fadeIn();
+  });
+
   fn_docs._jos = (function() {
     return {
       "menu-target": $("#docs-menu-print-target"),
@@ -92,19 +98,6 @@ $(document.body).ready(function() {
 
   // change print way(static) -- remove
   //fn_docs.menu.print(window.doc_menu_object || []);
-
-  $.ajax({
-    url: "https://api.github.com/repos/ax5ui/ax5core"
-  })
-    .done(function(data) {
-      console.log(data);
-    })
-    .fail(function() {
-      //alert("error");
-    })
-    .always(function() {
-      //alert("complete");
-    });
 
   $(window).scroll(function() {
     if ($(window).scrollTop() >= fn_docs._data["doc-heder-tool-change-position"]) {
