@@ -53,7 +53,8 @@
 					<div class="collapse navbar-collapse">
 
 						<ul class="nav navbar-nav" id="docs-menu-print-target">
-
+							<!-- file : document root, hrefRoot : link root -->
+							<ax5core-docs-list file="src/ax5docs/_src_ax5core" hrefRoot="src/ax5docs/_src_" activeId="${data.pageId}"></ax5core-docs-list>
 						</ul>
 
 						<ul class="nav navbar-nav navbar-right">
@@ -64,11 +65,7 @@
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
 								   aria-haspopup="true" aria-expanded="false">AX5UI <span class="caret"></span></a>
-								<ul class="dropdown-menu">
-									<li><a href="https://www.axisj.com">axisj.com</a></li>
-									<li><a href="#">ax5core</a></li>
-									<li><a href="#">bootstrap-ax5dialog</a></li>
-								</ul>
+								<ax5ui-project-list></ax5ui-project-list>
 							</li>
 						</ul>
 

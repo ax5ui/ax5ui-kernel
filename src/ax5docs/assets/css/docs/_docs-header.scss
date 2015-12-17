@@ -74,8 +74,9 @@
 				}
 			}
 			.navbar-nav > li > a{
+				box-sizing: border-box;
 				padding: 15px 15px;
-				line-height: $docs-header-tool-height - 30;
+				line-height: $docs-header-tool-height - 31;
 				color: #fff;
 				font-size: 16px;
 				font-weight: 500;
@@ -105,7 +106,7 @@
 			box-shadow: 0px 0px 5px #D3D3D3;
 
 			$font-color: #575757;
-			$font-color-hover: #6FAFE1;
+			$font-color-hover: darken(#6FAFE1, 10%);
 			.navbar {
 				.navbar-brand{
 					color: $font-color-hover;

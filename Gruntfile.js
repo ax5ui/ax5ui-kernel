@@ -8,6 +8,7 @@
 	/**
 	 *  module inline 생성 : demo 폴더의 구조를 크롤링하여 demo-resource/js/menus.js 만들어냄
 	 */
+	/*
 	grunt.registerMultiTask('make-menu', '', function() {
 		var options = this.options({});
 		var file_names = grunt.file.expand({cwd: options.pwd}, options.filter);
@@ -46,7 +47,6 @@
 			menus.push(menu);
 		});
 
-
 		menus.sort(function(v1, v2){
 			if(v1.sort == v2.sort) return 0;
 			else if(v1.sort > v2.sort) return 1;
@@ -74,9 +74,9 @@
 			}
 		});
 
-		//grunt.log.writeln(JSON.stringify(menus));
 		grunt.file.write(options.target, "var doc_menu_object = " + JSON.stringify(trees) + ";");
 	});
+	*/
 
 	// Project configuration.
 	grunt.initConfig({
@@ -109,11 +109,11 @@
 			},
 			"ax5docs-ax5core": {
 				files: ['<%= info.ax5core.doc_src %>/**/*.html', '<%= info.ax5core.doc_src %>/_layouts/**/*.*'],
-				tasks: ['make-menu:ax5core', 'ax_marko:ax5core']
+				tasks: ['ax_marko:ax5core']
 			},
 			"ax5docs-bootstrap-ax5dialog": {
 				files: ['<%= info["bootstrap-ax5dialog"].doc_src %>/**/*.html', '<%= info["bootstrap-ax5dialog"].doc_src %>/_layouts/*.*'],
-				tasks: ['make-menu:bootstrap-ax5dialog', 'ax_marko:bootstrap-ax5dialog']
+				tasks: ['ax_marko:bootstrap-ax5dialog']
 			}
 		},
 		copy: {
@@ -249,6 +249,6 @@
 
 	grunt.registerTask('ax5core', ['concat:ax5core', 'uglify:ax5core', 'copy:ax5core', 'watch:ax5core']);
 	grunt.registerTask('sass-ax5docs', ['sass:ax5docs', 'watch:ax5docs']);
-	grunt.registerTask('docs-ax5core', ['make-menu:ax5core', 'ax_marko:ax5core', 'watch:ax5docs-ax5core']);
-	grunt.registerTask('docs-bootstrap-ax5dialog', ['make-menu:bootstrap-ax5dialog', 'ax_marko:bootstrap-ax5dialog', 'watch:ax5docs-bootstrap-ax5dialog']);
+	grunt.registerTask('docs-ax5core', ['ax_marko:ax5core', 'watch:ax5docs-ax5core']);
+	grunt.registerTask('docs-bootstrap-ax5dialog', ['ax_marko:bootstrap-ax5dialog', 'watch:ax5docs-bootstrap-ax5dialog']);
 };

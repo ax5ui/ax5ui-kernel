@@ -90,7 +90,8 @@ $(document.body).ready(function() {
   })();
   fn_docs._data["doc-heder-tool-change-position"] = ax5.util.number(fn_docs._jos["docs-body"].css("margin-top")) - fn_docs._jos["docs-header-tool"].height();
 
-  fn_docs.menu.print(window.doc_menu_object || []);
+  // change print way(static) -- remove
+  //fn_docs.menu.print(window.doc_menu_object || []);
 
   $(window).scroll(function(){
     if($(window).scrollTop() >= fn_docs._data["doc-heder-tool-change-position"]){

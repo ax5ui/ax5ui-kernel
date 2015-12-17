@@ -4,15 +4,15 @@ function create(__helpers) {
       notEmpty = __helpers.ne,
       __loadTemplate = __helpers.l,
       __renderer = __helpers.r,
-      ____layouts_components_tmpl_metadata_renderer_js = __renderer(require("../_layouts/components/tmpl-metadata/renderer")),
+      ______assets_components_tmpl_metadata_renderer_js = __renderer(require("../../assets/components/tmpl-metadata/renderer")),
       __tag = __helpers.t,
       ____________node_modules_marko_node_modules_marko_layout_use_tag_js = __renderer(require("marko/node_modules/marko-layout/use-tag")),
       ____________node_modules_marko_node_modules_marko_layout_put_tag_js = __renderer(require("marko/node_modules/marko-layout/put-tag")),
-      ____layouts_components_ax5docs_md_renderer_js = __renderer(require("../_layouts/components/ax5docs-md/renderer"));
+      ______assets_components_ax5docs_md_renderer_js = __renderer(require("../../assets/components/ax5docs-md/renderer"));
 
   return function render(data, out) {
     __tag(out,
-      ____layouts_components_tmpl_metadata_renderer_js,
+      ______assets_components_tmpl_metadata_renderer_js,
       {},
       function(out) {
         out.w('\n  <parent></parent>\n  <sort>0</sort>\n\n  <id>install</id>\n  <title>Install</title>\n  <desc></desc>\n');
@@ -45,7 +45,7 @@ function create(__helpers) {
             function(out) {
               out.w('\n    <section class="ax5docs-section">\n      ');
               __tag(out,
-                ____layouts_components_ax5docs_md_renderer_js,
+                ______assets_components_ax5docs_md_renderer_js,
                 {
                   "file": "src/ax5core/README.md"
                 });
@@ -68,6 +68,7 @@ function create(__helpers) {
         },
         "*": {
           "pageTitle": "Install",
+          "pageId": "install",
           "bodyStyle": "style-sub"
         }
       });
