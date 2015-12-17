@@ -81,7 +81,7 @@ var fn_docs = (function() {
 $(document.body).ready(function() {
   if (!window.fn_docs) return;
 
-  fn_docs._jos = (function(){
+  fn_docs._jos = (function() {
     return {
       "menu-target": $("#docs-menu-print-target"),
       "docs-header-tool": $("#docs-header-tool"),
@@ -93,10 +93,24 @@ $(document.body).ready(function() {
   // change print way(static) -- remove
   //fn_docs.menu.print(window.doc_menu_object || []);
 
-  $(window).scroll(function(){
-    if($(window).scrollTop() >= fn_docs._data["doc-heder-tool-change-position"]){
+  $.ajax({
+    url: "https://api.github.com/repos/ax5ui/ax5core"
+  })
+    .done(function(data) {
+      console.log(data);
+    })
+    .fail(function() {
+      //alert("error");
+    })
+    .always(function() {
+      //alert("complete");
+    });
+
+  $(window).scroll(function() {
+    if ($(window).scrollTop() >= fn_docs._data["doc-heder-tool-change-position"]) {
       fn_docs._jos["docs-header-tool"].addClass("reflection");
-    }else{
+    }
+    else {
       fn_docs._jos["docs-header-tool"].removeClass("reflection");
     }
   });

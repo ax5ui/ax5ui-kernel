@@ -108,6 +108,7 @@ function create(__helpers) {
           out.w('\n');
         },
         "*": {
+          "projectName": data.project_name,
           "pageTitle": "ax5.info",
           "pageId": "ax5.info",
           "bodyStyle": "style-sub"

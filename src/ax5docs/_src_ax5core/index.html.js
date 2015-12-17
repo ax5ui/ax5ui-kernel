@@ -50,6 +50,7 @@ function create(__helpers) {
           out.w('\n');
         },
         "*": {
+          "projectName": data.project_name,
           "pageTitle": "home",
           "bodyStyle": "main"
         }

@@ -81,6 +81,9 @@
 	// Project configuration.
 	grunt.initConfig({
 		info: {
+			assets:{
+				src:"src/ax5docs/assets"
+			},
 			ax5docs: {
 				css_src: "src/ax5docs/assets/css",
 				css_dest: "src/ax5docs/assets/css",
@@ -108,11 +111,11 @@
 				tasks: ['concat:ax5docs', 'uglify:ax5core', 'copy:ax5core']
 			},
 			"ax5docs-ax5core": {
-				files: ['<%= info.ax5core.doc_src %>/**/*.html', '<%= info.ax5core.doc_src %>/_layouts/**/*.*'],
+				files: ['<%= info.ax5core.doc_src %>/**/*.html', '<%= info.assets.src %>/_layouts/**/*.*'],
 				tasks: ['ax_marko:ax5core']
 			},
 			"ax5docs-bootstrap-ax5dialog": {
-				files: ['<%= info["bootstrap-ax5dialog"].doc_src %>/**/*.html', '<%= info["bootstrap-ax5dialog"].doc_src %>/_layouts/*.*'],
+				files: ['<%= info["bootstrap-ax5dialog"].doc_src %>/**/*.html', '<%= info.assets.src %>/_layouts/*.*'],
 				tasks: ['ax_marko:bootstrap-ax5dialog']
 			}
 		},
@@ -173,11 +176,11 @@
 						src_root: '<%= info.ax5core.doc_src %>',
 						src: ['<%= info.ax5core.doc_src %>/**/*.html'],
 						global_data: { // append data
-							//layout_index: '<%= info.ax5core.doc_src %>/_layouts/index.marko', // src relative path
-							layout_path: '<%= info.ax5core.doc_src %>/_layouts/index.marko', // src relative path
+							project_name: "ax5core",
+							layout_path: '<%= info.assets.src %>/_layouts/index.marko', // src relative path
 							output_type: 'html'
 						},
-						lang: '<%= info.ax5core.doc_src %>/_layouts/ko.json',
+						lang: '<%= info.assets.src %>/_layouts/ko.json',
 						dest: '<%= info.ax5core.doc_dest %>',
 						output_extension: 'html'
 					}
@@ -193,10 +196,10 @@
 						src_root: '<%= info["bootstrap-ax5dialog"].doc_src %>',
 						src: ['<%= info["bootstrap-ax5dialog"].doc_src %>/**/*.html'],
 						global_data: { // append data
-							layout_path: '<%= info["bootstrap-ax5dialog"].doc_src %>/_layouts/basic.marko', // src relative path
+							layout_path: '<%= info.assets.src%>/_layouts/index.marko', // src relative path
 							output_type: 'html'
 						},
-						lang: '<%= info["bootstrap-ax5dialog"].doc_src %>/_layouts/ko.json',
+						lang: '<%= info.assets.src %>/_layouts/ko.json',
 						dest: '<%= info["bootstrap-ax5dialog"].doc_dest %>',
 						output_extension: 'html'
 					}

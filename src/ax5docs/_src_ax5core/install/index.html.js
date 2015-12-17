@@ -67,6 +67,7 @@ function create(__helpers) {
           out.w('\n');
         },
         "*": {
+          "projectName": data.project_name,
           "pageTitle": "Install",
           "pageId": "install",
           "bodyStyle": "style-sub"
