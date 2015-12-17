@@ -5996,6 +5996,7 @@ button.close {
           cursor: pointer;
           border-radius: 3px;
           font-size: 12px;
+          font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
           position: relative;
           margin-left: 4px;
           background-color: #fafafa;
