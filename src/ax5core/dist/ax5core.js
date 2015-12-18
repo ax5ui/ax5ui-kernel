@@ -1,6 +1,6 @@
 /*
  * ax5ui-kernel - v0.0.1 
- * 2015-12-12 
+ * 2015-12-18 
  */
 
 // 필수 Ployfill 확장 구문
@@ -176,17 +176,17 @@
   // root of function
   var root = this, win = window, doc = document, docElem = document.documentElement,
 
-    re_is_json = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
-    re_ms = /^-ms-/,
-    re_snake_case = /[\-_]([\da-z])/gi,
-    re_camel_case = /([A-Z])/g,
-    re_dot = /\./,
-    re_int = /[-|+]?[\D]/gi,
-    re_not_num = /\D/gi,
-    re_money_split = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
-    re_amp = /&/g,
-    re_eq = /=/,
-    re_class_name_split = /[ ]+/g,
+    reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
+    reMs = /^-ms-/,
+    reSnakeCase = /[\-_]([\da-z])/gi,
+    reCamelCase = /([A-Z])/g,
+    reDot = /\./,
+    reInt = /[-|+]?[\D]/gi,
+    reNotNum = /\D/gi,
+    reMoneySplit = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
+    reAmp = /&/g,
+    reEq = /=/,
+    reClassNameSplit = /[ ]+/g,
 
     /** @namespace {Object} ax5 */
     ax5 = {}, info, U, dom;
@@ -198,10 +198,10 @@
   ax5.guid = 1;
   /**
    * ax5.guid를 구하고 증가시킵니다.
-   * @method ax5.get_guid
+   * @method ax5.getGuid
    * @returns {Number} guid
    */
-  ax5.get_guid = function() {return ax5.guid++;};
+  ax5.getGuid = function() {return ax5.guid++;};
 
   /**
    * 상수모음
@@ -215,9 +215,9 @@
     var version = "0.0.1";
     /**
      * ax5 library path
-     * @member {String} ax5.info.base_url
+     * @member {String} ax5.info.baseUrl
      */
-    var base_url = "";
+    var baseUrl = "";
     /**
      * ax5 에러 출력메세지 사용자 재 정의
      * @member {Object} ax5.info.onerror
@@ -229,12 +229,12 @@
      * ```
      */
     var onerror = function() {
-      console.error(U.to_array(arguments).join(":"));
+      console.error(U.toArray(arguments).join(":"));
     };
 
     /**
      * event keyCodes
-     * @member {Object} ax5.info.event_keys
+     * @member {Object} ax5.info.eventKeys
      * @example
      * ```
      * {
@@ -244,13 +244,13 @@
 		 * }
      * ```
      */
-    var event_keys = {
+    var eventKeys = {
       BACKSPACE: 8, TAB: 9,
       RETURN: 13, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, DELETE: 46,
       HOME: 36, END: 35, PAGEUP: 33, PAGEDOWN: 34, INSERT: 45, SPACE: 32
     };
 
-    var week_names = [
+    var weekNames = [
       {label: "SUN"},
       {label: "MON"},
       {label: "TUE"},
@@ -300,22 +300,22 @@
     })();
     /**
      * 브라우저 여부
-     * @member {Boolean} ax5.info.is_browser
+     * @member {Boolean} ax5.info.isBrowser
      */
-    var is_browser = !!(typeof window !== 'undefined' && typeof navigator !== 'undefined' && win.document);
+    var isBrowser = !!(typeof window !== 'undefined' && typeof navigator !== 'undefined' && win.document);
     /**
      * 브라우저에 따른 마우스 휠 이벤트이름
-     * @member {Object} ax5.info.wheel_enm
+     * @member {Object} ax5.info.wheelEnm
      */
-    var wheel_enm = ((/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel");
+    var wheelEnm = ((/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel");
 
     /**
      * 첫번째 자리수 동사 - (필요한것이 없을때 : 4, 실행오류 : 5)
      * 두번째 자리수 목적어 - 문자열 0, 숫자 1, 배열 2, 오브젝트 3, 함수 4, DOM 5, 파일 6, 기타 7
      * 세번째 자리수 옵션
-     * @member {Object} ax5.info.error_msg
+     * @member {Object} ax5.info.errorMsg
      */
-    var error_msg = {
+    var errorMsg = {
       "single-uploader": {
         "460": "업로드할 파일이 없습니다.",
         "461": "업로드된 파일이 없습니다."
@@ -324,13 +324,13 @@
 
     /**
      * 현재 페이지의 Url 정보를 리턴합니다.
-     * @method ax5.info.url_util
+     * @method ax5.info.urlUtil
      * @returns {Object}
      * @example
      * ```
-     * console.log( ax5.util.to_json( ax5.util.url_util() ) );
+     * console.log( ax5.util.toJson( ax5.util.urlUtil() ) );
      * {
-		 *	"base_url": "http://ax5:2018",
+		 *	"baseUrl": "http://ax5:2018",
 		 *	"href": "http://ax5:2018/samples/index.html?a=1&b=1#abc",
 		 *	"param": "a=1&b=1",
 		 *	"referrer": "",
@@ -342,7 +342,7 @@
 		 * }
      * ```
      */
-    function url_util(url, urls) {
+    function urlUtil(url, urls) {
       url = {
         href: win.location.href,
         param: win.location.search,
@@ -357,54 +357,54 @@
         url.hashdata = U.last(urls);
       }
       urls = null;
-      url.base_url = U.left(url.href, "?").replace(url.pathname, "");
+      url.baseUrl = U.left(url.href, "?").replace(url.pathname, "");
       return url;
     }
 
     /**
      * ax5 error를 반환합니다.
-     * @method ax5.info.get_error
+     * @method ax5.info.getError
      * @returns {Object}
      * @example
      * ```
-     * if(!this.selected_file){
-		 *      if (cfg.on_event) {
+     * if(!this.selectedFile){
+		 *      if (cfg.onEvent) {
 		 *      	var that = {
 		 *      		action: "error",
-		 *      		error: ax5.info.get_error("single-uploader", "460", "upload")
+		 *      		error: ax5.info.getError("single-uploader", "460", "upload")
 		 *      	};
-		 *      	cfg.on_event.call(that, that);
+		 *      	cfg.onEvent.call(that, that);
 		 *      }
 		 *      return this;
 		 * }
      * ```
      */
-    function get_error(class_name, error_code, method_name) {
-      if (info.error_msg && info.error_msg[class_name]) {
+    function getError(className, errorCode, methodName) {
+      if (info.errorMsg && info.errorMsg[className]) {
         return {
-          class_name: class_name,
-          error_code: error_code,
-          method_name: method_name,
-          msg: info.error_msg[class_name][error_code]
+          className: className,
+          errorCode: errorCode,
+          methodName: methodName,
+          msg: info.errorMsg[className][errorCode]
         };
       }
       else {
-        return {class_name: class_name, error_code: error_code, method_name: method_name};
+        return {className: className, errorCode: errorCode, methodName: methodName};
       }
     }
 
     return {
-      error_msg: error_msg,
+      errorMsg: errorMsg,
       version: version,
-      base_url: base_url,
+      baseUrl: baseUrl,
       onerror: onerror,
-      event_keys: event_keys,
-      week_names: week_names,
+      eventKeys: eventKeys,
+      weekNames: weekNames,
       browser: browser,
-      is_browser: is_browser,
-      wheel_enm: wheel_enm,
-      url_util: url_util,
-      get_error: get_error
+      isBrowser: isBrowser,
+      wheelEnm: wheelEnm,
+      urlUtil: urlUtil,
+      getError: getError
     };
   })();
 
@@ -432,7 +432,7 @@
      * ```
      */
     function each(O, _fn) {
-      if (is_nothing(O)) return [];
+      if (isNothing(O)) return [];
       var key, i = 0, l = O.length,
         isObj = l === undefined || typeof O === "function";
       if (isObj) {
@@ -450,7 +450,7 @@
       return O;
     }
 
-    // In addition to using the http://underscorejs.org : map, reduce, reduce_right, find
+    // In addition to using the http://underscorejs.org : map, reduce, reduceRight, find
     /**
      * 원본 아이템들을 이용하여 사용자 함수의 리턴값으로 이루어진 새로운 배열을 만듭니다.
      * @method ax5.util.map
@@ -480,23 +480,23 @@
      * ```
      */
     function map(O, _fn) {
-      if (is_nothing(O)) return [];
-      var key, i = 0, l = O.length, results = [], fn_result;
-      if (is_object(O)) {
+      if (isNothing(O)) return [];
+      var key, i = 0, l = O.length, results = [], fnResult;
+      if (isObject(O)) {
         for (key in O) {
           if (typeof O[key] != "undefined") {
-            fn_result = undefined;
-            if ((fn_result = _fn.call(O[key], key, O[key])) === false) break;
-            else results.push(fn_result);
+            fnResult = undefined;
+            if ((fnResult = _fn.call(O[key], key, O[key])) === false) break;
+            else results.push(fnResult);
           }
         }
       }
       else {
         for (; i < l;) {
           if (typeof O[i] != "undefined") {
-            fn_result = undefined;
-            if ((fn_result = _fn.call(O[i], i, O[i++])) === false) break;
-            else results.push(fn_result);
+            fnResult = undefined;
+            if ((fnResult = _fn.call(O[i], i, O[i++])) === false) break;
+            else results.push(fnResult);
           }
         }
       }
@@ -537,11 +537,11 @@
      * ```
      */
     function search(O, _fn) {
-      if (is_nothing(O)) return -1;
+      if (isNothing(O)) return -1;
       var key, i = 0, l = O.length;
-      if (is_object(O)) {
+      if (isObject(O)) {
         for (key in O) {
-          if (typeof O[key] != "undefined" && is_function(_fn) && _fn.call(O[key], key, O[key])) {
+          if (typeof O[key] != "undefined" && isFunction(_fn) && _fn.call(O[key], key, O[key])) {
             return key;
             break;
           }
@@ -553,7 +553,7 @@
       }
       else {
         for (; i < l;) {
-          if (typeof O[i] != "undefined" && is_function(_fn) && _fn.call(O[i], i, O[i])) {
+          if (typeof O[i] != "undefined" && isFunction(_fn) && _fn.call(O[i], i, O[i])) {
             return i;
             break;
           }
@@ -589,23 +589,23 @@
      * ```
      */
     function reduce(O, _fn) {
-      var i, l, token_item;
-      if (is_array(O)) {
-        i = 0, l = O.length, token_item = O[i];
+      var i, l, tokenItem;
+      if (isArray(O)) {
+        i = 0, l = O.length, tokenItem = O[i];
         for (; i < l - 1;) {
           if (typeof O[i] != "undefined") {
-            if (( token_item = _fn.call(root, token_item, O[++i]) ) === false) break;
+            if (( tokenItem = _fn.call(root, tokenItem, O[++i]) ) === false) break;
           }
         }
-        return token_item;
+        return tokenItem;
       }
-      else if (is_object(O)) {
+      else if (isObject(O)) {
         for (i in O) {
           if (typeof O[i] != "undefined") {
-            if (( token_item = _fn.call(root, token_item, O[i]) ) === false) break;
+            if (( tokenItem = _fn.call(root, tokenItem, O[i]) ) === false) break;
           }
         }
-        return token_item;
+        return tokenItem;
       }
       else {
         console.error("argument error : ax5.util.reduce - use Array or Object");
@@ -615,14 +615,14 @@
 
     /**
      * 배열의 오른쪽에서 왼쪽으로 연산을 진행하는데 수행한 결과가 오른쪽 값으로 반영되어 최종 오른쪽 값을 반환합니다.
-     * @method ax5.util.reduce_right
+     * @method ax5.util.reduceRight
      * @param {Array} O
      * @param {Function} _fn
      * @returns {Alltypes}
      * @example
      * ```js
      * var aarray = [5,4,3,2,1];
-     * result = ax5.util.reduce_right( aarray, function(p, n){
+     * result = ax5.util.reduceRight( aarray, function(p, n){
 		 *    console.log( n );
 		 *    return p * n;
 		 * });
@@ -630,14 +630,14 @@
      * 120 [5, 4, 3, 2, 1]
      * ```
      */
-    function reduce_right(O, _fn) {
-      var i = O.length - 1, token_item = O[i];
+    function reduceRight(O, _fn) {
+      var i = O.length - 1, tokenItem = O[i];
       for (; i > 0;) {
         if (typeof O[i] != "undefined") {
-          if (( token_item = _fn.call(root, token_item, O[--i]) ) === false) break;
+          if (( tokenItem = _fn.call(root, tokenItem, O[--i]) ) === false) break;
         }
       }
-      return token_item;
+      return tokenItem;
     }
 
     /**
@@ -659,24 +659,24 @@
      * result = ax5.util.filter( filObject, function(){
 		 * 	return this.pickup;
 		 * });
-     * console.log( ax5.util.to_json(result) );
+     * console.log( ax5.util.toJson(result) );
      * // [{"pickup": , "name": "AXISJ"}, {"pickup": , "name": "AX5"}]
      * ```
      */
     function filter(O, _fn) {
-      if (is_nothing(O)) return [];
-      var k, i = 0, l = O.length, results = [], fn_result;
-      if (is_object(O)) {
+      if (isNothing(O)) return [];
+      var k, i = 0, l = O.length, results = [], fnResult;
+      if (isObject(O)) {
         for (k in O) {
           if (typeof O[k] != "undefined") {
-            if (fn_result = _fn.call(O[k], k, O[k])) results.push(O[k]);
+            if (fnResult = _fn.call(O[k], k, O[k])) results.push(O[k]);
           }
         }
       }
       else {
         for (; i < l;) {
           if (typeof O[i] != "undefined") {
-            if (fn_result = _fn.call(O[i], i, O[i])) results.push(O[i]);
+            if (fnResult = _fn.call(O[i], i, O[i])) results.push(O[i]);
             i++;
           }
         }
@@ -686,7 +686,7 @@
 
     /**
      * Object를 JSONString 으로 반환합니다.
-     * @method ax5.util.to_json
+     * @method ax5.util.toJson
      * @param {Object|Array} O
      * @returns {String} JSON
      * @example
@@ -698,70 +698,70 @@
 		 *        return abcdd;
 		 *    }
 		 * };
-     * console.log( ax.to_json(myObject) );
+     * console.log( ax.toJson(myObject) );
      * ```
      */
-    function to_json(O) {
-      var json_string = "";
-      if (ax5.util.is_array(O)) {
+    function toJson(O) {
+      var jsonString = "";
+      if (ax5.util.isArray(O)) {
         var i = 0, l = O.length;
-        json_string += "[";
+        jsonString += "[";
         for (; i < l; i++) {
-          if (i > 0) json_string += ",";
-          json_string += to_json(O[i]);
+          if (i > 0) jsonString += ",";
+          jsonString += toJson(O[i]);
         }
-        json_string += "]";
+        jsonString += "]";
       }
-      else if (ax5.util.is_object(O)) {
-        json_string += "{";
-        var json_object_body = [];
+      else if (ax5.util.isObject(O)) {
+        jsonString += "{";
+        var jsonObjectBody = [];
         each(O, function(key, value) {
-          json_object_body.push('"' + key + '": ' + to_json(value));
+          jsonObjectBody.push('"' + key + '": ' + toJson(value));
         });
-        json_string += json_object_body.join(", ");
-        json_string += "}";
+        jsonString += jsonObjectBody.join(", ");
+        jsonString += "}";
       }
-      else if (ax5.util.is_string(O)) {
-        json_string = '"' + O + '"';
+      else if (ax5.util.isString(O)) {
+        jsonString = '"' + O + '"';
       }
-      else if (ax5.util.is_number(O)) {
-        json_string = O;
+      else if (ax5.util.isNumber(O)) {
+        jsonString = O;
       }
-      else if (ax5.util.is_undefined(O)) {
-        json_string = "undefined";
+      else if (ax5.util.isUndefined(O)) {
+        jsonString = "undefined";
       }
-      else if (ax5.util.is_function(O)) {
-        json_string = '"{Function}"';
+      else if (ax5.util.isFunction(O)) {
+        jsonString = '"{Function}"';
       }
-      return json_string;
+      return jsonString;
     }
 
     /**
      * 관용의 JSON Parser
-     * @method ax5.util.parse_json
+     * @method ax5.util.parseJson
      * @param {String} JSONString
      * @param {Boolean} [force] - 강제 적용 여부 (json 문자열 검사를 무시하고 오브젝트 변환을 시도합니다.)
      * @returns {Object}
      * @example
      * ```
-     * console.log(ax5.util.parse_json('{"a":1}'));
+     * console.log(ax5.util.parseJson('{"a":1}'));
      * // Object {a: 1}
-     * console.log(ax5.util.parse_json("{'a':1, 'b':'b'}"));
+     * console.log(ax5.util.parseJson("{'a':1, 'b':'b'}"));
      * // Object {a: 1, b: "b"}
-     * console.log(ax5.util.parse_json("{'a':1, 'b':function(){return 1;}}", true));
+     * console.log(ax5.util.parseJson("{'a':1, 'b':function(){return 1;}}", true));
      * // Object {a: 1, b: function}
-     * console.log(ax5.util.parse_json("{a:1}"));
+     * console.log(ax5.util.parseJson("{a:1}"));
      * // Object {a: 1}
-     * console.log(ax5.util.parse_json("[1,2,3]"));
+     * console.log(ax5.util.parseJson("[1,2,3]"));
      * // [1, 2, 3]
-     * console.log(ax5.util.parse_json("['1','2','3']"));
+     * console.log(ax5.util.parseJson("['1','2','3']"));
      * // ["1", "2", "3"]
-     * console.log(ax5.util.parse_json("[{'a':'99'},'2','3']"));
+     * console.log(ax5.util.parseJson("[{'a':'99'},'2','3']"));
      * // [Object, "2", "3"]
      * ```
      */
-    function parse_json(str, force) {
-      if (force || (re_is_json).test(str)) {
+    function parseJson(str, force) {
+      if (force || (reIsJson).test(str)) {
         try {
           return (new Function('', 'return ' + str))();
         } catch (e) {
@@ -775,7 +775,7 @@
 
     /**
      * 인자의 타입을 반환합니다.
-     * @method ax5.util.get_type
+     * @method ax5.util.getType
      * @param {Object|Array|String|Number|Element|Etc} O
      * @returns {String} window|element|object|array|function|string|number|undefined|nodelist
      * @example
@@ -783,11 +783,11 @@
      * var axf = ax5.util;
      * var a = 11;
      * var b = "11";
-     * console.log( axf.get_type(a) );
-     * console.log( axf.get_type(b) );
+     * console.log( axf.getType(a) );
+     * console.log( axf.getType(b) );
      * ```
      */
-    function get_type(O) {
+    function getType(O) {
       var typeName;
       if (O != null && O == O.window) {
         typeName = "window";
@@ -824,101 +824,101 @@
 
     /**
      * 오브젝트가 window 인지 판단합니다.
-     * @method ax5.util.is_window
+     * @method ax5.util.isWindow
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_window(O) {
+    function isWindow(O) {
       return O != null && O == O.window;
     }
 
     /**
      * 오브젝트가 HTML 엘리먼트여부인지 판단합니다.
-     * @method ax5.util.is_element
+     * @method ax5.util.isElement
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_element(O) {
+    function isElement(O) {
       return !!(O && (O.nodeType == 1 || O.nodeType == 11));
     }
 
     /**
      * 오브젝트가 Object인지 판단합니다.
-     * @method ax5.util.is_object
+     * @method ax5.util.isObject
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_object(O) {
+    function isObject(O) {
       return _toString.call(O) == "[object Object]";
     }
 
     /**
      * 오브젝트가 Array인지 판단합니다.
-     * @method ax5.util.is_array
+     * @method ax5.util.isArray
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_array(O) {
+    function isArray(O) {
       return _toString.call(O) == "[object Array]";
     }
 
     /**
      * 오브젝트가 Function인지 판단합니다.
-     * @method ax5.util.is_function
+     * @method ax5.util.isFunction
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_function(O) {
+    function isFunction(O) {
       return typeof O === "function";
     }
 
     /**
      * 오브젝트가 String인지 판단합니다.
-     * @method ax5.util.is_string
+     * @method ax5.util.isString
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_string(O) {
+    function isString(O) {
       return _toString.call(O) == "[object String]";
     }
 
     /**
      * 오브젝트가 Number인지 판단합니다.
-     * @method ax5.util.is_number
+     * @method ax5.util.isNumber
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_number(O) {
+    function isNumber(O) {
       return _toString.call(O) == "[object Number]";
     }
 
     /**
      * 오브젝트가 NodeList인지 판단합니다.
-     * @method ax5.util.is_nodelist
+     * @method ax5.util.isNodelist
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_nodelist(O) {
+    function isNodelist(O) {
       return (_toString.call(O) == "[object NodeList]" || (O && O[0] && O[0].nodeType == 1));
     }
 
     /**
      * 오브젝트가 undefined인지 판단합니다.
-     * @method ax5.util.is_undefined
+     * @method ax5.util.isUndefined
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_undefined(O) {
+    function isUndefined(O) {
       return typeof O === "undefined";
     }
 
     /**
      * 오브젝트가 undefined이거나 null이거나 빈값인지 판단합니다.
-     * @method ax5.util.is_nothing
+     * @method ax5.util.isNothing
      * @param {Object} O
      * @returns {Boolean}
      */
-    function is_nothing(O) {
+    function isNothing(O) {
       return (typeof O === "undefined" || O === null || O === "");
     }
 
@@ -934,13 +934,13 @@
      * ```
      */
     function first(O) {
-      if (is_object(O)) {
+      if (isObject(O)) {
         var keys = Object.keys(O);
         var item = {};
         item[keys[0]] = O[keys[0]];
         return item;
       }
-      else if (is_array(O)) {
+      else if (isArray(O)) {
         return O[0];
       }
       else {
@@ -961,13 +961,13 @@
      * ```
      */
     function last(O) {
-      if (is_object(O)) {
+      if (isObject(O)) {
         var keys = Object.keys(O);
         var item = {};
         item[keys[keys.length - 1]] = O[keys[keys.length - 1]];
         return item;
       }
-      else if (is_array(O)) {
+      else if (isArray(O)) {
         return O[O.length - 1];
       }
       else {
@@ -978,19 +978,19 @@
 
     /**
      * 쿠키를 설정합니다.
-     * @method ax5.util.set_cookie
+     * @method ax5.util.setCookie
      * @param {String} cname - 쿠키이름
      * @param {String} cvalue - 쿠키값
      * @param {Number} [exdays] - 쿠키 유지일수
      * @param {Object} [opts] - path, domain 설정 옵션
      * @example
      * ```js
-     * ax5.util.set_cookie("jslib", "AX5");
-     * ax5.util.set_cookie("jslib", "AX5", 3);
-     * ax5.util.set_cookie("jslib", "AX5", 3, {path:"/", domain:".axisj.com"});
+     * ax5.util.setCookie("jslib", "AX5");
+     * ax5.util.setCookie("jslib", "AX5", 3);
+     * ax5.util.setCookie("jslib", "AX5", 3, {path:"/", domain:".axisj.com"});
      * ```
      */
-    function set_cookie(cn, cv, exdays, opts) {
+    function setCookie(cn, cv, exdays, opts) {
       var expire;
       if (typeof exdays === "number") {
         expire = new Date();
@@ -1008,15 +1008,15 @@
 
     /**
      * 쿠키를 가져옵니다.
-     * @method ax5.util.get_cookie
+     * @method ax5.util.getCookie
      * @param {String} cname
      * @returns {String} cookie value
      * @example
      * ```js
-     * ax5.util.get_cookie("jslib");
+     * ax5.util.getCookie("jslib");
      * ```
      */
-    function get_cookie(cname) {
+    function getCookie(cname) {
       var name = cname + "=";
       var ca = doc.cookie.split(';'), i = 0, l = ca.length;
       for (; i < l; i++) {
@@ -1035,8 +1035,8 @@
      * @param {Function} [errorBack] - 로드 실패시 호출함수
      * @example
      * ```js
-     * ax5.info.base_url = "../src/";
-     * ax5.util.require(["ax5_class_sample.js"], function(){
+     * ax5.info.baseUrl = "../src/";
+     * ax5.util.require(["ax5_classSample.js"], function(){
 		 * 	alert("ok");
 		 * });
      * ```
@@ -1045,8 +1045,8 @@
     function require(mods, callBack, errorBack) {
       var
         head = doc.head || doc.getElementsByTagName("head")[0],
-        readyRegExp = info.is_browser && navigator.platform === 'PLAYSTATION 3' ? /^complete$/ : /^(complete|loaded)$/,
-        loadCount = mods.length, loadErrors = [], loaded_src = {}, onloadTimer, onerrorTimer, returned = false,
+        readyRegExp = info.isBrowser && navigator.platform === 'PLAYSTATION 3' ? /^complete$/ : /^(complete|loaded)$/,
+        loadCount = mods.length, loadErrors = [], loadedSrc = {}, onloadTimer, onerrorTimer, returned = false,
         scripts = dom.get("script[src]"), styles = dom.get("style[href]"),
         onload = function() {
           if (loadCount < 1 && loadErrors.length == 0 && !returned) {
@@ -1068,11 +1068,11 @@
       // 로드해야 할 모듈들을 doc.head에 삽입하고 로드가 성공여부를 리턴합니다.
       for (var i = 0, l = mods.length; i < l; i++) {
         var src = mods[i], type = right(src, "."), hasPlugin = false,
-          plugin, plugin_src = info.base_url + src, attr_nm = (type === "js") ? "src" : "href",
-          plug_load, plug_err, s = scripts.length;
+          plugin, pluginSrc = info.baseUrl + src, attrNm = (type === "js") ? "src" : "href",
+          plugLoad, plugErr, s = scripts.length;
 
         while (s--) {
-          if (scripts[s].getAttribute(attr_nm) === plugin_src) {
+          if (scripts[s].getAttribute(attrNm) === pluginSrc) {
             hasPlugin = true;
             break;
           }
@@ -1087,31 +1087,31 @@
         else {
 
           plugin = (type === "js") ?
-            dom.create("script", {type: "text/javascript", src: plugin_src, "data-src": plugin_src}) :
-            dom.create("link", {rel: "stylesheet", type: "text/css", href: plugin_src});
+            dom.create("script", {type: "text/javascript", src: pluginSrc, "data-src": pluginSrc}) :
+            dom.create("link", {rel: "stylesheet", type: "text/css", href: pluginSrc});
 
-          plug_load = function(e, plugin_src) {
+          plugLoad = function(e, pluginSrc) {
             if (e && ( e.type === 'load' || readyRegExp.test((e.currentTarget || e.srcElement).readyState) )) {
-              if (!loaded_src[plugin_src]) loadCount--;
+              if (!loadedSrc[pluginSrc]) loadCount--;
               if (onloadTimer) clearTimeout(onloadTimer);
               onloadTimer = setTimeout(onload, 1);
             }
           },
-            plug_err = function(e) {
+            plugErr = function(e) {
               loadCount--;
               loadErrors.push({
-                src: info.base_url + src, error: e
+                src: info.baseUrl + src, error: e
               });
               if (onerrorTimer) clearTimeout(onerrorTimer);
               onerrorTimer = setTimeout(onerror, 1);
             };
 
           ax5.xhr({
-            url: plugin_src, contentType: "",
+            url: pluginSrc, contentType: "",
             res: function(response, status) {
-              var time_id, hasPlugin = false, scripts = dom.get("script[src]"), s = scripts.length;
+              var timeId, hasPlugin = false, scripts = dom.get("script[src]"), s = scripts.length;
               while (s--) {
-                if (scripts[s].getAttribute(attr_nm) === plugin_src) {
+                if (scripts[s].getAttribute(attrNm) === pluginSrc) {
                   hasPlugin = true;
                   break;
                 }
@@ -1119,15 +1119,15 @@
 
               if (!hasPlugin) head.appendChild(plugin);
               plugin.onload = function(e) {
-                plug_load(e, plugin_src);
-                if (time_id) clearTimeout(time_id);
+                plugLoad(e, pluginSrc);
+                if (timeId) clearTimeout(timeId);
               };
-              time_id = setTimeout(function() {
-                plug_load({type: "load"}, plugin_src);
+              timeId = setTimeout(function() {
+                plugLoad({type: "load"}, pluginSrc);
               }, 500);
             },
             error: function() {
-              plug_err(this);
+              plugErr(this);
             }
           });
         }
@@ -1145,7 +1145,7 @@
      * ```
      */
     function alert(O) {
-      win.alert(to_json(O));
+      win.alert(toJson(O));
       return O;
     }
 
@@ -1165,10 +1165,10 @@
      */
     function left(str, pos) {
       if (typeof str === "undefined" || typeof pos === "undefined") return "";
-      if (is_string(pos)) {
+      if (isString(pos)) {
         return (str.indexOf(pos) > -1) ? str.substr(0, str.indexOf(pos)) : str;
       }
-      else if (is_number(pos)) {
+      else if (isNumber(pos)) {
         return str.substr(0, pos);
       }
       else {
@@ -1193,10 +1193,10 @@
     function right(str, pos) {
       if (typeof str === "undefined" || typeof pos === "undefined") return "";
       str = '' + str;
-      if (is_string(pos)) {
+      if (isString(pos)) {
         return (str.lastIndexOf(pos) > -1) ? str.substr(str.lastIndexOf(pos) + 1) : str;
       }
-      else if (is_number(pos)) {
+      else if (isNumber(pos)) {
         return str.substr(str.length - pos);
       }
       else {
@@ -1206,37 +1206,37 @@
 
     /**
      * css형 문자열이나 특수문자가 포함된 문자열을 카멜케이스로 바꾸어 반환합니다.
-     * @method ax5.util.camel_case
+     * @method ax5.util.camelCase
      * @param {String} str
      * @returns {String}
      * @example
      * ```js
-     * ax5.util.camel_case("inner-width");
-     * ax5.util.camel_case("inner_width");
+     * ax5.util.camelCase("inner-width");
+     * ax5.util.camelCase("innerWidth");
      * // innerWidth
      * ```
      */
-    function camel_case(str) {
-      return str.replace(re_ms, "ms-").replace(re_snake_case, function(all, letter) {
+    function camelCase(str) {
+      return str.replace(reMs, "ms-").replace(reSnakeCase, function(all, letter) {
         return letter.toUpperCase();
       });
     }
 
     /**
      * css형 문자열이나 카멜케이스문자열을 스네이크 케이스 문자열로 바꾸어 반환합니다.
-     * @method ax5.util.snake_case
+     * @method ax5.util.snakeCase
      * @param {String} str
      * @returns {String}
      * @example
      * ```js
-     * ax5.util.snake_case("innerWidth");
-     * ax5.util.snake_case("inner-Width");
-     * ax5.util.snake_case("inner_width");
+     * ax5.util.snakeCase("innerWidth");
+     * ax5.util.snakeCase("inner-Width");
+     * ax5.util.snakeCase("innerWidth");
      * // inner-width
      * ```
      */
-    function snake_case(str) {
-      return camel_case(str).replace(re_camel_case, function(all, letter) {
+    function snakeCase(str) {
+      return camelCase(str).replace(reCamelCase, function(all, letter) {
         return "-" + letter.toLowerCase();
       });
     }
@@ -1270,10 +1270,10 @@
      * ```
      */
     function number(str, cond) {
-      var result, pair = ('' + str).split(re_dot), isMinus = (Number(pair[0]) < 0 || pair[0] == "-0"), returnValue = 0.0;
-      pair[0] = pair[0].replace(re_int, "");
+      var result, pair = ('' + str).split(reDot), isMinus = (Number(pair[0]) < 0 || pair[0] == "-0"), returnValue = 0.0;
+      pair[0] = pair[0].replace(reInt, "");
       if (pair[1]) {
-        pair[1] = pair[1].replace(re_not_num, "");
+        pair[1] = pair[1].replace(reNotNum, "");
         returnValue = Number(pair[0] + "." + pair[1]) || 0;
       }
       else {
@@ -1283,7 +1283,7 @@
 
       each(cond, function(k, c) {
         if (k == "round") {
-          if (is_number(c)) {
+          if (isNumber(c)) {
             if (c < 0) {
               result = +(Math.round(result + "e-" + Math.abs(c)) + "e+" + Math.abs(c));
             }
@@ -1311,8 +1311,8 @@
               var arrNumber = txtNumber.split('.');
               arrNumber[0] += '.';
               do {
-                arrNumber[0] = arrNumber[0].replace(re_money_split, '$1,$2');
-              } while (re_money_split.test(arrNumber[0]));
+                arrNumber[0] = arrNumber[0].replace(reMoneySplit, '$1,$2');
+              } while (reMoneySplit.test(arrNumber[0]));
               if (arrNumber.length > 1) {
                 return arrNumber.join('');
               }
@@ -1328,17 +1328,17 @@
         else if (k == "byte") {
           result = (function(val) {
             val = Number(result);
-            var n_unit = "KB";
+            var nUnit = "KB";
             var myByte = val / 1024;
             if (myByte / 1024 > 1) {
-              n_unit = "MB";
+              nUnit = "MB";
               myByte = myByte / 1024;
             }
             if (myByte / 1024 > 1) {
-              n_unit = "GB";
+              nUnit = "GB";
               myByte = myByte / 1024;
             }
-            return number(myByte, {round: 1}) + n_unit;
+            return number(myByte, {round: 1}) + nUnit;
           })(result);
         }
       });
@@ -1348,16 +1348,16 @@
 
     /**
      * 배열 비슷한 오브젝트를 배열로 변환해줍니다.
-     * @method ax5.util.to_array
+     * @method ax5.util.toArray
      * @param {Object|Elements|Arguments} O
      * @returns {Array}
      * @example
      * ```js
-     * ax5.util.to_array(arguments);
+     * ax5.util.toArray(arguments);
      * //
      * ```
      */
-    function to_array(O) {
+    function toArray(O) {
       if (typeof O.length != "undefined") return Array.prototype.slice.call(O);
       return [];
     }
@@ -1411,13 +1411,13 @@
      */
     function param(O, cond) {
       var p;
-      if (is_string(O) && typeof cond !== "undefined" && cond == "param") {
+      if (isString(O) && typeof cond !== "undefined" && cond == "param") {
         return O;
       }
-      else if ((is_string(O) && typeof cond !== "undefined" && cond == "object") || (is_string(O) && typeof cond === "undefined")) {
+      else if ((isString(O) && typeof cond !== "undefined" && cond == "object") || (isString(O) && typeof cond === "undefined")) {
         p = {};
-        each(O.split(re_amp), function() {
-          var item = this.split(re_eq);
+        each(O.split(reAmp), function() {
+          var item = this.split(reEq);
           p[item[0]] = item[1];
         });
         return p;
@@ -1445,19 +1445,19 @@
 
     /**
      * webGl context 에 적용할 셰이더를 셰이더 스크립트로 부터 변환합니다.
-     * @method ax5.util.get_shader
+     * @method ax5.util.getShader
      * @param {WebGLRenderingContext} gl
      * @param {script|String|Array} script
      * @param {String} [typ] - x-shader/x-fragment|x-shader/x-vertex
      * @returns {shader}
      */
-    function get_shader(gl, script, typ) {
+    function getShader(gl, script, typ) {
       if (!script) {
         return null;
       }
 
       var str = "", s, shader;
-      if (is_string(script) || is_array(script)) {
+      if (isString(script) || isArray(script)) {
         str = [].concat(script).join('');
         if (typ == "x-shader/x-fragment") {
           shader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -1509,24 +1509,24 @@
         };
     })();
 
-    function request_ani_frame(o) {
+    function requestAniFrame(o) {
       requestAnimFrame(o);
     }
 
-    function local_date(yy, mm, dd, hh, mi, ss) {
-      var utc_d, local_d;
-      local_d = new Date();
+    function localDate(yy, mm, dd, hh, mi, ss) {
+      var utcD, localD;
+      localD = new Date();
       if (typeof hh === "undefined") hh = 23;
       if (typeof mi === "undefined") mi = 59;
-      utc_d = new Date(Date.UTC(yy, mm, dd || 1, hh, mi, ss || 0));
+      utcD = new Date(Date.UTC(yy, mm, dd || 1, hh, mi, ss || 0));
 
-      if (mm == 0 && dd == 1 && utc_d.getUTCHours() + (utc_d.getTimezoneOffset() / 60) < 0) {
-        utc_d.setUTCHours(0);
+      if (mm == 0 && dd == 1 && utcD.getUTCHours() + (utcD.getTimezoneOffset() / 60) < 0) {
+        utcD.setUTCHours(0);
       }
       else {
-        utc_d.setUTCHours(utc_d.getUTCHours() + (utc_d.getTimezoneOffset() / 60));
+        utcD.setUTCHours(utcD.getUTCHours() + (utcD.getTimezoneOffset() / 60));
       }
-      return utc_d;
+      return utcD;
     }
 
     /**
@@ -1545,10 +1545,10 @@
     function date(d, cond) {
       var yy, mm, dd, hh, mi,
         aDateTime, aTimes, aTime, aDate,
-        utc_d, local_d,
+        utcD, localD,
         va;
 
-      if (is_string(d)) {
+      if (isString(d)) {
         if (d.length == 0) {
           d = new Date();
         }
@@ -1563,23 +1563,23 @@
           hh = parseFloat(aTimes[0]);
           mi = parseFloat(aTimes[1]);
           if (aTime.right(2) === "AM" || aTime.right(2) === "PM") hh += 12;
-          d = local_date(yy, mm - 1, dd, hh, mi);
+          d = localDate(yy, mm - 1, dd, hh, mi);
         }
         else if (d.length == 14) {
           va = d.replace(/\D/g, "");
-          d = local_date(va.substr(0, 4), va.substr(4, 2) - 1, number(va.substr(6, 2)), number(va.substr(8, 2)), number(va.substr(10, 2)), number(va.substr(12, 2)));
+          d = localDate(va.substr(0, 4), va.substr(4, 2) - 1, number(va.substr(6, 2)), number(va.substr(8, 2)), number(va.substr(10, 2)), number(va.substr(12, 2)));
         }
         else if (d.length > 7) {
           va = d.replace(/\D/g, "");
-          d = local_date(va.substr(0, 4), va.substr(4, 2) - 1, number(va.substr(6, 2)));
+          d = localDate(va.substr(0, 4), va.substr(4, 2) - 1, number(va.substr(6, 2)));
         }
         else if (d.length > 4) {
           va = d.replace(/\D/g, "");
-          d = local_date(va.substr(0, 4), va.substr(4, 2) - 1, 1);
+          d = localDate(va.substr(0, 4), va.substr(4, 2) - 1, 1);
         }
         else if (d.length > 2) {
           va = d.replace(/\D/g, "");
-          return local_date(va.substr(0, 4), va.substr(4, 2) - 1, 1);
+          return localDate(va.substr(0, 4), va.substr(4, 2) - 1, 1);
         }
         else {
           d = new Date();
@@ -1605,7 +1605,7 @@
               dd = _d.getDate();
               yy = yy + parseInt(opts["m"] / 12);
               mm += opts["m"] % 12;
-              mxdd = days_of_month(yy, mm);
+              mxdd = daysOfMonth(yy, mm);
               if (mxdd < dd) dd = mxdd;
               _d = new Date(yy, mm, dd, 12);
             }
@@ -1623,11 +1623,11 @@
             var fStr = cond["return"], nY, nM, nD, nH, nMM, nS, nDW;
 
             nY = d.getUTCFullYear();
-            nM = set_digit(d.getMonth() + 1, 2);
-            nD = set_digit(d.getDate(), 2);
-            nH = set_digit(d.getHours(), 2);
-            nMM = set_digit(d.getMinutes(), 2);
-            nS = set_digit(d.getSeconds(), 2);
+            nM = setDigit(d.getMonth() + 1, 2);
+            nD = setDigit(d.getDate(), 2);
+            nH = setDigit(d.getHours(), 2);
+            nMM = setDigit(d.getMinutes(), 2);
+            nS = setDigit(d.getSeconds(), 2);
             nDW = d.getDay();
 
             var yre = /[^y]*(yyyy)[^y]*/gi;
@@ -1673,7 +1673,7 @@
               fStr = fStr.replace(regS, nS);
             }
             if (regDW == "dw") {
-              fStr = fStr.replace(regDW, info.week_names[nDW].label);
+              fStr = fStr.replace(regDW, info.weekNames[nDW].label);
             }
             return fStr;
           })();
@@ -1692,32 +1692,32 @@
      * @returns {Number}
      */
     function dday(d, cond) {
-      var memory_day = date(d), DyMilli = ((1000 * 60) * 60) * 24, today = new Date(), diffnum, this_year_memory_day;
+      var memoryDay = date(d), DyMilli = ((1000 * 60) * 60) * 24, today = new Date(), diffnum, thisYearMemoryDay;
 
-      function get_day_time(_d) {
+      function getDayTime(_d) {
         return Math.floor(_d.getTime() / DyMilli) * DyMilli;
       }
 
       if (typeof cond === "undefined") {
-        diffnum = number((( get_day_time(memory_day) - get_day_time(today) ) / DyMilli), {floor: true});
+        diffnum = number((( getDayTime(memoryDay) - getDayTime(today) ) / DyMilli), {floor: true});
         return diffnum;
       }
 
       else {
-        diffnum = number((( get_day_time(memory_day) - get_day_time(today) ) / DyMilli), {floor: true});
+        diffnum = number((( getDayTime(memoryDay) - getDayTime(today) ) / DyMilli), {floor: true});
         if (cond["today"]) {
           today = date(cond.today);
-          diffnum = number((( get_day_time(memory_day) - get_day_time(today) ) / DyMilli), {floor: true});
+          diffnum = number((( getDayTime(memoryDay) - getDayTime(today) ) / DyMilli), {floor: true});
         }
-        if (cond["this_year"]) {
-          this_year_memory_day = new Date(today.getFullYear(), memory_day.getMonth(), memory_day.getDate());
-          diffnum = number((( get_day_time(this_year_memory_day) - get_day_time(today) ) / DyMilli), {floor: true});
+        if (cond["thisYear"]) {
+          thisYearMemoryDay = new Date(today.getFullYear(), memoryDay.getMonth(), memoryDay.getDate());
+          diffnum = number((( getDayTime(thisYearMemoryDay) - getDayTime(today) ) / DyMilli), {floor: true});
           if (diffnum < 0) {
-            this_year_memory_day = new Date(today.getFullYear() + 1, memory_day.getMonth(), memory_day.getDate());
-            diffnum = number((( get_day_time(this_year_memory_day) - get_day_time(today) ) / DyMilli), {floor: true});
+            thisYearMemoryDay = new Date(today.getFullYear() + 1, memoryDay.getMonth(), memoryDay.getDate());
+            diffnum = number((( getDayTime(thisYearMemoryDay) - getDayTime(today) ) / DyMilli), {floor: true});
           }
           if (cond["age"]) {
-            diffnum = this_year_memory_day.getFullYear() - memory_day.getFullYear();
+            diffnum = thisYearMemoryDay.getFullYear() - memoryDay.getFullYear();
           }
         }
 
@@ -1727,38 +1727,38 @@
 
     /**
      * 인자인 날짜가 몇년 몇월의 몇번째 주차인지 반환합니다.
-     * @method ax5.util.weeks_of_month
+     * @method ax5.util.weeksOfMonth
      * @param {String|Data} d
      * @returns {Object}
      * @example
      * ```js
-     * ax5.util.weeks_of_month("2015-10-01"); // {year: 2015, month: 9, count: 5}
-     * ax5.util.weeks_of_month("2015-09-19"); // {year: 2015, month: 9, count: 3}
+     * ax5.util.weeksOfMonth("2015-10-01"); // {year: 2015, month: 9, count: 5}
+     * ax5.util.weeksOfMonth("2015-09-19"); // {year: 2015, month: 9, count: 3}
      * ```
      */
-    function weeks_of_month(d) {
-      var my_date = date(d);
-      //s_of_month = new Date(my_date.getFullYear(), my_date.getMonth(), 1);
-      //s_of_month.getDay()
-      //console.log(s_of_month.getDay(), my_date.getDay());
-      //console.log(parseInt(my_date.getDate() / 7 + 1));
+    function weeksOfMonth(d) {
+      var myDate = date(d);
+      //sOfMonth = new Date(myDate.getFullYear(), myDate.getMonth(), 1);
+      //sOfMonth.getDay()
+      //console.log(sOfMonth.getDay(), myDate.getDay());
+      //console.log(parseInt(myDate.getDate() / 7 + 1));
       return {
-        year: my_date.getFullYear(),
-        month: my_date.getMonth() + 1,
-        count: parseInt(my_date.getDate() / 7 + 1)
+        year: myDate.getFullYear(),
+        month: myDate.getMonth() + 1,
+        count: parseInt(myDate.getDate() / 7 + 1)
       };
     }
 
     /**
      * 원하는 횟수 만큼 자릿수 맞춤 문자열을 포함한 문자열을 반환합니다.
-     * @method ax5.util.set_digit
+     * @method ax5.util.setDigit
      * @param {String|Number} num
      * @param {Number} length
      * @param {String} [padder=0]
      * @param {Number} [radix]
      * @returns {String}
      */
-    function set_digit(num, length, padder, radix) {
+    function setDigit(num, length, padder, radix) {
       var s = num.toString(radix || 10);
       return times((padder || '0'), (length - s.length)) + s;
     }
@@ -1767,12 +1767,12 @@
 
     /**
      * 년월에 맞는 날자수를 반환합니다.
-     * @method ax5.util.days_of_month
+     * @method ax5.util.daysOfMonth
      * @param {Number} y
      * @param {Number} m
      * @returns {Number}
      */
-    function days_of_month(y, m) {
+    function daysOfMonth(y, m) {
       if (m == 3 || m == 5 || m == 8 || m == 10) {
         return 30;
       }
@@ -1790,43 +1790,43 @@
       map: map,
       search: search,
       reduce: reduce,
-      reduce_right: reduce_right,
+      reduceRight: reduceRight,
       filter: filter,
-      to_json: to_json,
-      parse_json: parse_json,
+      toJson: toJson,
+      parseJson: parseJson,
       first: first,
       last: last,
       left: left,
       right: right,
-      get_type: get_type,
-      is_window: is_window,
-      is_element: is_element,
-      is_object: is_object,
-      is_array: is_array,
-      is_function: is_function,
-      is_string: is_string,
-      is_number: is_number,
-      is_nodelist: is_nodelist,
-      is_undefined: is_undefined,
-      is_nothing: is_nothing,
-      set_cookie: set_cookie,
-      get_cookie: get_cookie,
+      getType: getType,
+      isWindow: isWindow,
+      isElement: isElement,
+      isObject: isObject,
+      isArray: isArray,
+      isFunction: isFunction,
+      isString: isString,
+      isNumber: isNumber,
+      isNodelist: isNodelist,
+      isUndefined: isUndefined,
+      isNothing: isNothing,
+      setCookie: setCookie,
+      getCookie: getCookie,
       require: require,
-      camel_case: camel_case,
-      snake_case: snake_case,
+      camelCase: camelCase,
+      snakeCase: snakeCase,
       number: number,
-      to_array: to_array,
+      toArray: toArray,
       merge: merge,
       param: param,
       error: error,
-      get_shader: get_shader,
-      request_ani_frame: request_ani_frame,
+      getShader: getShader,
+      requestAniFrame: requestAniFrame,
       date: date,
       dday: dday,
-      set_digit: set_digit,
+      setDigit: setDigit,
       times: times,
-      days_of_month: days_of_month,
-      weeks_of_month: weeks_of_month
+      daysOfMonth: daysOfMonth,
+      weeksOfMonth: weeksOfMonth
     }
   })();
 
@@ -1856,7 +1856,7 @@
  */
 ax5.ui = (function (core) {
 
-	function ax_ui() {
+	function axUi() {
 		// 클래스 인스턴스 초기화
 		this.main = (function(){
 			this.config = {};
@@ -1865,21 +1865,21 @@ ax5.ui = (function (core) {
 
 		/**
 		 * 클래스의 속성 정의 메소드 속성 확장후에 내부에 init 함수를 호출합니다.
-		 * @method ax5.ui.root.set_config
+		 * @method ax5.ui.root.setConfig
 		 * @param {Object} config - 클래스 속성값
-		 * @param {Boolean} [call_init=true] - init 함수 호출 여부
-		 * @returns {ax5.ui.ax_ui}
+		 * @param {Boolean} [callInit=true] - init 함수 호출 여부
+		 * @returns {ax5.ui.axUi}
 		 * @example
 		 * ```
 		 * var myui = new ax5.ui.root();
-		 * myui.set_config({
+		 * myui.setConfig({
 		 * 	id:"abcd"
 		 * });
 		 * ```
 		 */
-		this.set_config = function (cfg, call_init) {
-			core.util.extend_all(this.config, cfg, true);
-			if (typeof call_init == "undefined" || call_init === true) {
+		this.setConfig = function (cfg, callInit) {
+			core.util.extendAll(this.config, cfg, true);
+			if (typeof callInit == "undefined" || callInit === true) {
 				this.init();
 			}
 			return this;
@@ -1888,12 +1888,12 @@ ax5.ui = (function (core) {
 			console.log(this.config);
 		};
 
-		this.bind_window_resize = function(callBack){
+		this.bindWindowResize = function(callBack){
 
 			setTimeout((function(){
 				ax5.dom.resize((function(){
-					if(this.bind_window_resize__) clearTimeout(this.bind_window_resize__);
-					this.bind_window_resize__ = setTimeout((function(){
+					if(this.bindWindowResize__) clearTimeout(this.bindWindowResize__);
+					this.bindWindowResize__ = setTimeout((function(){
 						callBack.call(this);
 					}).bind(this), 10);
 				}).bind(this));
@@ -1901,7 +1901,7 @@ ax5.ui = (function (core) {
 
 		};
 
-		this.stop_event = function(e){
+		this.stopEvent = function(e){
 			if (e.preventDefault) e.preventDefault();
 			if (e.stopPropagation) e.stopPropagation();
 			e.cancelBubble = true;
@@ -1910,6 +1910,6 @@ ax5.ui = (function (core) {
 	}
 
 	return {
-		root: ax_ui
+		root: axUi
 	}
 })(ax5);

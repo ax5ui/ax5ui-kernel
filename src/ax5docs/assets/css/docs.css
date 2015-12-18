@@ -6135,14 +6135,6 @@ button.close {
       padding: 20px 5px; }
     .docs .docs-body .ax5docs-section {
       margin: 2em 0; }
-    .docs .docs-body blockquote {
-      background: #f9f9f9;
-      border-left: 10px solid #ccc;
-      margin: 1.5em 10px;
-      padding: 0.5em 10px;
-      quotes: "“" "”" "‘" "’"; }
-      .docs .docs-body blockquote p {
-        display: inline; }
   .docs.style-sub .docs-body {
     margin-top: 260px; }
   .docs .docs-foot .background-type {

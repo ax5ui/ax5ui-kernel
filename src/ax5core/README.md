@@ -6,10 +6,10 @@ Location of the folder can be determined freely in your project. But be careful 
 exactly the path.
 ```html
 <html>
-<head>
-  <script type="text/javascript" src="../../jquery/jquery.min.js"></script>
-  <script type="text/javascript" src="../../ax5core/dist/ax5core.min.js"></script>
-</head>
+    <head>
+        <script type="text/javascript" src="../../jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="../../ax5core/dist/ax5core.min.js"></script>
+    </head>
 <body>
 ....
 </body>
@@ -40,6 +40,5 @@ If you have any questions, please refer to the following link:
 * [gitHub](https://github.com/ax5ui/ax5ui-kernel)
 
 
-> "ax5core" is a collection of functions is associated with a utility designed for use inside the ax5ui. It was
-designed to the utility to act as a minimum code. So compared to other utilities Please note that it may have
-limited functionality
+> "ax5core" is a collection of utility functions that have been designed for use in ax5ui. 
+It was designed to the utility to act as a minimum code. So it can be considered to be simple compared to other utilities.

@@ -1,30 +1,32 @@
 <tmpl-metadata>
-  <parent></parent>
-  <sort>0</sort>
+    <parent></parent>
+    <sort>0</sort>
 
-  <id>install</id>
-  <title>Install</title>
-  <desc></desc>
+    <id>install</id>
+    <title>Install</title>
+    <desc></desc>
 </tmpl-metadata>
-<layout-use template="${data.layout_path}" project-name="${data.project_name}" page-title="Install" page-id="install" bodyStyle="style-sub">
-  <layout-put into="visual">
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Install" page-id="install"
+            bodyStyle="style-sub">
+    <layout-put into="visual">
 
-    <div class="contents">
-      <div class="style-sub-visual">
-        <div class="title">Install</div>
-        <div class="description">"ax5core" is a utility for creating AX5UI Library. need to install on your browser.
+        <div class="contents">
+            <div class="style-sub-visual">
+                <div class="title">Install</div>
+                <div class="description">"ax5core" is a utility for creating AX5UI Library. need to install on your
+                    browser.
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-  </layout-put>
-  <layout-put into="body">
-    <section class="ax5docs-section">
-      <ax5docs-md file="src/ax5core/README.md"></ax5docs-md>
-    </section>
+    </layout-put>
+    <layout-put into="body">
+        <section class="ax5docs-section">
+            <ax5docs-md file="src/ax5core/README.md"></ax5docs-md>
+        </section>
 
-  </layout-put>
-  <layout-put into="page-js">
+    </layout-put>
+    <layout-put into="page-js">
 
-  </layout-put>
+    </layout-put>
 </layout-use>

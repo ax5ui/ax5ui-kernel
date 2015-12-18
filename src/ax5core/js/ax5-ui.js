@@ -17,7 +17,7 @@
  */
 ax5.ui = (function (core) {
 
-	function ax_ui() {
+	function axUi() {
 		// 클래스 인스턴스 초기화
 		this.main = (function(){
 			this.config = {};
@@ -26,21 +26,21 @@ ax5.ui = (function (core) {
 
 		/**
 		 * 클래스의 속성 정의 메소드 속성 확장후에 내부에 init 함수를 호출합니다.
-		 * @method ax5.ui.root.set_config
+		 * @method ax5.ui.root.setConfig
 		 * @param {Object} config - 클래스 속성값
-		 * @param {Boolean} [call_init=true] - init 함수 호출 여부
-		 * @returns {ax5.ui.ax_ui}
+		 * @param {Boolean} [callInit=true] - init 함수 호출 여부
+		 * @returns {ax5.ui.axUi}
 		 * @example
 		 * ```
 		 * var myui = new ax5.ui.root();
-		 * myui.set_config({
+		 * myui.setConfig({
 		 * 	id:"abcd"
 		 * });
 		 * ```
 		 */
-		this.set_config = function (cfg, call_init) {
-			core.util.extend_all(this.config, cfg, true);
-			if (typeof call_init == "undefined" || call_init === true) {
+		this.setConfig = function (cfg, callInit) {
+			core.util.extendAll(this.config, cfg, true);
+			if (typeof callInit == "undefined" || callInit === true) {
 				this.init();
 			}
 			return this;
@@ -49,12 +49,12 @@ ax5.ui = (function (core) {
 			console.log(this.config);
 		};
 
-		this.bind_window_resize = function(callBack){
+		this.bindWindowResize = function(callBack){
 
 			setTimeout((function(){
 				ax5.dom.resize((function(){
-					if(this.bind_window_resize__) clearTimeout(this.bind_window_resize__);
-					this.bind_window_resize__ = setTimeout((function(){
+					if(this.bindWindowResize__) clearTimeout(this.bindWindowResize__);
+					this.bindWindowResize__ = setTimeout((function(){
 						callBack.call(this);
 					}).bind(this), 10);
 				}).bind(this));
@@ -62,7 +62,7 @@ ax5.ui = (function (core) {
 
 		};
 
-		this.stop_event = function(e){
+		this.stopEvent = function(e){
 			if (e.preventDefault) e.preventDefault();
 			if (e.stopPropagation) e.stopPropagation();
 			e.cancelBubble = true;
@@ -71,6 +71,6 @@ ax5.ui = (function (core) {
 	}
 
 	return {
-		root: ax_ui
+		root: axUi
 	}
 })(ax5);

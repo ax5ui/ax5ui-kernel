@@ -1,145 +1,148 @@
 <tmpl-metadata>
-  <parent></parent>
-  <sort>1</sort>
+    <parent></parent>
+    <sort>1</sort>
 
-  <id>ax5.info</id>
-  <title>ax5.info</title>
-  <desc></desc>
+    <id>ax5.info</id>
+    <title>ax5.info</title>
+    <desc></desc>
 </tmpl-metadata>
 
-<layout-use template="${data.layout_path}" project-name="${data.project_name}" page-title="ax5.info" page-id="ax5.info" bodyStyle="style-sub">
-  <layout-put into="visual">
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="ax5.info" page-id="ax5.info"
+            bodyStyle="style-sub">
+    <layout-put into="visual">
 
-    <div class="contents">
-      <div class="style-sub-visual">
-        <div class="title">ax5.info</div>
-        <div class="description">"ax5core" is a utility for creating AX5UI Library. need to install on your browser.
+        <div class="contents">
+            <div class="style-sub-visual">
+                <div class="title">ax5.info</div>
+                <div class="description">"ax5core" is a utility for creating AX5UI Library. need to install on your
+                    browser.
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-  </layout-put>
-  <layout-put into="body">
+    </layout-put>
+    <layout-put into="body">
 
-    <section class="ax5docs-section">
-      <h2 data-method>ax5.info.version</h2>
+        <section class="ax5docs-section">
+            <h2 data-method>ax5.info.version</h2>
 
-      <p>
-        Version of ax5
-      </p>
+            <p>
+                Version of ax5
+            </p>
 
-      <ax5docs-js>
-        <script type="text/javascript">
-          console.log(ax5.info.version);
-        </script>
-      </ax5docs-js>
-    </section>
+            <ax5docs-js>
+                <script type="text/javascript">
+                    console.log(ax5.info.version);
+                </script>
+            </ax5docs-js>
+        </section>
 
 
-    <section class="ax5docs-section">
-      <h2 data-method>ax5.info.event_keys</h2>
+        <section class="ax5docs-section">
+            <h2 data-method>ax5.info.eventKeys</h2>
 
-      <p>
-        event_keys object key map
-      </p>
-      <ax5docs-js>
-        <script type="text/javascript">
-          console.log(ax5.info.event_keys);
-          /*
-           { "BACKSPACE": 8, "TAB": 9, "RETURN": 13, "ESC": 27, "LEFT": 37, "UP": 38, "RIGHT": 39, "DOWN": 40, "DELETE":
-           46, "HOME": 36, "END": 35, "PAGEUP": 33, "PAGEDOWN": 34, "INSERT": 45, "SPACE": 32 }
-           */
-        </script>
-      </ax5docs-js>
-    </section>
+            <p>
+                eventKeys object key map
+            </p>
+            <ax5docs-js>
+                <script type="text/javascript">
+                    console.log(ax5.info.eventKeys);
+                    /*
+                     { "BACKSPACE": 8, "TAB": 9, "RETURN": 13, "ESC": 27, "LEFT": 37, "UP": 38, "RIGHT": 39, "DOWN": 40, "DELETE":
+                     46, "HOME": 36, "END": 35, "PAGEUP": 33, "PAGEDOWN": 34, "INSERT": 45, "SPACE": 32 }
+                     */
+                </script>
+            </ax5docs-js>
+        </section>
 
-    <section class="ax5docs-section">
-      <h2 data-method>ax5.info.browser</h2>
+        <section class="ax5docs-section">
+            <h2 data-method>ax5.info.browser</h2>
 
-      <p>
-        It is user browser infomation
-      </p>
-      <ax5docs-js>
-        <script type="text/javascript">
-          console.log(ax5.info.browser);
-          // {"name": "chrome", "version": "46.0.2490.86", "mobile": }
-        </script>
-      </ax5docs-js>
-    </section>
-    
-    <section class="ax5docs-section">
-      <h2 data-method>ax5.info.url_util</h2>
+            <p>
+                It is user browser infomation
+            </p>
+            <ax5docs-js>
+                <script type="text/javascript">
+                    console.log(ax5.info.browser);
+                    // {"name": "chrome", "version": "46.0.2490.86", "mobile": }
+                </script>
+            </ax5docs-js>
+        </section>
 
-      <p>
-        Return current page's URL Infomation
-      </p>
-      <ax5docs-js>
-        <script type="text/javascript">
-          console.log(ax5.info.url_util());
-          /*
-           {
-           "href":"http://ax5ui:2028/ax5core/info/ax5-info.html",
-           "param":"",
-           "referrer":"http://ax5ui:2028/ax5core/util/ax5-util.html",
-           "pathname":"/ax5core/info/ax5-info.html",
-           "hostname":"ax5ui",
-           "port":"2028",
-           "url":"http://ax5ui:2028/ax5core/info/ax5-info.html",
-           "base_url":"http://ax5ui:2028"
-           }
-           */
-        </script>
-      </ax5docs-js>
-    </section>
+        <section class="ax5docs-section">
+            <h2 data-method>ax5.info.urlUtil</h2>
 
-    <section class="ax5docs-section">
-      <h2 data-method>ax5.info.error_msg</h2>
+            <p>
+                Return current page's URL Infomation
+            </p>
+            <ax5docs-js>
+                <script type="text/javascript">
+                    console.log(ax5.info.urlUtil());
+                    /*
+                     {
+                     "href":"http://ax5ui:2028/ax5core/info/ax5-info.html",
+                     "param":"",
+                     "referrer":"http://ax5ui:2028/ax5core/util/ax5-util.html",
+                     "pathname":"/ax5core/info/ax5-info.html",
+                     "hostname":"ax5ui",
+                     "port":"2028",
+                     "url":"http://ax5ui:2028/ax5core/info/ax5-info.html",
+                     "baseUrl":"http://ax5ui:2028"
+                     }
+                     */
+                </script>
+            </ax5docs-js>
+        </section>
 
-      <p>
-        When an error occurs in the UI Class, the error message can be customized.
-      </p>
-      <ax5docs-js>
-        <script type="text/javascript">
-          // reset user error message
-          ax5.info.error_msg["UI name"]["100"] = "my error 100";
-          ax5.info.error_msg["UI name"]["200"] = "my error 200";
+        <section class="ax5docs-section">
+            <h2 data-method>ax5.info.errorMsg</h2>
 
-          // or reset all
-          ax5.info.error_msg["UI name"] = {
-            "100": "is 100 error",
-            "200": "is 200 error"
-          };
-        </script>
-      </ax5docs-js>
-    </section>
+            <p>
+                When an error occurs in the UI Class, the error message can be customized.
+            </p>
+            <ax5docs-js>
+                <script type="text/javascript">
+                    // reset user error message
+                    ax5.info.errorMsg["UI name"]["100"] = "my error 100";
+                    ax5.info.errorMsg["UI name"]["200"] = "my error 200";
 
-    <section class="ax5docs-section">
-      <h2 data-method>ax5.info.ETC</h2>
-      <p>
+                    // or reset all
+                    ax5.info.errorMsg["UI name"] = {
+                        "100": "is 100 error",
+                        "200": "is 200 error"
+                    };
+                </script>
+            </ax5docs-js>
+        </section>
 
-      </p>
-      <ax5docs-js>
-        <script type="text/javascript">
-          ax5.info.is_browser; // is borwser ?
-          ax5.info.wheel_enm; // Current browser whell event name
-          console.log(ax5.info.week_names);
-          /*
-           [
-           {label: "SUN"},
-           {label: "MON"},
-           {label: "TUE"},
-           {label: "WED"},
-           {label: "THU"},
-           {label: "FRI"},
-           {label: "SAT"}
-           ]
-          */
-        </script>
-      </ax5docs-js>
-    </section>
+        <section class="ax5docs-section">
+            <h2 data-method>ax5.info.ETC</h2>
 
-  </layout-put>
-  <layout-put into="page-js">
+            <p>
 
-  </layout-put>
+            </p>
+            <ax5docs-js>
+                <script type="text/javascript">
+                    ax5.info.isBrowser; // is borwser ?
+                    ax5.info.wheelEnm; // Current browser whell event name
+                    console.log(ax5.info.weekNames);
+                    /*
+                     [
+                     {label: "SUN"},
+                     {label: "MON"},
+                     {label: "TUE"},
+                     {label: "WED"},
+                     {label: "THU"},
+                     {label: "FRI"},
+                     {label: "SAT"}
+                     ]
+                     */
+                </script>
+            </ax5docs-js>
+        </section>
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
 </layout-use>

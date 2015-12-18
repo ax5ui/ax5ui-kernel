@@ -176,9 +176,9 @@
 						src_root: '<%= info.ax5core.doc_src %>',
 						src: ['<%= info.ax5core.doc_src %>/**/*.html'],
 						global_data: { // append data
-							project_name: "ax5core",
-							layout_path: '<%= info.assets.src %>/_layouts/index.marko', // src relative path
-							output_type: 'html'
+							projectName: "ax5core",
+							layoutPath: '<%= info.assets.src %>/_layouts/index.marko', // src relative path
+							outputType: 'html'
 						},
 						lang: '<%= info.assets.src %>/_layouts/ko.json',
 						dest: '<%= info.ax5core.doc_dest %>',
@@ -196,8 +196,9 @@
 						src_root: '<%= info["bootstrap-ax5dialog"].doc_src %>',
 						src: ['<%= info["bootstrap-ax5dialog"].doc_src %>/**/*.html'],
 						global_data: { // append data
-							layout_path: '<%= info.assets.src%>/_layouts/index.marko', // src relative path
-							output_type: 'html'
+                            projectName: "bootstrap-ax5dialog",
+							layoutPath: '<%= info.assets.src%>/_layouts/index.marko', // src relative path
+							outputType: 'html'
 						},
 						lang: '<%= info.assets.src %>/_layouts/ko.json',
 						dest: '<%= info["bootstrap-ax5dialog"].doc_dest %>',
@@ -239,6 +240,23 @@
 					filter: ['<%= info["bootstrap-ax5dialog"].doc_src %>/**/*.html', '!<%= info["bootstrap-ax5dialog"].doc_src %>/index.html'] // _demo/index.html 은 제외 하고 모든 html을 대상
 				}
 			}
+		},
+
+		replace: {
+			samples: {
+				src: ['a'],
+                //dest: 'src/ax5core/js/d',
+				overwrite: true,                 // overwrite matched source files
+				options: {
+					processTemplates: false
+				},
+				replacements: [{
+					from: /[a-z]+(_[a-z])/g,
+					to: function (matchedWord, index, fullText, regexMatches) {
+                        return matchedWord.replace(regexMatches[0], regexMatches[0].toUpperCase().replace('_', ''));
+					}
+				}]
+			}
 		}
 	});
 
@@ -247,6 +265,8 @@
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-text-replace');
+
 	grunt.loadNpmTasks('grunt-ax-marko');
 	grunt.loadNpmTasks('grunt-sass');
 
