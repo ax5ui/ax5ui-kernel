@@ -4,3 +4,4 @@ node_modules
 *.html.js
 .idea
 *.iml
+.DS_Store
