@@ -52,7 +52,7 @@ function create(__helpers) {
         "*": {
           "projectName": data.projectName,
           "pageTitle": "home",
-          "bodyStyle": "main"
+          "bodyStyle": "index"
         }
       });
 

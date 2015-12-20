@@ -70,7 +70,7 @@ function create(__helpers) {
           "projectName": data.projectName,
           "pageTitle": "Install",
           "pageId": "install",
-          "bodyStyle": "style-sub"
+          "bodyStyle": "sub-page"
         }
       });
   };

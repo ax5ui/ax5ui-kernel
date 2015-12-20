@@ -6135,8 +6135,16 @@ button.close {
       padding: 20px 5px; }
     .docs .docs-body .ax5docs-section {
       margin: 2em 0; }
-  .docs.style-sub .docs-body {
+    .docs .docs-body .docs-menu {
+      display: none; }
+  .docs.sub-page .docs-body {
     margin-top: 260px; }
+  .docs.sub-page.with-inline-menu .docs-body, .docs.sub-page.with-menu .docs-body {
+    margin-top: 260px; }
+    .docs.sub-page.with-inline-menu .docs-body .wrapper, .docs.sub-page.with-menu .docs-body .wrapper {
+      padding-left: 260px; }
+    .docs.sub-page.with-inline-menu .docs-body .docs-menu, .docs.sub-page.with-menu .docs-body .docs-menu {
+      display: block; }
   .docs .docs-foot .background-type {
     padding: 40px 0px; }
   .docs .docs-foot .background-type-0 {

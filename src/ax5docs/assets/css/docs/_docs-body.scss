@@ -15,10 +15,25 @@
 		margin: 2em 0;
 	}
 
+	.docs-menu{
+		display: none;
+	}
 }
 
-&.style-sub {
+&.sub-page {
 	.docs-body {
 		margin-top: $docs-visual-sm-height;
+	}
+	&.with-inline-menu, &.with-menu {
+		.docs-body {
+
+			margin-top: $docs-visual-sm-height;
+			.wrapper{
+				padding-left: 260px;
+			}
+			.docs-menu{
+				display: block;
+			}
+		}
 	}
 }

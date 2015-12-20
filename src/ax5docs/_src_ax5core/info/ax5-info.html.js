@@ -111,7 +111,7 @@ function create(__helpers) {
           "projectName": data.projectName,
           "pageTitle": "ax5.info",
           "pageId": "ax5.info",
-          "bodyStyle": "style-sub"
+          "bodyStyle": "sub-page with-inline-menu"
         }
       });
   };
