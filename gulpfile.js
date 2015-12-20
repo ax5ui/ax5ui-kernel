@@ -33,7 +33,7 @@ var PATHS = {
  * SASS
  */
 gulp.task('SASS', function () {
-    gulp.src(PATHS.ax5docs.css_src + '/docs.scss')
+    return gulp.src(PATHS.ax5docs.css_src + '/docs.scss')
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(gulp.dest(PATHS.ax5docs.css_dest));
 });
@@ -42,7 +42,7 @@ gulp.task('SASS', function () {
  * for ax5core
  */
 gulp.task('AX5CORE-scripts', function () {
-    gulp.src(PATHS.ax5core.src + '/*.js')
+    return gulp.src(PATHS.ax5core.src + '/*.js')
         .pipe(concat('ax5core.js'))
         .pipe(gulp.dest(PATHS.ax5core.dest))
         .pipe(concat('ax5core.min.js'))
@@ -54,7 +54,7 @@ gulp.task('AX5CORE-scripts', function () {
  * ax5docs templete render
  */
 gulp.task('AX5CORE-docs', function () {
-    gulp.src(PATHS.ax5core.doc_src + '/**/*.html')
+    return gulp.src(PATHS.ax5core.doc_src + '/**/*.html')
         .pipe(changed(PATHS.ax5core.doc_dest))
         .pipe(marko_ax5({
             projectName: "ax5core",
