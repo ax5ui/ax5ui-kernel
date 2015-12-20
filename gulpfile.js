@@ -2,12 +2,13 @@
 
 var gulp = require('gulp');
 var sass = require('gulp-sass');
-var marko = require('marko');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var changed = require('gulp-changed');
 
-var gulp_info = {
+var marko_ax5 = require('gulp-marko-ax5');
+
+var PATHS = {
     assets: {
         src: "src/ax5docs/assets"
     },
@@ -32,28 +33,57 @@ var gulp_info = {
  * SASS
  */
 gulp.task('SASS', function () {
-    gulp.src(gulp_info.ax5docs.css_src + '/docs.scss')
+    gulp.src(PATHS.ax5docs.css_src + '/docs.scss')
         .pipe(sass({outputStyle: 'compressed'}))
-        .pipe(gulp.dest(gulp_info.ax5docs.css_dest));
+        .pipe(gulp.dest(PATHS.ax5docs.css_dest));
 });
 
 /**
  * for ax5core
  */
 gulp.task('AX5CORE-scripts', function () {
-    gulp.src(gulp_info.ax5core.src + '/*.js')
+    gulp.src(PATHS.ax5core.src + '/*.js')
         .pipe(concat('ax5core.js'))
-        .pipe(gulp.dest(gulp_info.ax5core.dest))
+        .pipe(gulp.dest(PATHS.ax5core.dest))
         .pipe(concat('ax5core.min.js'))
         .pipe(uglify())
-        .pipe(gulp.dest(gulp_info.ax5core.dest));
+        .pipe(gulp.dest(PATHS.ax5core.dest));
 });
 
+/**
+ * ax5docs templete render
+ */
+gulp.task('AX5CORE-docs', function () {
+    gulp.src(PATHS.ax5core.doc_src + '/**/*.html')
+        .pipe(changed(PATHS.ax5core.doc_dest))
+        .pipe(marko_ax5({
+            projectName: "ax5core",
+            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
+        }, {
+            /*
+             options: {
+                 preserveWhitespace: true,
+                 allowSelfClosing: {},
+                 checkUpToDate: true,
+                 writeToDisk: true
+             },
+             */
+            flatten: false,
+            /*
+            flatten: {
+                src_root: PATHS.ax5core.doc_src
+            },
+            */
+            //extension: 'html'
+        }))
+        .pipe(gulp.dest(PATHS.ax5core.doc_dest));
+});
 
 /**
  * watch
  */
 gulp.task('WATCH', function () {
-    gulp.watch(gulp_info.ax5docs.css_src + '/**/*.scss', ['SASS']);
-    gulp.watch(gulp_info.ax5core.src + '/*.js', ['AX5CORE-scripts']);
+    gulp.watch(PATHS.ax5docs.css_src + '/**/*.scss', ['SASS']);
+    gulp.watch(PATHS.ax5core.src + '/*.js', ['AX5CORE-scripts']);
+    gulp.watch(PATHS.ax5core.doc_src + '/**/*.html', ['AX5CORE-docs']);
 });
