@@ -35,7 +35,6 @@ gulp.task('SASS', function () {
     gulp.src(gulp_info.ax5docs.css_src + '/docs.scss')
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(gulp.dest(gulp_info.ax5docs.css_dest));
-    gulp.watch(gulp_info.ax5docs.css_src + '/ * * / *.scss', ['sass']);
 });
 
 /**
@@ -48,6 +47,13 @@ gulp.task('AX5CORE-scripts', function () {
         .pipe(concat('ax5core.min.js'))
         .pipe(uglify())
         .pipe(gulp.dest(gulp_info.ax5core.dest));
+});
 
+
+/**
+ * watch
+ */
+gulp.task('WATCH', function () {
+    gulp.watch(gulp_info.ax5docs.css_src + '/**/*.scss', ['SASS']);
     gulp.watch(gulp_info.ax5core.src + '/*.js', ['AX5CORE-scripts']);
 });

@@ -3,7 +3,6 @@
 
     // root of function
     var root = this, win = window, doc = document, docElem = document.documentElement,
-
         reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
         reMs = /^-ms-/,
         reSnakeCase = /[\-_]([\da-z])/gi,
