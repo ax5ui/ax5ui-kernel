@@ -60,21 +60,21 @@ gulp.task('AX5CORE-docs', function () {
             projectName: "ax5core",
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
         }, {
-            /*
-             options: {
-                 preserveWhitespace: true,
-                 allowSelfClosing: {},
-                 checkUpToDate: true,
-                 writeToDisk: true
-             },
-             */
-            flatten: false,
-            /*
-            flatten: {
-                src_root: PATHS.ax5core.doc_src
-            },
-            */
-            //extension: 'html'
+            options:{
+                preserveWhitespace: true
+            }
+        }))
+        .pipe(gulp.dest(PATHS.ax5core.doc_dest));
+});
+gulp.task('AX5CORE-docs:all', function () {
+    return gulp.src(PATHS.ax5core.doc_src + '/**/*.html')
+        .pipe(marko_ax5({
+            projectName: "ax5core",
+            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
+        }, {
+            options:{
+                preserveWhitespace: false
+            }
         }))
         .pipe(gulp.dest(PATHS.ax5core.doc_dest));
 });
@@ -86,4 +86,5 @@ gulp.task('default', function () {
     gulp.watch(PATHS.ax5docs.css_src + '/**/*.scss', ['SASS']);
     gulp.watch(PATHS.ax5core.src + '/*.js', ['AX5CORE-scripts']);
     gulp.watch(PATHS.ax5core.doc_src + '/**/*.html', ['AX5CORE-docs']);
+    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['AX5CORE-docs:all']);
 });

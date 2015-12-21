@@ -32,7 +32,7 @@
 	<layout-placeholder name="head-js"/>
 </head>
 <body>
-<div class="docs ${data.bodyStyle}">
+<div class="docs ${data.bodyStyle} {?data.withInlineMenu;with-inline-menu} {?data.withMenu;with-menu}">
 	<div class="docs-header">
 		<div class="docs-header-tool" id="docs-header-tool">
 			<nav class="navbar navbar-default">
@@ -87,6 +87,12 @@
 		<div class="wrapper">
 			<layout-placeholder name="body"/>
 		</div>
+		<if test="data.withInlineMenu">
+			<div class="docs-inline-menu" id="docs-inline-menu"></div>
+		</if>
+		<if test="data.withMenu">
+			<div class="docs-menu" id="docs-menu"></div>
+		</if>
 	</div>
 	<div class="docs-foot">
 		<div class="background-type background-type-0">
