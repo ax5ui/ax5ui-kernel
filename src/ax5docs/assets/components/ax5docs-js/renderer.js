@@ -1,5 +1,6 @@
 exports.render = function (input, out) {
     var _s = "", s, HTML, CSS, JS;
+
     var _out = {
         w: function (text) {
 
