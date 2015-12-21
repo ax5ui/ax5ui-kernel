@@ -67,6 +67,7 @@ gulp.task('AX5CORE-docs', function () {
         .pipe(gulp.dest(PATHS.ax5core.doc_dest));
 });
 gulp.task('AX5CORE-docs:all', function () {
+    require('marko/compiler').defaultOptions.preserveWhitespace = true;
     return gulp.src(PATHS.ax5core.doc_src + '/**/*.html')
         .pipe(marko_ax5({
             projectName: "ax5core",
