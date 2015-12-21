@@ -82,7 +82,7 @@ gulp.task('AX5CORE-docs', function () {
 /**
  * watch
  */
-gulp.task('WATCH', function () {
+gulp.task('default', function () {
     gulp.watch(PATHS.ax5docs.css_src + '/**/*.scss', ['SASS']);
     gulp.watch(PATHS.ax5core.src + '/*.js', ['AX5CORE-scripts']);
     gulp.watch(PATHS.ax5core.doc_src + '/**/*.html', ['AX5CORE-docs']);
