@@ -196,20 +196,19 @@ $(document.body).ready(function () {
         if (fn_docs.menu.viewType != viewType) {
             if (viewType == 0) {
                 fn_docs._jos["docs-header-tool"].removeClass("reflection");
-                if (fn_docs.menu.target) {
-                    fn_docs.menu.target.attr("class", "docs-menu").css({top: 'auto'});
-                }
+                if (fn_docs.menu.printed) fn_docs.menu.target.attr("class", "docs-menu").css({top: 'auto'});
             }
             else if (viewType == 1) {
                 fn_docs._jos["docs-header-tool"].addClass("reflection");
-                fn_docs.menu.target.attr("class", "docs-menu fixed").css({top: 70});
+                if (fn_docs.menu.printed) fn_docs.menu.target.attr("class", "docs-menu fixed").css({top: 70});
             }
             else if (viewType == 2) {
                 fn_docs._jos["docs-header-tool"].addClass("reflection");
-                fn_docs.menu.target.attr("class", "docs-menu fixed fixed-bottom")
-                    .css({top: $(document.body).height() - fn_docs._jos['docs-foot'].height() - fn_docs.menu.target.outerHeight() - fn_docs._data["doc-heder-tool-change-position"]});
+                if (fn_docs.menu.printed) {
+                    fn_docs.menu.target.attr("class", "docs-menu fixed fixed-bottom")
+                        .css({top: $(document.body).height() - fn_docs._jos['docs-foot'].height() - fn_docs.menu.target.outerHeight() - fn_docs._data["doc-heder-tool-change-position"]});
+                }
             }
-
             fn_docs.menu.viewType = viewType;
         }
 
