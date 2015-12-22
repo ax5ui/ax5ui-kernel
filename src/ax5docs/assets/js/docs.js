@@ -7,6 +7,7 @@ var fn_docs = (function () {
             target: null,
             scrollType: '',
             printed: false,
+            viewType: -1,
             ready: function (target, scrollType) {
                 var list = [];
                 this.target = target;
@@ -15,17 +16,17 @@ var fn_docs = (function () {
                 if (scrollType == 'inline') {
                     var h1_index = -1, h2_index = -1;
                     fn_docs._jos['docs-body'].find('h1,h2,h3').each(function (idx, nn) {
-                        if(!this.id) this.id = 'docs-' + (new Date()).getTime();
+                        if (!this.id) this.id = 'docs-' + (new Date()).getTime();
 
-                        if(this.tagName === "H1"){
+                        if (this.tagName === "H1") {
                             h1_index++;
                             _list = list;
                         }
-                        else if(this.tagName === "H2"){
+                        else if (this.tagName === "H2") {
                             h2_index++;
                             _list = (h1_index > -1) ? list[h1_index].child : list;
                         }
-                        else if(this.tagName == "H3"){
+                        else if (this.tagName == "H3") {
                             _list = (h1_index > -1 && h2_index > -1) ? list[h1_index].child[h2_index].child : list;
                         }
 
@@ -38,10 +39,10 @@ var fn_docs = (function () {
                     });
                 }
                 this.list = list;
-                if(!this.printed) this.print();
+                if (!this.printed) this.print();
             },
             getMenuList: function (list) {
-                var _this = this,  po = [];
+                var _this = this, po = [];
                 list.forEach(function (item) {
                     po.push('<li>');
                     po.push('<a href="">' + item.label + "</a>");
@@ -80,6 +81,7 @@ $(document.body).ready(function () {
             "menu-target": $("#docs-menu-print-target"),
             "docs-header-tool": $("#docs-header-tool"),
             "docs-body": $("#docs-body"),
+            "docs-foot": $("#docs-foot"),
             "docs-inline-menu": $("#docs-inline-menu"),
             "docs-menu": $("#docs-menu")
         }
@@ -98,12 +100,41 @@ $(document.body).ready(function () {
         }
     });
 
-    $(window).scroll(function () {
-        if ($(window).scrollTop() >= fn_docs._data["doc-heder-tool-change-position"]) {
-            fn_docs._jos["docs-header-tool"].addClass("reflection");
+    var windowScrollTop = 0;
+    $(window).on('load resize scroll', function () {
+        windowScrollTop = $(window).scrollTop();
+        var viewType;
+
+        if (windowScrollTop >= fn_docs._data["doc-heder-tool-change-position"]) {
+            viewType = 1;
+            if (fn_docs.menu.target) {
+                if (fn_docs.menu.target.outerHeight() + windowScrollTop > $(document.body).height() - fn_docs._jos['docs-foot'].height()) {
+                    viewType = 2;
+                }
+            }
         }
         else {
-            fn_docs._jos["docs-header-tool"].removeClass("reflection");
+            viewType = 0;
+        }
+
+        if (fn_docs.menu.viewType != viewType) {
+            if(viewType == 0){
+                fn_docs._jos["docs-header-tool"].removeClass("reflection");
+                if (fn_docs.menu.target) {
+                    fn_docs.menu.target.attr("class", "docs-menu").css({top:'auto'});
+                }
+            }
+            else if(viewType == 1){
+                fn_docs._jos["docs-header-tool"].addClass("reflection");
+                fn_docs.menu.target.attr("class", "docs-menu fixed").css({top: 70});
+            }
+            else if(viewType == 2){
+                fn_docs._jos["docs-header-tool"].addClass("reflection");
+                fn_docs.menu.target.attr("class", "docs-menu fixed fixed-bottom")
+                    .css({top: $(document.body).height() - fn_docs._jos['docs-foot'].height() - fn_docs.menu.target.outerHeight() - fn_docs._data["doc-heder-tool-change-position"] });
+            }
+
+            fn_docs.menu.viewType = viewType;
         }
     });
 });

@@ -1,4 +1,6 @@
 .docs-foot {
+	position: relative;
+	z-index: $zindex-body;
 	.background-type {
 		//clear: both;
 		padding: 40px 0px;

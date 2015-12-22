@@ -85,17 +85,36 @@
 	</div>
 	<div class="docs-body" id="docs-body">
 		<div class="wrapper">
-			<layout-placeholder name="body"/>
-
-			<if test="data.withInlineMenu">
-				<div class="docs-menu docs-inline-menu" id="docs-inline-menu"></div>
-			</if>
-			<if test="data.withMenu">
-				<div class="docs-menu" id="docs-menu"></div>
-			</if>
+		<if test="data.withInlineMenu">
+			<div class="row">
+				<div class="col-md-3 hidden-print hidden-xs hidden-sm">
+					<div class="docs-menu" id="docs-inline-menu"></div>
+				</div>
+				<div class="col-md-9">
+					<layout-placeholder name="body"/>
+				</div>
+			</div>
+		</if>
+		<else-if test="data.withMenu">
+			<div class="row">
+				<div class="col-md-3 hidden-print hidden-xs hidden-sm">
+					<div class="docs-menu" id="docs-menu"></div>
+				</div>
+				<div class="col-md-9">
+					<layout-placeholder name="body"/>
+				</div>
+			</div>
+		</else-if>
+		<else>
+			<div class="row">
+				<div class="col-md-12">
+					<layout-placeholder name="body"/>
+				</div>
+			</div>
+		</else>
 		</div>
 	</div>
-	<div class="docs-foot">
+	<div class="docs-foot" id="docs-foot">
 		<div class="background-type background-type-0">
 			<div class="wrapper row">
 				<div class="col-md-6">
