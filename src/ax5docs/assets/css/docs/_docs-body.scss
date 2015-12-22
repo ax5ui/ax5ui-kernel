@@ -14,10 +14,21 @@
 
 	.ax5docs-section {
 		margin: 2em 0;
+		padding-bottom: 30px;
+		border-bottom: 1px solid #ECEFF7;
 	}
 
 	.docs-menu{
 		display: none;
+	}
+
+	h1, h2, h3{
+		position: relative;
+		a[data-name]{
+			position: absolute;
+			left:0px;
+			top: -$docs-header-tool-height - 20;
+		}
 	}
 }
 
@@ -56,13 +67,17 @@
 					padding: 0px;
 					> li{
 						display: block;
-						font-size: 16px;
+						font-size: 1.3em;
 						color: #A1A1A1;
-						line-height: 30px;
+						line-height: 2.1em;
 						list-style: none;
+						&.open{
+							a{color: #6FAFE0;}
+						}
 						a{
 							display: block;
 							color: inherit;
+							text-transform: uppercase;
 							&:hover{
 								color: #6FAFE0;
 								text-decoration: none;
@@ -70,16 +85,25 @@
 						}
 					}
 					> ul {
-						display: block;
+						display: none;
 						margin: 5px 0px;
 						padding: 0px;
 						border-left: 2px solid #D8D8D8;
+
+						&.open{
+							display: block;
+						}
 						> li{
 							display: block;
-							font-size: 14px;
+							font-size: 1.1em;
 							color: #A1A1A1;
-							line-height: 24px;
+							line-height: 1.8em;
 							list-style: none;
+							&.open{
+								a{
+									color: #A9D438;
+								}
+							}
 							a{
 								/* Rectangle 6: */
 								display: block;
