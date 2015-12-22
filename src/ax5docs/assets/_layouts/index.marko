@@ -86,13 +86,14 @@
 	<div class="docs-body" id="docs-body">
 		<div class="wrapper">
 			<layout-placeholder name="body"/>
+
+			<if test="data.withInlineMenu">
+				<div class="docs-menu docs-inline-menu" id="docs-inline-menu"></div>
+			</if>
+			<if test="data.withMenu">
+				<div class="docs-menu" id="docs-menu"></div>
+			</if>
 		</div>
-		<if test="data.withInlineMenu">
-			<div class="docs-inline-menu" id="docs-inline-menu"></div>
-		</if>
-		<if test="data.withMenu">
-			<div class="docs-menu" id="docs-menu"></div>
-		</if>
 	</div>
 	<div class="docs-foot">
 		<div class="background-type background-type-0">
@@ -139,7 +140,7 @@
 	</div>
 </div>
 <layout-placeholder name="page-js"/>
-
 <ga-code projectName="${data.projectName}" activeId="${data.pageId}"></ga-code>
+
 </body>
 </html>
