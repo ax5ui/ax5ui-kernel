@@ -53,6 +53,12 @@
 					font-weight: 400;
 					vertical-align: top;
 				}
+				a{
+					color: inherit;
+					&:hover{
+						text-decoration: none;
+					}
+				}
 			}
 			.mobile-menu{
 				height: $docs-header-tool-height;

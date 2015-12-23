@@ -13,7 +13,7 @@
                     </button>
                     &nbsp;
                     <button class="btn btn-lg btn-border white"
-                            onclick="location.href = '/ax5core/install/index.html';">Documentation
+                            onclick="location.href = '/ax5core/info/ax5-info.html';">Documentation
                     </button>
                 </div>
             </div>
@@ -22,7 +22,9 @@
     </layout-put>
     <layout-put into="body">
 
-
+        <section class="ax5docs-section">
+            <ax5docs-md file="src/ax5core/README.md"></ax5docs-md>
+        </section>
 
     </layout-put>
     <layout-put into="page-js">

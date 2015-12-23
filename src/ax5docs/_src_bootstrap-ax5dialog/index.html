@@ -1,24 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>AX5 Index</title>
-	<!-- plugins -->
-	<script type="text/javascript" src="../demo-resource/plugins/jquery/jquery.min.js"></script>
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="home" body-style="index">
+	<layout-put into="visual">
 
-	<!-- ax5 -->
+		<div class="contents">
+			<div class="style-index-visual">
+				<div class="brand-title">AX5UI</div>
+				<div class="project-name">bootstrap-ax5dialog</div>
+				<div class="DH10"></div>
+				<div class="button-group">
+					<button class="btn btn-lg btn-border white" onclick="location.href = 'https://github.com/ax5ui/bootstrap-ax5dialog';">
+						Get ax5dialog
+					</button>
+					&nbsp;
+					<button class="btn btn-lg btn-border white"
+					        onclick="location.href = '/ax5core/demo/index.html';">Demostration
+					</button>
+				</div>
+			</div>
+		</div>
 
-	<!-- demo & menus -->
-	<link rel="stylesheet" type="text/css" href="../demo-resource/css/demo.css" />
-	<script type="text/javascript" src="../demo-resource/js/menus.js"></script>
-	<script type="text/javascript" src="../demo-resource/js/demo.js"></script>
+	</layout-put>
+	<layout-put into="body">
 
-</head>
-<body>
+		<section class="ax5docs-section">
+			<ax5docs-md file="src/bootstrap-ax5dialog/README.md"></ax5docs-md>
+		</section>
 
-	리다이렉트 처리하거나 인덱스 페이지 꾸미거나 템플릿 적용 할 수 있음
-	하지만 기본적으로 컨텐츠 페이지는 1Depth 하위에 있다는 전제하에 템플릿 구성함. (리소스 인클루드를 절대경로로 하는 경우라면 1Depth 이상에 컨텐츠를 만들어도 무방함)
+	</layout-put>
+	<layout-put into="page-js">
+		<script language="javascript">
 
-	<div id="demo-menu-print-target"></div>
-</body>
-</html>
+		</script>
+	</layout-put>
+</layout-use>

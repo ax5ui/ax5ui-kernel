@@ -41,10 +41,12 @@
 				<div class="container-fluid">
 					
 					<div class="navbar-header">
-						<a class="navbar-brand" href="/ax5core">
-							<i class="icon-ax5"></i>UI
-							<span class="small">/ ax5core</span>
-						</a>
+						<span class="navbar-brand">
+							<a href="/">
+							<i class="icon-ax5"></i>UI</a>
+							<a href="/ax5core">
+							<span class="small">/ ax5core</span></a>
+						</span>
 						<a class="visible-xs-inline-block mobile-menu">
 							<i class="icon-menu"></i>
 						</a>
@@ -55,7 +57,7 @@
 
 						<ul class="nav navbar-nav" id="docs-menu-print-target">
 							
-							<li ><a href="/ax5core/install/index.html">Install</a></li><li ><a href="/ax5core/info/ax5-info.html">ax5.info</a></li><li ><a href="/ax5core/util/ax5-util.html">ax5.util</a></li>
+							<li ><a href="/ax5core/info/ax5-info.html">ax5.info</a></li><li ><a href="/ax5core/util/ax5-util.html">ax5.util</a></li>
 						</ul>
 
 						<ul class="nav navbar-nav navbar-right">
@@ -102,7 +104,7 @@
                         ax5core
                     </button>
                     &nbsp;
-                    <button class="btn btn-lg btn-border white" onclick="location.href = &#39;/ax5core/install/index.html&#39;;">Documentation
+                    <button class="btn btn-lg btn-border white" onclick="location.href = &#39;/ax5core/info/ax5-info.html&#39;;">Documentation
                     </button>
                 </div>
             </div>
@@ -117,7 +119,46 @@
 				<div class="col-md-12">
 					
 
+        <section class="ax5docs-section">
+            <p><a href="https://github.com/axisj"><img src="https://img.shields.io/badge/AXISJ.com-Contributed-green.svg" alt="axisj-contributed"></a>
+<img src="https://img.shields.io/badge/Seowoo-Mondo&amp;Thomas-red.svg" alt=""></p>
+<h2>Insert the &quot;ax5&quot; in the HTML HEAD.</h2>
+<p>Location of the folder can be determined freely in your project. But be careful not to accidentally caused
+exactly the path.</p>
+<pre class="prettyprint linenums lang-html"><code>&lt;html&gt;
+    &lt;head&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;../../jquery/jquery.min.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;../../ax5core/dist/ax5core.min.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+&lt;body&gt;
+....
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Enjoy &quot;AX5&quot; utility library</p>
+<h2>ax5.util.date</h2>
+<pre class="prettyprint linenums lang-js"><code>ax5.util.date(&quot;20111111&quot;);
+//Fri Nov 11 2011 23:59:00 GMT+0900 (KST)
+ax5.util.date(&quot;20111111&quot;, {'return':'yyyy/mm/dd'});
+//&quot;2011/11/11&quot;
 
+//set multi option
+ax5.util.date(&quot;20111111&quot;, {'return':'yyyy/mm/dd', add:{&quot;d&quot;:1}} );
+&quot;2011/11/12&quot;
+</code></pre>
+<p>&quot;AX5&quot; utility is very safe and useful.
+'ax5.info', 'ax5.util', and consists of 'ax5.ui', are among the &quot;ax5.ui&quot; At the same time, perform the parenting
+role and the root of the UI library.</p>
+<p>If you have any questions, please refer to the following link:</p>
+<ul>
+<li><a href="https://github.com/ax5ui/ax5ui-kernel">gitHub</a></li>
+</ul>
+<blockquote>
+<p>&quot;ax5core&quot; is a collection of utility functions that have been designed for use in ax5ui.
+It was designed to the utility to act as a minimum code. So it can be considered to be simple compared to other utilities.</p>
+</blockquote>
+
+        </section>
 
     
 				</div>
