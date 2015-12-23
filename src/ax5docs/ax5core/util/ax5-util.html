@@ -73,10 +73,10 @@
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">AX5UI <span class="caret"></span></a>
 								<ul class="dropdown-menu">
-	<li><a href="https://www.ax5.io">AX5UI</a></li>
+	<li><a href="/">AX5UI</a></li>
 	<li role="separator" class="divider"></li>
-	<li><a href="https://www.ax5.io/ax5core">ax5core</a></li>
-	<li><a href="https://www.ax5.io/bootstrap-ax5dialog">bootstrap-ax5dialog</a></li>
+	<li><a href="/ax5core">ax5core</a></li>
+	<li><a href="/bootstrap-ax5dialog">bootstrap-ax5dialog</a></li>
 	<li role="separator" class="divider"></li>
 	<li><a href="https://www.axisj.com">axisj.com</a></li>
 </ul>
@@ -629,6 +629,18 @@
 ga('create', 'UA-56252826-3', 'auto');
 ga('send', 'pageview');
 </script>
-
+<script type="text/javascript">
+	$(document.body).ready(function () {
+		if (ax5.util.getCookie('stargazers_count')) {
+			$("#started-count").html(ax5.util.number(ax5.util.getCookie('stargazers_count'), {'money': true}));
+		}
+		$.ajax({
+			url: "https://api.github.com/repos/ax5ui/ax5core"
+		}).done(function (data) {
+			$("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true}));
+			ax5.util.setCookie('stargazers_count', data.stargazers_count);
+		});
+	});
+</script>
 </body>
 </html>

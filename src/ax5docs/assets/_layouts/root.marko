@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8"/>
-	<title>ax5ui / ${data.projectName} : ${data.pageTitle}</title>
+	<title>ax5ui : ${data.pageTitle}</title>
 
 	<!-- _assets -->
-	<script type="text/javascript" src="../../assets/lib/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="../assets/lib/jquery/jquery.min.js"></script>
 
-	<script src="../../assets/lib/prettify/prettify.js"></script>
-	<script src="../../assets/lib/prettify/lang-css.js"></script>
-	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/skins/github.css"/>
+	<script src="../assets/lib/prettify/prettify.js"></script>
+	<script src="../assets/lib/prettify/lang-css.js"></script>
+	<link rel="stylesheet" type="text/css" href="../assets/lib/prettify/skins/github.css"/>
 	<script type="text/javascript">
 		$(document.body).ready(function() {
 			if (window["prettyPrint"]) window["prettyPrint"]();
@@ -21,12 +21,12 @@
 	        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
 	        crossorigin="anonymous"></script>
 
-	<script type="text/javascript" src="../../assets/lib/ax5core/ax5core.js"></script>
+	<script type="text/javascript" src="../assets/lib/ax5core/ax5core.js"></script>
 
 	<!-- demo & menus -->
-	<link rel="stylesheet" type="text/css" href="../../assets/css/docs.css"/>
-	<script type="text/javascript" src="../../assets/js/ax5core-menus.js"></script>
-	<script type="text/javascript" src="../../assets/js/docs.js"></script>
+	<link rel="stylesheet" type="text/css" href="../assets/css/docs.css"/>
+	<script type="text/javascript" src="../assets/js/ax5core-menus.js"></script>
+	<script type="text/javascript" src="../assets/js/docs.js"></script>
 
 	<layout-placeholder name="head-css"/>
 	<layout-placeholder name="head-js"/>
@@ -42,8 +42,6 @@
 						<span class="navbar-brand">
 							<a href="/">
 							<i class="icon-ax5"></i>UI</a>
-							<a href="/${data.projectName}">
-							<span class="small">/ ${data.projectName}</span></a>
 						</span>
 						<a class="visible-xs-inline-block mobile-menu">
 							<i class="icon-menu"></i>
@@ -59,13 +57,6 @@
 						</ul>
 
 						<ul class="nav navbar-nav navbar-right">
-							<li>
-								<a href="https://github.com/ax5ui">
-									<i class="icon-github"></i>
-									Star
-									<span class="gh-count" id="started-count">.</span>
-								</a>
-							</li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
 								   aria-haspopup="true" aria-expanded="false">AX5UI <span class="caret"></span></a>
@@ -162,18 +153,6 @@
 </div>
 <layout-placeholder name="page-js"/>
 <ga-code projectName="${data.projectName}" activeId="${data.pageId}"></ga-code>
-<script type="text/javascript">
-	$(document.body).ready(function () {
-		if (ax5.util.getCookie('stargazers_count')) {
-			$("#started-count").html(ax5.util.number(ax5.util.getCookie('stargazers_count'), {'money': true}));
-		}
-		$.ajax({
-			url: "https://api.github.com/repos/ax5ui/${data.projectName}"
-		}).done(function (data) {
-			$("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true}));
-			ax5.util.setCookie('stargazers_count', data.stargazers_count);
-		});
-	});
-</script>
+
 </body>
 </html>

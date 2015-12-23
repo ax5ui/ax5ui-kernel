@@ -144,17 +144,6 @@ var fn_docs = (function () {
 $(document.body).ready(function () {
     if (!window.fn_docs) return;
 
-    if(ax5.util.getCookie('stargazers_count')){
-        $("#started-count").html(ax5.util.number(ax5.util.getCookie('stargazers_count'), {'money': true}));
-    }
-
-    $.ajax({
-        url: "https://api.github.com/repos/ax5ui/ax5core"
-    }).done(function (data) {
-        $("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true}));
-        ax5.util.setCookie('stargazers_count', data.stargazers_count);
-    });
-
     fn_docs._jos = (function () {
         return {
             "menu-target": $("#docs-menu-print-target"),

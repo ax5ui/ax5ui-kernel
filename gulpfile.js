@@ -15,7 +15,9 @@ var PATHS = {
     ax5docs: {
         css_src: "src/ax5docs/assets/css",
         css_dest: "src/ax5docs/assets/css",
-        ax5core: "src/ax5docs/assets/lib/ax5core"
+        ax5core: "src/ax5docs/assets/lib/ax5core",
+        doc_src: "src/ax5docs/_src_",
+        doc_dest: "src/ax5docs"
     },
     ax5core: {
         src: "src/ax5core/js",
@@ -78,6 +80,13 @@ gulp.task('docs:all', function () {
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
         }))
         .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].doc_dest));
+
+    gulp.src(PATHS['ax5docs'].doc_src + '/**/*.html')
+        .pipe(marko_ax5({
+            projectName: "ax5ui",
+            layoutPath: PATHS.assets.src + '/_layouts/root.marko'
+        }))
+        .pipe(gulp.dest(PATHS['ax5docs'].doc_dest));
 });
 
 gulp.task('AX5DIALOG-docs', function () {
