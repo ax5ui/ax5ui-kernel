@@ -43,15 +43,26 @@ gulp.task('SASS', function () {
 });
 
 /**
- * for ax5core
+ * for JS
  */
 gulp.task('AX5CORE-scripts', function () {
-    return gulp.src(PATHS.ax5core.src + '/*.js')
+    gulp.src(PATHS.ax5core.src + '/*.js')
         .pipe(concat('ax5core.js'))
         .pipe(gulp.dest(PATHS.ax5core.dest))
         .pipe(concat('ax5core.min.js'))
         .pipe(uglify())
-        .pipe(gulp.dest(PATHS.ax5core.dest));
+        .pipe(gulp.dest(PATHS.ax5core.dest))
+        .pipe(gulp.dest(PATHS.assets.src + '/lib/ax5core'));
+});
+
+gulp.task('AX5DIALOG-scripts', function () {
+    gulp.src(PATHS["bootstrap-ax5dialog"].src + '/*.js')
+        .pipe(concat('ax5dialog.js'))
+        .pipe(gulp.dest(PATHS["bootstrap-ax5dialog"].dest))
+        .pipe(concat('ax5dialog.min.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest(PATHS["bootstrap-ax5dialog"].dest))
+        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'));
 });
 
 /**
@@ -116,6 +127,7 @@ gulp.task('docs:all', function () {
 gulp.task('default', function () {
     gulp.watch(PATHS.ax5docs.css_src + '/**/*.scss', ['SASS']);
     gulp.watch(PATHS.ax5core.src + '/*.js', ['AX5CORE-scripts']);
+    gulp.watch(PATHS["bootstrap-ax5dialog"].src + '/*.js', ['AX5DIALOG-scripts']);
 
     gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['AX5CORE-docs', 'AX5DIALOG-docs']);
     gulp.watch(PATHS.assets.src + '/_layouts/root.marko', ['AX5UI-docs']);
