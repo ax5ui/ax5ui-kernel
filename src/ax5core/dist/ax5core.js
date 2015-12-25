@@ -2008,7 +2008,6 @@ ax5.ui = (function (core) {
          * ```
          */
         this.open = function (config) {
-            // todo : z-index 옵션으로 지정가능 하도록 변경
             if (this.status === "on") this.close();
             if (config && config.content) this.setBody(config.content);
             self.maskConfig = {};
@@ -2017,7 +2016,7 @@ ax5.ui = (function (core) {
 
             var cfg = self.maskConfig,
                 target = cfg.target, $target = jQuery(target),
-                po = [], css, maskId = 'ax-mask-' + ax5.getGuid(), _mask, css = {},
+                po = [], css, maskId = 'ax-mask-' + ax5.getGuid(), $mask, css = {},
                 that = {};
 
             po.push('<div class="ax-mask ' + cfg.theme + '" id="' + maskId + '">');
@@ -2039,13 +2038,16 @@ ax5.ui = (function (core) {
                     width: $target.outerWidth(),
                     height: $target.outerHeight()
                 };
+                if(typeof self.maskConfig.zIndex !== "undefined"){
+                    css["z-index"] = self.maskConfig.zIndex;
+                }
                 $target.addClass("ax-masking");
             }
-            this._mask = _mask = axd.get("#" + mask_id);
-            // todo : 여기까지 하다 말음
-            this.target = target;
+            this.$mask = $mask = jQuery("#" + mask_id);
+
+            this.$target = $target;
             this.status = "on";
-            axd.css(_mask, css);
+            $mask.css(css);
 
             if (cfg.onchange) {
                 that = {
@@ -2066,9 +2068,9 @@ ax5.ui = (function (core) {
          * ```
          */
         this.close = function () {
-            var cfg = this.mask_config;
-            axd.remove(this._mask);
-            axd.class_name(this.target, "remove", "ax-masking");
+            var cfg = this.maskConfig, that;
+            this.$mask.remove();
+            this.$target.removeClass("ax-masking");
             if (cfg && cfg.onchange) {
                 that = {
                     type: "close"
@@ -2081,8 +2083,8 @@ ax5.ui = (function (core) {
     };
 
     //== ui class 공통 처리 구문
-    if (U.is_function(_SUPER_)) ax_class.prototype = new _SUPER_(); // 상속
-    root.mask = ax_class; // ax5.ui에 연결
+    if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
+    root.mask = axClass; // ax5.ui에 연결
     //== ui class 공통 처리 구문
 
 })(ax5.ui, ax5.ui.root);

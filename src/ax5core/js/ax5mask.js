@@ -82,7 +82,6 @@
          * ```
          */
         this.open = function (config) {
-            // todo : z-index 옵션으로 지정가능 하도록 변경
             if (this.status === "on") this.close();
             if (config && config.content) this.setBody(config.content);
             self.maskConfig = {};
@@ -113,10 +112,13 @@
                     width: $target.outerWidth(),
                     height: $target.outerHeight()
                 };
+                if(typeof self.maskConfig.zIndex !== "undefined"){
+                    css["z-index"] = self.maskConfig.zIndex;
+                }
                 $target.addClass("ax-masking");
             }
             this.$mask = $mask = jQuery("#" + mask_id);
-            // todo : 여기까지 하다 말음
+
             this.$target = $target;
             this.status = "on";
             $mask.css(css);
