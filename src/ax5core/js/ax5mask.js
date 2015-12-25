@@ -91,7 +91,7 @@
 
             var cfg = self.maskConfig,
                 target = cfg.target, $target = jQuery(target),
-                po = [], css, maskId = 'ax-mask-' + ax5.getGuid(), _mask, css = {},
+                po = [], css, maskId = 'ax-mask-' + ax5.getGuid(), $mask, css = {},
                 that = {};
 
             po.push('<div class="ax-mask ' + cfg.theme + '" id="' + maskId + '">');
@@ -115,11 +115,11 @@
                 };
                 $target.addClass("ax-masking");
             }
-            this._mask = _mask = axd.get("#" + mask_id);
+            this.$mask = $mask = jQuery("#" + mask_id);
             // todo : 여기까지 하다 말음
-            this.target = target;
+            this.$target = $target;
             this.status = "on";
-            axd.css(_mask, css);
+            $mask.css(css);
 
             if (cfg.onchange) {
                 that = {
@@ -140,9 +140,9 @@
          * ```
          */
         this.close = function () {
-            var cfg = this.mask_config;
-            axd.remove(this._mask);
-            axd.class_name(this.target, "remove", "ax-masking");
+            var cfg = this.maskConfig, that;
+            this.$mask.remove();
+            this.$target.removeClass("ax-masking");
             if (cfg && cfg.onchange) {
                 that = {
                     type: "close"
@@ -155,8 +155,8 @@
     };
 
     //== ui class 공통 처리 구문
-    if (U.is_function(_SUPER_)) ax_class.prototype = new _SUPER_(); // 상속
-    root.mask = ax_class; // ax5.ui에 연결
+    if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
+    root.mask = axClass; // ax5.ui에 연결
     //== ui class 공통 처리 구문
 
 })(ax5.ui, ax5.ui.root);
