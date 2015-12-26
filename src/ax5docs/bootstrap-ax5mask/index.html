@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ax5ui / bootstrap-ax5dialog : home</title>
+	<title>ax5ui / bootstrap-ax5mask : home</title>
 
 	
 	<script type="text/javascript" src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -44,8 +44,8 @@
 						<span class="navbar-brand">
 							<a href="/">
 							<i class="icon-ax5"></i>UI</a>
-							<a href="/bootstrap-ax5dialog">
-							<span class="small">/ bootstrap-ax5dialog</span></a>
+							<a href="/bootstrap-ax5mask">
+							<span class="small">/ bootstrap-ax5mask</span></a>
 						</span>
 						<a class="visible-xs-inline-block mobile-menu">
 							<i class="icon-menu"></i>
@@ -57,7 +57,7 @@
 
 						<ul class="nav navbar-nav" id="docs-menu-print-target">
 							
-							<li ><a href="/bootstrap-ax5dialog/demo/index.html">Demo</a></li><li ><a href="/bootstrap-ax5dialog/api/index.html">API</a></li>
+							
 						</ul>
 
 						<ul class="nav navbar-nav navbar-right">
@@ -74,7 +74,6 @@
 	<li><a href="/">AX5UI</a></li>
 	<li role="separator" class="divider"></li>
 	<li><a href="/ax5core">ax5core</a></li>
-	<li><a href="/bootstrap-ax5mask">bootstrap-ax5mask</a></li>
 	<li><a href="/bootstrap-ax5dialog">bootstrap-ax5dialog</a></li>
 	<li role="separator" class="divider"></li>
 	<li><a href="https://www.axisj.com">axisj.com</a></li>
@@ -192,7 +191,7 @@ ga('send', 'pageview');
 			$("#started-count").html(ax5.util.number(ax5.util.getCookie('stargazers_count'), {'money': true}));
 		}
 		$.ajax({
-			url: "https://api.github.com/repos/ax5ui/bootstrap-ax5dialog"
+			url: "https://api.github.com/repos/ax5ui/bootstrap-ax5mask"
 		}).done(function (data) {
 			$("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true}));
 			ax5.util.setCookie('stargazers_count', data.stargazers_count);

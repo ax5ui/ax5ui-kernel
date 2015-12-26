@@ -1,0 +1,646 @@
+
+
+
+    
+    
+    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ax5ui / bootstrap-ax5dialog : ax5.util</title>
+
+	
+	<script type="text/javascript" src="../../assets/lib/jquery/jquery.min.js"></script>
+
+	<script src="../../assets/lib/prettify/prettify.js"></script>
+	<script src="../../assets/lib/prettify/lang-css.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/skins/github.css">
+	<script type="text/javascript">
+		$(document.body).ready(function() {
+			if (window["prettyPrint"]) window["prettyPrint"]();
+		});
+	</script>
+
+	
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="../../assets/lib/ax5core/ax5core.min.js"></script>
+
+	
+	<link rel="stylesheet" type="text/css" href="../../assets/css/docs.css">
+	<script type="text/javascript" src="../../assets/js/ax5core-menus.js"></script>
+	<script type="text/javascript" src="../../assets/js/docs.js"></script>
+
+	
+	
+</head>
+<body>
+<div class="docs sub-page with-inline-menu ">
+	<div class="docs-header">
+		<div class="docs-header-tool" id="docs-header-tool">
+			<nav class="navbar navbar-default">
+				<div class="container-fluid">
+					
+					<div class="navbar-header">
+						<span class="navbar-brand">
+							<a href="/">
+							<i class="icon-ax5"></i>UI</a>
+							<a href="/bootstrap-ax5dialog">
+							<span class="small">/ bootstrap-ax5dialog</span></a>
+						</span>
+						<a class="visible-xs-inline-block mobile-menu">
+							<i class="icon-menu"></i>
+						</a>
+					</div>
+
+					
+					<div class="collapse navbar-collapse">
+
+						<ul class="nav navbar-nav" id="docs-menu-print-target">
+							
+							<li class='active'><a href="/bootstrap-ax5dialog/api/ax5-util.html">ax5.util</a></li>
+						</ul>
+
+						<ul class="nav navbar-nav navbar-right">
+							<li>
+								<a href="https://github.com/ax5ui">
+									<i class="icon-github"></i>
+									Star
+									<span class="gh-count" id="started-count">.</span>
+								</a>
+							</li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">AX5UI <span class="caret"></span></a>
+								<ul class="dropdown-menu">
+	<li><a href="/">AX5UI</a></li>
+	<li role="separator" class="divider"></li>
+	<li><a href="/ax5core">ax5core</a></li>
+	<li><a href="/bootstrap-ax5dialog">bootstrap-ax5dialog</a></li>
+	<li role="separator" class="divider"></li>
+	<li><a href="https://www.axisj.com">axisj.com</a></li>
+</ul>
+							</li>
+						</ul>
+
+					</div>
+					
+
+				</div>
+				
+			</nav>
+		</div>
+	</div>
+	<div class="docs-visual">
+		<div class="pattern"></div>
+		
+
+        <div class="contents">
+            <div class="style-sub-visual">
+                <div class="title">ax5.util</div>
+                <div class="description">"ax5core" is a utility for creating AX5UI Library. need to install on your
+                    browser.
+                </div>
+            </div>
+        </div>
+
+    
+	</div>
+	<div class="docs-body" id="docs-body">
+		<div class="wrapper">
+		
+			<div class="row">
+				<div class="col-md-3 hidden-print hidden-xs hidden-sm">
+					<div class="docs-menu" id="docs-inline-menu"></div>
+				</div>
+				<div class="col-md-9">
+					
+
+        <h1>Type</h1>
+
+        
+        <section class="ax5docs-section">
+            <h2 data-method>ax5.util.getType</h2>
+
+            <p>
+                Return argument object type
+            </p>
+
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    ax5.util.getType(1); // "number"
+    ax5.util.getType("1"); // "string"
+    ax5.util.getType([0, 1, 2]); // "array"
+    ax5.util.getType({a: 1}); // "object"
+    ax5.util.getType(function () {}); // "function"
+    ax5.util.getType(document.querySelectorAll("div")); // "nodelist"
+    ax5.util.getType(document.createDocumentFragment()); // "fragment"
+&lt;/script></pre>
+            <p>
+                Javascript object type name is not clear. so <code>util.getType</code> method very useful.
+            </p>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2 data-method>ax5.util.is(Type)</h2>
+
+            <p>
+                Return argument object type is [type] result.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    // return is window.
+    ax5.util.isWindow(window);
+
+    // return is element.
+    ax5.util.isElement(document.getElementById("#ax5-util-is-type"));
+
+    // return is Object.
+    ax5.util.isObject({});
+
+    // return is Array.
+    ax5.util.isArray([]);
+
+    // return is Functon.
+    ax5.util.isFunction(new Function);
+
+    // return is String.
+    ax5.util.isString('');
+
+    // return is Number.
+    ax5.util.isNumber(1);
+
+    // return is nodeList.
+    ax5.util.isNodelist(document.querySelectorAll(".content"));
+
+    // return is undefined.
+    ax5.util.isUndefined();
+
+    // return is undefined|''|null.
+    ax5.util.isNothing();
+&lt;/script></pre>
+        </section>
+
+        <h1>Object</h1>
+
+        
+        <section class="ax5docs-section">
+            <h2 data-method>ax5.util.filter</h2>
+
+            <p>
+                The first item is delivered to the second argument of the filter function.
+                The second argument is an anonymous function, the result is True, the items will be collected.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    var result, aarray = [5, 4, 3, 2, 1];
+
+    result = ax5.util.filter(aarray, function () {
+        return this % 2;
+    });
+    console.log(result);
+
+    var list = [
+        {isdel: 1, name: "ax5-1"}, {name: "ax5-2"}, {
+            isdel: 1,
+            name: "ax5-3"
+        }, {name: "ax5-4"}, {name: "ax5-5"}
+    ];
+    result = ax5.util.filter(list, function () {
+        return (this.isdel != 1);
+    });
+    console.log(JSON.stringify(result));
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.search</h2>
+
+            <p>
+                It returns the first item of the result of the function is True.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    var a = ["A", "X", "5"];
+    var idx = ax5.util.search(a, function () {
+        return this == "X";
+    });
+    console.log(a[idx]);
+    // X
+
+    console.log(a[
+        ax5.util.search(a, function (idx) {
+            return idx == 2;
+        })
+        ]);
+    // 5
+
+    var b = {a: "AX5-0", x: "AX5-1", 5: "AX5-2"};
+    console.log(b[
+        ax5.util.search(b, function (k, v) {
+            return k == "x";
+        })
+        ]);
+    // AX5-1
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.map</h2>
+
+            <p>
+                "map" creating a new array features set into an array or object.
+                In the example I've created a simple object array as a numeric array.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    var a = [1, 2, 3, 4, 5];
+    a = ax5.util.map(a, function () {
+        return {id: this};
+    });
+    console.log(ax5.util.toJson(a));
+
+    console.log(
+        ax5.util.map({a: 1, b: 2}, function (k, v) {
+            return {id: k, value: v};
+        })
+    );
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.merge</h2>
+
+            <p>
+                "array like" the type of object "concat".
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    var a = [1, 2, 3], b = [7, 8, 9];
+    console.log(ax5.util.merge(a, b));
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.reduce</h2>
+
+            <p>
+                As a result of the process performed in the operation from the left to the right of the array it will be
+                reflected to the left side item. It returns the final value of the item.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    var aarray = [5, 4, 3, 2, 1], result;
+    console.log(ax5.util.reduce(aarray, function (p, n) {
+        return p * n;
+    }));
+    // 120
+
+    console.log(ax5.util.reduce({a: 1, b: 2}, function (p, n) {
+        // If the "Object" is the first "p" value is "undefined".
+        return parseInt(p | 0) + parseInt(n);
+    }));
+    // 3
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.reduceRight</h2>
+
+            <p>
+                Same as "reduce" but with a different direction.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    var aarray = [5, 4, 3, 2, 1];
+    console.log(ax5.util.reduceRight(aarray, function (p, n) {
+        return p - n;
+    }));
+    // -13
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.first</h2>
+
+            <p>
+                It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array
+                [0]"
+                rather than using the "first" method.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    var _arr = ["ax5", "axisj"];
+    var _obj = {k: "ax5", z: "axisj"};
+
+    console.log(ax5.util.first(_arr));
+    // ax5
+
+    console.log(ax5.util.toJson(ax5.util.first(_obj)));
+    // {"k": "ax5"}
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.last</h2>
+
+            <p>
+                It returns the last element in the Array, or Object.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    var _arr = ["ax5", "axisj"];
+    var _obj = {k: "ax5", z: "axisj"};
+
+    console.log(ax5.util.last(_arr));
+    // axisj
+
+    console.log(ax5.util.toJson(ax5.util.last(_obj)));
+    // {"z": "axisj"}
+&lt;/script></pre>
+        </section>
+
+        <h1>String</h1>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.left</h2>
+
+            <p>
+                Returns. Since the beginning of the string to the index, up to a certain character in a string from the
+                beginning of the string.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    console.log(ax5.util.left("abcd.efd", 3));
+    // abc
+    console.log(ax5.util.left("abcd.efd", "."));
+    // abcd
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.right</h2>
+
+            <p>
+                Returns. Up from the end of the string index, up to a certain character in a string from the end of the
+                string
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    console.log(ax5.util.right("abcd.efd", 3));
+    // efd
+    console.log(ax5.util.right("abcd.efd", "."));
+    // efd
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.camelCase</h2>
+
+            <p>
+                It converts a string to "Camel Case". "a-b", "aB" will be the "aB".
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    console.log(ax5.util.camelCase("inner-width"));
+    console.log(ax5.util.camelCase("innerWidth"));
+    // innerWidth
+    console.log(ax5.util.camelCase("camelCase"));
+    // camelCase
+    console.log(ax5.util.camelCase("aBc"));
+    // aBc
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.snakeCase</h2>
+
+            <p>
+                It converts a string to "Snake Case". "aB" will be the "a-b".
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    console.log(ax5.util.snakeCase("inner-width"));
+    // inner-width
+    console.log(ax5.util.snakeCase("camelCase"));
+    // camel-case
+    console.log(ax5.util.snakeCase("aBc"));
+    // a-bc
+&lt;/script></pre>
+        </section>
+
+        <h1>Number</h1>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.number</h2>
+
+            <p>
+                When the number covers the development, often it requires multiple steps.
+                The syntax is very complex and it is difficult to maintain.
+                "ax5.util.number" command to convert a number that were resolved by passing a JSON format.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    console.log('round(1) : ' + ax5.util.number(123456789.678, {round: 1}));
+    // round(1) : 123456789.7
+
+    console.log('round(1) money() : '
+        + ax5.util.number(123456789.678, {round: 1, money: true}));
+    // round(1) money() : 123,456,789.7
+
+    console.log('round(2) byte() : '
+        + ax5.util.number(123456789.678, {round: 2, byte: true}));
+    // round(2) byte() : 117.7MB
+
+    console.log('abs() round(2) money() : '
+        + ax5.util.number(-123456789.678, {abs: true, round: 2, money: true}));
+    // abs() round(2) money() : 123,456,789.68
+
+    console.log('abs() round(2) money() : '
+        + ax5.util.number("A-1234~~56789.8~888PX", {abs: true, round: 2, money: true}));
+    // abs() round(2) money() : 123,456,789.89
+&lt;/script></pre>
+        </section>
+
+        <h1>Misc.</h1>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.param</h2>
+
+            <p>
+                The parameter values may in some cases be the "Object" or "String".
+                At this time, useing the "param", it can be the same as verifying the parameter value.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    console.log(ax5.util.param({a: 1, b: '123\'"2&'}, "param"));
+    // a=1&b=123%27%222%26
+    console.log(ax5.util.param("a=1&b=12'\"32", "param"));
+    //a=1&b=12'"32
+    console.log(ax5.util.toJson(util.param("a=1&b=1232")));
+    // {"a": "1", "b": "1232"}
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.parseJson</h2>
+
+            <p>
+                parsing a little more than the less sensitive the JSON syntax "JSON.parse".
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    console.log(ax5.util.toJson(ax5.util.parseJson("[{'a':'99'},'2','3']")[0]));
+    // {"a": "99"}
+    console.log(ax5.util.parseJson("{a:1}").a);
+    // 1
+    console.log(ax5.util.toJson(ax5.util.parseJson("{'a':1, 'b':function(){return 1;}}", false)));
+    // {"error": 500, "msg": "syntax error"}
+    console.log(ax5.util.toJson(ax5.util.parseJson("{'a':1, 'b':function(){return 1;}}", true)));
+    // {"a": 1, "b": "{Function}"}
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.toJson</h2>
+
+            <p>
+
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    console.log(ax5.util.toJson(1));
+    // 1
+    console.log(ax5.util.toJson("A"));
+    // "A"
+    console.log(ax5.util.toJson([1, 2, 3, 'A']));
+    // [1,2,3,"A"]
+    console.log(ax5.util.toJson({a: 'a', x: 'x'}));
+    // {"a": "a", "x": "x"}
+    console.log(ax5.util.toJson([1, {a: 'a', x: 'x'}]));
+    // [1,{"a": "a", "x": "x"}]
+    console.log(ax5.util.toJson({a: 'a', x: 'x', list: [1, 2, 3]}));
+    // {"a": "a", "x": "x", "list": [1,2,3]}
+    console.log(ax5.util.toJson(function () {}));
+    // "{Function}"
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.alert</h2>
+
+            <p>
+
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    ax5.util.alert({a: 1, b: 2});
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.util.toArray</h2>
+
+            <p>
+                "nodelist" or on the Array Like such "arguments", has properties such as "length", but you can not use
+                functions
+                defined in Array.prototype. With "toArray" because it is easy to convert an array.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    function something() {
+        var arr = ax5.util.toArray(arguments);
+        console.log(ax5.util.toJson(arr));
+    }
+    something("A", "X", "I", "S", "J");
+&lt;/script></pre>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>ax5.getCookie / setCookie</h2>
+
+            <p>
+
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    ax5.util.setCookie("ax5-cookie", "abcde");
+    ax5.util.setCookie("ax5-cookie-path", "abcde", 2, {path: "/"});
+    console.log(ax5.util.getCookie("ax5-cookie"));
+    // abcde
+    console.log(ax5.util.getCookie("ax5-cookie-path"));
+    // abcde
+&lt;/script></pre>
+        </section>
+
+    
+				</div>
+			</div>
+		
+		</div>
+	</div>
+	<div class="docs-foot" id="docs-foot">
+		<div class="background-type background-type-0">
+			<div class="wrapper row">
+				<div class="col-md-6">
+					<h3>
+						<a href="https://github.com/ax5ui">
+							<i class="icon-github"></i> Get ax5core</a>
+					</h3>
+					<p>
+						"ax5core" source code is being released on Github. When you click the link to move to Github
+						repository.
+						Feel the joy of contributing to open source. We are always waiting for your action.
+					</p>
+				</div>
+				<div class="col-md-6">
+					<h3>
+						<a href="/">
+							<i class="icon-axisj"></i> AX5UI Package</a>
+					</h3>
+					<p>
+						'AX5UI' can be used with Bootstrap theme. The development of the distribution of the various UI plug-in.
+						When you click the link to move to AX5UI index page.
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="background-type background-type-1">
+			<div class="wrapper">
+				<dl class="dl-horizontal">
+					<dt>Code licensed</dt>
+					<dd>MIT</dd>
+					<dt>Mantained by</dt>
+					<dd>Thomas Jang</dd>
+					<dt>Templete design by</dt>
+					<dd>Jorwrney Kim</dd>
+
+					<dt>Copyright</dt>
+					<dd>Opensource Group AXISJ -
+						<a href="https://www.axisj.com">www.axisj.com</a></dd>
+				</dl>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+    
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-56252826-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+	$(document.body).ready(function () {
+		if (ax5.util.getCookie('stargazers_count')) {
+			$("#started-count").html(ax5.util.number(ax5.util.getCookie('stargazers_count'), {'money': true}));
+		}
+		$.ajax({
+			url: "https://api.github.com/repos/ax5ui/bootstrap-ax5dialog"
+		}).done(function (data) {
+			$("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true}));
+			ax5.util.setCookie('stargazers_count', data.stargazers_count);
+		});
+	});
+</script>
+</body>
+</html>
