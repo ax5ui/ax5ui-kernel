@@ -1,0 +1,6 @@
+# Basic Usage
+> mask
+
+## setConfig
+
+ 

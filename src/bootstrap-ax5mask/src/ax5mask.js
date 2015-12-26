@@ -7,6 +7,7 @@
      * @author tom@axisj.com
      * @logs
      * 2014-04-01 tom : 시작
+     * 2015-12-27 tom : refactoring
      * @example
      * ```
      * var my_mask = new ax5.ui.mask();
