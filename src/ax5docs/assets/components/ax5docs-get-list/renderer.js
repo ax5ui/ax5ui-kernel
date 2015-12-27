@@ -9,9 +9,6 @@ exports.render = function (input, out) {
     if (projectName == "ax5ui") {
 
     }
-    else if (projectName == "ax5core") {
-        loadFilePath = "src/ax5docs/_src_ax5core", hrefRoot = "src/ax5docs/_src_";
-    }
     else {
         loadFilePath = "src/ax5docs/_src_" + projectName, hrefRoot = "src/ax5docs/_src_";
     }
