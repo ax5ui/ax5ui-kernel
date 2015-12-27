@@ -163,10 +163,11 @@ gulp.task('default', function () {
     gulp.watch(PATHS["bootstrap-ax5dialog"].src + '/*.js', ['AX5DIALOG-scripts']);
     gulp.watch(PATHS["bootstrap-ax5mask"].src + '/*.js', ['AX5MASK-scripts']);
 
-    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['AX5CORE-docs', 'AX5DIALOG-docs']);
+    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
     gulp.watch(PATHS.assets.src + '/_layouts/root.marko', ['AX5UI-docs']);
 
     gulp.watch(PATHS.ax5docs.doc_src + '/**/*.html', ['AX5UI-docs']);
     gulp.watch(PATHS.ax5core.doc_src + '/**/*.html', ['AX5CORE-docs']);
+    gulp.watch(PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html', ['AX5MASK-docs']);
     gulp.watch(PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html', ['AX5DIALOG-docs']);
 });
