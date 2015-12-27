@@ -6,11 +6,14 @@ exports.render = function (input, out) {
     var projectName = input.projectName;
     var loadFilePath, hrefRoot;
 
-    if (projectName == "ax5core") {
+    if (projectName == "ax5ui") {
+
+    }
+    else if (projectName == "ax5core") {
         loadFilePath = "src/ax5docs/_src_ax5core", hrefRoot = "src/ax5docs/_src_";
     }
-    else if (projectName == "bootstrap-ax5dialog") {
-        loadFilePath = "src/ax5docs/_src_bootstrap-ax5dialog", hrefRoot = "src/ax5docs/_src_";
+    else {
+        loadFilePath = "src/ax5docs/_src_" + projectName, hrefRoot = "src/ax5docs/_src_";
     }
 
     if (loadFilePath) {
