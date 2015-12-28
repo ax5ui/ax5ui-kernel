@@ -5,6 +5,7 @@
     
     
     
+    
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,6 +36,9 @@
 
 	
 	
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
+    
 </head>
 <body>
 <div class="docs sub-page  with-menu">
@@ -98,14 +102,12 @@
 	<div class="docs-visual">
 		<div class="pattern"></div>
 		
-
         <div class="contents">
             <div class="style-sub-visual">
                 <div class="title">Demostration</div>
                 <div class="description">Introduces the basic use of bootstrap-ax5mask UI.</div>
             </div>
         </div>
-
     
 	</div>
 	<div class="docs-body" id="docs-body">
@@ -115,14 +117,68 @@
 				<div class="col-md-3 hidden-print hidden-xs hidden-sm">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li class='active'><a href="/bootstrap-ax5mask/demo/index.html">Basic</a></li></ul>
+        <ul><li class='active'><a href="/bootstrap-ax5mask/demo/index.html">Basic Uasge</a></li></ul>
     
 					</div>
 				</div>
 				<div class="col-md-9">
 					
 
+        <h1>Basic Uasge</h1>
 
+        <p>
+            When you click the button below, you can put a semi-transparent mask on the entire page. <br>
+            "mask" is used for prevent user action during running the application.
+        </p>
+
+        <button class="btn btn-default" type="button" id="mask-open">Button</button>
+
+        
+        <section class="ax5docs-section">
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $(document.body).ready(function () {
+
+        var mask = new ax5.ui.mask();
+        mask.setConfig({
+            target: document.body, // 미리 선언했지만
+            content: "&lt;h1>Mask will disappear after 3 seconds.&lt;/h1>",
+            onchange: function () {
+
+            }
+        });
+
+        $('#mask-open').click(function () {
+            mask.open();
+
+            setTimeout(function () {
+                mask.close();
+            }, 2000);
+        });
+
+    });
+&lt;/script></pre><script type="text/javascript">
+    $(document.body).ready(function () {
+
+        var mask = new ax5.ui.mask();
+        mask.setConfig({
+            target: document.body, // 미리 선언했지만
+            content: "<h1>Mask will disappear after 3 seconds.</h1>",
+            onchange: function () {
+
+            }
+        });
+
+        $('#mask-open').click(function () {
+            mask.open();
+
+            setTimeout(function () {
+                mask.close();
+            }, 2000);
+        });
+
+    });
+</script></script>
+        </section>
 
     
 				</div>
@@ -174,7 +230,6 @@
 		</div>
 	</div>
 </div>
-
 
     
 <script>

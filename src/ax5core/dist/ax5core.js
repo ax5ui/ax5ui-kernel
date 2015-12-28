@@ -1270,76 +1270,6 @@
             ax5.info.onerror.apply(this, arguments);
         }
 
-        /**
-         * webGl context 에 적용할 셰이더를 셰이더 스크립트로 부터 변환합니다.
-         * @method ax5.util.getShader
-         * @param {WebGLRenderingContext} gl
-         * @param {script|String|Array} script
-         * @param {String} [typ] - x-shader/x-fragment|x-shader/x-vertex
-         * @returns {shader}
-         */
-        function getShader(gl, script, typ) {
-            if (!script) {
-                return null;
-            }
-
-            var str = "", s, shader;
-            if (isString(script) || isArray(script)) {
-                str = [].concat(script).join('');
-                if (typ == "x-shader/x-fragment") {
-                    shader = gl.createShader(gl.FRAGMENT_SHADER);
-                }
-                else if (typ == "x-shader/x-vertex") {
-                    shader = gl.createShader(gl.VERTEX_SHADER);
-                }
-                else {
-                    return null;
-                }
-            }
-            else {
-                s = script.firstChild;
-                while (s) {
-                    if (s.nodeType == 3) {
-                        str += s.textContent;
-                    }
-                    s = s.nextSibling;
-                }
-                if (script.type == "x-shader/x-fragment") {
-                    shader = gl.createShader(gl.FRAGMENT_SHADER);
-                }
-                else if (script.type == "x-shader/x-vertex") {
-                    shader = gl.createShader(gl.VERTEX_SHADER);
-                }
-                else {
-                    return null;
-                }
-            }
-
-            gl.shaderSource(shader, str);
-            gl.compileShader(shader);
-
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                alert(gl.getShaderInfoLog(shader));
-                return null;
-            }
-            return shader;
-        }
-
-        var requestAnimFrame = (function () {
-            return window.requestAnimationFrame ||
-                window.webkitRequestAnimationFrame ||
-                window.mozRequestAnimationFrame ||
-                window.oRequestAnimationFrame ||
-                window.msRequestAnimationFrame ||
-                function (/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-                    window.setTimeout(callback, 1000 / 60);
-                };
-        })();
-
-        function requestAniFrame(o) {
-            requestAnimFrame(o);
-        }
-
         function localDate(yy, mm, dd, hh, mi, ss) {
             var utcD, localD;
             localD = new Date();
@@ -1646,8 +1576,6 @@
             merge: merge,
             param: param,
             error: error,
-            getShader: getShader,
-            requestAniFrame: requestAniFrame,
             date: date,
             dday: dday,
             setDigit: setDigit,
@@ -1887,7 +1815,7 @@ ax5.ui = (function (core) {
          * ```
          */
         this.setConfig = function (cfg, callInit) {
-            core.util.extendAll(this.config, cfg, true);
+            jQuery.extend(true, this.config, cfg, true);
             if (typeof callInit == "undefined" || callInit === true) {
                 this.init();
             }
@@ -1900,7 +1828,7 @@ ax5.ui = (function (core) {
         this.bindWindowResize = function (callBack) {
 
             setTimeout((function () {
-                ax5.dom.resize((function () {
+                jQuery(window).resize((function () {
                     if (this.bindWindowResize__) clearTimeout(this.bindWindowResize__);
                     this.bindWindowResize__ = setTimeout((function () {
                         callBack.call(this);

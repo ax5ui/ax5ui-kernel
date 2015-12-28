@@ -164,9 +164,6 @@ $(document.body).ready(function () {
         if (fn_docs._jos['docs-inline-menu'][0]) {
             fn_docs.menu.ready(fn_docs._jos['docs-inline-menu'], 'inline');
         }
-        if (fn_docs._jos['docs-menu'][0]) {
-
-        }
     });
 
     var windowScrollTop = 0;

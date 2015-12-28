@@ -83,6 +83,7 @@
          * ```
          */
         this.open = function (config) {
+
             if (this.status === "on") this.close();
             if (config && config.content) this.setBody(config.content);
             self.maskConfig = {};
@@ -103,7 +104,7 @@
             po.push('</div>');
             po.push('</div>');
 
-            jQuery(document.body, po.join(''));
+            jQuery(document.body).append(po.join(''));
 
             if (target !== document.body) {
                 css = {
@@ -118,7 +119,7 @@
                 }
                 $target.addClass("ax-masking");
             }
-            this.$mask = $mask = jQuery("#" + mask_id);
+            this.$mask = $mask = jQuery("#" + maskId);
 
             this.$target = $target;
             this.status = "on";

@@ -38,7 +38,7 @@ exports.render = function (input, out) {
                 }
             }
 
-            //JS = text_array.join("\n").replace(/<\w+(\s+("[^"]*"|'[^']*'|[^>])+)?>|<\/\w+>/gi, '');
+            JS = text_array.join("\n").replace(/<script+(\s+("[^"]*"|'[^']*'|[^>])+)?>|<\/\script>/gi, '');
             _s = text_array.join("\n").replace(/</g, "&lt;");
 
         }
@@ -50,4 +50,10 @@ exports.render = function (input, out) {
     out.write('<pre class="prettyprint linenums lang-js">');
     out.write(_s);
     out.write('</pre>');
+
+    if (input.run) {
+        out.write('<script type="text/javascript">');
+        out.write( JS );
+        out.write('</script>');
+    }
 };

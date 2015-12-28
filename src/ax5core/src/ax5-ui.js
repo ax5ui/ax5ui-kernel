@@ -39,7 +39,7 @@ ax5.ui = (function (core) {
          * ```
          */
         this.setConfig = function (cfg, callInit) {
-            core.util.extendAll(this.config, cfg, true);
+            jQuery.extend(true, this.config, cfg, true);
             if (typeof callInit == "undefined" || callInit === true) {
                 this.init();
             }
@@ -52,7 +52,7 @@ ax5.ui = (function (core) {
         this.bindWindowResize = function (callBack) {
 
             setTimeout((function () {
-                ax5.dom.resize((function () {
+                jQuery(window).resize((function () {
                     if (this.bindWindowResize__) clearTimeout(this.bindWindowResize__);
                     this.bindWindowResize__ = setTimeout((function () {
                         callBack.call(this);

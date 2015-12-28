@@ -43,9 +43,14 @@ var PATHS = {
  * SASS
  */
 gulp.task('SASS', function () {
-    return gulp.src(PATHS.ax5docs.css_src + '/docs.scss')
+    gulp.src(PATHS.ax5docs.css_src + '/docs.scss')
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(gulp.dest(PATHS.ax5docs.css_dest));
+
+    gulp.src(PATHS['bootstrap-ax5mask'].src + '/ax5mask.scss')
+        .pipe(sass({outputStyle: 'compressed'}))
+        .pipe(gulp.dest(PATHS['bootstrap-ax5mask'].dest))
+        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5mask'));
 });
 
 /**
@@ -116,7 +121,10 @@ gulp.task('AX5MASK-docs', function () {
 
 gulp.task('AX5DIALOG-docs', function () {
     return gulp.src(PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html')
-        .pipe(changed(PATHS['bootstrap-ax5dialog'].doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
+        .pipe(changed(PATHS['bootstrap-ax5dialog'].doc_dest, {
+            extension: '.html',
+            hasChanged: changed.compareSha1Digest
+        }))
         .pipe(marko_ax5({
             projectName: "bootstrap-ax5dialog",
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
