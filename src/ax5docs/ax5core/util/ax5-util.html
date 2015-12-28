@@ -120,459 +120,332 @@
 					
 
         <h1>Type</h1>
-
-        
-        <section class="ax5docs-section">
-            <h2 data-method>ax5.util.getType</h2>
-
-            <p>
-                Return argument object type
-            </p>
-
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    ax5.util.getType(1); // "number"
-    ax5.util.getType("1"); // "string"
-    ax5.util.getType([0, 1, 2]); // "array"
-    ax5.util.getType({a: 1}); // "object"
-    ax5.util.getType(function () {}); // "function"
-    ax5.util.getType(document.querySelectorAll("div")); // "nodelist"
-    ax5.util.getType(document.createDocumentFragment()); // "fragment"
-&lt;/script></pre>
-            <p>
-                Javascript object type name is not clear. so <code>util.getType</code> method very useful.
-            </p>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2 data-method>ax5.util.is(Type)</h2>
-
-            <p>
-                Return argument object type is [type] result.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+<h2>ax5.util.getType</h2>
+<p>Return argument object type</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    ax5.util.getType(1); // &quot;number&quot;
+    ax5.util.getType(&quot;1&quot;); // &quot;string&quot;
+    ax5.util.getType([0, 1, 2]); // &quot;array&quot;
+    ax5.util.getType({a: 1}); // &quot;object&quot;
+    ax5.util.getType(function () {}); // &quot;function&quot;
+    ax5.util.getType(document.querySelectorAll(&quot;div&quot;)); // &quot;nodelist&quot;
+    ax5.util.getType(document.createDocumentFragment()); // &quot;fragment&quot;
+&lt;/script&gt;
+</code></pre>
+<p>Javascript object type name is not clear. so util.getType method very useful.</p>
+<hr>
+<h2>ax5.util.is(Type)</h2>
+<p>Return argument object type is [type] result.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     // return is window.
     ax5.util.isWindow(window);
-
+ 
     // return is element.
-    ax5.util.isElement(document.getElementById("#ax5-util-is-type"));
-
+    ax5.util.isElement(document.getElementById(&quot;#ax5-util-is-type&quot;));
+ 
     // return is Object.
     ax5.util.isObject({});
-
+ 
     // return is Array.
     ax5.util.isArray([]);
-
+ 
     // return is Functon.
     ax5.util.isFunction(new Function);
-
+ 
     // return is String.
     ax5.util.isString('');
-
+ 
     // return is Number.
     ax5.util.isNumber(1);
-
+ 
     // return is nodeList.
-    ax5.util.isNodelist(document.querySelectorAll(".content"));
-
+    ax5.util.isNodelist(document.querySelectorAll(&quot;.content&quot;));
+ 
     // return is undefined.
     ax5.util.isUndefined();
-
+ 
     // return is undefined|''|null.
     ax5.util.isNothing();
-&lt;/script></pre>
-        </section>
-
-        <h1>Object</h1>
-
-        
-        <section class="ax5docs-section">
-            <h2 data-method>ax5.util.filter</h2>
-
-            <p>
-                The first item is delivered to the second argument of the filter function.
-                The second argument is an anonymous function, the result is True, the items will be collected.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h1>Object</h1>
+<h2>ax5.util.filter</h2>
+<p>The first item is delivered to the second argument of the filter function. The second argument is an anonymous function, the result is True, the items will be collected.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     var result, aarray = [5, 4, 3, 2, 1];
-
+ 
     result = ax5.util.filter(aarray, function () {
         return this % 2;
     });
     console.log(result);
-
+ 
     var list = [
-        {isdel: 1, name: "ax5-1"}, {name: "ax5-2"}, {
+        {isdel: 1, name: &quot;ax5-1&quot;}, {name: &quot;ax5-2&quot;}, {
             isdel: 1,
-            name: "ax5-3"
-        }, {name: "ax5-4"}, {name: "ax5-5"}
+            name: &quot;ax5-3&quot;
+        }, {name: &quot;ax5-4&quot;}, {name: &quot;ax5-5&quot;}
     ];
     result = ax5.util.filter(list, function () {
         return (this.isdel != 1);
     });
     console.log(JSON.stringify(result));
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.search</h2>
-
-            <p>
-                It returns the first item of the result of the function is True.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    var a = ["A", "X", "5"];
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.search</h2>
+<p>It returns the first item of the result of the function is True.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    var a = [&quot;A&quot;, &quot;X&quot;, &quot;5&quot;];
     var idx = ax5.util.search(a, function () {
-        return this == "X";
+        return this == &quot;X&quot;;
     });
     console.log(a[idx]);
     // X
-
+ 
     console.log(a[
         ax5.util.search(a, function (idx) {
             return idx == 2;
         })
         ]);
     // 5
-
-    var b = {a: "AX5-0", x: "AX5-1", 5: "AX5-2"};
+ 
+    var b = {a: &quot;AX5-0&quot;, x: &quot;AX5-1&quot;, 5: &quot;AX5-2&quot;};
     console.log(b[
         ax5.util.search(b, function (k, v) {
-            return k == "x";
+            return k == &quot;x&quot;;
         })
         ]);
     // AX5-1
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.map</h2>
-
-            <p>
-                "map" creating a new array features set into an array or object.
-                In the example I've created a simple object array as a numeric array.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.map</h2>
+<p><code>&quot;map&quot;</code> creating a new array features set into an array or object. In the example I've created a simple object array as a numeric array.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     var a = [1, 2, 3, 4, 5];
     a = ax5.util.map(a, function () {
         return {id: this};
     });
     console.log(ax5.util.toJson(a));
-
+ 
     console.log(
         ax5.util.map({a: 1, b: 2}, function (k, v) {
             return {id: k, value: v};
         })
     );
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.merge</h2>
-
-            <p>
-                "array like" the type of object "concat".
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.merge</h2>
+<p><code>&quot;array like&quot;</code> the type of object <code>&quot;concat&quot;</code>.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     var a = [1, 2, 3], b = [7, 8, 9];
     console.log(ax5.util.merge(a, b));
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.reduce</h2>
-
-            <p>
-                As a result of the process performed in the operation from the left to the right of the array it will be
-                reflected to the left side item. It returns the final value of the item.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.reduce</h2>
+<p>As a result of the process performed in the operation from the left to the right of the array it will be reflected to the left side item. It returns the final value of the item.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     var aarray = [5, 4, 3, 2, 1], result;
     console.log(ax5.util.reduce(aarray, function (p, n) {
         return p * n;
     }));
     // 120
-
+ 
     console.log(ax5.util.reduce({a: 1, b: 2}, function (p, n) {
-        // If the "Object" is the first "p" value is "undefined".
+        // If the &quot;Object&quot; is the first &quot;p&quot; value is &quot;undefined&quot;.
         return parseInt(p | 0) + parseInt(n);
     }));
     // 3
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.reduceRight</h2>
-
-            <p>
-                Same as "reduce" but with a different direction.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.reduceRight</h2>
+<p>Same as &quot;reduce&quot; but with a different direction.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     var aarray = [5, 4, 3, 2, 1];
     console.log(ax5.util.reduceRight(aarray, function (p, n) {
         return p - n;
     }));
     // -13
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.first</h2>
-
-            <p>
-                It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array
-                [0]"
-                rather than using the "first" method.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    var _arr = ["ax5", "axisj"];
-    var _obj = {k: "ax5", z: "axisj"};
-
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.first</h2>
+<p>It returns the first element in the Array, or Object. However, it is faster to use Array in the &quot;Array [0]&quot; rather than using the &quot;first&quot; method.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    var _arr = [&quot;ax5&quot;, &quot;axisj&quot;];
+    var _obj = {k: &quot;ax5&quot;, z: &quot;axisj&quot;};
+ 
     console.log(ax5.util.first(_arr));
     // ax5
-
+ 
     console.log(ax5.util.toJson(ax5.util.first(_obj)));
-    // {"k": "ax5"}
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.last</h2>
-
-            <p>
-                It returns the last element in the Array, or Object.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    var _arr = ["ax5", "axisj"];
-    var _obj = {k: "ax5", z: "axisj"};
-
+    // {&quot;k&quot;: &quot;ax5&quot;}
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.last</h2>
+<p>It returns the last element in the Array, or Object.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    var _arr = [&quot;ax5&quot;, &quot;axisj&quot;];
+    var _obj = {k: &quot;ax5&quot;, z: &quot;axisj&quot;};
+ 
     console.log(ax5.util.last(_arr));
     // axisj
-
+ 
     console.log(ax5.util.toJson(ax5.util.last(_obj)));
-    // {"z": "axisj"}
-&lt;/script></pre>
-        </section>
-
-        <h1>String</h1>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.left</h2>
-
-            <p>
-                Returns. Since the beginning of the string to the index, up to a certain character in a string from the
-                beginning of the string.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    console.log(ax5.util.left("abcd.efd", 3));
+    // {&quot;z&quot;: &quot;axisj&quot;}
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h1>String</h1>
+<h2>ax5.util.left</h2>
+<p>Returns. Since the beginning of the string to the index, up to a certain character in a string from the beginning of the string.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    console.log(ax5.util.left(&quot;abcd.efd&quot;, 3));
     // abc
-    console.log(ax5.util.left("abcd.efd", "."));
+    console.log(ax5.util.left(&quot;abcd.efd&quot;, &quot;.&quot;));
     // abcd
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.right</h2>
-
-            <p>
-                Returns. Up from the end of the string index, up to a certain character in a string from the end of the
-                string
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    console.log(ax5.util.right("abcd.efd", 3));
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.right</h2>
+<p>Returns. Up from the end of the string index, up to a certain character in a string from the end of the string</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    console.log(ax5.util.right(&quot;abcd.efd&quot;, 3));
     // efd
-    console.log(ax5.util.right("abcd.efd", "."));
+    console.log(ax5.util.right(&quot;abcd.efd&quot;, &quot;.&quot;));
     // efd
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.camelCase</h2>
-
-            <p>
-                It converts a string to "Camel Case". "a-b", "aB" will be the "aB".
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    console.log(ax5.util.camelCase("inner-width"));
-    console.log(ax5.util.camelCase("innerWidth"));
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.camelCase</h2>
+<p>It converts a string to &quot;Camel Case&quot;. &quot;a-b&quot;, &quot;aB&quot; will be the &quot;aB&quot;.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    console.log(ax5.util.camelCase(&quot;inner-width&quot;));
+    console.log(ax5.util.camelCase(&quot;innerWidth&quot;));
     // innerWidth
-    console.log(ax5.util.camelCase("camelCase"));
+    console.log(ax5.util.camelCase(&quot;camelCase&quot;));
     // camelCase
-    console.log(ax5.util.camelCase("aBc"));
+    console.log(ax5.util.camelCase(&quot;aBc&quot;));
     // aBc
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.snakeCase</h2>
-
-            <p>
-                It converts a string to "Snake Case". "aB" will be the "a-b".
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    console.log(ax5.util.snakeCase("inner-width"));
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.snakeCase</h2>
+<p>It converts a string to &quot;Snake Case&quot;. &quot;aB&quot; will be the &quot;a-b&quot;.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    console.log(ax5.util.snakeCase(&quot;inner-width&quot;));
     // inner-width
-    console.log(ax5.util.snakeCase("camelCase"));
+    console.log(ax5.util.snakeCase(&quot;camelCase&quot;));
     // camel-case
-    console.log(ax5.util.snakeCase("aBc"));
+    console.log(ax5.util.snakeCase(&quot;aBc&quot;));
     // a-bc
-&lt;/script></pre>
-        </section>
-
-        <h1>Number</h1>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.number</h2>
-
-            <p>
-                When the number covers the development, often it requires multiple steps.
-                The syntax is very complex and it is difficult to maintain.
-                "ax5.util.number" command to convert a number that were resolved by passing a JSON format.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h1>Number</h1>
+<h2>ax5.util.number</h2>
+<p>When the number covers the development, often it requires multiple steps. The syntax is very complex and it is difficult to maintain. &quot;ax5.util.number&quot; command to convert a number that were resolved by passing a JSON format.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     console.log('round(1) : ' + ax5.util.number(123456789.678, {round: 1}));
     // round(1) : 123456789.7
-
+ 
     console.log('round(1) money() : '
         + ax5.util.number(123456789.678, {round: 1, money: true}));
     // round(1) money() : 123,456,789.7
-
+ 
     console.log('round(2) byte() : '
         + ax5.util.number(123456789.678, {round: 2, byte: true}));
     // round(2) byte() : 117.7MB
-
+ 
     console.log('abs() round(2) money() : '
         + ax5.util.number(-123456789.678, {abs: true, round: 2, money: true}));
     // abs() round(2) money() : 123,456,789.68
-
+ 
     console.log('abs() round(2) money() : '
-        + ax5.util.number("A-1234~~56789.8~888PX", {abs: true, round: 2, money: true}));
+        + ax5.util.number(&quot;A-1234~~56789.8~888PX&quot;, {abs: true, round: 2, money: true}));
     // abs() round(2) money() : 123,456,789.89
-&lt;/script></pre>
-        </section>
-
-        <h1>Misc.</h1>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.param</h2>
-
-            <p>
-                The parameter values may in some cases be the "Object" or "String".
-                At this time, useing the "param", it can be the same as verifying the parameter value.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    console.log(ax5.util.param({a: 1, b: '123\'"2&'}, "param"));
-    // a=1&b=123%27%222%26
-    console.log(ax5.util.param("a=1&b=12'\"32", "param"));
-    //a=1&b=12'"32
-    console.log(ax5.util.toJson(util.param("a=1&b=1232")));
-    // {"a": "1", "b": "1232"}
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.parseJson</h2>
-
-            <p>
-                parsing a little more than the less sensitive the JSON syntax "JSON.parse".
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    console.log(ax5.util.toJson(ax5.util.parseJson("[{'a':'99'},'2','3']")[0]));
-    // {"a": "99"}
-    console.log(ax5.util.parseJson("{a:1}").a);
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h1>Misc.</h1>
+<h2>ax5.util.param</h2>
+<p>The parameter values may in some cases be the &quot;Object&quot; or &quot;String&quot;. At this time, useing the &quot;param&quot;, it can be the same as verifying the parameter value.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    console.log(ax5.util.param({a: 1, b: '123\'&quot;2&amp;'}, &quot;param&quot;));
+    // a=1&amp;b=123%27%222%26
+    console.log(ax5.util.param(&quot;a=1&amp;b=12'\&quot;32&quot;, &quot;param&quot;));
+    //a=1&amp;b=12'&quot;32
+    console.log(ax5.util.toJson(util.param(&quot;a=1&amp;b=1232&quot;)));
+    // {&quot;a&quot;: &quot;1&quot;, &quot;b&quot;: &quot;1232&quot;}
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.parseJson</h2>
+<p>parsing a little more than the less sensitive the JSON syntax &quot;JSON.parse&quot;.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    console.log(ax5.util.toJson(ax5.util.parseJson(&quot;[{'a':'99'},'2','3']&quot;)[0]));
+    // {&quot;a&quot;: &quot;99&quot;}
+    console.log(ax5.util.parseJson(&quot;{a:1}&quot;).a);
     // 1
-    console.log(ax5.util.toJson(ax5.util.parseJson("{'a':1, 'b':function(){return 1;}}", false)));
-    // {"error": 500, "msg": "syntax error"}
-    console.log(ax5.util.toJson(ax5.util.parseJson("{'a':1, 'b':function(){return 1;}}", true)));
-    // {"a": 1, "b": "{Function}"}
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.toJson</h2>
-
-            <p>
-
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    console.log(ax5.util.toJson(ax5.util.parseJson(&quot;{'a':1, 'b':function(){return 1;}}&quot;, false)));
+    // {&quot;error&quot;: 500, &quot;msg&quot;: &quot;syntax error&quot;}
+    console.log(ax5.util.toJson(ax5.util.parseJson(&quot;{'a':1, 'b':function(){return 1;}}&quot;, true)));
+    // {&quot;a&quot;: 1, &quot;b&quot;: &quot;{Function}&quot;}
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.toJson</h2>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     console.log(ax5.util.toJson(1));
     // 1
-    console.log(ax5.util.toJson("A"));
-    // "A"
+    console.log(ax5.util.toJson(&quot;A&quot;));
+    // &quot;A&quot;
     console.log(ax5.util.toJson([1, 2, 3, 'A']));
-    // [1,2,3,"A"]
+    // [1,2,3,&quot;A&quot;]
     console.log(ax5.util.toJson({a: 'a', x: 'x'}));
-    // {"a": "a", "x": "x"}
+    // {&quot;a&quot;: &quot;a&quot;, &quot;x&quot;: &quot;x&quot;}
     console.log(ax5.util.toJson([1, {a: 'a', x: 'x'}]));
-    // [1,{"a": "a", "x": "x"}]
+    // [1,{&quot;a&quot;: &quot;a&quot;, &quot;x&quot;: &quot;x&quot;}]
     console.log(ax5.util.toJson({a: 'a', x: 'x', list: [1, 2, 3]}));
-    // {"a": "a", "x": "x", "list": [1,2,3]}
+    // {&quot;a&quot;: &quot;a&quot;, &quot;x&quot;: &quot;x&quot;, &quot;list&quot;: [1,2,3]}
     console.log(ax5.util.toJson(function () {}));
-    // "{Function}"
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.alert</h2>
-
-            <p>
-
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    // &quot;{Function}&quot;
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.alert</h2>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     ax5.util.alert({a: 1, b: 2});
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.util.toArray</h2>
-
-            <p>
-                "nodelist" or on the Array Like such "arguments", has properties such as "length", but you can not use
-                functions
-                defined in Array.prototype. With "toArray" because it is easy to convert an array.
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.util.toArray</h2>
+<p>&quot;nodelist&quot; or on the Array Like such &quot;arguments&quot;, has properties such as &quot;length&quot;, but you can not use functions defined in Array.prototype. With &quot;toArray&quot; because it is easy to convert an array.</p>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
     function something() {
         var arr = ax5.util.toArray(arguments);
         console.log(ax5.util.toJson(arr));
     }
-    something("A", "X", "I", "S", "J");
-&lt;/script></pre>
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>ax5.getCookie / setCookie</h2>
-
-            <p>
-
-            </p>
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    ax5.util.setCookie("ax5-cookie", "abcde");
-    ax5.util.setCookie("ax5-cookie-path", "abcde", 2, {path: "/"});
-    console.log(ax5.util.getCookie("ax5-cookie"));
+    something(&quot;A&quot;, &quot;X&quot;, &quot;I&quot;, &quot;S&quot;, &quot;J&quot;);
+&lt;/script&gt;
+</code></pre>
+<hr>
+<h2>ax5.getCookie / setCookie</h2>
+<pre class="prettyprint linenums lang-js"><code>&lt;script type=&quot;text/javascript&quot;&gt;
+    ax5.util.setCookie(&quot;ax5-cookie&quot;, &quot;abcde&quot;);
+    ax5.util.setCookie(&quot;ax5-cookie-path&quot;, &quot;abcde&quot;, 2, {path: &quot;/&quot;});
+    console.log(ax5.util.getCookie(&quot;ax5-cookie&quot;));
     // abcde
-    console.log(ax5.util.getCookie("ax5-cookie-path"));
+    console.log(ax5.util.getCookie(&quot;ax5-cookie-path&quot;));
     // abcde
-&lt;/script></pre>
-        </section>
+&lt;/script&gt;
+</code></pre>
+
 
     
 				</div>

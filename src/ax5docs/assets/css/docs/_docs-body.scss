@@ -127,10 +127,17 @@
 		.row {
 			margin-left: 0;
 			margin-right: 0;
+			position: relative;
 
 			.col-md-3{
+				float: none;
 				padding: 0px;
+				background: lighten(#F9F9F9, 1%);
 				border-right: 1px solid #F0F0F0;
+				width: $docs-sub-page-menu-width;
+				height: 100%;
+				position: absolute;
+				z-index: 10;
 
 				.docs-menu{
 					padding: 20px 20px;
@@ -201,7 +208,10 @@
 				}
 			}
 			.col-md-9{
-				padding: 20px 40px;
+				float: none;
+				padding: 20px 20px;
+				padding-left: $docs-sub-page-menu-width + 40;
+				width: 100%;
 			}
 		}
 	}
@@ -214,6 +224,23 @@
 		.row {
 			margin-left: 0;
 			margin-right: 0;
+		}
+	}
+	&.with-menu {
+		.wrapper {
+			.row {
+				margin-left: 0;
+				margin-right: 0;
+
+				.col-md-3 {
+					display: none;
+
+				}
+				.col-md-9 {
+					padding: 20px 20px;
+					width: 100%;
+				}
+			}
 		}
 	}
 }

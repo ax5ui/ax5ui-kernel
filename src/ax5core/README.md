@@ -1,6 +1,10 @@
 [![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj)
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
+# ax5core
+> *Dependencies*
+> * _[jQuery 1.X+](http://jquery.com/)_
+
 ## Insert the "ax5" in the HTML HEAD.
 Location of the folder can be determined freely in your project. But be careful not to accidentally caused
 exactly the path.
@@ -15,9 +19,7 @@ exactly the path.
 </body>
 </html>
 ```
-
 Enjoy "AX5" utility library
-
 
 ## ax5.util.date
 ```js

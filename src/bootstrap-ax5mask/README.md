@@ -2,8 +2,11 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # bootstrap-ax5mask
+> *Dependencies*
+> * _[jQuery 1.X+](http://jquery.com/)_
+> * _[ax5core](http://ax5.io/ax5core)_
 
-> "mask" is used for prevent user action during running the application.
+"mask" is used for prevent user action during running the application.
 
 ### Insert the "ax5mask" in the HTML HEAD.
 
@@ -23,7 +26,3 @@ exactly the path.
 </body>
 </html>
 ```
-
-### Dependencies
-* [jQuery 1.X+](http://jquery.com/)
-* [ax5core](https://github.com/ax5ui/ax5core)
