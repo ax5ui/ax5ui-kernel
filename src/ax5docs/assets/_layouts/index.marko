@@ -55,7 +55,12 @@
 
 						<ul class="nav navbar-nav" id="docs-menu-print-target">
 							<!-- file : document root, hrefRoot : link root -->
-							<ax5docs-get-list projectName="${data.projectName}" activeId="${data.pageId}"></ax5docs-get-list>
+							<if test="data.parentId">
+								<ax5docs-get-list projectName="${data.projectName}" activeId="${data.parentId}"></ax5docs-get-list>
+							</if>
+							<else>
+								<ax5docs-get-list projectName="${data.projectName}" activeId="${data.pageId}"></ax5docs-get-list>
+							</else>
 						</ul>
 
 						<ul class="nav navbar-nav navbar-right">
@@ -100,7 +105,9 @@
 		<else-if test="data.withMenu">
 			<div class="row">
 				<div class="col-md-3 hidden-print hidden-xs hidden-sm">
-					<div class="docs-menu" id="docs-menu"></div>
+					<div class="docs-menu" id="docs-menu">
+						<layout-placeholder name="docs-menu"/>
+					</div>
 				</div>
 				<div class="col-md-9">
 					<layout-placeholder name="body"/>

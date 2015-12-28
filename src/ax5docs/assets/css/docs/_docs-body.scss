@@ -18,15 +18,15 @@
 		border-bottom: 1px solid #ECEFF7;
 	}
 
-	.docs-menu{
+	.docs-menu {
 		display: none;
 	}
 
-	h1, h2, h3{
+	h1, h2, h3 {
 		position: relative;
-		a[data-name]{
+		a[data-name] {
 			position: absolute;
-			left:0px;
+			left: 0px;
 			top: -$docs-header-tool-height - 20;
 		}
 	}
@@ -35,92 +35,115 @@
 &.sub-page {
 	.docs-body {
 		margin-top: $docs-visual-sm-height;
-	}
-	&.with-inline-menu, &.with-menu {
-		.docs-body {
+		.docs-menu {
+			display: block;
+			/*
+			position: absolute;
+			left:0px;
+			top: 0px;
+			padding: 30px 0px;
+			*/
+			width: $docs-sub-page-menu-width - 40;
 
-			margin-top: $docs-visual-sm-height;
-			.wrapper{
-				//padding-left: $docs-sub-page-menu-width;
+			&.fixed {
+				position: fixed;
+				top: $docs-header-tool-height + 20;
+				&.fixed-bottom {
+					position: absolute;
+
+				}
 			}
-			.docs-menu{
+
+			> ul {
 				display: block;
-				/*
-				position: absolute;
-				left:0px;
-				top: 0px;
-				padding: 30px 0px;
-				*/
-				width: $docs-sub-page-menu-width - 40;
-
-				&.fixed{
-					position: fixed;
-					top: $docs-header-tool-height + 20;
-					&.fixed-bottom{
-						position: absolute;
-
+				padding: 0px;
+				> li {
+					display: block;
+					font-size: 1.3em;
+					color: #A1A1A1;
+					line-height: 2.1em;
+					list-style: none;
+					&.open {
+						a {
+							color: #6FAFE0;
+						}
+					}
+					a {
+						display: block;
+						color: inherit;
+						text-transform: uppercase;
+						&:hover {
+							color: #6FAFE0;
+							text-decoration: none;
+						}
 					}
 				}
-
-				> ul{
-					display: block;
+				> ul {
+					display: none;
+					margin: 5px 0px;
 					padding: 0px;
-					> li{
+					border-left: 2px solid #D8D8D8;
+
+					&.open {
 						display: block;
-						font-size: 1.3em;
+					}
+					> li {
+						display: block;
+						font-size: 1.1em;
 						color: #A1A1A1;
-						line-height: 2.1em;
+						line-height: 1.8em;
 						list-style: none;
-						&.open{
-							a{color: #6FAFE0;}
+						&.open {
+							a {
+								color: #A9D438;
+							}
 						}
-						a{
+						a {
+							/* Rectangle 6: */
 							display: block;
-							color: inherit;
-							text-transform: uppercase;
-							&:hover{
-								color: #6FAFE0;
+							height: 28px;
+							line-height: 28px;
+							color: #A1A1A1;
+							padding: 0px 10px;
+							&:hover {
+								background: #F1F1F1;
+								color: #A9D438;
 								text-decoration: none;
 							}
 						}
 					}
-					> ul {
-						display: none;
-						margin: 5px 0px;
-						padding: 0px;
-						border-left: 2px solid #D8D8D8;
-
-						&.open{
-							display: block;
-						}
-						> li{
-							display: block;
-							font-size: 1.1em;
-							color: #A1A1A1;
-							line-height: 1.8em;
-							list-style: none;
-							&.open{
-								a{
-									color: #A9D438;
-								}
-							}
-							a{
-								/* Rectangle 6: */
-								display: block;
-								height: 28px;
-								line-height: 28px;
-								color: #A1A1A1;
-								padding: 0px 10px;
-								&:hover{
-									background: #F1F1F1;
-									color: #A9D438;
-									text-decoration: none;
-								}
-							}
-						}
-					}
 				}
 			}
+		}
+	}
+}
+
+&.with-inline-menu{
+	.docs-body {
+
+		margin-top: $docs-visual-sm-height;
+		.wrapper {
+			//padding-left: $docs-sub-page-menu-width;
+		}
+	}
+}
+&.with-menu{
+	.wrapper {
+		max-width: 100%;
+		padding: 20px 0px;
+		.row {
+			margin-left: 0;
+			margin-right: 0;
+		}
+	}
+}
+
+// mobile
+@media screen and (max-width: $break-mobilewide-width) {
+	.wrapper {
+		.row {
+			margin-left: 0;
+			margin-right: 0;
 		}
 	}
 }

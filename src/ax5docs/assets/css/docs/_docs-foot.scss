@@ -44,3 +44,17 @@
 		margin: 0px auto;
 	}
 }
+&.with-menu{
+	.wrapper {
+		max-width: 100%;
+	}
+}
+
+// mobile
+@media screen and (max-width: $break-mobilewide-width) {
+	.docs-foot {
+		.background-type {
+			padding: 20px;
+		}
+	}
+}

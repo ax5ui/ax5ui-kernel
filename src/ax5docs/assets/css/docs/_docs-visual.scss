@@ -74,6 +74,14 @@
 	}
 }
 
+&.with-menu{
+	.docs-visual {
+		.contents {
+			max-width: 100%;
+		}
+	}
+}
+
 // class="docs-body style-sub"
 &.style-sub {
 	.docs-visual {

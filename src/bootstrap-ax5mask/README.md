@@ -3,3 +3,4 @@
 
 # bootstrap-ax5mask
 
+"mask" is used for prevent user action during running the application.

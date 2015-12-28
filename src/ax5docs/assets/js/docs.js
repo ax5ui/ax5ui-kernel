@@ -13,73 +13,74 @@ var fn_docs = (function () {
             focusedH2: '',
             focusedH3: '',
             ready: function (target, scrollType) {
+                if (scrollType != 'inline') return;
+
                 var list = [], offsetList = [];
                 this.target = target;
                 this.scrollType = scrollType;
 
-                if (scrollType == 'inline') {
-                    var h1_index = -1, h2_index = -1, h3_index = -1;
-                    fn_docs._jos['docs-body'].find('h1,h2,h3').each(function (idx, nn) {
-                        var $this = $(this);
-                        $this.find('a[data-name]').remove();
-                        var h_id = 'doc-' + this.innerHTML.replace(/\W/g, "-") + '-' + idx;
+                var h1_index = -1, h2_index = -1, h3_index = -1;
+                fn_docs._jos['docs-body'].find('h1,h2,h3').each(function (idx, nn) {
+                    var $this = $(this);
+                    $this.find('a[data-name]').remove();
+                    var h_id = 'doc-' + this.innerHTML.replace(/\W/g, "-") + '-' + idx;
 
-                        if(idx == 0 && this.tagName !== "H1"){
-                            // 상위 아이템 없음.
-                            h1_index = 0;
-                            h2_index = 0;
-                            h3_index = 0;
-                            list.push({
-                                tagName: "H1",
-                                id: "",
-                                label: "",
-                                child: []
-                            });
-
-                            offsetList.push({
-                                top: 0,
-                                id: "",
-                                h1_index: h1_index,
-                                h2_index: h2_index,
-                                h3_index: h3_index
-                            });
-                        }
-
-                        if (this.tagName === "H1") {
-                            _list = list;
-                            h1_index = _list.length;
-                            h2_index = 0;
-                            h3_index = 0;
-                        }
-                        else if (this.tagName === "H2") {
-                            _list = (h1_index > -1) ? list[h1_index].child : list;
-                            h2_index = _list.length;
-                            h3_index = 0;
-                        }
-                        else if (this.tagName == "H3") {
-                            _list = (h1_index > -1 && h2_index > -1) ? list[h1_index].child[h2_index].child : list;
-                            h3_index = _list.length;
-                        }
-
-                        _list.push({
-                            tagName: this.tagName,
-                            id: h_id,
-                            label: this.innerHTML,
+                    if(idx == 0 && this.tagName !== "H1"){
+                        // 상위 아이템 없음.
+                        h1_index = 0;
+                        h2_index = 0;
+                        h3_index = 0;
+                        list.push({
+                            tagName: "H1",
+                            id: "",
+                            label: "",
                             child: []
                         });
 
                         offsetList.push({
-                            top: $this.offset().top,
-                            id: h_id,
+                            top: 0,
+                            id: "",
                             h1_index: h1_index,
                             h2_index: h2_index,
                             h3_index: h3_index
                         });
+                    }
 
-                        $this.append('<a name="' + h_id + '" data-name="true"></a>');
+                    if (this.tagName === "H1") {
+                        _list = list;
+                        h1_index = _list.length;
+                        h2_index = 0;
+                        h3_index = 0;
+                    }
+                    else if (this.tagName === "H2") {
+                        _list = (h1_index > -1) ? list[h1_index].child : list;
+                        h2_index = _list.length;
+                        h3_index = 0;
+                    }
+                    else if (this.tagName == "H3") {
+                        _list = (h1_index > -1 && h2_index > -1) ? list[h1_index].child[h2_index].child : list;
+                        h3_index = _list.length;
+                    }
 
+                    _list.push({
+                        tagName: this.tagName,
+                        id: h_id,
+                        label: this.innerHTML,
+                        child: []
                     });
-                }
+
+                    offsetList.push({
+                        top: $this.offset().top,
+                        id: h_id,
+                        h1_index: h1_index,
+                        h2_index: h2_index,
+                        h3_index: h3_index
+                    });
+
+                    $this.append('<a name="' + h_id + '" data-name="true"></a>');
+
+                });
+
                 this.list = list;
                 this.offsetList = offsetList;
                 if (!this.printed) this.print();
@@ -164,7 +165,7 @@ $(document.body).ready(function () {
             fn_docs.menu.ready(fn_docs._jos['docs-inline-menu'], 'inline');
         }
         if (fn_docs._jos['docs-menu'][0]) {
-            fn_docs.menu.ready(fn_docs._jos['docs-menu'], 'static');
+
         }
     });
 

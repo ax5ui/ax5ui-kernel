@@ -165,6 +165,7 @@ gulp.task('default', function () {
 
     gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
     gulp.watch(PATHS.assets.src + '/_layouts/root.marko', ['AX5UI-docs']);
+    gulp.watch(PATHS.assets.src + '/components/**/*.js', ['AX5UI-docs', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
 
     gulp.watch(PATHS.ax5docs.doc_src + '/**/*.html', ['AX5UI-docs']);
     gulp.watch(PATHS.ax5core.doc_src + '/**/*.html', ['AX5CORE-docs']);

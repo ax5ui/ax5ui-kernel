@@ -98,16 +98,20 @@ exports.render = function (input, out) {
         var po = [];
         for (var i = 0, l = trees.length, _item; i < l; i++) {
             _item = trees[i];
-            po.push('<li ' + (function () {
-                    return (input.activeId == _item.id) ? "class='active'" : "";
-                })() + '>');
 
-            if (!_item.url && _item.child && _item.child.length > 0) {
-                _item.url = _item.child[0].url;
+            if(input.parentId == _item.id){
+                po.push('<ul>');
+
+                _item.child.forEach(function(childItem){
+                    po.push('<li ' + (function () {
+                            return (input.activeId == childItem.id) ? "class='active'" : "";
+                        })() + '>');
+                    po.push('<a href="' + getUrl(childItem.url) + '">' + childItem.title + '</a>');
+                    po.push('</li>');
+                });
+
+                po.push('</ul>');
             }
-
-            po.push('<a href="' + getUrl(_item.url) + '">' + _item.title + '</a>');
-            po.push('</li>');
         }
 
         out.write(po.join(''));

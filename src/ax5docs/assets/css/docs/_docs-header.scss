@@ -202,6 +202,14 @@
 	}
 }
 
+&.with-menu{
+	.docs-header-tool {
+		.navbar {
+			max-width: 100%;
+		}
+	}
+}
+
 @media screen and (max-width: $break-mobilewide-width) {
 	.docs-header{
 		position: absolute;
