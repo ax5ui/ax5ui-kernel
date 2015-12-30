@@ -72,7 +72,7 @@
 
 						<ul class="nav navbar-nav navbar-right">
 							<li>
-								<a href="https://github.com/ax5ui">
+								<a href="https://github.com/ax5ui/bootstrap-ax5mask">
 									<span class="ax5uicon ax5uicon-github"></span>
 									Star
 									<span class="gh-count" id="started-count">.</span>
@@ -128,9 +128,9 @@
         <h1>Custom Uasge</h1>
 
         <p>
-            만약 당신이 마스크에 <code>z-index</code>, 메시지 등을 변경하거나,
-            특정한 엘리먼트에 마스크를 씌워야 한다면 <code>mask.setConfig</code>에서 설정을 변경 할 수 있습니다.
-            마스크 설정은 <code>mask.open</code> 메소드에서도 원하는 설정을 적용할 수 있습니다.
+            If you need to put mask on specific element, change on <code>z-index</code> or message,
+            you can set it on <code>mask.setConfig</code>
+            <code>mask.open</code> method can set mask additional configuration on.
         </p>
 
         <button class="btn btn-primary" type="button" id="mask-open">open Mask</button>
@@ -194,6 +194,9 @@
 
     });
 </script></script>
+            <p>
+                Declare Mask UI default configuration in advance. Whenever open method is called, its default configuration is applied as inheritance
+            </p>
         </section>
 
 
@@ -249,7 +252,7 @@
 					<dt>Code licensed</dt>
 					<dd>MIT</dd>
 					<dt>Mantained by</dt>
-					<dd>Thomas Jang</dd>
+					<dd>Thomas Jang, Brant, Junho and Team AXISJ</dd>
 					<dt>Templete design by</dt>
 					<dd>Jorwrney Kim</dd>
 

@@ -8,3 +8,11 @@
 		height: #{$i*10}px;
 	}
 }
+
+pre.prettyprint{
+	font-size: 13px;
+	margin: 1em 0;
+}
+pre.lang-sh{
+	font-size: 15px;
+}

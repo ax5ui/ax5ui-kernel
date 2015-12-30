@@ -2,11 +2,19 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # bootstrap-ax5mask
+"mask" is used for prevent user action during running the application.
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 > * _[ax5core](http://ax5.io/ax5core)_
 
-"mask" is used for prevent user action during running the application.
+
+### Install
+```sh
+npm install bootstrap-ax5mask
+```
+After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
+If the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.
+***
 
 ### Insert the "ax5mask" in the HTML HEAD.
 
@@ -26,3 +34,12 @@ exactly the path.
 </body>
 </html>
 ```
+
+### Basic Usages
+```js
+var mask = new ax5.ui.mask();
+mask.open();
+```
+
+### Preview
+- [See Demostration](http://ax5.io/bootstrap-ax5mask/demo/index.html)

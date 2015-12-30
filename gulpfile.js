@@ -6,6 +6,7 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var changed = require('gulp-changed');
 var marko_ax5 = require('gulp-marko-ax5');
+var notify = require("gulp-notify");
 var spawn = require('child_process').spawn;
 
 var PATHS = {
@@ -20,18 +21,21 @@ var PATHS = {
         doc_dest: "src/ax5docs"
     },
     ax5core: {
+        root: "src/ax5core",
         src: "src/ax5core/src",
         dest: "src/ax5core/dist",
         doc_src: "src/ax5docs/_src_ax5core",
         doc_dest: "src/ax5docs/ax5core"
     },
     "bootstrap-ax5dialog": {
+        root: "src/bootstrap-ax5dialog",
         src: "src/bootstrap-ax5dialog/src",
         dest: "src/bootstrap-ax5dialog/dist",
         doc_src: "src/ax5docs/_src_bootstrap-ax5dialog",
         doc_dest: "src/ax5docs/bootstrap-ax5dialog"
     },
     "bootstrap-ax5mask": {
+        root: "src/bootstrap-ax5mask",
         src: "src/bootstrap-ax5mask/src",
         dest: "src/bootstrap-ax5mask/dist",
         doc_src: "src/ax5docs/_src_bootstrap-ax5mask",
@@ -43,8 +47,7 @@ var PATHS = {
  * SASS
  */
 function errorAlert(err) {
-    notify.onError({title: "SCSS Error", message: "Check your terminal", sound: "Sosumi"})(error); //Error Notification
-    console.log(error.toString());//Prints Error to Console
+    notify("SASS Error check your terminal"); //Error Notification
     this.emit("end"); //End function
 }
 
@@ -190,6 +193,10 @@ gulp.task('watch', function () {
     gulp.watch(PATHS.ax5core.doc_src + '/**/*.html', ['AX5CORE-docs']);
     gulp.watch(PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html', ['AX5MASK-docs']);
     gulp.watch(PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html', ['AX5DIALOG-docs']);
+
+    gulp.watch(PATHS['ax5core'].root + '/**/*.md', ['AX5CORE-docs']);
+    gulp.watch(PATHS['bootstrap-ax5mask'].root + '/**/*.md', ['AX5MASK-docs']);
+    gulp.watch(PATHS['bootstrap-ax5dialog'].root + '/**/*.md', ['AX5DIALOG-docs']);
 });
 
 gulp.task('default', function () {

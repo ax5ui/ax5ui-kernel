@@ -71,7 +71,7 @@
 
 						<ul class="nav navbar-nav navbar-right">
 							<li>
-								<a href="https://github.com/ax5ui">
+								<a href="https://github.com/ax5ui/bootstrap-ax5mask">
 									<span class="ax5uicon ax5uicon-github"></span>
 									Star
 									<span class="gh-count" id="started-count">.</span>
@@ -141,7 +141,7 @@
         
         <section class="ax5docs-section">
             <p>
-                Has the following elements, is as the syntax for applying a mask to this element of the next.
+                In order to put the mask on, you can use the following example elements and codes
             </p>
             <pre class="prettyprint linenums lang-html">&lt;div style="width: 300px;height: 300px; border: 1px solid #000;" id="user-content">
     user content
@@ -157,6 +157,7 @@
 
         $('#mask-open').click(function () {
             mask.open({
+                zIndex: 99,
                 target: $("#user-content").get(0),
                 content: 'MASK'
             });
@@ -174,6 +175,7 @@
 
         $('#mask-open').click(function () {
             mask.open({
+                zIndex: 99,
                 target: $("#user-content").get(0),
                 content: 'MASK'
             });
@@ -225,7 +227,7 @@
 					<dt>Code licensed</dt>
 					<dd>MIT</dd>
 					<dt>Mantained by</dt>
-					<dd>Thomas Jang</dd>
+					<dd>Thomas Jang, Brant, Junho and Team AXISJ</dd>
 					<dt>Templete design by</dt>
 					<dd>Jorwrney Kim</dd>
 

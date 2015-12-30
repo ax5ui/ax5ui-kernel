@@ -5,7 +5,16 @@
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 
-## Insert the "ax5" in the HTML HEAD.
+### Install
+```sh
+npm install ax5core
+```
+After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
+If the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.
+***
+
+   
+### Insert the "ax5" in the HTML HEAD.
 Location of the folder can be determined freely in your project. But be careful not to accidentally caused
 exactly the path.
 ```html
@@ -21,7 +30,9 @@ exactly the path.
 ```
 Enjoy "AX5" utility library
 
-## ax5.util.date
+***
+
+### ax5.util.date
 ```js
 ax5.util.date("20111111");
 //Fri Nov 11 2011 23:59:00 GMT+0900 (KST)

@@ -40,7 +40,7 @@
         <!-- doc-js mask basic -->
         <section class="ax5docs-section">
             <p>
-                Has the following elements, is as the syntax for applying a mask to this element of the next.
+                In order to put the mask on, you can use the following example elements and codes
             </p>
             <ax5docs-html>
                 <div style="width: 300px;height: 300px; border: 1px solid #000;" id="user-content">
@@ -59,6 +59,7 @@
 
                         $('#mask-open').click(function () {
                             mask.open({
+                                zIndex: 99,
                                 target: $("#user-content").get(0),
                                 content: 'MASK'
                             });

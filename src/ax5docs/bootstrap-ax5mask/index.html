@@ -65,7 +65,7 @@
 
 						<ul class="nav navbar-nav navbar-right">
 							<li>
-								<a href="https://github.com/ax5ui">
+								<a href="https://github.com/ax5ui/bootstrap-ax5mask">
 									<span class="ax5uicon ax5uicon-github"></span>
 									Star
 									<span class="gh-count" id="started-count">.</span>
@@ -126,6 +126,7 @@
 			<p><a href="https://github.com/axisj"><img src="https://img.shields.io/badge/AXISJ.com-Contributed-green.svg" alt="axisj-contributed"></a>
 <img src="https://img.shields.io/badge/Seowoo-Mondo&amp;Thomas-red.svg" alt=""></p>
 <h1>bootstrap-ax5mask</h1>
+<p>&quot;mask&quot; is used for prevent user action during running the application.</p>
 <blockquote>
 <p><em>Dependencies</em></p>
 <ul>
@@ -133,7 +134,12 @@
 <li><em><a href="http://ax5.io/ax5core">ax5core</a></em></li>
 </ul>
 </blockquote>
-<p>&quot;mask&quot; is used for prevent user action during running the application.</p>
+<h3>Install</h3>
+<pre class="prettyprint linenums lang-sh"><code>npm install bootstrap-ax5mask
+</code></pre>
+<p>After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
+If the inconvenience in the process that you want to copy the file and can be easily copied by using a <code>gulp</code> or <code>grunt</code>.</p>
+<hr>
 <h3>Insert the &quot;ax5mask&quot; in the HTML HEAD.</h3>
 <p>Location of the folder can be determined freely in your project. But be careful not to accidentally caused
 exactly the path.</p>
@@ -150,6 +156,14 @@ exactly the path.</p>
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
+<h3>Basic Usages</h3>
+<pre class="prettyprint linenums lang-js"><code>var mask = new ax5.ui.mask();
+mask.open();
+</code></pre>
+<h3>Preview</h3>
+<ul>
+<li><a href="http://ax5.io/bootstrap-ax5mask/demo/index.html">See Demostration</a></li>
+</ul>
 
 		</section>
 
@@ -191,7 +205,7 @@ exactly the path.</p>
 					<dt>Code licensed</dt>
 					<dd>MIT</dd>
 					<dt>Mantained by</dt>
-					<dd>Thomas Jang</dd>
+					<dd>Thomas Jang, Brant, Junho and Team AXISJ</dd>
 					<dt>Templete design by</dt>
 					<dd>Jorwrney Kim</dd>
 
