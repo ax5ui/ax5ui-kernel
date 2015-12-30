@@ -3,49 +3,49 @@
     <parent>Demo</parent>
     <sort>2</sort>
 
-    <id>custom</id>
-    <title>Custom Uasge</title>
+    <id>element-mask</id>
+    <title>Element mask</title>
     <desc></desc>
 </tmpl-metadata>
 
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Custom Uasge" parent-id="demo"
-            page-id="custom" body-style="sub-page" with-menu="true">
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Element mask" parent-id="demo"
+            page-id="element-mask" body-style="sub-page" with-menu="true">
     <layout-put into="docs-menu">
         <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo"
-                              activeId="custom"></ax5docs-get-sub-list>
+                              activeId="element-mask"></ax5docs-get-sub-list>
     </layout-put>
     <layout-put into="visual">
-        <div class="contents">
-            <div class="style-sub-visual">
-                <div class="title">Demostration</div>
-                <div class="description">Introduces the basic use of bootstrap-ax5mask UI.</div>
-            </div>
-        </div>
+        <include template="../_inc/include.html" id="demo-visual" />
     </layout-put>
     <layout-put into="head-js">
-        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css"/>
-        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css" />
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.js"></script>
     </layout-put>
     <layout-put into="body">
 
-        <h1>Custom Uasge</h1>
+        <h1>Element mask</h1>
 
         <p>
-            만약 당신이 마스크에 <code>z-index</code>, 메시지 등을 변경하거나,
-            특정한 엘리먼트에 마스크를 씌워야 한다면 <code>mask.setConfig</code>에서 설정을 변경 할 수 있습니다.
-            마스크 설정은 <code>mask.open</code> 메소드에서도 원하는 설정을 적용할 수 있습니다.
+            It can be used when the need to mask the element.
         </p>
 
-        <button class="btn btn-primary" type="button" id="mask-open">open Mask</button>
+        <div style="width: 300px;height: 300px; border: 1px solid #000;" id="user-content">
+            user content
+        </div>
+
+        <div class="DH10"></div>
+        <button class="btn btn-default" type="button" id="mask-open">open Mask</button>
+        <button class="btn btn-default" type="button" id="mask-close">close Mask</button>
 
         <!-- doc-js mask basic -->
         <section class="ax5docs-section">
             <p>
-                <b>Paste the following code into the <code>&lt;head&gt;</code> section of your site's HTML.</b>
+                Has the following elements, is as the syntax for applying a mask to this element of the next.
             </p>
             <ax5docs-html>
-                <link rel="stylesheet"
-                      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+                <div style="width: 300px;height: 300px; border: 1px solid #000;" id="user-content">
+                    user content
+                </div>
             </ax5docs-html>
 
             <p>
@@ -53,26 +53,19 @@
             </p>
             <ax5docs-js run="true">
                 <script type="text/javascript">
+                    var mask = new ax5.ui.mask();
+
                     $(document.body).ready(function () {
-
-                        var mask = new ax5.ui.mask();
-                        mask.setConfig({
-                            target: document.body, // 미리 선언했지만
-                            content: "<h1>Mask will disappear after 3 seconds.</h1>",
-                            onchange: function () {
-
-                            }
-                        });
 
                         $('#mask-open').click(function () {
                             mask.open({
-                                content: '<h1><i class="fa fa-spinner fa-spin"></i> Loading</h1>'
+                                target: $("#user-content").get(0),
+                                content: 'MASK'
                             });
+                        });
 
-                            setTimeout(function () {
-                                mask.close();
-                            }, 2000);
-                            // Mask will disappear after 3 seconds.
+                        $('#mask-close').click(function () {
+                            mask.close();
                         });
 
                     });
@@ -80,26 +73,5 @@
             </ax5docs-js>
         </section>
 
-
-        <!-- doc-js Options -->
-        <section class="ax5docs-section">
-            <h2>Options</h2>
-            <p>
-                Mask settings can change the following four attributes.
-            </p>
-            <ax5docs-js>
-                <script type="text/javascript">
-                    mask.open({
-                        target: {Element} [target of mask],
-                        theme: {String} [addClass mask],
-                        zIndex: {Number},
-                        content: 'content of mask'
-                    });
-                </script>
-            </ax5docs-js>
-        </section>
-
-    </layout-put>
-    <layout-put into="page-js">
     </layout-put>
 </layout-use>

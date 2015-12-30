@@ -15,7 +15,6 @@
 	<script src="../../assets/lib/prettify/prettify.js"></script>
 	<script src="../../assets/lib/prettify/lang-css.js"></script>
 	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/skins/github.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
 	<script type="text/javascript">
 		$(document.body).ready(function() {
@@ -117,11 +116,76 @@
 				<div class="col-md-9">
 					
 
-        <h1>Basic Usage</h1>
+        <h1>Mask</h1>
 <blockquote>
-<p>mask</p>
+<p>&quot;mask&quot; is used for prevent user action during running the application.</p>
 </blockquote>
 <h2>setConfig</h2>
+<p>You previously declared the default settings of the mask UI. The declared set value in this way, are inherited by every time you start it with by <code>open</code> method.</p>
+<pre class="prettyprint linenums lang-js"><code>var mask = new ax5.ui.mask();
+mask.setConfig({
+    zIndex: 1000, 
+    content: 'Loading content'
+});
+</code></pre>
+<pre class="prettyprint linenums lang-json"><code>{
+    [target: {Element} - target of mask,]
+    [theme: {String} -addClass mask,]
+    [zIndex: {Number},]
+    [content: 'content of mask']
+}
+</code></pre>
+<hr>
+<h2>open</h2>
+<pre class="prettyprint linenums lang-js"><code>var mask = new ax5.ui.mask();
+
+$('#mask-open').click(function () {
+    mask.open();
+});
+</code></pre>
+<p><strong>with config</strong></p>
+<pre class="prettyprint linenums lang-js"><code>mask.open({
+    target: $('#id').get(0),
+    content: 'mask'
+});
+</code></pre>
+<hr>
+<h2>close</h2>
+<pre class="prettyprint linenums lang-js"><code>var mask = new ax5.ui.mask();
+
+$('#mask-close').click(function () {
+    mask.close();
+});
+</code></pre>
+<hr>
+<h2>Using SASS</h2>
+<p><strong>src/css/_ax5mask_variables.css</strong> file, there is a variable to be used in the <code>ax5mask</code>.
+You can be compiled by overriding variables.</p>
+<pre class="prettyprint linenums lang-css"><code>$ax5mask-z-index: 1000 !default;
+$ax5mask-bg-opacity: 0.6 !default;
+
+$ax5mask-bg: #000 !default;
+$ax5mask-text-color: #fff !default;
+$ax5mask-text-shadow:0px 1px 0px #000 !default;
+</code></pre>
+<p><code>src/ax5mask.css</code> file, you can declare a variable on import of syntax.</p>
+<pre class="prettyprint linenums lang-css"><code>$ax5mask-bg: #000;
+@import &quot;ax5mask&quot;;
+</code></pre>
+<h2>Make theme</h2>
+<p>In some cases, you may need to extend the mask theme.
+When you add the syntax of the following CSS, you can easily extend the mask theme.</p>
+<pre class="prettyprint linenums lang-css"><code>&lt;style type=&quot;text/css&quot;&gt;
+    .ax-mask.danger .ax-mask-bg {
+        background: #7a0000;
+    }
+&lt;/style&gt;
+</code></pre>
+<p>And you can use it to add the theme property of the <code>setConfig</code> and<code>open</code> methods</p>
+<pre class="prettyprint linenums lang-js"><code>mask.open({
+    theme:'danger'
+});
+</code></pre>
 
 
     

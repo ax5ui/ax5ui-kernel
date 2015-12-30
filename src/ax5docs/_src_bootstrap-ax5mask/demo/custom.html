@@ -1,7 +1,7 @@
 <tmpl-metadata>
     <parentId>demo</parentId>
     <parent>Demo</parent>
-    <sort>2</sort>
+    <sort>4</sort>
 
     <id>custom</id>
     <title>Custom Uasge</title>
@@ -15,14 +15,10 @@
                               activeId="custom"></ax5docs-get-sub-list>
     </layout-put>
     <layout-put into="visual">
-        <div class="contents">
-            <div class="style-sub-visual">
-                <div class="title">Demostration</div>
-                <div class="description">Introduces the basic use of bootstrap-ax5mask UI.</div>
-            </div>
-        </div>
+        <include template="../_inc/include.html" id="demo-visual"/>
     </layout-put>
     <layout-put into="head-js">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css"/>
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
     </layout-put>
@@ -88,18 +84,14 @@
                 Mask settings can change the following four attributes.
             </p>
             <ax5docs-js>
-                <script type="text/javascript">
-                    mask.open({
-                        target: {Element} [target of mask],
-                        theme: {String} [addClass mask],
-                        zIndex: {Number},
-                        content: 'content of mask'
-                    });
-                </script>
+                {
+                    [target: {Element} - target of mask,]
+                    [theme: {String} -addClass mask,]
+                    [zIndex: {Number},]
+                    [content: 'content of mask']
+                }
             </ax5docs-js>
         </section>
 
-    </layout-put>
-    <layout-put into="page-js">
     </layout-put>
 </layout-use>

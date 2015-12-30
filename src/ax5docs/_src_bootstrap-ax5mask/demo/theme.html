@@ -1,0 +1,86 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>3</sort>
+
+    <id>theme</id>
+    <title>Extend theme</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Extend theme" parent-id="demo"
+            page-id="theme" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo"
+                              activeId="theme"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
+
+        <style type="text/css">
+            .ax-mask.danger .ax-mask-bg {
+                background: #7a0000;
+            }
+        </style>
+    </layout-put>
+    <layout-put into="body">
+
+        <h1>Exetend theme</h1>
+
+        <p>
+
+        </p>
+
+        <button class="btn btn-default" type="button" id="mask-open">open Mask(default)</button>
+        <button class="btn btn-danger" type="button" id="mask-open-danger">open Mask(danger)</button>
+
+        <!-- doc-js mask basic -->
+        <section class="ax5docs-section">
+            <p>
+                다음의 스타일 시트를 문서에 추가하면 <code>ax-mask</code>의 <code>danger</code> 테마가 추가됩니다. 배경이외의 옵션들도 제공된 <code>scss</code>구조를 파악하여 확장 할 수 있습니다.
+            </p>
+            <ax5docs-html>
+                <style type="text/css">
+                    .ax-mask.danger .ax-mask-bg {
+                        background: #7a0000;
+                    }
+                </style>
+            </ax5docs-html>
+
+            <p>
+                <b>Javascript</b>
+            </p>
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    var mask = new ax5.ui.mask();
+                    $(document.body).ready(function () {
+                        $('#mask-open').click(function () {
+                            mask.open();
+
+                            setTimeout(function () {
+                                mask.close();
+                            }, 2000);
+                            // Mask will disappear after 3 seconds.
+                        });
+
+                        $('#mask-open-danger').click(function () {
+                            mask.open({
+                                theme: 'danger'
+                            });
+
+                            setTimeout(function () {
+                                mask.close();
+                            }, 2000);
+                            // Mask will disappear after 3 seconds.
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+        </section>
+
+    </layout-put>
+</layout-use>
