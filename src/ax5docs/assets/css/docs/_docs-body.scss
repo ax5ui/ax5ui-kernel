@@ -153,17 +153,17 @@
 							color: #575757;
 							line-height: 2.1em;
 							list-style: none;
-							&.open {
+							&.active {
 								a {
-									color: #6FAFE0;
+									color: darken(#6FAFE0, 10%);
 								}
 							}
 							a {
 								display: block;
 								color: inherit;
 								text-transform: none;
-								&:hover {
-									color: #6FAFE0;
+								&:active {
+									color: darken(#6FAFE0, 10%);
 									text-decoration: none;
 								}
 							}

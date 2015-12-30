@@ -105,7 +105,7 @@ exports.render = function (input, out) {
 
                 _item.child.forEach(function(childItem){
                     po.push('<li ' + (function () {
-                            return (input.activeId == childItem.id) ? "class='active'" : "";
+                            return (input.activeId == childItem.id) ? " class='active'" : "";
                         })() + '>');
                     po.push('<a href="' + getUrl(childItem.url) + '">' + childItem.title + '</a>');
                     po.push('</li>');

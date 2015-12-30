@@ -5,8 +5,8 @@ var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var changed = require('gulp-changed');
-
 var marko_ax5 = require('gulp-marko-ax5');
+var spawn = require('child_process').spawn;
 
 var PATHS = {
     assets: {
@@ -42,14 +42,22 @@ var PATHS = {
 /**
  * SASS
  */
+function errorAlert(err) {
+    notify.onError({title: "SCSS Error", message: "Check your terminal", sound: "Sosumi"})(error); //Error Notification
+    console.log(error.toString());//Prints Error to Console
+    this.emit("end"); //End function
+}
+
 gulp.task('SASS', function () {
     gulp.src(PATHS.ax5docs.css_src + '/docs.scss')
         .pipe(sass({outputStyle: 'compressed'}))
+        .on("error", errorAlert)
         .pipe(gulp.dest(PATHS.ax5docs.css_dest));
 
     gulp.src(PATHS['bootstrap-ax5mask'].src + '/ax5mask.scss')
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(gulp.dest(PATHS['bootstrap-ax5mask'].dest))
+        .on("error", errorAlert)
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5mask'));
 });
 
@@ -168,18 +176,32 @@ gulp.task('docs:all', function () {
 /**
  * watch
  */
-gulp.task('default', function () {
+gulp.task('watch', function () {
     gulp.watch(PATHS.ax5docs.css_src + '/**/*.scss', ['SASS']);
     gulp.watch(PATHS.ax5core.src + '/*.js', ['AX5CORE-scripts']);
     gulp.watch(PATHS["bootstrap-ax5dialog"].src + '/*.js', ['AX5DIALOG-scripts']);
     gulp.watch(PATHS["bootstrap-ax5mask"].src + '/*.js', ['AX5MASK-scripts']);
 
-    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
-    gulp.watch(PATHS.assets.src + '/_layouts/root.marko', ['AX5UI-docs']);
-    gulp.watch(PATHS.assets.src + '/components/**/*.js', ['AX5UI-docs', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
+    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['default', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
+    gulp.watch(PATHS.assets.src + '/_layouts/root.marko', ['default', 'AX5UI-docs']);
+    gulp.watch(PATHS.assets.src + '/components/**/*.js', ['default', 'AX5UI-docs', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
 
     gulp.watch(PATHS.ax5docs.doc_src + '/**/*.html', ['AX5UI-docs']);
     gulp.watch(PATHS.ax5core.doc_src + '/**/*.html', ['AX5CORE-docs']);
     gulp.watch(PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html', ['AX5MASK-docs']);
     gulp.watch(PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html', ['AX5DIALOG-docs']);
+});
+
+gulp.task('default', function () {
+    var p;
+    spawnChildren();
+
+    function spawnChildren(e) {
+        // kill previous spawned process
+        if (p) {
+            p.kill();
+        }
+        // `spawn` a child `gulp` process linked to the parent `stdio`
+        p = spawn('gulp', ["watch"], {stdio: 'inherit'});
+    }
 });
