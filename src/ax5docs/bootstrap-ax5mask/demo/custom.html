@@ -18,6 +18,8 @@
 	<script src="../../assets/lib/prettify/prettify.js"></script>
 	<script src="../../assets/lib/prettify/lang-css.js"></script>
 	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/skins/github.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
 	<script type="text/javascript">
 		$(document.body).ready(function() {
 			if (window["prettyPrint"]) window["prettyPrint"]();
@@ -50,7 +52,7 @@
 					<div class="navbar-header">
 						<span class="navbar-brand">
 							<a href="/">
-							<i class="icon-ax5"></i>UI</a>
+							<span class="ax5uicon ax5uicon-ax5"></span>UI</a>
 							<a href="/bootstrap-ax5mask">
 							<span class="small">/ bootstrap-ax5mask</span></a>
 						</span>
@@ -72,7 +74,7 @@
 						<ul class="nav navbar-nav navbar-right">
 							<li>
 								<a href="https://github.com/ax5ui">
-									<i class="icon-github"></i>
+									<span class="ax5uicon ax5uicon-github"></span>
 									Star
 									<span class="gh-count" id="started-count">.</span>
 								</a>
@@ -117,24 +119,33 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li ><a href="/bootstrap-ax5mask/demo/index.html">Basic Uasge</a></li><li  class='active'><a href="/bootstrap-ax5mask/demo/custom.html">Custom Uasge</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5mask/demo/index.html">Basic Uasge</a></li><li  class='active'><a href="/bootstrap-ax5mask/demo/custom.html">Custom Uasge</a></li><li  class='active'><a href="/bootstrap-ax5mask/demo/element-mask.html">Custom Uasge</a></li></ul>
     
 					</div>
 				</div>
 				<div class="col-md-9">
 					
 
-        <h1>custom Uasge</h1>
+        <h1>Custom Uasge</h1>
 
         <p>
-            When you click the button below, you can put a semi-transparent mask on the entire page. <br>
-            "mask" is used for prevent user action during running the application.
+            만약 당신이 마스크에 <code>z-index</code>, 메시지 등을 변경하거나,
+            특정한 엘리먼트에 마스크를 씌워야 한다면 <code>mask.setConfig</code>에서 설정을 변경 할 수 있습니다.
+            마스크 설정은 <code>mask.open</code> 메소드에서도 원하는 설정을 적용할 수 있습니다.
         </p>
 
-        <button class="btn btn-default" type="button" id="mask-open">Button</button>
+        <button class="btn btn-primary" type="button" id="mask-open">open Mask</button>
 
         
         <section class="ax5docs-section">
+            <p>
+                <b>Paste the following code into the <code>&lt;head></code> section of your site's HTML.</b>
+            </p>
+            <pre class="prettyprint linenums lang-html">&lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"></pre>
+
+            <p>
+                <b>Javascript</b>
+            </p>
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
 
@@ -148,11 +159,14 @@
         });
 
         $('#mask-open').click(function () {
-            mask.open();
+            mask.open({
+                content: '&lt;h1>&lt;i class="fa fa-spinner fa-spin">&lt;/i> Loading&lt;/h1>'
+            });
 
             setTimeout(function () {
                 mask.close();
             }, 2000);
+            // Mask will disappear after 3 seconds.
         });
 
     });
@@ -169,15 +183,35 @@
         });
 
         $('#mask-open').click(function () {
-            mask.open();
+            mask.open({
+                content: '<h1><i class="fa fa-spinner fa-spin"></i> Loading</h1>'
+            });
 
             setTimeout(function () {
                 mask.close();
             }, 2000);
+            // Mask will disappear after 3 seconds.
         });
 
     });
 </script></script>
+        </section>
+
+
+        
+        <section class="ax5docs-section">
+            <h2>Options</h2>
+            <p>
+                Mask settings can change the following four attributes.
+            </p>
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    mask.open({
+        target: {Element} [target of mask],
+        theme: {String} [addClass mask],
+        zIndex: {Number},
+        content: 'content of mask'
+    });
+&lt;/script></pre>
         </section>
 
     

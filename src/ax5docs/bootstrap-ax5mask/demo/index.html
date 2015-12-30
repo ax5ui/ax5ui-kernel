@@ -18,6 +18,8 @@
 	<script src="../../assets/lib/prettify/prettify.js"></script>
 	<script src="../../assets/lib/prettify/lang-css.js"></script>
 	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/skins/github.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
 	<script type="text/javascript">
 		$(document.body).ready(function() {
 			if (window["prettyPrint"]) window["prettyPrint"]();
@@ -50,7 +52,7 @@
 					<div class="navbar-header">
 						<span class="navbar-brand">
 							<a href="/">
-							<i class="icon-ax5"></i>UI</a>
+							<span class="ax5uicon ax5uicon-ax5"></span>UI</a>
 							<a href="/bootstrap-ax5mask">
 							<span class="small">/ bootstrap-ax5mask</span></a>
 						</span>
@@ -72,7 +74,7 @@
 						<ul class="nav navbar-nav navbar-right">
 							<li>
 								<a href="https://github.com/ax5ui">
-									<i class="icon-github"></i>
+									<span class="ax5uicon ax5uicon-github"></span>
 									Star
 									<span class="gh-count" id="started-count">.</span>
 								</a>
@@ -117,7 +119,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5mask/demo/index.html">Basic Uasge</a></li><li ><a href="/bootstrap-ax5mask/demo/custom.html">Custom Uasge</a></li></ul>
+        <ul><li  class='active'><a href="/bootstrap-ax5mask/demo/index.html">Basic Uasge</a></li><li ><a href="/bootstrap-ax5mask/demo/custom.html">Custom Uasge</a></li><li ><a href="/bootstrap-ax5mask/demo/element-mask.html">Custom Uasge</a></li></ul>
     
 					</div>
 				</div>
@@ -132,6 +134,10 @@
         </p>
 
         <button class="btn btn-default" type="button" id="mask-open">Button</button>
+        <div class="DH10"></div>
+        <p>
+            <code>Mask will disappear after 3 seconds.</code>
+        </p>
 
         
         <section class="ax5docs-section">
@@ -139,13 +145,7 @@
     $(document.body).ready(function () {
 
         var mask = new ax5.ui.mask();
-        mask.setConfig({
-            target: document.body, // 미리 선언했지만
-            content: "&lt;h1>Mask will disappear after 3 seconds.&lt;/h1>",
-            onchange: function () {
-
-            }
-        });
+        mask.setConfig();
 
         $('#mask-open').click(function () {
             mask.open();
@@ -160,13 +160,7 @@
     $(document.body).ready(function () {
 
         var mask = new ax5.ui.mask();
-        mask.setConfig({
-            target: document.body, // 미리 선언했지만
-            content: "<h1>Mask will disappear after 3 seconds.</h1>",
-            onchange: function () {
-
-            }
-        });
+        mask.setConfig();
 
         $('#mask-open').click(function () {
             mask.open();

@@ -1378,11 +1378,11 @@
 		"showQuickUse2": true,
 		"showSVGs": true,
 		"fontPref": {
-			"prefix": "icon-",
+			"prefix": "ax5uicon-",
 			"metadata": {
 				"fontFamily": "ax5uicon",
 				"majorVersion": 1,
-				"minorVersion": 0
+				"minorVersion": 1
 			},
 			"metrics": {
 				"emSize": 1024,
@@ -1392,10 +1392,11 @@
 			"includeMetadata": false,
 			"embed": true,
 			"showSelector": true,
-			"selector": "i",
+			"selector": "class",
 			"showMetrics": true,
 			"showMetadata": false,
-			"showVersion": false
+			"showVersion": true,
+			"classSelector": ".ax5uicon"
 		},
 		"imagePref": {
 			"prefix": "icon-",

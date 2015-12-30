@@ -35,6 +35,10 @@
         </p>
 
         <button class="btn btn-default" type="button" id="mask-open">Button</button>
+        <div class="DH10"></div>
+        <p>
+            <code>Mask will disappear after 3 seconds.</code>
+        </p>
 
         <!-- doc-js mask basic -->
         <section class="ax5docs-section">
@@ -43,13 +47,7 @@
                     $(document.body).ready(function () {
 
                         var mask = new ax5.ui.mask();
-                        mask.setConfig({
-                            target: document.body, // 미리 선언했지만
-                            content: "<h1>Mask will disappear after 3 seconds.</h1>",
-                            onchange: function () {
-
-                            }
-                        });
+                        mask.setConfig();
 
                         $('#mask-open').click(function () {
                             mask.open();
