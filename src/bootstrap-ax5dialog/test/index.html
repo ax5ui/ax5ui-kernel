@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../ax5docs/assets/lib/jquery/jquery.min.js"></script>
+    <script src="../../ax5docs/assets/lib/ax5core/ax5core.js"></script>
+    <script src="../dist/ax5dialog.js"></script>
+    <link rel="stylesheet" type="text/css" href="../dist/ax5dialog.css" />
+</head>
+<body>
+
+<button type="button" id="mask-open">mask-open</button>
+<script>
+    $(document.body).ready(function(){
+        var mask = new ax5.ui.mask();
+        $("#mask-open").click(function(){
+            mask.open();
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -62,6 +62,12 @@ gulp.task('SASS', function () {
         .pipe(gulp.dest(PATHS['bootstrap-ax5mask'].dest))
         .on("error", errorAlert)
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5mask'));
+
+    gulp.src(PATHS['bootstrap-ax5dialog'].src + '/ax5dialog.scss')
+        .pipe(sass({outputStyle: 'compressed'}))
+        .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].dest))
+        .on("error", errorAlert)
+        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'));
 });
 
 /**
@@ -180,7 +186,7 @@ gulp.task('docs:all', function () {
  * watch
  */
 gulp.task('watch', function () {
-    gulp.watch(PATHS.ax5docs.css_src + '/**/*.scss', ['SASS']);
+    gulp.watch([PATHS.ax5docs.css_src + '/**/*.scss', PATHS['bootstrap-ax5mask'].src + '/**/*.scss', PATHS['bootstrap-ax5dialog'].src + '/**/*.scss'], ['SASS']);
     gulp.watch(PATHS.ax5core.src + '/*.js', ['AX5CORE-scripts']);
     gulp.watch(PATHS["bootstrap-ax5dialog"].src + '/*.js', ['AX5DIALOG-scripts']);
     gulp.watch(PATHS["bootstrap-ax5mask"].src + '/*.js', ['AX5MASK-scripts']);
@@ -190,13 +196,29 @@ gulp.task('watch', function () {
     gulp.watch(PATHS.assets.src + '/components/**/*.js', ['default', 'AX5UI-docs', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
 
     gulp.watch(PATHS.ax5docs.doc_src + '/**/*.html', ['AX5UI-docs']);
-    gulp.watch(PATHS.ax5core.doc_src + '/**/*.html', ['AX5CORE-docs']);
-    gulp.watch(PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html', ['AX5MASK-docs']);
-    gulp.watch(PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html', ['AX5DIALOG-docs']);
+    gulp.watch(
+        [
+            PATHS.ax5core.doc_src + '/**/*.html',
+            PATHS['ax5core'].root + '/**/*.md'
+        ],
+        ['AX5CORE-docs']
+    );
 
-    gulp.watch(PATHS['ax5core'].root + '/**/*.md', ['AX5CORE-docs']);
-    gulp.watch(PATHS['bootstrap-ax5mask'].root + '/**/*.md', ['AX5MASK-docs']);
-    gulp.watch(PATHS['bootstrap-ax5dialog'].root + '/**/*.md', ['AX5DIALOG-docs']);
+    gulp.watch(
+        [
+            PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html',
+            PATHS['bootstrap-ax5mask'].root + '/**/*.md'
+        ],
+        ['AX5MASK-docs']
+    );
+    gulp.watch(
+        [
+            PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html',
+            PATHS['bootstrap-ax5dialog'].root + '/**/*.md'
+        ],
+        ['AX5DIALOG-docs']
+    );
+
 });
 
 gulp.task('default', function () {

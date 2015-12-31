@@ -14,7 +14,7 @@
      * ```
      */
 
-    var U = ax5.util, axd = ax5.dom;
+    var U = ax5.util;
 
     //== UI Class
     var ax_class = function(){
@@ -23,10 +23,6 @@
             if (ax_super) ax_super.call(this); // 부모호출
             this.config = {
                 click_event_name: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
-                mask: {
-                    target: document.body,
-                    content: ''
-                },
                 theme: 'default',
                 width: 300,
                 title: '',
@@ -38,7 +34,6 @@
         }).apply(this, arguments);
 
         this.active_dialog = null;
-        this.mask = new ax5.ui.mask();
 
         var cfg = this.config;
         /**
@@ -53,9 +48,7 @@
             //== class body start
         this.init = function(){
             // after set_config();
-            cfg.id = 'ax5-dialog-' + ax5.get_guid();
-
-            this.mask.set_config(cfg.mask);
+            cfg.id = 'ax5-dialog-' + ax5.getGuid();
         };
 
         /**
@@ -206,7 +199,6 @@
 
             opts.id = (opts.id || cfg.id);
 
-            this.mask.open();
             box = {
                 width: opts.width || cfg.width
             };
@@ -350,7 +342,6 @@
         this.close = function(){
             if(this.active_dialog){
                 this.active_dialog.remove();
-                this.mask.close();
                 this.active_dialog = null;
                 axd(window).off("keydown.ax-dialog");
                 if(cfg.onclose){
@@ -363,13 +354,8 @@
     //== UI Class
 
     //== ui class 공통 처리 구문
-    if (U.is_function(ax_super)) ax_class.prototype = new ax_super(); // 상속
+    if (U.isFunction(ax_super)) ax_class.prototype = new ax_super(); // 상속
     root.dialog = ax_class; // ax5.ui에 연결
     //== ui class 공통 처리 구문
 
 })(ax5.ui, ax5.ui.root);
-
-
-// todo : confirm 기능 구현 alert에 btns만 확장 하면 끄읏
-// todo : prompt
-// todo : toast
