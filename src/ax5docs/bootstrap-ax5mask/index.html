@@ -138,15 +138,6 @@
 <pre class="prettyprint linenums lang-sh"><code>bower install bootstrap-ax5mask
 </code></pre>
 <p><a href="http://bower.io/#install-bower">bower</a> is web front-end package manager</p>
-<h3>Install by npm</h3>
-<pre class="prettyprint linenums lang-sh"><code>npm install jquery
-npm install ax5core
-npm install bootstrap-ax5mask
-</code></pre>
-<hr>
-<p>After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
-If the inconvenience in the process that you want to copy the file and can be easily copied by using a <code>gulp</code> or <code>grunt</code>.</p>
-<hr>
 <h3>Insert the &quot;ax5mask&quot; in the HTML HEAD.</h3>
 <p>Location of the folder can be determined freely in your project. But be careful not to accidentally caused
 exactly the path.</p>
@@ -154,9 +145,9 @@ exactly the path.</p>
     &lt;head&gt;
         &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;../../bootstrap-ax5mask/dist/ax5mask.css&quot; /&gt;
     
-        &lt;script type=&quot;text/javascript&quot; src=&quot;../../jquery/jquery.min.js&quot;&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;../../ax5core/dist/ax5core.min.js&quot;&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;../../bootstrap-ax5mask/dist/ax5mask.min.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/jquery/dist/jquery.min.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ax5core/dist/ax5core.min.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/bootstrap-ax5mask/dist/ax5mask.min.js&quot;&gt;&lt;/script&gt;
     &lt;/head&gt;
 &lt;body&gt;
 ....
@@ -167,10 +158,22 @@ exactly the path.</p>
 <pre class="prettyprint linenums lang-js"><code>var mask = new ax5.ui.mask();
 mask.open();
 </code></pre>
+<h3>Install by npm</h3>
+<p>If you do not use the bower, it can be downloaded by using the npm as second best.
+In npm, so pile on the package manager for the front end, you need to solve the problem of plug-in dependencies.</p>
+<pre class="prettyprint linenums lang-sh"><code>npm install jquery
+npm install ax5core
+npm install bootstrap-ax5mask
+</code></pre>
+<hr>
+<p>After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
+If the inconvenience in the process that you want to copy the file and can be easily copied by using a <code>gulp</code> or <code>grunt</code>.</p>
+<hr>
 <h3>Preview</h3>
 <ul>
 <li><a href="http://ax5.io/bootstrap-ax5mask/demo/index.html">See Demostration</a></li>
 </ul>
+<p>If you have any questions, please refer to the following <a href="https://github.com/ax5ui/ax5ui-kernel">gitHub</a></p>
 
 		</section>
 
