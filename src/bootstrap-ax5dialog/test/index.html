@@ -6,17 +6,17 @@
     <script src="../../ax5docs/assets/lib/jquery/jquery.min.js"></script>
     <script src="../../ax5docs/assets/lib/ax5core/ax5core.js"></script>
     <script src="../dist/ax5dialog.js"></script>
-    <link rel="stylesheet" type="text/css" href="../dist/ax5dialog.css" />
+    <link rel="stylesheet" type="text/css" href="../dist/ax5dialog.css"/>
 </head>
 <body>
 
-<button type="button" id="mask-open">mask-open</button>
+<button type="button" id="dialog-open">dialog-open</button>
 <script>
-    $(document.body).ready(function(){
-        var mask = new ax5.ui.mask();
-        $("#mask-open").click(function(){
-            mask.open();
-        });
+    var dialog = new ax5.ui.dialog();
+    $(document.body).ready(function () {
+        dialog.alert({
+            theme: 'basic', title: '<i class="axi axi-stars"></i> alert', msg: 'basic color'
+        }, function () { console.log(this); });
     });
 </script>
 

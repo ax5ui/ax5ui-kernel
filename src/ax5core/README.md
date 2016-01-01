@@ -6,7 +6,7 @@
 'ax5.info', 'ax5.util', and consists of 'ax5.ui', are among the "ax5.ui" At the same time, perform the parenting
 role and the root of the UI library.
 
-> "ax5core" is a collection of utility functions that have been designed for use in ax5ui. 
+"ax5core" is a collection of utility functions that have been designed for use in ax5ui. 
 It was designed to the utility to act as a minimum code. So it can be considered to be simple compared to other utilities.
 
 > *Dependencies*
@@ -16,7 +16,10 @@ It was designed to the utility to act as a minimum code. So it can be considered
 ```sh
 bower install ax5core
 ```
-[bower](http://bower.io/#install-bower) is web front-end package manager
+[bower](http://bower.io/#install-bower) is web front-end package manager.
+using the `bower`, when you install the plug-in is installed to resolve the plug-in dependencies under the `bower_components` folder.  
+It is recommended that you install by using the `bower`. 
+If you've never used a bower is, you will be able to be used for [http://bower.io/#install-bower](http://bower.io/#install-bower).
    
 ### Insert the "ax5" in the HTML HEAD.
 Location of the folder can be determined freely in your project. But be careful not to accidentally caused

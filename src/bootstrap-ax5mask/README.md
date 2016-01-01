@@ -12,7 +12,10 @@
 ```sh
 bower install bootstrap-ax5mask
 ```
-[bower](http://bower.io/#install-bower) is web front-end package manager
+[bower](http://bower.io/#install-bower) is web front-end package manager.
+using the `bower`, when you install the plug-in is installed to resolve the plug-in dependencies under the `bower_components` folder.  
+It is recommended that you install by using the `bower`. 
+If you've never used a bower is, you will be able to be used for [http://bower.io/#install-bower](http://bower.io/#install-bower).
 
 ### Insert the "ax5mask" in the HTML HEAD.
 
@@ -21,7 +24,7 @@ exactly the path.
 ```html
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="../../bootstrap-ax5mask/dist/ax5mask.css" />
+        <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5mask/dist/ax5mask.css" />
     
         <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="bower_components/ax5core/dist/ax5core.min.js"></script>
@@ -39,6 +42,7 @@ var mask = new ax5.ui.mask();
 mask.open();
 ```
 
+***
 
 ### Install by npm
 If you do not use the bower, it can be downloaded by using the npm as second best.
@@ -49,7 +53,7 @@ npm install jquery
 npm install ax5core
 npm install bootstrap-ax5mask
 ```
-***
+
 After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
 If the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.
 ***

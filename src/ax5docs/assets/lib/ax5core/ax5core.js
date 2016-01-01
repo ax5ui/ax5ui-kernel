@@ -1541,6 +1541,104 @@
             }
         }
 
+        /**
+         * 타겟엘리먼트의 부모 엘리멘트 트리에서 원하는 조건의 엘리먼트를 얻습니다.
+         * @method ax5.util.findParentNode
+         * @param {Element} elements - target element
+         * @param {Object|Function} cond - 원하는 element를 찾을 조건
+         * @returns {Element}
+         * @example
+         * ```
+         * // cond 속성정의
+         * var cond = {
+		 * 	tagname: {String} - 태그명 (ex. a, div, span..),
+		 * 	clazz: {String} - 클래스명
+		 * 	[, 그 외 찾고 싶은 attribute명들]
+		 * };
+         * console.log(
+         *    ax5.util.findParentNode(e.target, {tagname:"a", clazz:"ax-menu-handel", "data-custom-attr":"attr_value"})
+         * );
+         * // cond 함수로 처리하기
+         * jQuery('#id').bind("click.app_expand", function(e){
+		 * 	var target = ax5.dom.findParentNode(e.target, function(target){
+		 * 		if($(target).hasClass("aside")){
+		 * 			return true;
+		 * 		}
+		 * 		else{
+		 * 			return true;
+		 * 		}
+		 * 	});
+		 * 	//client-aside
+		 * 	if(target.id !== "client-aside"){
+		 * 		// some action
+		 * 	}
+		 * });
+         * ```
+         */
+        function findParentNode(_target, cond) {
+            if (_target) {
+                while ((function () {
+                    var result = true;
+                    if (typeof cond === "undefined") {
+                        _target = (_target.parentNode) ? _target.parentNode : false;
+                    }
+                    else if (isFunction(cond)) {
+                        result = cond(_target);
+                    }
+                    else if (isObject(cond)) {
+                        for (var k in cond) {
+                            if (k === "tagname") {
+                                if (_target.tagName.toLocaleLowerCase() != cond[k]) {
+                                    result = false;
+                                    break;
+                                }
+                            }
+                            else if (k === "clazz" || k === "class_name") {
+                                if ("className" in _target) {
+                                    var klasss = _target.className.split(reClassNameSplit);
+                                    var hasClass = false;
+                                    for (var a = 0; a < klasss.length; a++) {
+                                        if (klasss[a] == cond[k]) {
+                                            hasClass = true;
+                                            break;
+                                        }
+                                    }
+                                    result = hasClass;
+                                }
+                                else {
+                                    result = false;
+                                    break;
+                                }
+                            }
+                            else { // 그외 속성값들.
+                                if (_target.getAttribute) {
+                                    if (_target.getAttribute(k) != cond[k]) {
+                                        result = false;
+                                        break;
+                                    }
+                                }
+                                else {
+                                    result = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    return !result;
+                })())
+                {
+                    if (_target.parentNode) {
+                        _target = _target.parentNode;
+                    }
+                    else {
+                        _target = false;
+                        break;
+                    }
+                }
+            }
+            return _target;
+        }
+
         return {
             alert: alert,
             each: each,
@@ -1581,7 +1679,8 @@
             setDigit: setDigit,
             times: times,
             daysOfMonth: daysOfMonth,
-            weeksOfMonth: weeksOfMonth
+            weeksOfMonth: weeksOfMonth,
+            findParentNode: findParentNode
         }
     })();
 
