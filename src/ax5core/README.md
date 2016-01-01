@@ -5,10 +5,18 @@
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 
-### Install
+### Install by bower
 ```sh
+bower install ax5core
+```
+[bower](http://bower.io/#install-bower) is web front-end package manager
+
+### Install by npm
+```sh
+npm install jquery
 npm install ax5core
 ```
+***
 After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
 If the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.
 ***

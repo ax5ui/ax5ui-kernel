@@ -8,13 +8,23 @@
 > * _[ax5core](http://ax5.io/ax5core)_
 
 
-### Install
+### Install by bower
 ```sh
+bower install bootstrap-ax5mask
+```
+[bower](http://bower.io/#install-bower) is web front-end package manager
+
+### Install by npm
+```sh
+npm install jquery
+npm install ax5core
 npm install bootstrap-ax5mask
 ```
+***
 After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
 If the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.
 ***
+
 
 ### Insert the "ax5mask" in the HTML HEAD.
 
