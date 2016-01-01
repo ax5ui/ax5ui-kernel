@@ -1,6 +1,6 @@
 {
 	"name": "bootstrap-ax5mask",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "A mask plugin that works with Bootstrap.",
 	"license": "MIT",
 	"repository": {
@@ -22,10 +22,11 @@
 		"bootstrap-ax5mask"
 	],
 	"dependencies": {
-
+		"jquery": "^2.1.4",
+		"ax5core": "^0.1.0"
 	},
 	"devDependencies": {
-		"jQuery": "^1.10.0",
-		"ax5core": "^0.1.0"
+		"gulp": "^3.9.0",
+		"gulp-concat": "^2.6.0"
 	}
 }
