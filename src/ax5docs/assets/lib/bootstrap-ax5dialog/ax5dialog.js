@@ -14,7 +14,7 @@
      * ```
      */
 
-    var U = ax5.util;
+    var U = ax5.util, axd = ax5.dom;
 
     //== UI Class
     var axClass = function () {
@@ -22,7 +22,15 @@
         this.main = (function () {
             if (_SUPER_) _SUPER_.call(this); // 부모호출
             this.config = {
+<<<<<<< HEAD
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
+=======
+                click_event_name: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
+                mask: {
+                    target: document.body,
+                    content: ''
+                },
+>>>>>>> Revert "ax5dialog 90%"
                 theme: 'default',
                 width: 300,
                 title: '',
@@ -33,7 +41,12 @@
             };
         }).apply(this, arguments);
 
+<<<<<<< HEAD
         this.activeDialog = null;
+=======
+        this.active_dialog = null;
+        this.mask = new ax5.ui.mask();
+>>>>>>> Revert "ax5dialog 90%"
 
         var cfg = this.config;
         /**
@@ -46,9 +59,17 @@
          * ```
          */
             //== class body start
+<<<<<<< HEAD
         this.init = function () {
             // after setConfig();
             cfg.id = 'ax5-dialog-' + ax5.getGuid();
+=======
+        this.init = function(){
+            // after set_config();
+            cfg.id = 'ax5-dialog-' + ax5.get_guid();
+
+            this.mask.set_config(cfg.mask);
+>>>>>>> Revert "ax5dialog 90%"
         };
 
         /**
@@ -198,6 +219,7 @@
 
             opts.id = (opts.id || cfg.id);
 
+            this.mask.open();
             box = {
                 width: opts.width || cfg.width
             };
@@ -335,12 +357,22 @@
          * myDialog.close();
          * ```
          */
+<<<<<<< HEAD
         this.close = function () {
             if (this.activeDialog) {
                 this.activeDialog.remove();
                 this.activeDialog = null;
                 jQuery(window).unbind("keydown.ax-dialog");
                 if (cfg.onclose) {
+=======
+        this.close = function(){
+            if(this.active_dialog){
+                this.active_dialog.remove();
+                this.mask.close();
+                this.active_dialog = null;
+                axd(window).off("keydown.ax-dialog");
+                if(cfg.onclose){
+>>>>>>> Revert "ax5dialog 90%"
                     cfg.onclose.call(this, this);
                 }
             }
@@ -350,8 +382,18 @@
     //== UI Class
 
     //== ui class 공통 처리 구문
+<<<<<<< HEAD
     if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
     root.dialog = axClass; // ax5.ui에 연결
+=======
+    if (U.is_function(ax_super)) ax_class.prototype = new ax_super(); // 상속
+    root.dialog = ax_class; // ax5.ui에 연결
+>>>>>>> Revert "ax5dialog 90%"
     //== ui class 공통 처리 구문
 
 })(ax5.ui, ax5.ui.root);
+
+
+// todo : confirm 기능 구현 alert에 btns만 확장 하면 끄읏
+// todo : prompt
+// todo : toast
