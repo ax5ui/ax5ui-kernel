@@ -5,3 +5,4 @@ node_modules
 .idea
 *.iml
 .DS_Store
+**/test/bower_components
