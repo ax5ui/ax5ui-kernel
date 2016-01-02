@@ -40,11 +40,13 @@
          * setConfig({
 		 *      target : {Element|AX5 nodelist}, // 마스크 처리할 대상
 		 *      content : {String}, // 마스크안에 들어가는 내용물
-		 *      onchange: function(){} // 마스크 상태변경 시 호출되는 함수 this.type으로 예외처리 가능
+		 *      onStateChanged: function(){} // 마스크 상태변경 시 호출되는 함수 this.type으로 예외처리 가능
 		 * }
          * ```
          */
             //== class body start
+        var cfg = this.config;
+
         this.init = function () {
             // after setConfig();
             if (this.config.content) this.setBody(this.config.content);
@@ -68,7 +70,7 @@
          * my_mask.open({
 		 *     target: document.body,
 		 *     content: "<h1>Loading..</h1>",
-		 *     onchange: function () {
+		 *     onStateChanged: function () {
 		 *
 		 *     }
 		 * });
@@ -76,7 +78,7 @@
          * my_mask.open({
 		 *     target: $("#mask-target").get(0), // dom Element
 		 *     content: "<h1>Loading..</h1>",
-		 *     onchange: function () {
+		 *     onStateChanged: function () {
 		 *
 		 *     }
 		 * });
@@ -90,12 +92,12 @@
             jQuery.extend(true, self.maskConfig, this.config);
             jQuery.extend(true, self.maskConfig, config);
 
-            var cfg = self.maskConfig,
-                target = cfg.target, $target = jQuery(target),
+            var config = self.maskConfig,
+                target = config.target, $target = jQuery(target),
                 po = [], css, maskId = 'ax-mask-' + ax5.getGuid(), $mask, css = {},
                 that = {};
 
-            po.push('<div class="ax-mask ' + cfg.theme + '" id="' + maskId + '">');
+            po.push('<div class="ax-mask ' + config.theme + '" id="' + maskId + '">');
             po.push('<div class="ax-mask-bg"></div>');
             po.push('<div class="ax-mask-content">');
             po.push('<div class="ax-mask-body">');
@@ -125,11 +127,11 @@
             this.status = "on";
             $mask.css(css);
 
-            if (cfg.onchange) {
+            if (config.onStateChanged) {
                 that = {
-                    type: "open"
+                    state: "open"
                 };
-                cfg.onchange.call(that, that);
+                config.onStateChanged.call(that, that);
             }
             return this;
         };
@@ -144,14 +146,14 @@
          * ```
          */
         this.close = function () {
-            var cfg = this.maskConfig, that;
+            var config = this.maskConfig, that;
             this.$mask.remove();
             this.$target.removeClass("ax-masking");
-            if (cfg && cfg.onchange) {
+            if (config && config.onStateChanged) {
                 that = {
-                    type: "close"
+                    state: "close"
                 };
-                cfg.onchange.call(that, that);
+                config.onStateChanged.call(that, that);
             }
             return this;
         };

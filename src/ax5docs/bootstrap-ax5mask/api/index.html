@@ -125,14 +125,18 @@
 <pre class="prettyprint linenums lang-js"><code>var mask = new ax5.ui.mask();
 mask.setConfig({
     zIndex: 1000, 
-    content: 'Loading content'
+    content: 'Loading content',
+    onStateChanged: function(){
+        console.log(this);
+    }
 });
 </code></pre>
 <pre class="prettyprint linenums lang-json"><code>{
     [target: {Element} - target of mask,]
     [theme: {String} -addClass mask,]
     [zIndex: {Number},]
-    [content: 'content of mask']
+    [content: 'content of mask',]
+    [onStateChanged: {Function}]
 }
 </code></pre>
 <hr>

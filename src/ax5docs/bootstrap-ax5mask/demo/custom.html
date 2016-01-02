@@ -152,8 +152,8 @@
         mask.setConfig({
             target: document.body, // 미리 선언했지만
             content: "&lt;h1>Mask will disappear after 3 seconds.&lt;/h1>",
-            onchange: function () {
-
+            onStateChanged: function(){
+                console.log(this);
             }
         });
 
@@ -176,8 +176,8 @@
         mask.setConfig({
             target: document.body, // 미리 선언했지만
             content: "<h1>Mask will disappear after 3 seconds.</h1>",
-            onchange: function () {
-
+            onStateChanged: function(){
+                console.log(this);
             }
         });
 

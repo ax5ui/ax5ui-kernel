@@ -7,7 +7,10 @@ You previously declared the default settings of the mask UI. The declared set va
 var mask = new ax5.ui.mask();
 mask.setConfig({
     zIndex: 1000, 
-    content: 'Loading content'
+    content: 'Loading content',
+    onStateChanged: function(){
+        console.log(this);
+    }
 });
 ```
 ```json
@@ -15,7 +18,8 @@ mask.setConfig({
     [target: {Element} - target of mask,]
     [theme: {String} -addClass mask,]
     [zIndex: {Number},]
-    [content: 'content of mask']
+    [content: 'content of mask',]
+    [onStateChanged: {Function}]
 }
 ```
 ---

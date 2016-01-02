@@ -13,11 +13,14 @@
      * var myDialog = new ax5.ui.dialog();
      * ```
      */
-
     var U = ax5.util;
 
     //== UI Class
     var axClass = function () {
+        var
+            self = this,
+            cfg;
+
         // 클래스 생성자
         this.main = (function () {
             if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -34,8 +37,8 @@
         }).apply(this, arguments);
 
         this.activeDialog = null;
+        cfg = this.config
 
-        var cfg = this.config;
         cfg.id = 'ax5-dialog-' + ax5.getGuid();
 
         /**
@@ -56,7 +59,7 @@
          * open the dialog of alert type
          * @method ax5.ui.dialog.alert
          * @param {Object|String} [{theme, title, msg, btns}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
-         * @param {Function} [callback] - 사용자 확인 이벤트시 호출될 callback 함수
+         * @param {Function} [callBack] - 사용자 확인 이벤트시 호출될 callBack 함수
          * @returns {ax5.ui.dialog}
          * @example
          * ```
@@ -66,7 +69,7 @@
 		 * }, function(){});
          * ```
          */
-        this.alert = function (opts, callback) {
+        this.alert = function (opts, callBack) {
             if (U.isString(opts)) {
                 opts = {
                     title: cfg.title,
@@ -79,6 +82,11 @@
                 return this;
             }
 
+            self.dialogConfig = {};
+            jQuery.extend(true, self.dialogConfig, cfg);
+            jQuery.extend(true, self.dialogConfig, opts);
+            opts = self.dialogConfig;
+
             opts.dialogType = "alert";
             opts.theme = (opts.theme || cfg.theme || "");
             if (typeof opts.btns === "undefined") {
@@ -86,7 +94,7 @@
                     ok: {label: cfg.lang["ok"], theme: opts.theme}
                 };
             }
-            this.open(opts, callback);
+            this.open(opts, callBack);
             return this;
         };
 
@@ -94,7 +102,7 @@
          * open the dialog of confirm type
          * @method ax5.ui.dialog.confirm
          * @param {Object|String} [{theme, title, msg, btns}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
-         * @param {Function} [callback] - 사용자 확인 이벤트시 호출될 callback 함수
+         * @param {Function} [callBack] - 사용자 확인 이벤트시 호출될 callBack 함수
          * @returns {ax5.ui.dialog}
          * @example
          * ```
@@ -104,7 +112,7 @@
 		 * }, function(){});
          * ```
          */
-        this.confirm = function (opts, callback) {
+        this.confirm = function (opts, callBack) {
             if (U.isString(opts)) {
                 opts = {
                     title: cfg.title,
@@ -117,6 +125,11 @@
                 return this;
             }
 
+            self.dialogConfig = {};
+            jQuery.extend(true, self.dialogConfig, cfg);
+            jQuery.extend(true, self.dialogConfig, opts);
+            opts = self.dialogConfig;
+
             opts.dialogType = "confirm";
             opts.theme = (opts.theme || cfg.theme || "");
             if (typeof opts.btns === "undefined") {
@@ -125,7 +138,7 @@
                     cancel: {label: cfg.lang["cancel"]}
                 };
             }
-            this.open(opts, callback);
+            this.open(opts, callBack);
             return this;
         };
 
@@ -133,7 +146,7 @@
          * open the dialog of prompt type
          * @method ax5.ui.dialog.prompt
          * @param {Object|String} [{theme, title, msg, btns, input}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
-         * @param {Function} [callback] - 사용자 확인 이벤트시 호출될 callback 함수
+         * @param {Function} [callBack] - 사용자 확인 이벤트시 호출될 callBack 함수
          * @returns {ax5.ui.dialog}
          * @example
          * ```
@@ -143,7 +156,7 @@
 		 * }, function(){});
          * ```
          */
-        this.prompt = function (opts, callback) {
+        this.prompt = function (opts, callBack) {
             if (U.isString(opts)) {
                 opts = {
                     title: cfg.title,
@@ -151,11 +164,15 @@
                 }
             }
 
-
             if(this.activeDialog) {
                 console.log(ax5.info.getError("ax5dialog", "501", "prompt"));
                 return this;
             }
+
+            self.dialogConfig = {};
+            jQuery.extend(true, self.dialogConfig, cfg);
+            jQuery.extend(true, self.dialogConfig, opts);
+            opts = self.dialogConfig;
 
             opts.dialogType = "prompt";
             opts.theme = (opts.theme || cfg.theme || "");
@@ -171,7 +188,7 @@
                     cancel: {label: cfg.lang["cancel"]}
                 };
             }
-            this.open(opts, callback);
+            this.open(opts, callBack);
             return this;
         };
 
@@ -193,7 +210,7 @@
                 U.each(opts.input, function (k, v) {
                     po.push('<div class="form-group">');
                     po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
-                    po.push('    <input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="form-control ' + (this.klass || "") + '" data-ax-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
+                    po.push('    <input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="form-control ' + (this.theme || "") + '" data-ax-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
                     if(this.help) {
                         po.push('    <p class="help-block">' + this.help.replace(/\n/g, "<br/>") + '</p>');
                     }
@@ -214,9 +231,10 @@
             return po.join('');
         };
 
-        this.open = function (opts, callback) {
+        this.open = function (opts, callBack) {
             var
-                pos = {};
+                pos = {},
+                that;
 
             opts.id = (opts.id || cfg.id);
 
@@ -257,21 +275,24 @@
             }
 
             this.activeDialog.find("[data-ax-dialog-btn]").on(cfg.clickEventName, (function (e) {
-                this.btnOnclick(e || window.event, opts, callback);
+                this.btnOnclick(e || window.event, opts, callBack);
             }).bind(this));
 
             // bind key event
             jQuery(window).bind("keydown.ax-dialog", (function (e) {
-                this.onkeyup(e || window.event, opts, callback);
+                this.onkeyup(e || window.event, opts, callBack);
             }).bind(this));
 
-            if (cfg.onopen) {
-                cfg.onopen.call(this, this);
+            if (opts && opts.onStateChanged) {
+                that = {
+                    state: "open"
+                };
+                opts.onStateChanged.call(that, that);
             }
             return this;
         };
 
-        this.btnOnclick = function (e, opts, callback, target, k) {
+        this.btnOnclick = function (e, opts, callBack, target, k) {
             if (e.srcElement) e.target = e.srcElement;
 
             target = U.findParentNode(e.target, function (target) {
@@ -302,11 +323,11 @@
                     opts.btns[k].onclick.call(that, k);
                 }
                 else if (opts.dialogType === "alert") {
-                    if (callback) callback.call(that, k);
+                    if (callBack) callBack.call(that, k);
                     this.close();
                 }
                 else if (opts.dialogType === "confirm") {
-                    if (callback) callback.call(that, k);
+                    if (callBack) callBack.call(that, k);
                     this.close();
                 }
                 else if (opts.dialogType === "prompt") {
@@ -316,13 +337,13 @@
                             return false;
                         }
                     }
-                    if (callback) callback.call(that, k);
+                    if (callBack) callBack.call(that, k);
                     this.close();
                 }
             }
         };
 
-        this.onkeyup = function (e, opts, callback, target, k) {
+        this.onkeyup = function (e, opts, callBack, target, k) {
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
             }
@@ -342,7 +363,7 @@
                         }
                     }
                     if (emptyKey) return false;
-                    if (callback) callback.call(that, k);
+                    if (callBack) callBack.call(that, k);
                     this.close();
                 }
             }
@@ -358,12 +379,19 @@
          * ```
          */
         this.close = function () {
+            var
+                that = {},
+                opts = self.dialogConfig;
+
             if (this.activeDialog) {
                 this.activeDialog.remove();
                 this.activeDialog = null;
                 jQuery(window).unbind("keydown.ax-dialog");
-                if (cfg.onclose) {
-                    cfg.onclose.call(this, this);
+                if (opts && opts.onStateChanged) {
+                    that = {
+                        state: "close"
+                    };
+                    opts.onStateChanged.call(that, that);
                 }
             }
             return this;
