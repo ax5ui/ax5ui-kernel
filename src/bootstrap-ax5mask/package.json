@@ -1,7 +1,7 @@
 {
 	"name": "bootstrap-ax5mask",
-	"version": "0.2.3",
-	"description": "A mask plugin that works with Bootstrap.",
+	"version": "0.3.0",
+	"description": "A mask plugin that works with Bootstrap & jQuery",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
