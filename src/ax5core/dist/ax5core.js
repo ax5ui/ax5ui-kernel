@@ -143,9 +143,12 @@
          * @member {Object} ax5.info.errorMsg
          */
         var errorMsg = {
+            "ax5dialog": {
+                "501": "Duplicate call error"
+            },
             "single-uploader": {
-                "460": "업로드할 파일이 없습니다.",
-                "461": "업로드된 파일이 없습니다."
+                "460": "There are no files to be uploaded.",
+                "461": "There is no uploaded files."
             }
         };
 

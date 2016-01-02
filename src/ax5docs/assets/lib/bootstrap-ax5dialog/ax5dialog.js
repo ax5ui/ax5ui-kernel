@@ -49,7 +49,7 @@
          */
             //== class body start
         this.init = function () {
-            cfg.id = 'ax5-dialog-' + ax5.getGuid();
+
         };
 
         /**
@@ -73,6 +73,12 @@
                     msg: opts
                 }
             }
+
+            if(this.activeDialog) {
+                console.log(ax5.info.getError("ax5dialog", "501", "alert"));
+                return this;
+            }
+
             opts.dialogType = "alert";
             opts.theme = (opts.theme || cfg.theme || "");
             if (typeof opts.btns === "undefined") {
@@ -105,6 +111,12 @@
                     msg: opts
                 }
             }
+
+            if(this.activeDialog) {
+                console.log(ax5.info.getError("ax5dialog", "501", "confirm"));
+                return this;
+            }
+
             opts.dialogType = "confirm";
             opts.theme = (opts.theme || cfg.theme || "");
             if (typeof opts.btns === "undefined") {
@@ -138,6 +150,13 @@
                     msg: opts
                 }
             }
+
+
+            if(this.activeDialog) {
+                console.log(ax5.info.getError("ax5dialog", "501", "prompt"));
+                return this;
+            }
+
             opts.dialogType = "prompt";
             opts.theme = (opts.theme || cfg.theme || "");
 
@@ -165,24 +184,28 @@
             po.push((opts.title || cfg.title || ""));
             po.push('</div>');
             po.push('<div class="ax-dialog-body">');
-            po.push('<div class="ax-dialog-msg">');
-
-            po.push((opts.msg || cfg.msg || "").replace(/\n/g, "<br/>"));
+                po.push('<div class="ax-dialog-msg">');
+                po.push((opts.msg || cfg.msg || "").replace(/\n/g, "<br/>"));
+                po.push('</div>');
 
             if (opts.input) {
+                po.push('<div class="ax-dialog-prompt">');
                 U.each(opts.input, function (k, v) {
-                    po.push('<div class="ax-dialog-prompt">');
-                    po.push(this.label.replace(/\n/g, "<br/>"));
+                    po.push('<div class="form-group">');
+                    po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
+                    po.push('    <input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="form-control ' + (this.klass || "") + '" data-ax-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
+                    if(this.help) {
+                        po.push('    <p class="help-block">' + this.help.replace(/\n/g, "<br/>") + '</p>');
+                    }
                     po.push('</div>');
-                    po.push('<input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="ax-inp ' + (this.klass || "") + '" data-ax-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
                 });
+                po.push('</div>');
             }
 
-            po.push('</div>');
             po.push('<div class="ax-dialog-buttons">');
             po.push('<div class="ax-button-wrap">');
             U.each(opts.btns, function (k, v) {
-                po.push('<button type="button" data-ax-dialog-btn="' + k + '" class="btn ' + this.theme + '">' + this.label + '</button>');
+                po.push('<button type="button" data-ax-dialog-btn="' + k + '" class="btn btn-' + (this.theme||"default") + '">' + this.label + '</button>');
             });
             po.push('</div>');
             po.push('</div>');
@@ -193,9 +216,7 @@
 
         this.open = function (opts, callback) {
             var
-                pos = {},
-                box = {},
-                po;
+                pos = {};
 
             opts.id = (opts.id || cfg.id);
 
