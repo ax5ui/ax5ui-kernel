@@ -16,9 +16,12 @@
 <script>
     var dialog = new ax5.ui.dialog();
     $(document.body).ready(function () {
-        dialog.alert({
-            theme: 'basic', title: '<i class="axi axi-stars"></i> alert', msg: 'basic color'
-        }, function () { console.log(this); });
+        $('#dialog-open').click(function(){
+            dialog.alert({
+                theme: 'basic', title: '<i class="axi axi-stars"></i> alert', msg: 'basic color'
+            }, function () { console.log(this); });
+        });
+
     });
 </script>
 

@@ -36,6 +36,8 @@
         this.activeDialog = null;
 
         var cfg = this.config;
+        cfg.id = 'ax5-dialog-' + ax5.getGuid();
+
         /**
          * Preferences of dialog UI
          * @method ax5.ui.dialog.setConfig
@@ -47,7 +49,6 @@
          */
             //== class body start
         this.init = function () {
-            // after setConfig();
             cfg.id = 'ax5-dialog-' + ax5.getGuid();
         };
 
