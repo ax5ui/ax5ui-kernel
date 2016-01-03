@@ -39,7 +39,21 @@ exactly the path.
 
 ### Basic Usages
 ```js
+var myDialog = new ax5.ui.dialog();
+myDialog.set_config({
+    title: '<i class="axi axi-ion-alert"></i> Default alert',
+    onStateChanged: function(){
+    
+    }
+});
 
+$('#btn').click(function () {
+    myDialog.alert({
+        msg: 'Alert message'
+    }, function () {
+        console.log(this);
+    });
+});
 ```
 
 ***

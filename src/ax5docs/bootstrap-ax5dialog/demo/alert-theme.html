@@ -4,11 +4,13 @@
     
     
     
+    
+    
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ax5ui / bootstrap-ax5dialog : API</title>
+	<title>ax5ui / bootstrap-ax5dialog : Alert theme</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -35,9 +37,12 @@
 
 	
 	
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5dialog/ax5dialog.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5dialog/ax5dialog.min.js"></script>
+    
 </head>
 <body>
-<div class="docs sub-page with-inline-menu ">
+<div class="docs sub-page  with-menu">
 	<div class="docs-header">
 		<div class="docs-header-tool" id="docs-header-tool">
 			<nav class="navbar navbar-default">
@@ -61,7 +66,7 @@
 						<ul class="nav navbar-nav" id="docs-menu-print-target">
 							
 							
-								<li ><a href="/bootstrap-ax5dialog/demo/index.html">Demo</a></li><li class='active'><a href="/bootstrap-ax5dialog/api/index.html">API</a></li>
+								<li class='active'><a href="/bootstrap-ax5dialog/demo/index.html">Demo</a></li><li ><a href="/bootstrap-ax5dialog/api/index.html">API</a></li>
 							
 						</ul>
 
@@ -98,48 +103,85 @@
 	<div class="docs-visual">
 		<div class="pattern"></div>
 		
-
         <div class="contents">
-            <div class="style-sub-visual">
-                <div class="title">API</div>
-                <div class="description">
-                </div>
-            </div>
-        </div>
-
+    <div class="style-sub-visual">
+        <div class="title">Demostration</div>
+        <div class="description">Introduces the basic use of bootstrap-ax5mask UI.</div>
+    </div>
+</div>
     
 	</div>
 	<div class="docs-body" id="docs-body">
 		<div class="wrapper">
 		
 			<div class="row">
-				<div class="col-md-3 hidden-print hidden-xs hidden-sm">
-					<div class="docs-menu" id="docs-inline-menu"></div>
+				<div class="col-md-3">
+					<div class="docs-menu" id="docs-menu">
+						
+        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/alert-theme.html">Alert theme</a></li></ul>
+    
+					</div>
 				</div>
 				<div class="col-md-9">
 					
-        <h1>Basic Usage</h1>
-<blockquote>
-<p>dialog is a UI that can be used as an alternative means of window.alert, window.confirm and window.prompt</p>
-</blockquote>
-<h2>setConfig</h2>
-<p>You define the default settings for the dialog. Create a ax5.ui.dialog instance, using the setConfig method in that instance, you can define a default value.</p>
-<pre class="prettyprint linenums lang-js"><code>var myDialog = new ax5.ui.dialog();
-myDialog.set_config({
-    title: '&lt;i class=&quot;axi axi-ion-alert&quot;&gt;&lt;/i&gt; Default alert',
-    onStateChanged: function(){
-    
-    }
-});
 
-$('#btn').click(function () {
-    myDialog.alert({
-        msg: 'Alert message'
-    }, function () {
-        console.log(this);
+        
+        <section class="ax5docs-section">
+            <h1>Basic Alert</h1>
+
+            <p>
+                ax5dialog themes using six colors defined by the bootstrap is provided.<br>
+                If you want to change the theme to the dialog you can define the theme attribute at the time of <code>method</code> calls, you can use to define in advance <code>setConfig</code>.
+            </p>
+
+            <button type="button" data-alert="default" class="btn btn-default" id="alert-default-open">alert-default-open</button>
+            <button type="button" data-alert="primary" class="btn btn-primary" id="alert-primary-open">alert-primary-open</button>
+            <button type="button" data-alert="success" class="btn btn-success" id="alert-success-open">alert-success-open</button>
+            <button type="button" data-alert="info" class="btn btn-info" id="alert-info-open">alert-info-open</button>
+            <button type="button" data-alert="warning" class="btn btn-warning" id="alert-warning-open">alert-warning-open</button>
+            <button type="button" data-alert="danger" class="btn btn-danger" id="alert-danger-open">alert-danger-open</button>
+
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        dialog.setConfig({
+            title: "AX5 Dialog theme"
+        });
+
+        $('button[data-alert]').click(function () {
+            var theme = this.getAttribute("data-alert");
+            dialog.alert({
+                theme: theme,
+                title: 'Alert ' + theme,
+                msg: theme + ' color'
+            }, function () {
+                console.log(this);
+            });
+        });
     });
-});
-</code></pre>
+&lt;/script></pre><script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        dialog.setConfig({
+            title: "AX5 Dialog theme"
+        });
+
+        $('button[data-alert]').click(function () {
+            var theme = this.getAttribute("data-alert");
+            dialog.alert({
+                theme: theme,
+                title: 'Alert ' + theme,
+                msg: theme + ' color'
+            }, function () {
+                console.log(this);
+            });
+        });
+    });
+</script></script>
+
+
+        </section>
+
 
     
 				</div>
