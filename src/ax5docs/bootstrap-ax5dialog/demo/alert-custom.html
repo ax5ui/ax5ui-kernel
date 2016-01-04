@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ax5ui / bootstrap-ax5dialog : Alert theme</title>
+	<title>ax5ui / bootstrap-ax5dialog : Basic Alert</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -39,6 +39,15 @@
 	
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5dialog/ax5dialog.css">
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5dialog/ax5dialog.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
+
+        <style type="text/css">
+            .ax-mask.danger .ax-mask-bg {
+                background: #7a0000;
+            }
+        </style>
     
 </head>
 <body>
@@ -106,7 +115,7 @@
         <div class="contents">
     <div class="style-sub-visual">
         <div class="title">Demostration</div>
-        <div class="description">Introduces the basic use of bootstrap-ax5mask UI.</div>
+        <div class="description">Introduces the basic use of bootstrap-ax5dialog UI.</div>
     </div>
 </div>
     
@@ -118,44 +127,54 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/alert-theme.html">Alert theme</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li ><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
     
 					</div>
 				</div>
 				<div class="col-md-9">
 					
 
+        <section class="ax5docs-section">
+            <h1>Custom Alert</h1>
+
+        </section>
+
         
         <section class="ax5docs-section">
-            <h1>Basic Alert</h1>
+            <h2>Width</h2>
 
             <p>
-                ax5dialog themes using six colors defined by the bootstrap is provided.<br>
-                If you want to change the theme to the dialog you can define the theme attribute at the time of <code>method</code> calls, you can use to define in advance <code>setConfig</code>.
+                Basically the values defined in <code>setConfig</code> dialog opens.
+                If not defined, it will be opened by default.<br>
+                If the default value is a concern, please enter the following code to the command.<br>
+                <code>(new ax5.ui.dialog()).config;</code> If ax5 dialog.js have been added to the page you want to enter the console, will output the default settings of the dialog UI to the console.
+            </p>
+            <p>
+                In the following example, we have to change the width in dialog.alert method. You can be tested in the following manner.
             </p>
 
-            <button type="button" data-alert="default" class="btn btn-default" id="alert-default-open">alert-default-open</button>
-            <button type="button" data-alert="primary" class="btn btn-primary" id="alert-primary-open">alert-primary-open</button>
-            <button type="button" data-alert="success" class="btn btn-success" id="alert-success-open">alert-success-open</button>
-            <button type="button" data-alert="info" class="btn btn-info" id="alert-info-open">alert-info-open</button>
-            <button type="button" data-alert="warning" class="btn btn-warning" id="alert-warning-open">alert-warning-open</button>
-            <button type="button" data-alert="danger" class="btn btn-danger" id="alert-danger-open">alert-danger-open</button>
+            <button class="btn btn-default" type="button" id="alert-open">Alert</button>
+            <button class="btn btn-default" type="button" id="alert-open-500">Alert(width:500px)</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
         var dialog = new ax5.ui.dialog();
         dialog.setConfig({
-            title: "AX5 Dialog theme"
+            title: "XXX",
+            width: 200
         });
 
-        $('button[data-alert]').click(function () {
-            var theme = this.getAttribute("data-alert");
+        $('#alert-open').click(function () {
             dialog.alert({
-                theme: theme,
-                title: 'Alert ' + theme,
-                msg: theme + ' color'
-            }, function () {
-                console.log(this);
+                title: "Alert Title",
+                msg: 'Alert message'
+            });
+        });
+        $('#alert-open-500').click(function () {
+            dialog.alert({
+                title: "Alert Title",
+                msg: 'Alert message',
+                width: 500
             });
         });
     });
@@ -163,23 +182,124 @@
     $(document.body).ready(function () {
         var dialog = new ax5.ui.dialog();
         dialog.setConfig({
-            title: "AX5 Dialog theme"
+            title: "XXX",
+            width: 200
         });
 
-        $('button[data-alert]').click(function () {
-            var theme = this.getAttribute("data-alert");
+        $('#alert-open').click(function () {
             dialog.alert({
-                theme: theme,
-                title: 'Alert ' + theme,
-                msg: theme + ' color'
-            }, function () {
-                console.log(this);
+                title: "Alert Title",
+                msg: 'Alert message'
+            });
+        });
+        $('#alert-open-500').click(function () {
+            dialog.alert({
+                title: "Alert Title",
+                msg: 'Alert message',
+                width: 500
             });
         });
     });
 </script></script>
+        </section>
 
+        
+        <section class="ax5docs-section">
+            <h2>onStateChanged</h2>
 
+            <p>
+                Please add ax5mask plug-in html document.
+                You can use the ax5mask If you add a plug-in to the page.
+            </p>
+
+            <pre class="prettyprint linenums lang-html">&lt;link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5mask/ax5mask.css">
+&lt;script type="text/javascript" src="bower_components/bootstrap-ax5mask/ax5mask.min.js">&lt;/script>
+&lt;style type="text/css">
+    .ax-mask.danger .ax-mask-bg {
+    / / prepare mask theme background: #7a0000;
+    }
+&lt;/style></pre>
+
+            <p>
+                <code>onStateChanged</code> function is executed when the dialog of the state is changed,<br>
+                <code>this.state</code> state value is passed to this time onStateChanged function.<br>
+
+                onStateChanged defined in setConfig you open a fundamental mask,
+                we will open the danger mask in <code>dialog.alert</code>.
+            </p>
+
+            <button class="btn btn-default" type="button" id="alert-open-with-mask">Alert</button>
+            <button class="btn btn-danger" type="button" id="alert-open-with-danger-mask">Alert(danger)</button>
+
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        var mask = new ax5.ui.mask();
+
+        dialog.setConfig({
+            title: 'Title',
+            onStateChanged: function () {
+                if (this.state === "open") {
+                    mask.open();
+                }
+                else if (this.state === "close") {
+                    mask.close();
+                }
+            }
+        });
+
+        $('#alert-open-with-mask').click(function () {
+            dialog.alert('Alert message');
+        });
+        $('#alert-open-with-danger-mask').click(function () {
+            dialog.alert({
+                msg: 'Alert message',
+                onStateChanged: function () {
+                    if (this.state === "open") {
+                        mask.open({theme: 'danger'});
+                    }
+                    else if (this.state === "close") {
+                        mask.close();
+                    }
+                }
+            });
+        });
+    });
+&lt;/script></pre><script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        var mask = new ax5.ui.mask();
+
+        dialog.setConfig({
+            title: 'Title',
+            onStateChanged: function () {
+                if (this.state === "open") {
+                    mask.open();
+                }
+                else if (this.state === "close") {
+                    mask.close();
+                }
+            }
+        });
+
+        $('#alert-open-with-mask').click(function () {
+            dialog.alert('Alert message');
+        });
+        $('#alert-open-with-danger-mask').click(function () {
+            dialog.alert({
+                msg: 'Alert message',
+                onStateChanged: function () {
+                    if (this.state === "open") {
+                        mask.open({theme: 'danger'});
+                    }
+                    else if (this.state === "close") {
+                        mask.close();
+                    }
+                }
+            });
+        });
+    });
+</script></script>
         </section>
 
 

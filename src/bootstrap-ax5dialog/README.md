@@ -18,6 +18,11 @@ using the `bower`, when you install the plug-in is installed to resolve the plug
 It is recommended that you install by using the `bower`. 
 If you've never used a bower is, you will be able to be used for [http://bower.io/#install-bower](http://bower.io/#install-bower).
 
+### Download code
+- [ax5core Github releases](https://github.com/ax5ui/ax5core/releases)
+- [bootstrap-ax5dialog Github releases](https://github.com/ax5ui/bootstrap-ax5dialog/releases)
+
+
 ### Insert the "ax5dialog" in the HTML HEAD.
 
 Location of the folder can be determined freely in your project. But be careful not to accidentally caused

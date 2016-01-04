@@ -1,0 +1,157 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>2</sort>
+
+    <id>alert-custom</id>
+    <title>Custom Alert</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Basic Alert" parent-id="demo"
+            page-id="alert-custom" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="alert-custom"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5dialog/ax5dialog.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5dialog/ax5dialog.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
+
+        <style type="text/css">
+            .ax-mask.danger .ax-mask-bg {
+                background: #7a0000;
+            }
+        </style>
+    </layout-put>
+    <layout-put into="body">
+
+        <section class="ax5docs-section">
+            <h1>Custom Alert</h1>
+
+        </section>
+
+        <!-- doc-js Width -->
+        <section class="ax5docs-section">
+            <h2>Width</h2>
+
+            <p>
+                Basically the values defined in <code>setConfig</code> dialog opens.
+                If not defined, it will be opened by default.<br/>
+                If the default value is a concern, please enter the following code to the command.<br/>
+                <code>(new ax5.ui.dialog()).config;</code> If ax5 dialog.js have been added to the page you want to enter the console, will output the default settings of the dialog UI to the console.
+            </p>
+            <p>
+                In the following example, we have to change the width in dialog.alert method. You can be tested in the following manner.
+            </p>
+
+            <button class="btn btn-default" type="button" id="alert-open">Alert</button>
+            <button class="btn btn-default" type="button" id="alert-open-500">Alert(width:500px)</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var dialog = new ax5.ui.dialog();
+                        dialog.setConfig({
+                            title: "XXX",
+                            width: 200
+                        });
+
+                        $('#alert-open').click(function () {
+                            dialog.alert({
+                                title: "Alert Title",
+                                msg: 'Alert message'
+                            });
+                        });
+                        $('#alert-open-500').click(function () {
+                            dialog.alert({
+                                title: "Alert Title",
+                                msg: 'Alert message',
+                                width: 500
+                            });
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+        </section>
+
+        <!-- doc-js onStateChanged -->
+        <section class="ax5docs-section">
+            <h2>onStateChanged</h2>
+
+            <p>
+                Please add ax5mask plug-in html document.
+                You can use the ax5mask If you add a plug-in to the page.
+            </p>
+
+            <ax5docs-html>
+                <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5mask/ax5mask.css"/>
+                <script type="text/javascript" src="bower_components/bootstrap-ax5mask/ax5mask.min.js"></script>
+                <style type="text/css">
+                    .ax-mask.danger .ax-mask-bg {
+                    / / prepare mask theme background: #7a0000;
+                    }
+                </style>
+            </ax5docs-html>
+
+            <p>
+                <code>onStateChanged</code> function is executed when the dialog of the state is changed,<br/>
+                <code>this.state</code> state value is passed to this time onStateChanged function.<br/>
+
+                onStateChanged defined in setConfig you open a fundamental mask,
+                we will open the danger mask in <code>dialog.alert</code>.
+            </p>
+
+            <button class="btn btn-default" type="button" id="alert-open-with-mask">Alert</button>
+            <button class="btn btn-danger" type="button" id="alert-open-with-danger-mask">Alert(danger)</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var dialog = new ax5.ui.dialog();
+                        var mask = new ax5.ui.mask();
+
+                        dialog.setConfig({
+                            title: 'Title',
+                            onStateChanged: function () {
+                                if (this.state === "open") {
+                                    mask.open();
+                                }
+                                else if (this.state === "close") {
+                                    mask.close();
+                                }
+                            }
+                        });
+
+                        $('#alert-open-with-mask').click(function () {
+                            dialog.alert('Alert message');
+                        });
+                        $('#alert-open-with-danger-mask').click(function () {
+                            dialog.alert({
+                                msg: 'Alert message',
+                                onStateChanged: function () {
+                                    if (this.state === "open") {
+                                        mask.open({theme: 'danger'});
+                                    }
+                                    else if (this.state === "close") {
+                                        mask.close();
+                                    }
+                                }
+                            });
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+        </section>
+
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>

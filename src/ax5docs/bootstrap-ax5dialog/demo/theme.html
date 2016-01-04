@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ax5ui / bootstrap-ax5dialog : Basic Alert</title>
+	<title>ax5ui / bootstrap-ax5dialog : Theme</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -118,84 +118,47 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li ><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
     
 					</div>
 				</div>
 				<div class="col-md-9">
 					
 
-        
         <section class="ax5docs-section">
-            <h1>Basic Alert</h1>
+            <h1>Theme</h1>
 
             <p>
-                ax5dialog creates a dialog by extending the argument to be passed to the alert method to the attributes defined in setConfig, then delivered to the user.<br>
-                how to call the dialog is, <code>alert</code>, <code>confirm</code> and <code>prompt</code>, we will introduce the basic use of alert in it.
+                ax5dialog themes using six colors defined by the bootstrap is provided.<br>
+                If you want to change the theme to the dialog you can define the theme attribute at the time of <code>method</code> calls, you can use to define in advance <code>setConfig</code>.
             </p>
-
-            <button class="btn btn-default" type="button" id="alert-open">Alert</button>
-            <button class="btn btn-default" type="button" id="alert-close">Alert Close</button>
-
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
-        });
-
-        $('#alert-open').click(function () {
-            dialog.alert('Alert message');
-        });
-        $('#alert-close').click(function () {
-            dialog.close();
-        });
-    });
-&lt;/script></pre><script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
-        });
-
-        $('#alert-open').click(function () {
-            dialog.alert('Alert message');
-        });
-        $('#alert-close').click(function () {
-            dialog.close();
-        });
-    });
-</script></script>
-
-
-            <p>
-                In the example, we introduce the basic use to output a alert dialog using <code>dialog.alert</code>.<br>
-                However, you can not completely stopping the operation of the application as window.alert in dialog.alert.<br>
-                If after the alert, user clicks the [OK] button, you need to pass an anonymous function as the second argument of the alert if there is a need of any such actions.
-            </p>
-
         </section>
 
+
         
         <section class="ax5docs-section">
-            <h2>Alert callBack</h2>
-
-            <p>
-                In the following example, after the alert, when the user clicks the [OK] button, run an anonymous function that is defined as the second argument,
-                To "this" anonymous function, you pass multiple arguments required developers.
-            </p>
-
-            <button class="btn btn-default" type="button" id="alert-open-callback">Alert</button>
+            <h2>Alert</h2>
+            <button type="button" data-alert="default" class="btn btn-default" id="alert-default-open">alert-default-open</button>
+            <button type="button" data-alert="primary" class="btn btn-primary" id="alert-primary-open">alert-primary-open</button>
+            <button type="button" data-alert="success" class="btn btn-success" id="alert-success-open">alert-success-open</button>
+            <button type="button" data-alert="info" class="btn btn-info" id="alert-info-open">alert-info-open</button>
+            <button type="button" data-alert="warning" class="btn btn-warning" id="alert-warning-open">alert-warning-open</button>
+            <button type="button" data-alert="danger" class="btn btn-danger" id="alert-danger-open">alert-danger-open</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
         var dialog = new ax5.ui.dialog();
         dialog.setConfig({
-            title: "AX5 Dialog"
+            title: "AX5 Dialog theme"
         });
 
-        $('#alert-open-callback').click(function () {
-            dialog.alert('Alert message', function () {
+        $('button[data-alert]').click(function () {
+            var theme = this.getAttribute("data-alert");
+            dialog.alert({
+                theme: theme,
+                title: 'Alert ' + theme,
+                msg: theme + ' color'
+            }, function () {
                 console.log(this);
             });
         });
@@ -204,22 +167,120 @@
     $(document.body).ready(function () {
         var dialog = new ax5.ui.dialog();
         dialog.setConfig({
-            title: "AX5 Dialog"
+            title: "AX5 Dialog theme"
         });
 
-        $('#alert-open-callback').click(function () {
-            dialog.alert('Alert message', function () {
+        $('button[data-alert]').click(function () {
+            var theme = this.getAttribute("data-alert");
+            dialog.alert({
+                theme: theme,
+                title: 'Alert ' + theme,
+                msg: theme + ' color'
+            }, function () {
                 console.log(this);
             });
         });
     });
 </script></script>
-            <p>
-                To "this" anonymous function, has been included, such as the following objects. You can check directly open a console window.
-            </p>
-            <pre class="prettyprint linenums lang-js">{key: "ok", value: Object, dialogId: "ax5-dialog-2", btnTarget: button.btn.btn-default}</pre>
         </section>
 
+        
+        <section class="ax5docs-section">
+            <h2>Confirm</h2>
+            <button type="button" data-confirm="default" class="btn btn-default" id="confirm-default-open">confirm-default-open</button>
+            <button type="button" data-confirm="primary" class="btn btn-primary" id="confirm-primary-open">confirm-primary-open</button>
+            <button type="button" data-confirm="success" class="btn btn-success" id="confirm-success-open">confirm-success-open</button>
+            <button type="button" data-confirm="info" class="btn btn-info" id="confirm-info-open">confirm-info-open</button>
+            <button type="button" data-confirm="warning" class="btn btn-warning" id="confirm-warning-open">confirm-warning-open</button>
+            <button type="button" data-confirm="danger" class="btn btn-danger" id="confirm-danger-open">confirm-danger-open</button>
+
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        dialog.setConfig({
+            title: "AX5 Dialog theme"
+        });
+
+        $('button[data-confirm]').click(function () {
+            var theme = this.getAttribute("data-confirm");
+            dialog.confirm({
+                theme: theme,
+                title: 'Confirm ' + theme,
+                msg: theme + ' color'
+            }, function () {
+                console.log(this);
+            });
+        });
+    });
+&lt;/script></pre><script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        dialog.setConfig({
+            title: "AX5 Dialog theme"
+        });
+
+        $('button[data-confirm]').click(function () {
+            var theme = this.getAttribute("data-confirm");
+            dialog.confirm({
+                theme: theme,
+                title: 'Confirm ' + theme,
+                msg: theme + ' color'
+            }, function () {
+                console.log(this);
+            });
+        });
+    });
+</script></script>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>Prompt</h2>
+            <button type="button" data-prompt="default" class="btn btn-default" id="prompt-default-open">prompt-default-open</button>
+            <button type="button" data-prompt="primary" class="btn btn-primary" id="prompt-primary-open">prompt-primary-open</button>
+            <button type="button" data-prompt="success" class="btn btn-success" id="prompt-success-open">prompt-success-open</button>
+            <button type="button" data-prompt="info" class="btn btn-info" id="prompt-info-open">prompt-info-open</button>
+            <button type="button" data-prompt="warning" class="btn btn-warning" id="prompt-warning-open">prompt-warning-open</button>
+            <button type="button" data-prompt="danger" class="btn btn-danger" id="prompt-danger-open">prompt-danger-open</button>
+
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        dialog.setConfig({
+            title: "AX5 Dialog theme"
+        });
+
+        $('button[data-prompt]').click(function () {
+            var theme = this.getAttribute("data-prompt");
+            dialog.prompt({
+                theme: theme,
+                title: 'Prompt ' + theme,
+                msg: theme + ' color'
+            }, function () {
+                console.log(this);
+            });
+        });
+    });
+&lt;/script></pre><script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        dialog.setConfig({
+            title: "AX5 Dialog theme"
+        });
+
+        $('button[data-prompt]').click(function () {
+            var theme = this.getAttribute("data-prompt");
+            dialog.prompt({
+                theme: theme,
+                title: 'Prompt ' + theme,
+                msg: theme + ' color'
+            }, function () {
+                console.log(this);
+            });
+        });
+    });
+</script></script>
+        </section>
 
     
 				</div>

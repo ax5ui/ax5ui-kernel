@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ax5ui / bootstrap-ax5dialog : Basic Alert</title>
+	<title>ax5ui / bootstrap-ax5dialog : Confirm</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -39,6 +39,15 @@
 	
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5dialog/ax5dialog.css">
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5dialog/ax5dialog.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
+
+        <style type="text/css">
+            .ax-mask.danger .ax-mask-bg {
+                background: #7a0000;
+            }
+        </style>
     
 </head>
 <body>
@@ -118,106 +127,72 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li ><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li ><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
     
 					</div>
 				</div>
 				<div class="col-md-9">
 					
 
-        
         <section class="ax5docs-section">
-            <h1>Basic Alert</h1>
-
+            <h1>Confirm</h1>
             <p>
-                ax5dialog creates a dialog by extending the argument to be passed to the alert method to the attributes defined in setConfig, then delivered to the user.<br>
-                how to call the dialog is, <code>alert</code>, <code>confirm</code> and <code>prompt</code>, we will introduce the basic use of alert in it.
+                confirm은 사용자에게 선택을 받을 수 있는 UI입니다.
+                사용자가 선택할 수 있는 버튼의 종류는 기본값으로는 ok, cancel이 선언 되어 있습니다.
             </p>
-
-            <button class="btn btn-default" type="button" id="alert-open">Alert</button>
-            <button class="btn btn-default" type="button" id="alert-close">Alert Close</button>
-
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
-        });
-
-        $('#alert-open').click(function () {
-            dialog.alert('Alert message');
-        });
-        $('#alert-close').click(function () {
-            dialog.close();
-        });
-    });
-&lt;/script></pre><script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
-        });
-
-        $('#alert-open').click(function () {
-            dialog.alert('Alert message');
-        });
-        $('#alert-close').click(function () {
-            dialog.close();
-        });
-    });
-</script></script>
-
-
-            <p>
-                In the example, we introduce the basic use to output a alert dialog using <code>dialog.alert</code>.<br>
-                However, you can not completely stopping the operation of the application as window.alert in dialog.alert.<br>
-                If after the alert, user clicks the [OK] button, you need to pass an anonymous function as the second argument of the alert if there is a need of any such actions.
-            </p>
-
         </section>
 
         
         <section class="ax5docs-section">
-            <h2>Alert callBack</h2>
+            <h2>Basic Usages</h2>
 
-            <p>
-                In the following example, after the alert, when the user clicks the [OK] button, run an anonymous function that is defined as the second argument,
-                To "this" anonymous function, you pass multiple arguments required developers.
-            </p>
-
-            <button class="btn btn-default" type="button" id="alert-open-callback">Alert</button>
+            <button class="btn btn-default" type="button" id="confirm-open">Confirm</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
+        var confirmDialog = new ax5.ui.dialog();
+        confirmDialog.setConfig({
+            title: "XXX",
+            theme: "danger"
         });
 
-        $('#alert-open-callback').click(function () {
-            dialog.alert('Alert message', function () {
-                console.log(this);
+        $('#confirm-open').click(function () {
+            confirmDialog.confirm({
+                title: "Confirm Title",
+                msg: 'Confirm message'
+            }, function(){
+                if(this.key == "ok"){
+                    alert('OK');
+                }
+                else if(this.key == "cancel"){
+                    alert('CANCEL');
+                }
             });
         });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
+        var confirmDialog = new ax5.ui.dialog();
+        confirmDialog.setConfig({
+            title: "XXX",
+            theme: "danger"
         });
 
-        $('#alert-open-callback').click(function () {
-            dialog.alert('Alert message', function () {
-                console.log(this);
+        $('#confirm-open').click(function () {
+            confirmDialog.confirm({
+                title: "Confirm Title",
+                msg: 'Confirm message'
+            }, function(){
+                if(this.key == "ok"){
+                    alert('OK');
+                }
+                else if(this.key == "cancel"){
+                    alert('CANCEL');
+                }
             });
         });
     });
 </script></script>
-            <p>
-                To "this" anonymous function, has been included, such as the following objects. You can check directly open a console window.
-            </p>
-            <pre class="prettyprint linenums lang-js">{key: "ok", value: Object, dialogId: "ax5-dialog-2", btnTarget: button.btn.btn-default}</pre>
         </section>
 
 
