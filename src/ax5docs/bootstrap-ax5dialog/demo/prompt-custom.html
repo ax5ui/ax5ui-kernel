@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ax5ui / bootstrap-ax5dialog : Theme</title>
+	<title>ax5ui / bootstrap-ax5dialog : Prompt</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -39,6 +39,15 @@
 	
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5dialog/ax5dialog.css">
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5dialog/ax5dialog.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
+
+        <style type="text/css">
+            .ax-mask.danger .ax-mask-bg {
+                background: #7a0000;
+            }
+        </style>
     
 </head>
 <body>
@@ -118,7 +127,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li ><a href="/bootstrap-ax5dialog/demo/prompt-custom.html">Prompt</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/prompt-custom.html">Prompt</a></li><li ><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
     
 					</div>
 				</div>
@@ -126,58 +135,51 @@
 					
 
         <section class="ax5docs-section">
-            <h1>Theme</h1>
+            <h1>Prompt</h1>
+        </section>
 
+        
+        <section class="ax5docs-section">
+            <h2>Basic Usages</h2>
             <p>
-                ax5dialog themes using six colors defined by the bootstrap is provided.<br>
-                If you want to change the theme to the dialog you can define the theme attribute at the time of <code>method</code> calls, you can use to define in advance <code>setConfig</code>.
+                Value which has received the input to the user through the Prompt UI will be forwarded to [this] of functions that are defined as the second argument of dialog.prompt.
+                You can to understand the value that the user entered in the passed this.value.
             </p>
-        </section>
-
-
-        
-        <section class="ax5docs-section">
-            <h2>Alert</h2>
-            <button type="button" data-alert="default" class="btn btn-default" id="alert-default-open">alert-default-open</button>
-            <button type="button" data-alert="primary" class="btn btn-primary" id="alert-primary-open">alert-primary-open</button>
-            <button type="button" data-alert="success" class="btn btn-success" id="alert-success-open">alert-success-open</button>
-            <button type="button" data-alert="info" class="btn btn-info" id="alert-info-open">alert-info-open</button>
-            <button type="button" data-alert="warning" class="btn btn-warning" id="alert-warning-open">alert-warning-open</button>
-            <button type="button" data-alert="danger" class="btn btn-danger" id="alert-danger-open">alert-danger-open</button>
+            <button class="btn btn-default" type="button" id="prompt-open">Prompt</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog theme"
+        var promptDialog = new ax5.ui.dialog();
+        promptDialog.setConfig({
+            title: "XXX",
+            theme: "danger"
         });
 
-        $('button[data-alert]').click(function () {
-            var theme = this.getAttribute("data-alert");
-            dialog.alert({
-                theme: theme,
-                title: 'Alert ' + theme,
-                msg: theme + ' color'
-            }, function () {
+        $('#prompt-open').click(function () {
+            promptDialog.prompt({
+                title: "Confirm Title",
+                msg: 'Confirm message'
+            }, function(){
                 console.log(this);
+                // {key: "ok", value: [User Input Data]}
             });
         });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog theme"
+        var promptDialog = new ax5.ui.dialog();
+        promptDialog.setConfig({
+            title: "XXX",
+            theme: "danger"
         });
 
-        $('button[data-alert]').click(function () {
-            var theme = this.getAttribute("data-alert");
-            dialog.alert({
-                theme: theme,
-                title: 'Alert ' + theme,
-                msg: theme + ' color'
-            }, function () {
+        $('#prompt-open').click(function () {
+            promptDialog.prompt({
+                title: "Confirm Title",
+                msg: 'Confirm message'
+            }, function(){
                 console.log(this);
+                // {key: "ok", value: [User Input Data]}
             });
         });
     });
@@ -186,101 +188,63 @@
 
         
         <section class="ax5docs-section">
-            <h2>Confirm</h2>
-            <button type="button" data-confirm="default" class="btn btn-default" id="confirm-default-open">confirm-default-open</button>
-            <button type="button" data-confirm="primary" class="btn btn-primary" id="confirm-primary-open">confirm-primary-open</button>
-            <button type="button" data-confirm="success" class="btn btn-success" id="confirm-success-open">confirm-success-open</button>
-            <button type="button" data-confirm="info" class="btn btn-info" id="confirm-info-open">confirm-info-open</button>
-            <button type="button" data-confirm="warning" class="btn btn-warning" id="confirm-warning-open">confirm-warning-open</button>
-            <button type="button" data-confirm="danger" class="btn btn-danger" id="confirm-danger-open">confirm-danger-open</button>
+            <h2>Custom Input</h2>
+            <p>
+                사용자 입력을 여러개 받아야 한다거나, 입력키를 다르게 설정해야 할 때에 input을 재정의 하여 사용자화 할 수 있습니다.
+            </p>
+            <button class="btn btn-default" type="button" id="prompt-open-input-custom">Confirm</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog theme"
+        var promptDialog = new ax5.ui.dialog();
+        promptDialog.setConfig({
+            title: "Prompt title",
+            theme: "danger"
         });
 
-        $('button[data-confirm]').click(function () {
-            var theme = this.getAttribute("data-confirm");
-            dialog.confirm({
-                theme: theme,
-                title: 'Confirm ' + theme,
-                msg: theme + ' color'
-            }, function () {
+        $('#prompt-open-input-custom').click(function () {
+            promptDialog.prompt({
+                input: {
+                    name: {label:"1. Name", placeholder: "Input your name"},
+                    age: {label:"2. Age", type:"number", value: "22"}
+                }
+            }, function(){
                 console.log(this);
+                // this.name, this.age
             });
         });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog theme"
+        var promptDialog = new ax5.ui.dialog();
+        promptDialog.setConfig({
+            title: "Prompt title",
+            theme: "danger"
         });
 
-        $('button[data-confirm]').click(function () {
-            var theme = this.getAttribute("data-confirm");
-            dialog.confirm({
-                theme: theme,
-                title: 'Confirm ' + theme,
-                msg: theme + ' color'
-            }, function () {
+        $('#prompt-open-input-custom').click(function () {
+            promptDialog.prompt({
+                input: {
+                    name: {label:"1. Name", placeholder: "Input your name"},
+                    age: {label:"2. Age", type:"number", value: "22"}
+                }
+            }, function(){
                 console.log(this);
+                // this.name, this.age
             });
         });
     });
 </script></script>
+
+            <div class="alert alert-warning" role="alert">
+                <p class="text-danger">
+                    Names in the key of the input of key, btnTarget, dialogId, value can not be used.<br>
+                    The name of the key that was enumeration is a reserved word that is defined in the UI class.
+                </p>
+            </div>
+
         </section>
 
-        
-        <section class="ax5docs-section">
-            <h2>Prompt</h2>
-            <button type="button" data-prompt="default" class="btn btn-default" id="prompt-default-open">prompt-default-open</button>
-            <button type="button" data-prompt="primary" class="btn btn-primary" id="prompt-primary-open">prompt-primary-open</button>
-            <button type="button" data-prompt="success" class="btn btn-success" id="prompt-success-open">prompt-success-open</button>
-            <button type="button" data-prompt="info" class="btn btn-info" id="prompt-info-open">prompt-info-open</button>
-            <button type="button" data-prompt="warning" class="btn btn-warning" id="prompt-warning-open">prompt-warning-open</button>
-            <button type="button" data-prompt="danger" class="btn btn-danger" id="prompt-danger-open">prompt-danger-open</button>
-
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog theme"
-        });
-
-        $('button[data-prompt]').click(function () {
-            var theme = this.getAttribute("data-prompt");
-            dialog.prompt({
-                theme: theme,
-                title: 'Prompt ' + theme,
-                msg: theme + ' color'
-            }, function () {
-                console.log(this);
-            });
-        });
-    });
-&lt;/script></pre><script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog theme"
-        });
-
-        $('button[data-prompt]').click(function () {
-            var theme = this.getAttribute("data-prompt");
-            dialog.prompt({
-                theme: theme,
-                title: 'Prompt ' + theme,
-                msg: theme + ' color'
-            }, function () {
-                console.log(this);
-            });
-        });
-    });
-</script></script>
-        </section>
 
     
 				</div>

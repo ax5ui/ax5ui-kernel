@@ -127,7 +127,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li ><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li ><a href="/bootstrap-ax5dialog/demo/prompt-custom.html">Prompt</a></li><li ><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
     
 					</div>
 				</div>
@@ -136,16 +136,15 @@
 
         <section class="ax5docs-section">
             <h1>Confirm</h1>
-            <p>
-                confirm은 사용자에게 선택을 받을 수 있는 UI입니다.
-                사용자가 선택할 수 있는 버튼의 종류는 기본값으로는 ok, cancel이 선언 되어 있습니다.
-            </p>
         </section>
 
         
         <section class="ax5docs-section">
             <h2>Basic Usages</h2>
-
+            <p>
+                confirm UI is used to receive a selected by the user.
+                The default user selection buttons defined in is "ok", "cancel".
+            </p>
             <button class="btn btn-default" type="button" id="confirm-open">Confirm</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
@@ -189,6 +188,89 @@
                 else if(this.key == "cancel"){
                     alert('CANCEL');
                 }
+            });
+        });
+    });
+</script></script>
+        </section>
+
+        
+        <section class="ax5docs-section">
+            <h2>Custom Buttons</h2>
+            <p>
+                "Ok", in addition to "cancel", if you must receive the user's selection, you can define the button to btns.
+            </p>
+            <button class="btn btn-default" type="button" id="confirm-open-btn-custom">Confirm</button>
+
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $(document.body).ready(function () {
+        var confirmDialog = new ax5.ui.dialog();
+        confirmDialog.setConfig({
+            title: "Confirm title",
+            theme: "danger"
+        });
+
+        $('#confirm-open-btn-custom').click(function () {
+            confirmDialog.confirm({
+                msg: 'Confirm message',
+                btns: {
+                    del: {
+                        label:'Delete', theme:'warning', onclick: function(key){
+                            console.log(key, this);
+                            confirmDialog.close();
+                        }
+                    },
+                    cancel: {
+                        label:'Cancel', onclick: function(key){
+                            console.log(key, this);
+                            confirmDialog.close();
+                        }
+                    },
+                    other: {
+                        label:'Other', onclick: function(key){
+                            console.log(key, this);
+                            confirmDialog.close();
+                        }
+                    }
+                }
+            }, function(){
+                // The callBack function that defines the button will not be executed.
+            });
+        });
+    });
+&lt;/script></pre><script type="text/javascript">
+    $(document.body).ready(function () {
+        var confirmDialog = new ax5.ui.dialog();
+        confirmDialog.setConfig({
+            title: "Confirm title",
+            theme: "danger"
+        });
+
+        $('#confirm-open-btn-custom').click(function () {
+            confirmDialog.confirm({
+                msg: 'Confirm message',
+                btns: {
+                    del: {
+                        label:'Delete', theme:'warning', onclick: function(key){
+                            console.log(key, this);
+                            confirmDialog.close();
+                        }
+                    },
+                    cancel: {
+                        label:'Cancel', onclick: function(key){
+                            console.log(key, this);
+                            confirmDialog.close();
+                        }
+                    },
+                    other: {
+                        label:'Other', onclick: function(key){
+                            console.log(key, this);
+                            confirmDialog.close();
+                        }
+                    }
+                }
+            }, function(){
+                // The callBack function that defines the button will not be executed.
             });
         });
     });

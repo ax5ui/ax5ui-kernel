@@ -179,7 +179,7 @@
 
             if (typeof opts.input === "undefined") {
                 opts.input = {
-                    value: {label: (opts.msg || cfg.msg || "")}
+                    value: {label: ""}
                 };
             }
             if (typeof opts.btns === "undefined") {
@@ -209,7 +209,7 @@
                 po.push('<div class="ax-dialog-prompt">');
                 U.each(opts.input, function (k, v) {
                     po.push('<div class="form-group">');
-                    po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
+                    if(this.label) po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
                     po.push('    <input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="form-control ' + (this.theme || "") + '" data-ax-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
                     if(this.help) {
                         po.push('    <p class="help-block">' + this.help.replace(/\n/g, "<br/>") + '</p>');

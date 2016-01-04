@@ -127,7 +127,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li ><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5dialog/demo/index.html">Basic Alert</a></li><li  class='active'><a href="/bootstrap-ax5dialog/demo/alert-custom.html">Custom Alert</a></li><li ><a href="/bootstrap-ax5dialog/demo/confirm-custom.html">Confirm</a></li><li ><a href="/bootstrap-ax5dialog/demo/prompt-custom.html">Prompt</a></li><li ><a href="/bootstrap-ax5dialog/demo/theme.html">Theme</a></li></ul>
     
 					</div>
 				</div>
@@ -297,6 +297,62 @@
                     }
                 }
             });
+        });
+    });
+</script></script>
+        </section>
+
+
+        
+        <section class="ax5docs-section">
+            <h2>Button Language</h2>
+
+            <p>
+                Defined in the class "ok", if you need to change the value of the label to another language "cancel" can be used to redefine the lang value.
+            </p>
+
+            <button class="btn btn-default" type="button" id="alert-open-lang">Alert</button>
+            <button class="btn btn-default" type="button" id="confirm-open-lang">Confirm</button>
+            <button class="btn btn-default" type="button" id="prompt-open-lang">Prompt</button>
+
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        dialog.setConfig({
+            title: 'Title',
+            lang:{
+                "ok": "확인", "cancel": "취소"
+            }
+        });
+
+        $('#alert-open-lang').click(function () {
+            dialog.alert('Alert message');
+        });
+        $('#confirm-open-lang').click(function () {
+            dialog.confirm('confirm message');
+        });
+        $('#prompt-open-lang').click(function () {
+            dialog.prompt('Prompt message');
+        });
+    });
+&lt;/script></pre><script type="text/javascript">
+    $(document.body).ready(function () {
+        var dialog = new ax5.ui.dialog();
+        dialog.setConfig({
+            title: 'Title',
+            lang:{
+                "ok": "확인", "cancel": "취소"
+            }
+        });
+
+        $('#alert-open-lang').click(function () {
+            dialog.alert('Alert message');
+        });
+        $('#confirm-open-lang').click(function () {
+            dialog.confirm('confirm message');
+        });
+        $('#prompt-open-lang').click(function () {
+            dialog.prompt('Prompt message');
         });
     });
 </script></script>

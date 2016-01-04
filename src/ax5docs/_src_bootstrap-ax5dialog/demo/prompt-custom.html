@@ -1,0 +1,116 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>4</sort>
+
+    <id>prompt-custom</id>
+    <title>Prompt</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Prompt" parent-id="demo"
+            page-id="prompt-custom" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="prompt-custom"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5dialog/ax5dialog.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5dialog/ax5dialog.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
+
+        <style type="text/css">
+            .ax-mask.danger .ax-mask-bg {
+                background: #7a0000;
+            }
+        </style>
+    </layout-put>
+    <layout-put into="body">
+
+        <section class="ax5docs-section">
+            <h1>Prompt</h1>
+        </section>
+
+        <!-- doc-js Width -->
+        <section class="ax5docs-section">
+            <h2>Basic Usages</h2>
+            <p>
+                Value which has received the input to the user through the Prompt UI will be forwarded to [this] of functions that are defined as the second argument of dialog.prompt.
+                You can to understand the value that the user entered in the passed this.value.
+            </p>
+            <button class="btn btn-default" type="button" id="prompt-open">Prompt</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var promptDialog = new ax5.ui.dialog();
+                        promptDialog.setConfig({
+                            title: "XXX",
+                            theme: "danger"
+                        });
+
+                        $('#prompt-open').click(function () {
+                            promptDialog.prompt({
+                                title: "Confirm Title",
+                                msg: 'Confirm message'
+                            }, function(){
+                                console.log(this);
+                                // {key: "ok", value: [User Input Data]}
+                            });
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+        </section>
+
+        <!-- doc-js Width -->
+        <section class="ax5docs-section">
+            <h2>Custom Input</h2>
+            <p>
+                사용자 입력을 여러개 받아야 한다거나, 입력키를 다르게 설정해야 할 때에 input을 재정의 하여 사용자화 할 수 있습니다.
+            </p>
+            <button class="btn btn-default" type="button" id="prompt-open-input-custom">Confirm</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var promptDialog = new ax5.ui.dialog();
+                        promptDialog.setConfig({
+                            title: "Prompt title",
+                            theme: "danger"
+                        });
+
+                        $('#prompt-open-input-custom').click(function () {
+                            promptDialog.prompt({
+                                input: {
+                                    name: {label:"1. Name", placeholder: "Input your name"},
+                                    age: {label:"2. Age", type:"number", value: "22"}
+                                }
+                            }, function(){
+                                console.log(this);
+                                // this.name, this.age
+                            });
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+
+            <div class="alert alert-warning" role="alert">
+                <p class="text-danger">
+                    Names in the key of the input of key, btnTarget, dialogId, value can not be used.<br/>
+                    The name of the key that was enumeration is a reserved word that is defined in the UI class.
+                </p>
+            </div>
+
+        </section>
+
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>
