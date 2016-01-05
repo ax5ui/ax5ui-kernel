@@ -40,6 +40,13 @@ var PATHS = {
         dest: "src/bootstrap-ax5mask/dist",
         doc_src: "src/ax5docs/_src_bootstrap-ax5mask",
         doc_dest: "src/ax5docs/bootstrap-ax5mask"
+    },
+    "bootstrap-ax5toast": {
+        root: "src/bootstrap-ax5toast",
+        src: "src/bootstrap-ax5toast/src",
+        dest: "src/bootstrap-ax5toast/dist",
+        doc_src: "src/ax5docs/_src_bootstrap-ax5toast",
+        doc_dest: "src/ax5docs/bootstrap-ax5toast"
     }
 };
 
@@ -106,6 +113,17 @@ gulp.task('AX5DIALOG-scripts', function () {
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'));
 });
 
+gulp.task('AX5TOAST-scripts', function () {
+    gulp.src(PATHS["bootstrap-ax5toast"].src + '/*.js')
+        .pipe(concat('ax5toast.js'))
+        .pipe(gulp.dest(PATHS["bootstrap-ax5toast"].dest))
+        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5toast'))
+        .pipe(concat('ax5toast.min.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest(PATHS["bootstrap-ax5toast"].dest))
+        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5toast'));
+});
+
 /**
  * ax5docs templete render
  */
@@ -152,6 +170,19 @@ gulp.task('AX5DIALOG-docs', function () {
         .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].doc_dest));
 });
 
+gulp.task('AX5TOAST-docs', function () {
+    return gulp.src(PATHS['bootstrap-ax5toast'].doc_src + '/**/*.html')
+        .pipe(changed(PATHS['bootstrap-ax5toast'].doc_dest, {
+            extension: '.html',
+            hasChanged: changed.compareSha1Digest
+        }))
+        .pipe(marko_ax5({
+            projectName: "bootstrap-ax5toast",
+            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
+        }))
+        .pipe(gulp.dest(PATHS['bootstrap-ax5toast'].doc_dest));
+});
+
 gulp.task('docs:all', function () {
     gulp.src(PATHS['ax5docs'].doc_src + '/**/*.html')
         .pipe(marko_ax5({
@@ -180,21 +211,39 @@ gulp.task('docs:all', function () {
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
         }))
         .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].doc_dest));
+
+    gulp.src(PATHS['bootstrap-ax5toast'].doc_src + '/**/*.html')
+        .pipe(marko_ax5({
+            projectName: "bootstrap-ax5toast",
+            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
+        }))
+        .pipe(gulp.dest(PATHS['bootstrap-ax5toast'].doc_dest));
 });
 
 /**
  * watch
  */
 gulp.task('watch', function () {
-    gulp.watch([PATHS.ax5docs.css_src + '/**/*.scss', PATHS['bootstrap-ax5mask'].src + '/**/*.scss', PATHS['bootstrap-ax5dialog'].src + '/**/*.scss'], ['SASS']);
+
+    // todo : ui 목록으로 자동화처리 하기
+
+    gulp.watch([
+        PATHS.ax5docs.css_src + '/**/*.scss',
+        PATHS['bootstrap-ax5mask'].src + '/**/*.scss',
+        PATHS['bootstrap-ax5dialog'].src + '/**/*.scss',
+        PATHS['bootstrap-ax5toast'].src + '/**/*.scss'
+    ], ['SASS']);
+
     gulp.watch(PATHS.ax5core.src + '/*.js', ['AX5CORE-scripts']);
-    gulp.watch(PATHS["bootstrap-ax5dialog"].src + '/*.js', ['AX5DIALOG-scripts']);
     gulp.watch(PATHS["bootstrap-ax5mask"].src + '/*.js', ['AX5MASK-scripts']);
+    gulp.watch(PATHS["bootstrap-ax5dialog"].src + '/*.js', ['AX5DIALOG-scripts']);
+    gulp.watch(PATHS["bootstrap-ax5toast"].src + '/*.js', ['AX5TOAST-scripts']);
 
-    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['default', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
+    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['default', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs', 'AX5TOAST-docs']);
     gulp.watch(PATHS.assets.src + '/_layouts/root.marko', ['default', 'AX5UI-docs']);
-    gulp.watch(PATHS.assets.src + '/components/**/*.js', ['default', 'AX5UI-docs', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs']);
+    gulp.watch(PATHS.assets.src + '/components/**/*.js', ['default', 'AX5UI-docs', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs', 'AX5TOAST-docs']);
 
+    // for MD
     gulp.watch(PATHS.ax5docs.doc_src + '/**/*.html', ['AX5UI-docs']);
     gulp.watch(
         [
@@ -203,7 +252,6 @@ gulp.task('watch', function () {
         ],
         ['AX5CORE-docs']
     );
-
     gulp.watch(
         [
             PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html',
@@ -217,6 +265,13 @@ gulp.task('watch', function () {
             PATHS['bootstrap-ax5dialog'].root + '/**/*.md'
         ],
         ['AX5DIALOG-docs']
+    );
+    gulp.watch(
+        [
+            PATHS['bootstrap-ax5toast'].doc_src + '/**/*.html',
+            PATHS['bootstrap-ax5toast'].root + '/**/*.md'
+        ],
+        ['AX5TOAST-docs']
     );
 
 });

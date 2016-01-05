@@ -1,11 +1,11 @@
 {
-	"name": "bootstrap-ax5dialog",
-	"version": "0.3.0",
-	"description": "A dialog plugin that works with Bootstrap & jQuery",
+	"name": "bootstrap-ax5toast",
+	"version": "0.1.0",
+	"description": "A toast plugin that works with Bootstrap & jQuery",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/ax5ui/bootstrap-ax5dialog"
+		"url": "git+https://github.com/ax5ui/bootstrap-ax5toast"
 	},
 	"author": {
 		"name": "Thomas Jang",

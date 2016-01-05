@@ -1,0 +1,104 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>1</sort>
+
+    <id>basic</id>
+    <title>Basic Alert</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Basic Alert" parent-id="demo"
+            page-id="basic" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="basic"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5toast/ax5toast.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5toast/ax5toast.min.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+        <!-- doc-js Basic Alert -->
+        <section class="ax5docs-section">
+            <h1>Basic Alert</h1>
+
+            <p>
+                ax5toast creates a dialog by extending the argument to be passed to the alert method to the attributes defined in setConfig, then delivered to the user.<br/>
+                how to call the dialog is, <code>alert</code>, <code>confirm</code> and <code>prompt</code>, we will introduce the basic use of alert in it.
+            </p>
+
+            <button class="btn btn-default" type="button" id="alert-open">Alert</button>
+            <button class="btn btn-default" type="button" id="alert-close">Alert Close</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var dialog = new ax5.ui.dialog();
+                        dialog.setConfig({
+                            title: "AX5 Dialog"
+                        });
+
+                        $('#alert-open').click(function () {
+                            dialog.alert('Alert message');
+                        });
+                        $('#alert-close').click(function () {
+                            dialog.close();
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+
+
+            <p>
+                In the example, we introduce the basic use to output a alert dialog using <code>dialog.alert</code>.<br/>
+                However, you can not completely stopping the operation of the application as window.alert in dialog.alert.<br/>
+                If after the alert, user clicks the [OK] button, you need to pass an anonymous function as the second argument of the alert if there is a need of any such actions.
+            </p>
+
+        </section>
+
+        <!-- doc-js alert callback -->
+        <section class="ax5docs-section">
+            <h2>Alert callBack</h2>
+
+            <p>
+                In the following example, after the alert, when the user clicks the [OK] button, run an anonymous function that is defined as the second argument,
+                To "this" anonymous function, you pass multiple arguments required developers.
+            </p>
+
+            <button class="btn btn-default" type="button" id="alert-open-callback">Alert</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var dialog = new ax5.ui.dialog();
+                        dialog.setConfig({
+                            title: "AX5 Dialog"
+                        });
+
+                        $('#alert-open-callback').click(function () {
+                            dialog.alert('Alert message', function () {
+                                console.log(this);
+                            });
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+            <p>
+                To "this" anonymous function, has been included, such as the following objects. You can check directly open a console window.
+            </p>
+            <ax5docs-js>
+                {key: "ok", value: Object, dialogId: "ax5-dialog-2", btnTarget: button.btn.btn-default}
+            </ax5docs-js>
+        </section>
+
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>
