@@ -1,7 +1,6 @@
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj)
-![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
-# bootstrap-ax5toast 
+# bootstrap-ax5toast
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
@@ -14,7 +13,8 @@
 bower install bootstrap-ax5toast
 ```
 [bower](http://bower.io/#install-bower) is web front-end package manager.
-using the `bower`, when you install the plug-in is installed to resolve the plug-in dependencies under the `bower_components` folder.  
+using the `bower`, when you install the plug-in is installed to resolve the plug-in dependencies under the `bower_components` folder.
+
 It is recommended that you install by using the `bower`. 
 If you've never used a bower is, you will be able to be used for [http://bower.io/#install-bower](http://bower.io/#install-bower).
 
@@ -31,7 +31,6 @@ exactly the path.
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5toast/dist/ax5toast.css" />
-    
         <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="bower_components/ax5core/dist/ax5core.min.js"></script>
         <script type="text/javascript" src="bower_components/bootstrap-ax5toast/dist/ax5toast.min.js"></script>
@@ -50,7 +49,7 @@ myToast.set_config({
 });
 ```
 
-***
+- - -
 
 ### Install by npm
 If you do not use the bower, it can be downloaded by using the npm as second best.
@@ -64,7 +63,9 @@ npm install bootstrap-ax5toast
 
 After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
 If the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.
-***
+
+- - -
+
 
 ### Preview
 - [See Demostration](http://ax5.io/bootstrap-ax5toast/demo/index.html)

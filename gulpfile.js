@@ -75,6 +75,12 @@ gulp.task('SASS', function () {
         .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].dest))
         .on("error", errorAlert)
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'));
+
+    gulp.src(PATHS['bootstrap-ax5toast'].src + '/ax5toast.scss')
+        .pipe(sass({outputStyle: 'compressed'}))
+        .pipe(gulp.dest(PATHS['bootstrap-ax5toast'].dest))
+        .on("error", errorAlert)
+        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5toast'));
 });
 
 /**

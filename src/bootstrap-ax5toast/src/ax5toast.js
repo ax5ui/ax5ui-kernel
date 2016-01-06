@@ -17,7 +17,7 @@
     var U = ax5.util;
     
     //== UI Class
-    var ax_class = function () {
+    var axClass = function () {
         var
             self = this,
             cfg;
@@ -235,16 +235,8 @@
     //== UI Class
     
     //== ui class 공통 처리 구문
-    if (U.is_function(_SUPER_)) ax_class.prototype = new _SUPER_(); // 상속
-    root.toast = ax_class; // ax5.ui에 연결
-    
-    if (typeof define === "function" && define.amd) {
-        define("_ax5_ui_toast", [], function () { return ax_class; }); // for requireJS
-    }
+    if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
+    root.toast = axClass; // ax5.ui에 연결
     //== ui class 공통 처리 구문
     
 })(ax5.ui, ax5.ui.root);
-
-// todo : confirm 기능 구현 alert에 btns만 확장 하면 끄읏
-// todo : prompt
-// todo : toast
