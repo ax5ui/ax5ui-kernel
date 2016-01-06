@@ -56,19 +56,19 @@ You can re-define the user's selection button in dialog.confirm.
 ```json
 btns: {
     del: {
-        label:'Delete', theme:'warning', onclick: function(key){
+        label:'Delete', theme:'warning', onClick: function(key){
             console.log(key, this);
             confirmDialog.close();
         }
     },
     cancel: {
-        label:'Cancel', onclick: function(key){
+        label:'Cancel', onClick: function(key){
             console.log(key, this);
             confirmDialog.close();
         }
     },
     other: {
-        label:'Other', onclick: function(key){
+        label:'Other', onClick: function(key){
             console.log(key, this);
             confirmDialog.close();
         }

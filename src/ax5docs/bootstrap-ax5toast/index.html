@@ -164,20 +164,9 @@ exactly the path.</p>
 &lt;/html&gt;
 </code></pre>
 <h3>Basic Usages</h3>
-<pre class="prettyprint linenums lang-js"><code>var myDialog = new ax5.ui.dialog();
-myDialog.set_config({
-    title: '&lt;i class=&quot;axi axi-ion-alert&quot;&gt;&lt;/i&gt; Default alert',
-    onStateChanged: function(){
-    
-    }
-});
+<pre class="prettyprint linenums lang-js"><code>var myToast = new ax5.ui.toast();
+myToast.set_config({
 
-$('#btn').click(function () {
-    myDialog.alert({
-        msg: 'Alert message'
-    }, function () {
-        console.log(this);
-    });
 });
 </code></pre>
 <hr>
