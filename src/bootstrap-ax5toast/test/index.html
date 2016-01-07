@@ -14,8 +14,19 @@
 </head>
 <body>
 
+    <button class="btn" id="toast-open">
+        toast
+    </button>
+
 <script>
+    var toast = new ax5.ui.toast();
+    toast.setConfig();
     $(document.body).ready(function () {
+
+        $("#toast-open").click(function(){
+            toast.push("12312312");
+            toast.confirm("12312312");
+        });
 
     });
 </script>

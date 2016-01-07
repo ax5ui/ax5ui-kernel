@@ -37,6 +37,13 @@
 			}
 		}
 	}
+	.ax-toast-close {
+		display: table-cell;
+		padding: $ax5toast-body-padding;
+		text-align: right;
+		vertical-align: middle;
+		text-decoration: none;
+	}
 }
 
 @mixin toast-variant($text-color, $bg-color, $color) {
@@ -45,20 +52,14 @@
 	.ax-toast-icon {
 		color: $color;
 	}
+	.ax-toast-close {
+		color: $text-color;
+	}
 }
 
-@include keyframes(ax-toast) {
+@include keyframes(ax-toast-bottom) {
 	from {
-		//@include opacity(0.0);
-		@if ($ax5toast-container-position == 0) {
-			@include transform(translateY(-100px));
-		} @else if ($ax5toast-container-position == 1) {
-			@include transform(translateY(-100px));
-		} @else if ($ax5toast-container-position == 2) {
-			@include transform(translateY(100px));
-		} @else if ($ax5toast-container-position == 3) {
-			@include transform(translateY(100px));
-		}
+		@include transform(translateY(-100px));
 	}
 	to {
 		//@include opacity($mask-bg-opacity);
@@ -66,22 +67,33 @@
 	}
 }
 
-@include keyframes(ax-toast-removed) {
+@include keyframes(ax-toast-top) {
+	from {
+		@include transform(translateY(100px));
+	}
+	to {
+		//@include opacity($mask-bg-opacity);
+		@include transform(translateX(0px))
+	}
+}
+
+@include keyframes(ax-toast-removed-bottom) {
 	from {
 		//@include opacity(1.0);
 		@include transform(translateX(0px));
 	}
 	to {
-		//@include opacity(0.0);
-		@if ($ax5toast-container-position == 0) {
-			@include transform(translateY(-100px));
-		} @else if ($ax5toast-container-position == 1) {
-			@include transform(translateY(-100px));
-		} @else if ($ax5toast-container-position == 2) {
-			@include transform(translateY(100px));
-		} @else if ($ax5toast-container-position == 3) {
-			@include transform(translateY(100px));
-		}
+		@include transform(translateY(100px));
+	}
+}
+
+@include keyframes(ax-toast-removed-top) {
+	from {
+		//@include opacity(1.0);
+		@include transform(translateX(0px));
+	}
+	to {
+		@include transform(translateY(-100px));
 	}
 }
 
@@ -99,19 +111,6 @@
 .ax5-ui-toast-container {
 	z-index: $ax5toast-z-index;
 	position: fixed;
-	@if ($ax5toast-container-position == 0) {
-		left: $ax5toast-container-margin;
-		top: $ax5toast-container-margin;
-	} @else if ($ax5toast-container-position == 1) {
-		right: $ax5toast-container-margin;
-		top: $ax5toast-container-margin;
-	} @else if ($ax5toast-container-position == 2) {
-		right: $ax5toast-container-margin;
-		bottom: $ax5toast-container-margin;
-	} @else if ($ax5toast-container-position == 3) {
-		left: $ax5toast-container-margin;
-		bottom: $ax5toast-container-margin;
-	}
 
 	.ax5-ui-toast {
 		@include animation(ax-toast 0.3s $ease-out-back);
@@ -136,12 +135,63 @@
 		&.danger {
 			@include toast-variant($ax5toast-danger-text, $ax5toast-danger-bg, $ax5toast-danger-color);
 		}
+	}
 
-		&.removed {
-			@include animation(ax-toast-removed 0.3s $ease-in-back forwards);
+
+	&.bottom-right {
+		right: $ax5toast-container-margin;
+		bottom: $ax5toast-container-margin;
+
+		.ax5-ui-toast {
+			&.removed {
+				@include animation(ax-toast-removed-bottom 0.3s $ease-in-back forwards);
+			}
+			&.destroy {
+				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+			}
 		}
-		&.destroy {
-			@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+
+	}
+
+	&.top-left {
+		left: $ax5toast-container-margin;
+		top: $ax5toast-container-margin;
+
+		.ax5-ui-toast {
+			&.removed {
+				@include animation(ax-toast-removed-top 0.3s $ease-in-back forwards);
+			}
+			&.destroy {
+				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+			}
+		}
+	}
+
+	&.top-right {
+		right: $ax5toast-container-margin;
+		top: $ax5toast-container-margin;
+
+		.ax5-ui-toast {
+			&.removed {
+				@include animation(ax-toast-removed-top 0.3s $ease-in-back forwards);
+			}
+			&.destroy {
+				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+			}
+		}
+	}
+
+	&.bottom-left {
+		left: $ax5toast-container-margin;
+		bottom: $ax5toast-container-margin;
+
+		.ax5-ui-toast {
+			&.removed {
+				@include animation(ax-toast-removed-bottom 0.3s $ease-in-back forwards);
+			}
+			&.destroy {
+				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+			}
 		}
 	}
 }

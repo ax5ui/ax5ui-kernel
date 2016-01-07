@@ -28,14 +28,15 @@
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
                 theme: 'default',
-                width: 300,
+                width: '100%',
                 icon: '',
                 msg: '',
                 lang: {
                     "ok": "ok", "cancel": "cancel"
                 },
                 displayTime: 3000,
-                animateTime: 200
+                animateTime: 200,
+                containerPosition: "bottom-left"
             };
         }).apply(this, arguments);
         
@@ -55,10 +56,17 @@
             //== class body start
         this.init = function () {
             // after set_config();
-            var containerId = ax5.getGuid();
-            jQuery(document.body).append('<div class="ax5-ui-toast-container" data-toast-container="' +
-                '' + containerId + '"></div>');
-            this.toastContainer = jQuery('[data-toast-container="' + containerId + '"]');
+            self.containerId = ax5.getGuid();
+            jQuery(document.body).append('<div class="ax5-ui-toast-container ' + cfg.containerPosition + '" data-toast-container="' +
+                '' + self.containerId + '"></div>');
+            this.toastContainer = jQuery('[data-toast-container="' + self.containerId + '"]');
+
+            // bind key event
+            /*
+             jQuery(window).bind("keydown.ax-toast-" + self.containerId, (function (e) {
+             this.onKeyup(e || window.event);
+             }).bind(this));
+             */
         };
         
         this.push = function (opts, callBack) {
@@ -106,22 +114,25 @@
             var po = [];
             po.push('<div id="' + toastId + '" data-ax5-ui="toast" class="ax5-ui-toast ' + opts.theme + '">');
             po.push('<div class="ax-toast-icon">');
-            po.push((opts.icon || cfg.icon || ""));
+            po.push((opts.icon || ""));
             po.push('</div>');
             po.push('<div class="ax-toast-body">');
-            po.push((opts.msg || cfg.msg || "").replace(/\n/g, "<br/>"));
+            po.push((opts.msg || "").replace(/\n/g, "<br/>"));
             po.push('</div>');
 
             if (opts.btns) {
                 po.push('<div class="ax-toast-buttons">');
                 po.push('<div class="ax-button-wrap">');
                 U.each(opts.btns, function (k, v) {
-                    po.push('<button type="button" data-ax-toast-btn="' + k + '" class="btn btn-' + (this.theme||"default") + '">' + this.label + '</button>');
+                    po.push('<button type="button" data-ax-toast-btn="' + k + '" class="btn btn-' + (this.theme || "default") + '">' + this.label + '</button>');
                 });
                 po.push('</div>');
                 po.push('</div>');
             }
-            
+            else {
+                po.push('<a href="#" class="ax-toast-close" data-ax-toast-action="close">' + (opts.closeIcon || 'close') + '</a>');
+            }
+
             po.push('<div style="clear:both;"></div>');
             po.push('</div>');
             return po.join('');
@@ -153,10 +164,6 @@
                 }).bind(this));
             }
 
-            // bind key event
-            jQuery(window).bind("keydown.ax-toast", (function (e) {
-                this.onKeyup(e || window.event, opts, callBack);
-            }).bind(this));
         };
         
         this.btnOnClick = function (e, opts, toastBox, callBack, target, k) {
@@ -188,8 +195,8 @@
         
         // todo : confirm 타입 토스트일 때 키보드 이벤트 추가 할 수 있음.
         this.onKeyup = function (e, opts, callBack, target, k) {
-            if (e.keyCode == ax5.info.event_keys.ESC) {
-                this.close();
+            if (e.keyCode == ax5.info.eventKeys.ESC) {
+                if (this.queue.length > 0) this.close();
             }
         };
         
@@ -211,9 +218,7 @@
                 toastId: opts.id
             };
 
-            jQuery(window).unbind("keydown.ax-toast");
-
-            toastBox.addClass( (opts.toastType == "push") ? "removed" : "destroy" );
+            toastBox.addClass((opts.toastType == "push") ? "removed" : "destroy");
             this.queue = U.filter(this.queue, function () {
                 return opts.id != this.id;
             });
