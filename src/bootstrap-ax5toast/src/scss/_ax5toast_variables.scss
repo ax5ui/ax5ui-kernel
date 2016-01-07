@@ -1,6 +1,38 @@
-$ax5mask-z-index: 1000 !default;
-$ax5mask-bg-opacity: 0.6 !default;
+//== toast
+$ax5toast-z-index: 2000;
+$ax5toast-container-position: 2;
+// 0:left,top / 1:right,top / 2:right,bottom / 3:left,bottom
+$ax5toast-container-margin: 10px !default;
+$ax5toast-box-model: border-box  !default;
+$ax5toast-border: 1px solid rgb(255/2, 255/2, 255/2) !default;
+$ax5toast-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.60) !default;
+$ax5toast-body-padding: 6px !default;
+$ax5toast-border-radius: 8px !default;
+$ax5toast-opacity: 0.9 !default;
+$ax5toast-box-margin: 0px 0px 10px 0px !default;
+$ax5toast-icon-size: 24px;
 
-$ax5mask-bg: #000 !default;
-$ax5mask-text-color: #fff !default;
-$ax5mask-text-shadow:0px 1px 0px #000 !default;
+//** Border color for elements within toast
+$ax5toast-default-text: $panel-default-text !default;
+$ax5toast-default-bg: $panel-bg !default;
+$ax5toast-default-color: $text-color !default;
+
+$ax5toast-primary-text: $panel-default-text !default;
+$ax5toast-primary-bg: $panel-bg !default;
+$ax5toast-primary-color: $panel-primary-heading-bg !default;
+
+$ax5toast-success-text: $panel-default-text !default;
+$ax5toast-success-bg: $panel-bg !default;
+$ax5toast-success-color: $panel-success-heading-bg !default;
+
+$ax5toast-info-text: $panel-default-text !default;
+$ax5toast-info-bg: $panel-bg !default;
+$ax5toast-info-color: $panel-info-heading-bg !default;
+
+$ax5toast-warning-text: $panel-default-text !default;
+$ax5toast-warning-bg: $panel-bg !default;
+$ax5toast-warning-color: $panel-warning-heading-bg !default;
+
+$ax5toast-danger-text: $panel-default-text !default;
+$ax5toast-danger-bg: $panel-bg !default;
+$ax5toast-danger-color: $panel-danger-heading-bg !default;

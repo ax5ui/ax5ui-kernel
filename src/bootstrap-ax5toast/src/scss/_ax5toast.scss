@@ -1,38 +1,38 @@
 @mixin ax-toast() {
 	box-sizing: $ax5toast-box-model;
 	border: $ax5toast-border;
-	@include opacity(0.9);
+	opacity: $ax5toast-opacity;
 
 	@include ax-border-radius($ax5toast-border-radius);
-	@include box-shadow($ax5toast-box-shaodw);
+	box-shadow: $ax5toast-box-shadow;
 	position: relative;
-	margin: 0px 0px 10px 0px;
+	margin: $ax5toast-box-margin;
 }
 
 @mixin ax-toast-section() {
 	display: table;
 	padding: $ax5toast-body-padding;
-	.ax-toast-axicon {
+	.ax-toast-icon {
 		display: table-cell;
 		padding: $ax5toast-body-padding;
 		text-align: left;
-		font-size:24px;
-		width: 24px;
+		font-size: $ax5toast-icon-size;
+		width: $ax5toast-icon-size;
 		vertical-align: middle;
 	}
-	.ax-toast-body{
+	.ax-toast-body {
 		display: table-cell;
 		padding: $ax5toast-body-padding;
 		text-align: left;
 		vertical-align: middle;
 	}
-	.ax-toast-buttons{
+	.ax-toast-buttons {
 		display: table-cell;
 		padding: $ax5toast-body-padding;
 		text-align: right;
 		vertical-align: middle;
-		button{
-			&:not(:last-child){
+		button {
+			&:not(:last-child) {
 				margin-right: 3px;
 			}
 		}
@@ -42,7 +42,7 @@
 @mixin toast-variant($text-color, $bg-color, $color) {
 	background: $bg-color;
 	color: $text-color;
-	.ax-toast-axicon {
+	.ax-toast-icon {
 		color: $color;
 	}
 }
@@ -50,42 +50,36 @@
 @include keyframes(ax-toast) {
 	from {
 		//@include opacity(0.0);
-		@if($ax5toast-container-position == 0) {
+		@if ($ax5toast-container-position == 0) {
 			@include transform(translateY(-100px));
-		}
-		@else if($ax5toast-container-position == 1) {
+		} @else if ($ax5toast-container-position == 1) {
 			@include transform(translateY(-100px));
-		}
-		@else if($ax5toast-container-position == 2) {
+		} @else if ($ax5toast-container-position == 2) {
 			@include transform(translateY(100px));
-		}
-		@else if($ax5toast-container-position == 3) {
+		} @else if ($ax5toast-container-position == 3) {
 			@include transform(translateY(100px));
 		}
 	}
 	to {
 		//@include opacity($mask-bg-opacity);
-		@include transform( translateX(0px) )
+		@include transform(translateX(0px))
 	}
 }
 
 @include keyframes(ax-toast-removed) {
 	from {
 		//@include opacity(1.0);
-		@include transform( translateX(0px) );
+		@include transform(translateX(0px));
 	}
 	to {
 		//@include opacity(0.0);
-		@if($ax5toast-container-position == 0) {
+		@if ($ax5toast-container-position == 0) {
 			@include transform(translateY(-100px));
-		}
-		@else if($ax5toast-container-position == 1) {
+		} @else if ($ax5toast-container-position == 1) {
 			@include transform(translateY(-100px));
-		}
-		@else if($ax5toast-container-position == 2) {
+		} @else if ($ax5toast-container-position == 2) {
 			@include transform(translateY(100px));
-		}
-		@else if($ax5toast-container-position == 3) {
+		} @else if ($ax5toast-container-position == 3) {
 			@include transform(translateY(100px));
 		}
 	}
@@ -93,35 +87,33 @@
 
 @include keyframes(ax-toast-destroy) {
 	from {
-		@include opacity(1.0);
+		opacity: 1.0;
 	}
 	to {
-		@include opacity(0.0);
+		opacity: 0.0;
 	}
 }
+
 // mixins --------------------------------------------- end
 
 .ax5-ui-toast-container {
-	z-index: $mask-over-z-index;
+	z-index: $ax5toast-z-index;
 	position: fixed;
-	@if($ax5toast-container-position == 0){
+	@if ($ax5toast-container-position == 0) {
 		left: $ax5toast-container-margin;
 		top: $ax5toast-container-margin;
-	}
-	@else if($ax5toast-container-position == 1) {
+	} @else if ($ax5toast-container-position == 1) {
 		right: $ax5toast-container-margin;
 		top: $ax5toast-container-margin;
-	}
-	@else if($ax5toast-container-position == 2) {
+	} @else if ($ax5toast-container-position == 2) {
 		right: $ax5toast-container-margin;
 		bottom: $ax5toast-container-margin;
-	}
-	@else if($ax5toast-container-position == 3) {
+	} @else if ($ax5toast-container-position == 3) {
 		left: $ax5toast-container-margin;
 		bottom: $ax5toast-container-margin;
 	}
 
-	.ax5-ui-toast{
+	.ax5-ui-toast {
 		@include animation(ax-toast 0.3s $ease-out-back);
 		@include ax-toast();
 		@include ax-toast-section();
@@ -129,29 +121,26 @@
 
 		@include toast-variant($ax5toast-default-text, $ax5toast-default-bg, $ax5toast-default-color);
 
-		&.basic{
-			@include toast-variant($ax5toast-basic-text, $ax5toast-basic-bg, $ax5toast-basic-color);
+		&.primary {
+			@include toast-variant($ax5toast-primary-text, $ax5toast-primary-bg, $ax5toast-primary-color);
 		}
-		&.good{
-			@include toast-variant($ax5toast-good-text, $ax5toast-good-bg, $ax5toast-good-color);
+		&.success {
+			@include toast-variant($ax5toast-success-text, $ax5toast-success-bg, $ax5toast-success-color);
 		}
-		&.info{
+		&.info {
 			@include toast-variant($ax5toast-info-text, $ax5toast-info-bg, $ax5toast-info-color);
 		}
-		&.warning{
+		&.warning {
 			@include toast-variant($ax5toast-warning-text, $ax5toast-warning-bg, $ax5toast-warning-color);
 		}
-		&.danger{
+		&.danger {
 			@include toast-variant($ax5toast-danger-text, $ax5toast-danger-bg, $ax5toast-danger-color);
 		}
-		&.special{
-			@include toast-variant($ax5toast-special-text, $ax5toast-special-bg, $ax5toast-special-color);
-		}
 
-		&.removed{
+		&.removed {
 			@include animation(ax-toast-removed 0.3s $ease-in-back forwards);
 		}
-		&.destroy{
+		&.destroy {
 			@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
 		}
 	}
