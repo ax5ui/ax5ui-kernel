@@ -2,7 +2,7 @@
 	"name": "bootstrap-ax5dialog-tester",
 	"dependencies": {
 		"jquery": "^1.11.0",
-		"ax5core": "",
+		"ax5core": ">=0.4.0",
 		"bootstrap-ax5mask": "",
 		"bootstrap": "^3.3.6"
 	}
