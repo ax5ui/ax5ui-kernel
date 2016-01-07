@@ -1,65 +1,159 @@
-@mixin ax-mask() {
-	position: absolute;
+@mixin ax-toast() {
+	box-sizing: $ax5toast-box-model;
+	border: $ax5toast-border;
+	@include opacity(0.9);
+
+	@include ax-border-radius($ax5toast-border-radius);
+	@include box-shadow($ax5toast-box-shaodw);
+	position: relative;
+	margin: 0px 0px 10px 0px;
 }
 
-@mixin ax-panel-mask() {
-	position: absolute;
+@mixin ax-toast-section() {
+	display: table;
+	padding: $ax5toast-body-padding;
+	.ax-toast-axicon {
+		display: table-cell;
+		padding: $ax5toast-body-padding;
+		text-align: left;
+		font-size:24px;
+		width: 24px;
+		vertical-align: middle;
+	}
+	.ax-toast-body{
+		display: table-cell;
+		padding: $ax5toast-body-padding;
+		text-align: left;
+		vertical-align: middle;
+	}
+	.ax-toast-buttons{
+		display: table-cell;
+		padding: $ax5toast-body-padding;
+		text-align: right;
+		vertical-align: middle;
+		button{
+			&:not(:last-child){
+				margin-right: 3px;
+			}
+		}
+	}
 }
 
-// mixins --------------------------------------------- end
+@mixin toast-variant($text-color, $bg-color, $color) {
+	background: $bg-color;
+	color: $text-color;
+	.ax-toast-axicon {
+		color: $color;
+	}
+}
 
-@include keyframes(ax-mask) {
+@include keyframes(ax-toast) {
 	from {
-		opacity: 0.0;
+		//@include opacity(0.0);
+		@if($ax5toast-container-position == 0) {
+			@include transform(translateY(-100px));
+		}
+		@else if($ax5toast-container-position == 1) {
+			@include transform(translateY(-100px));
+		}
+		@else if($ax5toast-container-position == 2) {
+			@include transform(translateY(100px));
+		}
+		@else if($ax5toast-container-position == 3) {
+			@include transform(translateY(100px));
+		}
 	}
 	to {
-		opacity: $ax5mask-bg-opacity;
+		//@include opacity($mask-bg-opacity);
+		@include transform( translateX(0px) )
 	}
 }
 
-.ax-masking {
-	-webkit-filter: blur(3px);
-	//position: fixed;
-	@include transform(scale(0.96));
-	@include transform(translateZ(0));
+@include keyframes(ax-toast-removed) {
+	from {
+		//@include opacity(1.0);
+		@include transform( translateX(0px) );
+	}
+	to {
+		//@include opacity(0.0);
+		@if($ax5toast-container-position == 0) {
+			@include transform(translateY(-100px));
+		}
+		@else if($ax5toast-container-position == 1) {
+			@include transform(translateY(-100px));
+		}
+		@else if($ax5toast-container-position == 2) {
+			@include transform(translateY(100px));
+		}
+		@else if($ax5toast-container-position == 3) {
+			@include transform(translateY(100px));
+		}
+	}
 }
 
-.ax-mask {
-	z-index: $ax5mask-z-index;
+@include keyframes(ax-toast-destroy) {
+	from {
+		@include opacity(1.0);
+	}
+	to {
+		@include opacity(0.0);
+	}
+}
+// mixins --------------------------------------------- end
+
+.ax5-ui-toast-container {
+	z-index: $mask-over-z-index;
 	position: fixed;
-	left: 0px;
-	top: 0px;
-	width: 100%;
-	height: 100%;
-	.ax-mask-bg {
-		z-index: 1;
-		position: absolute;
-		left: 0px;
-		top: 0px;
-		width: 100%;
-		height: 100%;
-		background: $ax5mask-bg;
-		opacity: $ax5mask-bg-opacity;
+	@if($ax5toast-container-position == 0){
+		left: $ax5toast-container-margin;
+		top: $ax5toast-container-margin;
 	}
-	.ax-mask-content {
-		z-index: 2;
-		position: absolute;
-		left: 0px;
-		top: 0px;
-		width: 100%;
-		height: 100%;
-		display: table;
-		vertical-align: middle;
-		text-align: center;
-		color: $ax5mask-text-color;
-		text-shadow: $ax5mask-text-shadow;
-		* {
-			color: inherit;
+	@else if($ax5toast-container-position == 1) {
+		right: $ax5toast-container-margin;
+		top: $ax5toast-container-margin;
+	}
+	@else if($ax5toast-container-position == 2) {
+		right: $ax5toast-container-margin;
+		bottom: $ax5toast-container-margin;
+	}
+	@else if($ax5toast-container-position == 3) {
+		left: $ax5toast-container-margin;
+		bottom: $ax5toast-container-margin;
+	}
+
+	.ax5-ui-toast{
+		@include animation(ax-toast 0.3s $ease-out-back);
+		@include ax-toast();
+		@include ax-toast-section();
+		@include transition(all 0.3s ease-in-out);
+
+		@include toast-variant($ax5toast-default-text, $ax5toast-default-bg, $ax5toast-default-color);
+
+		&.basic{
+			@include toast-variant($ax5toast-basic-text, $ax5toast-basic-bg, $ax5toast-basic-color);
 		}
-		div {
-			display: table-cell;
-			vertical-align: middle;
-			text-align: center;
+		&.good{
+			@include toast-variant($ax5toast-good-text, $ax5toast-good-bg, $ax5toast-good-color);
+		}
+		&.info{
+			@include toast-variant($ax5toast-info-text, $ax5toast-info-bg, $ax5toast-info-color);
+		}
+		&.warning{
+			@include toast-variant($ax5toast-warning-text, $ax5toast-warning-bg, $ax5toast-warning-color);
+		}
+		&.danger{
+			@include toast-variant($ax5toast-danger-text, $ax5toast-danger-bg, $ax5toast-danger-color);
+		}
+		&.special{
+			@include toast-variant($ax5toast-special-text, $ax5toast-special-bg, $ax5toast-special-color);
+		}
+
+		&.removed{
+			@include animation(ax-toast-removed 0.3s $ease-in-back forwards);
+		}
+		&.destroy{
+			@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
 		}
 	}
 }
+

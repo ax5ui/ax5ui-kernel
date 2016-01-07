@@ -17,6 +17,7 @@
 		"gulp-uglify": "^1.5.1",
 		"gulp-marko-ax5": "^0.3.0",
 		"js-beautify": "^1.5.10",
-		"gulp-notify": "^2.2.0"
+		"gulp-notify": "^2.2.0",
+		"ax5core": ""
 	}
 }
