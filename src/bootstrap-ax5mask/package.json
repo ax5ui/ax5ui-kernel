@@ -20,5 +20,8 @@
 		"bootstrap jQuery plugins",
 		"mask",
 		"bootstrap-ax5mask"
-	]
+	],
+	"dependencies": {
+		"ax5core": ">=0.4.0"
+	}
 }
