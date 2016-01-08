@@ -41,8 +41,9 @@
 		display: table-cell;
 		padding: $ax5toast-body-padding;
 		text-align: right;
-		vertical-align: middle;
+		vertical-align: top;
 		text-decoration: none;
+		cursor: pointer;
 	}
 }
 
@@ -111,9 +112,10 @@
 .ax5-ui-toast-container {
 	z-index: $ax5toast-z-index;
 	position: fixed;
+	width: $ax5toast-container-width;
+	padding: $ax5toast-container-padding;
 
 	.ax5-ui-toast {
-		@include animation(ax-toast 0.3s $ease-out-back);
 		@include ax-toast();
 		@include ax-toast-section();
 		@include transition(all 0.3s ease-in-out);
@@ -137,43 +139,60 @@
 		}
 	}
 
-
-	&.bottom-right {
-		right: $ax5toast-container-margin;
-		bottom: $ax5toast-container-margin;
+	&.bottom-left {
+		left: 0;
+		bottom: 0;
 
 		.ax5-ui-toast {
+			@include animation(ax-toast-top 0.3s $ax5toast-easing);
 			&.removed {
-				@include animation(ax-toast-removed-bottom 0.3s $ease-in-back forwards);
+				@include animation(ax-toast-removed-bottom 0.3s $ax5toast-easing forwards);
 			}
 			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+				@include animation(ax-toast-destroy 0.3s $ax5toast-easing forwards);
+			}
+		}
+	}
+	&.bottom-right {
+		right: 0;
+		bottom: 0;
+
+		.ax5-ui-toast {
+			@include animation(ax-toast-top 0.3s $ax5toast-easing);
+			&.removed {
+				@include animation(ax-toast-removed-bottom 0.3s $ax5toast-easing forwards);
+			}
+			&.destroy {
+				@include animation(ax-toast-destroy 0.3s $ax5toast-easing forwards);
 			}
 		}
 
 	}
 
+
 	&.top-left {
-		left: $ax5toast-container-margin;
-		top: $ax5toast-container-margin;
+		left: 0;
+		top: 0;
 
 		.ax5-ui-toast {
+			@include animation(ax-toast-bottom 0.3s $ax5toast-easing);
 			&.removed {
-				@include animation(ax-toast-removed-top 0.3s $ease-in-back forwards);
+				@include animation(ax-toast-removed-top 0.3s $ax5toast-easing forwards);
 			}
 			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+				@include animation(ax-toast-destroy 0.3s $ax5toast-easing forwards);
 			}
 		}
 	}
 
 	&.top-right {
-		right: $ax5toast-container-margin;
-		top: $ax5toast-container-margin;
+		right: 0;
+		top: 0;
 
 		.ax5-ui-toast {
+			@include animation(ax-toast-bottom 0.3s $ax5toast-easing);
 			&.removed {
-				@include animation(ax-toast-removed-top 0.3s $ease-in-back forwards);
+				@include animation(ax-toast-removed-top 0.3s $ax5toast-easing forwards);
 			}
 			&.destroy {
 				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
@@ -181,18 +200,6 @@
 		}
 	}
 
-	&.bottom-left {
-		left: $ax5toast-container-margin;
-		bottom: $ax5toast-container-margin;
 
-		.ax5-ui-toast {
-			&.removed {
-				@include animation(ax-toast-removed-bottom 0.3s $ease-in-back forwards);
-			}
-			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
-			}
-		}
-	}
 }
 

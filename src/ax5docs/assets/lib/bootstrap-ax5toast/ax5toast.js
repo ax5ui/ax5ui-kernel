@@ -28,8 +28,9 @@
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
                 theme: 'default',
-                width: '100%',
+                width: 300,
                 icon: '',
+                closeIcon: '',
                 msg: '',
                 lang: {
                     "ok": "ok", "cancel": "cancel"
@@ -60,13 +61,6 @@
             jQuery(document.body).append('<div class="ax5-ui-toast-container ' + cfg.containerPosition + '" data-toast-container="' +
                 '' + self.containerId + '"></div>');
             this.toastContainer = jQuery('[data-toast-container="' + self.containerId + '"]');
-
-            // bind key event
-            /*
-             jQuery(window).bind("keydown.ax-toast-" + self.containerId, (function (e) {
-             this.onKeyup(e || window.event);
-             }).bind(this));
-             */
         };
         
         this.push = function (opts, callBack) {
@@ -130,7 +124,7 @@
                 po.push('</div>');
             }
             else {
-                po.push('<a href="#" class="ax-toast-close" data-ax-toast-action="close">' + (opts.closeIcon || 'close') + '</a>');
+                po.push('<a class="ax-toast-close" data-ax-toast-btn="ok">' + (opts.closeIcon || 'close') + '</a>');
             }
 
             po.push('<div style="clear:both;"></div>');
@@ -142,10 +136,11 @@
             var
                 toastBox;
             
-            opts.id = 'ax5-toast-' + this.queue.length;
+            opts.id = 'ax5-toast-' + self.containerId + '-' + this.queue.length;
             box = {
-                width: opts.width || cfg.width
+                width: opts.width
             };
+
             this.toastContainer.prepend(this.getContent(opts.id, opts));
             toastBox = jQuery('#' + opts.id);
             toastBox.css({width: box.width});
@@ -157,6 +152,10 @@
                 setTimeout((function () {
                     this.close(opts, toastBox, callBack);
                 }).bind(this), cfg.displayTime);
+
+                toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, (function (e) {
+                    this.btnOnClick(e || window.event, opts, toastBox, callBack);
+                }).bind(this));
             }
             else if (opts.toastType === "confirm") {
                 toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, (function (e) {
@@ -178,13 +177,17 @@
                 k = target.getAttribute("data-ax-toast-btn");
 
                 var that = {
-                    key: k, value: opts.btns[k],
+                    key: k, value: (opts.btns) ? opts.btns[k] : k,
                     toastId: opts.id,
                     btn_target: target
                 };
                 
-                if (opts.btns[k].onClick) {
+                if (opts.btns && opts.btns[k].onClick) {
                     opts.btns[k].onClick.call(that, k);
+                }
+                else if (opts.toastType === "push") {
+                    if (callBack) callBack.call(that, k);
+                    this.close(opts, toastBox);
                 }
                 else if (opts.toastType === "confirm") {
                     if (callBack) callBack.call(that, k);
