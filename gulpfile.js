@@ -6,6 +6,7 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var changed = require('gulp-changed');
 var marko_ax5 = require('gulp-marko-ax5');
+var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
 var spawn = require('child_process').spawn;
 
@@ -50,36 +51,37 @@ var PATHS = {
     }
 };
 
+function errorAlert(error){
+    notify.onError({title: "Gulp Error", message: "Check your terminal", sound: "Purr"})(error); //Error Notification
+    console.log(error.toString());//Prints Error to Console
+    this.emit("end"); //End function
+};
+
 /**
  * SASS
  */
-function errorAlert(err) {
-    notify("SASS Error check your terminal"); //Error Notification
-    this.emit("end"); //End function
-}
-
 gulp.task('SASS', function () {
     gulp.src(PATHS.ax5docs.css_src + '/docs.scss')
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(sass({outputStyle: 'compressed'}))
-        .on("error", errorAlert)
         .pipe(gulp.dest(PATHS.ax5docs.css_dest));
 
     gulp.src(PATHS['bootstrap-ax5mask'].src + '/ax5mask.scss')
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(gulp.dest(PATHS['bootstrap-ax5mask'].dest))
-        .on("error", errorAlert)
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5mask'));
 
     gulp.src(PATHS['bootstrap-ax5dialog'].src + '/ax5dialog.scss')
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].dest))
-        .on("error", errorAlert)
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'));
 
     gulp.src(PATHS['bootstrap-ax5toast'].src + '/ax5toast.scss')
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(gulp.dest(PATHS['bootstrap-ax5toast'].dest))
-        .on("error", errorAlert)
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5toast'));
 });
 
@@ -103,6 +105,7 @@ gulp.task('AX5MASK-scripts', function () {
         .pipe(gulp.dest(PATHS["bootstrap-ax5mask"].dest))
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5mask'))
         .pipe(concat('ax5mask.min.js'))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(uglify())
         .pipe(gulp.dest(PATHS["bootstrap-ax5mask"].dest))
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5mask'));
@@ -114,6 +117,7 @@ gulp.task('AX5DIALOG-scripts', function () {
         .pipe(gulp.dest(PATHS["bootstrap-ax5dialog"].dest))
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'))
         .pipe(concat('ax5dialog.min.js'))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(uglify())
         .pipe(gulp.dest(PATHS["bootstrap-ax5dialog"].dest))
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'));
@@ -125,6 +129,7 @@ gulp.task('AX5TOAST-scripts', function () {
         .pipe(gulp.dest(PATHS["bootstrap-ax5toast"].dest))
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5toast'))
         .pipe(concat('ax5toast.min.js'))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(uglify())
         .pipe(gulp.dest(PATHS["bootstrap-ax5toast"].dest))
         .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5toast'));
@@ -136,6 +141,7 @@ gulp.task('AX5TOAST-scripts', function () {
 gulp.task('AX5UI-docs', function () {
     return gulp.src(PATHS['ax5docs'].doc_src + '/**/*.html')
         .pipe(changed(PATHS['ax5docs'].doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(marko_ax5({
             projectName: "ax5ui",
             layoutPath: PATHS.assets.src + '/_layouts/root.marko'
@@ -146,6 +152,7 @@ gulp.task('AX5UI-docs', function () {
 gulp.task('AX5CORE-docs', function () {
     return gulp.src(PATHS.ax5core.doc_src + '/**/*.html')
         .pipe(changed(PATHS.ax5core.doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(marko_ax5({
             projectName: "ax5core",
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
@@ -156,6 +163,7 @@ gulp.task('AX5CORE-docs', function () {
 gulp.task('AX5MASK-docs', function () {
     return gulp.src(PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html')
         .pipe(changed(PATHS['bootstrap-ax5mask'].doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(marko_ax5({
             projectName: "bootstrap-ax5mask",
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
@@ -182,6 +190,7 @@ gulp.task('AX5TOAST-docs', function () {
             extension: '.html',
             hasChanged: changed.compareSha1Digest
         }))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(marko_ax5({
             projectName: "bootstrap-ax5toast",
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
@@ -195,6 +204,7 @@ gulp.task('docs:all', function () {
             projectName: "ax5ui",
             layoutPath: PATHS.assets.src + '/_layouts/root.marko'
         }))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(gulp.dest(PATHS['ax5docs'].doc_dest));
 
     gulp.src(PATHS.ax5core.doc_src + '/**/*.html')
@@ -202,6 +212,7 @@ gulp.task('docs:all', function () {
             projectName: "ax5core",
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
         }))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(gulp.dest(PATHS.ax5core.doc_dest));
 
     gulp.src(PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html')
@@ -209,6 +220,7 @@ gulp.task('docs:all', function () {
             projectName: "bootstrap-ax5mask",
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
         }))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(gulp.dest(PATHS['bootstrap-ax5mask'].doc_dest));
 
     gulp.src(PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html')
@@ -216,6 +228,7 @@ gulp.task('docs:all', function () {
             projectName: "bootstrap-ax5dialog",
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
         }))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].doc_dest));
 
     gulp.src(PATHS['bootstrap-ax5toast'].doc_src + '/**/*.html')
@@ -223,6 +236,7 @@ gulp.task('docs:all', function () {
             projectName: "bootstrap-ax5toast",
             layoutPath: PATHS.assets.src + '/_layouts/index.marko'
         }))
+        .pipe(plumber({errorHandler: errorAlert}))
         .pipe(gulp.dest(PATHS['bootstrap-ax5toast'].doc_dest));
 });
 
@@ -285,7 +299,6 @@ gulp.task('watch', function () {
 gulp.task('default', function () {
     var p;
     spawnChildren();
-
     function spawnChildren(e) {
         // kill previous spawned process
         if (p) {
