@@ -36,6 +36,9 @@
                 <script type="text/javascript">
                     $(document.body).ready(function () {
                         var toast = new ax5.ui.toast();
+                        toast.setConfig({
+                            containerPosition: "top-right"
+                        })
 
                         $('#toast-push').click(function () {
                             toast.push('Toast message');

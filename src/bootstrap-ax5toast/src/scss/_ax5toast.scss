@@ -60,21 +60,21 @@
 
 @include keyframes(ax-toast-bottom) {
 	from {
-		@include transform(translateY(-100px));
+		@include transform(translateY(-100px) scale(0.7));
 	}
 	to {
 		//@include opacity($mask-bg-opacity);
-		@include transform(translateX(0px))
+		@include transform(translateX(0px) scale(1))
 	}
 }
 
 @include keyframes(ax-toast-top) {
 	from {
-		@include transform(translateY(100px));
+		@include transform(translateY(100px) scale(0.7));
 	}
 	to {
 		//@include opacity($mask-bg-opacity);
-		@include transform(translateX(0px))
+		@include transform(translateX(0px) scale(1))
 	}
 }
 
@@ -84,7 +84,7 @@
 		@include transform(translateX(0px));
 	}
 	to {
-		@include transform(translateY(100px));
+		@include transform(translateY(0px) scale(0.7));
 	}
 }
 
@@ -94,7 +94,7 @@
 		@include transform(translateX(0px));
 	}
 	to {
-		@include transform(translateY(-100px));
+		@include transform(translateY(0px) scale(0.7));
 	}
 }
 

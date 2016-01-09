@@ -149,7 +149,12 @@
                 width: opts.width
             };
 
-            this.toastContainer.prepend(this.getContent(opts.id, opts));
+            if(U.left(cfg.containerPosition, '-') == 'bottom'){
+                this.toastContainer.append(this.getContent(opts.id, opts));
+            }else{
+                this.toastContainer.prepend(this.getContent(opts.id, opts));
+            }
+
             toastBox = jQuery('#' + opts.id);
             toastBox.css({width: box.width});
             opts.toastBox = toastBox;

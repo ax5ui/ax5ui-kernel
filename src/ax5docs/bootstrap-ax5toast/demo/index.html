@@ -139,6 +139,9 @@
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
         var toast = new ax5.ui.toast();
+        toast.setConfig({
+            containerPosition: "top-right"
+        })
 
         $('#toast-push').click(function () {
             toast.push('Toast message');
@@ -147,6 +150,9 @@
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
         var toast = new ax5.ui.toast();
+        toast.setConfig({
+            containerPosition: "top-right"
+        })
 
         $('#toast-push').click(function () {
             toast.push('Toast message');
