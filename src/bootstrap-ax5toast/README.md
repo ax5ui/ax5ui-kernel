@@ -44,9 +44,13 @@ exactly the path.
 ### Basic Usages
 ```js
 var myToast = new ax5.ui.toast();
-myToast.set_config({
-
+myToast.setConfig({
+    icon: '<i class="fa fa-bug"></i>',
+    containerPosition: "bottom-right",
+    closeIcon: '<i class="fa fa-times"></i>'
 });
+
+myToast.push('Toast message');
 ```
 
 - - -

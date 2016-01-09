@@ -64,6 +64,9 @@
         };
         
         this.push = function (opts, callBack) {
+            if(!self.containerId){
+                this.init();
+            }
             if (U.isString(opts)) {
                 opts = {
                     title: cfg.title,
@@ -82,6 +85,9 @@
         };
         
         this.confirm = function (opts, callBack) {
+            if(!self.containerId){
+                this.init();
+            }
             if (U.isString(opts)) {
                 opts = {
                     title: cfg.title,
@@ -107,9 +113,11 @@
         this.getContent = function (toastId, opts) {
             var po = [];
             po.push('<div id="' + toastId + '" data-ax5-ui="toast" class="ax5-ui-toast ' + opts.theme + '">');
-            po.push('<div class="ax-toast-icon">');
-            po.push((opts.icon || ""));
-            po.push('</div>');
+            if (opts.icon) {
+                po.push('<div class="ax-toast-icon">');
+                po.push((opts.icon || ""));
+                po.push('</div>');
+            }
             po.push('<div class="ax-toast-body">');
             po.push((opts.msg || "").replace(/\n/g, "<br/>"));
             po.push('</div>');
@@ -124,7 +132,7 @@
                 po.push('</div>');
             }
             else {
-                po.push('<a class="ax-toast-close" data-ax-toast-btn="ok">' + (opts.closeIcon || 'close') + '</a>');
+                po.push('<a class="ax-toast-close" data-ax-toast-btn="ok">' + (opts.closeIcon || '') + '</a>');
             }
 
             po.push('<div style="clear:both;"></div>');

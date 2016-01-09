@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ax5ui / bootstrap-ax5toast : Basic Alert</title>
+	<title>ax5ui / bootstrap-ax5toast : Basic Toast</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -119,7 +119,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5toast/demo/index.html">Basic Alert</a></li></ul>
+        <ul><li  class='active'><a href="/bootstrap-ax5toast/demo/index.html">Basic Toast</a></li></ul>
     
 					</div>
 				</div>
@@ -128,97 +128,34 @@
 
         
         <section class="ax5docs-section">
-            <h1>Basic Alert</h1>
+            <h1>Basic Toast</h1>
 
             <p>
-                ax5toast creates a dialog by extending the argument to be passed to the alert method to the attributes defined in setConfig, then delivered to the user.<br>
-                how to call the dialog is, <code>alert</code>, <code>confirm</code> and <code>prompt</code>, we will introduce the basic use of alert in it.
+
             </p>
 
-            <button class="btn btn-default" type="button" id="alert-open">Alert</button>
-            <button class="btn btn-default" type="button" id="alert-close">Alert Close</button>
+            <button class="btn btn-default" type="button" id="toast-push">Toast</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
-        });
+        var toast = new ax5.ui.toast();
 
-        $('#alert-open').click(function () {
-            dialog.alert('Alert message');
-        });
-        $('#alert-close').click(function () {
-            dialog.close();
+        $('#toast-push').click(function () {
+            toast.push('Toast message');
         });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
-        });
+        var toast = new ax5.ui.toast();
 
-        $('#alert-open').click(function () {
-            dialog.alert('Alert message');
-        });
-        $('#alert-close').click(function () {
-            dialog.close();
+        $('#toast-push').click(function () {
+            toast.push('Toast message');
         });
     });
 </script></script>
 
 
-            <p>
-                In the example, we introduce the basic use to output a alert dialog using <code>dialog.alert</code>.<br>
-                However, you can not completely stopping the operation of the application as window.alert in dialog.alert.<br>
-                If after the alert, user clicks the [OK] button, you need to pass an anonymous function as the second argument of the alert if there is a need of any such actions.
-            </p>
 
-        </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>Alert callBack</h2>
-
-            <p>
-                In the following example, after the alert, when the user clicks the [OK] button, run an anonymous function that is defined as the second argument,
-                To "this" anonymous function, you pass multiple arguments required developers.
-            </p>
-
-            <button class="btn btn-default" type="button" id="alert-open-callback">Alert</button>
-
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
-        });
-
-        $('#alert-open-callback').click(function () {
-            dialog.alert('Alert message', function () {
-                console.log(this);
-            });
-        });
-    });
-&lt;/script></pre><script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog();
-        dialog.setConfig({
-            title: "AX5 Dialog"
-        });
-
-        $('#alert-open-callback').click(function () {
-            dialog.alert('Alert message', function () {
-                console.log(this);
-            });
-        });
-    });
-</script></script>
-            <p>
-                To "this" anonymous function, has been included, such as the following objects. You can check directly open a console window.
-            </p>
-            <pre class="prettyprint linenums lang-js">{key: "ok", value: Object, dialogId: "ax5-dialog-2", btnTarget: button.btn.btn-default}</pre>
         </section>
 
 
