@@ -1,0 +1,60 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>2</sort>
+
+    <id>confirm</id>
+    <title>Confirm</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Confirm" parent-id="demo"
+            page-id="confirm" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="confirm"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5toast/ax5toast.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5toast/ax5toast.min.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+        <!-- doc-js Basic Alert -->
+        <section class="ax5docs-section">
+            <h1>Confirm</h1>
+
+            <p>
+                In toast of UI, and if you use the Confirm, the well-known message is waiting for user confirmation.
+            </p>
+
+            <button class="btn btn-default" type="button" id="confirm-push">Confirm</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var toast = new ax5.ui.toast();
+                        toast.setConfig({
+                            theme: "danger",
+                            containerPosition: "top-left"
+                        });
+
+                        $('#confirm-push').click(function () {
+                            toast.confirm('Toast message');
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+
+
+
+        </section>
+
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>

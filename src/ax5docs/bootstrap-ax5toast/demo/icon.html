@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ax5ui / bootstrap-ax5toast : Basic Toast</title>
+	<title>ax5ui / bootstrap-ax5toast : Icon</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -37,6 +37,7 @@
 
 	
 	
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5toast/ax5toast.css">
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5toast/ax5toast.min.js"></script>
     
@@ -119,7 +120,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5toast/demo/index.html">Basic Toast</a></li><li ><a href="/bootstrap-ax5toast/demo/confirm.html">Confirm</a></li><li ><a href="/bootstrap-ax5toast/demo/icon.html">Icon</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5toast/demo/index.html">Basic Toast</a></li><li ><a href="/bootstrap-ax5toast/demo/confirm.html">Confirm</a></li><li  class='active'><a href="/bootstrap-ax5toast/demo/icon.html">Icon</a></li></ul>
     
 					</div>
 				</div>
@@ -128,59 +129,61 @@
 
         
         <section class="ax5docs-section">
-            <h1>Basic Toast</h1>
+            <h1>Icon</h1>
 
             <p>
-                Toast UI will tell the system message will automatically disappear after a certain period of time.
+                <b>Paste the following code into the <code>&lt;head></code> section of your site's HTML.</b>
+            </p>
+            <pre class="prettyprint linenums lang-html">&lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"></pre>
+            <p>
+                <a href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a>
+                gives you scalable vector icons that can instantly be customized — size, color, drop shadow, and anything that can be done with the power of CSS.
             </p>
 
-            <button class="btn btn-default" type="button" id="toast-push">Toast</button>
+            <button class="btn btn-default" type="button" id="confirm-push">Confirm</button>
+            <button class="btn btn-danger" type="button" id="toast-bug">Toast Bug</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
         var toast = new ax5.ui.toast();
         toast.setConfig({
-            containerPosition: "top-right"
-        })
+            icon: '&lt;i class="fa fa-bell">&lt;/i>',
+            containerPosition: "top-right",
+            closeIcon: '&lt;i class="fa fa-times">&lt;/i>'
+        });
 
-        $('#toast-push').click(function () {
-            toast.push('Toast message');
+        $('#confirm-push').click(function () {
+            toast.confirm('Toast message');
+        });
+        $('#toast-bug').click(function () {
+            toast.push({
+                theme: 'danger',
+                icon: '&lt;i class="fa fa-bug">&lt;/i>',
+                msg: 'Toast message'
+            });
         });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
         var toast = new ax5.ui.toast();
         toast.setConfig({
-            containerPosition: "top-right"
-        })
+            icon: '<i class="fa fa-bell"></i>',
+            containerPosition: "top-right",
+            closeIcon: '<i class="fa fa-times"></i>'
+        });
 
-        $('#toast-push').click(function () {
-            toast.push('Toast message');
+        $('#confirm-push').click(function () {
+            toast.confirm('Toast message');
+        });
+        $('#toast-bug').click(function () {
+            toast.push({
+                theme: 'danger',
+                icon: '<i class="fa fa-bug"></i>',
+                msg: 'Toast message'
+            });
         });
     });
 </script></script>
-
-            <div class="docs-callout docs-callout-primary">
-                <h4>containerPosition</h4>
-                <p>
-                    using the <code>containerPosition</code> attribute, you can set the output position of <code>toast</code>.
-                </p>
-
-                <ul>
-                    <li>
-                        <b>top-left</b> : Toast pops out from the upper left corner of the web page.
-                    </li>
-                    <li>
-                        <b>top-right</b> : Toast pops out from the upper right corner of the web page.
-                    </li>
-                    <li>
-                        <b>bottom-right</b> : Toast pops out from the bottom left of the web page.
-                    </li>
-                    <li>
-                        <b>bottom-right</b> : Toast will pop out at the bottom right of the web page.
-                    </li>
-                </ul>
-            </div>
 
 
         </section>

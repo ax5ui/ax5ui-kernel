@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ax5ui / bootstrap-ax5toast : Basic Toast</title>
+	<title>ax5ui / bootstrap-ax5toast : Confirm</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -119,7 +119,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5toast/demo/index.html">Basic Toast</a></li><li ><a href="/bootstrap-ax5toast/demo/confirm.html">Confirm</a></li><li ><a href="/bootstrap-ax5toast/demo/icon.html">Icon</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5toast/demo/index.html">Basic Toast</a></li><li  class='active'><a href="/bootstrap-ax5toast/demo/confirm.html">Confirm</a></li><li ><a href="/bootstrap-ax5toast/demo/icon.html">Icon</a></li></ul>
     
 					</div>
 				</div>
@@ -128,59 +128,40 @@
 
         
         <section class="ax5docs-section">
-            <h1>Basic Toast</h1>
+            <h1>Confirm</h1>
 
             <p>
-                Toast UI will tell the system message will automatically disappear after a certain period of time.
+                In toast of UI, and if you use the Confirm, the well-known message is waiting for user confirmation.
             </p>
 
-            <button class="btn btn-default" type="button" id="toast-push">Toast</button>
+            <button class="btn btn-default" type="button" id="confirm-push">Confirm</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
         var toast = new ax5.ui.toast();
         toast.setConfig({
-            containerPosition: "top-right"
-        })
+            theme: "danger",
+            containerPosition: "top-left"
+        });
 
-        $('#toast-push').click(function () {
-            toast.push('Toast message');
+        $('#confirm-push').click(function () {
+            toast.confirm('Toast message');
         });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
         var toast = new ax5.ui.toast();
         toast.setConfig({
-            containerPosition: "top-right"
-        })
+            theme: "danger",
+            containerPosition: "top-left"
+        });
 
-        $('#toast-push').click(function () {
-            toast.push('Toast message');
+        $('#confirm-push').click(function () {
+            toast.confirm('Toast message');
         });
     });
 </script></script>
 
-            <div class="docs-callout docs-callout-primary">
-                <h4>containerPosition</h4>
-                <p>
-                    using the <code>containerPosition</code> attribute, you can set the output position of <code>toast</code>.
-                </p>
-
-                <ul>
-                    <li>
-                        <b>top-left</b> : Toast pops out from the upper left corner of the web page.
-                    </li>
-                    <li>
-                        <b>top-right</b> : Toast pops out from the upper right corner of the web page.
-                    </li>
-                    <li>
-                        <b>bottom-right</b> : Toast pops out from the bottom left of the web page.
-                    </li>
-                    <li>
-                        <b>bottom-right</b> : Toast will pop out at the bottom right of the web page.
-                    </li>
-                </ul>
-            </div>
 
 
         </section>

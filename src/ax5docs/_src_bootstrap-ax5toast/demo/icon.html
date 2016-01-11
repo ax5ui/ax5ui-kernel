@@ -1,0 +1,76 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>3</sort>
+
+    <id>icon</id>
+    <title>Icon</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Icon" parent-id="demo"
+            page-id="icon" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="icon"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5toast/ax5toast.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5toast/ax5toast.min.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+        <!-- doc-js Basic Alert -->
+        <section class="ax5docs-section">
+            <h1>Icon</h1>
+
+            <p>
+                <b>Paste the following code into the <code>&lt;head&gt;</code> section of your site's HTML.</b>
+            </p>
+            <ax5docs-html>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+            </ax5docs-html>
+            <p>
+                <a href="http://fortawesome.github.io/Font-Awesome/">Font Awesome</a>
+                gives you scalable vector icons that can instantly be customized — size, color, drop shadow, and anything that can be done with the power of CSS.
+            </p>
+
+            <button class="btn btn-default" type="button" id="confirm-push">Confirm</button>
+            <button class="btn btn-danger" type="button" id="toast-bug">Toast Bug</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var toast = new ax5.ui.toast();
+                        toast.setConfig({
+                            icon: '<i class="fa fa-bell"></i>',
+                            containerPosition: "top-right",
+                            closeIcon: '<i class="fa fa-times"></i>'
+                        });
+
+                        $('#confirm-push').click(function () {
+                            toast.confirm('Toast message');
+                        });
+                        $('#toast-bug').click(function () {
+                            toast.push({
+                                theme: 'danger',
+                                icon: '<i class="fa fa-bug"></i>',
+                                msg: 'Toast message'
+                            });
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+
+
+        </section>
+
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>
