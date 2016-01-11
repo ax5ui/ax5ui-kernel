@@ -19,7 +19,7 @@
 		"plugin",
 		"bootstrap jQuery plugins",
 		"dialog",
-		"bootstrap-ax5dialog",
+		"bootstrap-ax5dialog",cd
 		"javascript ui"
 	],
 	"dependencies": {
