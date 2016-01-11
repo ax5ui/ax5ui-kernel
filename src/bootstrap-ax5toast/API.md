@@ -1,158 +1,128 @@
 # Basic Usage
-> dialog is a UI that can be used as an alternative means of window.alert, window.confirm and window.prompt
+> toast is a UI that can be used as an alternative means of window.alert, window.confirm and window.prompt
 
 ## setConfig()
 `setConfig([options])`
-You define the default settings for the dialog. Create a ax5.ui.dialog instance, using the setConfig method in that instance, you can define a default value.
+You define the default settings for the toast. Create a ax5.ui.toast instance, using the setConfig method in that instance, you can define a default value.
  
 ```js
-var myDialog = new ax5.ui.dialog();
-myDialog.set_config({
-    title: [String],
-    theme: [String],
-    width: [Number], 
-    onStateChanged: [Function],
-    btns: [Object],
-    input: [Object]
+var myToast = new ax5.ui.toast();
+myToast.set_config({
+    msg: "String",
+    theme: "String",
+    width: "Number", 
+    icon: "String",
+    closeIcon: "String",
+    onStateChanged: "Function",
+    displayTime: "Number",
+    animateTime: "Number",
+    containerPosition: "String",
+    lang: "Object"
 });
 ```
 
 
-### title
+### msg
 
 Type: `String`  
 
-Title of dialog.
+Title of toast.
 
 
 ### theme
 
-Type: `String`  
+Type: `String`  [default: default]
 
-Theme of dialog, ax5dialog themes using six colors defined by the bootstrap is provided.
+Theme of toast, ax5toast themes using six colors defined by the bootstrap is provided.
 
 
 ### width
 
-Type: `Number`  
+Type: `Number` [default: 300]
 
-Dialog width
+Toast width
+
+
+### icon
+
+Type: `String`
+
+
+### closeIcon
+
+Type: `String`
 
 
 ### onStateChanged
 
 Type: `Function`  
 
-onStateChanged function is executed when the dialog of the state is changed,
+onStateChanged function is executed when the toast of the state is changed,
 this.state state value is passed to this time onStateChanged function.
 
 
-### btns
+### displayTime
 
-Type: `Object`  
+Type: `Number` [default : 3000]
 
-You can re-define the user's selection button in dialog.confirm.
 
-```json
-btns: {
-    del: {
-        label:'Delete', theme:'warning', onclick: function(key){
-            console.log(key, this);
-            confirmDialog.close();
-        }
-    },
-    cancel: {
-        label:'Cancel', onclick: function(key){
-            console.log(key, this);
-            confirmDialog.close();
-        }
-    },
-    other: {
-        label:'Other', onclick: function(key){
-            console.log(key, this);
-            confirmDialog.close();
-        }
+
+### animateTime
+
+Type: `Number` [default : 300]
+
+
+
+### containerPosition
+
+Type: `String` [top-left|top-right|bottom-left|bottom-right]
+
+
+
+### lang
+
+Type: `Object`
+
+```js
+myToast.set_config({
+    lang: {
+        "ok": "확인"
     }
-}
+});
 ```
 
 
-### input
+- - -
 
-Type: `Object`  
-
-You can re-define the user's input value in dialog.prompt.
-
-```json
-input: {
-    name: {label:"1. Name", placeholder: "Input your name"},
-    age: {label:"2. Age", type:"number", value: "22"}
-}
-```
-***
-
-## alert()
-`alert(String|Options[, callBack])`
+## push()
+`push(String|Options[, callBack])`
 
 If this is String in the first argument and recognizes the first argument to `msg`.  
 it is possible to redefine all of the options that can be used in setConfig.  
-If after the alert, user clicks the [OK] button, you need to pass an anonymous function as the second argument of the alert if there is a need of any such actions.
 
 ```js
-dialog.alert('Alert message', function () {
+toast.push('Toast message', function () {
     console.log(this);
 });
 
-dialog.alert({
-    title: 'TITLE',
+toast.push({
     theme: 'danger',
-    msg:'Alert message'
+    msg:'Toast message'
 }, function () {
     console.log(this);
 });
 ```
 
+- - -
+
 ## confirm()
 `confirm(String|Options[, callBack])`
 
-alert and use the way is similar. Remember only the portion that determines the input of users in callBack function confirm is if you can.
-
 ```js
-confirmDialog.confirm({
-    title: "Confirm Title",
+confirmToast.confirm({
     msg: 'Confirm message'
 }, function(){
-    if(this.key == "ok"){
-        alert('OK');
-    }
-    else if(this.key == "cancel"){
-        alert('CANCEL');
-    }
-});
-```
 
-## prompt()
-`prompt(String|Options[, callBack])`
-
-alert and use the way is similar. 
-
-```js
-promptDialog.prompt({
-    title: "Confirm Title",
-    msg: 'Confirm message'
-}, function(){
-    console.log(this);
-    // {key: "ok", value: [User Input Data]}
-});
-
-promptDialog.prompt({
-    input: {
-        name: {label:"1. Name", placeholder: "Input your name"},
-        age: {label:"2. Age", type:"number", value: "22"}
-    }
-}, function(){
-    console.log(this);
-    // this.name, this.age
 });
 ```
 

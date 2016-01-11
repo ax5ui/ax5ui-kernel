@@ -159,6 +159,14 @@
             toastBox.css({width: box.width});
             opts.toastBox = toastBox;
             this.queue.push(opts);
+
+            if (opts && opts.onStateChanged) {
+                var that = {
+                    state: "open",
+                    toastId: opts.id
+                };
+                opts.onStateChanged.call(that, that);
+            }
             
             if (opts.toastType === "push") {
                 // 자동 제거 타이머 시작
@@ -230,22 +238,23 @@
                 opts = U.last(this.queue);
                 toastBox = opts.toastBox;
             }
-            var that = {
-                toastId: opts.id
-            };
 
             toastBox.addClass((opts.toastType == "push") ? "removed" : "destroy");
             this.queue = U.filter(this.queue, function () {
                 return opts.id != this.id;
             });
             setTimeout(function () {
+                var that = {
+                    toastId: opts.id
+                };
+
                 toastBox.remove();
                 if (callBack) callBack.call(that);
 
                 if (opts && opts.onStateChanged) {
                     that = {
                         state: "close",
-                        toastId: that.toastId
+                        toastId: opts.id
                     };
                     opts.onStateChanged.call(that, that);
                 }

@@ -42,12 +42,27 @@
                         });
 
                         $('#confirm-push').click(function () {
-                            toast.confirm('Toast message');
+                            toast.confirm({
+                                msg: 'Toast message',
+                                onStateChanged: function () {
+                                    console.log(this);
+                                }
+                            }, function () {
+                                // close toast
+                                console.log(this);
+                            });
                         });
                     });
                 </script>
             </ax5docs-js>
 
+            <p>
+                To "this" anonymous function, has been included, such as the following objects. You can check directly open a console window.
+            </p>
+
+            <ax5docs-js>
+                {key: "ok", value: Object, toastId: "ax5-toast-1-0", btn_target: button.btn.btn-danger}
+            </ax5docs-js>
 
 
         </section>

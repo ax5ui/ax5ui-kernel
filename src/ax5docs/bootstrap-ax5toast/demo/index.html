@@ -119,7 +119,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5toast/demo/index.html">Basic Toast</a></li><li ><a href="/bootstrap-ax5toast/demo/confirm.html">Confirm</a></li><li ><a href="/bootstrap-ax5toast/demo/icon.html">Icon</a></li></ul>
+        <ul><li  class='active'><a href="/bootstrap-ax5toast/demo/index.html">Basic Toast</a></li><li ><a href="/bootstrap-ax5toast/demo/confirm.html">Confirm</a></li><li ><a href="/bootstrap-ax5toast/demo/icon.html">Icon</a></li><li ><a href="/bootstrap-ax5toast/demo/theme.html">Theme</a></li><li ><a href="/bootstrap-ax5toast/demo/custom.html">Custom</a></li></ul>
     
 					</div>
 				</div>
@@ -140,22 +140,34 @@
     $(document.body).ready(function () {
         var toast = new ax5.ui.toast();
         toast.setConfig({
-            containerPosition: "top-right"
-        })
+            containerPosition: "top-right",
+            onStateChanged: function(){
+                console.log(this);
+            }
+        });
 
         $('#toast-push').click(function () {
-            toast.push('Toast message');
+            toast.push('Toast message', function () {
+                // close toast
+                console.log(this);
+            });
         });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
         var toast = new ax5.ui.toast();
         toast.setConfig({
-            containerPosition: "top-right"
-        })
+            containerPosition: "top-right",
+            onStateChanged: function(){
+                console.log(this);
+            }
+        });
 
         $('#toast-push').click(function () {
-            toast.push('Toast message');
+            toast.push('Toast message', function () {
+                // close toast
+                console.log(this);
+            });
         });
     });
 </script></script>

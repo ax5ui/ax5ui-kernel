@@ -119,7 +119,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li ><a href="/bootstrap-ax5toast/demo/index.html">Basic Toast</a></li><li  class='active'><a href="/bootstrap-ax5toast/demo/confirm.html">Confirm</a></li><li ><a href="/bootstrap-ax5toast/demo/icon.html">Icon</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5toast/demo/index.html">Basic Toast</a></li><li  class='active'><a href="/bootstrap-ax5toast/demo/confirm.html">Confirm</a></li><li ><a href="/bootstrap-ax5toast/demo/icon.html">Icon</a></li><li ><a href="/bootstrap-ax5toast/demo/theme.html">Theme</a></li><li ><a href="/bootstrap-ax5toast/demo/custom.html">Custom</a></li></ul>
     
 					</div>
 				</div>
@@ -145,7 +145,15 @@
         });
 
         $('#confirm-push').click(function () {
-            toast.confirm('Toast message');
+            toast.confirm({
+                msg: 'Toast message',
+                onStateChanged: function () {
+                    console.log(this);
+                }
+            }, function () {
+                // close toast
+                console.log(this);
+            });
         });
     });
 &lt;/script></pre><script type="text/javascript">
@@ -157,11 +165,24 @@
         });
 
         $('#confirm-push').click(function () {
-            toast.confirm('Toast message');
+            toast.confirm({
+                msg: 'Toast message',
+                onStateChanged: function () {
+                    console.log(this);
+                }
+            }, function () {
+                // close toast
+                console.log(this);
+            });
         });
     });
 </script></script>
 
+            <p>
+                To "this" anonymous function, has been included, such as the following objects. You can check directly open a console window.
+            </p>
+
+            <pre class="prettyprint linenums lang-js">{key: "ok", value: Object, toastId: "ax5-toast-1-0", btn_target: button.btn.btn-danger}</pre>
 
 
         </section>

@@ -37,11 +37,17 @@
                     $(document.body).ready(function () {
                         var toast = new ax5.ui.toast();
                         toast.setConfig({
-                            containerPosition: "top-right"
-                        })
+                            containerPosition: "top-right",
+                            onStateChanged: function(){
+                                console.log(this);
+                            }
+                        });
 
                         $('#toast-push').click(function () {
-                            toast.push('Toast message');
+                            toast.push('Toast message', function () {
+                                // close toast
+                                console.log(this);
+                            });
                         });
                     });
                 </script>
