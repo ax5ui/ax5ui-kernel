@@ -22,36 +22,67 @@ var PATHS = {
         doc_dest: "src/ax5docs"
     },
     ax5core: {
+        isPlugin: true,
         root: "src/ax5core",
         src: "src/ax5core/src",
         dest: "src/ax5core/dist",
+        js: "ax5core",
         doc_src: "src/ax5docs/_src_ax5core",
         doc_dest: "src/ax5docs/ax5core"
     },
     "bootstrap-ax5dialog": {
+        isPlugin: true,
         root: "src/bootstrap-ax5dialog",
         src: "src/bootstrap-ax5dialog/src",
         dest: "src/bootstrap-ax5dialog/dist",
+        scss: "ax5dialog.scss",
+        js: "ax5dialog",
         doc_src: "src/ax5docs/_src_bootstrap-ax5dialog",
         doc_dest: "src/ax5docs/bootstrap-ax5dialog"
     },
     "bootstrap-ax5mask": {
+        isPlugin: true,
         root: "src/bootstrap-ax5mask",
         src: "src/bootstrap-ax5mask/src",
         dest: "src/bootstrap-ax5mask/dist",
+        scss: "ax5mask.scss",
+        js: "ax5mask",
         doc_src: "src/ax5docs/_src_bootstrap-ax5mask",
         doc_dest: "src/ax5docs/bootstrap-ax5mask"
     },
     "bootstrap-ax5toast": {
+        isPlugin: true,
         root: "src/bootstrap-ax5toast",
         src: "src/bootstrap-ax5toast/src",
         dest: "src/bootstrap-ax5toast/dist",
+        scss: "ax5toast.scss",
+        js: "ax5toast",
         doc_src: "src/ax5docs/_src_bootstrap-ax5toast",
         doc_dest: "src/ax5docs/bootstrap-ax5toast"
+    },
+    "bootstrap-ax5modal": {
+        isPlugin: true,
+        root: "src/bootstrap-ax5modal",
+        src: "src/bootstrap-ax5modal/src",
+        dest: "src/bootstrap-ax5modal/dist",
+        scss: "ax5modal.scss",
+        js: "ax5modal",
+        doc_src: "src/ax5docs/_src_bootstrap-ax5modal",
+        doc_dest: "src/ax5docs/bootstrap-ax5modal"
+    },
+    "bootstrap-ax5calendar": {
+        isPlugin: true,
+        root: "src/bootstrap-ax5calendar",
+        src: "src/bootstrap-ax5calendar/src",
+        dest: "src/bootstrap-ax5calendar/dist",
+        scss: "ax5calendar.scss",
+        js: "ax5calendar",
+        doc_src: "src/ax5docs/_src_bootstrap-ax5calendar",
+        doc_dest: "src/ax5docs/bootstrap-ax5calendar"
     }
 };
 
-function errorAlert(error){
+function errorAlert(error) {
     notify.onError({title: "Gulp Error", message: "Check your terminal", sound: "Purr"})(error); //Error Notification
     console.log(error.toString());//Prints Error to Console
     this.emit("end"); //End function
@@ -66,74 +97,36 @@ gulp.task('SASS', function () {
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(gulp.dest(PATHS.ax5docs.css_dest));
 
-    gulp.src(PATHS['bootstrap-ax5mask'].src + '/ax5mask.scss')
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(sass({outputStyle: 'compressed'}))
-        .pipe(gulp.dest(PATHS['bootstrap-ax5mask'].dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5mask'));
-
-    gulp.src(PATHS['bootstrap-ax5dialog'].src + '/ax5dialog.scss')
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(sass({outputStyle: 'compressed'}))
-        .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'));
-
-    gulp.src(PATHS['bootstrap-ax5toast'].src + '/ax5toast.scss')
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(sass({outputStyle: 'compressed'}))
-        .pipe(gulp.dest(PATHS['bootstrap-ax5toast'].dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5toast'));
+    for (var k in PATHS) {
+        var p = PATHS[k];
+        if (p.isPlugin && p.scss) {
+            gulp.src(PATHS[k].src + '/' + p.scss)
+                .pipe(plumber({errorHandler: errorAlert}))
+                .pipe(sass({outputStyle: 'compressed'}))
+                .pipe(gulp.dest(PATHS[k].dest))
+                .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
+        }
+    }
 });
 
 /**
  * for JS
  */
-gulp.task('AX5CORE-scripts', function () {
-    gulp.src(PATHS.ax5core.src + '/*.js')
-        .pipe(concat('ax5core.js'))
-        .pipe(gulp.dest(PATHS.ax5core.dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/ax5core'))
-        .pipe(concat('ax5core.min.js'))
-        .pipe(uglify())
-        .pipe(gulp.dest(PATHS.ax5core.dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/ax5core'));
-});
-
-gulp.task('AX5MASK-scripts', function () {
-    gulp.src(PATHS["bootstrap-ax5mask"].src + '/*.js')
-        .pipe(concat('ax5mask.js'))
-        .pipe(gulp.dest(PATHS["bootstrap-ax5mask"].dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5mask'))
-        .pipe(concat('ax5mask.min.js'))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(uglify())
-        .pipe(gulp.dest(PATHS["bootstrap-ax5mask"].dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5mask'));
-});
-
-gulp.task('AX5DIALOG-scripts', function () {
-    gulp.src(PATHS["bootstrap-ax5dialog"].src + '/*.js')
-        .pipe(concat('ax5dialog.js'))
-        .pipe(gulp.dest(PATHS["bootstrap-ax5dialog"].dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'))
-        .pipe(concat('ax5dialog.min.js'))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(uglify())
-        .pipe(gulp.dest(PATHS["bootstrap-ax5dialog"].dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5dialog'));
-});
-
-gulp.task('AX5TOAST-scripts', function () {
-    gulp.src(PATHS["bootstrap-ax5toast"].src + '/*.js')
-        .pipe(concat('ax5toast.js'))
-        .pipe(gulp.dest(PATHS["bootstrap-ax5toast"].dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5toast'))
-        .pipe(concat('ax5toast.min.js'))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(uglify())
-        .pipe(gulp.dest(PATHS["bootstrap-ax5toast"].dest))
-        .pipe(gulp.dest(PATHS.assets.src + '/lib/bootstrap-ax5toast'));
-});
+for (var k in PATHS) {
+    var p = PATHS[k];
+    if (p.isPlugin && p.js) {
+        gulp.task(k + '-scripts', function () {
+            gulp.src(PATHS[k].src + '/*.js')
+                .pipe(concat(p.js + '.js'))
+                .pipe(gulp.dest(PATHS[k].dest))
+                .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k))
+                .pipe(concat(p.js + '.min.js'))
+                .pipe(uglify())
+                .pipe(gulp.dest(PATHS[k].dest))
+                .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
+        });
+    }
+}
 
 /**
  * ax5docs templete render
@@ -149,56 +142,24 @@ gulp.task('AX5UI-docs', function () {
         .pipe(gulp.dest(PATHS['ax5docs'].doc_dest));
 });
 
-gulp.task('AX5CORE-docs', function () {
-    return gulp.src(PATHS.ax5core.doc_src + '/**/*.html')
-        .pipe(changed(PATHS.ax5core.doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(marko_ax5({
-            projectName: "ax5core",
-            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
-        }))
-        .pipe(gulp.dest(PATHS.ax5core.doc_dest));
-});
-
-gulp.task('AX5MASK-docs', function () {
-    return gulp.src(PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html')
-        .pipe(changed(PATHS['bootstrap-ax5mask'].doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(marko_ax5({
-            projectName: "bootstrap-ax5mask",
-            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
-        }))
-        .pipe(gulp.dest(PATHS['bootstrap-ax5mask'].doc_dest));
-});
-
-gulp.task('AX5DIALOG-docs', function () {
-    return gulp.src(PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html')
-        .pipe(changed(PATHS['bootstrap-ax5dialog'].doc_dest, {
-            extension: '.html',
-            hasChanged: changed.compareSha1Digest
-        }))
-        .pipe(marko_ax5({
-            projectName: "bootstrap-ax5dialog",
-            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
-        }))
-        .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].doc_dest));
-});
-
-gulp.task('AX5TOAST-docs', function () {
-    return gulp.src(PATHS['bootstrap-ax5toast'].doc_src + '/**/*.html')
-        .pipe(changed(PATHS['bootstrap-ax5toast'].doc_dest, {
-            extension: '.html',
-            hasChanged: changed.compareSha1Digest
-        }))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(marko_ax5({
-            projectName: "bootstrap-ax5toast",
-            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
-        }))
-        .pipe(gulp.dest(PATHS['bootstrap-ax5toast'].doc_dest));
-});
+for (var k in PATHS) {
+    var p = PATHS[k];
+    if (p.isPlugin) {
+        gulp.task(k + '-docs', function () {
+            return gulp.src(PATHS[k].doc_src + '/**/*.html')
+                .pipe(changed(PATHS[k].doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
+                .pipe(plumber({errorHandler: errorAlert}))
+                .pipe(marko_ax5({
+                    projectName: k,
+                    layoutPath: PATHS.assets.src + '/_layouts/index.marko'
+                }))
+                .pipe(gulp.dest(PATHS[k].doc_dest));
+        });
+    }
+}
 
 gulp.task('docs:all', function () {
+
     gulp.src(PATHS['ax5docs'].doc_src + '/**/*.html')
         .pipe(marko_ax5({
             projectName: "ax5ui",
@@ -207,37 +168,18 @@ gulp.task('docs:all', function () {
         .pipe(plumber({errorHandler: errorAlert}))
         .pipe(gulp.dest(PATHS['ax5docs'].doc_dest));
 
-    gulp.src(PATHS.ax5core.doc_src + '/**/*.html')
-        .pipe(marko_ax5({
-            projectName: "ax5core",
-            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
-        }))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(gulp.dest(PATHS.ax5core.doc_dest));
-
-    gulp.src(PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html')
-        .pipe(marko_ax5({
-            projectName: "bootstrap-ax5mask",
-            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
-        }))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(gulp.dest(PATHS['bootstrap-ax5mask'].doc_dest));
-
-    gulp.src(PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html')
-        .pipe(marko_ax5({
-            projectName: "bootstrap-ax5dialog",
-            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
-        }))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(gulp.dest(PATHS['bootstrap-ax5dialog'].doc_dest));
-
-    gulp.src(PATHS['bootstrap-ax5toast'].doc_src + '/**/*.html')
-        .pipe(marko_ax5({
-            projectName: "bootstrap-ax5toast",
-            layoutPath: PATHS.assets.src + '/_layouts/index.marko'
-        }))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(gulp.dest(PATHS['bootstrap-ax5toast'].doc_dest));
+    for (var k in PATHS) {
+        var p = PATHS[k];
+        if (p.isPlugin) {
+            gulp.src(PATHS[k].doc_src + '/**/*.html')
+                .pipe(marko_ax5({
+                    projectName: k,
+                    layoutPath: PATHS.assets.src + '/_layouts/index.marko'
+                }))
+                .pipe(plumber({errorHandler: errorAlert}))
+                .pipe(gulp.dest(PATHS[k].doc_dest));
+        }
+    }
 });
 
 /**
@@ -245,54 +187,49 @@ gulp.task('docs:all', function () {
  */
 gulp.task('watch', function () {
 
-    // todo : ui 목록으로 자동화처리 하기
+    // SASS
+    (function () {
+        var sass_watch_list = [];
+        sass_watch_list.push(PATHS.ax5docs.css_src + '/**/*.scss');
+        for (var k in PATHS) {
+            var p = PATHS[k];
+            if (p.isPlugin && p.scss) {
+                sass_watch_list.push(PATHS[k].css_src + '/**/*.scss');
+            }
+        }
+        gulp.watch(sass_watch_list, ['SASS']);
+    })();
 
-    gulp.watch([
-        PATHS.ax5docs.css_src + '/**/*.scss',
-        PATHS['bootstrap-ax5mask'].src + '/**/*.scss',
-        PATHS['bootstrap-ax5dialog'].src + '/**/*.scss',
-        PATHS['bootstrap-ax5toast'].src + '/**/*.scss'
-    ], ['SASS']);
+    // scripts
+    for (var k in PATHS) {
+        var p = PATHS[k];
+        if (p.isPlugin && p.js) {
+            gulp.watch(PATHS[k].src + '/*.js', [k + '-scripts']);
+        }
+    }
 
-    gulp.watch(PATHS.ax5core.src + '/*.js', ['AX5CORE-scripts']);
-    gulp.watch(PATHS["bootstrap-ax5mask"].src + '/*.js', ['AX5MASK-scripts']);
-    gulp.watch(PATHS["bootstrap-ax5dialog"].src + '/*.js', ['AX5DIALOG-scripts']);
-    gulp.watch(PATHS["bootstrap-ax5toast"].src + '/*.js', ['AX5TOAST-scripts']);
-
-    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', ['default', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs', 'AX5TOAST-docs']);
+    // docs watch
     gulp.watch(PATHS.assets.src + '/_layouts/root.marko', ['default', 'AX5UI-docs']);
-    gulp.watch(PATHS.assets.src + '/components/**/*.js', ['default', 'AX5UI-docs', 'AX5CORE-docs', 'AX5MASK-docs', 'AX5DIALOG-docs', 'AX5TOAST-docs']);
+
+    var docs_list = [];
+    docs_list.push('default');
+    for (var k in PATHS) {
+        var p = PATHS[k];
+        if (p.isPlugin) {
+            docs_list.push(k + '-docs');
+        }
+    }
+    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', docs_list);
+    gulp.watch(PATHS.assets.src + '/components/**/*.js', docs_list);
 
     // for MD
     gulp.watch(PATHS.ax5docs.doc_src + '/**/*.html', ['AX5UI-docs']);
-    gulp.watch(
-        [
-            PATHS.ax5core.doc_src + '/**/*.html',
-            PATHS['ax5core'].root + '/**/*.md'
-        ],
-        ['AX5CORE-docs']
-    );
-    gulp.watch(
-        [
-            PATHS['bootstrap-ax5mask'].doc_src + '/**/*.html',
-            PATHS['bootstrap-ax5mask'].root + '/**/*.md'
-        ],
-        ['AX5MASK-docs']
-    );
-    gulp.watch(
-        [
-            PATHS['bootstrap-ax5dialog'].doc_src + '/**/*.html',
-            PATHS['bootstrap-ax5dialog'].root + '/**/*.md'
-        ],
-        ['AX5DIALOG-docs']
-    );
-    gulp.watch(
-        [
-            PATHS['bootstrap-ax5toast'].doc_src + '/**/*.html',
-            PATHS['bootstrap-ax5toast'].root + '/**/*.md'
-        ],
-        ['AX5TOAST-docs']
-    );
+    for (var k in PATHS) {
+        var p = PATHS[k];
+        if (p.isPlugin) {
+            gulp.watch([PATHS[k].doc_src + '/**/*.html', PATHS[k].root + '/**/*.md'], [k + '-docs']);
+        }
+    }
 
 });
 

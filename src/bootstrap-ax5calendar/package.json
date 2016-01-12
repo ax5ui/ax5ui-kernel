@@ -1,11 +1,11 @@
 {
-	"name": "bootstrap-ax5toast",
+	"name": "bootstrap-ax5calendar",
 	"version": "0.1.0",
-	"description": "A toast plugin that works with Bootstrap & jQuery",
+	"description": "A calendar plugin that works with Bootstrap & jQuery",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/ax5ui/bootstrap-ax5toast"
+		"url": "git+https://github.com/ax5ui/bootstrap-ax5calendar"
 	},
 	"author": {
 		"name": "Thomas Jang",
@@ -18,8 +18,8 @@
 		"ax5ui",
 		"plugin",
 		"bootstrap jQuery plugins",
-		"dialog",
-		"bootstrap-ax5dialog",
+		"calendar",
+		"bootstrap-ax5calendar",
 		"javascript ui"
 	],
 	"dependencies": {

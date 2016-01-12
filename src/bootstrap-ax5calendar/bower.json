@@ -1,0 +1,26 @@
+{
+	"name": "bootstrap-ax5calendar",
+	"version": "0.1.0",
+	"authors": [
+		"ThomasJ <tom@axisj.com>"
+	],
+	"description": "",
+	"main": "dist/ax5calendar.js",
+	"keywords": [
+		"bootstrap",
+		"jquery",
+		"ax5ui",
+		"plugin",
+		"bootstrap jQuery plugins",
+		"calendar",
+		"bootstrap-ax5calendar",
+		"javascript ui"
+	],
+	"dependencies": {
+		"jquery": "^1.11.0",
+		"ax5core": ">=0.4.0",
+		"bootstrap": "^3.3.6"
+	},
+	"license": "MIT",
+	"homepage": "ax5.io"
+}
