@@ -6,6 +6,7 @@
 	width: 100%;
 	height: $docs-visual-height;
 
+	background: #82AA16;
 	@include gradient-directional(#82AA16, #3D8EB9, 269deg);
 	.pattern {
 		position: absolute;
@@ -28,6 +29,7 @@
 		.button-group {
 			margin: 10px auto;
 		}
+
 
 		// index visual layout
 		.style-index-visual {

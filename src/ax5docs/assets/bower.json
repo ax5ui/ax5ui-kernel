@@ -1,0 +1,8 @@
+{
+	"name": "bootstrap-ax5dialog-tester",
+	"dependencies": {
+		"jquery": "^1.11.0",
+		"bootstrap": "^3.3.6",
+		"font-awesome": ""
+	}
+}

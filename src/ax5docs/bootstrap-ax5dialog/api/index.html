@@ -8,6 +8,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>ax5ui / bootstrap-ax5dialog : API</title>
 
 	
@@ -23,8 +24,7 @@
 		});
 	</script>
 
-	
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<script src="../../assets/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 
 	<script src="../../assets/lib/ax5core/ax5core.min.js"></script>
 
@@ -82,6 +82,8 @@
 	<li><a href="/bootstrap-ax5mask">bootstrap-ax5mask</a></li>
 	<li><a href="/bootstrap-ax5dialog">bootstrap-ax5dialog</a></li>
 	<li><a href="/bootstrap-ax5toast">bootstrap-ax5toast</a></li>
+	<li><a href="/bootstrap-ax5modal">bootstrap-ax5modal</a></li>
+	<li><a href="/bootstrap-ax5calendar">bootstrap-ax5calendar</a></li>
 	<li role="separator" class="divider"></li>
 	<li><a href="https://www.axisj.com">axisj.com</a></li>
 </ul>
@@ -301,12 +303,15 @@ ga('send', 'pageview');
 		if (ax5.util.getCookie('stargazers_count')) {
 			$("#started-count").html(ax5.util.number(ax5.util.getCookie('stargazers_count'), {'money': true}));
 		}
+		
 		$.ajax({
-			url: "https://api.github.com/repos/ax5ui/bootstrap-ax5dialog"
-		}).done(function (data) {
-			$("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true}));
-			ax5.util.setCookie('stargazers_count', data.stargazers_count);
-		});
+			method: "GET",
+			url: "https://api.github.com/repos/ax5ui/bootstrap-ax5dialog",
+			success: function(data){
+				$("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true}));
+				ax5.util.setCookie('stargazers_count', data.stargazers_count);
+			}
+		}); 
 	});
 </script>
 </body>

@@ -8,7 +8,6 @@ var changed = require('gulp-changed');
 var marko_ax5 = require('gulp-marko-ax5');
 var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
-var spawn = require('child_process').spawn;
 
 var PATHS = {
     assets: {
@@ -91,40 +90,44 @@ function errorAlert(error) {
 /**
  * SASS
  */
-gulp.task('SASS', function () {
+gulp.task('docs-scss', function () {
     gulp.src(PATHS.ax5docs.css_src + '/docs.scss')
         .pipe(plumber({errorHandler: errorAlert}))
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(gulp.dest(PATHS.ax5docs.css_dest));
+});
 
-    for (var k in PATHS) {
-        var p = PATHS[k];
-        if (p.isPlugin && p.scss) {
-            gulp.src(PATHS[k].src + '/' + p.scss)
+for (var k in PATHS) {
+    var __p = PATHS[k];
+    if (__p.isPlugin && __p.scss) {
+        gulp.task(k + '-scss', (function (k, __p) {
+            gulp.src(PATHS[k].src + '/' + __p.scss)
                 .pipe(plumber({errorHandler: errorAlert}))
                 .pipe(sass({outputStyle: 'compressed'}))
                 .pipe(gulp.dest(PATHS[k].dest))
                 .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
-        }
+        })(k, __p));
     }
-});
+}
 
 /**
  * for JS
  */
 for (var k in PATHS) {
-    var p = PATHS[k];
-    if (p.isPlugin && p.js) {
-        gulp.task(k + '-scripts', function () {
-            gulp.src(PATHS[k].src + '/*.js')
-                .pipe(concat(p.js + '.js'))
-                .pipe(gulp.dest(PATHS[k].dest))
-                .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k))
-                .pipe(concat(p.js + '.min.js'))
-                .pipe(uglify())
-                .pipe(gulp.dest(PATHS[k].dest))
-                .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
-        });
+    var __p = PATHS[k];
+    if (__p.isPlugin && __p.js) {
+        gulp.task(k + '-scripts', (function (k, __p) {
+            return function () {
+                gulp.src(PATHS[k].src + '/*.js')
+                    .pipe(concat(__p.js + '.js'))
+                    .pipe(gulp.dest(PATHS[k].dest))
+                    .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k))
+                    .pipe(concat(__p.js + '.min.js'))
+                    .pipe(uglify())
+                    .pipe(gulp.dest(PATHS[k].dest))
+                    .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
+            }
+        })(k, __p));
     }
 }
 
@@ -143,18 +146,20 @@ gulp.task('AX5UI-docs', function () {
 });
 
 for (var k in PATHS) {
-    var p = PATHS[k];
-    if (p.isPlugin) {
-        gulp.task(k + '-docs', function () {
-            return gulp.src(PATHS[k].doc_src + '/**/*.html')
-                .pipe(changed(PATHS[k].doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
-                .pipe(plumber({errorHandler: errorAlert}))
-                .pipe(marko_ax5({
-                    projectName: k,
-                    layoutPath: PATHS.assets.src + '/_layouts/index.marko'
-                }))
-                .pipe(gulp.dest(PATHS[k].doc_dest));
-        });
+    var __p = PATHS[k];
+    if (__p.isPlugin) {
+        gulp.task(k + '-docs', (function(k, __p){
+            return function () {
+                return gulp.src(PATHS[k].doc_src + '/**/*.html')
+                    .pipe(changed(PATHS[k].doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
+                    .pipe(plumber({errorHandler: errorAlert}))
+                    .pipe(marko_ax5({
+                        projectName: k,
+                        layoutPath: PATHS.assets.src + '/_layouts/index.marko'
+                    }))
+                    .pipe(gulp.dest(PATHS[k].doc_dest));
+            }
+        })(k, __p) );
     }
 }
 
@@ -169,8 +174,8 @@ gulp.task('docs:all', function () {
         .pipe(gulp.dest(PATHS['ax5docs'].doc_dest));
 
     for (var k in PATHS) {
-        var p = PATHS[k];
-        if (p.isPlugin) {
+        var __p = PATHS[k];
+        if (__p.isPlugin) {
             gulp.src(PATHS[k].doc_src + '/**/*.html')
                 .pipe(marko_ax5({
                     projectName: k,
@@ -185,26 +190,21 @@ gulp.task('docs:all', function () {
 /**
  * watch
  */
-gulp.task('watch', function () {
+gulp.task('default', function () {
 
     // SASS
-    (function () {
-        var sass_watch_list = [];
-        sass_watch_list.push(PATHS.ax5docs.css_src + '/**/*.scss');
-        for (var k in PATHS) {
-            var p = PATHS[k];
-            if (p.isPlugin && p.scss) {
-                sass_watch_list.push(PATHS[k].css_src + '/**/*.scss');
-            }
-        }
-        gulp.watch(sass_watch_list, ['SASS']);
-    })();
+    gulp.watch(PATHS.ax5docs.css_src + '/**/*.scss', ['docs-scss']);
 
     // scripts
     for (var k in PATHS) {
-        var p = PATHS[k];
-        if (p.isPlugin && p.js) {
+        var __p = PATHS[k];
+        if (__p.isPlugin && __p.js) {
+            //console.log(PATHS[k].src + '/*.js');
             gulp.watch(PATHS[k].src + '/*.js', [k + '-scripts']);
+        }
+        if (__p.isPlugin && __p.scss) {
+            //console.log(PATHS[k].src + '/*.js');
+            gulp.watch(PATHS[k].css_src + '/**/*.scss', [k + '-scss']);
         }
     }
 
@@ -214,8 +214,8 @@ gulp.task('watch', function () {
     var docs_list = [];
     docs_list.push('default');
     for (var k in PATHS) {
-        var p = PATHS[k];
-        if (p.isPlugin) {
+        var __p = PATHS[k];
+        if (__p.isPlugin) {
             docs_list.push(k + '-docs');
         }
     }
@@ -225,23 +225,11 @@ gulp.task('watch', function () {
     // for MD
     gulp.watch(PATHS.ax5docs.doc_src + '/**/*.html', ['AX5UI-docs']);
     for (var k in PATHS) {
-        var p = PATHS[k];
-        if (p.isPlugin) {
+        var __p = PATHS[k];
+        if (__p.isPlugin) {
+            //console.log(k);
             gulp.watch([PATHS[k].doc_src + '/**/*.html', PATHS[k].root + '/**/*.md'], [k + '-docs']);
         }
     }
 
-});
-
-gulp.task('default', function () {
-    var p;
-    spawnChildren();
-    function spawnChildren(e) {
-        // kill previous spawned process
-        if (p) {
-            p.kill();
-        }
-        // `spawn` a child `gulp` process linked to the parent `stdio`
-        p = spawn('gulp', ["watch"], {stdio: 'inherit'});
-    }
 });

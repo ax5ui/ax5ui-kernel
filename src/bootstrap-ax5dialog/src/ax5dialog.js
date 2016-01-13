@@ -37,8 +37,8 @@
         }).apply(this, arguments);
 
         this.activeDialog = null;
-        cfg = this.config
-
+        // extended config copy cfg
+        cfg = this.config;
         cfg.id = 'ax5-dialog-' + ax5.getGuid();
 
         /**
@@ -241,6 +241,7 @@
                 width: opts.width || cfg.width
             };
             jQuery(document.body).append(this.getContent(opts.id, opts));
+
             this.activeDialog = jQuery('#' + opts.id);
             this.activeDialog.css({width: box.width});
 

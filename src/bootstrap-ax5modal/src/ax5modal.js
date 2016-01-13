@@ -39,11 +39,9 @@
         }).apply(this, arguments);
         
         this.activeModal = null;
-        this.els = {};
-        
-        // extended config copy cfg
-        cfg = this.config;
-        cfg.id = 'ax5-modal-' + ax5.getGuid();
+        this.$ = {}; // UI inside of the jQuery object store
+        cfg = this.config; // extended config copy cfg
+        cfg.id = 'ax5-modal-' + ax5.getGuid(); // instance id
         
         /**
          * Preferences of modal UI
@@ -83,33 +81,54 @@
             po.push('</div>');
             return po.join('');
         };
-        
-        this.open = function (opts) {
+
+        this.open = function (opts, callBack) {
+            if (U.isString(opts)) {
+                opts = {
+                    title: cfg.title,
+                    msg: opts
+                }
+            }
+
+            if(this.activeModal) {
+                console.log(ax5.info.getError("ax5modal", "501", "open"));
+                return this;
+            }
+
+            self.modalConfig = {};
+            jQuery.extend(true, self.modalConfig, cfg);
+            jQuery.extend(true, self.modalConfig, opts);
+            opts = self.modalConfig;
+
+            this._open(opts, callBack);
+            return this;
+        };
+
+        this._open = function (opts, callBack) {
             var
                 pos = {},
-                box = {},
-                po;
-            
-            opts.id = (opts.id);
+                box,
+                po,
+                that;
 
             box = {
-                width: opts.width || cfg.width,
-                height: opts.height || cfg.height
+                width: opts.width,
+                height: opts.height
             };
-            axd.append(document.body, this.getContent(opts.id, opts));
+            jQuery(document.body).append(this.getContent(opts.id, opts));
             
             this.activeModal = jQuery('#' + opts.id);
 
             // 파트수집
-            this.els = {
+            this.$ = {
                 "root": this.activeModal.find('[data-modal-els="root"]'),
                 "heading": this.activeModal.find('[data-modal-els="heading"]'),
                 "body": this.activeModal.find('[data-modal-els="body"]')
             };
             
             if (opts.http) {
-                this.els["iframe"] = this.activeModal.find('[data-modal-els="iframe"]');
-                this.els["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
+                this.$["iframe"] = this.activeModal.find('[data-modal-els="iframe"]');
+                this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
             }
             
             //- position 정렬
@@ -124,7 +143,7 @@
             this.activeModal.css(box);
             
             if (opts.http) {
-                this.els["iframe"].css({height: box.height - cfg.heading.height});
+                this.$["iframe"].css({height: box.height - cfg.heading.height});
                 
                 // iframe content load
                 this.els["iframe-form"].attr({"method": opts.http.method});
@@ -150,17 +169,15 @@
             
             // bind key event
             if (cfg.closeToEsc) {
-                axd(window).on("keydown.ax-modal", (function (e) {
+                jQuery(window).on("keydown.ax-modal", (function (e) {
                     this.onkeyup(e || window.event, opts);
                 }).bind(this));
             }
         };
         
         this.onkeyup = function (e, opts, target, k) {
-            if (e.keyCode == ax5.info.event_keys.ESC) {
+            if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
-                if (opts.onclose) opts.onclose.call(opts);
-                else if (cfg.onclose) cfg.onclose.call(opts);
             }
         };
         
@@ -176,9 +193,14 @@
         this.close = function () {
             if (this.activeModal) {
                 this.activeModal.remove();
-                this.mask.close();
                 this.activeModal = null;
-                axd(window).off("keydown.ax-modal");
+                jQuery(window).off("keydown.ax-modal");
+                if (opts && opts.onStateChanged) {
+                    that = {
+                        state: "close"
+                    };
+                    opts.onStateChanged.call(that, that);
+                }
             }
             return this;
         }

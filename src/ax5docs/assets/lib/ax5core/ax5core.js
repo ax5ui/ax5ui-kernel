@@ -1875,6 +1875,15 @@
         while (method = methods.pop()) con[method] = con[method] || dummy;
     })(root.console = root.console || {}); // Using `this` for web workers.
 
+    // extend innerWidth ..
+    var html = document.getElementsByTagName('html')[0];
+    var body = document.getElementsByTagName('body')[0];
+
+    if (!window.innerWidth) window.innerWidth = html.clientWidth;
+    if (!window.innerHeight) window.innerHeight = html.clientHeight;
+    if (!window.scrollX) window.scrollX = window.pageXOffset || html.scrollLeft;
+    if (!window.scrollY) window.scrollY = window.pageYOffset || html.scrollTop;
+
 }.call(this));
 /**
  * Refer to this by {@link ax5}.
