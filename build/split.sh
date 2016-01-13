@@ -5,4 +5,6 @@ git subsplit publish --heads="master" --no-tags src/ax5core:https://github.com/a
 git subsplit publish --heads="master" --no-tags src/bootstrap-ax5mask:https://github.com/ax5ui/bootstrap-ax5mask.git
 git subsplit publish --heads="master" --no-tags src/bootstrap-ax5dialog:https://github.com/ax5ui/bootstrap-ax5dialog.git
 git subsplit publish --heads="master" --no-tags src/bootstrap-ax5toast:https://github.com/ax5ui/bootstrap-ax5toast.git
+git subsplit publish --heads="master" --no-tags src/bootstrap-ax5modal:https://github.com/ax5ui/bootstrap-ax5modal.git
+git subsplit publish --heads="master" --no-tags src/bootstrap-ax5calendar:https://github.com/ax5ui/bootstrap-ax5calendar.git
 rm -rf .subsplit/

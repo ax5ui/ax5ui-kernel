@@ -1,5 +1,5 @@
 {
-	"name": "bootstrap-ax5dialog-tester",
+	"name": "ax5doc-assets",
 	"dependencies": {
 		"jquery": "^1.11.0",
 		"bootstrap": "^3.3.6",
