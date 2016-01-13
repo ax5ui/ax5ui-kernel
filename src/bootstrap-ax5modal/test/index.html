@@ -15,12 +15,24 @@
 </head>
 <body style="padding: 50px;">
 
-
+    <button class="btn btn-danger" id="modal-open">Modal open</button>
+    <button class="btn btn-danger" id="modal-close">Modal close</button>
 
 
 <script>
     $(document.body).ready(function () {
-
+        var modal = new ax5.ui.modal();
+        modal.setConfig({
+            onStateChanged: function(){
+                console.log(this);
+            }
+        });
+        $("#modal-open").click(function(){
+            modal.open();
+        });
+        $("#modal-close").click(function(){
+            modal.close();
+        });
     });
 </script>
 

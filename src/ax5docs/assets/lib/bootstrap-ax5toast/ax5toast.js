@@ -36,7 +36,7 @@
                     "ok": "ok", "cancel": "cancel"
                 },
                 displayTime: 3000,
-                animateTime: 200,
+                animateTime: 250,
                 containerPosition: "bottom-left"
             };
         }).apply(this, arguments);

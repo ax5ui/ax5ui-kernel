@@ -37,8 +37,8 @@
         }).apply(this, arguments);
 
         this.activeDialog = null;
-        cfg = this.config
-
+        // extended config copy cfg
+        cfg = this.config;
         cfg.id = 'ax5-dialog-' + ax5.getGuid();
 
         /**
@@ -88,7 +88,6 @@
             opts = self.dialogConfig;
 
             opts.dialogType = "alert";
-            opts.theme = (opts.theme || cfg.theme || "");
             if (typeof opts.btns === "undefined") {
                 opts.btns = {
                     ok: {label: cfg.lang["ok"], theme: opts.theme}
@@ -242,6 +241,7 @@
                 width: opts.width || cfg.width
             };
             jQuery(document.body).append(this.getContent(opts.id, opts));
+
             this.activeDialog = jQuery('#' + opts.id);
             this.activeDialog.css({width: box.width});
 
@@ -275,12 +275,12 @@
             }
 
             this.activeDialog.find("[data-ax-dialog-btn]").on(cfg.clickEventName, (function (e) {
-                this.btnOnclick(e || window.event, opts, callBack);
+                this.btnOnClick(e || window.event, opts, callBack);
             }).bind(this));
 
             // bind key event
             jQuery(window).bind("keydown.ax-dialog", (function (e) {
-                this.onkeyup(e || window.event, opts, callBack);
+                this.onKeyup(e || window.event, opts, callBack);
             }).bind(this));
 
             if (opts && opts.onStateChanged) {
@@ -292,7 +292,7 @@
             return this;
         };
 
-        this.btnOnclick = function (e, opts, callBack, target, k) {
+        this.btnOnClick = function (e, opts, callBack, target, k) {
             if (e.srcElement) e.target = e.srcElement;
 
             target = U.findParentNode(e.target, function (target) {
@@ -319,8 +319,8 @@
                         }
                     }
                 }
-                if (opts.btns[k].onclick) {
-                    opts.btns[k].onclick.call(that, k);
+                if (opts.btns[k].onClick) {
+                    opts.btns[k].onClick.call(that, k);
                 }
                 else if (opts.dialogType === "alert") {
                     if (callBack) callBack.call(that, k);
@@ -343,7 +343,7 @@
             }
         };
 
-        this.onkeyup = function (e, opts, callBack, target, k) {
+        this.onKeyup = function (e, opts, callBack, target, k) {
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
             }

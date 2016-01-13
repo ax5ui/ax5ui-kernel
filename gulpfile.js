@@ -123,6 +123,7 @@ for (var k in PATHS) {
                     .pipe(gulp.dest(PATHS[k].dest))
                     .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k))
                     .pipe(concat(__p.js + '.min.js'))
+                    .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(uglify())
                     .pipe(gulp.dest(PATHS[k].dest))
                     .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
@@ -197,14 +198,13 @@ gulp.task('default', function () {
 
     // scripts
     for (var k in PATHS) {
+
         var __p = PATHS[k];
         if (__p.isPlugin && __p.js) {
-            //console.log(PATHS[k].src + '/*.js');
             gulp.watch(PATHS[k].src + '/*.js', [k + '-scripts']);
         }
         if (__p.isPlugin && __p.scss) {
-            //console.log(PATHS[k].src + '/*.js');
-            gulp.watch(PATHS[k].css_src + '/**/*.scss', [k + '-scss']);
+            gulp.watch(PATHS[k].src + '/**/*.scss', [k + '-scss']);
         }
     }
 

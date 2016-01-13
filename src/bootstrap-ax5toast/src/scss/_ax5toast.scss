@@ -98,11 +98,12 @@
 
 @include keyframes(ax-toast-destroy) {
 	from {
-		//opacity: 1.0;
 		@include transform(scale(1));
+		opacity: 1.0;
 	}
 	to {
 		@include transform(scale(1.5));
+		opacity: 0.0;
 	}
 }
 
@@ -117,7 +118,7 @@
 	.ax5-ui-toast {
 		@include ax-toast();
 		@include ax-toast-section();
-		@include transition(all 0.3s ease-in-out);
+		@include transition(all $ax5toast-easing-time ease-in-out);
 
 		@include toast-variant($ax5toast-default-text, $ax5toast-default-bg, $ax5toast-default-color);
 
@@ -143,12 +144,12 @@
 		bottom: 0;
 
 		.ax5-ui-toast {
-			@include animation(ax-toast-top 0.3s $ax5toast-easing);
+			@include animation(ax-toast-top $ax5toast-easing-time $ax5toast-easing);
 			&.removed {
-				@include animation(ax-toast-removed-bottom 0.3s $ax5toast-easing forwards);
+				@include animation(ax-toast-removed-bottom $ax5toast-easing-time $ax5toast-easing forwards);
 			}
 			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+				@include animation(ax-toast-destroy $ax5toast-easing-time $ease-in-back forwards);
 			}
 		}
 	}
@@ -157,12 +158,12 @@
 		bottom: 0;
 
 		.ax5-ui-toast {
-			@include animation(ax-toast-top 0.3s $ax5toast-easing);
+			@include animation(ax-toast-top $ax5toast-easing-time $ax5toast-easing);
 			&.removed {
-				@include animation(ax-toast-removed-bottom 0.3s $ax5toast-easing forwards);
+				@include animation(ax-toast-removed-bottom $ax5toast-easing-time $ax5toast-easing forwards);
 			}
 			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+				@include animation(ax-toast-destroy $ax5toast-easing-time $ease-in-back forwards);
 			}
 		}
 
@@ -174,13 +175,13 @@
 		top: 0;
 
 		.ax5-ui-toast {
-			@include animation(ax-toast-bottom 0.3s $ax5toast-easing);
+			@include animation(ax-toast-bottom $ax5toast-easing-time $ax5toast-easing);
 
 			&.removed {
-				@include animation(ax-toast-removed-top 0.3s $ax5toast-easing forwards);
+				@include animation(ax-toast-removed-top $ax5toast-easing-time $ax5toast-easing forwards);
 			}
 			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+				@include animation(ax-toast-destroy $ax5toast-easing-time $ease-in-back forwards);
 			}
 		}
 	}
@@ -190,12 +191,12 @@
 		top: 0;
 
 		.ax5-ui-toast {
-			@include animation(ax-toast-bottom 0.3s $ax5toast-easing);
+			@include animation(ax-toast-bottom $ax5toast-easing-time $ax5toast-easing);
 			&.removed {
-				@include animation(ax-toast-removed-top 0.3s $ax5toast-easing forwards);
+				@include animation(ax-toast-removed-top $ax5toast-easing-time $ax5toast-easing forwards);
 			}
 			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+				@include animation(ax-toast-destroy $ax5toast-easing-time $ease-in-back forwards);
 			}
 		}
 	}

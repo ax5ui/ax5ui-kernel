@@ -30,11 +30,8 @@
                 theme: 'default',
                 width: 300,
                 height: 400,
-                title: '',
-                heading: {
-                    height: 30
-                },
-                closeToEsc: true
+                closeToEsc: true,
+                animateTime: 250
             };
         }).apply(this, arguments);
         
@@ -62,9 +59,6 @@
                 po = [];
             
             po.push('<div id="' + modalId + '" data-modal-els="root" class="ax5-ui-modal ' + opts.theme + '">');
-            po.push('<div class="ax-modal-heading" data-modal-els="heading" style="height:' + cfg.heading.height + 'px;line-height:' + cfg.heading.height + 'px;">');
-            po.push((opts.title || ""));
-            po.push('</div>');
             po.push('<div class="ax-modal-body" data-modal-els="body">');
             // use iframe
             if (opts.http) {
@@ -77,7 +71,6 @@
                 po.push('</form>');
             }
             po.push('</div>');
-            
             po.push('</div>');
             return po.join('');
         };
@@ -88,11 +81,6 @@
                     title: cfg.title,
                     msg: opts
                 }
-            }
-
-            if(this.activeModal) {
-                console.log(ax5.info.getError("ax5modal", "501", "open"));
-                return this;
             }
 
             self.modalConfig = {};
@@ -133,43 +121,48 @@
             
             //- position 정렬
             if (typeof opts.position === "undefined" || opts.position === "center") {
-                box.top = ax5.dom.height(document.body) / 2 - box.height / 2;
-                box.left = ax5.dom.width(document.body) / 2 - box.width / 2;
+                box.top = window.innerWidth / 2 - box.height / 2;
+                box.left = window.innerHeight / 2 - box.width / 2;
             }
             else {
                 box.left = opts.position.left || 0;
                 box.top = opts.position.top || 0;
             }
             this.activeModal.css(box);
-            
+
+            that = {
+                id: opts.id,
+                theme: opts.theme,
+                width: opts.width,
+                height: opts.height,
+                state: "open"
+            };
+
             if (opts.http) {
                 this.$["iframe"].css({height: box.height - cfg.heading.height});
                 
                 // iframe content load
-                this.els["iframe-form"].attr({"method": opts.http.method});
-                this.els["iframe-form"].attr({"target": opts.id + "-frame"});
-                this.els["iframe-form"].attr({"action": opts.http.url});
-                this.els["iframe"].on("load", (function () {
-                    if (opts.onload) opts.onload.call(opts);
-                    else if (cfg.onload) cfg.onload.call(opts);
+                this.$["iframe-form"].attr({"method": opts.http.method});
+                this.$["iframe-form"].attr({"target": opts.id + "-frame"});
+                this.$["iframe-form"].attr({"action": opts.http.url});
+                this.$["iframe"].on("load", (function () {
+                    if (opts && opts.onStateChanged) {
+                        that.state = "load";
+                        opts.onStateChanged.call(that, that);
+                    }
                 }).bind(this));
-                this.els["iframe-form"].elements[0].submit();
+                this.$["iframe-form"].elements[0].submit();
             }
-            else {
-                var that = {
-                    id: opts.id,
-                    theme: opts.theme,
-                    width: opts.width,
-                    height: opts.height
-                };
-                U.extend(that, this.els);
-                if (opts.onload) opts.onload.call(that);
-                else if (cfg.onload) cfg.onload.call(that);
+
+            jQuery.extend(true, that, this.$);
+            if (callBack) callBack.call(that);
+            if (opts && opts.onStateChanged) {
+                opts.onStateChanged.call(that, that);
             }
-            
+
             // bind key event
             if (cfg.closeToEsc) {
-                jQuery(window).on("keydown.ax-modal", (function (e) {
+                jQuery(window).bind("keydown.ax-modal", (function (e) {
                     this.onkeyup(e || window.event, opts);
                 }).bind(this));
             }
@@ -190,17 +183,22 @@
          * my_modal.close();
          * ```
          */
-        this.close = function () {
+        this.close = function (opts, that) {
             if (this.activeModal) {
-                this.activeModal.remove();
-                this.activeModal = null;
-                jQuery(window).off("keydown.ax-modal");
-                if (opts && opts.onStateChanged) {
-                    that = {
-                        state: "close"
-                    };
-                    opts.onStateChanged.call(that, that);
-                }
+                opts = self.modalConfig;
+                this.activeModal.addClass("destroy");
+                jQuery(window).unbind("keydown.ax-modal");
+
+                setTimeout((function () {
+                    this.activeModal.remove();
+                    this.activeModal = null;
+                    if (opts && opts.onStateChanged) {
+                        that = {
+                            state: "close"
+                        };
+                        opts.onStateChanged.call(that, that);
+                    }
+                }).bind(this), cfg.animateTime);
             }
             return this;
         }
@@ -208,7 +206,7 @@
     //== UI Class
     
     //== ui class 공통 처리 구문
-    if (U.is_function(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
+    if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
     root.modal = axClass; // ax5.ui에 연결
     //== ui class 공통 처리 구문
     
