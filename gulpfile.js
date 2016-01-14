@@ -214,7 +214,6 @@ gulp.task('default', function () {
     gulp.watch(PATHS.assets.src + '/_layouts/root.marko', ['default', 'AX5UI-docs']);
 
     var docs_list = [];
-    docs_list.push('default');
     for (var k in PATHS) {
         var __p = PATHS[k];
         if (__p.isPlugin) {

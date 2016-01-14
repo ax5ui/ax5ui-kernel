@@ -2,7 +2,7 @@
 ```
 ax5ui-kernel/
     build/
-        push.sh     master 브랜치로 gh-pages 브랜치를 rebase 하고 master로 복귀합니다. 
+        push.sh     rebase with 'gh-pages' branch from 'master' branch, then change to 'master' branch.
         split.sh    ax5docs, ax5core, booxstrap-ax5dialog, the contents of a folder, such as booxstrap-ax5mask, it overrides in each of git.
     src/
         ax5core/    utility project for ax5ui

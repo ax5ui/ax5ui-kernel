@@ -122,7 +122,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5modal/demo/index.html">Basic Modal</a></li></ul>
+        <ul><li  class='active'><a href="/bootstrap-ax5modal/demo/index.html">Basic Modal</a></li><li ><a href="/bootstrap-ax5modal/demo/modal-control.html">Modal Control</a></li></ul>
     
 					</div>
 				</div>
@@ -138,41 +138,73 @@
             </p>
 
             <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
-            <button class="btn btn-default" type="button" id="modal-close">Modal Close</button>
+
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
         var modal = new ax5.ui.modal();
         modal.setConfig({
-            onStateChanged: function(){
-                console.log(this);
+            onStateChanged: function () {
+                // console.log(this);
             }
         });
 
         $('#modal-open').click(function () {
-            modal.open();
+            modal.open({}, function () {
+                // check your browser console
+                console.log(this);
+
+                var btn = jQuery(
+                    '&lt;button class="btn btn-default" type="button" style="margin-top: 100px;">' +
+                    'Modal Close&lt;/button>');
+                btn.click(function () {
+                    modal.close();
+                });
+                this.$.body.append(btn);
+            });
         });
-        $('#modal-close').click(function () {
-            modal.close();
-        });
+
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
         var modal = new ax5.ui.modal();
         modal.setConfig({
-            onStateChanged: function(){
-                console.log(this);
+            onStateChanged: function () {
+                // console.log(this);
             }
         });
 
         $('#modal-open').click(function () {
-            modal.open();
+            modal.open({}, function () {
+                // check your browser console
+                console.log(this);
+
+                var btn = jQuery(
+                    '<button class="btn btn-default" type="button" style="margin-top: 100px;">' +
+                    'Modal Close</button>');
+                btn.click(function () {
+                    modal.close();
+                });
+                this.$.body.append(btn);
+            });
         });
-        $('#modal-close').click(function () {
-            modal.close();
-        });
+
     });
 </script></script>
+
+            <p>
+                In <code>"setConfig"</code> method modal instance, it can be a default setting. Fixed setting, can be changed by passing the necessary settings when not is fixed, it becomes <code>"open"</code>.
+                
+            </p>
+
+            <p>
+                The first argument of <code>modal.open</code> in the example, the set value (object), the second argument, using the callBack function.<br>
+                In the second argument, <code>"this"</code> is <code>"state, width, height, $..."</code> is included, $ are included jQuery object of modal DOM elements made in the new.<br>
+                <br>
+                By using the passed jQuery object, it is possible to extend the desired function freely.
+
+                
+            </p>
 
         </section>
 

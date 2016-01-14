@@ -110,7 +110,6 @@
             // 파트수집
             this.$ = {
                 "root": this.activeModal.find('[data-modal-els="root"]'),
-                "heading": this.activeModal.find('[data-modal-els="heading"]'),
                 "body": this.activeModal.find('[data-modal-els="body"]')
             };
             
@@ -136,7 +135,8 @@
                 theme: opts.theme,
                 width: opts.width,
                 height: opts.height,
-                state: "open"
+                state: "open",
+                $: this.$
             };
 
             if (opts.http) {
@@ -155,7 +155,6 @@
                 this.$["iframe-form"].elements[0].submit();
             }
 
-            jQuery.extend(true, that, this.$);
             if (callBack) callBack.call(that);
             if (opts && opts.onStateChanged) {
                 opts.onStateChanged.call(that, that);

@@ -1,17 +1,17 @@
 <tmpl-metadata>
     <parentId>demo</parentId>
     <parent>Demo</parent>
-    <sort>1</sort>
+    <sort>2</sort>
 
-    <id>basic</id>
-    <title>Basic Modal</title>
+    <id>control</id>
+    <title>Modal Control</title>
     <desc></desc>
 </tmpl-metadata>
 
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Basic Modal" parent-id="demo"
-            page-id="basic" body-style="sub-page" with-menu="true">
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Modal Control" parent-id="demo"
+            page-id="control" body-style="sub-page" with-menu="true">
     <layout-put into="docs-menu">
-        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="basic"></ax5docs-get-sub-list>
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="control"></ax5docs-get-sub-list>
     </layout-put>
     <layout-put into="visual">
         <include template="../_inc/include.html" id="demo-visual"/>
@@ -19,16 +19,25 @@
     <layout-put into="head-js">
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5modal/ax5modal.css"/>
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5modal/ax5modal.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
     </layout-put>
     <layout-put into="body">
 
         <!-- doc-js Basic Alert -->
         <section class="ax5docs-section">
-            <h1>Basic Modal</h1>
+            <h1>Modal Control</h1>
 
             <p>
-
+                Please add ax5mask plug-in html document.
+                You can use the ax5mask If you add a plug-in to the page.
             </p>
+
+            <ax5docs-html>
+                <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5mask/ax5mask.css"/>
+                <script type="text/javascript" src="bower_components/bootstrap-ax5mask/ax5mask.min.js"></script>
+            </ax5docs-html>
 
             <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
 
@@ -36,10 +45,17 @@
             <ax5docs-js run="true">
                 <script type="text/javascript">
                     $(document.body).ready(function () {
+                        var mask = new ax5.ui.mask();
                         var modal = new ax5.ui.modal();
                         modal.setConfig({
                             onStateChanged: function () {
-                                // console.log(this);
+                                // use mask
+                                if (this.state === "open") {
+                                    mask.open();
+                                }
+                                else if (this.state === "close") {
+                                    mask.close();
+                                }
                             }
                         });
 
@@ -61,27 +77,6 @@
                     });
                 </script>
             </ax5docs-js>
-
-            <p>
-                In <code>"setConfig"</code> method modal instance, it can be a default setting. Fixed setting, can be changed by passing the necessary settings when not is fixed, it becomes <code>"open"</code>.
-                <!--
-                모달인스턴스에 setConfig메소드로 기본 설정을 할수 있다.
-                정해진 설정은 고정되는 것이 아니고 open이 될 때 원하는 설정을 전달하여 변경 할 수 있다.
-                -->
-            </p>
-
-            <p>
-                The first argument of <code>modal.open</code> in the example, the set value (object), the second argument, using the callBack function.<br/>
-                In the second argument, <code>"this"</code> is <code>"state, width, height, $..."</code> is included, $ are included jQuery object of modal DOM elements made in the new.<br/>
-                <br/>
-                By using the passed jQuery object, it is possible to extend the desired function freely.
-
-                <!--
-                예제에서 modal.open의 첫번째 인자는 설정값(오브젝트), 두번째 인자는 callBack 함수를 사용하였다.
-                두번째 인자에서 this는 모달의 속성 state, width, height, $ 등이 있다, $는 새롭게 만들어진 모달의 DOM엘리먼트의 jQuery 오브젝트가 담겨 있다.
-                이 jQuery 오브젝트를 이용하여 원하는 기능을 자유롭게 확장 할 수 있다.
-                -->
-            </p>
 
         </section>
 
