@@ -33,7 +33,7 @@ Title of toast.
 
 Type: `String`  [default: default]
 
-Theme of toast, ax5toast themes using six colors defined by the bootstrap is provided.
+Theme of toast, ax5modal themes using six colors defined by the bootstrap is provided.
 
 
 ### width

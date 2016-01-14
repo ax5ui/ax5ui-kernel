@@ -12,7 +12,7 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<link rel="shortcut icon" href="../../assets/ax5favicon.ico" type="image/x-icon">
-	<title>ax5ui / bootstrap-ax5modal : Basic Toast</title>
+	<title>ax5ui / bootstrap-ax5modal : Basic Modal</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -122,7 +122,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5modal/demo/index.html">Basic Toast</a></li></ul>
+        <ul><li  class='active'><a href="/bootstrap-ax5modal/demo/index.html">Basic Modal</a></li></ul>
     
 					</div>
 				</div>
@@ -131,72 +131,48 @@
 
         
         <section class="ax5docs-section">
-            <h1>Basic Toast</h1>
+            <h1>Basic Modal</h1>
 
             <p>
-                Toast UI will tell the system message will automatically disappear after a certain period of time.
+
             </p>
 
-            <button class="btn btn-default" type="button" id="toast-push">Toast</button>
+            <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
+            <button class="btn btn-default" type="button" id="modal-close">Modal Close</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-        var toast = new ax5.ui.toast();
-        toast.setConfig({
-            containerPosition: "top-right",
+        var modal = new ax5.ui.modal();
+        modal.setConfig({
             onStateChanged: function(){
                 console.log(this);
             }
         });
 
-        $('#toast-push').click(function () {
-            toast.push('Toast message', function () {
-                // close toast
-                console.log(this);
-            });
+        $('#modal-open').click(function () {
+            modal.open();
+        });
+        $('#modal-close').click(function () {
+            modal.close();
         });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-        var toast = new ax5.ui.toast();
-        toast.setConfig({
-            containerPosition: "top-right",
+        var modal = new ax5.ui.modal();
+        modal.setConfig({
             onStateChanged: function(){
                 console.log(this);
             }
         });
 
-        $('#toast-push').click(function () {
-            toast.push('Toast message', function () {
-                // close toast
-                console.log(this);
-            });
+        $('#modal-open').click(function () {
+            modal.open();
+        });
+        $('#modal-close').click(function () {
+            modal.close();
         });
     });
 </script></script>
-
-            <div class="docs-callout docs-callout-primary">
-                <h4>containerPosition</h4>
-                <p>
-                    using the <code>containerPosition</code> attribute, you can set the output position of <code>toast</code>.
-                </p>
-
-                <ul>
-                    <li>
-                        <b>top-left</b> : Toast pops out from the upper left corner of the web page.
-                    </li>
-                    <li>
-                        <b>top-right</b> : Toast pops out from the upper right corner of the web page.
-                    </li>
-                    <li>
-                        <b>bottom-right</b> : Toast pops out from the bottom left of the web page.
-                    </li>
-                    <li>
-                        <b>bottom-right</b> : Toast will pop out at the bottom right of the web page.
-                    </li>
-                </ul>
-            </div>
-
 
         </section>
 

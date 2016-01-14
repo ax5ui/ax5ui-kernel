@@ -4,11 +4,11 @@
     <sort>1</sort>
 
     <id>basic</id>
-    <title>Basic Toast</title>
+    <title>Basic Modal</title>
     <desc></desc>
 </tmpl-metadata>
 
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Basic Toast" parent-id="demo"
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Basic Modal" parent-id="demo"
             page-id="basic" body-style="sub-page" with-menu="true">
     <layout-put into="docs-menu">
         <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="basic"></ax5docs-get-sub-list>
@@ -24,57 +24,34 @@
 
         <!-- doc-js Basic Alert -->
         <section class="ax5docs-section">
-            <h1>Basic Toast</h1>
+            <h1>Basic Modal</h1>
 
             <p>
-                Toast UI will tell the system message will automatically disappear after a certain period of time.
+
             </p>
 
-            <button class="btn btn-default" type="button" id="toast-push">Toast</button>
+            <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
+            <button class="btn btn-default" type="button" id="modal-close">Modal Close</button>
 
             <ax5docs-js run="true">
                 <script type="text/javascript">
                     $(document.body).ready(function () {
-                        var toast = new ax5.ui.toast();
-                        toast.setConfig({
-                            containerPosition: "top-right",
+                        var modal = new ax5.ui.modal();
+                        modal.setConfig({
                             onStateChanged: function(){
                                 console.log(this);
                             }
                         });
 
-                        $('#toast-push').click(function () {
-                            toast.push('Toast message', function () {
-                                // close toast
-                                console.log(this);
-                            });
+                        $('#modal-open').click(function () {
+                            modal.open();
+                        });
+                        $('#modal-close').click(function () {
+                            modal.close();
                         });
                     });
                 </script>
             </ax5docs-js>
-
-            <div class="docs-callout docs-callout-primary">
-                <h4>containerPosition</h4>
-                <p>
-                    using the <code>containerPosition</code> attribute, you can set the output position of <code>toast</code>.
-                </p>
-
-                <ul>
-                    <li>
-                        <b>top-left</b> : Toast pops out from the upper left corner of the web page.
-                    </li>
-                    <li>
-                        <b>top-right</b> : Toast pops out from the upper right corner of the web page.
-                    </li>
-                    <li>
-                        <b>bottom-right</b> : Toast pops out from the bottom left of the web page.
-                    </li>
-                    <li>
-                        <b>bottom-right</b> : Toast will pop out at the bottom right of the web page.
-                    </li>
-                </ul>
-            </div>
-
 
         </section>
 

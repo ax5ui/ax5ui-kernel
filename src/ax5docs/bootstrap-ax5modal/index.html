@@ -128,7 +128,7 @@
 
 		<section class="ax5docs-section">
 			<p><a href="https://github.com/axisj"><img src="https://img.shields.io/badge/AXISJ.com-Contributed-green.svg" alt="axisj-contributed"></a> <img src="https://img.shields.io/badge/Seowoo-Mondo&amp;Thomas-red.svg" alt=""></p>
-<h1>bootstrap-ax5toast</h1>
+<h1>bootstrap-ax5modal</h1>
 <blockquote>
 <p><em>Dependencies</em></p>
 <ul>
@@ -138,7 +138,7 @@
 </ul>
 </blockquote>
 <h3>Install by bower</h3>
-<pre class="prettyprint linenums lang-sh"><code>bower install bootstrap-ax5toast
+<pre class="prettyprint linenums lang-sh"><code>bower install bootstrap-ax5modal
 </code></pre>
 <p><a href="http://bower.io/#install-bower">bower</a> is web front-end package manager.
 using the <code>bower</code>, when you install the plug-in is installed to resolve the plug-in dependencies under the <code>bower_components</code> folder.</p>
@@ -147,17 +147,17 @@ If you've never used a bower is, you will be able to be used for <a href="http:/
 <h3>Download code</h3>
 <ul>
 <li><a href="https://github.com/ax5ui/ax5core/releases">ax5core Github releases</a></li>
-<li><a href="https://github.com/ax5ui/bootstrap-ax5toast/releases">bootstrap-ax5toast Github releases</a></li>
+<li><a href="https://github.com/ax5ui/bootstrap-ax5modal/releases">bootstrap-ax5modal Github releases</a></li>
 </ul>
-<h3>Insert the &quot;ax5toast&quot; in the HTML HEAD.</h3>
+<h3>Insert the &quot;ax5modal&quot; in the HTML HEAD.</h3>
 <p>Location of the folder can be determined freely in your project. But be careful not to accidentally caused
 exactly the path.</p>
 <pre class="prettyprint linenums lang-html"><code>&lt;html&gt;
     &lt;head&gt;
-        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;bower_components/bootstrap-ax5toast/dist/ax5toast.css&quot; /&gt;
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;bower_components/bootstrap-ax5modal/dist/ax5modal.css&quot; /&gt;
         &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/jquery/dist/jquery.min.js&quot;&gt;&lt;/script&gt;
         &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ax5core/dist/ax5core.min.js&quot;&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/bootstrap-ax5toast/dist/ax5toast.min.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/bootstrap-ax5modal/dist/ax5modal.min.js&quot;&gt;&lt;/script&gt;
     &lt;/head&gt;
 &lt;body&gt;
 ....
@@ -165,14 +165,13 @@ exactly the path.</p>
 &lt;/html&gt;
 </code></pre>
 <h3>Basic Usages</h3>
-<pre class="prettyprint linenums lang-js"><code>var myToast = new ax5.ui.toast();
-myToast.setConfig({
-    icon: '&lt;i class=&quot;fa fa-bug&quot;&gt;&lt;/i&gt;',
-    containerPosition: &quot;bottom-right&quot;,
-    closeIcon: '&lt;i class=&quot;fa fa-times&quot;&gt;&lt;/i&gt;'
+<pre class="prettyprint linenums lang-js"><code>var modal = new ax5.ui.modal();
+modal.setConfig({
+    onStateChanged: function(){
+        console.log(this);
+    }
 });
-
-myToast.push('Toast message');
+modal.open();
 </code></pre>
 <hr>
 <h3>Install by npm</h3>
@@ -180,14 +179,14 @@ myToast.push('Toast message');
 In npm, so pile on the package manager for the front end, you need to solve the problem of plug-in dependencies.</p>
 <pre class="prettyprint linenums lang-sh"><code>npm install jquery
 npm install ax5core
-npm install bootstrap-ax5toast
+npm install bootstrap-ax5modal
 </code></pre>
 <p>After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
 If the inconvenience in the process that you want to copy the file and can be easily copied by using a <code>gulp</code> or <code>grunt</code>.</p>
 <hr>
 <h3>Preview</h3>
 <ul>
-<li><a href="http://ax5.io/bootstrap-ax5toast/demo/index.html">See Demostration</a></li>
+<li><a href="http://ax5.io/bootstrap-ax5modal/demo/index.html">See Demostration</a></li>
 </ul>
 <p>If you have any questions, please refer to the following <a href="https://github.com/ax5ui/ax5ui-kernel">gitHub</a></p>
 
