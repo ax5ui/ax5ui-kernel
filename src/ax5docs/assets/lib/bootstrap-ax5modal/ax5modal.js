@@ -121,8 +121,9 @@
             
             //- position 정렬
             if (typeof opts.position === "undefined" || opts.position === "center") {
-                box.top = window.innerWidth / 2 - box.height / 2;
-                box.left = window.innerHeight / 2 - box.width / 2;
+                //console.log(window.innerWidth, box.height);
+                box.top = window.innerHeight / 2 - box.height / 2;
+                box.left = window.innerWidth / 2 - box.width / 2;
             }
             else {
                 box.left = opts.position.left || 0;
@@ -163,12 +164,35 @@
             // bind key event
             if (cfg.closeToEsc) {
                 jQuery(window).bind("keydown.ax-modal", (function (e) {
-                    this.onkeyup(e || window.event, opts);
+                    this.onkeyup(e || window.event);
                 }).bind(this));
             }
+            jQuery(window).bind("resize.ax-modal", (function (e) {
+                this.align(e || window.event);
+            }).bind(this));
+        };
+
+        this.align = function(e){
+            if(!this.activeModal) return this;
+            var opts = self.modalConfig,
+                box = {
+                    width: opts.width,
+                    height: opts.height
+                };
+            //- position 정렬
+            if (typeof opts.position === "undefined" || opts.position === "center") {
+                box.top = window.innerHeight / 2 - box.height / 2;
+                box.left = window.innerWidth / 2 - box.width / 2;
+            }
+            else {
+                box.left = opts.position.left || 0;
+                box.top = opts.position.top || 0;
+            }
+            this.activeModal.css(box);
+            return this;
         };
         
-        this.onkeyup = function (e, opts, target, k) {
+        this.onkeyup = function (e) {
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
             }
@@ -188,6 +212,7 @@
                 opts = self.modalConfig;
                 this.activeModal.addClass("destroy");
                 jQuery(window).unbind("keydown.ax-modal");
+                jQuery(window).unbind("resize.ax-modal");
 
                 setTimeout((function () {
                     this.activeModal.remove();

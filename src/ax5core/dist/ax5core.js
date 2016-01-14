@@ -1578,6 +1578,7 @@
 		 * });
          * ```
          */
+
         function findParentNode(_target, cond) {
             if (_target) {
                 while ((function () {

@@ -76,10 +76,22 @@
 	}
 }
 
+
+@include keyframes(ax-dialog-destroy) {
+	from {
+		@include transform(scale(1));
+		opacity: 1.0;
+	}
+	to {
+		@include transform(scale(0.5));
+		opacity: 0.0;
+	}
+}
+
 // mixins --------------------------------------------- end
 
 .ax5-ui-dialog {
-	@include animation(ax-dialog 0.3s $ease-out-back);
+	@include animation(ax-dialog $ax5dialog-easing-time-open $ease-out-back);
 	@include transform(translateZ(0));
 
 	@include ax-dialog();
@@ -101,5 +113,9 @@
 	}
 	&.danger {
 		@include dialog-variant($ax5dialog-danger-text, $ax5dialog-danger-border, $ax5dialog-danger-heading-bg);
+	}
+
+	&.destroy {
+		@include animation(ax-dialog-destroy $ax5dialog-easing-time-close $ease-in-back forwards);
 	}
 }

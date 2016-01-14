@@ -133,13 +133,13 @@
 .ax5-ui-modal {
 	@include animation(ax-modal 0.7s linear both);
 	@include transform(translateZ(0px));
-	@include transition(all $ax5modal-easing-time $ease-in-back);
+	@include transition(all $ax5modal-easing-time-open $ease-in-back);
 
 	@include ax-modal();
 	@include ax-modal-section();
 	@include modal-variant();
 
 	&.destroy {
-		@include animation(ax-modal-destroy $ax5modal-easing-time $ease-in-back forwards);
+		@include animation(ax-modal-destroy $ax5modal-easing-time-close $ease-in-back forwards);
 	}
 }

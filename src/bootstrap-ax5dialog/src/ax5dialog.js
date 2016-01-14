@@ -32,7 +32,8 @@
                 msg: '',
                 lang: {
                     "ok": "ok", "cancel": "cancel"
-                }
+                },
+                animateTime: 250
             };
         }).apply(this, arguments);
 
@@ -238,7 +239,7 @@
             opts.id = (opts.id || cfg.id);
 
             box = {
-                width: opts.width || cfg.width
+                width: opts.width
             };
             jQuery(document.body).append(this.getContent(opts.id, opts));
 
@@ -246,16 +247,12 @@
             this.activeDialog.css({width: box.width});
 
             // dialog 높이 구하기 - 너비가 정해지면 높이가 변경 될 것.
-            box.height = this.activeDialog.height();
+            opts.height = box.height = this.activeDialog.height();
 
             //- position 정렬
             if (typeof opts.position === "undefined" || opts.position === "center") {
-                var w = window.innerWidth
-                    || document.documentElement.clientWidth
-                    || document.body.clientWidth;
-                var h = window.innerHeight
-                    || document.documentElement.clientHeight
-                    || document.body.clientHeight;
+                var w = window.innerWidth;
+                var h = window.innerHeight;
 
                 pos.top = h / 2 - box.height / 2;
                 pos.left = w / 2 - box.width / 2;
@@ -283,12 +280,36 @@
                 this.onKeyup(e || window.event, opts, callBack);
             }).bind(this));
 
+            jQuery(window).bind("resize.ax-dialog", (function (e) {
+                this.align(e || window.event);
+            }).bind(this));
+
             if (opts && opts.onStateChanged) {
                 that = {
                     state: "open"
                 };
                 opts.onStateChanged.call(that, that);
             }
+            return this;
+        };
+
+        this.align = function(e){
+            if(!this.activeDialog) return this;
+            var opts = self.dialogConfig,
+                box = {
+                    width: opts.width,
+                    height: opts.height
+                };
+            //- position 정렬
+            if (typeof opts.position === "undefined" || opts.position === "center") {
+                box.top = window.innerHeight / 2 - box.height / 2;
+                box.left = window.innerWidth / 2 - box.width / 2;
+            }
+            else {
+                box.left = opts.position.left || 0;
+                box.top = opts.position.top || 0;
+            }
+            this.activeDialog.css(box);
             return this;
         };
 
@@ -378,21 +399,23 @@
          * myDialog.close();
          * ```
          */
-        this.close = function () {
-            var
-                that = {},
-                opts = self.dialogConfig;
-
+        this.close = function (opts, that) {
             if (this.activeDialog) {
-                this.activeDialog.remove();
-                this.activeDialog = null;
+                opts = self.dialogConfig;
+                this.activeDialog.addClass("destroy");
                 jQuery(window).unbind("keydown.ax-dialog");
-                if (opts && opts.onStateChanged) {
-                    that = {
-                        state: "close"
-                    };
-                    opts.onStateChanged.call(that, that);
-                }
+                jQuery(window).unbind("resize.ax-dialog");
+
+                setTimeout((function () {
+                    this.activeDialog.remove();
+                    this.activeDialog = null;
+                    if (opts && opts.onStateChanged) {
+                        that = {
+                            state: "close"
+                        };
+                        opts.onStateChanged.call(that, that);
+                    }
+                }).bind(this), cfg.animateTime);
             }
             return this;
         }

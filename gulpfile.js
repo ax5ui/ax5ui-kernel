@@ -101,11 +101,13 @@ for (var k in PATHS) {
     var __p = PATHS[k];
     if (__p.isPlugin && __p.scss) {
         gulp.task(k + '-scss', (function (k, __p) {
-            gulp.src(PATHS[k].src + '/' + __p.scss)
-                .pipe(plumber({errorHandler: errorAlert}))
-                .pipe(sass({outputStyle: 'compressed'}))
-                .pipe(gulp.dest(PATHS[k].dest))
-                .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
+            return function () {
+                gulp.src(PATHS[k].src + '/' + __p.scss)
+                    .pipe(plumber({errorHandler: errorAlert}))
+                    .pipe(sass({outputStyle: 'compressed'}))
+                    .pipe(gulp.dest(PATHS[k].dest))
+                    .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
+            }
         })(k, __p));
     }
 }
