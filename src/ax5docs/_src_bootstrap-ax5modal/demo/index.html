@@ -63,7 +63,8 @@
             </ax5docs-js>
 
             <p>
-                In <code>"setConfig"</code> method modal instance, it can be a default setting. Fixed setting, can be changed by passing the necessary settings when not is fixed, it becomes <code>"open"</code>.
+                you can set default configuration with <code>setConfig</code> method on ModalInstance.
+                you can pass additional configuration, when opening the modal.
                 <!--
                 모달인스턴스에 setConfig메소드로 기본 설정을 할수 있다.
                 정해진 설정은 고정되는 것이 아니고 open이 될 때 원하는 설정을 전달하여 변경 할 수 있다.
@@ -72,8 +73,10 @@
 
             <p>
                 The first argument of <code>modal.open</code> in the example, the set value (object), the second argument, using the callBack function.<br/>
-                In the second argument, <code>"this"</code> is <code>"state, width, height, $..."</code> is included, $ are included jQuery object of modal DOM elements made in the new.<br/>
-                <br/>
+                The second argument's 'this' directive contains modal attribute state, width, height and $ attributes.
+            </p>
+
+            <p>
                 By using the passed jQuery object, it is possible to extend the desired function freely.
 
                 <!--

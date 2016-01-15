@@ -226,6 +226,25 @@
             }
             return this;
         }
+
+        /**
+         * setCSS
+         * @method ax5.ui.modal.css
+         * @param {Object} css -
+         * @returns {ax5.ui.modal}
+         */
+        this.css = function(css){
+            if(this.activeModal){
+                this.activeModal.css(css);
+                if(css.width){
+                    self.modalConfig.width = this.activeModal.width();
+                }
+                if(css.height){
+                    self.modalConfig.height = this.activeModal.height();
+                }
+            }
+            return this;
+        }
     };
     //== UI Class
     

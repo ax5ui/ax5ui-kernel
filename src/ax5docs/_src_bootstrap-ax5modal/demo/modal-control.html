@@ -49,7 +49,7 @@
                         var modal = new ax5.ui.modal();
                         modal.setConfig({
                             onStateChanged: function () {
-                                // use mask
+                                // mask
                                 if (this.state === "open") {
                                     mask.open();
                                 }
@@ -61,16 +61,36 @@
 
                         $('#modal-open').click(function () {
                             modal.open({}, function () {
-                                // check your browser console
-                                console.log(this);
 
                                 var btn = jQuery(
-                                    '<button class="btn btn-default" type="button" style="margin-top: 100px;">' +
-                                    'Modal Close</button>');
-                                btn.click(function () {
-                                    modal.close();
-                                });
-                                this.$.body.append(btn);
+                                    '<button class="btn btn-default" type="button">' +
+                                    'Modal Close</button>')
+                                    .click(function () {
+                                        modal.close();
+                                    });
+
+                                var btnResize = jQuery(
+                                    '<button class="btn btn-default" type="button">' +
+                                    'Resize</button>')
+                                    .click(function () {
+                                        modal.css({width:500, height: 500});
+                                        modal.align();
+                                    });
+
+                                var btnRestore = jQuery(
+                                    '<button class="btn btn-default" type="button">' +
+                                    'Restore</button>')
+                                    .click(function () {
+                                        modal.css({width:300, height: 400});
+                                        modal.align();
+                                    });
+
+                                this.$.body
+                                    .css({padding: 50})
+                                    .append(btn)
+                                    .append(btnResize)
+                                    .append(btnRestore);
+
                             });
                         });
 

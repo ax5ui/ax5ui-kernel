@@ -12,7 +12,7 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<link rel="shortcut icon" href="../../assets/ax5favicon.ico" type="image/x-icon">
-	<title>ax5ui / bootstrap-ax5modal : Basic Modal</title>
+	<title>ax5ui / bootstrap-ax5modal : Modal Control</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -40,6 +40,9 @@
 	
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5modal/ax5modal.css">
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5modal/ax5modal.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
     
 </head>
 <body>
@@ -122,7 +125,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5modal/demo/index.html">Basic Modal</a></li><li ><a href="/bootstrap-ax5modal/demo/modal-control.html">Modal Control</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5modal/demo/index.html">Basic Modal</a></li><li  class='active'><a href="/bootstrap-ax5modal/demo/modal-control.html">Modal Control</a></li></ul>
     
 					</div>
 				</div>
@@ -131,83 +134,124 @@
 
         
         <section class="ax5docs-section">
-            <h1>Basic Modal</h1>
+            <h1>Modal Control</h1>
 
             <p>
-
+                Please add ax5mask plug-in html document.
+                You can use the ax5mask If you add a plug-in to the page.
             </p>
+
+            <pre class="prettyprint linenums lang-html">&lt;link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5mask/ax5mask.css">
+&lt;script type="text/javascript" src="bower_components/bootstrap-ax5mask/ax5mask.min.js">&lt;/script></pre>
 
             <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
 
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
+        var mask = new ax5.ui.mask();
         var modal = new ax5.ui.modal();
         modal.setConfig({
             onStateChanged: function () {
-                // console.log(this);
+                // mask
+                if (this.state === "open") {
+                    mask.open();
+                }
+                else if (this.state === "close") {
+                    mask.close();
+                }
             }
         });
 
         $('#modal-open').click(function () {
             modal.open({}, function () {
-                // check your browser console
-                console.log(this);
 
                 var btn = jQuery(
-                    '&lt;button class="btn btn-default" type="button" style="margin-top: 100px;">' +
-                    'Modal Close&lt;/button>');
-                btn.click(function () {
-                    modal.close();
-                });
-                this.$.body.append(btn);
+                    '&lt;button class="btn btn-default" type="button">' +
+                    'Modal Close&lt;/button>')
+                    .click(function () {
+                        modal.close();
+                    });
+
+                var btnResize = jQuery(
+                    '&lt;button class="btn btn-default" type="button">' +
+                    'Resize&lt;/button>')
+                    .click(function () {
+                        modal.css({width:500, height: 500});
+                        modal.align();
+                    });
+
+                var btnRestore = jQuery(
+                    '&lt;button class="btn btn-default" type="button">' +
+                    'Restore&lt;/button>')
+                    .click(function () {
+                        modal.css({width:300, height: 400});
+                        modal.align();
+                    });
+
+                this.$.body
+                    .css({padding: 50})
+                    .append(btn)
+                    .append(btnResize)
+                    .append(btnRestore);
+
             });
         });
 
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
+        var mask = new ax5.ui.mask();
         var modal = new ax5.ui.modal();
         modal.setConfig({
             onStateChanged: function () {
-                // console.log(this);
+                // mask
+                if (this.state === "open") {
+                    mask.open();
+                }
+                else if (this.state === "close") {
+                    mask.close();
+                }
             }
         });
 
         $('#modal-open').click(function () {
             modal.open({}, function () {
-                // check your browser console
-                console.log(this);
 
                 var btn = jQuery(
-                    '<button class="btn btn-default" type="button" style="margin-top: 100px;">' +
-                    'Modal Close</button>');
-                btn.click(function () {
-                    modal.close();
-                });
-                this.$.body.append(btn);
+                    '<button class="btn btn-default" type="button">' +
+                    'Modal Close</button>')
+                    .click(function () {
+                        modal.close();
+                    });
+
+                var btnResize = jQuery(
+                    '<button class="btn btn-default" type="button">' +
+                    'Resize</button>')
+                    .click(function () {
+                        modal.css({width:500, height: 500});
+                        modal.align();
+                    });
+
+                var btnRestore = jQuery(
+                    '<button class="btn btn-default" type="button">' +
+                    'Restore</button>')
+                    .click(function () {
+                        modal.css({width:300, height: 400});
+                        modal.align();
+                    });
+
+                this.$.body
+                    .css({padding: 50})
+                    .append(btn)
+                    .append(btnResize)
+                    .append(btnRestore);
+
             });
         });
 
     });
 </script></script>
-
-            <p>
-                you can set default configuration with <code>setConfig</code> method on ModalInstance.
-                you can pass additional configuration, when opening the modal.
-                
-            </p>
-
-            <p>
-                The first argument of <code>modal.open</code> in the example, the set value (object), the second argument, using the callBack function.<br>
-                The second argument's 'this' directive contains modal attribute state, width, height and $ attributes.
-            </p>
-
-            <p>
-                By using the passed jQuery object, it is possible to extend the desired function freely.
-
-                
-            </p>
 
         </section>
 

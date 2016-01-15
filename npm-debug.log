@@ -1,0 +1,104 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'publish',
+1 verbose cli   'src/bootstrap-ax5toast/' ]
+2 info using npm@2.14.7
+3 info using node@v4.2.2
+4 verbose publish [ 'src/bootstrap-ax5toast/' ]
+5 silly cache add args [ 'src/bootstrap-ax5toast/', null ]
+6 verbose cache add spec src/bootstrap-ax5toast/
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: 'src/bootstrap-ax5toast/',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: 'src/bootstrap-ax5toast/',
+7 silly cache add   spec: '/Users/tom/Works-OSS/ax5ui/ax5ui-kernel/src/bootstrap-ax5toast',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/tom/.npm/bootstrap-ax5toast/0.1.0/package.tgz not in flight; packing
+9 verbose tar pack [ '/Users/tom/.npm/bootstrap-ax5toast/0.1.0/package.tgz',
+9 verbose tar pack   '/Users/tom/Works-OSS/ax5ui/ax5ui-kernel/src/bootstrap-ax5toast' ]
+10 verbose tarball /Users/tom/.npm/bootstrap-ax5toast/0.1.0/package.tgz
+11 verbose folder /Users/tom/Works-OSS/ax5ui/ax5ui-kernel/src/bootstrap-ax5toast
+12 info prepublish bootstrap-ax5toast@0.1.0
+13 verbose addLocalTarball adding from inside cache /Users/tom/.npm/bootstrap-ax5toast/0.1.0/package.tgz
+14 silly cache afterAdd bootstrap-ax5toast@0.1.0
+15 verbose afterAdd /Users/tom/.npm/bootstrap-ax5toast/0.1.0/package/package.json not in flight; writing
+16 verbose afterAdd /Users/tom/.npm/bootstrap-ax5toast/0.1.0/package/package.json written
+17 silly publish { name: 'bootstrap-ax5toast',
+17 silly publish   version: '0.1.0',
+17 silly publish   description: 'A toast plugin that works with Bootstrap & jQuery',
+17 silly publish   license: 'MIT',
+17 silly publish   repository:
+17 silly publish    { type: 'git',
+17 silly publish      url: 'git+https://github.com/ax5ui/bootstrap-ax5toast.git' },
+17 silly publish   author: { name: 'Thomas Jang', email: 'tom@axisj.com', url: 'ax5.io' },
+17 silly publish   keywords:
+17 silly publish    [ 'bootstrap',
+17 silly publish      'jquery',
+17 silly publish      'ax5ui',
+17 silly publish      'plugin',
+17 silly publish      'bootstrap jQuery plugins',
+17 silly publish      'dialog',
+17 silly publish      'bootstrap-ax5dialog',
+17 silly publish      'javascript ui' ],
+17 silly publish   dependencies: { ax5core: '>=0.4.0' },
+17 silly publish   readme: '[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)\n\n# bootstrap-ax5toast\n\n> *Dependencies*\n> * _[jQuery 1.X+](http://jquery.com/)_\n> * _[ax5core](http://ax5.io/ax5core)_\n> * _[bootstrap](http://getbootstrap.com/)_\n\n\n### Install by bower\n```sh\nbower install bootstrap-ax5toast\n```\n[bower](http://bower.io/#install-bower) is web front-end package manager.\nusing the `bower`, when you install the plug-in is installed to resolve the plug-in dependencies under the `bower_components` folder.\n(You can change the folder location. [.bowerrc](http://bower.io/docs/config/#bowerrc-specification) )\n\nIt is recommended that you install by using the `bower`. \nIf you\'ve never used a bower is, you will be able to be used for [http://bower.io/#install-bower](http://bower.io/#install-bower).\n\n### Download code\n- [ax5core Github releases](https://github.com/ax5ui/ax5core/releases)\n- [bootstrap-ax5toast Github releases](https://github.com/ax5ui/bootstrap-ax5toast/releases)\n\n\n### Insert the "ax5toast" in the HTML HEAD.\n\nLocation of the folder can be determined freely in your project. But be careful not to accidentally caused\nexactly the path.\n```html\n<html>\n    <head>\n        <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5toast/dist/ax5toast.css" />\n        <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>\n        <script type="text/javascript" src="bower_components/ax5core/dist/ax5core.min.js"></script>\n        <script type="text/javascript" src="bower_components/bootstrap-ax5toast/dist/ax5toast.min.js"></script>\n    </head>\n<body>\n....\n</body>\n</html>\n```\n\n### Basic Usages\n```js\nvar myToast = new ax5.ui.toast();\nmyToast.setConfig({\n    icon: \'<i class="fa fa-bug"></i>\',\n    containerPosition: "bottom-right",\n    closeIcon: \'<i class="fa fa-times"></i>\'\n});\n\nmyToast.push(\'Toast message\');\n```\n\n- - -\n\n### Install by npm\nIf you do not use the bower, it can be downloaded by using the npm as second best.\nIn npm, so pile on the package manager for the front end, you need to solve the problem of plug-in dependencies.\n\n```sh\nnpm install jquery\nnpm install ax5core\nnpm install bootstrap-ax5toast\n```\n\nAfter you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.\nIf the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.\n\n- - -\n\n\n### Preview\n- [See Demostration](http://ax5.io/bootstrap-ax5toast/demo/index.html)\n\nIf you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)',
+17 silly publish   readmeFilename: 'README.md',
+17 silly publish   bugs: { url: 'https://github.com/ax5ui/bootstrap-ax5toast/issues' },
+17 silly publish   homepage: 'https://github.com/ax5ui/bootstrap-ax5toast#readme',
+17 silly publish   _id: 'bootstrap-ax5toast@0.1.0',
+17 silly publish   scripts: {},
+17 silly publish   _shasum: 'c59ea2d731ae35c8fba9f92760545e95c69ea211',
+17 silly publish   _from: 'src/bootstrap-ax5toast',
+17 silly publish   _resolved: 'file:src/bootstrap-ax5toast' }
+18 verbose getPublishConfig undefined
+19 silly mapToRegistry name bootstrap-ax5toast
+20 silly mapToRegistry using default registry
+21 silly mapToRegistry registry https://registry.npmjs.org/
+22 silly mapToRegistry uri https://registry.npmjs.org/bootstrap-ax5toast
+23 verbose publish registryBase https://registry.npmjs.org/
+24 silly publish uploading /Users/tom/.npm/bootstrap-ax5toast/0.1.0/package.tgz
+25 verbose request uri https://registry.npmjs.org/bootstrap-ax5toast
+26 verbose request sending authorization for write operation
+27 info attempt registry request try #1 at 12:36:19 AM
+28 verbose request using bearer token for auth
+29 verbose request id 11ccd7172c6280a8
+30 http request PUT https://registry.npmjs.org/bootstrap-ax5toast
+31 http 403 https://registry.npmjs.org/bootstrap-ax5toast
+32 verbose headers { 'content-type': 'application/json',
+32 verbose headers   'cache-control': 'max-age=300',
+32 verbose headers   'content-length': '95',
+32 verbose headers   'accept-ranges': 'bytes',
+32 verbose headers   date: 'Thu, 14 Jan 2016 15:36:21 GMT',
+32 verbose headers   via: '1.1 varnish',
+32 verbose headers   connection: 'keep-alive',
+32 verbose headers   'x-served-by': 'cache-nrt6121-NRT',
+32 verbose headers   'x-cache': 'MISS',
+32 verbose headers   'x-cache-hits': '0',
+32 verbose headers   'x-timer': 'S1452785780.275666,VS0,VE1314' }
+33 verbose request invalidating /Users/tom/.npm/registry.npmjs.org/bootstrap-ax5toast on PUT
+34 error publish Failed PUT 403
+35 verbose stack Error: "You cannot publish over the previously published version 0.1.0." : bootstrap-ax5toast
+35 verbose stack     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+35 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+35 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+35 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:198:22)
+35 verbose stack     at emitTwo (events.js:87:13)
+35 verbose stack     at Request.emit (events.js:172:7)
+35 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1063:14)
+35 verbose stack     at emitOne (events.js:82:20)
+35 verbose stack     at Request.emit (events.js:169:7)
+35 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1009:12)
+36 verbose statusCode 403
+37 verbose pkgid bootstrap-ax5toast
+38 verbose cwd /Users/tom/Works-OSS/ax5ui/ax5ui-kernel
+39 error Darwin 15.2.0
+40 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "publish" "src/bootstrap-ax5toast/"
+41 error node v4.2.2
+42 error npm  v2.14.7
+43 error code E403
+44 error "You cannot publish over the previously published version 0.1.0." : bootstrap-ax5toast
+45 error If you need help, you may report this error at:
+45 error     <https://github.com/npm/npm/issues>
+46 verbose exit [ 1, true ]
