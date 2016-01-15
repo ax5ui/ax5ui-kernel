@@ -133,7 +133,7 @@
 .ax5-ui-modal {
 	@include animation(ax-modal 0.7s linear both);
 	@include transform(translateZ(0px));
-	//@include transition(all $ax5modal-easing-time-open $ease-in-back);
+	//@include transition(all $ax5modal-easing-time-open linear);
 
 	@include ax-modal();
 	@include ax-modal-section();
