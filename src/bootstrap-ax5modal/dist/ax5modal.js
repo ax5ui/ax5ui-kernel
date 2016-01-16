@@ -26,6 +26,10 @@
         this.main = (function () {
             if (_SUPER_) _SUPER_.call(this); // 부모호출
             this.config = {
+                position: {
+                    left: "center",
+                    top: "middle"
+                },
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
                 theme: 'default',
                 width: 300,
@@ -119,16 +123,7 @@
             }
             
             //- position 정렬
-            if (typeof opts.position === "undefined" || opts.position === "center") {
-                //console.log(window.innerWidth, box.height);
-                box.top = window.innerHeight / 2 - box.height / 2;
-                box.left = window.innerWidth / 2 - box.width / 2;
-            }
-            else {
-                box.left = opts.position.left || 0;
-                box.top = opts.position.top || 0;
-            }
-            this.activeModal.css(box);
+            this.align();
 
             that = {
                 id: opts.id,
@@ -167,26 +162,49 @@
                 }).bind(this));
             }
             jQuery(window).bind("resize.ax-modal", (function (e) {
-                this.align(e || window.event);
+                this.align(null, e || window.event);
             }).bind(this));
         };
 
-        this.align = function(e){
+        this.align = function(position, e){
             if(!this.activeModal) return this;
             var opts = self.modalConfig,
                 box = {
                     width: opts.width,
                     height: opts.height
                 };
+
+            if(position){
+                opts.position = position;
+            }
+
             //- position 정렬
-            if (typeof opts.position === "undefined" || opts.position === "center") {
-                box.top = window.innerHeight / 2 - box.height / 2;
+            if(opts.position.left == "left"){
+                box.left = 0;
+            }
+            else if(opts.position.left == "right") {
+                box.left = window.innerWidth - box.width;
+            }
+            else if(opts.position.left == "center") {
                 box.left = window.innerWidth / 2 - box.width / 2;
             }
             else {
                 box.left = opts.position.left || 0;
+            }
+
+            if(opts.position.top == "top"){
+                box.top = 0;
+            }
+            else if(opts.position.top == "bottom") {
+                box.top = window.innerHeight - box.height;
+            }
+            else if(opts.position.top == "middle") {
+                box.top = window.innerHeight / 2 - box.height / 2;
+            }
+            else {
                 box.top = opts.position.top || 0;
             }
+
             this.activeModal.css(box);
             return this;
         };
