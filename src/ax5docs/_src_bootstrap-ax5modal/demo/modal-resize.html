@@ -1,0 +1,108 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>2</sort>
+
+    <id>resize</id>
+    <title>Modal Resize</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Modal Resize" parent-id="demo"
+            page-id="resize" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="resize"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5modal/ax5modal.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5modal/ax5modal.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+        <!-- doc-js Basic Alert -->
+        <section class="ax5docs-section">
+            <h1>Modal Resize</h1>
+
+            <p>
+                Please add ax5mask plug-in html document.
+                You can use the ax5mask If you add a plug-in to the page.
+            </p>
+
+            <ax5docs-html>
+                <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5mask/ax5mask.css"/>
+                <script type="text/javascript" src="bower_components/bootstrap-ax5mask/ax5mask.min.js"></script>
+            </ax5docs-html>
+
+            <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var mask = new ax5.ui.mask();
+                        var modal = new ax5.ui.modal();
+                        modal.setConfig({
+                            onStateChanged: function () {
+                                // mask
+                                if (this.state === "open") {
+                                    mask.open();
+                                }
+                                else if (this.state === "close") {
+                                    mask.close();
+                                }
+                            }
+                        });
+
+                        $('#modal-open').click(function () {
+                            modal.open({}, function () {
+
+                                var btn = jQuery(
+                                    '<button class="btn btn-primary" type="button">' +
+                                    'Modal Close</button>')
+                                    .click(function () {
+                                        modal.close();
+                                    });
+
+                                var btnResize = jQuery(
+                                    '<button class="btn btn-default" type="button">' +
+                                    'Resize</button>')
+                                    .click(function () {
+                                        modal.css({width:500, height: 500});
+                                        modal.align();
+                                    });
+
+                                var btnRestore = jQuery(
+                                    '<button class="btn btn-default" type="button">' +
+                                    'Restore</button>')
+                                    .click(function () {
+                                        modal.css({width:300, height: 400});
+                                        modal.align();
+                                    });
+
+                                this.$.body
+                                    .css({padding: 50})
+                                    .append(btn)
+                                    .append('<hr/>')
+                                    .append(btnResize)
+                                    .append(btnRestore);
+
+                            });
+                        });
+
+                    });
+                </script>
+            </ax5docs-js>
+
+        </section>
+
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>

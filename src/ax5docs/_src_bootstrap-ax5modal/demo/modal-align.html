@@ -1,17 +1,17 @@
 <tmpl-metadata>
     <parentId>demo</parentId>
     <parent>Demo</parent>
-    <sort>2</sort>
+    <sort>3</sort>
 
-    <id>control</id>
-    <title>Modal Control</title>
+    <id>align</id>
+    <title>Modal Align</title>
     <desc></desc>
 </tmpl-metadata>
 
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Modal Control" parent-id="demo"
-            page-id="control" body-style="sub-page" with-menu="true">
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Modal Align" parent-id="demo"
+            page-id="align" body-style="sub-page" with-menu="true">
     <layout-put into="docs-menu">
-        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="control"></ax5docs-get-sub-list>
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="align"></ax5docs-get-sub-list>
     </layout-put>
     <layout-put into="visual">
         <include template="../_inc/include.html" id="demo-visual"/>
@@ -27,17 +27,7 @@
 
         <!-- doc-js Basic Alert -->
         <section class="ax5docs-section">
-            <h1>Modal Control</h1>
-
-            <p>
-                Please add ax5mask plug-in html document.
-                You can use the ax5mask If you add a plug-in to the page.
-            </p>
-
-            <ax5docs-html>
-                <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5mask/ax5mask.css"/>
-                <script type="text/javascript" src="bower_components/bootstrap-ax5mask/ax5mask.min.js"></script>
-            </ax5docs-html>
+            <h1>Modal Align</h1>
 
             <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
 
@@ -49,13 +39,7 @@
                         var modal = new ax5.ui.modal();
                         modal.setConfig({
                             onStateChanged: function () {
-                                // mask
-                                if (this.state === "open") {
-                                    mask.open();
-                                }
-                                else if (this.state === "close") {
-                                    mask.close();
-                                }
+
                             }
                         });
 
@@ -63,7 +47,7 @@
                             modal.open({}, function () {
 
                                 var btn = jQuery(
-                                    '<button class="btn btn-default" type="button">' +
+                                    '<button class="btn btn-primary" type="button">' +
                                     'Modal Close</button>')
                                     .click(function () {
                                         modal.close();
@@ -71,23 +55,22 @@
 
                                 var btnResize = jQuery(
                                     '<button class="btn btn-default" type="button">' +
-                                    'Resize</button>')
+                                    'Align Left</button>')
                                     .click(function () {
-                                        modal.css({width:500, height: 500});
-                                        modal.align();
+                                        modal.align({left:"left", top:"middle"});
                                     });
 
                                 var btnRestore = jQuery(
                                     '<button class="btn btn-default" type="button">' +
-                                    'Restore</button>')
+                                    'Align Right</button>')
                                     .click(function () {
-                                        modal.css({width:300, height: 400});
-                                        modal.align();
+                                        modal.align({left:"right", top:"middle"});
                                     });
 
                                 this.$.body
                                     .css({padding: 50})
                                     .append(btn)
+                                    .append('<hr/>')
                                     .append(btnResize)
                                     .append(btnRestore);
 
