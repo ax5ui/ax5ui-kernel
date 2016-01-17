@@ -28,7 +28,8 @@
             this.config = {
                 position: {
                     left: "center",
-                    top: "middle"
+                    top: "middle",
+                    margin: 10
                 },
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
                 theme: 'default',
@@ -65,12 +66,12 @@
             po.push('<div id="' + modalId + '" data-modal-els="root" class="ax5-ui-modal ' + opts.theme + '">');
             po.push('<div class="ax-modal-body" data-modal-els="body">');
             // use iframe
-            if (opts.http) {
+            if (opts.iframe) {
                 po.push('<iframe name="' + modalId + '-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe"></iframe>');
                 po.push('<form name="' + modalId + '-form" data-modal-els="iframe-form">');
                 po.push('<input type="hidden" name="modalId" value="' + modalId + '" />');
-                for (var p in opts.http.param) {
-                    po.push('<input type="hidden" name="' + p + '" value="' + opts.http.param[p] + '" />');
+                for (var p in opts.iframe.param) {
+                    po.push('<input type="hidden" name="' + p + '" value="' + opts.iframe.param[p] + '" />');
                 }
                 po.push('</form>');
             }
@@ -117,7 +118,7 @@
                 "body": this.activeModal.find('[data-modal-els="body"]')
             };
             
-            if (opts.http) {
+            if (opts.iframe) {
                 this.$["iframe"] = this.activeModal.find('[data-modal-els="iframe"]');
                 this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
             }
@@ -134,13 +135,13 @@
                 $: this.$
             };
 
-            if (opts.http) {
+            if (opts.iframe) {
                 this.$["iframe"].css({height: box.height - cfg.heading.height});
                 
                 // iframe content load
-                this.$["iframe-form"].attr({"method": opts.http.method});
+                this.$["iframe-form"].attr({"method": opts.iframe.method});
                 this.$["iframe-form"].attr({"target": opts.id + "-frame"});
-                this.$["iframe-form"].attr({"action": opts.http.url});
+                this.$["iframe-form"].attr({"action": opts.iframe.url});
                 this.$["iframe"].on("load", (function () {
                     if (opts && opts.onStateChanged) {
                         that.state = "load";
@@ -175,31 +176,32 @@
                 };
 
             if(position){
-                opts.position = position;
+                jQuery.extend(true, opts.position, position);
             }
 
             //- position 정렬
             if(opts.position.left == "left"){
-                box.left = 0;
+                box.left = (opts.position.margin||0);
             }
             else if(opts.position.left == "right") {
-                box.left = window.innerWidth - box.width;
+                // window.innerWidth;
+                box.left = jQuery(window).width() - box.width - (opts.position.margin||0);
             }
             else if(opts.position.left == "center") {
-                box.left = window.innerWidth / 2 - box.width / 2;
+                box.left = jQuery(window).width() / 2 - box.width / 2;
             }
             else {
                 box.left = opts.position.left || 0;
             }
 
             if(opts.position.top == "top"){
-                box.top = 0;
+                box.top = (opts.position.margin||0);
             }
             else if(opts.position.top == "bottom") {
-                box.top = window.innerHeight - box.height;
+                box.top = jQuery(window).height() - box.height - (opts.position.margin||0);
             }
             else if(opts.position.top == "middle") {
-                box.top = window.innerHeight / 2 - box.height / 2;
+                box.top = jQuery(window).height() / 2 - box.height / 2;
             }
             else {
                 box.top = opts.position.top || 0;
