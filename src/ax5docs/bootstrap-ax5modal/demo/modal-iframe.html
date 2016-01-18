@@ -124,7 +124,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li ><a href="/bootstrap-ax5modal/demo/index.html">Basic Modal</a></li><li ><a href="/bootstrap-ax5modal/demo/modal-resize.html">Modal Resize</a></li><li ><a href="/bootstrap-ax5modal/demo/modal-align.html">Modal Align</a></li><li  class='active'><a href="/bootstrap-ax5modal/demo/modal-iframe.html">Iframe</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5modal/demo/index.html">Basic Modal</a></li><li ><a href="/bootstrap-ax5modal/demo/modal-resize.html">Modal Resize</a></li><li ><a href="/bootstrap-ax5modal/demo/modal-align.html">Modal Align</a></li><li  class='active'><a href="/bootstrap-ax5modal/demo/modal-iframe.html">Iframe</a></li><li ><a href="/bootstrap-ax5modal/demo/modal-config.html">Config</a></li></ul>
     
 					</div>
 				</div>
@@ -152,6 +152,15 @@
                     method: "get",
                     url: "modal-iframe-content.html",
                     param: "callBack=modalCallBack"
+                },
+                onStateChanged: function () {
+                    // mask
+                    if (this.state === "open") {
+                        mask.open();
+                    }
+                    else if (this.state === "close") {
+                        mask.close();
+                    }
                 }
             }, function () {
 
@@ -174,6 +183,15 @@
                     method: "get",
                     url: "modal-iframe-content.html",
                     param: "callBack=modalCallBack"
+                },
+                onStateChanged: function () {
+                    // mask
+                    if (this.state === "open") {
+                        mask.open();
+                    }
+                    else if (this.state === "close") {
+                        mask.close();
+                    }
                 }
             }, function () {
 

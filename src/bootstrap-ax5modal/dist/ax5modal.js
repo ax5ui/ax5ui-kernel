@@ -61,9 +61,14 @@
         
         this.getContent = function (modalId, opts) {
             var
-                po = [];
+                po = [],
+                styles = [];
+
+            if(opts.zIndex){
+                styles.push("z-index:" + opts.zIndex);
+            }
             
-            po.push('<div id="' + modalId + '" data-modal-els="root" class="ax5-ui-modal ' + opts.theme + '">');
+            po.push('<div id="' + modalId + '" data-modal-els="root" class="ax5-ui-modal ' + opts.theme + '" style="' + styles.join(";") + '">');
             po.push('<div class="ax-modal-body" data-modal-els="body">');
             // use iframe
             if (opts.iframe) {
@@ -160,7 +165,7 @@
             }
 
             // bind key event
-            if (cfg.closeToEsc) {
+            if (opts.closeToEsc) {
                 jQuery(window).bind("keydown.ax-modal", (function (e) {
                     this.onkeyup(e || window.event);
                 }).bind(this));
@@ -264,6 +269,7 @@
                 }
                 if (css.height) {
                     self.modalConfig.height = this.activeModal.height();
+                    if(this.$["iframe"]) this.$["iframe"].css({height: self.modalConfig.height});
                 }
             }
             return this;

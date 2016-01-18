@@ -123,56 +123,43 @@
 					
         <h1>Basic Usage</h1>
 <blockquote>
-<p>toast is a UI that can be used as an alternative means of window.alert, window.confirm and window.prompt</p>
+<p>Modal UI, hold does not exceed the current page, you can use in order to process a simple user input and information. In some cases, by the other page so as to output in the modal, it can also handle the task of more diverse forms.</p>
 </blockquote>
 <h2>setConfig()</h2>
 <p><code>setConfig([options])</code>
-You define the default settings for the toast. Create a ax5.ui.toast instance, using the setConfig method in that instance, you can define a default value.</p>
-<pre class="prettyprint linenums lang-js"><code>var myToast = new ax5.ui.toast();
-myToast.set_config({
-    msg: &quot;String&quot;,
-    theme: &quot;String&quot;,
-    width: &quot;Number&quot;, 
-    icon: &quot;String&quot;,
-    closeIcon: &quot;String&quot;,
+You define the default settings for the modal. Create a ax5.ui.modal instance, using the setConfig method in that instance, you can define a default value.</p>
+<pre class="prettyprint linenums lang-js"><code>var myModal = new ax5.ui.modal();
+myModal.set_config({
+    width: &quot;Number&quot;,
+    height: &quot;Number&quot;,
+    position: {
+        left: &quot;left|center|right|Number&quot;, 
+        top: &quot;top|middle|bottom|Number&quot;, 
+        margin: &quot;Number&quot;
+    },
+    iframe: {
+        method: &quot;get|post&quot;, 
+        url: &quot;String&quot;, 
+        param: &quot;paramString|Object&quot;
+    },
+    closeToEsc: &quot;Boolean&quot;,
     onStateChanged: &quot;Function&quot;,
-    displayTime: &quot;Number&quot;,
     animateTime: &quot;Number&quot;,
-    containerPosition: &quot;String&quot;,
-    lang: &quot;Object&quot;
+    zIndex: &quot;Number&quot;
 });
 </code></pre>
-<h3>msg</h3>
-<p>Type: <code>String</code></p>
-<p>Title of toast.</p>
-<h3>theme</h3>
-<p>Type: <code>String</code>  [default: default]</p>
-<p>Theme of toast, ax5modal themes using six colors defined by the bootstrap is provided.</p>
 <h3>width</h3>
 <p>Type: <code>Number</code> [default: 300]</p>
-<p>Toast width</p>
-<h3>icon</h3>
-<p>Type: <code>String</code></p>
-<h3>closeIcon</h3>
-<p>Type: <code>String</code></p>
+<p>Modal width</p>
+<h3>height</h3>
+<p>Type: <code>Number</code> [default: 400]</p>
+<p>Modal height</p>
 <h3>onStateChanged</h3>
 <p>Type: <code>Function</code></p>
-<p>onStateChanged function is executed when the toast of the state is changed,
+<p>onStateChanged function is executed when the modal of the state is changed,
 this.state state value is passed to this time onStateChanged function.</p>
-<h3>displayTime</h3>
-<p>Type: <code>Number</code> [default : 3000]</p>
 <h3>animateTime</h3>
 <p>Type: <code>Number</code> [default : 300]</p>
-<h3>containerPosition</h3>
-<p>Type: <code>String</code> [top-left|top-right|bottom-left|bottom-right]</p>
-<h3>lang</h3>
-<p>Type: <code>Object</code></p>
-<pre class="prettyprint linenums lang-js"><code>myToast.setConfig({
-    lang: {
-        &quot;ok&quot;: &quot;확인&quot;
-    }
-});
-</code></pre>
 <hr>
 <h2>push()</h2>
 <p><code>push(String|Options[, callBack])</code></p>

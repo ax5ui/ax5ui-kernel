@@ -48,6 +48,10 @@
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
+
+        parent.modal.css({height: $(document.body).height() + 10});
+        parent.modal.align();
+
         var param = ax5.util.param( ax5.info.urlUtil().param );
         $("#modal-close").click(function(){
            parent[param.callBack]();
@@ -55,6 +59,10 @@
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
+
+        parent.modal.css({height: $(document.body).height() + 10});
+        parent.modal.align();
+
         var param = ax5.util.param( ax5.info.urlUtil().param );
         $("#modal-close").click(function(){
            parent[param.callBack]();
@@ -62,6 +70,12 @@
     });
 </script></script>
 
+            <p>
+                When you click the "Modal Close" button, you can call the "parent [callBack]" function in the parameter "callBack" that is passed from the "parent", to run the modal.close.
+            </p>
+            <p>
+                If you are using a server script, it is possible to call the modal content page POST, the received parameters in the server scripts can also be controlled in the same way.
+            </p>
         </section>
 
     

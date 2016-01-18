@@ -58,13 +58,17 @@
         this.init = function () {
             // after set_config();
             self.containerId = ax5.getGuid();
+            var styles = [];
+            if(cfg.zIndex){
+                styles.push("z-index:" + cfg.zIndex);
+            }
             jQuery(document.body).append('<div class="ax5-ui-toast-container ' + cfg.containerPosition + '" data-toast-container="' +
-                '' + self.containerId + '"></div>');
+                '' + self.containerId + '" style="' + styles.join(";") + '"></div>');
             this.toastContainer = jQuery('[data-toast-container="' + self.containerId + '"]');
         };
         
         this.push = function (opts, callBack) {
-            if(!self.containerId){
+            if (!self.containerId) {
                 this.init();
             }
             if (U.isString(opts)) {
@@ -85,7 +89,7 @@
         };
         
         this.confirm = function (opts, callBack) {
-            if(!self.containerId){
+            if (!self.containerId) {
                 this.init();
             }
             if (U.isString(opts)) {
@@ -149,9 +153,10 @@
                 width: opts.width
             };
 
-            if(U.left(cfg.containerPosition, '-') == 'bottom'){
+            if (U.left(cfg.containerPosition, '-') == 'bottom') {
                 this.toastContainer.append(this.getContent(opts.id, opts));
-            }else{
+            }
+            else {
                 this.toastContainer.prepend(this.getContent(opts.id, opts));
             }
 

@@ -1,0 +1,123 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>4</sort>
+
+    <id>config</id>
+    <title>Config</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Config" parent-id="demo"
+            page-id="config" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="config"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5modal/ax5modal.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5modal/ax5modal.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5toast/ax5toast.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5toast/ax5toast.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+        <!-- doc-js Basic Alert -->
+        <section class="ax5docs-section">
+            <h1>Config</h1>
+
+            <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    var modal = new ax5.ui.modal();
+                    var toast = new ax5.ui.toast();
+
+                    toast.setConfig({
+                        theme: "primary",
+                        containerPosition: "top-right",
+                        zIndex: 3000
+                    });
+
+                    function modalCallBack() {
+                        modal.close();
+                    }
+
+                    $(document.body).ready(function () {
+
+                        $('#modal-open').click(function () {
+                            modal.open({
+                                width: 700,
+                                height: 500,
+                                position: {
+                                    left: "center",
+                                    top: 10
+                                },
+                                iframe: {
+                                    method: "get",
+                                    url: "modal-iframe-content.html",
+                                    param: "callBack=modalCallBack"
+                                },
+                                closeToEsc: false,
+                                animateTime: 250,
+                                onStateChanged: function () {
+
+                                },
+                                zIndex: 100
+                            }, function () {
+                                toast.push("modal opened");
+                            });
+                        });
+
+                    });
+                </script>
+            </ax5docs-js>
+
+            <div class="docs-callout docs-callout-danger">
+                <h4>Config</h4>
+                <ul>
+                    <li>
+                        <b>width</b><br/>
+                        width of modal
+                    </li>
+                    <li>
+                        <b>height</b><br/>
+                        height of modal
+                    </li>
+                    <li>
+                        <b>position</b><br/>
+                        position of modal <code>{left: "left|center|right|Number", top: "top|middle|bottom|Number", margin: "Number"}</code>
+                    </li>
+                    <li>
+                        <b>iframe</b><br/>
+                        Object that defines the modal body as "iframe" <code>{method:"get|post", url:"String", param:"paramString|Object"}</code>
+                    </li>
+                    <li>
+                        <b>closeToEsc</b><br/>
+                        Whether to close the "ESC" key modal window
+                    </li>
+                    <li>
+                        <b>animateTime</b><br/>
+                        Modal window animation of time required at the time of opening and closing, must be the same as the value of time, which is defined in the CSS. The default is 250
+                    </li>
+                    <li>
+                        <b>onStateChanged</b><br/>
+                        Event function that occurs when a modal window state is changed
+                    </li>
+                    <li>
+                        <b>zIndex</b><br/>
+                        CSS z-index Depth
+                    </li>
+                </ul>
+            </div>
+
+        </section>
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>
