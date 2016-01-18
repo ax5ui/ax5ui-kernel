@@ -143,7 +143,8 @@ gulp.task('AX5UI-docs', function () {
         .pipe(plumber({errorHandler: errorAlert}))
         .pipe(marko_ax5({
             projectName: "ax5ui",
-            layoutPath: PATHS.assets.src + '/_layouts/root.marko'
+            layoutPath: PATHS.assets.src + '/_layouts/root.marko',
+            layoutModalPath: PATHS.assets.src + '/_layouts/modal.marko'
         }))
         .pipe(gulp.dest(PATHS['ax5docs'].doc_dest));
 });
@@ -158,7 +159,8 @@ for (var k in PATHS) {
                     .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(marko_ax5({
                         projectName: k,
-                        layoutPath: PATHS.assets.src + '/_layouts/index.marko'
+                        layoutPath: PATHS.assets.src + '/_layouts/index.marko',
+                        layoutModalPath: PATHS.assets.src + '/_layouts/modal.marko'
                     }))
                     .pipe(gulp.dest(PATHS[k].doc_dest));
             }
@@ -171,7 +173,8 @@ gulp.task('docs:all', function () {
     gulp.src(PATHS['ax5docs'].doc_src + '/**/*.html')
         .pipe(marko_ax5({
             projectName: "ax5ui",
-            layoutPath: PATHS.assets.src + '/_layouts/root.marko'
+            layoutPath: PATHS.assets.src + '/_layouts/root.marko',
+            layoutModalPath: PATHS.assets.src + '/_layouts/modal.marko'
         }))
         .pipe(plumber({errorHandler: errorAlert}))
         .pipe(gulp.dest(PATHS['ax5docs'].doc_dest));
@@ -182,7 +185,8 @@ gulp.task('docs:all', function () {
             gulp.src(PATHS[k].doc_src + '/**/*.html')
                 .pipe(marko_ax5({
                     projectName: k,
-                    layoutPath: PATHS.assets.src + '/_layouts/index.marko'
+                    layoutPath: PATHS.assets.src + '/_layouts/index.marko',
+                    layoutModalPath: PATHS.assets.src + '/_layouts/modal.marko'
                 }))
                 .pipe(plumber({errorHandler: errorAlert}))
                 .pipe(gulp.dest(PATHS[k].doc_dest));

@@ -1,12 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<layout-use template="${data.layoutModalPath}" project-name="${data.projectName}">
+    <layout-put into="head-js">
 
-    //btnAlignRight
+    </layout-put>
+    <layout-put into="body">
 
-</body>
-</html>
+
+        <!-- doc-js Basic Alert -->
+        <section class="ax5docs-section">
+            <h1>Modal Iframe Content</h1>
+
+            <button class="btn btn-default" type="button" id="modal-close">Modal Close</button>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var param = ax5.util.param( ax5.info.urlUtil().param );
+                        $("#modal-close").click(function(){
+                           parent[param.callBack]();
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+
+        </section>
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>

@@ -31,19 +31,22 @@
 
             <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
 
-
             <ax5docs-js run="true">
                 <script type="text/javascript">
+                    var mask = new ax5.ui.mask();
+                    var modal = new ax5.ui.modal();
+                    var modalCallBack = function(){
+                        modal.close();
+                    };
                     $(document.body).ready(function () {
-                        var mask = new ax5.ui.mask();
-                        var modal = new ax5.ui.modal();
 
                         $('#modal-open').click(function () {
                             modal.open({
+                                width: 600,
                                 iframe: {
                                     method: "get",
                                     url: "modal-iframe-content.html",
-                                    param: ""
+                                    param: "callBack=modalCallBack"
                                 }
                             }, function () {
 
@@ -55,7 +58,6 @@
             </ax5docs-js>
 
         </section>
-
 
     </layout-put>
     <layout-put into="page-js">

@@ -305,7 +305,10 @@
 	}
 
 }
-
+&.modal-page{
+	margin: 0px;
+	padding: 10px;
+}
 // mobile
 @media screen and (max-width: $break-mobilewide-width) {
 	.wrapper {

@@ -5,13 +5,14 @@
     
     
     
+    
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<link rel="shortcut icon" href="../../assets/ax5favicon.ico" type="image/x-icon">
-	<title>ax5ui / bootstrap-ax5mask : Custom Uasge</title>
+	<title>ax5ui / bootstrap-ax5modal : Modal Align</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -36,7 +37,9 @@
 
 	
 	
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5modal/ax5modal.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5modal/ax5modal.min.js"></script>
+
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5mask/ax5mask.css">
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5mask/ax5mask.min.js"></script>
     
@@ -52,8 +55,8 @@
 						<span class="navbar-brand">
 							<a href="/">
 							<span class="ax5uicon ax5uicon-ax5"></span>UI</a>
-							<a href="/bootstrap-ax5mask">
-							<span class="small">/ bootstrap-ax5mask</span></a>
+							<a href="/bootstrap-ax5modal">
+							<span class="small">/ bootstrap-ax5modal</span></a>
 						</span>
 						<a class="visible-xs-inline-block mobile-menu">
 							<i class="icon-menu"></i>
@@ -66,13 +69,13 @@
 						<ul class="nav navbar-nav" id="docs-menu-print-target">
 							
 							
-								<li class='active'><a href="/bootstrap-ax5mask/demo/index.html">Demo</a></li><li ><a href="/bootstrap-ax5mask/api/index.html">API</a></li>
+								<li class='active'><a href="/bootstrap-ax5modal/demo/index.html">Demo</a></li><li ><a href="/bootstrap-ax5modal/api/index.html">API</a></li>
 							
 						</ul>
 
 						<ul class="nav navbar-nav navbar-right">
 							<li>
-								<a href="https://github.com/ax5ui/bootstrap-ax5mask">
+								<a href="https://github.com/ax5ui/bootstrap-ax5modal">
 									<span class="ax5uicon ax5uicon-github"></span>
 									Star
 									<span class="gh-count" id="started-count">.</span>
@@ -109,7 +112,7 @@
         <div class="contents">
     <div class="style-sub-visual">
         <div class="title">Demostration</div>
-        <div class="description">Introduces the basic use of bootstrap-ax5mask UI.</div>
+        <div class="description">Introduces the basic use of bootstrap-ax5modal UI.</div>
     </div>
 </div>
     
@@ -121,101 +124,127 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li ><a href="/bootstrap-ax5mask/demo/index.html">Basic Usage</a></li><li ><a href="/bootstrap-ax5mask/demo/element-mask.html">Element mask</a></li><li ><a href="/bootstrap-ax5mask/demo/theme.html">Extend theme</a></li><li  class='active'><a href="/bootstrap-ax5mask/demo/custom.html">Custom Uasge</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5modal/demo/index.html">Basic Modal</a></li><li ><a href="/bootstrap-ax5modal/demo/modal-resize.html">Modal Resize</a></li><li  class='active'><a href="/bootstrap-ax5modal/demo/modal-align.html">Modal Align</a></li><li ><a href="/bootstrap-ax5modal/demo/modal-iframe.html">Iframe</a></li></ul>
     
 					</div>
 				</div>
 				<div class="col-md-9">
 					
 
-        <h1>Custom Uasge</h1>
-
-        <p>
-            If you need to put mask on specific element, change on <code>z-index</code> or message,
-            you can set it on <code>mask.setConfig</code>
-            <code>mask.open</code> method can set mask additional configuration on.
-        </p>
-
-        <button class="btn btn-primary" type="button" id="mask-open">open Mask</button>
-
         
         <section class="ax5docs-section">
-            <p>
-                <b>Paste the following code into the <code>&lt;head></code> section of your site's HTML.</b>
-            </p>
-            <pre class="prettyprint linenums lang-html">&lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"></pre>
+            <h1>Modal Align</h1>
 
-            <p>
-                <b>Javascript</b>
-            </p>
+            <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
+
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-
         var mask = new ax5.ui.mask();
-        mask.setConfig({
-            target: document.body, // 미리 선언했지만
-            content: "&lt;h1>Mask will disappear after 3 seconds.&lt;/h1>",
-            onStateChanged: function(){
-                console.log(this);
+        var modal = new ax5.ui.modal();
+        modal.setConfig({
+            onStateChanged: function () {
+
             }
         });
 
-        $('#mask-open').click(function () {
-            mask.open({
-                content: '&lt;h1>&lt;i class="fa fa-spinner fa-spin">&lt;/i> Loading&lt;/h1>'
-            });
+        $('#modal-open').click(function () {
+            modal.open({}, function () {
 
-            setTimeout(function () {
-                mask.close();
-            }, 2000);
-            // Mask will disappear after 3 seconds.
+                var btn = jQuery(
+                    '&lt;button class="btn btn-primary" type="button">' +
+                    'Modal Close&lt;/button>')
+                    .click(function () {
+                        modal.close();
+                    });
+
+                var btnAlignLeft = jQuery(
+                    '&lt;button class="btn btn-default" type="button">' +
+                    'Align Left&lt;/button>')
+                    .click(function () {
+                        modal.align({left:"left", top:"top"});
+                    });
+
+                var btnAlignRight = jQuery(
+                    '&lt;button class="btn btn-default" type="button">' +
+                    'Align Right&lt;/button>')
+                    .click(function () {
+                        modal.align({left:"right", top:"bottom"});
+                    });
+                var btnAlignCenter = jQuery(
+                    '&lt;button class="btn btn-default" type="button">' +
+                    'Align Center&lt;/button>')
+                    .click(function () {
+                        modal.align({left:"center", top:"middle"});
+                    });
+
+                this.$.body
+                    .css({padding: 50})
+                    .append(btn)
+                    .append('&lt;hr/>')
+                    .append(btnAlignLeft)
+                    .append(btnAlignRight)
+                    .append(btnAlignCenter);
+
+            });
         });
 
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-
         var mask = new ax5.ui.mask();
-        mask.setConfig({
-            target: document.body, // 미리 선언했지만
-            content: "<h1>Mask will disappear after 3 seconds.</h1>",
-            onStateChanged: function(){
-                console.log(this);
+        var modal = new ax5.ui.modal();
+        modal.setConfig({
+            onStateChanged: function () {
+
             }
         });
 
-        $('#mask-open').click(function () {
-            mask.open({
-                content: '<h1><i class="fa fa-spinner fa-spin"></i> Loading</h1>'
-            });
+        $('#modal-open').click(function () {
+            modal.open({}, function () {
 
-            setTimeout(function () {
-                mask.close();
-            }, 2000);
-            // Mask will disappear after 3 seconds.
+                var btn = jQuery(
+                    '<button class="btn btn-primary" type="button">' +
+                    'Modal Close</button>')
+                    .click(function () {
+                        modal.close();
+                    });
+
+                var btnAlignLeft = jQuery(
+                    '<button class="btn btn-default" type="button">' +
+                    'Align Left</button>')
+                    .click(function () {
+                        modal.align({left:"left", top:"top"});
+                    });
+
+                var btnAlignRight = jQuery(
+                    '<button class="btn btn-default" type="button">' +
+                    'Align Right</button>')
+                    .click(function () {
+                        modal.align({left:"right", top:"bottom"});
+                    });
+                var btnAlignCenter = jQuery(
+                    '<button class="btn btn-default" type="button">' +
+                    'Align Center</button>')
+                    .click(function () {
+                        modal.align({left:"center", top:"middle"});
+                    });
+
+                this.$.body
+                    .css({padding: 50})
+                    .append(btn)
+                    .append('<hr/>')
+                    .append(btnAlignLeft)
+                    .append(btnAlignRight)
+                    .append(btnAlignCenter);
+
+            });
         });
 
     });
 </script></script>
-            <p>
-                Declare Mask UI default configuration in advance. Whenever open method is called, its default configuration is applied as inheritance
-            </p>
+
         </section>
 
-
-        
-        <section class="ax5docs-section">
-            <h2>Options</h2>
-            <p>
-                Mask settings can change the following four attributes.
-            </p>
-            <pre class="prettyprint linenums lang-js">{
-    [target: {Element} - target of mask,]
-    [theme: {String} -addClass mask,]
-    [zIndex: {Number},]
-    [content: 'content of mask']
-}</pre>
-        </section>
 
     
 				</div>
@@ -268,6 +297,8 @@
 	</div>
 </div>
 
+
+    
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 ga('create', 'UA-56252826-3', 'auto');
@@ -281,7 +312,7 @@ ga('send', 'pageview');
 		
 		$.ajax({
 			method: "GET",
-			url: "https://api.github.com/repos/ax5ui/bootstrap-ax5mask",
+			url: "https://api.github.com/repos/ax5ui/bootstrap-ax5modal",
 			success: function(data){
 				$("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true}));
 				ax5.util.setCookie('stargazers_count', data.stargazers_count);

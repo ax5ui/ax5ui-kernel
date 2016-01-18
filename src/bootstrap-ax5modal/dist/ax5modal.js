@@ -70,6 +70,9 @@
                 po.push('<iframe name="' + modalId + '-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe"></iframe>');
                 po.push('<form name="' + modalId + '-form" data-modal-els="iframe-form">');
                 po.push('<input type="hidden" name="modalId" value="' + modalId + '" />');
+                if(typeof opts.iframe.param === "string"){
+                    opts.iframe.param = ax5.util.param(opts.iframe.param);
+                }
                 for (var p in opts.iframe.param) {
                     po.push('<input type="hidden" name="' + p + '" value="' + opts.iframe.param[p] + '" />');
                 }

@@ -1,0 +1,73 @@
+
+    
+    
+    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="shortcut icon" href="../../assets/ax5favicon.ico" type="image/x-icon">
+	<title>ax5ui - modal</title>
+
+	
+	<script src="../../assets/lib/jquery/jquery.min.js"></script>
+	<script src="../../assets/lib/prettify/prettify.js"></script>
+	<script src="../../assets/lib/prettify/lang-css.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/skins/github.css">
+
+	<script type="text/javascript">
+		$(document.body).ready(function() {
+			if (window["prettyPrint"]) window["prettyPrint"]();
+		});
+	</script>
+
+	<script src="../../assets/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+	<script src="../../assets/lib/ax5core/ax5core.min.js"></script>
+
+	
+	<link rel="stylesheet" type="text/css" href="../../assets/css/docs.css">
+	<script src="../../assets/js/docs.js"></script>
+
+
+
+
+    
+</head>
+<body>
+	<div class="docs modal-page">
+		
+
+
+        
+        <section class="ax5docs-section">
+            <h1>Modal Iframe Content</h1>
+
+            <button class="btn btn-default" type="button" id="modal-close">Modal Close</button>
+
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $(document.body).ready(function () {
+        var param = ax5.util.param( ax5.info.urlUtil().param );
+        $("#modal-close").click(function(){
+           parent[param.callBack]();
+        });
+    });
+&lt;/script></pre><script type="text/javascript">
+    $(document.body).ready(function () {
+        var param = ax5.util.param( ax5.info.urlUtil().param );
+        $("#modal-close").click(function(){
+           parent[param.callBack]();
+        });
+    });
+</script></script>
+
+        </section>
+
+    
+	</div>
+
+
+    
+</body>
+</html>
