@@ -31,7 +31,6 @@
 
             <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
 
-
             <ax5docs-js run="true">
                 <script type="text/javascript">
                     $(document.body).ready(function () {
@@ -53,26 +52,33 @@
                                         modal.close();
                                     });
 
-                                var btnResize = jQuery(
+                                var btnAlignLeft = jQuery(
                                     '<button class="btn btn-default" type="button">' +
                                     'Align Left</button>')
                                     .click(function () {
                                         modal.align({left:"left", top:"top"});
                                     });
 
-                                var btnRestore = jQuery(
+                                var btnAlignRight = jQuery(
                                     '<button class="btn btn-default" type="button">' +
                                     'Align Right</button>')
                                     .click(function () {
                                         modal.align({left:"right", top:"bottom"});
+                                    });
+                                var btnAlignCenter = jQuery(
+                                    '<button class="btn btn-default" type="button">' +
+                                    'Align Center</button>')
+                                    .click(function () {
+                                        modal.align({left:"center", top:"middle"});
                                     });
 
                                 this.$.body
                                     .css({padding: 50})
                                     .append(btn)
                                     .append('<hr/>')
-                                    .append(btnResize)
-                                    .append(btnRestore);
+                                    .append(btnAlignLeft)
+                                    .append(btnAlignRight)
+                                    .append(btnAlignCenter);
 
                             });
                         });

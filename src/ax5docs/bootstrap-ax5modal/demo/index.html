@@ -134,11 +134,22 @@
             <h1>Basic Modal</h1>
 
             <p>
-
+                To use the modal UI, you must add the following CSS and JS to the page.<br>
+                For information about how to install the library and plug-ins, please refer to the <a href="/bootstrap-ax5modal/">index page</a>.
             </p>
 
-            <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
+            <pre class="prettyprint linenums lang-html">&lt;script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js">&lt;/script>
+&lt;script type="text/javascript" src="bower_components/ax5core/dist/ax5core.min.js">&lt;/script>
+&lt;link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5modal/ax5modal.css">
+&lt;script type="text/javascript" src="bower_components/bootstrap-ax5modal/ax5modal.min.js">&lt;/script></pre>
 
+            <p>
+                If the library and plug-ins required for the Web page has been prepared, let's run the following code.
+            </p>
+
+            <br>
+
+            <button class="btn btn-default" type="button" id="modal-open">Modal Open</button>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {

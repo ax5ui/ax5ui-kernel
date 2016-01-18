@@ -98,8 +98,8 @@
 					color: #fff;
 					/* Fill 3: */
 					///background-image: linear-gradient(-180deg, #A1CBEA 0%, #A9D43A 100%);
-					//@include gradient-directional(#888, #f3f3f3, -180deg);
-					background: #ccc;
+					@include gradient-directional(#A1CBEA, #A9D43A, 90deg);
+					//background: #ccc;
 
 					border-radius: 20px;
 					margin-right: 20px;

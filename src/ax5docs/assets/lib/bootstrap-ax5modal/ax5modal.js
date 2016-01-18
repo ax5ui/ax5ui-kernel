@@ -136,7 +136,7 @@
             };
 
             if (opts.iframe) {
-                this.$["iframe"].css({height: box.height - cfg.heading.height});
+                this.$["iframe"].css({height: box.height});
                 
                 // iframe content load
                 this.$["iframe-form"].attr({"method": opts.iframe.method});
@@ -148,7 +148,7 @@
                         opts.onStateChanged.call(that, that);
                     }
                 }).bind(this));
-                this.$["iframe-form"].elements[0].submit();
+                this.$["iframe-form"].submit();
             }
 
             if (callBack) callBack.call(that);
@@ -167,40 +167,40 @@
             }).bind(this));
         };
 
-        this.align = function(position, e){
-            if(!this.activeModal) return this;
+        this.align = function (position, e) {
+            if (!this.activeModal) return this;
             var opts = self.modalConfig,
                 box = {
                     width: opts.width,
                     height: opts.height
                 };
 
-            if(position){
+            if (position) {
                 jQuery.extend(true, opts.position, position);
             }
 
             //- position 정렬
-            if(opts.position.left == "left"){
-                box.left = (opts.position.margin||0);
+            if (opts.position.left == "left") {
+                box.left = (opts.position.margin || 0);
             }
-            else if(opts.position.left == "right") {
+            else if (opts.position.left == "right") {
                 // window.innerWidth;
-                box.left = jQuery(window).width() - box.width - (opts.position.margin||0);
+                box.left = jQuery(window).width() - box.width - (opts.position.margin || 0);
             }
-            else if(opts.position.left == "center") {
+            else if (opts.position.left == "center") {
                 box.left = jQuery(window).width() / 2 - box.width / 2;
             }
             else {
                 box.left = opts.position.left || 0;
             }
 
-            if(opts.position.top == "top"){
-                box.top = (opts.position.margin||0);
+            if (opts.position.top == "top") {
+                box.top = (opts.position.margin || 0);
             }
-            else if(opts.position.top == "bottom") {
-                box.top = jQuery(window).height() - box.height - (opts.position.margin||0);
+            else if (opts.position.top == "bottom") {
+                box.top = jQuery(window).height() - box.height - (opts.position.margin || 0);
             }
-            else if(opts.position.top == "middle") {
+            else if (opts.position.top == "middle") {
                 box.top = jQuery(window).height() / 2 - box.height / 2;
             }
             else {
@@ -253,13 +253,13 @@
          * @param {Object} css -
          * @returns {ax5.ui.modal}
          */
-        this.css = function(css){
-            if(this.activeModal){
+        this.css = function (css) {
+            if (this.activeModal) {
                 this.activeModal.css(css);
-                if(css.width){
+                if (css.width) {
                     self.modalConfig.width = this.activeModal.width();
                 }
-                if(css.height){
+                if (css.height) {
                     self.modalConfig.height = this.activeModal.height();
                 }
             }
