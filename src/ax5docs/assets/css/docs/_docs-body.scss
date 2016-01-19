@@ -177,7 +177,7 @@
 						list-style: none;
 						&.open {
 							a {
-								color: #A9D438;
+								color: darken(#A9D438, 10%);
 							}
 						}
 						a {
@@ -189,10 +189,43 @@
 							padding: 0px 10px;
 							&:hover {
 								background: #F1F1F1;
-								color: #A9D438;
+								color: darken(#A9D438, 10%);
 								text-decoration: none;
 							}
 						}
+					}
+					ul{
+						display: none;
+						margin: 5px 0px;
+						padding: 0px 0px 0px 35px;
+						&.open {
+							display: block;
+						}
+
+						li{
+							font-size: 1em;
+							color: #A1A1A1;
+							line-height: 1.4em;
+							list-style: circle;
+							&.open {
+								a{
+									color: darken(#A9D438, 10%);
+								}
+							}
+							a {
+								/* Rectangle 6: */
+								display: block;
+								height: 22px;
+								line-height: 22px;
+								color: #A1A1A1;
+								padding: 0px 0px;
+								&:hover {
+									color: darken(#A9D438, 10%);
+									text-decoration: none;
+								}
+							}
+						}
+
 					}
 				}
 			}
