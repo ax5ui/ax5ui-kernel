@@ -253,7 +253,7 @@
                 }).bind(this), cfg.animateTime);
             }
             return this;
-        }
+        };
 
         /**
          * setCSS

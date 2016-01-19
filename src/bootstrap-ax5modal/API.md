@@ -39,6 +39,36 @@ Type: `Number` [default: 400]
 
 Modal height
 
+### position
+
+Type: `Object` 
+
+**default**
+```json
+{
+    left: "center", // left|center|right|Number
+    top: "middle", // top|middle|bottom|Number
+    margin: 10
+}
+```
+
+### iframe
+
+Type: `Object` 
+
+**default**
+```json
+{
+    method: "get", // get|post
+    url: "", // iframe src url
+    param: "" // parameter
+}
+```
+
+### closeToEsc
+
+Type: `Boolean`
+
 ### onStateChanged
 
 Type: `Function`  
@@ -50,40 +80,51 @@ this.state state value is passed to this time onStateChanged function.
 
 Type: `Number` [default : 300]
 
+### zIndex
+
+Type: `Number`
 
 - - -
 
-## push()
-`push(String|Options[, callBack])`
+## open()
+`open(Options[, callBack])`
 
-If this is String in the first argument and recognizes the first argument to `msg`.  
 it is possible to redefine all of the options that can be used in setConfig.  
 
 ```js
-toast.push('Toast message', function () {
-    console.log(this);
+modal.open();
+modal.open({
+    width: 500,
+    height: 500
 });
-
-toast.push({
-    theme: 'danger',
-    msg:'Toast message'
-}, function () {
+modal.open({}, function(){
     console.log(this);
 });
 ```
 
 - - -
 
-## confirm()
-`confirm(String|Options[, callBack])`
+## css()
+`css(Object)`
 
 ```js
-confirmToast.confirm({
-    msg: 'Confirm message'
-}, function(){
-
+modal.css({
+    width: 400,
+    height: 600
 });
 ```
+
+- - -
+
+## align()
+`align(Object)`
+
+```js
+modal.align({left:"center", top:"middle"});
+modal.align({left:"left", top:"top", margin: 20});
+```
+
+- - - 
 
 ## close()
 `close()`

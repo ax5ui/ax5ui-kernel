@@ -154,37 +154,62 @@ myModal.set_config({
 <h3>height</h3>
 <p>Type: <code>Number</code> [default: 400]</p>
 <p>Modal height</p>
+<h3>position</h3>
+<p>Type: <code>Object</code></p>
+<p><strong>default</strong></p>
+<pre class="prettyprint linenums lang-json"><code>{
+    left: &quot;center&quot;, // left|center|right|Number
+    top: &quot;middle&quot;, // top|middle|bottom|Number
+    margin: 10
+}
+</code></pre>
+<h3>iframe</h3>
+<p>Type: <code>Object</code></p>
+<p><strong>default</strong></p>
+<pre class="prettyprint linenums lang-json"><code>{
+    method: &quot;get&quot;, // get|post
+    url: &quot;&quot;, // iframe src url
+    param: &quot;&quot; // parameter
+}
+</code></pre>
+<h3>closeToEsc</h3>
+<p>Type: <code>Boolean</code></p>
 <h3>onStateChanged</h3>
 <p>Type: <code>Function</code></p>
 <p>onStateChanged function is executed when the modal of the state is changed,
 this.state state value is passed to this time onStateChanged function.</p>
 <h3>animateTime</h3>
 <p>Type: <code>Number</code> [default : 300]</p>
+<h3>zIndex</h3>
+<p>Type: <code>Number</code></p>
 <hr>
-<h2>push()</h2>
-<p><code>push(String|Options[, callBack])</code></p>
-<p>If this is String in the first argument and recognizes the first argument to <code>msg</code>.<br>
-it is possible to redefine all of the options that can be used in setConfig.</p>
-<pre class="prettyprint linenums lang-js"><code>toast.push('Toast message', function () {
-    console.log(this);
+<h2>open()</h2>
+<p><code>open(Options[, callBack])</code></p>
+<p>it is possible to redefine all of the options that can be used in setConfig.</p>
+<pre class="prettyprint linenums lang-js"><code>modal.open();
+modal.open({
+    width: 500,
+    height: 500
 });
-
-toast.push({
-    theme: 'danger',
-    msg:'Toast message'
-}, function () {
+modal.open({}, function(){
     console.log(this);
 });
 </code></pre>
 <hr>
-<h2>confirm()</h2>
-<p><code>confirm(String|Options[, callBack])</code></p>
-<pre class="prettyprint linenums lang-js"><code>confirmToast.confirm({
-    msg: 'Confirm message'
-}, function(){
-
+<h2>css()</h2>
+<p><code>css(Object)</code></p>
+<pre class="prettyprint linenums lang-js"><code>modal.css({
+    width: 400,
+    height: 600
 });
 </code></pre>
+<hr>
+<h2>align()</h2>
+<p><code>align(Object)</code></p>
+<pre class="prettyprint linenums lang-js"><code>modal.align({left:&quot;center&quot;, top:&quot;middle&quot;});
+modal.align({left:&quot;left&quot;, top:&quot;top&quot;, margin: 20});
+</code></pre>
+<hr>
 <h2>close()</h2>
 <p><code>close()</code></p>
 
