@@ -19,7 +19,7 @@
         var
             self = this,
             cfg,
-            a_day = 1000 * 60 * 60 * 24;
+            aDay = 1000 * 60 * 60 * 24;
         
         // 클래스 생성자
         this.main = (function () {
@@ -62,13 +62,12 @@
             //console.log(this.config);
             if (!cfg.target)
             {
-                U.error("aui_calendar_400", "[ax5.ui.calendar] config.target is required");
+                console.log(ax5.info.getError("ax5calendar", "401", "setConfig"));
             }
             this.target = jQuery(cfg.target);
             
-            //cfg.item_height = cfg.item_width = cfg.width / 7;
             cfg.displayDate = U.date(cfg.displayDate);
-            this.target.html(this.get_frame());
+            this.target.html(this.getFrame());
             
             // 파트수집
             this.$ = {
@@ -85,32 +84,32 @@
                 }).bind(this));
             }
             
-            if (cfg.mode == "day")
+            if (cfg.mode === "day")
             {
-                this.print_day(cfg.displayDate);
+                this.printDay(cfg.displayDate);
             }
-            else if (cfg.mode == "month")
+            else if (cfg.mode === "month")
             {
-                this.print_month(cfg.displayDate);
+                this.printMonth(cfg.displayDate);
             }
-            else if (cfg.mode == "year")
+            else if (cfg.mode === "year")
             {
-                this.print_year(cfg.displayDate);
+                this.printYear(cfg.displayDate);
             }
             
         };
         
-        this.get_frame = function () {
+        this.getFrame = function () {
             var po = [];
             po.push('<div class="ax5-ui-calendar ' + cfg.theme + '" data-calendar-els="root" style="' + (function () {
                     return (cfg.width) ? 'width:' + cfg.width + 'px;' : '';
                 })() + '" onselectstart="return false;">');
             if (cfg.control)
             {
-                po.push('<div class="calendar-control" data-calendar-els="control" style="height:' + cfg.item_height + 'px;line-height:' + cfg.item_height + 'px;">');
-                po.push('<a class="date-move-left" data-calendar-move="left" style="width:' + cfg.item_width + 'px;">' + cfg.control.left + '</a>');
+                po.push('<div class="calendar-control" data-calendar-els="control" style="">');
+                po.push('<a class="date-move-left" data-calendar-move="left" style="">' + cfg.control.left + '</a>');
                 po.push('<div class="date-display" data-calendar-els="control-display"></div>');
-                po.push('<a class="date-move-right" data-calendar-move="right" style="width:' + cfg.item_width + 'px;">' + cfg.control.right + '</a>');
+                po.push('<a class="date-move-right" data-calendar-move="right" style="">' + cfg.control.right + '</a>');
                 po.push('</div>');
             }
             po.push('<div class="calendar-body" data-calendar-els="body"></div>');
@@ -118,50 +117,48 @@
             return po.join('');
         };
         
-        this.set_display = function () {
+        this.setDisplay = function () {
             if (cfg.control)
             {
-                //this.$["control-display"].html(U.date(cfg.displayDate, {"return": cfg.control.display}));
-                
                 var myDate = U.date(cfg.displayDate), yy = "", mm = "";
                 
                 if (cfg.mode == "day")
                 {
-                    if (cfg.control.year_tmpl) yy = cfg.control.year_tmpl.replace('%s', myDate.getFullYear());
-                    if (cfg.control.month_tmpl) mm = cfg.control.month_tmpl.replace('%s', (myDate.getMonth() + 1));
+                    if (cfg.control.yearTmpl) yy = cfg.control.yearTmpl.replace('%s', myDate.getFullYear());
+                    if (cfg.control.monthTmpl) mm = cfg.control.monthTmpl.replace('%s', (myDate.getMonth() + 1));
                     
                     this.$["control-display"].html('<span data-calendar-display="year">' + yy + '</span>' + '<span data-calendar-display="month">' + mm + '</span>');
                 }
                 else if (cfg.mode == "month")
                 {
-                    if (cfg.control.year_tmpl) yy = cfg.control.year_tmpl.replace('%s', myDate.getFullYear());
+                    if (cfg.control.yearTmpl) yy = cfg.control.yearTmpl.replace('%s', myDate.getFullYear());
                     
                     this.$["control-display"].html('<span data-calendar-display="year">' + yy + '</span>');
                 }
                 else if (cfg.mode == "year")
                 {
-                    var yy1 = cfg.control.year_tmpl.replace('%s', myDate.getFullYear() - 10);
-                    var yy2 = cfg.control.year_tmpl.replace('%s', Number(myDate.getFullYear()) + 9);
+                    var yy1 = cfg.control.yearTmpl.replace('%s', myDate.getFullYear() - 10);
+                    var yy2 = cfg.control.yearTmpl.replace('%s', Number(myDate.getFullYear()) + 9);
                     this.$["control-display"].html(yy1 + ' ~ ' + yy2);
                 }
                 
                 this.$["control-display"].find('[data-calendar-display]').on(cfg.clickEventName, (function (e) {
-                    target = axd.parent(e.target, function (target) {
-                        if (jQuery.attr(target, "data-calendar-display"))
+                    target = U.findParentNode(e.target, function (target) {
+                        if (target.getAttribute("data-calendar-display"))
                         {
                             return true;
                         }
                     });
                     if (target)
                     {
-                        var mode = axd.attr(target, "data-calendar-display");
-                        this.change_mode(mode);
+                        var mode = target.getAttribute("data-calendar-display");
+                        this.changeMode(mode);
                     }
                 }).bind(this));
             }
         };
         
-        this.print_day = function (now_date) {
+        this.printDay = function (now_date) {
             var dot_date = U.date(now_date), po = [], month_start_date = new Date(dot_date.getFullYear(), dot_date.getMonth(), 1, 12),
             //_today = new Date(),
                 _today = cfg.displayDate,
@@ -245,16 +242,16 @@
             
             if (cfg.on_event) {
                 var that = {
-                    action: "print_day",
+                    action: "printDay",
                     printedDay: this.printedDay
                 };
                 cfg.on_event.call(that, that);
             }
             
-            this.set_display();
+            this.setDisplay();
         };
         
-        this.print_month = function (now_date) {
+        this.printMonth = function (now_date) {
             
             var _item_width = cfg.item_width * 7 / 3, _item_height = cfg.item_height * 6 / 4;
             
@@ -310,7 +307,7 @@
                 if (target)
                 {
                     value = axd.attr(target, "data-calendar-item-month");
-                    self.change_mode("day", value);
+                    self.changeMode("day", value);
                     //alert(value);
                     try {
                         if (e.preventDefault) e.preventDefault();
@@ -323,10 +320,10 @@
                 }
             });
             
-            this.set_display();
+            this.setDisplay();
         };
         
-        this.print_year = function (now_date) {
+        this.printYear = function (now_date) {
             var _item_width = cfg.item_width * 7 / 4, _item_height = cfg.item_height * 6 / 5;
             
             var dot_date = U.date(now_date), n_year = dot_date.getFullYear(), po = [],
@@ -382,7 +379,7 @@
                 if (target)
                 {
                     value = axd.attr(target, "data-calendar-item-year");
-                    self.change_mode("month", value);
+                    self.changeMode("month", value);
                     
                     try {
                         if (e.preventDefault) e.preventDefault();
@@ -395,7 +392,7 @@
                 }
             });
             
-            this.set_display();
+            this.setDisplay();
         };
         
         this.onclick = function (e, target, value) {
@@ -449,7 +446,7 @@
                     else {
                         cfg.displayDate = U.date(cfg.displayDate, {add: {m: 1}});
                     }
-                    this.print_day(cfg.displayDate);
+                    this.printDay(cfg.displayDate);
                 }
                 else if (cfg.mode == "month")
                 {
@@ -460,7 +457,7 @@
                     else {
                         cfg.displayDate = U.date(cfg.displayDate, {add: {y: 1}});
                     }
-                    this.print_month(cfg.displayDate);
+                    this.printMonth(cfg.displayDate);
                 }
                 else if (cfg.mode == "year")
                 {
@@ -471,12 +468,12 @@
                     else {
                         cfg.displayDate = U.date(cfg.displayDate, {add: {y: 10}});
                     }
-                    this.print_year(cfg.displayDate);
+                    this.printYear(cfg.displayDate);
                 }
             }
         };
         
-        this.change_mode = function (mode, change_date) {
+        this.changeMode = function (mode, change_date) {
             if (typeof change_date != "undefined") cfg.displayDate = change_date;
             cfg.mode = mode;
             
@@ -484,36 +481,36 @@
             setTimeout((function () {
                 if (cfg.mode == "day")
                 {
-                    this.print_day(cfg.displayDate);
+                    this.printDay(cfg.displayDate);
                 }
                 else if (cfg.mode == "month")
                 {
-                    this.print_month(cfg.displayDate);
+                    this.printMonth(cfg.displayDate);
                 }
                 else if (cfg.mode == "year")
                 {
-                    this.print_year(cfg.displayDate);
+                    this.printYear(cfg.displayDate);
                 }
                 this.$["body"].class_name("remove", "fadeout").class_name("add", "fadein");
             }).bind(this), 300);
         };
         
-        this.set_displayDate = function (d) {
+        this.setDisplayDate = function (d) {
             cfg.displayDate = U.date(d);
             
             this.$["body"].class_name("remove", "fadein").class_name("add", "fadeout");
             setTimeout((function () {
                 if (cfg.mode == "day")
                 {
-                    this.print_day(cfg.displayDate);
+                    this.printDay(cfg.displayDate);
                 }
                 else if (cfg.mode == "month")
                 {
-                    this.print_month(cfg.displayDate);
+                    this.printMonth(cfg.displayDate);
                 }
                 else if (cfg.mode == "year")
                 {
-                    this.print_year(cfg.displayDate);
+                    this.printYear(cfg.displayDate);
                 }
                 this.$["body"].class_name("remove", "fadeout").class_name("add", "fadein");
             }).bind(this), 300);
