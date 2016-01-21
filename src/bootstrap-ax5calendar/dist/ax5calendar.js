@@ -179,7 +179,7 @@
             while (k < 7)
             {
                 po.push('<td class="calendar-col-' + k + '">');
-                po.push(ax5.info.week_names[k].label);
+                po.push(ax5.info.weekNames[k].label);
                 po.push('</td>');
                 k++;
             }
