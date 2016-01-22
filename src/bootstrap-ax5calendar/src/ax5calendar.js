@@ -60,7 +60,6 @@
             //== class body start
         this.init = function () {
             // after setConfig();
-            //console.log(this.config);
             if (!cfg.target)
             {
                 console.log(ax5.info.getError("ax5calendar", "401", "setConfig"));
