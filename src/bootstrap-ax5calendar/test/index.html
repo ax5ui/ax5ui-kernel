@@ -17,13 +17,29 @@
 
     <div id="calendar-target"></div>
 
+    <!--
+    <button class="btn btn-default" data-calendar-move="prev">이전</button>
+    <button class="btn btn-default" data-calendar-move="next">다음</button>
+    -->
+
 <script>
     $(document.body).ready(function () {
 
         var myCalendar = new ax5.ui.calendar();
         myCalendar.setConfig({
-            
+            control: {
+                left: 'prev',
+                year_tmpl: '%s년',
+                month_tmpl: '%s월',
+                right: 'next'
+            },
+            target: document.getElementById("calendar-target"),
+            displayDate: "2016-01-01",
+            onClick: function(){
+                console.log(this);
+            }
         });
+
     });
 </script>
 

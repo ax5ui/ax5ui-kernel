@@ -31,7 +31,8 @@
                 width: '100%',
                 height: '100%',
                 dateFormat: 'yyyy-mm-dd',
-                displayDate: (new Date())
+                displayDate: (new Date()),
+                animateTime: 250
             };
         }).apply(this, arguments);
         
@@ -298,15 +299,15 @@
             this.$["body"].html(po.join(''));
             this.$["body"].find('[data-calendar-item-month]').on(cfg.clickEventName, function (e) {
                 e = e || window.event;
-                target = axd.parent(e.target, function (target) {
-                    if (jQuery.attr(target, "data-calendar-item-month"))
+                target = U.findParentNode(e.target, function (target) {
+                    if (target.getAttribute("data-calendar-item-month"))
                     {
                         return true;
                     }
                 });
                 if (target)
                 {
-                    value = axd.attr(target, "data-calendar-item-month");
+                    value = target.getAttribute("data-calendar-item-month");
                     self.changeMode("day", value);
                     //alert(value);
                     try {
@@ -370,15 +371,15 @@
             this.$["body"].html(po.join(''));
             this.$["body"].find('[data-calendar-item-year]').on(cfg.clickEventName, function (e) {
                 e = (e || window.event);
-                target = axd.parent(e.target, function (target) {
-                    if (jQuery.attr(target, "data-calendar-item-year"))
+                target = U.findParentNode(e.target, function (target) {
+                    if (target.getAttribute("data-calendar-item-year"))
                     {
                         return true;
                     }
                 });
                 if (target)
                 {
-                    value = axd.attr(target, "data-calendar-item-year");
+                    value = target.getAttribute("data-calendar-item-year");
                     self.changeMode("month", value);
                     
                     try {
@@ -396,15 +397,15 @@
         };
         
         this.onclick = function (e, target, value) {
-            target = axd.parent(e.target, function (target) {
-                if (jQuery.attr(target, "data-calendar-item-date"))
+            target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-calendar-item-date"))
                 {
                     return true;
                 }
             });
             if (target)
             {
-                value = axd.attr(target, "data-calendar-item-date");
+                value = target.getAttribute("data-calendar-item-date");
                 var dt = U.date(value, {"return": cfg.dateFormat}), selectable = true;
                 
                 if (cfg.selectable) {
@@ -412,14 +413,14 @@
                 }
                 
                 if (selectable) {
-                    this.$["body"].find('[data-calendar-item-date="' + U.date(cfg.displayDate, {"return": cfg.dateFormat}) + '"]').class_name("remove", "hover");
-                    axd.class_name(target, "add", "hover");
+                    this.$["body"].find('[data-calendar-item-date="' + U.date(cfg.displayDate, {"return": cfg.dateFormat}) + '"]').removeClass("hover");
+                    jQuery(target).addClass("hover");
                     cfg.displayDate = value;
                     
-                    if (this.config.onclick)
+                    if (cfg.onClick)
                     {
-                        this.config.onclick.call({
-                            date: value, target: this.target.elements[0], item_target: target
+                        cfg.onClick.call({
+                            date: value, target: this.target, dateElement: target
                         });
                     }
                 }
@@ -427,15 +428,15 @@
         };
         
         this.move = function (e, target, value) {
-            target = axd.parent(e.target, function (target) {
-                if (jQuery.attr(target, "data-calendar-move"))
+            target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-calendar-move"))
                 {
                     return true;
                 }
             });
             if (target)
             {
-                value = axd.attr(target, "data-calendar-move");
+                value = target.getAttribute("data-calendar-move");
                 
                 if (cfg.mode == "day")
                 {
@@ -477,7 +478,7 @@
             if (typeof change_date != "undefined") cfg.displayDate = change_date;
             cfg.mode = mode;
             
-            this.$["body"].class_name("remove", "fadein").class_name("add", "fadeout");
+            this.$["body"].removeClass("fadein").addClass("fadeout");
             setTimeout((function () {
                 if (cfg.mode == "day")
                 {
@@ -491,14 +492,14 @@
                 {
                     this.printYear(cfg.displayDate);
                 }
-                this.$["body"].class_name("remove", "fadeout").class_name("add", "fadein");
-            }).bind(this), 300);
+                this.$["body"].removeClass("fadeout").addClass("fadein");
+            }).bind(this), cfg.animateTime);
         };
         
         this.setDisplayDate = function (d) {
             cfg.displayDate = U.date(d);
             
-            this.$["body"].class_name("remove", "fadein").class_name("add", "fadeout");
+            this.$["body"].removeClass("fadein").addClass("fadeout");
             setTimeout((function () {
                 if (cfg.mode == "day")
                 {
@@ -512,8 +513,8 @@
                 {
                     this.printYear(cfg.displayDate);
                 }
-                this.$["body"].class_name("remove", "fadeout").class_name("add", "fadein");
-            }).bind(this), 300);
+                this.$["body"].removeClass("fadeout").addClass("fadein");
+            }).bind(this), cfg.animateTime);
         };
         
     };
