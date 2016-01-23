@@ -105,7 +105,7 @@
         this.getFrame = function () {
             var po = [];
             po.push('<div class="ax5-ui-calendar ' + cfg.theme + '" data-calendar-els="root" style="' + (function () {
-                    return (cfg.width) ? 'width:' + cfg.width + 'px;' : '';
+                    return (cfg.width) ? 'width:' + ax5.util.cssNumber(cfg.width) + ';' : '';
                 })() + '" onselectstart="return false;">');
             if (cfg.control)
             {
