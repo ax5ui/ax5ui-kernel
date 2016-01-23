@@ -1,29 +1,29 @@
 
 //== calendar
-$ax5calendar-control-bg: (#FFFFFF, #F0F0F0);
-$ax5calendar-control-border: 1px solid #B4B4B4;
-$ax5calendar-control-border-radius: 2px;
-$ax5calendar-control-font-size: ceil(($font-size-base * 1.25));
-$ax5calendar-control-text-color: $text-color;
-$ax5calendar-control-hover-text-color: $brand-primary;
+$ax5calendar-control-bg: (#FFFFFF, #F0F0F0) !default;
+$ax5calendar-control-border: 1px solid #B4B4B4 !default;
+$ax5calendar-control-border-radius: 2px !default;
+$ax5calendar-control-font-size: ceil(($font-size-base * 1.25)) !default;
+$ax5calendar-control-text-color: $text-color !default;
+$ax5calendar-control-hover-text-color: $brand-primary !default;
 
-$ax5calendar-header-bg: (#FFFFFF, #FFFFFF);
-$ax5calendar-header-border: 0px none;
-$ax5calendar-header-padding: 10px 2px;
-$ax5calendar-header-font-size: ceil(($font-size-base * 0.8));
+$ax5calendar-header-bg: (#FFFFFF, #FFFFFF) !default;
+$ax5calendar-header-border: 0px none !default;
+$ax5calendar-header-padding: 10px 2px !default;
+$ax5calendar-header-font-size: ceil(($font-size-base * 0.8)) !default;
 
-$ax5calendar-body-bg: (#FFFFFF, #FFFFFF);
-$ax5calendar-body-border: 0px none;
-$ax5calendar-body-font-size: $font-size-base;
+$ax5calendar-body-bg: (#FFFFFF, #FFFFFF) !default;
+$ax5calendar-body-border: 0px none !default;
+$ax5calendar-body-font-size: $font-size-base !default;
 
-$ax5calendar-sun-text-color: #C78B81;
-$ax5calendar-sat-text-color: #32B4DC;
+$ax5calendar-sun-text-color: #C78B81 !default;
+$ax5calendar-sat-text-color: #32B4DC !default;
 
-$ax5calendar-date-bg: (#FFFFFF, #FFFFFF);
-$ax5calendar-date-text-color: #C3C4C6;
-$ax5calendar-live-bg: (#F0F0F0, #F0F0F0);
-$ax5calendar-live-text-color: #6D6E70;
-$ax5calendar-hover-bg: (#32B4DC, #32B4DC);
-$ax5calendar-hover-text-color: #fff;
-$ax5calendar-focus-bg: (#E67241, #E67241);
-$ax5calendar-focus-text-color: #fff;
+$ax5calendar-date-bg: (#FFFFFF, #FFFFFF) !default;
+$ax5calendar-date-text-color: #C3C4C6 !default;
+$ax5calendar-live-bg: (#F0F0F0, #F0F0F0) !default;
+$ax5calendar-live-text-color: #6D6E70 !default;
+$ax5calendar-hover-bg: (#32B4DC, #32B4DC) !default;
+$ax5calendar-hover-text-color: #fff !default;
+$ax5calendar-focus-bg: (#E67241, #E67241) !default;
+$ax5calendar-focus-text-color: #fff !default;
