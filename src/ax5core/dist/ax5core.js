@@ -1646,7 +1646,7 @@
             return _target;
         }
 
-        function cssValue(val) {
+        function cssNumber(val) {
             var re = /\D?(\d+)([a-zA-Z%]*)/i,
                 found = ('' + val).match(re),
                 unit = found[2] || "px"
@@ -1697,7 +1697,7 @@
             daysOfMonth: daysOfMonth,
             weeksOfMonth: weeksOfMonth,
             findParentNode: findParentNode,
-            cssValue: cssValue
+            cssNumber: cssNumber
         }
     })();
 
