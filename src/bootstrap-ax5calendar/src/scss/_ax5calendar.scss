@@ -1,5 +1,3 @@
-
-
 // mixins --------------------------------------------- end
 
 @include keyframes(ax5-ui-calendar-fadeout) {
@@ -22,55 +20,63 @@
 
 .ax5-ui-calendar {
 	box-sizing: border-box;
-	position:relative;
-	.calendar-control{
-		position:relative;
+	position: relative;
+	.calendar-control {
+		position: relative;
 		box-sizing: content-box;
 		@include linear-gradient(to top, nth($ax5calendar-control-bg, 1), nth($ax5calendar-control-bg, 2));
-
 		border: $ax5calendar-control-border;
 		border-radius: $ax5calendar-control-border-radius;
 		font-size: $ax5calendar-control-font-size;
 		margin-bottom: 5px;
-		.date-move-left{
-			display:block;
-			position:absolute;left:0px;top:0px;
+
+		.date-move-left, .date-move-right {
+			display: block;
+			position: absolute;
+			width: $ax5calendar-control-height;
+			overflow: hidden;
+
 			text-align: center;
 			font-size: ceil($ax5calendar-control-font-size * 1.2);
 			cursor: pointer;
-			i{line-height: inherit;}
+			text-decoration: none;
+			i, span {
+				line-height: inherit;
+			}
 		}
-		.date-display{
-			text-align:center;
-			[data-calendar-display]{
+
+		.date-move-left{
+			left: 0px;
+			top: 0px;
+		}
+		.date-move-right{
+			right: 0px;
+			top: 0px;
+		}
+		.date-display {
+			text-align: center;
+			[data-calendar-display] {
 				margin: 0px 10px;
 				cursor: pointer;
 				text-decoration: underline;
 			}
 		}
-		.date-move-right{
-			display:block;
-			position:absolute;right:0px;top:0px;
-			text-align: center;
-			font-size: ceil($ax5calendar-control-font-size * 1.2);
-			cursor: pointer;
-			i{line-height: inherit;}
-		}
+
 		color: $ax5calendar-control-text-color;
-		a{
+		a {
 			color: $ax5calendar-control-text-color;
 		}
-		a:hover{
+		a:hover {
 			color: $ax5calendar-control-hover-text-color;
 		}
 	}
 	.calendar-body {
-		&.fadein{
-			@include animation(ax5-ui-calendar-fadein 0.3s ease-in-out);
+		&.fadein {
+			@include animation($ax5calendar-body-animation-in 0.3s ease-in-out);
 			opacity: 1.0;
 		}
-		&.fadeout{
-			@include animation(ax5-ui-calendar-fadeout 0.3s ease-in-out);
+		&.fadeout {
+			@include animation($ax5calendar-body-animation-out 0.3s ease-in-out);
 			opacity: 0.0;
 		}
 
@@ -127,17 +133,19 @@
 						color: $ax5calendar-date-text-color;
 						font-size: 16px;
 
-						span.addon{
+						span.addon {
 							position: absolute;
-							left:0px;top:0px;
-							width:100%;
+							left: 0px;
+							top: 0px;
+							width: 100%;
 							text-align: center;
 							line-height: 10px;
 						}
-						span.lunar{
+						span.lunar {
 							position: absolute;
-							left:0px;bottom:3px;
-							width:100%;
+							left: 0px;
+							bottom: 3px;
+							width: 100%;
 							text-align: center;
 							font-size: 12px;
 							color: #eee;
@@ -147,29 +155,29 @@
 						&.live {
 							@include linear-gradient(to top, nth($ax5calendar-live-bg, 1), nth($ax5calendar-live-bg, 2));
 							color: $ax5calendar-live-text-color;
-							span.addon{
+							span.addon {
 								color: #A1A1A1;
 							}
-							span.lunar{
+							span.lunar {
 								color: #A1A1A1;
 							}
 						}
 						&.focus {
 							@include linear-gradient(to top, nth($ax5calendar-focus-bg, 1), nth($ax5calendar-focus-bg, 2));
 							color: $ax5calendar-focus-text-color;
-							span.addon{
+							span.addon {
 								color: $ax5calendar-focus-text-color;
 							}
-							span.lunar{
+							span.lunar {
 								color: $ax5calendar-focus-text-color;
 							}
 							&.hover {
 								@include linear-gradient(to top, nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
 								color: $ax5calendar-hover-text-color !important;
-								span.addon{
+								span.addon {
 									color: $ax5calendar-hover-text-color;
 								}
-								span.lunar{
+								span.lunar {
 									color: $ax5calendar-hover-text-color;
 								}
 							}
@@ -177,14 +185,14 @@
 						&.hover {
 							@include linear-gradient(to top, nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
 							color: $ax5calendar-hover-text-color !important;
-							span.addon{
+							span.addon {
 								color: $ax5calendar-hover-text-color;
 							}
-							span.lunar{
+							span.lunar {
 								color: $ax5calendar-hover-text-color;
 							}
 						}
-						&.disable{
+						&.disable {
 							@include linear-gradient(to top, nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
 							color: lighten($ax5calendar-date-text-color, 10%);
 						}
@@ -260,6 +268,5 @@
 			}
 		}
 	}
-
 
 }

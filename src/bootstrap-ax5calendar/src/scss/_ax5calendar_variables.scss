@@ -7,6 +7,7 @@ $ax5calendar-control-font-size: ceil(($font-size-base * 1.25)) !default;
 $ax5calendar-control-text-color: $text-color !default;
 $ax5calendar-control-hover-text-color: $brand-primary !default;
 
+
 $ax5calendar-header-bg: (#FFFFFF, #FFFFFF) !default;
 $ax5calendar-header-border: 0px none !default;
 $ax5calendar-header-padding: 10px 2px !default;
@@ -15,6 +16,8 @@ $ax5calendar-header-font-size: ceil(($font-size-base * 0.8)) !default;
 $ax5calendar-body-bg: (#FFFFFF, #FFFFFF) !default;
 $ax5calendar-body-border: 0px none !default;
 $ax5calendar-body-font-size: $font-size-base !default;
+$ax5calendar-body-animation-in: ax5-ui-calendar-fadein !default;
+$ax5calendar-body-animation-out: ax5-ui-calendar-fadeout !default;
 
 $ax5calendar-sun-text-color: #C78B81 !default;
 $ax5calendar-sat-text-color: #32B4DC !default;

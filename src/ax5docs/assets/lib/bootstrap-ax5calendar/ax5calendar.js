@@ -28,11 +28,14 @@
                 clickEventName: "click",
                 theme: 'default',
                 mode: 'day', // day|month|year,
-                width: '100%',
-                height: '100%',
                 dateFormat: 'yyyy-mm-dd',
                 displayDate: (new Date()),
-                animateTime: 250
+                animateTime: 250,
+                dimensions: {
+                    controlHeight: '40px',
+                    controlButtonWidth: '40px',
+                    displayRatio: 1
+                }
             };
         }).apply(this, arguments);
         
@@ -283,7 +286,7 @@
                     po.push('<a class="calendar-item-month live ' + (function () {
                             return ( m == n_month ) ? "hover" : "";
                         })() + '" data-calendar-item-month="' + (function () {
-                            return dot_date.getFullYear() + '-' + U.set_digit(m + 1, 2) + '-' + U.set_digit(dot_date.getDate(), 2);
+                            return dot_date.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dot_date.getDate(), 2);
                         })() + '">' + (m + 1) + '월</a>');
                     po.push('</td>');
                     m++;
@@ -355,7 +358,7 @@
                     po.push('<a class="calendar-item-year live ' + (function () {
                             return ( y == n_year ) ? "hover" : "";
                         })() + '" data-calendar-item-year="' + (function () {
-                            return y + '-' + U.set_digit(dot_date.getMonth() + 1, 2) + '-' + U.set_digit(dot_date.getDate(), 2);
+                            return y + '-' + U.setDigit(dot_date.getMonth() + 1, 2) + '-' + U.setDigit(dot_date.getDate(), 2);
                         })() + '">' + (y) + '년</a>');
                     po.push('</td>');
                     y++;
