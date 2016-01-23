@@ -1646,6 +1646,15 @@
             return _target;
         }
 
+        function cssValue(val) {
+            var re = /\D?(\d+)([a-zA-Z%]*)/i,
+                found = ('' + val).match(re),
+                unit = found[2] || "px"
+                ;
+
+            return found[1] + unit;
+        }
+
         return {
             alert: alert,
             each: each,
@@ -1687,7 +1696,8 @@
             times: times,
             daysOfMonth: daysOfMonth,
             weeksOfMonth: weeksOfMonth,
-            findParentNode: findParentNode
+            findParentNode: findParentNode,
+            cssValue: cssValue
         }
     })();
 

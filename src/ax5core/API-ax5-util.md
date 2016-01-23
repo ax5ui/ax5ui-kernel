@@ -366,3 +366,15 @@ jQuery('#id').bind("click.app_expand", function(e){
     }
 });
 ```
+
+## ax5.util.cssValue
+```js
+console.log(ax5.util.cssValue('100px'));
+// 100px
+console.log(ax5.util.cssValue(100));
+// 100px
+console.log(ax5.util.cssValue('100%'));
+// 100%
+console.log(ax5.util.cssValue('##100@'));
+// 100px
+```
