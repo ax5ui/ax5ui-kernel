@@ -1,205 +1,265 @@
-@mixin ax-toast() {
-	box-sizing: $ax5toast-box-model;
-	border: $ax5toast-border;
-	opacity: $ax5toast-opacity;
 
-	@include ax-border-radius($ax5toast-border-radius);
-	box-shadow: $ax5toast-box-shadow;
-	position: relative;
-	margin: $ax5toast-box-margin;
-}
-
-@mixin ax-toast-section() {
-	display: table;
-	padding: $ax5toast-body-padding;
-	.ax-toast-icon {
-		display: table-cell;
-		padding: $ax5toast-body-padding;
-		text-align: left;
-		font-size: $ax5toast-icon-size;
-		width: $ax5toast-icon-size;
-		vertical-align: middle;
-	}
-	.ax-toast-body {
-		display: table-cell;
-		padding: $ax5toast-body-padding;
-		text-align: left;
-		vertical-align: middle;
-	}
-	.ax-toast-buttons {
-		display: table-cell;
-		padding: $ax5toast-body-padding;
-		text-align: right;
-		vertical-align: middle;
-		button {
-			&:not(:last-child) {
-				margin-right: 3px;
-			}
-		}
-	}
-	.ax-toast-close {
-		display: table-cell;
-		padding: $ax5toast-body-padding;
-		text-align: right;
-		vertical-align: top;
-		text-decoration: none;
-		cursor: pointer;
-	}
-}
-
-@mixin toast-variant($text-color, $bg-color, $color) {
-	background: $bg-color;
-	color: $text-color;
-	.ax-toast-icon {
-		color: $color;
-	}
-	.ax-toast-close {
-		color: $text-color;
-	}
-}
-
-@include keyframes(ax-toast-bottom) {
-	from {
-		@include transform(translateY(-100px) scale(0.7));
-	}
-	to {
-		//@include opacity($mask-bg-opacity);
-		@include transform(translateY(0px) scale(1))
-	}
-}
-
-@include keyframes(ax-toast-top) {
-	from {
-		@include transform(translateY(100px) scale(0.7));
-	}
-	to {
-		//@include opacity($mask-bg-opacity);
-		@include transform(translateY(0px) scale(1))
-	}
-}
-
-@include keyframes(ax-toast-removed-bottom) {
-	from {
-		@include transform(translateY(0px));
-	}
-	to {
-		@include transform(translateY(10px) scale(0.7));
-	}
-}
-
-@include keyframes(ax-toast-removed-top) {
-	from {
-		@include transform(translateY(0px));
-	}
-	to {
-		@include transform(translateY(-10px) scale(0.7));
-	}
-}
-
-@include keyframes(ax-toast-destroy) {
-	from {
-		//opacity: 1.0;
-		@include transform(scale(1));
-	}
-	to {
-		@include transform(scale(1.5));
-	}
-}
 
 // mixins --------------------------------------------- end
 
-.ax5-ui-toast-container {
-	z-index: $ax5toast-z-index;
-	position: fixed;
-	width: $ax5toast-container-width;
-	padding: $ax5toast-container-padding;
+@include keyframes(ax5-ui-calendar-fadeout) {
+	from {
+		opacity: 1.0;
+	}
+	to {
+		opacity: 0.0;
+	}
+}
 
-	.ax5-ui-toast {
-		@include ax-toast();
-		@include ax-toast-section();
-		@include transition(all 0.3s ease-in-out);
+@include keyframes(ax5-ui-calendar-fadein) {
+	from {
+		opacity: 0.0;
+	}
+	to {
+		opacity: 1.0;
+	}
+}
 
-		@include toast-variant($ax5toast-default-text, $ax5toast-default-bg, $ax5toast-default-color);
+.ax5-ui-calendar {
+	box-sizing: border-box;
+	position:relative;
+	.calendar-control{
+		position:relative;
+		box-sizing: content-box;
+		@include linear-gradient(to top, nth($ax5calendar-control-bg, 1), nth($ax5calendar-control-bg, 2));
 
-		&.primary {
-			@include toast-variant($ax5toast-primary-text, $ax5toast-primary-bg, $ax5toast-primary-color);
+		border: $ax5calendar-control-border;
+		border-radius: $ax5calendar-control-border-radius;
+		font-size: $ax5calendar-control-font-size;
+		margin-bottom: 5px;
+		.date-move-left{
+			display:block;
+			position:absolute;left:0px;top:0px;
+			text-align: center;
+			font-size: ceil($ax5calendar-control-font-size * 1.2);
+			cursor: pointer;
+			i{line-height: inherit;}
 		}
-		&.success {
-			@include toast-variant($ax5toast-success-text, $ax5toast-success-bg, $ax5toast-success-color);
+		.date-display{
+			text-align:center;
+			[data-calendar-display]{
+				margin: 0px 10px;
+				cursor: pointer;
+				text-decoration: underline;
+			}
 		}
-		&.info {
-			@include toast-variant($ax5toast-info-text, $ax5toast-info-bg, $ax5toast-info-color);
+		.date-move-right{
+			display:block;
+			position:absolute;right:0px;top:0px;
+			text-align: center;
+			font-size: ceil($ax5calendar-control-font-size * 1.2);
+			cursor: pointer;
+			i{line-height: inherit;}
 		}
-		&.warning {
-			@include toast-variant($ax5toast-warning-text, $ax5toast-warning-bg, $ax5toast-warning-color);
+		color: $ax5calendar-control-text-color;
+		a{
+			color: $ax5calendar-control-text-color;
 		}
-		&.danger {
-			@include toast-variant($ax5toast-danger-text, $ax5toast-danger-bg, $ax5toast-danger-color);
+		a:hover{
+			color: $ax5calendar-control-hover-text-color;
 		}
 	}
-
-	&.bottom-left {
-		left: 0;
-		bottom: 0;
-
-		.ax5-ui-toast {
-			@include animation(ax-toast-top 0.3s $ax5toast-easing);
-			&.removed {
-				@include animation(ax-toast-removed-bottom 0.3s $ax5toast-easing forwards);
-			}
-			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
-			}
+	.calendar-body {
+		&.fadein{
+			@include animation(ax5-ui-calendar-fadein 0.3s ease-in-out);
+			opacity: 1.0;
 		}
-	}
-	&.bottom-right {
-		right: 0;
-		bottom: 0;
-
-		.ax5-ui-toast {
-			@include animation(ax-toast-top 0.3s $ax5toast-easing);
-			&.removed {
-				@include animation(ax-toast-removed-bottom 0.3s $ax5toast-easing forwards);
-			}
-			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
-			}
+		&.fadeout{
+			@include animation(ax5-ui-calendar-fadeout 0.3s ease-in-out);
+			opacity: 0.0;
 		}
 
-	}
+		table {
+			box-sizing: border-box;
+			table-layout: fixed;
+			border-collapse: collapse;
+			border-spacing: 0px;
+			thead {
+				td, th {
+					box-sizing: border-box;
+					vertical-align: middle;
+					line-height: 1em;
+					cursor: pointer;
+					text-align: center;
+					font-size: $ax5calendar-header-font-size;
 
+					padding: $ax5calendar-header-padding;
+					border: $ax5calendar-header-border;
+					@include linear-gradient(to top, nth($ax5calendar-header-bg, 1), nth($ax5calendar-header-bg, 2));
 
-	&.top-left {
-		left: 0;
-		top: 0;
-
-		.ax5-ui-toast {
-			@include animation(ax-toast-bottom 0.3s $ax5toast-easing);
-
-			&.removed {
-				@include animation(ax-toast-removed-top 0.3s $ax5toast-easing forwards);
+					color: $ax5calendar-live-text-color;
+					&.calendar-col-0 {
+						color: $ax5calendar-sun-text-color;
+					}
+					&.calendar-col-6 {
+						color: $ax5calendar-sat-text-color;
+					}
+				}
 			}
-			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
-			}
-		}
-	}
+			tbody {
+				td, th {
+					box-sizing: border-box;
+					vertical-align: middle;
+					line-height: 1em;
+					cursor: pointer;
+					text-align: center;
+					font-size: $ax5calendar-body-font-size;
 
-	&.top-right {
-		right: 0;
-		top: 0;
+					border: $ax5calendar-body-border;
+					@include linear-gradient(to top, nth($ax5calendar-body-bg, 1), nth($ax5calendar-body-bg, 2));
 
-		.ax5-ui-toast {
-			@include animation(ax-toast-bottom 0.3s $ax5toast-easing);
-			&.removed {
-				@include animation(ax-toast-removed-top 0.3s $ax5toast-easing forwards);
-			}
-			&.destroy {
-				@include animation(ax-toast-destroy 0.3s $ease-in-back forwards);
+					overflow: hidden;
+					.calendar-item-date {
+						position: relative;
+						display: block;
+						width: 100%;
+						height: 100%;
+						vertical-align: middle;
+						border-radius: 50%;
+						overflow: hidden;
+						line-height: inherit;
+						@include linear-gradient(to top, nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
+						color: $ax5calendar-date-text-color;
+						font-size: 16px;
+
+						span.addon{
+							position: absolute;
+							left:0px;top:0px;
+							width:100%;
+							text-align: center;
+							line-height: 10px;
+						}
+						span.lunar{
+							position: absolute;
+							left:0px;bottom:3px;
+							width:100%;
+							text-align: center;
+							font-size: 12px;
+							color: #eee;
+							line-height: 12px;
+						}
+
+						&.live {
+							@include linear-gradient(to top, nth($ax5calendar-live-bg, 1), nth($ax5calendar-live-bg, 2));
+							color: $ax5calendar-live-text-color;
+							span.addon{
+								color: #A1A1A1;
+							}
+							span.lunar{
+								color: #A1A1A1;
+							}
+						}
+						&.focus {
+							@include linear-gradient(to top, nth($ax5calendar-focus-bg, 1), nth($ax5calendar-focus-bg, 2));
+							color: $ax5calendar-focus-text-color;
+							span.addon{
+								color: $ax5calendar-focus-text-color;
+							}
+							span.lunar{
+								color: $ax5calendar-focus-text-color;
+							}
+							&.hover {
+								@include linear-gradient(to top, nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
+								color: $ax5calendar-hover-text-color !important;
+								span.addon{
+									color: $ax5calendar-hover-text-color;
+								}
+								span.lunar{
+									color: $ax5calendar-hover-text-color;
+								}
+							}
+						}
+						&.hover {
+							@include linear-gradient(to top, nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
+							color: $ax5calendar-hover-text-color !important;
+							span.addon{
+								color: $ax5calendar-hover-text-color;
+							}
+							span.lunar{
+								color: $ax5calendar-hover-text-color;
+							}
+						}
+						&.disable{
+							@include linear-gradient(to top, nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
+							color: lighten($ax5calendar-date-text-color, 10%);
+						}
+					}
+					.calendar-item-month {
+						display: block;
+						width: 100%;
+						height: 100%;
+						vertical-align: middle;
+						border-radius: 0;
+						overflow: hidden;
+						line-height: inherit;
+						@include linear-gradient(nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
+						color: $ax5calendar-date-text-color;
+						font-size: 16px;
+
+						&.live {
+							@include linear-gradient(nth($ax5calendar-live-bg, 1), nth($ax5calendar-live-bg, 2));
+							color: $ax5calendar-live-text-color;
+						}
+						&.hover {
+							@include linear-gradient(nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
+							color: $ax5calendar-hover-text-color;
+						}
+						&.focus {
+							@include linear-gradient(nth($ax5calendar-focus-bg, 1), nth($ax5calendar-focus-bg, 2));
+							color: $ax5calendar-focus-text-color;
+						}
+					}
+					.calendar-item-year {
+						display: block;
+						width: 100%;
+						height: 100%;
+						vertical-align: middle;
+						border-radius: 0;
+						overflow: hidden;
+						line-height: inherit;
+						@include linear-gradient(nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
+						color: $ax5calendar-date-text-color;
+						font-size: 16px;
+
+						&.live {
+							@include linear-gradient(nth($ax5calendar-live-bg, 1), nth($ax5calendar-live-bg, 2));
+							color: $ax5calendar-live-text-color;
+						}
+						&.hover {
+							@include linear-gradient(nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
+							color: $ax5calendar-hover-text-color;
+						}
+						&.focus {
+							@include linear-gradient(nth($ax5calendar-focus-bg, 1), nth($ax5calendar-focus-bg, 2));
+							color: $ax5calendar-focus-text-color;
+						}
+					}
+
+					&.calendar-col-0 {
+						.calendar-item-date.live {
+							color: $ax5calendar-sun-text-color;
+							&:hover {
+								color: $ax5calendar-hover-text-color;
+							}
+						}
+					}
+					&.calendar-col-6 {
+						.calendar-item-date.live {
+							color: $ax5calendar-sat-text-color;
+							&:hover {
+								color: $ax5calendar-hover-text-color;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
 
 
 }
-
