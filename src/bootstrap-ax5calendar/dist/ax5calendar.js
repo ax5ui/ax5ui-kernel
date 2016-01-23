@@ -101,7 +101,7 @@
             }
             
         };
-        
+
         this.getFrame = function () {
             var po = [];
             po.push('<div class="ax5-ui-calendar ' + cfg.theme + '" data-calendar-els="root" style="' + (function () {
