@@ -119,7 +119,7 @@
 					@include linear-gradient(to top, nth($ax5calendar-body-bg, 1), nth($ax5calendar-body-bg, 2));
 
 					overflow: hidden;
-					.calendar-item-date {
+					.calendar-item-day {
 						position: relative;
 						display: block;
 						width: 100%;
@@ -248,19 +248,13 @@
 					}
 
 					&.calendar-col-0 {
-						.calendar-item-date.live {
+						.calendar-item-day.live {
 							color: $ax5calendar-sun-text-color;
-							&:hover {
-								color: $ax5calendar-hover-text-color;
-							}
 						}
 					}
 					&.calendar-col-6 {
-						.calendar-item-date.live {
+						.calendar-item-day.live {
 							color: $ax5calendar-sat-text-color;
-							&:hover {
-								color: $ax5calendar-hover-text-color;
-							}
 						}
 					}
 				}

@@ -39,13 +39,20 @@
         myCalendar.setConfig({
             control: {
                 left: 'P',
-                yearTmpl: '%s년',
-                monthTmpl: '%s월',
-                right: 'N'
+                yearTmpl: '%s',
+                monthTmpl: '%s',
+                right: 'N',
+                yearFirst: true
             },
             dimensions: {
                 itemRatio: 1,
-                itemPadding: 2
+                itemPadding: 2,
+                height: 250
+            },
+            lang: {
+                year: "%s",
+                month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                day: "%s"
             },
             target: document.getElementById("calendar-target"),
             displayDate: "2016-01-01",
