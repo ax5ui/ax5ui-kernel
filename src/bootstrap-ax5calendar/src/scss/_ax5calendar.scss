@@ -33,7 +33,6 @@
 		.date-move-left, .date-move-right {
 			display: block;
 			position: absolute;
-			width: $ax5calendar-control-height;
 			overflow: hidden;
 
 			text-align: center;
@@ -126,7 +125,7 @@
 						width: 100%;
 						height: 100%;
 						vertical-align: middle;
-						border-radius: 50%;
+						border-radius: $ax5calendar-item-day-radius;
 						overflow: hidden;
 						line-height: inherit;
 						@include linear-gradient(to top, nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
@@ -202,7 +201,7 @@
 						width: 100%;
 						height: 100%;
 						vertical-align: middle;
-						border-radius: 0;
+						border-radius: $ax5calendar-item-month-radius;
 						overflow: hidden;
 						line-height: inherit;
 						@include linear-gradient(nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
@@ -227,7 +226,7 @@
 						width: 100%;
 						height: 100%;
 						vertical-align: middle;
-						border-radius: 0;
+						border-radius: $ax5calendar-item-year-radius;
 						overflow: hidden;
 						line-height: inherit;
 						@include linear-gradient(nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));

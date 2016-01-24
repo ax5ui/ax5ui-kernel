@@ -15,24 +15,24 @@
 </head>
 <body style="padding: 50px;">
 
-    <div id="calendar-target"></div>
+<div id="calendar-target" style="width:300px;"></div>
 
-    <!--
-    <button class="btn btn-default" data-calendar-move="prev">이전</button>
-    <button class="btn btn-default" data-calendar-move="next">다음</button>
-    -->
+<!--
+<button class="btn btn-default" data-calendar-move="prev">이전</button>
+<button class="btn btn-default" data-calendar-move="next">다음</button>
+-->
 
 <script>
     $(document.body).ready(function () {
 
         ax5.info.weekNames = [
-            {label:"일"},
-            {label:"월"},
-            {label:"화"},
-            {label:"수"},
-            {label:"목"},
-            {label:"금"},
-            {label:"토"}
+            {label: "일"},
+            {label: "월"},
+            {label: "화"},
+            {label: "수"},
+            {label: "목"},
+            {label: "금"},
+            {label: "토"}
         ];
 
         var myCalendar = new ax5.ui.calendar();
@@ -43,9 +43,14 @@
                 monthTmpl: '%s월',
                 right: 'N'
             },
+            dimensions: {
+                itemRatio: 1,
+                itemPadding: 2
+            },
             target: document.getElementById("calendar-target"),
             displayDate: "2016-01-01",
-            onClick: function(){
+            mode: "day",
+            onClick: function () {
                 console.log(this);
             }
         });

@@ -34,7 +34,7 @@
                 dimensions: {
                     controlHeight: '40px',
                     controlButtonWidth: '40px',
-                    displayRatio: 1
+                    itemPadding: 2
                 }
             };
         }).apply(this, arguments);
@@ -87,32 +87,42 @@
                 }).bind(this));
             }
             
-            if (cfg.mode === "day")
+            if (cfg.mode === "day" || cfg.mode === "d")
             {
                 this.printDay(cfg.displayDate);
             }
-            else if (cfg.mode === "month")
+            else if (cfg.mode === "month" || cfg.mode === "m")
             {
                 this.printMonth(cfg.displayDate);
             }
-            else if (cfg.mode === "year")
+            else if (cfg.mode === "year" || cfg.mode === "y")
             {
                 this.printYear(cfg.displayDate);
             }
             
         };
-
+        
         this.getFrame = function () {
-            var po = [];
-            po.push('<div class="ax5-ui-calendar ' + cfg.theme + '" data-calendar-els="root" style="' + (function () {
-                    return (cfg.width) ? 'width:' + ax5.util.cssNumber(cfg.width) + ';' : '';
-                })() + '" onselectstart="return false;">');
+            var
+                po = []
+                ;
+            
+            po.push('<div class="ax5-ui-calendar ' + cfg.theme + '" data-calendar-els="root" onselectstart="return false;">');
             if (cfg.control)
             {
-                po.push('<div class="calendar-control" data-calendar-els="control" style="">');
-                po.push('<a class="date-move-left" data-calendar-move="left" style="">' + cfg.control.left + '</a>');
-                po.push('<div class="date-display" data-calendar-els="control-display"></div>');
-                po.push('<a class="date-move-right" data-calendar-move="right" style="">' + cfg.control.right + '</a>');
+                var
+                    controlCSS = {},
+                    controlButtonCSS = {}
+                    ;
+                
+                controlButtonCSS["height"] = controlCSS["height"] = U.cssNumber(cfg.dimensions.controlHeight);
+                controlButtonCSS["line-height"] = controlCSS["line-height"] = U.cssNumber(cfg.dimensions.controlHeight);
+                controlButtonCSS["width"] = U.cssNumber(cfg.dimensions.controlHeight);
+                
+                po.push('<div class="calendar-control" data-calendar-els="control" style="' + U.css(controlCSS) + '">');
+                po.push('<a class="date-move-left" data-calendar-move="left" style="' + U.css(controlButtonCSS) + '">' + cfg.control.left + '</a>');
+                po.push('<div class="date-display" data-calendar-els="control-display" style="' + U.css(controlCSS) + '"></div>');
+                po.push('<a class="date-move-right" data-calendar-move="right" style="' + U.css(controlButtonCSS) + '">' + cfg.control.right + '</a>');
                 po.push('</div>');
             }
             po.push('<div class="calendar-body" data-calendar-els="body"></div>');
@@ -125,20 +135,20 @@
             {
                 var myDate = U.date(cfg.displayDate), yy = "", mm = "";
                 
-                if (cfg.mode == "day")
+                if (cfg.mode == "day" || cfg.mode == "d")
                 {
                     if (cfg.control.yearTmpl) yy = cfg.control.yearTmpl.replace('%s', myDate.getFullYear());
                     if (cfg.control.monthTmpl) mm = cfg.control.monthTmpl.replace('%s', (myDate.getMonth() + 1));
                     
                     this.$["control-display"].html('<span data-calendar-display="year">' + yy + '</span>' + '<span data-calendar-display="month">' + mm + '</span>');
                 }
-                else if (cfg.mode == "month")
+                else if (cfg.mode == "month" || cfg.mode == "m")
                 {
                     if (cfg.control.yearTmpl) yy = cfg.control.yearTmpl.replace('%s', myDate.getFullYear());
                     
                     this.$["control-display"].html('<span data-calendar-display="year">' + yy + '</span>');
                 }
-                else if (cfg.mode == "year")
+                else if (cfg.mode == "year" || cfg.mode == "y")
                 {
                     var yy1 = cfg.control.yearTmpl.replace('%s', myDate.getFullYear() - 10);
                     var yy2 = cfg.control.yearTmpl.replace('%s', Number(myDate.getFullYear()) + 9);
@@ -161,21 +171,36 @@
             }
         };
         
-        this.printDay = function (now_date) {
-            var dot_date = U.date(now_date), po = [], month_start_date = new Date(dot_date.getFullYear(), dot_date.getMonth(), 1, 12),
-            //_today = new Date(),
+        this.printDay = function (nowDate) {
+            var
+                dotDate = U.date(nowDate),
+                po = [],
+                monthStratDate = new Date(dotDate.getFullYear(), dotDate.getMonth(), 1, 12),
                 _today = cfg.displayDate,
-                table_start_date = (function () {
-                    var day = month_start_date.getDay();
+                tableStartDate = (function () {
+                    var day = monthStratDate.getDay();
                     if (day == 0) day = 7;
-                    return U.date(month_start_date, {add: {d: -day}});
-                })(), loop_date, this_month = dot_date.getMonth(), this_date = dot_date.getDate(),
-                item_styles = ['width:' + cfg.item_width + 'px', 'height:' + cfg.item_height + 'px', 'line-height:' + (cfg.item_height - cfg.item_padding * 2) + 'px', 'padding:' + cfg.item_padding + 'px'],
-                i, k;
-            
-            po.push('<table data-calendar-table="day" cellpadding="0" cellspacing="0" style="' + (function () {
-                    return (cfg.width) ? 'width:' + cfg.width + 'px;' : 'width:100%;';
-                })() + '">');
+                    return U.date(monthStratDate, {add: {d: -day}});
+                })(),
+                loopDate,
+                thisMonth = dotDate.getMonth(),
+                thisDate = dotDate.getDate(),
+                itemStyles = {}, //['width:' + cfg.item_width + 'px', 'height:' + cfg.item_height + 'px', 'line-height:' + (cfg.item_height - cfg.item_padding * 2) + 'px', 'padding:' + cfg.item_padding + 'px'],
+                i,
+                k,
+                frameWidth = this.$["body"].width(),
+                frameHeight = frameWidth * 6 / 7 // 1week = 7days, 1month = 6weeks
+                ;
+
+            if (cfg.dimensions.height) {
+                frameHeight = U.number(cfg.dimensions.height);
+            }
+
+            itemStyles['height'] = frameHeight / 6 - U.number(cfg.dimensions.itemPadding) * 2 + 'px';
+            itemStyles['line-height'] = itemStyles['height'];
+            itemStyles['padding'] = U.cssNumber(cfg.dimensions.itemPadding);
+
+            po.push('<table data-calendar-table="day" cellpadding="0" cellspacing="0" style="width:100%;">');
             po.push('<thead>');
             po.push('<tr>');
             k = 0;
@@ -189,7 +214,7 @@
             po.push('</tr>');
             po.push('</thead>');
             po.push('<tbody>');
-            loop_date = table_start_date;
+            loopDate = tableStartDate;
             i = 0;
             while (i < 6)
             {
@@ -197,26 +222,26 @@
                 k = 0;
                 while (k < 7)
                 {
-                    po.push('<td class="calendar-col-' + k + '" style="' + item_styles.join(';') + ';">');
+                    po.push('<td class="calendar-col-' + k + '" style="' + U.css(itemStyles) + '">');
                     po.push('<a class="calendar-item-date ' + (function () {
                             if (cfg.selectable) {
-                                if (cfg.selectable[U.date(loop_date, {"return": "yyyy-mm-dd"})]) {
-                                    return ( loop_date.getMonth() == this_month ) ? "live" : "";
+                                if (cfg.selectable[U.date(loopDate, {"return": "yyyy-mm-dd"})]) {
+                                    return ( loopDate.getMonth() == thisMonth ) ? "live" : "";
                                 }
                                 else {
                                     return "disable";
                                 }
                             }
                             else {
-                                return ( loop_date.getMonth() == this_month ) ? ( U.date(loop_date, {"return": "yyyymmdd"}) == U.date(_today, {"return": "yyyymmdd"}) ) ? "focus" : "live" : "";
+                                return ( loopDate.getMonth() == thisMonth ) ? ( U.date(loopDate, {"return": "yyyymmdd"}) == U.date(_today, {"return": "yyyymmdd"}) ) ? "focus" : "live" : "";
                             }
                             
                         })() + ' ' + (function () {
-                            return ""; //( U.date(loop_date, {"return":"yyyymmdd"}) == U.date(cfg.displayDate, {"return":"yyyymmdd"}) ) ? "hover" : "";
-                        })() + '" data-calendar-item-date="' + U.date(loop_date, {"return": cfg.dateFormat}) + '"><span class="addon"></span>' + loop_date.getDate() + '<span class="lunar"></span></a>');
+                            return ""; //( U.date(loopDate, {"return":"yyyymmdd"}) == U.date(cfg.displayDate, {"return":"yyyymmdd"}) ) ? "hover" : "";
+                        })() + '" data-calendar-item-date="' + U.date(loopDate, {"return": cfg.dateFormat}) + '"><span class="addon"></span>' + loopDate.getDate() + '<span class="lunar"></span></a>');
                     po.push('</td>');
                     k++;
-                    loop_date = U.date(loop_date, {add: {d: 1}});
+                    loopDate = U.date(loopDate, {add: {d: 1}});
                 }
                 po.push('</tr>');
                 i++;
@@ -240,26 +265,26 @@
             });
             
             this.printedDay = {
-                start: table_start_date, end: loop_date
+                start: tableStartDate, end: loopDate
             };
             
-            if (cfg.on_event) {
+            if (cfg.onStateChanged) {
                 var that = {
                     action: "printDay",
                     printedDay: this.printedDay
                 };
-                cfg.on_event.call(that, that);
+                cfg.onStateChanged.call(that, that);
             }
             
             this.setDisplay();
         };
         
-        this.printMonth = function (now_date) {
+        this.printMonth = function (nowDate) {
             
             var _item_width = cfg.item_width * 7 / 3, _item_height = cfg.item_height * 6 / 4;
             
-            var dot_date = U.date(now_date), n_month = dot_date.getMonth(), po = [],
-                item_styles = ['width:' + _item_width + 'px', 'height:' + _item_height + 'px', 'line-height:' + (_item_height - cfg.item_padding * 2) + 'px', 'padding:' + cfg.item_padding + 'px'], i, k, m;
+            var dotDate = U.date(nowDate), n_month = dotDate.getMonth(), po = [],
+                itemStyles = ['width:' + _item_width + 'px', 'height:' + _item_height + 'px', 'line-height:' + (_item_height - cfg.item_padding * 2) + 'px', 'padding:' + cfg.item_padding + 'px'], i, k, m;
             
             po.push('<table data-calendar-table="month" cellpadding="0" cellspacing="0" style="' + (function () {
                     return (cfg.width) ? 'width:' + cfg.width + 'px;' : 'width:100%;';
@@ -282,11 +307,11 @@
                 k = 0;
                 while (k < 3)
                 {
-                    po.push('<td class="calendar-col-' + i + '" style="' + item_styles.join(';') + ';">');
+                    po.push('<td class="calendar-col-' + i + '" style="' + itemStyles.join(';') + ';">');
                     po.push('<a class="calendar-item-month live ' + (function () {
                             return ( m == n_month ) ? "hover" : "";
                         })() + '" data-calendar-item-month="' + (function () {
-                            return dot_date.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dot_date.getDate(), 2);
+                            return dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
                         })() + '">' + (m + 1) + '월</a>');
                     po.push('</td>');
                     m++;
@@ -326,11 +351,11 @@
             this.setDisplay();
         };
         
-        this.printYear = function (now_date) {
+        this.printYear = function (nowDate) {
             var _item_width = cfg.item_width * 7 / 4, _item_height = cfg.item_height * 6 / 5;
             
-            var dot_date = U.date(now_date), n_year = dot_date.getFullYear(), po = [],
-                item_styles = ['width:' + _item_width + 'px', 'height:' + _item_height + 'px', 'line-height:' + (_item_height - cfg.item_padding * 2) + 'px', 'padding:' + cfg.item_padding + 'px'], i, k, m;
+            var dotDate = U.date(nowDate), n_year = dotDate.getFullYear(), po = [],
+                itemStyles = ['width:' + _item_width + 'px', 'height:' + _item_height + 'px', 'line-height:' + (_item_height - cfg.item_padding * 2) + 'px', 'padding:' + cfg.item_padding + 'px'], i, k, m;
             
             po.push('<table data-calendar-table="year" cellpadding="0" cellspacing="0" style="' + (function () {
                     return (cfg.width) ? 'width:' + cfg.width + 'px;' : 'width:100%;';
@@ -354,11 +379,11 @@
                 k = 0;
                 while (k < 4)
                 {
-                    po.push('<td class="calendar-col-' + i + '" style="' + item_styles.join(';') + ';">');
+                    po.push('<td class="calendar-col-' + i + '" style="' + itemStyles.join(';') + ';">');
                     po.push('<a class="calendar-item-year live ' + (function () {
                             return ( y == n_year ) ? "hover" : "";
                         })() + '" data-calendar-item-year="' + (function () {
-                            return y + '-' + U.setDigit(dot_date.getMonth() + 1, 2) + '-' + U.setDigit(dot_date.getDate(), 2);
+                            return y + '-' + U.setDigit(dotDate.getMonth() + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
                         })() + '">' + (y) + '년</a>');
                     po.push('</td>');
                     y++;
