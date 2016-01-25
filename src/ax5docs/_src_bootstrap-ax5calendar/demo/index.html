@@ -25,19 +25,37 @@
         <section class="ax5docs-section">
             <h1>Basic Calendar</h1>
 
+            <h4>Step 1.</h4>
             <p>
-
+                To use the calendar UI, you must add the following CSS and JS to the page.<br/>
+                For information about how to install the library and plug-ins, please refer to the <a href="/bootstrap-ax5calendar/">index page</a>.
             </p>
+            <ax5docs-html>
+                <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+                <script type="text/javascript" src="bower_components/ax5core/dist/ax5core.min.js"></script>
+                <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5calendar/ax5calendar.css"/>
+                <script type="text/javascript" src="bower_components/bootstrap-ax5calendar/ax5calendar.min.js"></script>
+            </ax5docs-html>
 
+            <h4>Step 2.</h4>
+            <p>
+                It will prepare the element that is the target of the Calendar UI in the document.
+            </p>
             <ax5docs-html run="true">
                 <div id="calendar-target" style="
                 width:300px;
                 border:1px solid #ccc;
-                border-radius: 10px;">
+                border-radius: 5px;
+                padding: 5px;
+                overflow: hidden;">
 
                 </div>
             </ax5docs-html>
 
+            <h4>Step 3.</h4>
+            <p>
+                Create an instance of ax5.ui.calendar class, using the setConfig method to an instance, you can set the Calendar UI.
+            </p>
             <ax5docs-js run="true">
                 <script type="text/javascript">
                     $(document.body).ready(function () {

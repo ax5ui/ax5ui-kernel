@@ -1550,7 +1550,7 @@
         /**
          * 타겟엘리먼트의 부모 엘리멘트 트리에서 원하는 조건의 엘리먼트를 얻습니다.
          * @method ax5.util.findParentNode
-         * @param {Element} elements - target element
+         * @param {Element} _target - target element
          * @param {Object|Function} cond - 원하는 element를 찾을 조건
          * @returns {Element}
          * @example
@@ -1648,7 +1648,7 @@
 
         /**
          * @method ax5.util.cssNumber
-         * @param {String|Number}
+         * @param {String|Number} val
          * @returns {String}
          * @example
          * ```
@@ -1670,10 +1670,12 @@
 
         /**
          * @method ax5.util.css
-         * @param {Object|String}
+         * @param {Object|String} val - CSSString or CSSObject
          * @returns {String|Object}
          * @example
          * ```
+         * console.log(ax5.util.css({background: "#ccc", padding: "50px", width: "100px"}));
+         * console.log(ax5.util.css('width:100px;padding: 50px; background: #ccc'));
          * ```
          */
         function css(val) {

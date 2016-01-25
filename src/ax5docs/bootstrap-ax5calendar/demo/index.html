@@ -131,16 +131,30 @@
         <section class="ax5docs-section">
             <h1>Basic Calendar</h1>
 
+            <h4>Step 1.</h4>
             <p>
-
+                To use the calendar UI, you must add the following CSS and JS to the page.<br>
+                For information about how to install the library and plug-ins, please refer to the <a href="/bootstrap-ax5calendar/">index page</a>.
             </p>
+            <pre class="prettyprint linenums lang-html">&lt;script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js">&lt;/script>
+&lt;script type="text/javascript" src="bower_components/ax5core/dist/ax5core.min.js">&lt;/script>
+&lt;link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5calendar/ax5calendar.css">
+&lt;script type="text/javascript" src="bower_components/bootstrap-ax5calendar/ax5calendar.min.js">&lt;/script></pre>
 
-            <pre class="prettyprint linenums lang-html">&lt;div id="calendar-target" style="&#10;                width:300px;&#10;                border:1px solid #ccc;&#10;                border-radius: 10px;">
+            <h4>Step 2.</h4>
+            <p>
+                It will prepare the element that is the target of the Calendar UI in the document.
+            </p>
+            <pre class="prettyprint linenums lang-html">&lt;div id="calendar-target" style="&#10;                width:300px;&#10;                border:1px solid #ccc;&#10;                border-radius: 5px;&#10;                padding: 5px;&#10;                overflow: hidden;">
 
-&lt;/div></pre><div id="calendar-target" style="&#10;                width:300px;&#10;                border:1px solid #ccc;&#10;                border-radius: 10px;">
+&lt;/div></pre><div id="calendar-target" style="&#10;                width:300px;&#10;                border:1px solid #ccc;&#10;                border-radius: 5px;&#10;                padding: 5px;&#10;                overflow: hidden;">
 
 </div>
 
+            <h4>Step 3.</h4>
+            <p>
+                Create an instance of ax5.ui.calendar class, using the setConfig method to an instance, you can set the Calendar UI.
+            </p>
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
         var myCalendar = new ax5.ui.calendar();
