@@ -1,6 +1,6 @@
 {
 	"name": "bootstrap-ax5calendar",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "A calendar plugin that works with Bootstrap & jQuery",
 	"license": "MIT",
 	"repository": {
