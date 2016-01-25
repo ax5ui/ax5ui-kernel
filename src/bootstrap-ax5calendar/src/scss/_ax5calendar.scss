@@ -24,7 +24,7 @@
 	.calendar-control {
 		position: relative;
 		box-sizing: content-box;
-		@include linear-gradient(to top, nth($ax5calendar-control-bg, 1), nth($ax5calendar-control-bg, 2));
+		@include ax-background($ax5calendar-control-bg);
 		border: $ax5calendar-control-border;
 		border-radius: $ax5calendar-control-border-radius;
 		font-size: $ax5calendar-control-font-size;
@@ -95,7 +95,7 @@
 
 					padding: $ax5calendar-header-padding;
 					border: $ax5calendar-header-border;
-					@include linear-gradient(to top, nth($ax5calendar-header-bg, 1), nth($ax5calendar-header-bg, 2));
+					@include ax-background($ax5calendar-header-bg);
 
 					color: $ax5calendar-live-text-color;
 					&.calendar-col-0 {
@@ -116,7 +116,7 @@
 					font-size: $ax5calendar-body-font-size;
 
 					border: $ax5calendar-body-border;
-					@include linear-gradient(to top, nth($ax5calendar-body-bg, 1), nth($ax5calendar-body-bg, 2));
+					@include ax-background($ax5calendar-body-bg);
 
 					overflow: hidden;
 					.calendar-item-day {
@@ -128,7 +128,7 @@
 						border-radius: $ax5calendar-item-day-radius;
 						overflow: hidden;
 						line-height: inherit;
-						@include linear-gradient(to top, nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
+						@include ax-background($ax5calendar-date-bg);
 						color: $ax5calendar-date-text-color;
 						font-size: 16px;
 
@@ -152,7 +152,7 @@
 						}
 
 						&.live {
-							@include linear-gradient(to top, nth($ax5calendar-live-bg, 1), nth($ax5calendar-live-bg, 2));
+							@include ax-background($ax5calendar-live-bg);
 							color: $ax5calendar-live-text-color;
 							span.addon {
 								color: #A1A1A1;
@@ -162,7 +162,7 @@
 							}
 						}
 						&.focus {
-							@include linear-gradient(to top, nth($ax5calendar-focus-bg, 1), nth($ax5calendar-focus-bg, 2));
+							@include ax-background($ax5calendar-focus-bg);
 							color: $ax5calendar-focus-text-color;
 							span.addon {
 								color: $ax5calendar-focus-text-color;
@@ -171,7 +171,7 @@
 								color: $ax5calendar-focus-text-color;
 							}
 							&.hover {
-								@include linear-gradient(to top, nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
+								@include ax-background($ax5calendar-hover-bg);
 								color: $ax5calendar-hover-text-color !important;
 								span.addon {
 									color: $ax5calendar-hover-text-color;
@@ -182,7 +182,7 @@
 							}
 						}
 						&.hover {
-							@include linear-gradient(to top, nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
+							@include ax-background($ax5calendar-hover-bg);
 							color: $ax5calendar-hover-text-color !important;
 							span.addon {
 								color: $ax5calendar-hover-text-color;
@@ -192,7 +192,7 @@
 							}
 						}
 						&.disable {
-							@include linear-gradient(to top, nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
+							@include ax-background($ax5calendar-date-bg);
 							color: lighten($ax5calendar-date-text-color, 10%);
 						}
 					}
@@ -204,20 +204,20 @@
 						border-radius: $ax5calendar-item-month-radius;
 						overflow: hidden;
 						line-height: inherit;
-						@include linear-gradient(nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
+						@include ax-background($ax5calendar-date-bg);
 						color: $ax5calendar-date-text-color;
 						font-size: 16px;
 
 						&.live {
-							@include linear-gradient(nth($ax5calendar-live-bg, 1), nth($ax5calendar-live-bg, 2));
+							@include ax-background($ax5calendar-live-bg);
 							color: $ax5calendar-live-text-color;
 						}
 						&.hover {
-							@include linear-gradient(nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
+							@include ax-background($ax5calendar-hover-bg);
 							color: $ax5calendar-hover-text-color;
 						}
 						&.focus {
-							@include linear-gradient(nth($ax5calendar-focus-bg, 1), nth($ax5calendar-focus-bg, 2));
+							@include ax-background($ax5calendar-focus-bg);
 							color: $ax5calendar-focus-text-color;
 						}
 					}
@@ -229,20 +229,20 @@
 						border-radius: $ax5calendar-item-year-radius;
 						overflow: hidden;
 						line-height: inherit;
-						@include linear-gradient(nth($ax5calendar-date-bg, 1), nth($ax5calendar-date-bg, 2));
+						@include ax-background($ax5calendar-date-bg);
 						color: $ax5calendar-date-text-color;
 						font-size: 16px;
 
 						&.live {
-							@include linear-gradient(nth($ax5calendar-live-bg, 1), nth($ax5calendar-live-bg, 2));
+							@include ax-background($ax5calendar-live-bg);
 							color: $ax5calendar-live-text-color;
 						}
 						&.hover {
-							@include linear-gradient(nth($ax5calendar-hover-bg, 1), nth($ax5calendar-hover-bg, 2));
+							@include ax-background($ax5calendar-hover-bg);
 							color: $ax5calendar-hover-text-color;
 						}
 						&.focus {
-							@include linear-gradient(nth($ax5calendar-focus-bg, 1), nth($ax5calendar-focus-bg, 2));
+							@include ax-background($ax5calendar-focus-bg);
 							color: $ax5calendar-focus-text-color;
 						}
 					}
