@@ -44,23 +44,35 @@
                 right: 'N',
                 yearFirst: true
             },
-            dimensions: {
-                itemRatio: 1,
-                itemPadding: 2,
-                height: 250
-            },
-            lang: {
-                year: "%s",
-                month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                day: "%s"
-            },
+
+            /*
+             dimensions: {
+                 itemPadding: 2,
+                 height: 250
+             },
+             */
+            /*
+             lang: {
+                 year: "%s",
+                 month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                 day: "%s"
+             },
+             */
+
             target: document.getElementById("calendar-target"),
-            displayDate: "2016-01-01",
-            mode: "day",
+            displayDate: (new Date()),
+            // mode: "day",
+
             onClick: function () {
+                console.log(myCalendar.getSelection());
+            },
+            onStateChanged: function () {
                 console.log(this);
             }
+            //multipleSelect: 1
         });
+
+        myCalendar.setSelection(['2016-01-11', '2016-01-12', '2016-01-13']);
 
     });
 </script>

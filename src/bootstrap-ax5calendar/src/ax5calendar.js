@@ -19,7 +19,9 @@
         var
             self = this,
             cfg,
-            aDay = 1000 * 60 * 60 * 24;
+            aDay = 1000 * 60 * 60 * 24,
+            selectableCount = 1
+            ;
         
         // 클래스 생성자
         this.main = (function () {
@@ -42,13 +44,15 @@
                     year: "%s",
                     month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                     day: "%s"
-                }
+                },
+                multipleSelect: false
             };
         }).apply(this, arguments);
         
         this.target = null;
+        this.selection = [];
         cfg = this.config;
-        
+
         this.printedDay = {
             start: "", end: ""
         };
@@ -488,9 +492,17 @@
                 }
                 
                 if (selectable) {
-                    this.$["body"].find('[data-calendar-item-date="' + U.date(cfg.displayDate, {"return": cfg.dateFormat}) + '"]').removeClass("hover");
-                    jQuery(target).addClass("hover");
-                    cfg.displayDate = value;
+                    selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
+                    if (self.selection.length >= selectableCount) {
+                        var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
+                        removed.forEach(function (d) {
+                            self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').removeClass("selected");
+                        });
+                    }
+
+                    jQuery(target).addClass("selected");
+                    self.selection.push(value);
+                    // cfg.displayDate = value;
                     
                     if (cfg.onClick)
                     {
@@ -570,7 +582,10 @@
                 this.$["body"].removeClass("fadeout").addClass("fadein");
             }).bind(this), cfg.animateTime);
         };
-        
+
+        /**
+         * @method ax5.ui.calendar.setDisplayDate
+         */
         this.setDisplayDate = function (d) {
             cfg.displayDate = U.date(d);
             
@@ -591,7 +606,34 @@
                 this.$["body"].removeClass("fadeout").addClass("fadein");
             }).bind(this), cfg.animateTime);
         };
-        
+
+        /**
+         * @method ax5.ui.calendar.setSelection
+         * @param {Array} selection
+         * @returns {ax5.ui.calendar}
+         * @example
+         * ```
+         *
+         * ```
+         */
+        this.setSelection = function (selection) {
+            if(!U.isArray(selection)) return this;
+
+            selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
+            this.selection = selection.splice(0, selectableCount);
+            this.selection.forEach(function (d) {
+                self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').addClass("selected");
+            });
+
+            return this;
+        };
+
+        /**
+         * @method ax5.ui.calendar.getSelection
+         */
+        this.getSelection = function () {
+            return this.selection;
+        };
     };
     //== UI Class
     

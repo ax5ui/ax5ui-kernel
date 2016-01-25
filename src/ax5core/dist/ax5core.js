@@ -1646,19 +1646,6 @@
             return _target;
         }
 
-        /**
-         * @method ax5.util.cssNumber
-         * @param {String|Number}
-         * @returns {String}
-         * @example
-         * ```
-         * console.log(ax5.util.cssNumber("100px"))
-         * console.log(ax5.util.cssNumber("100%"))
-         * console.log(ax5.util.cssNumber("100"))
-         * console.log(ax5.util.cssNumber(100))
-         * console.log(ax5.util.cssNumber("!!100@#"))
-         * ```
-         */
         function cssNumber(val) {
             var re = /\D?(\d+)([a-zA-Z%]*)/i,
                 found = ('' + val).match(re),
@@ -1666,36 +1653,6 @@
                 ;
 
             return found[1] + unit;
-        }
-
-        /**
-         * @method ax5.util.css
-         * @param {Object|String}
-         * @returns {String|Object}
-         * @example
-         * ```
-         * ```
-         */
-        function css(val) {
-            var returns;
-            if (isObject(val)) {
-                returns = '';
-                for(var k in val){
-                    returns += k + ':' + val[k] + ';';
-                }
-                return returns;
-            }
-            else if (isString(val)) {
-                returns = {};
-                var valSplited = val.split(/[ ]*;[ ]*/g);
-                valSplited.forEach(function(v){
-                    if((v = v.trim()) !== "") {
-                        var vSplited = v.split(/[ ]*:[ ]*/g);
-                        returns[vSplited[0]] = vSplited[1];
-                    }
-                });
-                return returns;
-            }
         }
 
         return {
@@ -1740,8 +1697,7 @@
             daysOfMonth: daysOfMonth,
             weeksOfMonth: weeksOfMonth,
             findParentNode: findParentNode,
-            cssNumber: cssNumber,
-            css: css
+            cssNumber: cssNumber
         }
     })();
 

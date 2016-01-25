@@ -181,7 +181,7 @@
 								}
 							}
 						}
-						&.hover {
+						&.selected {
 							@include ax-background($ax5calendar-hover-bg);
 							color: $ax5calendar-hover-text-color !important;
 							span.addon {
