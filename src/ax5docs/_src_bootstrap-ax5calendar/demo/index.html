@@ -29,11 +29,30 @@
 
             </p>
 
+            <ax5docs-html run="true">
+                <div id="calendar-target" style="
+                width:300px;
+                border:1px solid #ccc;
+                border-radius: 10px;">
+
+                </div>
+            </ax5docs-html>
 
             <ax5docs-js run="true">
                 <script type="text/javascript">
                     $(document.body).ready(function () {
-
+                        var myCalendar = new ax5.ui.calendar();
+                        myCalendar.setConfig({
+                            target: document.getElementById("calendar-target"),
+                            displayDate: (new Date()),
+                            onClick: function () {
+                                console.log(this);
+                                console.log(myCalendar.getSelection());
+                            },
+                            onStateChanged: function () {
+                                console.log(this);
+                            }
+                        });
                     });
                 </script>
             </ax5docs-js>

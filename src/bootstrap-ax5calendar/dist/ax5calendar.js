@@ -257,7 +257,7 @@
                             }
                             
                         })() + ' ' + (function () {
-                            return ""; //( U.date(loopDate, {"return":"yyyymmdd"}) == U.date(cfg.displayDate, {"return":"yyyymmdd"}) ) ? "hover" : "";
+                            return ""; 
                         })() + '" data-calendar-item-date="' + U.date(loopDate, {"return": cfg.dateFormat}) + '"><span class="addon"></span>'
                         + cfg.lang.day.replace('%s', loopDate.getDate())
                         + '<span class="lunar"></span></a>');
@@ -493,16 +493,18 @@
                 
                 if (selectable) {
                     selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
+                    
+                    console.log(selectableCount);
+                    
                     if (self.selection.length >= selectableCount) {
                         var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
                         removed.forEach(function (d) {
-                            self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').removeClass("selected");
+                            self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').removeClass("selected-day");
                         });
                     }
 
-                    jQuery(target).addClass("selected");
+                    jQuery(target).addClass("selected-day");
                     self.selection.push(value);
-                    // cfg.displayDate = value;
                     
                     if (cfg.onClick)
                     {

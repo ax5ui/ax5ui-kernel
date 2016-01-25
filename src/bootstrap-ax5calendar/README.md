@@ -46,7 +46,17 @@ exactly the path.
 ### Basic Usages
 ```js
 var myCalendar = new ax5.ui.calendar();
-myCalendar.setConfig();
+myCalendar.setConfig({
+    target: document.getElementById("calendar-target"),
+    displayDate: (new Date()),
+    onClick: function () {
+        console.log(this);
+        console.log(myCalendar.getSelection());
+    },
+    onStateChanged: function () {
+        console.log(this);
+    }
+});
 ```
 
 - - -

@@ -135,14 +135,41 @@
 
             </p>
 
+            <pre class="prettyprint linenums lang-html">&lt;div id="calendar-target" style="&#10;                width:300px;&#10;                border:1px solid #ccc;&#10;                border-radius: 10px;">
+
+&lt;/div></pre><div id="calendar-target" style="&#10;                width:300px;&#10;                border:1px solid #ccc;&#10;                border-radius: 10px;">
+
+</div>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-
+        var myCalendar = new ax5.ui.calendar();
+        myCalendar.setConfig({
+            target: document.getElementById("calendar-target"),
+            displayDate: (new Date()),
+            onClick: function () {
+                console.log(this);
+                console.log(myCalendar.getSelection());
+            },
+            onStateChanged: function () {
+                console.log(this);
+            }
+        });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-
+        var myCalendar = new ax5.ui.calendar();
+        myCalendar.setConfig({
+            target: document.getElementById("calendar-target"),
+            displayDate: (new Date()),
+            onClick: function () {
+                console.log(this);
+                console.log(myCalendar.getSelection());
+            },
+            onStateChanged: function () {
+                console.log(this);
+            }
+        });
     });
 </script></script>
         </section>
