@@ -20,7 +20,21 @@ myToast.set_config({
     lang: "Object"
 });
 ```
-
+**Easy Way - without setConfig**
+```js
+var myToast = new ax5.ui.toast({
+    msg: "String",
+    theme: "String",
+    width: "Number", 
+    icon: "String",
+    closeIcon: "String",
+    onStateChanged: "Function",
+    displayTime: "Number",
+    animateTime: "Number",
+    containerPosition: "String",
+    lang: "Object"
+});
+```
 
 ### msg
 

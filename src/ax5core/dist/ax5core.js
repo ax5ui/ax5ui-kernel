@@ -1965,11 +1965,8 @@
 ax5.ui = (function (core) {
 
     function axUi() {
-        // instance init
-        this.main = (function () {
-            this.config = {};
-            this.name = "root";
-        }).apply(this, arguments);
+        this.config = {};
+        this.name = "root";
 
         /**
          * 클래스의 속성 정의 메소드 속성 확장후에 내부에 init 함수를 호출합니다.
@@ -2015,6 +2012,11 @@ ax5.ui = (function (core) {
             e.cancelBubble = true;
             return false;
         }
+
+        // instance init
+        this.main = (function () {
+
+        }).apply(this, arguments);
     }
 
     return {

@@ -16,19 +16,19 @@
     var U = ax5.util;
 
     var axClass = function () {
-        var self = this;
+        var
+            self = this
+            ;
 
-        // 클래스 생성자
-        this.main = (function () {
-            if (_SUPER_) _SUPER_.call(this); // 부모호출
-            this.config = {
-                theme: '',
-                target: jQuery(document.body).get(0)
-            };
-            this.maskContent = '';
-            this.status = "off";
+        if (_SUPER_) _SUPER_.call(this); // 부모호출
+        this.maskContent = '';
+        this.status = "off";
+        this.config = {
+            theme: '',
+            target: jQuery(document.body).get(0)
+        };
+        var cfg = this.config;
 
-        }).apply(this, arguments);
 
         /**
          * Preferences of Mask UI
@@ -44,9 +44,6 @@
 		 * }
          * ```
          */
-            //== class body start
-        var cfg = this.config;
-
         this.init = function () {
             // after setConfig();
             if (this.config.content) this.setBody(this.config.content);
@@ -158,6 +155,14 @@
             return this;
         };
         //== class body end
+
+
+        // 클래스 생성자
+        this.main = (function () {
+            if(arguments && U.isObject(arguments[0])) {
+                this.setConfig(arguments[0]);
+            }
+        }).apply(this, arguments);
     };
 
     //== ui class 공통 처리 구문

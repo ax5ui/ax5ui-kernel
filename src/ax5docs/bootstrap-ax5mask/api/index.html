@@ -134,6 +134,15 @@ mask.setConfig({
     }
 });
 </code></pre>
+<p><strong>Easy Way - without setConfig</strong></p>
+<pre class="prettyprint linenums lang-js"><code>var mask = new ax5.ui.mask({
+   zIndex: 1000, 
+   content: 'Loading content',
+   onStateChanged: function(){
+       console.log(this);
+   }
+});
+</code></pre>
 <pre class="prettyprint linenums lang-json"><code>{
     [target: {Element} - target of mask,]
     [theme: {String} -addClass mask,]

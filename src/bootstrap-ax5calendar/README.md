@@ -32,10 +32,12 @@ exactly the path.
 ```html
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5calendar/dist/ax5calendar.css" />
+        <link rel="stylesheet" type="text/css" 
+        href="bower_components/bootstrap-ax5calendar/dist/ax5calendar.css" />
         <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="bower_components/ax5core/dist/ax5core.min.js"></script>
-        <script type="text/javascript" src="bower_components/bootstrap-ax5calendar/dist/ax5calendar.min.js"></script>
+        <script type="text/javascript" 
+        src="bower_components/bootstrap-ax5calendar/dist/ax5calendar.min.js"></script>
     </head>
 <body>
 ....
@@ -45,8 +47,7 @@ exactly the path.
 
 ### Basic Usages
 ```js
-var myCalendar = new ax5.ui.calendar();
-myCalendar.setConfig({
+var myCalendar = new ax5.ui.calendar({
     target: document.getElementById("calendar-target"),
     displayDate: (new Date()),
     onClick: function () {

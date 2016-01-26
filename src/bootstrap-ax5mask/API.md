@@ -13,6 +13,16 @@ mask.setConfig({
     }
 });
 ```
+**Easy Way - without setConfig**
+```js
+var mask = new ax5.ui.mask({
+   zIndex: 1000, 
+   content: 'Loading content',
+   onStateChanged: function(){
+       console.log(this);
+   }
+});
+```
 ```json
 {
     [target: {Element} - target of mask,]

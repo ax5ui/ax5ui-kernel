@@ -59,8 +59,7 @@
             <ax5docs-js run="true">
                 <script type="text/javascript">
                     $(document.body).ready(function () {
-                        var myCalendar = new ax5.ui.calendar();
-                        myCalendar.setConfig({
+                        new ax5.ui.calendar({
                             target: document.getElementById("calendar-target"),
                             displayDate: (new Date()),
                             onClick: function () {

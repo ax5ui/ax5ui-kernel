@@ -21,27 +21,23 @@
         var
             self = this,
             cfg;
-        
-        // 클래스 생성자
-        this.main = (function () {
-            if (_SUPER_) _SUPER_.call(this); // 부모호출
-            this.config = {
-                position: {
-                    left: "center",
-                    top: "middle",
-                    margin: 10
-                },
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
-                theme: 'default',
-                width: 300,
-                height: 400,
-                closeToEsc: true,
-                animateTime: 250
-            };
-        }).apply(this, arguments);
-        
+
+        if (_SUPER_) _SUPER_.call(this); // 부모호출
         this.activeModal = null;
         this.$ = {}; // UI inside of the jQuery object store
+        this.config = {
+            position: {
+                left: "center",
+                top: "middle",
+                margin: 10
+            },
+            clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
+            theme: 'default',
+            width: 300,
+            height: 400,
+            closeToEsc: true,
+            animateTime: 250
+        };
         cfg = this.config; // extended config copy cfg
         cfg.id = 'ax5-modal-' + ax5.getGuid(); // instance id
         
@@ -273,7 +269,14 @@
                 }
             }
             return this;
-        }
+        };
+
+        // 클래스 생성자
+        this.main = (function () {
+            if(arguments && U.isObject(arguments[0])) {
+                this.setConfig(arguments[0]);
+            }
+        }).apply(this, arguments);
     };
     //== UI Class
     

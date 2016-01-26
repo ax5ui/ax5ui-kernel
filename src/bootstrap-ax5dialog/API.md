@@ -7,7 +7,7 @@ You define the default settings for the dialog. Create a ax5.ui.dialog instance,
  
 ```js
 var myDialog = new ax5.ui.dialog();
-myDialog.set_config({
+myDialog.setConfig({
     title: [String],
     theme: [String],
     width: [Number], 
@@ -17,6 +17,17 @@ myDialog.set_config({
 });
 ```
 
+**Easy Way - without setConfig**
+```js
+var myDialog = new ax5.ui.dialog({
+    title: [String],
+    theme: [String],
+    width: [Number], 
+    onStateChanged: [Function],
+    btns: [Object],
+    input: [Object]
+});
+```
 
 ### title
 

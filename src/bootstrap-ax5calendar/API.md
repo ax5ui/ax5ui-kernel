@@ -3,3 +3,5 @@
 
 ## setConfig()
 `setConfig([options])`
+
+**Easy Way - without setConfig**

@@ -16,46 +16,42 @@
     
     //== UI Class
     var axClass = function () {
+        if (_SUPER_) _SUPER_.call(this); // 부모호출
+
         var
             self = this,
             cfg,
             aDay = 1000 * 60 * 60 * 24,
             selectableCount = 1
             ;
-        
-        // 클래스 생성자
-        this.main = (function () {
-            if (_SUPER_) _SUPER_.call(this); // 부모호출
-            this.config = {
-                clickEventName: "click",
-                theme: 'default',
-                mode: 'day', // day|month|year,
-                dateFormat: 'yyyy-mm-dd',
-                displayDate: (new Date()),
-                animateTime: 250,
-                dimensions: {
-                    controlHeight: '40px',
-                    controlButtonWidth: '40px',
-                    itemPadding: 2
-                },
-                lang: {
-                    yearHeading: "Choose the year",
-                    monthHeading: "Choose the month",
-                    year: "%s",
-                    month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                    day: "%s"
-                },
-                multipleSelect: false
-            };
-        }).apply(this, arguments);
-        
+
         this.target = null;
         this.selection = [];
-        cfg = this.config;
-
         this.printedDay = {
             start: "", end: ""
         };
+        this.config = {
+            clickEventName: "click",
+            theme: 'default',
+            mode: 'day', // day|month|year,
+            dateFormat: 'yyyy-mm-dd',
+            displayDate: (new Date()),
+            animateTime: 250,
+            dimensions: {
+                controlHeight: '40px',
+                controlButtonWidth: '40px',
+                itemPadding: 2
+            },
+            lang: {
+                yearHeading: "Choose the year",
+                monthHeading: "Choose the month",
+                year: "%s",
+                month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                day: "%s"
+            },
+            multipleSelect: false
+        };
+        cfg = this.config;
         
         /**
          * Preferences of calendar UI
@@ -74,8 +70,7 @@
             //== class body start
         this.init = function () {
             // after setConfig();
-            if (!cfg.target)
-            {
+            if (!cfg.target) {
                 console.log(ax5.info.getError("ax5calendar", "401", "setConfig"));
             }
             this.target = jQuery(cfg.target);
@@ -624,7 +619,7 @@
             selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
             this.selection = selection.splice(0, selectableCount);
             this.selection.forEach(function (d) {
-                self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').addClass("selected");
+                self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').addClass("selected-day");
             });
 
             return this;
@@ -636,12 +631,20 @@
         this.getSelection = function () {
             return this.selection;
         };
+
+        // 클래스 생성자
+        this.main = (function () {
+            if(arguments && U.isObject(arguments[0])) {
+                this.setConfig(arguments[0]);
+            }
+        }).apply(this, arguments);
     };
     //== UI Class
-    
+
+
     //== ui class 공통 처리 구문
     if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
     root.calendar = axClass; // ax5.ui에 연결
     //== ui class 공통 처리 구문
-    
+
 })(ax5.ui, ax5.ui.root);

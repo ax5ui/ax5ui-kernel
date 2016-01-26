@@ -21,24 +21,19 @@
             self = this,
             cfg;
 
-        // 클래스 생성자
-        this.main = (function () {
-            if (_SUPER_) _SUPER_.call(this); // 부모호출
-            this.config = {
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
-                theme: 'default',
-                width: 300,
-                title: '',
-                msg: '',
-                lang: {
-                    "ok": "ok", "cancel": "cancel"
-                },
-                animateTime: 250
-            };
-        }).apply(this, arguments);
-
+        if (_SUPER_) _SUPER_.call(this); // 부모호출
         this.activeDialog = null;
-        // extended config copy cfg
+        this.config = {
+            clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
+            theme: 'default',
+            width: 300,
+            title: '',
+            msg: '',
+            lang: {
+                "ok": "ok", "cancel": "cancel"
+            },
+            animateTime: 250
+        };
         cfg = this.config;
         cfg.id = 'ax5-dialog-' + ax5.getGuid();
 
@@ -419,6 +414,13 @@
             }
             return this;
         }
+
+        // 클래스 생성자
+        this.main = (function () {
+            if(arguments && U.isObject(arguments[0])) {
+                this.setConfig(arguments[0]);
+            }
+        }).apply(this, arguments);
     };
     //== UI Class
 

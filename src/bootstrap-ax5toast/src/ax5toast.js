@@ -21,28 +21,24 @@
         var
             self = this,
             cfg;
-        
-        // 클래스 생성자
-        this.main = (function () {
-            if (_SUPER_) _SUPER_.call(this); // 부모호출
-            this.config = {
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
-                theme: 'default',
-                width: 300,
-                icon: '',
-                closeIcon: '',
-                msg: '',
-                lang: {
-                    "ok": "ok", "cancel": "cancel"
-                },
-                displayTime: 3000,
-                animateTime: 250,
-                containerPosition: "bottom-left"
-            };
-        }).apply(this, arguments);
-        
+
+        if (_SUPER_) _SUPER_.call(this); // 부모호출
         this.toastContainer = null;
         this.queue = [];
+        this.config = {
+            clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
+            theme: 'default',
+            width: 300,
+            icon: '',
+            closeIcon: '',
+            msg: '',
+            lang: {
+                "ok": "ok", "cancel": "cancel"
+            },
+            displayTime: 3000,
+            animateTime: 250,
+            containerPosition: "bottom-left"
+        };
         cfg = this.config;
         
         /**
@@ -265,7 +261,14 @@
                 }
             }, cfg.animateTime);
             return this;
-        }
+        };
+
+        // 클래스 생성자
+        this.main = (function () {
+            if(arguments && U.isObject(arguments[0])) {
+                this.setConfig(arguments[0]);
+            }
+        }).apply(this, arguments);
     };
     //== UI Class
     

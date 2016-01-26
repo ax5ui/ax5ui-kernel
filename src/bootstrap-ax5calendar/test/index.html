@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>ㅔ목
+<head>
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" type="text/css" href="../dist/ax5calendar.css"/>
@@ -35,8 +35,7 @@
             {label: "토"}
         ];
 
-        var myCalendar = new ax5.ui.calendar();
-        myCalendar.setConfig({
+        var myCalendar = new ax5.ui.calendar({
             control: {
                 left: 'P',
                 yearTmpl: '%s',
@@ -47,15 +46,15 @@
 
             /*
              dimensions: {
-                 itemPadding: 2,
-                 height: 250
+             itemPadding: 2,
+             height: 250
              },
              */
             /*
              lang: {
-                 year: "%s",
-                 month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                 day: "%s"
+             year: "%s",
+             month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+             day: "%s"
              },
              */
 

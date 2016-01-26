@@ -129,7 +129,17 @@
 <p><code>setConfig([options])</code>
 You define the default settings for the dialog. Create a ax5.ui.dialog instance, using the setConfig method in that instance, you can define a default value.</p>
 <pre class="prettyprint linenums lang-js"><code>var myDialog = new ax5.ui.dialog();
-myDialog.set_config({
+myDialog.setConfig({
+    title: [String],
+    theme: [String],
+    width: [Number], 
+    onStateChanged: [Function],
+    btns: [Object],
+    input: [Object]
+});
+</code></pre>
+<p><strong>Easy Way - without setConfig</strong></p>
+<pre class="prettyprint linenums lang-js"><code>var myDialog = new ax5.ui.dialog({
     title: [String],
     theme: [String],
     width: [Number], 
