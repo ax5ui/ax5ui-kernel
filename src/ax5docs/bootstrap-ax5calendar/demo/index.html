@@ -121,7 +121,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5calendar/demo/index.html">Basic Calendar</a></li></ul>
+        <ul><li  class='active'><a href="/bootstrap-ax5calendar/demo/index.html">Basic Calendar</a></li><li ><a href="/bootstrap-ax5calendar/demo/control.html">Control Calendar</a></li></ul>
     
 					</div>
 				</div>
@@ -157,7 +157,7 @@
             </p>
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-        new ax5.ui.calendar({
+        var myCalendar = new ax5.ui.calendar({
             target: document.getElementById("calendar-target"),
             displayDate: (new Date()),
             onClick: function () {
@@ -171,7 +171,7 @@
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-        new ax5.ui.calendar({
+        var myCalendar = new ax5.ui.calendar({
             target: document.getElementById("calendar-target"),
             displayDate: (new Date()),
             onClick: function () {

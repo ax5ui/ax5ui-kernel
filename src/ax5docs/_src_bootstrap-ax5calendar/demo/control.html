@@ -1,46 +1,42 @@
 <tmpl-metadata>
     <parentId>demo</parentId>
     <parent>Demo</parent>
-    <sort>1</sort>
+    <sort>2</sort>
 
-    <id>basic</id>
-    <title>Basic Calendar</title>
+    <id>control</id>
+    <title>Control Calendar</title>
     <desc></desc>
 </tmpl-metadata>
 
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Basic Calendar" parent-id="demo"
-            page-id="basic" body-style="sub-page" with-menu="true">
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Control Calendar" parent-id="demo"
+            page-id="control" body-style="sub-page" with-menu="true">
     <layout-put into="docs-menu">
-        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="basic"></ax5docs-get-sub-list>
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="control"></ax5docs-get-sub-list>
     </layout-put>
     <layout-put into="visual">
         <include template="../_inc/include.html" id="demo-visual"/>
     </layout-put>
     <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css"/>
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/ax5calendar.css"/>
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/ax5calendar.min.js"></script>
     </layout-put>
     <layout-put into="body">
 
         <section class="ax5docs-section">
-            <h1>Basic Calendar</h1>
+            <h1>Control Calendar</h1>
 
-            <h4>Step 1.</h4>
             <p>
-                To use the calendar UI, you must add the following CSS and JS to the page.<br/>
-                For information about how to install the library and plug-ins, please refer to the <a href="/bootstrap-ax5calendar/">index page</a>.
+                It'll add a CSS tag for the font icon on the page. When you use the font of the icon, you can use the simple variety of image only Tag.
             </p>
             <ax5docs-html>
-                <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
-                <script type="text/javascript" src="bower_components/ax5core/dist/ax5core.min.js"></script>
-                <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5calendar/ax5calendar.css"/>
-                <script type="text/javascript" src="bower_components/bootstrap-ax5calendar/ax5calendar.min.js"></script>
+                <link rel="stylesheet" type="text/css" href="bower_components/font-awesome/css/font-awesome.css"/>
             </ax5docs-html>
 
-            <h4>Step 2.</h4>
             <p>
                 It will prepare the element that is the target of the Calendar UI in the document.
             </p>
+
             <ax5docs-html run="true">
                 <div id="calendar-target" style="
                 width:300px;
@@ -52,7 +48,8 @@
                 </div>
             </ax5docs-html>
 
-            <h4>Step 3.</h4>
+            <p></p>
+
             <p>
                 Create an instance of ax5.ui.calendar class, using the setConfig method to an instance, you can set the Calendar UI.
             </p>
@@ -61,10 +58,16 @@
                     $(document.body).ready(function () {
                         var myCalendar = new ax5.ui.calendar({
                             target: document.getElementById("calendar-target"),
+                            control: {
+                                left: '<i class="fa fa-chevron-left"></i>',
+                                yearTmpl: '%s',
+                                monthTmpl: '%s',
+                                right: '<i class="fa fa-chevron-right"></i>',
+                                yearFirst: true
+                            },
                             displayDate: (new Date()),
                             onClick: function () {
-                                console.log(this);
-                                console.log(myCalendar.getSelection());
+
                             },
                             onStateChanged: function () {
                                 console.log(this);
