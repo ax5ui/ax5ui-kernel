@@ -49,7 +49,8 @@
                 month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                 day: "%s"
             },
-            multipleSelect: false
+            multipleSelect: false,
+            selectMode: 'day'
         };
         cfg = this.config;
         
@@ -200,7 +201,7 @@
                 loopDate,
                 thisMonth = dotDate.getMonth(),
                 thisDate = dotDate.getDate(),
-                itemStyles = {}, //['width:' + cfg.item_width + 'px', 'height:' + cfg.item_height + 'px', 'line-height:' + (cfg.item_height - cfg.item_padding * 2) + 'px', 'padding:' + cfg.item_padding + 'px'],
+                itemStyles = {},
                 i,
                 k,
                 frameWidth = this.$["body"].width(),
@@ -488,9 +489,7 @@
                 
                 if (selectable) {
                     selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
-                    
-                    console.log(selectableCount);
-                    
+
                     if (self.selection.length >= selectableCount) {
                         var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
                         removed.forEach(function (d) {
@@ -564,15 +563,15 @@
             
             this.$["body"].removeClass("fadein").addClass("fadeout");
             setTimeout((function () {
-                if (cfg.mode == "day")
+                if (cfg.mode == "day" || cfg.mode == "d")
                 {
                     this.printDay(cfg.displayDate);
                 }
-                else if (cfg.mode == "month")
+                else if (cfg.mode == "month" || cfg.mode == "m")
                 {
                     this.printMonth(cfg.displayDate);
                 }
-                else if (cfg.mode == "year")
+                else if (cfg.mode == "year" || cfg.mode == "y")
                 {
                     this.printYear(cfg.displayDate);
                 }

@@ -1,0 +1,85 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>4</sort>
+
+    <id>dimension</id>
+    <title>Calendar Dimensions</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Calendar Dimensions" parent-id="demo"
+            page-id="dimension" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="dimension"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css"/>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/ax5calendar.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/ax5calendar.min.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+        <section class="ax5docs-section">
+            <h1>Calendar Dimensions</h1>
+
+            <p>
+                It'll add a CSS tag for the font icon on the page. When you use the font of the icon, you can use the simple variety of image only Tag.
+            </p>
+            <ax5docs-html>
+                <link rel="stylesheet" type="text/css" href="bower_components/font-awesome/css/font-awesome.css"/>
+            </ax5docs-html>
+
+            <p>
+                It will prepare the element that is the target of the Calendar UI in the document.
+            </p>
+
+            <ax5docs-html run="true">
+                <div id="calendar-target" style="
+                width:300px;
+                border:1px solid #ccc;
+                border-radius: 5px;
+                padding: 5px;
+                overflow: hidden;">
+
+                </div>
+            </ax5docs-html>
+
+            <p></p>
+
+            <p>
+                Create an instance of ax5.ui.calendar class, using the setConfig method to an instance, you can set the Calendar UI.
+            </p>
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var myCalendar = new ax5.ui.calendar({
+                            target: document.getElementById("calendar-target"),
+                            control: {
+                                left: '<i class="fa fa-chevron-left"></i>',
+                                yearTmpl: '%s',
+                                monthTmpl: '%s',
+                                right: '<i class="fa fa-chevron-right"></i>',
+                                yearFirst: true
+                            },
+                            displayDate: (new Date()),
+                            onClick: function () {
+
+                            },
+                            onStateChanged: function () {
+                                console.log(this);
+                            }
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+        </section>
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>

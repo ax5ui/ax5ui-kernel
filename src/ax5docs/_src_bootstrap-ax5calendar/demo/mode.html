@@ -1,0 +1,65 @@
+<tmpl-metadata>
+    <parentId>demo</parentId>
+    <parent>Demo</parent>
+    <sort>3</sort>
+
+    <id>mode-change</id>
+    <title>Change Calendar mode</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Change Calendar mode" parent-id="demo"
+            page-id="mode-change" body-style="sub-page" with-menu="true">
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="mode-change"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css"/>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/ax5calendar.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/ax5calendar.min.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+        <section class="ax5docs-section">
+            <h1>Change Calendar mode</h1>
+
+            <p>html</p>
+            <ax5docs-html run="true">
+                <div id="build-target"></div>
+                <div class="DH10"></div>
+                <button class="btn btn-default" data-change-calendar-mode="d">Day</button>
+                <button class="btn btn-default" data-change-calendar-mode="m">Month</button>
+                <button class="btn btn-default" data-change-calendar-mode="y">Year</button>
+                <div class="DH10"></div>
+            </ax5docs-html>
+
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        var buildTarget = $("#build-target");
+                        buildTarget.html('<div id="calendar-target" style="width:300px;border:1px solid #888;padding: 10px;"></div>');
+
+                        var myCalendar = new ax5.ui.calendar({
+                            target: document.getElementById("calendar-target"),
+                            displayDate: (new Date()),
+                            mode: "year"
+                        });
+
+                        $('[data-change-calendar-mode]').click(function () {
+                            var mode = this.getAttribute('data-change-calendar-mode');
+                            myCalendar.changeMode(mode);
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+        </section>
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>
