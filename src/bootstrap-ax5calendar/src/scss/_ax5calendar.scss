@@ -220,6 +220,20 @@
 							@include ax-background($ax5calendar-focus-bg);
 							color: $ax5calendar-focus-text-color;
 						}
+						&.selected-month {
+							@include ax-background($ax5calendar-hover-bg);
+							color: $ax5calendar-hover-text-color !important;
+							span.addon {
+								color: $ax5calendar-hover-text-color;
+							}
+							span.lunar {
+								color: $ax5calendar-hover-text-color;
+							}
+						}
+						&.disable {
+							@include ax-background($ax5calendar-date-bg);
+							color: lighten($ax5calendar-date-text-color, 10%);
+						}
 					}
 					.calendar-item-year {
 						display: block;
@@ -244,6 +258,20 @@
 						&.focus {
 							@include ax-background($ax5calendar-focus-bg);
 							color: $ax5calendar-focus-text-color;
+						}
+						&.selected-year {
+							@include ax-background($ax5calendar-hover-bg);
+							color: $ax5calendar-hover-text-color !important;
+							span.addon {
+								color: $ax5calendar-hover-text-color;
+							}
+							span.lunar {
+								color: $ax5calendar-hover-text-color;
+							}
+						}
+						&.disable {
+							@include ax-background($ax5calendar-date-bg);
+							color: lighten($ax5calendar-date-text-color, 10%);
 						}
 					}
 

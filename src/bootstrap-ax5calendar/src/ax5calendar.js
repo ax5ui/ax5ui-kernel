@@ -52,6 +52,8 @@
             multipleSelect: false,
             selectMode: 'day'
         };
+        // todo : selectMode 구현
+
         cfg = this.config;
         
         /**
@@ -253,7 +255,7 @@
                             }
                             
                         })() + ' ' + (function () {
-                            return ""; 
+                            return "";
                         })() + '" data-calendar-item-date="' + U.date(loopDate, {"return": cfg.dateFormat}) + '"><span class="addon"></span>'
                         + cfg.lang.day.replace('%s', loopDate.getDate())
                         + '<span class="lunar"></span></a>');
@@ -270,7 +272,7 @@
             this.$["body"].html(po.join(''));
             this.$["body"].find('[data-calendar-item-date]').on(cfg.clickEventName, function (e) {
                 e = e || window.event;
-                self.onclick(e);
+                self.onclick(e, 'date');
                 
                 try {
                     if (e.preventDefault) e.preventDefault();
@@ -307,6 +309,7 @@
                 i,
                 k,
                 m,
+                tableStartMonth,
                 frameWidth = this.$["body"].width(),
                 frameHeight = Math.floor(frameWidth * (6 / 7))
                 ;
@@ -330,7 +333,8 @@
             po.push('</tr>');
             po.push('</thead>');
             po.push('<tbody>');
-            
+
+            tableStartMonth = 0;
             m = 0;
             i = 0;
             while (i < 4)
@@ -341,7 +345,7 @@
                 {
                     po.push('<td class="calendar-col-' + i + '" style="' + U.css(itemStyles) + '">');
                     po.push('<a class="calendar-item-month live ' + (function () {
-                            return ( m == nMonth ) ? "hover" : "";
+                            return ( m == nMonth ) ? "focus" : "";
                         })() + '" data-calendar-item-month="' + (function () {
                             return dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
                         })() + '">'
@@ -360,28 +364,29 @@
             this.$["body"].html(po.join(''));
             this.$["body"].find('[data-calendar-item-month]').on(cfg.clickEventName, function (e) {
                 e = e || window.event;
-                target = U.findParentNode(e.target, function (target) {
-                    if (target.getAttribute("data-calendar-item-month"))
-                    {
-                        return true;
-                    }
-                });
-                if (target)
-                {
-                    value = target.getAttribute("data-calendar-item-month");
-                    self.changeMode("day", value);
-                    //alert(value);
-                    try {
-                        if (e.preventDefault) e.preventDefault();
-                        if (e.stopPropagation) e.stopPropagation();
-                        e.cancelBubble = true;
-                    } catch (e) {
-                        
-                    }
-                    return false;
+                self.onclick(e, 'month');
+                try {
+                    if (e.preventDefault) e.preventDefault();
+                    if (e.stopPropagation) e.stopPropagation();
+                    e.cancelBubble = true;
+                } catch (e) {
+
                 }
+                return false;
             });
-            
+
+            this.printedDay = {
+                start: dotDate.getFullYear() + '-' + U.setDigit(tableStartMonth + 1, 2), end: dotDate.getFullYear() + '-' + U.setDigit(m, 2)
+            };
+
+            if (cfg.onStateChanged) {
+                var that = {
+                    action: "printMonth",
+                    printedDay: this.printedDay
+                };
+                cfg.onStateChanged.call(that, that);
+            }
+
             this.setDisplay();
         };
         
@@ -393,7 +398,8 @@
                 itemStyles = {},
                 i,
                 k,
-                m,
+                y,
+                tableStartYear,
                 frameWidth = this.$["body"].width(),
                 frameHeight = Math.floor(frameWidth * (6 / 7))
                 ;
@@ -418,7 +424,8 @@
             po.push('</thead>');
             
             po.push('<tbody>');
-            
+
+            tableStartYear = nYear - 10;
             y = nYear - 10;
             i = 0;
             while (i < 5)
@@ -429,7 +436,7 @@
                 {
                     po.push('<td class="calendar-col-' + i + '" style="' + U.css(itemStyles) + '">');
                     po.push('<a class="calendar-item-year live ' + (function () {
-                            return ( y == nYear ) ? "hover" : "";
+                            return ( y == nYear ) ? "focus" : "";
                         })() + '" data-calendar-item-year="' + (function () {
                             return y + '-' + U.setDigit(dotDate.getMonth() + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
                         })() + '">' + cfg.lang.year.replace('%s', (y)) + '</a>');
@@ -446,65 +453,122 @@
             this.$["body"].html(po.join(''));
             this.$["body"].find('[data-calendar-item-year]').on(cfg.clickEventName, function (e) {
                 e = (e || window.event);
-                target = U.findParentNode(e.target, function (target) {
-                    if (target.getAttribute("data-calendar-item-year"))
-                    {
-                        return true;
-                    }
-                });
-                if (target)
-                {
-                    value = target.getAttribute("data-calendar-item-year");
-                    self.changeMode("month", value);
-                    
-                    try {
-                        if (e.preventDefault) e.preventDefault();
-                        if (e.stopPropagation) e.stopPropagation();
-                        e.cancelBubble = true;
-                    } catch (e) {
-                        
-                    }
-                    return false;
+                self.onclick(e, 'year');
+                try {
+                    if (e.preventDefault) e.preventDefault();
+                    if (e.stopPropagation) e.stopPropagation();
+                    e.cancelBubble = true;
+                } catch (e) {
+
                 }
+                return false;
             });
-            
+
+            this.printedDay = {
+                start: tableStartYear, end: y - 1
+            };
+
+            if (cfg.onStateChanged) {
+                var that = {
+                    action: "printYear",
+                    printedDay: this.printedDay
+                };
+                cfg.onStateChanged.call(that, that);
+            }
+
             this.setDisplay();
         };
         
-        this.onclick = function (e, target, value) {
+        this.onclick = function (e, mode, target, value) {
+            mode = mode || "date";
             target = U.findParentNode(e.target, function (target) {
-                if (target.getAttribute("data-calendar-item-date"))
+                if (target.getAttribute("data-calendar-item-" + mode))
                 {
                     return true;
                 }
             });
             if (target)
             {
-                value = target.getAttribute("data-calendar-item-date");
-                var dt = U.date(value, {"return": cfg.dateFormat}), selectable = true;
-                
+                value = target.getAttribute("data-calendar-item-" + mode);
+
+                var
+                    dt = U.date(value, {"return": cfg.dateFormat}),
+                    selectable = true
+                    ;
+
                 if (cfg.selectable) {
                     if (!cfg.selectable[dt]) selectable = false;
-                }
-                
-                if (selectable) {
                     selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
+                }
 
-                    if (self.selection.length >= selectableCount) {
-                        var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
-                        removed.forEach(function (d) {
-                            self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').removeClass("selected-day");
-                        });
+                if (mode == "date") {
+                    if (selectable) {
+                        if (self.selection.length >= selectableCount) {
+                            var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
+                            removed.forEach(function (d) {
+                                self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').removeClass("selected-day");
+                            });
+                        }
+
+                        jQuery(target).addClass("selected-day");
+                        self.selection.push(value);
+
+                        if (cfg.onClick)
+                        {
+                            cfg.onClick.call({
+                                date: value, target: this.target, dateElement: target
+                            });
+                        }
                     }
+                }
+                else if (mode == "month") {
+                    if (cfg.selectMode == "month") {
+                        if (selectable) {
+                            if (self.selection.length >= selectableCount) {
+                                var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
+                                removed.forEach(function (d) {
+                                    self.$["body"].find('[data-calendar-item-month="' + U.date(d, {"return": 'yyyy-mm-dd'}) + '"]').removeClass("selected-month");
+                                });
+                            }
 
-                    jQuery(target).addClass("selected-day");
-                    self.selection.push(value);
-                    
-                    if (cfg.onClick)
-                    {
-                        cfg.onClick.call({
-                            date: value, target: this.target, dateElement: target
-                        });
+                            jQuery(target).addClass("selected-month");
+                            self.selection.push(value);
+
+                            if (cfg.onClick)
+                            {
+                                cfg.onClick.call({
+                                    date: value, target: this.target, dateElement: target
+                                });
+                            }
+                        }
+                    }
+                    else {
+                        self.changeMode("day", value);
+                    }
+                }
+                else if (mode == "year") {
+                    if (cfg.selectMode == "year") {
+                        if (selectable) {
+                            if (self.selection.length >= selectableCount) {
+                                var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
+                                removed.forEach(function (d) {
+                                    self.$["body"].find('[data-calendar-item-year="' + U.date(d, {"return": 'yyyy-mm-dd'}) + '"]').removeClass("selected-year");
+                                });
+                            }
+
+                            jQuery(target).addClass("selected-year");
+                            self.selection.push(value);
+
+                            if (cfg.onClick)
+                            {
+                                cfg.onClick.call({
+                                    date: value, target: this.target, dateElement: target
+                                });
+                            }
+                        }
+                    }
+                    else {
+                        self.changeMode("month", value);
                     }
                 }
             }
@@ -613,7 +677,7 @@
          * ```
          */
         this.setSelection = function (selection) {
-            if(!U.isArray(selection)) return this;
+            if (!U.isArray(selection)) return this;
 
             selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
             this.selection = selection.splice(0, selectableCount);
@@ -633,13 +697,12 @@
 
         // 클래스 생성자
         this.main = (function () {
-            if(arguments && U.isObject(arguments[0])) {
+            if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
         }).apply(this, arguments);
     };
     //== UI Class
-
 
     //== ui class 공통 처리 구문
     if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
