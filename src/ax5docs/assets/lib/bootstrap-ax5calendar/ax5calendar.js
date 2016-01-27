@@ -108,7 +108,8 @@
             {
                 this.printYear(cfg.displayDate);
             }
-            
+
+
         };
         
         this.getFrame = function () {
@@ -187,6 +188,8 @@
                     }
                 }).bind(this));
             }
+
+            return this;
         };
         
         this.printDay = function (nowDate) {
@@ -388,6 +391,8 @@
             }
 
             this.setDisplay();
+
+            return this;
         };
         
         this.printYear = function (nowDate) {
@@ -477,6 +482,8 @@
             }
 
             this.setDisplay();
+
+            return this;
         };
         
         this.onclick = function (e, mode, target, value) {
@@ -619,11 +626,19 @@
                     this.printYear(cfg.displayDate);
                 }
             }
+
+            return this;
         };
-        
-        this.changeMode = function (mode, change_date) {
-            if (typeof change_date != "undefined") cfg.displayDate = change_date;
-            cfg.mode = mode;
+
+        /**
+         * @method ax5.ui.calendar.changeMode
+         * @param {String} mode
+         * @param {String} changeDate
+         * @returns {ax5.ui.calendar}
+         */
+        this.changeMode = function (mode, changeDate) {
+            if (typeof changeDate != "undefined") cfg.displayDate = changeDate;
+            if(mode) cfg.mode = mode;
             
             this.$["body"].removeClass("fadein").addClass("fadeout");
             setTimeout((function () {
@@ -641,30 +656,36 @@
                 }
                 this.$["body"].removeClass("fadeout").addClass("fadein");
             }).bind(this), cfg.animateTime);
+
+            return this;
         };
 
         /**
          * @method ax5.ui.calendar.setDisplayDate
+         * @param {String|Data} d
+         * @returns {ax5.ui.calendar}
          */
         this.setDisplayDate = function (d) {
             cfg.displayDate = U.date(d);
             
             this.$["body"].removeClass("fadein").addClass("fadeout");
             setTimeout((function () {
-                if (cfg.mode == "day")
+                if (cfg.mode == "day" || cfg.mode == "d")
                 {
                     this.printDay(cfg.displayDate);
                 }
-                else if (cfg.mode == "month")
+                else if (cfg.mode == "month" || cfg.mode == "m")
                 {
                     this.printMonth(cfg.displayDate);
                 }
-                else if (cfg.mode == "year")
+                else if (cfg.mode == "year" || cfg.mode == "y")
                 {
                     this.printYear(cfg.displayDate);
                 }
                 this.$["body"].removeClass("fadeout").addClass("fadein");
             }).bind(this), cfg.animateTime);
+
+            return this;
         };
 
         /**

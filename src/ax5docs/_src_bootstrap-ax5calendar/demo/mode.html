@@ -30,9 +30,9 @@
             <ax5docs-html run="true">
                 <div id="build-target"></div>
                 <div class="DH10"></div>
-                <button class="btn btn-default" data-change-calendar-mode="d">Day</button>
-                <button class="btn btn-default" data-change-calendar-mode="m">Month</button>
-                <button class="btn btn-default" data-change-calendar-mode="y">Year</button>
+                <button class="btn btn-default" data-change-calendar-mode="day">Day</button>
+                <button class="btn btn-default" data-change-calendar-mode="month">Month</button>
+                <button class="btn btn-default" data-change-calendar-mode="year">Year</button>
                 <div class="DH10"></div>
             </ax5docs-html>
 
@@ -46,12 +46,19 @@
                         var myCalendar = new ax5.ui.calendar({
                             target: document.getElementById("calendar-target"),
                             displayDate: (new Date()),
-                            mode: "year"
+                            mode: "year",
+                            selectMode: "year"
                         });
 
                         $('[data-change-calendar-mode]').click(function () {
                             var mode = this.getAttribute('data-change-calendar-mode');
-                            myCalendar.changeMode(mode);
+                            console.log(mode);
+                            myCalendar
+                                .setConfig({
+                                    mode: mode,
+                                    selectMode: mode
+                                }, false)
+                                .changeMode();
                         });
                     });
                 </script>

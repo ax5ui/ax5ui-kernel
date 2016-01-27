@@ -26,53 +26,37 @@
         <section class="ax5docs-section">
             <h1>Calendar Dimensions</h1>
 
-            <p>
-                It'll add a CSS tag for the font icon on the page. When you use the font of the icon, you can use the simple variety of image only Tag.
-            </p>
-            <ax5docs-html>
-                <link rel="stylesheet" type="text/css" href="bower_components/font-awesome/css/font-awesome.css"/>
-            </ax5docs-html>
-
-            <p>
-                It will prepare the element that is the target of the Calendar UI in the document.
-            </p>
-
+            <p>html</p>
             <ax5docs-html run="true">
-                <div id="calendar-target" style="
-                width:300px;
-                border:1px solid #ccc;
-                border-radius: 5px;
-                padding: 5px;
-                overflow: hidden;">
-
-                </div>
+                <div id="build-target"></div>
             </ax5docs-html>
 
-            <p></p>
-
-            <p>
-                Create an instance of ax5.ui.calendar class, using the setConfig method to an instance, you can set the Calendar UI.
-            </p>
             <ax5docs-js run="true">
                 <script type="text/javascript">
                     $(document.body).ready(function () {
-                        var myCalendar = new ax5.ui.calendar({
-                            target: document.getElementById("calendar-target"),
-                            control: {
-                                left: '<i class="fa fa-chevron-left"></i>',
-                                yearTmpl: '%s',
-                                monthTmpl: '%s',
-                                right: '<i class="fa fa-chevron-right"></i>',
-                                yearFirst: true
-                            },
-                            displayDate: (new Date()),
-                            onClick: function () {
+                        var buildTarget = $("#build-target");
+                        buildTarget.html(
+                            '<div id="calendar-target-01" style="width:300px;border:1px solid #888;padding: 10px;float:left;"></div>'
+                            + '<div id="calendar-target-02" style="width:300px;border:1px solid #888;padding: 10px;float:left;"></div>'
+                            + '<div style="clear:both;"></div>'
+                        );
 
-                            },
-                            onStateChanged: function () {
-                                console.log(this);
+                        new ax5.ui.calendar({
+                            target: document.getElementById("calendar-target-01"),
+                            displayDate: (new Date()),
+                            dimensions: {
+                                height: 400
                             }
                         });
+
+                        new ax5.ui.calendar({
+                            target: document.getElementById("calendar-target-02"),
+                            displayDate: (new Date()),
+                            dimensions: {
+                                height: 200
+                            }
+                        });
+
                     });
                 </script>
             </ax5docs-js>
