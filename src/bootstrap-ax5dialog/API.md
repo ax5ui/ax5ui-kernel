@@ -13,8 +13,7 @@ myDialog.setConfig({
     width: [Number], 
     onStateChanged: [Function],
     btns: [Object],
-    input: [Object],
-    fullScreen: [Boolean]
+    input: [Object]
 });
 ```
 
@@ -26,8 +25,7 @@ var myDialog = new ax5.ui.dialog({
     width: [Number], 
     onStateChanged: [Function],
     btns: [Object],
-    input: [Object],
-    fullScreen: [Boolean]
+    input: [Object]
 });
 ```
 
@@ -103,14 +101,6 @@ input: {
 }
 ```
 
-
-### fullScreen
-
-Type: `Boolean`  
-
-```json
-fullScreen : true
-```
 ***
 
 ## alert()

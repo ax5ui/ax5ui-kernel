@@ -23,7 +23,8 @@ myModal.set_config({
     closeToEsc: "Boolean",
     onStateChanged: "Function",
     animateTime: "Number",
-    zIndex: "Number"
+    zIndex: "Number",
+    fullScreen: "Boolean"
 });
 ```
 
@@ -83,6 +84,15 @@ Type: `Number` [default : 300]
 ### zIndex
 
 Type: `Number`
+
+
+### fullScreen
+
+Type: `Boolean`  
+
+```json
+fullScreen : true
+```
 
 - - -
 
