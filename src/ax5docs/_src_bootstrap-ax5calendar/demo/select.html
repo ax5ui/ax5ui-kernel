@@ -55,7 +55,7 @@
                             },
                             displayDate: today,
                             multipleSelect: 3
-                        }).setSelection([today, ax5.util.date(today,  ), '2016-01-13']);
+                        }).setSelection([ax5.util.date(today, {'add': {d: -2}}), ax5.util.date(today, {'add': {d: -3}}), ax5.util.date(today, {'add': {d: -4}})]);
 
                         new ax5.ui.calendar({
                             target: document.getElementById("calendar-target-02"),
@@ -68,7 +68,7 @@
                             },
                             displayDate: (new Date()),
                             multipleSelect: 2
-                        });
+                        }).setSelection([ax5.util.date(today, {'add': {d: -2}}), ax5.util.date(today, {'add': {d: -3}})]);
 
                     });
                 </script>

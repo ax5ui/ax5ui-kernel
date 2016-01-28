@@ -109,7 +109,6 @@
                 this.printYear(cfg.displayDate);
             }
 
-
         };
         
         this.getFrame = function () {
@@ -147,8 +146,8 @@
                 
                 if (cfg.mode == "day" || cfg.mode == "d")
                 {
-                    if (cfg.control.yearTmpl) yy = cfg.control.yearTmpl.replace('%s', myDate.getFullYear());
-                    if (cfg.control.monthTmpl) mm = cfg.control.monthTmpl.replace('%s', cfg.lang.month[myDate.getMonth()]);
+                    yy = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', myDate.getFullYear()) : myDate.getFullYear();
+                    mm = (cfg.control.monthTmpl) ? cfg.control.monthTmpl.replace('%s', cfg.lang.month[myDate.getMonth()]) : cfg.lang.month[myDate.getMonth()];
                     
                     this.$["control-display"].html((function () {
                         if (cfg.control.yearFirst) {
@@ -640,7 +639,7 @@
          */
         this.changeMode = function (mode, changeDate) {
             if (typeof changeDate != "undefined") cfg.displayDate = changeDate;
-            if(mode) cfg.mode = mode;
+            if (mode) cfg.mode = mode;
             
             this.$["body"].removeClass("fadein").addClass("fadeout");
             setTimeout((function () {

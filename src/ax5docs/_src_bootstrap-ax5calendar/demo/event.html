@@ -17,6 +17,9 @@
         <include template="../_inc/include.html" id="demo-visual"/>
     </layout-put>
     <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5toast/ax5toast.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5toast/ax5toast.min.js"></script>
+
         <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css"/>
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/ax5calendar.css"/>
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/ax5calendar.min.js"></script>
@@ -25,52 +28,28 @@
 
         <section class="ax5docs-section">
             <h1>Event</h1>
-
-            <p>
-                It'll add a CSS tag for the font icon on the page. When you use the font of the icon, you can use the simple variety of image only Tag.
-            </p>
-            <ax5docs-html>
-                <link rel="stylesheet" type="text/css" href="bower_components/font-awesome/css/font-awesome.css"/>
-            </ax5docs-html>
-
-            <p>
-                It will prepare the element that is the target of the Calendar UI in the document.
-            </p>
+            <p>html</p>
 
             <ax5docs-html run="true">
-                <div id="calendar-target" style="
-                width:300px;
-                border:1px solid #ccc;
-                border-radius: 5px;
-                padding: 5px;
-                overflow: hidden;">
-
-                </div>
+                <div id="calendar-target-01" style="width:300px;border:1px solid #888;padding: 10px;margin: 10px;"></div>
             </ax5docs-html>
 
-            <p></p>
-
-            <p>
-                Create an instance of ax5.ui.calendar class, using the setConfig method to an instance, you can set the Calendar UI.
-            </p>
             <ax5docs-js run="true">
                 <script type="text/javascript">
                     $(document.body).ready(function () {
-                        var myCalendar = new ax5.ui.calendar({
-                            target: document.getElementById("calendar-target"),
+                        var toast = new ax5.ui.toast();
+                        var today = new Date();
+                        new ax5.ui.calendar({
+                            target: document.getElementById("calendar-target-01"),
                             control: {
                                 left: '<i class="fa fa-chevron-left"></i>',
-                                yearTmpl: '%s',
-                                monthTmpl: '%s',
-                                right: '<i class="fa fa-chevron-right"></i>',
-                                yearFirst: true
+                                right: '<i class="fa fa-chevron-right"></i>'
                             },
-                            displayDate: (new Date()),
                             onClick: function () {
-
+                                toast.push(this.date);
                             },
                             onStateChanged: function () {
-                                console.log(this);
+                                toast.confirm(JSON.stringify(this))
                             }
                         });
                     });
