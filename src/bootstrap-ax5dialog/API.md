@@ -13,7 +13,8 @@ myDialog.setConfig({
     width: [Number], 
     onStateChanged: [Function],
     btns: [Object],
-    input: [Object]
+    input: [Object],
+    fullScreen: [Boolean]
 });
 ```
 
@@ -25,7 +26,8 @@ var myDialog = new ax5.ui.dialog({
     width: [Number], 
     onStateChanged: [Function],
     btns: [Object],
-    input: [Object]
+    input: [Object],
+    fullScreen: [Boolean]
 });
 ```
 
@@ -99,6 +101,15 @@ input: {
     name: {label:"1. Name", placeholder: "Input your name"},
     age: {label:"2. Age", type:"number", value: "22"}
 }
+```
+
+
+### fullScreen
+
+Type: `Boolean`  
+
+```json
+fullScreen : true
 ```
 ***
 

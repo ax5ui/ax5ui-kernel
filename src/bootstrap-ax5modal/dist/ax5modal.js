@@ -64,7 +64,7 @@
                 styles.push("z-index:" + opts.zIndex);
             }
             
-            po.push('<div id="' + modalId + '" data-modal-els="root" class="ax5-ui-modal ' + opts.theme + '" style="' + styles.join(";") + '">');
+            po.push('<div id="' + modalId + '" data-modal-els="root" class="ax5-ui-modal ' + opts.theme + ' ' + (opts.fullScreen ? "fullscreen" : "") + '" style="' + styles.join(";") + '">');
             po.push('<div class="ax-modal-body" data-modal-els="body">');
             // use iframe
             if (opts.iframe) {
@@ -103,15 +103,8 @@
 
         this._open = function (opts, callBack) {
             var
-                pos = {},
-                box,
-                po,
                 that;
 
-            box = {
-                width: opts.width,
-                height: opts.height
-            };
             jQuery(document.body).append(this.getContent(opts.id, opts));
             
             this.activeModal = jQuery('#' + opts.id);
@@ -140,7 +133,7 @@
             };
 
             if (opts.iframe) {
-                this.$["iframe"].css({height: box.height});
+                this.$["iframe"].css({height: opts.height});
                 
                 // iframe content load
                 this.$["iframe-form"].attr({"method": opts.iframe.method});
@@ -179,36 +172,48 @@
                     height: opts.height
                 };
 
-            if (position) {
-                jQuery.extend(true, opts.position, position);
-            }
+            if(opts.fullScreen){
+                box.width = jQuery(window).width();
+                box.height = jQuery(window).height();
+                box.left = 0;
+                box.top = 0;
 
-            //- position 정렬
-            if (opts.position.left == "left") {
-                box.left = (opts.position.margin || 0);
+                if (opts.iframe) {
+                    this.$["iframe"].css({height: box.height});
+                }
             }
-            else if (opts.position.left == "right") {
-                // window.innerWidth;
-                box.left = jQuery(window).width() - box.width - (opts.position.margin || 0);
-            }
-            else if (opts.position.left == "center") {
-                box.left = jQuery(window).width() / 2 - box.width / 2;
-            }
-            else {
-                box.left = opts.position.left || 0;
-            }
+            else{
+                if (position) {
+                    jQuery.extend(true, opts.position, position);
+                }
 
-            if (opts.position.top == "top") {
-                box.top = (opts.position.margin || 0);
-            }
-            else if (opts.position.top == "bottom") {
-                box.top = jQuery(window).height() - box.height - (opts.position.margin || 0);
-            }
-            else if (opts.position.top == "middle") {
-                box.top = jQuery(window).height() / 2 - box.height / 2;
-            }
-            else {
-                box.top = opts.position.top || 0;
+                //- position 정렬
+                if (opts.position.left == "left") {
+                    box.left = (opts.position.margin || 0);
+                }
+                else if (opts.position.left == "right") {
+                    // window.innerWidth;
+                    box.left = jQuery(window).width() - box.width - (opts.position.margin || 0);
+                }
+                else if (opts.position.left == "center") {
+                    box.left = jQuery(window).width() / 2 - box.width / 2;
+                }
+                else {
+                    box.left = opts.position.left || 0;
+                }
+
+                if (opts.position.top == "top") {
+                    box.top = (opts.position.margin || 0);
+                }
+                else if (opts.position.top == "bottom") {
+                    box.top = jQuery(window).height() - box.height - (opts.position.margin || 0);
+                }
+                else if (opts.position.top == "middle") {
+                    box.top = jQuery(window).height() / 2 - box.height / 2;
+                }
+                else {
+                    box.top = opts.position.top || 0;
+                }
             }
 
             this.activeModal.css(box);
@@ -258,7 +263,7 @@
          * @returns {ax5.ui.modal}
          */
         this.css = function (css) {
-            if (this.activeModal) {
+            if (this.activeModal && !self.fullScreen) {
                 this.activeModal.css(css);
                 if (css.width) {
                     self.modalConfig.width = this.activeModal.width();

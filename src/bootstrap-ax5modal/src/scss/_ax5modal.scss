@@ -128,6 +128,24 @@
 	}
 }
 
+@include keyframes(ax-modal-fullscreen) {
+	0% {
+		@include transform(translateY(100%));
+	}
+	100% {
+		@include transform(translateY(0));
+	}
+}
+
+@include keyframes(ax-modal-fullscreen-destroy) {
+	0% {
+		@include transform(translateY(0));
+	}
+	100% {
+		@include transform(translateY(100%));
+	}
+}
+
 // mixins --------------------------------------------- end
 
 .ax5-ui-modal {
@@ -142,4 +160,17 @@
 	&.destroy {
 		@include animation(ax-modal-destroy $ax5modal-easing-time-close $ease-in-back forwards);
 	}
+
+
+	&.fullscreen{
+		border: 0px none;
+		@include ax-border-radius(0px);
+		@include box-shadow(none);
+		@include animation(ax-modal-fullscreen 0.3s $ease-in-back forwards);
+
+		&.destroy {
+			@include animation(ax-modal-fullscreen-destroy $ax5modal-easing-time-close $ease-out-expo forwards);
+		}
+	}
+
 }
