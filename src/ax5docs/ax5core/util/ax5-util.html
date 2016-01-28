@@ -346,6 +346,30 @@ console.log('abs() round(2) money() : '
 // abs() round(2) money() : 123,456,789.89
 </code></pre>
 <hr>
+<h1>Date</h1>
+<h2>date</h2>
+<p><code>ax5.util.date(date[, cond])</code></p>
+<pre class="prettyprint linenums lang-js"><code>ax5.util.date('2013-01-01'); // Tue Jan 01 2013 23:59:00 GMT+0900 (KST)
+ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/mm/dd'}); // &quot;2015/07/01&quot;
+ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/mm/dd'}); // &quot;1919/03/11&quot;
+</code></pre>
+<h2>dday</h2>
+<p><code>ax5.util.dday(date[, cond])</code></p>
+<pre class="prettyprint linenums lang-js"><code>ax5.util.dday('2016-01-29'); // 1
+ax5.util.dday('2016-01-29', {today:'2016-01-28'}); // 1
+ax5.util.dday('1977-03-29', {today:'2016-01-28', age:true}); // 39
+</code></pre>
+<h2>weeksOfMonth</h2>
+<p><code>ax5.util.weeksOfMonth(date)</code></p>
+<pre class="prettyprint linenums lang-js"><code>ax5.util.weeksOfMonth(&quot;2015-10-01&quot;); // {year: 2015, month: 10, count: 1}
+ax5.util.weeksOfMonth(&quot;2015-09-19&quot;); // {year: 2015, month: 9, count: 3}
+</code></pre>
+<h2>daysOfMonth</h2>
+<p><code>ax5.util.daysOfMonth(year, month)</code></p>
+<pre class="prettyprint linenums lang-js"><code>ax5.util.daysOfMonth(2015, 11); // 31
+ax5.util.daysOfMonth(2015, 1); // 28
+</code></pre>
+<hr>
 <h1>Misc.</h1>
 <h2>ax5.util.param</h2>
 <p>The parameter values may in some cases be the &quot;Object&quot; or &quot;String&quot;. At this time, useing the &quot;param&quot;, it can be the same as verifying the parameter value.</p>

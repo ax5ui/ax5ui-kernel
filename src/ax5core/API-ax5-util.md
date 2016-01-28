@@ -256,7 +256,40 @@ console.log('abs() round(2) money() : '
     + ax5.util.number("A-1234~~56789.8~888PX", {abs: true, round: 2, money: true}));
 // abs() round(2) money() : 123,456,789.89
 ```
----
+- - -
+
+# Date
+## date
+`ax5.util.date(date[, cond])`
+```js
+ax5.util.date('2013-01-01'); // Tue Jan 01 2013 23:59:00 GMT+0900 (KST)
+ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/mm/dd'}); // "2015/07/01"
+ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/mm/dd'}); // "1919/03/11"
+```
+
+## dday
+`ax5.util.dday(date[, cond])`
+```js
+ax5.util.dday('2016-01-29'); // 1
+ax5.util.dday('2016-01-29', {today:'2016-01-28'}); // 1
+ax5.util.dday('1977-03-29', {today:'2016-01-28', age:true}); // 39
+```
+
+## weeksOfMonth
+`ax5.util.weeksOfMonth(date)`
+```js
+ax5.util.weeksOfMonth("2015-10-01"); // {year: 2015, month: 10, count: 1}
+ax5.util.weeksOfMonth("2015-09-19"); // {year: 2015, month: 9, count: 3}
+```
+
+## daysOfMonth
+`ax5.util.daysOfMonth(year, month)`
+```js
+ax5.util.daysOfMonth(2015, 11); // 31
+ax5.util.daysOfMonth(2015, 1); // 28
+```
+
+- - -
 
 # Misc.
 ## ax5.util.param

@@ -503,13 +503,15 @@
                     selectable = true
                     ;
 
+                selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
+
                 if (cfg.selectable) {
                     if (!cfg.selectable[dt]) selectable = false;
-                    selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
                 }
 
                 if (mode == "date") {
                     if (selectable) {
+
                         if (self.selection.length >= selectableCount) {
                             var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
                             removed.forEach(function (d) {

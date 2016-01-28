@@ -36,24 +36,40 @@
                     $(document.body).ready(function () {
                         var buildTarget = $("#build-target");
                         buildTarget.html(
-                            '<div id="calendar-target-01" style="width:300px;border:1px solid #888;padding: 10px;float:left;"></div>'
-                            + '<div id="calendar-target-02" style="width:300px;border:1px solid #888;padding: 10px;float:left;"></div>'
+                            '<div id="calendar-target-01" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;"></div>'
+                            + '<div id="calendar-target-02" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;"></div>'
                             + '<div style="clear:both;"></div>'
                         );
 
                         new ax5.ui.calendar({
                             target: document.getElementById("calendar-target-01"),
+                            control: {
+                                left: '<i class="fa fa-chevron-left"></i>',
+                                yearTmpl: '%s',
+                                monthTmpl: '%s',
+                                right: '<i class="fa fa-chevron-right"></i>',
+                                yearFirst: true
+                            },
                             displayDate: (new Date()),
                             dimensions: {
-                                height: 400
+                                height: 200
                             }
                         });
 
                         new ax5.ui.calendar({
                             target: document.getElementById("calendar-target-02"),
+                            control: {
+                                left: '<i class="fa fa-chevron-left"></i>',
+                                yearTmpl: '%s',
+                                monthTmpl: '%s',
+                                right: '<i class="fa fa-chevron-right"></i>',
+                                yearFirst: true
+                            },
                             displayDate: (new Date()),
                             dimensions: {
-                                height: 200
+                                height: 400,
+                                controlHeight: 50,
+                                itemPadding: 5
                             }
                         });
 
