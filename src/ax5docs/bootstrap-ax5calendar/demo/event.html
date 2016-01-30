@@ -42,7 +42,7 @@
 
         <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css">
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/ax5calendar.css">
-        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/ax5calendar.min.js"></script>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/ax5calendar.js"></script>
     
 </head>
 <body>
@@ -140,7 +140,9 @@
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-        var toast = new ax5.ui.toast();
+        var toast = new ax5.ui.toast({
+            containerPosition: "top-right"
+        });
         var today = new Date();
         new ax5.ui.calendar({
             target: document.getElementById("calendar-target-01"),
@@ -152,13 +154,15 @@
                 toast.push(this.date);
             },
             onStateChanged: function () {
-                toast.confirm(JSON.stringify(this))
+                toast.push(JSON.stringify(this))
             }
         });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-        var toast = new ax5.ui.toast();
+        var toast = new ax5.ui.toast({
+            containerPosition: "top-right"
+        });
         var today = new Date();
         new ax5.ui.calendar({
             target: document.getElementById("calendar-target-01"),
@@ -170,7 +174,7 @@
                 toast.push(this.date);
             },
             onStateChanged: function () {
-                toast.confirm(JSON.stringify(this))
+                toast.push(JSON.stringify(this))
             }
         });
     });

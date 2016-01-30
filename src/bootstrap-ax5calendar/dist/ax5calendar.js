@@ -163,13 +163,13 @@
                 }
                 else if (cfg.mode == "month" || cfg.mode == "m")
                 {
-                    if (cfg.control.yearTmpl) yy = cfg.control.yearTmpl.replace('%s', myDate.getFullYear());
+                    yy = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', myDate.getFullYear()) : myDate.getFullYear();
                     this.$["control-display"].html('<span data-calendar-display="year">' + yy + '</span>');
                 }
                 else if (cfg.mode == "year" || cfg.mode == "y")
                 {
-                    var yy1 = cfg.control.yearTmpl.replace('%s', myDate.getFullYear() - 10);
-                    var yy2 = cfg.control.yearTmpl.replace('%s', Number(myDate.getFullYear()) + 9);
+                    var yy1 = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', myDate.getFullYear() - 10) : myDate.getFullYear() - 10;
+                    var yy2 = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', Number(myDate.getFullYear()) + 9) : Number(myDate.getFullYear()) + 9;
                     this.$["control-display"].html(yy1 + ' ~ ' + yy2);
                 }
                 
@@ -351,7 +351,7 @@
                         })() + '" data-calendar-item-month="' + (function () {
                             return dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
                         })() + '">'
-                        + cfg.lang.monthTmpl[m]
+                        + cfg.lang.months[m]
                         + '</a>');
                     po.push('</td>');
                     m++;
