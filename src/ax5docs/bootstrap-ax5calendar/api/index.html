@@ -123,11 +123,143 @@
 					
         <h1>Basic Usage</h1>
 <blockquote>
-<p>calendar</p>
+<p>calendar UI</p>
 </blockquote>
 <h2>setConfig()</h2>
-<p><code>setConfig([options])</code></p>
+<p><code>setConfig([options, callInit=true])</code></p>
+<pre class="prettyprint linenums lang-js"><code>var myCalendar = new ax5.ui.calendar();
+myCalendar.setConfig({
+    target: &quot;target Element&quot;, // null
+    theme: 'String', // default
+    displayDate: &quot;Date|String&quot;, // new Date()
+    control: { // null
+        left: 'String',
+        yearTmpl: '%s',
+        monthTmpl: '%s',
+        right: 'String',
+        yearFirst: 'Boolean' // false
+    },
+    mode: &quot;year|month|day|y|m|d&quot;, // day
+    selectMode: &quot;year|month|day|y|m|d&quot;, // day
+    dateFormat: 'String', // yyyy-mm-dd 
+    dimensions: {
+        height: 'Number', // null
+        controlHeight: 'Number', // 40
+        controlButtonWidth: 'Number', // 40
+        itemPadding: 'Number' // 2
+    },
+    animateTime: 'Number', // 250
+    lang: {
+        yearHeading: 'String', // Choose the year
+        monthHeading: 'String', // Choose the month
+        yearTmpl: 'String', // %s
+        months: 'Array', // ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        dayTmpl: 'String' // %s
+    },
+    multipleSelect: 'false|Number', // false
+    onClick: &quot;Function&quot;, // null
+    onStateChanged: &quot;Function&quot; // null
+});
+</code></pre>
 <p><strong>Easy Way - without setConfig</strong></p>
+<pre class="prettyprint linenums lang-js"><code>new ax5.ui.calendar({options});
+</code></pre>
+<p>After the UI has been defined, in Calendar, to change some of the options, there is a reference to the following syntax.</p>
+<pre class="prettyprint linenums lang-js"><code>myCalendar.setConfig({
+    mode: 'month',
+    selectMode: 'month'
+}, false);
+</code></pre>
+<p>If you pass <code>false</code> as the second argument of <code>setConfig</code> method, it is possible not to call the <code>init</code> function,
+which is started automatically after you change the UI options in <code>setConfig</code> function.</p>
+<h3>target</h3>
+<p>Type: <code>DOMElement</code></p>
+<p>Display target DOMElement</p>
+<h3>theme</h3>
+<p>Type: <code>String</code></p>
+<p>theme that is defined in the class attribute of the Calendar DIV tag if give me to decide the name of the theme when you try to add a theme is added to the Calendar.
+Developers can define the CSS Class in <code>.ax5calendar.theme</code>, it is possible to Override the properties of the CSS.</p>
+<h3>displayDate</h3>
+<p>Type: <code>String|Date</code> [default: new Date()]</p>
+<p>Today that are displayed on the calendar</p>
+<h3>control</h3>
+<p>Type: `Object'</p>
+<pre class="prettyprint linenums lang-js"><code>{
+    left: 'String', // previous button text
+    yearTmpl: 'String', // Year to be displayed on the Control bar [%s &lt;= year]
+    monthTmpl: 'String', // Month to be displayed on the Control bar [$s &lt;= month]
+    right: 'String', // next button text
+    yearFirst: 'Boolean' // [default: false] - Month by default to change the output order of the year and month to Control bar will be output first.
+}
+</code></pre>
+<p>Control bar will not be output by default in the Calendar.</p>
+<h3>mode</h3>
+<p>Type: <code>year|month|day|y|m|d</code> [default: 'day']</p>
+<p>The Calendar, there are three output modes.</p>
+<h3>selectMode</h3>
+<p>Type: <code>year|month|day|y|m|d</code> [default: 'day']</p>
+<p>The Calendar, there are three of the selected mode.</p>
+<h3>dateFormat</h3>
+<p>Type: <code>String</code> [default: 'yyyy-mm-dd']</p>
+<p>When the user selects a date, you will call the <code>onClick</code> function that has been defined. It will be the date that has been selected for this function as passed as a String. If you need to change the String to be transmitted, please redefine the <code>dateFormat</code>.</p>
+<h3>dimensions</h3>
+<p>Type: <code>Object</code> [default: defaultObject]</p>
+<p><strong>defaultObject</strong></p>
+<pre class="prettyprint linenums lang-js"><code>{
+    controlHeight: '40px',
+    controlButtonWidth: '40px',
+    itemPadding: 2
+}
+</code></pre>
+<p><code>dimensions</code> will be able to define additional height attribute in addition to the properties that have been defined to <code>defaultObject</code>.</p>
+<pre class="prettyprint linenums lang-js"><code>{
+    height: 'Number', // null
+    controlHeight: 'Number', // 40
+    controlButtonWidth: 'Number', // 40
+    itemPadding: 'Number' // 2
+}
+</code></pre>
+<p>When you define a <code>height</code>, you will want to change the date display view in Calendar.</p>
+<h3>animateTime</h3>
+<p>Type: <code>Number</code> [default : 250]</p>
+<h3>lang</h3>
+<p>Type: <code>Object</code> [default: defaultObject]</p>
+<p><strong>defaultObject</strong></p>
+<pre class="prettyprint linenums lang-js"><code>{
+    yearHeading: 'String', // Choose the year
+    monthHeading: 'String', // Choose the month
+    yearTmpl: 'String', // %s
+    months: 'Array', // ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    dayTmpl: 'String' // %s
+}
+</code></pre>
+<h3>multipleSelect</h3>
+<p>Type: <code>false|Number</code> [default: false]</p>
+<p>It defines the number of selectable date from the <code>Calendar</code>. It is determined the value of the false 1 is the same as.</p>
+<h3>onClick</h3>
+<p>Type: <code>Function</code></p>
+<h3>onStateChanged</h3>
+<p>Type: <code>Function</code></p>
+<p>onStateChanged function is executed when the dialog of the state is changed,
+this.state state value is passed to this time onStateChanged function.</p>
+<hr>
+<h2>changeMode()</h2>
+<p><code>changeMode([mode, changeDate])</code></p>
+<p>Outputs to the screen in the output mode defined in the <code>Calendar</code>. If you pass an argument, you can change the output mode and output reference date.</p>
+<h3>mode</h3>
+<p>Type: <code>year|month|day|y|m|d</code></p>
+<h3>changeDate</h3>
+<p>Type: <code>Date</code></p>
+<hr>
+<h2>getSelection()</h2>
+<p><code>getSelection()</code></p>
+<p>Return: <code>Array</code> - Calendar Selection</p>
+<hr>
+<h2>setSelection()</h2>
+<p><code>setSelection(selection)</code></p>
+<p>Changes to state a date is selected, which is included in the <code>selection</code>.</p>
+<h3>selection</h3>
+<p>Type: <code>Array</code></p>
 
     
 				</div>

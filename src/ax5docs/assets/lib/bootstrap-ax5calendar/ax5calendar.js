@@ -45,9 +45,9 @@
             lang: {
                 yearHeading: "Choose the year",
                 monthHeading: "Choose the month",
-                year: "%s",
-                month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                day: "%s"
+                yearTmpl: "%s",
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                dayTmpl: "%s"
             },
             multipleSelect: false,
             selectMode: 'day'
@@ -109,7 +109,6 @@
                 this.printYear(cfg.displayDate);
             }
 
-
         };
         
         this.getFrame = function () {
@@ -147,9 +146,9 @@
                 
                 if (cfg.mode == "day" || cfg.mode == "d")
                 {
-                    if (cfg.control.yearTmpl) yy = cfg.control.yearTmpl.replace('%s', myDate.getFullYear());
-                    if (cfg.control.monthTmpl) mm = cfg.control.monthTmpl.replace('%s', cfg.lang.month[myDate.getMonth()]);
-                    
+                    yy = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', myDate.getFullYear()) : myDate.getFullYear();
+                    mm = (cfg.control.monthTmpl) ? cfg.control.monthTmpl.replace('%s', cfg.lang.months[myDate.getMonth()]) : cfg.lang.months[myDate.getMonth()];
+
                     this.$["control-display"].html((function () {
                         if (cfg.control.yearFirst) {
                             return '<span data-calendar-display="year">' + yy + '</span>' +
@@ -260,7 +259,7 @@
                         })() + ' ' + (function () {
                             return "";
                         })() + '" data-calendar-item-date="' + U.date(loopDate, {"return": cfg.dateFormat}) + '"><span class="addon"></span>'
-                        + cfg.lang.day.replace('%s', loopDate.getDate())
+                        + cfg.lang.dayTmpl.replace('%s', loopDate.getDate())
                         + '<span class="lunar"></span></a>');
                     po.push('</td>');
                     k++;
@@ -352,7 +351,7 @@
                         })() + '" data-calendar-item-month="' + (function () {
                             return dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
                         })() + '">'
-                        + cfg.lang.month[m]
+                        + cfg.lang.monthTmpl[m]
                         + '</a>');
                     po.push('</td>');
                     m++;
@@ -444,7 +443,7 @@
                             return ( y == nYear ) ? "focus" : "";
                         })() + '" data-calendar-item-year="' + (function () {
                             return y + '-' + U.setDigit(dotDate.getMonth() + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
-                        })() + '">' + cfg.lang.year.replace('%s', (y)) + '</a>');
+                        })() + '">' + cfg.lang.yearTmpl.replace('%s', (y)) + '</a>');
                     po.push('</td>');
                     y++;
                     k++;
@@ -503,13 +502,15 @@
                     selectable = true
                     ;
 
+                selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
+
                 if (cfg.selectable) {
                     if (!cfg.selectable[dt]) selectable = false;
-                    selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
                 }
 
                 if (mode == "date") {
                     if (selectable) {
+
                         if (self.selection.length >= selectableCount) {
                             var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
                             removed.forEach(function (d) {
@@ -638,7 +639,7 @@
          */
         this.changeMode = function (mode, changeDate) {
             if (typeof changeDate != "undefined") cfg.displayDate = changeDate;
-            if(mode) cfg.mode = mode;
+            if (mode) cfg.mode = mode;
             
             this.$["body"].removeClass("fadein").addClass("fadeout");
             setTimeout((function () {
