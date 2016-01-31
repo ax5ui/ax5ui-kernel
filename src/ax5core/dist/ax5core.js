@@ -763,7 +763,8 @@
             var
                 result = false
                 ;
-            if (O instanceof Date && !isNaN(O.valueOf())) {
+            if(!O){ }
+            else if (O instanceof Date && !isNaN(O.valueOf())) {
                 result = true;
             }
             else {
