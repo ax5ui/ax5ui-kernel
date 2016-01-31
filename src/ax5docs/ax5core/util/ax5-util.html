@@ -167,6 +167,16 @@ ax5.util.isUndefined();
 
 // return is undefined|''|null.
 ax5.util.isNothing();
+
+// return is Date
+ax5.util.isDate();
+
+</code></pre>
+<h2>ax5.util.isDateFormat</h2>
+<p><code>ax5.util.isDateFormat(String)</code></p>
+<pre class="prettyprint linenums lang-js"><code>console.log(ax5.util.isDateFormat('20160101')); // true
+console.log(ax5.util.isDateFormat('2016*01*01')); // true
+console.log(ax5.util.isDateFormat('20161132')); // false
 </code></pre>
 <hr>
 <h1>Object</h1>
