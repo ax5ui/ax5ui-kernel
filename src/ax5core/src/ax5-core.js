@@ -755,6 +755,33 @@
             return (typeof O === "undefined" || O === null || O === "");
         }
 
+        function isDate(O) {
+            return (O instanceof Date && !isNaN(O.valueOf()));
+        }
+
+        function isDateFormat(O) {
+            var
+                result = false
+                ;
+            if (O instanceof Date && !isNaN(O.valueOf())) {
+                result = true;
+            }
+            else {
+                O = O.replace(/\D/g, '');
+                if (O.length > 7) {
+                    var
+                        mm = O.substr(4, 2),
+                        dd = O.substr(6, 2)
+                        ;
+                    O = date(O);
+                    if (O.getMonth() == (mm - 1) && O.getDate() == dd) {
+                        result = true;
+                    }
+                }
+            }
+            return result;
+        }
+
         /**
          * 오브젝트의 첫번째 아이템을 반환합니다.
          * @method ax5.util.first
@@ -1558,7 +1585,6 @@
 
         function times(s, count) { return count < 1 ? '' : new Array(count + 1).join(s); }
 
-
         /**
          * 타겟엘리먼트의 부모 엘리멘트 트리에서 원하는 조건의 엘리먼트를 얻습니다.
          * @method ax5.util.findParentNode
@@ -1694,7 +1720,7 @@
             var returns;
             if (isObject(val)) {
                 returns = '';
-                for(var k in val){
+                for (var k in val) {
                     returns += k + ':' + val[k] + ';';
                 }
                 return returns;
@@ -1702,8 +1728,8 @@
             else if (isString(val)) {
                 returns = {};
                 var valSplited = val.split(/[ ]*;[ ]*/g);
-                valSplited.forEach(function(v){
-                    if((v = v.trim()) !== "") {
+                valSplited.forEach(function (v) {
+                    if ((v = v.trim()) !== "") {
                         var vSplited = v.split(/[ ]*:[ ]*/g);
                         returns[vSplited[0]] = vSplited[1];
                     }
@@ -1755,7 +1781,9 @@
             times: times,
             findParentNode: findParentNode,
             cssNumber: cssNumber,
-            css: css
+            css: css,
+            isDate: isDate,
+            isDateFormat: isDateFormat
         }
     })();
 

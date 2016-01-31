@@ -755,6 +755,33 @@
             return (typeof O === "undefined" || O === null || O === "");
         }
 
+        function isDate(O) {
+            return (O instanceof Date && !isNaN(O.valueOf()));
+        }
+
+        function isDateFormat(O) {
+            var
+                result = false
+                ;
+            if (O instanceof Date && !isNaN(O.valueOf())) {
+                result = true;
+            }
+            else {
+                O = O.replace(/\D/g, '');
+                if (O.length > 7) {
+                    var
+                        mm = O.substr(4, 2),
+                        dd = O.substr(6, 2)
+                        ;
+                    O = date(O);
+                    if (O.getMonth() == (mm - 1) && O.getDate() == dd) {
+                        result = true;
+                    }
+                }
+            }
+            return result;
+        }
+
         /**
          * 오브젝트의 첫번째 아이템을 반환합니다.
          * @method ax5.util.first
@@ -1453,6 +1480,15 @@
          * @param {String|Data} d
          * @param {Object} cond
          * @returns {Number}
+         * @example
+         * ```js
+         * ax5.util.dday('2016-01-29');
+         * // 1
+         * ax5.util.dday('2016-01-29', {today:'2016-01-28'});
+         * // 1
+         * ax5.util.dday('1977-03-29', {today:'2016-01-28', age:true});
+         * // 39
+         * ```
          */
         function dday(d, cond) {
             var memoryDay = date(d), DyMilli = ((1000 * 60) * 60) * 24, today = new Date(), diffnum, thisYearMemoryDay;
@@ -1479,9 +1515,10 @@
                         thisYearMemoryDay = new Date(today.getFullYear() + 1, memoryDay.getMonth(), memoryDay.getDate());
                         diffnum = number((( getDayTime(thisYearMemoryDay) - getDayTime(today) ) / DyMilli), {floor: true});
                     }
-                    if (cond["age"]) {
-                        diffnum = thisYearMemoryDay.getFullYear() - memoryDay.getFullYear();
-                    }
+                }
+                if (cond["age"]) {
+                    thisYearMemoryDay = new Date(today.getFullYear(), memoryDay.getMonth(), memoryDay.getDate());
+                    diffnum = thisYearMemoryDay.getFullYear() - memoryDay.getFullYear();
                 }
 
                 return diffnum;
@@ -1495,21 +1532,41 @@
          * @returns {Object}
          * @example
          * ```js
-         * ax5.util.weeksOfMonth("2015-10-01"); // {year: 2015, month: 9, count: 5}
-         * ax5.util.weeksOfMonth("2015-09-19"); // {year: 2015, month: 9, count: 3}
+         * ax5.util.weeksOfMonth("2015-10-01"); // {year: 2015, month: 10, count: 1}
+         * ax5.util.weeksOfMonth("2015-09-19"); // {year: 2015, month: 10, count: 1}
          * ```
          */
         function weeksOfMonth(d) {
             var myDate = date(d);
-            //sOfMonth = new Date(myDate.getFullYear(), myDate.getMonth(), 1);
-            //sOfMonth.getDay()
-            //console.log(sOfMonth.getDay(), myDate.getDay());
-            //console.log(parseInt(myDate.getDate() / 7 + 1));
             return {
                 year: myDate.getFullYear(),
                 month: myDate.getMonth() + 1,
                 count: parseInt(myDate.getDate() / 7 + 1)
             };
+        }
+
+        /**
+         * 년월에 맞는 날자수를 반환합니다.
+         * @method ax5.util.daysOfMonth
+         * @param {Number} y
+         * @param {Number} m
+         * @returns {Number}
+         * @examples
+         * ```js
+         * ax5.util.daysOfMonth(2015, 11); // 31
+         * ax5.util.daysOfMonth(2015, 1); // 28
+         * ```
+         */
+        function daysOfMonth(y, m) {
+            if (m == 3 || m == 5 || m == 8 || m == 10) {
+                return 30;
+            }
+            else if (m == 1) {
+                return (((y % 4 == 0) && (y % 100 != 0)) || (y % 400 == 0)) ? 29 : 28;
+            }
+            else {
+                return 31;
+            }
         }
 
         /**
@@ -1527,25 +1584,6 @@
         }
 
         function times(s, count) { return count < 1 ? '' : new Array(count + 1).join(s); }
-
-        /**
-         * 년월에 맞는 날자수를 반환합니다.
-         * @method ax5.util.daysOfMonth
-         * @param {Number} y
-         * @param {Number} m
-         * @returns {Number}
-         */
-        function daysOfMonth(y, m) {
-            if (m == 3 || m == 5 || m == 8 || m == 10) {
-                return 30;
-            }
-            else if (m == 1) {
-                return (((y % 4 == 0) && (y % 100 != 0)) || (y % 400 == 0)) ? 29 : 28;
-            }
-            else {
-                return 31;
-            }
-        }
 
         /**
          * 타겟엘리먼트의 부모 엘리멘트 트리에서 원하는 조건의 엘리먼트를 얻습니다.
@@ -1682,7 +1720,7 @@
             var returns;
             if (isObject(val)) {
                 returns = '';
-                for(var k in val){
+                for (var k in val) {
                     returns += k + ':' + val[k] + ';';
                 }
                 return returns;
@@ -1690,8 +1728,8 @@
             else if (isString(val)) {
                 returns = {};
                 var valSplited = val.split(/[ ]*;[ ]*/g);
-                valSplited.forEach(function(v){
-                    if((v = v.trim()) !== "") {
+                valSplited.forEach(function (v) {
+                    if ((v = v.trim()) !== "") {
                         var vSplited = v.split(/[ ]*:[ ]*/g);
                         returns[vSplited[0]] = vSplited[1];
                     }
@@ -1737,13 +1775,15 @@
             error: error,
             date: date,
             dday: dday,
-            setDigit: setDigit,
-            times: times,
             daysOfMonth: daysOfMonth,
             weeksOfMonth: weeksOfMonth,
+            setDigit: setDigit,
+            times: times,
             findParentNode: findParentNode,
             cssNumber: cssNumber,
-            css: css
+            css: css,
+            isDate: isDate,
+            isDateFormat: isDateFormat
         }
     })();
 

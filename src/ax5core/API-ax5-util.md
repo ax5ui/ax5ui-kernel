@@ -47,6 +47,19 @@ ax5.util.isUndefined();
 
 // return is undefined|''|null.
 ax5.util.isNothing();
+
+// return is Date
+ax5.util.isDate();
+
+```
+
+## ax5.util.isDateFormat
+`ax5.util.isDateFormat(String)`
+
+```js
+console.log(ax5.util.isDateFormat('20160101')); // true
+console.log(ax5.util.isDateFormat('2016*01*01')); // true
+console.log(ax5.util.isDateFormat('20161132')); // false
 ```
 
 ---
