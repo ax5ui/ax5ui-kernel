@@ -1,17 +1,17 @@
 <tmpl-metadata>
     <parentId>demo</parentId>
     <parent>Demo</parent>
-    <sort>7</sort>
+    <sort>6</sort>
 
-    <id>lang</id>
-    <title>Language</title>
+    <id>selectable</id>
+    <title>Selectable</title>
     <desc></desc>
 </tmpl-metadata>
 
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Language" parent-id="demo"
-            page-id="lang" body-style="sub-page" with-menu="true">
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Selectable" parent-id="demo"
+            page-id="selectable" body-style="sub-page" with-menu="true">
     <layout-put into="docs-menu">
-        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="lang"></ax5docs-get-sub-list>
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="selectable"></ax5docs-get-sub-list>
     </layout-put>
     <layout-put into="visual">
         <include template="../_inc/include.html" id="demo-visual"/>
@@ -24,53 +24,47 @@
     <layout-put into="body">
 
         <section class="ax5docs-section">
-            <h1>Language</h1>
-            <p>html</p>
+            <h1>Selectable</h1>
 
+            <p>html</p>
             <ax5docs-html run="true">
                 <div id="build-target"></div>
             </ax5docs-html>
 
             <ax5docs-js run="true">
                 <script type="text/javascript">
-
-                    // Overriding ax5.info.weekNames
-                    ax5.info.weekNames = [
-                        {label: "일"},
-                        {label: "월"},
-                        {label: "화"},
-                        {label: "수"},
-                        {label: "목"},
-                        {label: "금"},
-                        {label: "토"}
-                    ];
-
                     $(document.body).ready(function () {
-
                         var
                             buildTarget = $("#build-target"),
-                            today = new Date();
+                            today = new Date(),
+                            _c_date = ax5.util.date;
 
                         buildTarget.html(
                             '<div id="calendar-target-01" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;"></div>'
+                            + '<div id="calendar-target-02" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;"></div>'
                             + '<div style="clear:both;"></div>'
                         );
 
                         new ax5.ui.calendar({
                             target: document.getElementById("calendar-target-01"),
-                            control: {
-                                left: '<i class="fa fa-chevron-left"></i>',
-                                yearTmpl: '%s',
-                                monthTmpl: '%s',
-                                right: '<i class="fa fa-chevron-right"></i>',
-                                yearFirst: true
-                            },
-                            displayDate: today,
-                            lang: {
-                                yearTmpl: "%s년",
-                                months: ['일월', '이월', '삼월', '사월', '오월', '육월', '칠월', '팔월', '구월', '시월', '십일월', '십이월'],
-                                dayTmpl: "%s"
+                            selectable: [
+                                _c_date(today, {'add': {d: -2}}),
+                                _c_date(today, {'add': {d: -3}}),
+                                _c_date(today, {'add': {d: -4}})
+                            ],
+                            onClick: function(){
+                                console.log(this)
                             }
+                        });
+
+                        new ax5.ui.calendar({
+                            target: document.getElementById("calendar-target-02"),
+                            onClick: function(){
+                                console.log(this)
+                            }
+                        }).setSelectable({
+                            from: _c_date(today, {'add': {d: -4}}),
+                            to: _c_date(today, {'add': {d: 4}})
                         });
 
                     });

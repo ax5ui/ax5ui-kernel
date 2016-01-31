@@ -62,7 +62,7 @@
             displayDate: (new Date()),
             mode: "day",
             selectMode: "day",
-            selectable: ['2016-01-04', '2016-01-05', '2016-01-06'],
+            selectable: {from: '2015-12-01', to: '2016-01-06'},
 
             onClick: function () {
                 console.log(myCalendar.getSelection());
@@ -75,12 +75,10 @@
 
         myCalendar.setSelection(['2016-01-11', '2016-01-12', '2016-01-13']);
 
-
-        var s = '20160111';
-        console.log( ax5.util.date(s).getMonth() );
-
-        s = '2016';
-        console.log( ax5.util.date(s).getMonth() );
+        var s = {
+            a: "1"
+        };
+        console.log(ax5.util.isDateFormat(s.date));
 
     });
 </script>

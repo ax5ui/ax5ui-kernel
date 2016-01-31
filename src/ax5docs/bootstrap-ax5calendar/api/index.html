@@ -156,6 +156,7 @@ myCalendar.setConfig({
         months: 'Array', // ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         dayTmpl: 'String' // %s
     },
+    selectable: 'Array|Object',
     multipleSelect: 'false|Number', // false
     onClick: &quot;Function&quot;, // null
     onStateChanged: &quot;Function&quot; // null
@@ -233,6 +234,16 @@ Developers can define the CSS Class in <code>.ax5calendar.theme</code>, it is po
     dayTmpl: 'String' // %s
 }
 </code></pre>
+<h3>selectable</h3>
+<p>Type: <code>Array|Object</code></p>
+<pre class="prettyprint linenums lang-js"><code>// String array
+selectable: ['2016-01-01', '2016-01-02']
+// Date array
+selectable: [new Date(2016, 0, 1), new Date(2016, 0, 2)]
+// Object
+selectable: {from: '2016-01-01', to: '2016-01-02'}
+selectable: {from: new Date(2016, 0, 1), to: new Date(2016, 0, 2)}
+</code></pre>
 <h3>multipleSelect</h3>
 <p>Type: <code>false|Number</code> [default: false]</p>
 <p>It defines the number of selectable date from the <code>Calendar</code>. It is determined the value of the false 1 is the same as.</p>
@@ -260,6 +271,16 @@ this.state state value is passed to this time onStateChanged function.</p>
 <p>Changes to state a date is selected, which is included in the <code>selection</code>.</p>
 <h3>selection</h3>
 <p>Type: <code>Array</code></p>
+<hr>
+<h2>setSelectable()</h2>
+<p><code>setSelectable(selectable[, isPrint])</code></p>
+<p>Set the date / year / month that can be selected from the <code>Calendar</code>.
+<code>selectable</code> is, Array and Object(<code>{from: '', to: ''}</code>) is made up of.</p>
+<pre class="prettyprint linenums lang-js"><code>myCalendar.setSelectable(['2016-01-01', ...]);
+myCalendar.setSelectable([new Date(), ...]);
+myCalendar.setSelectable({from: '2016-01-01', to: '2016-01-10'});
+myCalendar.setSelectable({from: new Date(), to: new Date()});
+</code></pre>
 
     
 				</div>

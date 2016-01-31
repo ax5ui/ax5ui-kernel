@@ -98,23 +98,8 @@
             }
             
             // collect selectableMap
-            if(cfg.selectable){
-                this.selectableMap = {}; // clear selectableMap
-                if(U.isArray(cfg.selectable)){
-                    cfg.selectable.forEach(function(n){
-                        self.selectableMap[n] = true;
-                    });
-                }
-                else if(U.isObject(cfg.selectable)){
-                    if(cfg.selectable["from"] || cfg.selectable["to"]){
-                        if(cfg.selectable["from"] && cfg.selectable["to"]) {
-
-                        }
-                    }
-                    else{
-
-                    }
-                }
+            if (cfg.selectable) {
+                this.setSelectable(cfg.selectable, false);
             }
 
             if (cfg.mode === "day" || cfg.mode === "d")
@@ -749,6 +734,46 @@
          */
         this.getSelection = function () {
             return this.selection;
+        };
+
+        this.setSelectable = function (selectable, isPrint) {
+            // collect selectableMap
+            if (cfg.selectable = selectable) {
+                var
+                    _seltb = cfg.selectable;
+                this.selectableMap = {}; // clear selectableMap
+                if (U.isArray(_seltb)) {
+                    _seltb.forEach(function (n) {
+                        if (U.isDate(n))
+                            n = U.date(n, {'return': cfg.dateFormat});
+                        self.selectableMap[n] = true;
+                    });
+                }
+                else if (U.isObject(_seltb)) {
+                    if (_seltb["from"] || _seltb["to"]) {
+                        if (_seltb["from"] && _seltb["to"]) {
+                            if (U.isDateFormat(_seltb["from"]) && U.isDateFormat(_seltb["to"])) {
+                                for (var d = U.date(_seltb["from"]); d <= U.date(_seltb["to"]); d.setDate(d.getDate() + 1)) {
+                                    self.selectableMap[U.date(d, {"return": cfg.dateFormat})] = true;
+                                }
+                            }
+                            else {
+                                for (var i = _seltb["from"]; i <= _seltb["to"]; i++) {
+                                    self.selectableMap[i] = true;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        for (var k in _seltb) {
+                            self.selectableMap[k] = _seltb[k];
+                        }
+                    }
+                }
+            }
+
+            // 변경내용 적용하여 출력
+            if(isPrint !== false) this.changeMode();
         };
 
         // 클래스 생성자

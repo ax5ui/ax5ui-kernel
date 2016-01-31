@@ -33,6 +33,7 @@ myCalendar.setConfig({
         months: 'Array', // ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         dayTmpl: 'String' // %s
     },
+    selectable: 'Array|Object',
     multipleSelect: 'false|Number', // false
     onClick: "Function", // null
     onStateChanged: "Function" // null
@@ -151,6 +152,21 @@ Type: `Object` [default: defaultObject]
 }
 ```
 
+### selectable
+
+Type: `Array|Object`
+
+```js
+// String array
+selectable: ['2016-01-01', '2016-01-02']
+// Date array
+selectable: [new Date(2016, 0, 1), new Date(2016, 0, 2)]
+// Object
+selectable: {from: '2016-01-01', to: '2016-01-02'}
+selectable: {from: new Date(2016, 0, 1), to: new Date(2016, 0, 2)}
+```
+
+
 ### multipleSelect
 
 Type: `false|Number` [default: false]
@@ -203,5 +219,18 @@ Changes to state a date is selected, which is included in the `selection`.
 
 Type: `Array`
 
+- - -
 
+## setSelectable()
+`setSelectable(selectable[, isPrint])`
+
+Set the date / year / month that can be selected from the `Calendar`.
+`selectable` is, Array and Object(`{from: '', to: ''}`) is made up of.
+
+```js
+myCalendar.setSelectable(['2016-01-01', ...]);
+myCalendar.setSelectable([new Date(), ...]);
+myCalendar.setSelectable({from: '2016-01-01', to: '2016-01-10'});
+myCalendar.setSelectable({from: new Date(), to: new Date()});
+```
 
