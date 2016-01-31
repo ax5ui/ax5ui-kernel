@@ -27,6 +27,7 @@
 
         this.target = null;
         this.selection = [];
+        this.selectableMap = {};
         this.printedDay = {
             start: "", end: ""
         };
@@ -96,6 +97,26 @@
                 }).bind(this));
             }
             
+            // collect selectableMap
+            if(cfg.selectable){
+                this.selectableMap = {}; // clear selectableMap
+                if(U.isArray(cfg.selectable)){
+                    cfg.selectable.forEach(function(n){
+                        self.selectableMap[n] = true;
+                    });
+                }
+                else if(U.isObject(cfg.selectable)){
+                    if(cfg.selectable["from"] || cfg.selectable["to"]){
+                        if(cfg.selectable["from"] && cfg.selectable["to"]) {
+
+                        }
+                    }
+                    else{
+
+                    }
+                }
+            }
+
             if (cfg.mode === "day" || cfg.mode === "d")
             {
                 this.printDay(cfg.displayDate);
@@ -245,7 +266,7 @@
                     po.push('<td class="calendar-col-' + k + '" style="' + U.css(itemStyles) + '">');
                     po.push('<a class="calendar-item-day ' + (function () {
                             if (cfg.selectable) {
-                                if (cfg.selectable[U.date(loopDate, {"return": "yyyy-mm-dd"})]) {
+                                if (self.selectableMap[U.date(loopDate, {"return": cfg.dateFormat})]) {
                                     return ( loopDate.getMonth() == thisMonth ) ? "live" : "";
                                 }
                                 else {
@@ -255,7 +276,6 @@
                             else {
                                 return ( loopDate.getMonth() == thisMonth ) ? ( U.date(loopDate, {"return": "yyyymmdd"}) == U.date(_today, {"return": "yyyymmdd"}) ) ? "focus" : "live" : "";
                             }
-                            
                         })() + ' ' + (function () {
                             return "";
                         })() + '" data-calendar-item-date="' + U.date(loopDate, {"return": cfg.dateFormat}) + '"><span class="addon"></span>'
@@ -346,7 +366,14 @@
                 while (k < 3)
                 {
                     po.push('<td class="calendar-col-' + i + '" style="' + U.css(itemStyles) + '">');
-                    po.push('<a class="calendar-item-month live ' + (function () {
+                    po.push('<a class="calendar-item-month ' + (function () {
+                            if (cfg.selectable) {
+                                return (self.selectableMap[m]) ? 'live' : 'disable';
+                            }
+                            else {
+                                return 'live';
+                            }
+                        })() + ' ' + (function () {
                             return ( m == nMonth ) ? "focus" : "";
                         })() + '" data-calendar-item-month="' + (function () {
                             return dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
@@ -439,7 +466,14 @@
                 while (k < 4)
                 {
                     po.push('<td class="calendar-col-' + i + '" style="' + U.css(itemStyles) + '">');
-                    po.push('<a class="calendar-item-year live ' + (function () {
+                    po.push('<a class="calendar-item-year ' + (function () {
+                            if (cfg.selectable) {
+                                return (self.selectableMap[y]) ? 'live' : 'disable';
+                            }
+                            else {
+                                return 'live';
+                            }
+                        })() + ' ' + (function () {
                             return ( y == nYear ) ? "focus" : "";
                         })() + '" data-calendar-item-year="' + (function () {
                             return y + '-' + U.setDigit(dotDate.getMonth() + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
@@ -505,7 +539,7 @@
                 selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
 
                 if (cfg.selectable) {
-                    if (!cfg.selectable[dt]) selectable = false;
+                    if (!self.selectableMap[dt]) selectable = false;
                 }
 
                 if (mode == "date") {
