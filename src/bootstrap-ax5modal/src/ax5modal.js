@@ -68,7 +68,9 @@
             po.push('<div class="ax-modal-body" data-modal-els="body">');
             // use iframe
             if (opts.iframe) {
-                po.push('<iframe name="' + modalId + '-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe"></iframe>');
+                po.push('<div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">');
+                po.push('<iframe name="' + modalId + '-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>');
+                po.push('</div>');
                 po.push('<form name="' + modalId + '-form" data-modal-els="iframe-form">');
                 po.push('<input type="hidden" name="modalId" value="' + modalId + '" />');
                 if(typeof opts.iframe.param === "string"){
@@ -116,6 +118,7 @@
             };
             
             if (opts.iframe) {
+                this.$["iframe-wrap"] = this.activeModal.find('[data-modal-els="iframe-wrap"]');
                 this.$["iframe"] = this.activeModal.find('[data-modal-els="iframe"]');
                 this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
             }
@@ -133,6 +136,10 @@
             };
 
             if (opts.iframe) {
+                
+                console.log();
+                
+                this.$["iframe-wrap"].css({height: opts.height});
                 this.$["iframe"].css({height: opts.height});
                 
                 // iframe content load
@@ -179,6 +186,7 @@
                 box.top = 0;
 
                 if (opts.iframe) {
+                    this.$["iframe-wrap"].css({height: box.height});
                     this.$["iframe"].css({height: box.height});
                 }
             }
@@ -270,7 +278,10 @@
                 }
                 if (css.height) {
                     self.modalConfig.height = this.activeModal.height();
-                    if(this.$["iframe"]) this.$["iframe"].css({height: self.modalConfig.height});
+                    if(this.$["iframe"]) {
+                        this.$["iframe-wrap"].css({height: self.modalConfig.height});
+                        this.$["iframe"].css({height: self.modalConfig.height});
+                    }
                 }
             }
             return this;
