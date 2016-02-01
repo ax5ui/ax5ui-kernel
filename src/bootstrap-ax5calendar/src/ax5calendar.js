@@ -240,6 +240,7 @@
             po.push('</tr>');
             po.push('</thead>');
             po.push('<tbody>');
+            
             loopDate = tableStartDate;
             i = 0;
             while (i < 6)
@@ -736,44 +737,79 @@
             return this.selection;
         };
 
-        this.setSelectable = function (selectable, isPrint) {
-            // collect selectableMap
-            if (cfg.selectable = selectable) {
-                var
-                    _seltb = cfg.selectable;
-                this.selectableMap = {}; // clear selectableMap
-
-                if (U.isArray(_seltb)) {
-                    _seltb.forEach(function (n) {
+        this.setSelectable = (function () {
+            this.selectableMap = {};
+            var processor = {
+                'arr': function (v, map) {
+                    map = {};
+                    if(!U.isArray(v)) return map;
+                    v.forEach(function (n) {
                         if (U.isDate(n))
                             n = U.date(n, {'return': cfg.dateFormat});
-                        self.selectableMap[n] = true;
+                        map[n] = true;
                     });
-                }
-                else if (U.isObject(_seltb)) {
-                    if (_seltb["from"] && _seltb["to"]) {
-                        if (U.isDateFormat(_seltb["from"]) && U.isDateFormat(_seltb["to"])) {
-                            for (var d = U.date(_seltb["from"]); d <= U.date(_seltb["to"]); d.setDate(d.getDate() + 1)) {
-                                self.selectableMap[U.date(d, {"return": cfg.dateFormat})] = true;
+                    return map;
+                },
+                'obj': function (v, map) {
+                    map = {};
+                    if(U.isArray(v)) return map;
+                    if(v.range) return map;
+                    for (var k in v) {
+                        map[k] = v[k];
+                    }
+                    return map;
+                },
+                'range': function (v, map) {
+                    map = {};
+                    if(U.isArray(v)) return map;
+                    if(!v.range) return map;
+
+                    v.range.forEach(function (n) {
+                        if (U.isDateFormat(n.from) && U.isDateFormat(n.to)) {
+                            for (var d = U.date(n.from); d <= U.date(n.to); d.setDate(d.getDate() + 1)) {
+                                map[U.date(d, {"return": cfg.dateFormat})] = true;
                             }
                         }
                         else {
-                            for (var i = _seltb["from"]; i <= _seltb["to"]; i++) {
-                                self.selectableMap[i] = true;
+                            for (var i = n.from; i <= n.to; i++) {
+                                map[i] = true;
                             }
                         }
+                    });
+                    
+                    return map;
+                }
+            };
+
+            return function (selectable, isPrint) {
+                
+                var
+                    key,
+                    result = {}
+                    ;
+
+                if (cfg.selectable = selectable) {
+                    if (U.isArray(selectable)) {
+                        result = processor.arr(selectable);
                     }
-                    else if(!_seltb["from"] && !_seltb["to"]) {
-                        for (var k in _seltb) {
-                            self.selectableMap[k] = _seltb[k];
+                    else {
+                        for (key in processor) {
+                            if (selectable[key]) {
+                                result = processor[key](selectable);
+                                break;
+                            }
+                        }
+                        if(Object.keys(result).length === 0){
+                            result = processor.obj(selectable);
                         }
                     }
                 }
-            }
 
-            // 변경내용 적용하여 출력
-            if(isPrint !== false) this.changeMode();
-        };
+                this.selectableMap = result;
+                // 변경내용 적용하여 출력
+                if (isPrint !== false) this.changeMode();
+            };
+        })();
 
         // 클래스 생성자
         this.main = (function () {

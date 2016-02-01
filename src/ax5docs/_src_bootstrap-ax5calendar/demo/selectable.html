@@ -42,9 +42,11 @@
                         buildTarget.html(
                             '<div id="calendar-target-01" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;"></div>'
                             + '<div id="calendar-target-02" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;"></div>'
+                            + '<div id="calendar-target-03" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;"></div>'
                             + '<div style="clear:both;"></div>'
                         );
 
+                        // use Array
                         new ax5.ui.calendar({
                             target: document.getElementById("calendar-target-01"),
                             selectable: [
@@ -52,19 +54,37 @@
                                 _c_date(today, {'add': {d: 0}}),
                                 _c_date(today, {'add': {d: 1}})
                             ],
-                            onClick: function(){
+                            onClick: function () {
                                 console.log(this)
                             }
                         });
 
+                        // use Range
                         new ax5.ui.calendar({
                             target: document.getElementById("calendar-target-02"),
-                            onClick: function(){
+                            onClick: function () {
                                 console.log(this)
                             }
-                        }).setSelectable({
-                            from: _c_date(today, {'add': {d: -4}}),
-                            to: _c_date(today, {'add': {d: 4}})
+                        })
+                        .setSelectable({
+                            range: [
+                                {from: _c_date(today, {'add': {d: -4}}), to: _c_date(today, {'add': {d: 4}})}
+                            ]
+                        });
+
+
+                        // use Object
+                        var selectable = {};
+                        for (var d = _c_date(today, {'add': {d: -1}}); d <= _c_date(today, {'add': {d: 4}}); d.setDate(d.getDate() + 1)) {
+                            selectable[_c_date(d, {'return':'yyyy-mm-dd'})] = true;
+                        }
+
+                        new ax5.ui.calendar({
+                            target: document.getElementById("calendar-target-03"),
+                            selectable: selectable,
+                            onClick: function () {
+                                console.log(this)
+                            }
                         });
 
                     });

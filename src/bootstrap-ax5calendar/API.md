@@ -161,9 +161,11 @@ Type: `Array|Object`
 selectable: ['2016-01-01', '2016-01-02']
 // Date array
 selectable: [new Date(2016, 0, 1), new Date(2016, 0, 2)]
+// range
+selectable: { range: [{from: '2016-01-01', to: '2016-01-02'}] }
+selectable: { range: [{from: new Date(2016, 0, 1), to: new Date(2016, 0, 2)}] }
 // Object
-selectable: {from: '2016-01-01', to: '2016-01-02'}
-selectable: {from: new Date(2016, 0, 1), to: new Date(2016, 0, 2)}
+selectable: { '2016-01-01': true, '2016-01-02': true }
 ```
 
 
@@ -230,7 +232,8 @@ Set the date / year / month that can be selected from the `Calendar`.
 ```js
 myCalendar.setSelectable(['2016-01-01', ...]);
 myCalendar.setSelectable([new Date(), ...]);
-myCalendar.setSelectable({from: '2016-01-01', to: '2016-01-10'});
-myCalendar.setSelectable({from: new Date(), to: new Date()});
+myCalendar.setSelectable({ range: [{from: '2016-01-01', to: '2016-01-10'}] });
+myCalendar.setSelectable({ range: [{from: new Date(), to: new Date()}] });
+myCalendar.setSelectable({ '2016-01-01': true, '2016-01-02': true });
 ```
 
