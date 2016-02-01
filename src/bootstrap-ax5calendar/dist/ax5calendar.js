@@ -742,6 +742,7 @@
                 var
                     _seltb = cfg.selectable;
                 this.selectableMap = {}; // clear selectableMap
+
                 if (U.isArray(_seltb)) {
                     _seltb.forEach(function (n) {
                         if (U.isDate(n))
