@@ -750,21 +750,19 @@
                     });
                 }
                 else if (U.isObject(_seltb)) {
-                    if (_seltb["from"] || _seltb["to"]) {
-                        if (_seltb["from"] && _seltb["to"]) {
-                            if (U.isDateFormat(_seltb["from"]) && U.isDateFormat(_seltb["to"])) {
-                                for (var d = U.date(_seltb["from"]); d <= U.date(_seltb["to"]); d.setDate(d.getDate() + 1)) {
-                                    self.selectableMap[U.date(d, {"return": cfg.dateFormat})] = true;
-                                }
+                    if (_seltb["from"] && _seltb["to"]) {
+                        if (U.isDateFormat(_seltb["from"]) && U.isDateFormat(_seltb["to"])) {
+                            for (var d = U.date(_seltb["from"]); d <= U.date(_seltb["to"]); d.setDate(d.getDate() + 1)) {
+                                self.selectableMap[U.date(d, {"return": cfg.dateFormat})] = true;
                             }
-                            else {
-                                for (var i = _seltb["from"]; i <= _seltb["to"]; i++) {
-                                    self.selectableMap[i] = true;
-                                }
+                        }
+                        else {
+                            for (var i = _seltb["from"]; i <= _seltb["to"]; i++) {
+                                self.selectableMap[i] = true;
                             }
                         }
                     }
-                    else {
+                    else if(!_seltb["from"] && !_seltb["to"]) {
                         for (var k in _seltb) {
                             self.selectableMap[k] = _seltb[k];
                         }
