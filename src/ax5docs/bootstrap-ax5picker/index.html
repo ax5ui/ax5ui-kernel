@@ -1,0 +1,278 @@
+
+	
+	
+	
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="shortcut icon" href="../../assets/ax5favicon.ico" type="image/x-icon">
+	<title>ax5ui / bootstrap-ax5picker : home</title>
+
+	
+	<script src="../../assets/lib/jquery/jquery.min.js"></script>
+
+	<script src="../../assets/lib/prettify/prettify.js"></script>
+	<script src="../../assets/lib/prettify/lang-css.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../assets/lib/prettify/skins/github.css">
+
+	<script type="text/javascript">
+		$(document.body).ready(function() {
+			if (window["prettyPrint"]) window["prettyPrint"]();
+		});
+	</script>
+
+	<script src="../../assets/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+	<script src="../../assets/lib/ax5core/ax5core.min.js"></script>
+
+	
+	<link rel="stylesheet" type="text/css" href="../../assets/css/docs.css">
+	<script src="../../assets/js/docs.js"></script>
+
+	
+	
+</head>
+<body>
+<div class="docs index  ">
+	<div class="docs-header">
+		<div class="docs-header-tool" id="docs-header-tool">
+			<nav class="navbar navbar-default">
+				<div class="container-fluid">
+					
+					<div class="navbar-header">
+						<span class="navbar-brand">
+							<a href="/">
+							<span class="ax5uicon ax5uicon-ax5"></span>UI</a>
+							<a href="/bootstrap-ax5picker">
+							<span class="small">/ bootstrap-ax5picker</span></a>
+						</span>
+						<a class="visible-xs-inline-block mobile-menu">
+							<i class="icon-menu"></i>
+						</a>
+					</div>
+
+					
+					<div class="collapse navbar-collapse">
+
+						<ul class="nav navbar-nav" id="docs-menu-print-target">
+							
+							
+								<li ><a href="/bootstrap-ax5picker/demo/index.html">Demo</a></li><li ><a href="/bootstrap-ax5picker/api/index.html">API</a></li>
+							
+						</ul>
+
+						<ul class="nav navbar-nav navbar-right">
+							<li>
+								<a href="https://github.com/ax5ui/bootstrap-ax5picker">
+									<span class="ax5uicon ax5uicon-github"></span>
+									Star
+									<span class="gh-count" id="started-count">.</span>
+								</a>
+							</li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">AX5UI <span class="caret"></span></a>
+								<ul class="dropdown-menu">
+	<li><a href="/">AX5UI</a></li>
+	<li role="separator" class="divider"></li>
+	<li><a href="/ax5core">ax5core</a></li>
+	<li><a href="/bootstrap-ax5mask">bootstrap-ax5mask</a></li>
+	<li><a href="/bootstrap-ax5dialog">bootstrap-ax5dialog</a></li>
+	<li><a href="/bootstrap-ax5toast">bootstrap-ax5toast</a></li>
+	<li><a href="/bootstrap-ax5modal">bootstrap-ax5modal</a></li>
+	<li><a href="/bootstrap-ax5calendar">bootstrap-ax5calendar</a></li>
+	<li><a href="/bootstrap-ax5calendar">bootstrap-ax5picker</a></li>
+	<li role="separator" class="divider"></li>
+	<li><a href="https://www.axisj.com">axisj.com</a></li>
+</ul>
+							</li>
+						</ul>
+
+					</div>
+					
+
+				</div>
+				
+			</nav>
+		</div>
+	</div>
+	<div class="docs-visual">
+		<div class="pattern"></div>
+		
+
+		<div class="contents">
+			<div class="style-index-visual">
+				<div class="brand-title">AX5UI</div>
+				<div class="project-name">bootstrap-ax5picker</div>
+				<div class="DH10"></div>
+				<div class="button-group">
+					<button class="btn btn-lg btn-border white" onclick="location.href = &#39;https://github.com/ax5ui/bootstrap-ax5picker&#39;;">
+						Get ax5picker
+					</button>
+					&nbsp;
+					<button class="btn btn-lg btn-border white" onclick="location.href = &#39;/bootstrap-ax5picker/demo/index.html&#39;;">Demostration
+					</button>
+				</div>
+			</div>
+		</div>
+
+	
+	</div>
+	<div class="docs-body" id="docs-body">
+		<div class="wrapper">
+		
+			<div class="row">
+				<div class="col-md-12">
+					
+
+		<section class="ax5docs-section">
+			<img src="https://img.shields.io/badge/Bower-0.1.0-blue.svg" alt="Bower-0.1.0" /> <img src="https://img.shields.io/badge/NPM-0.1.0-blue.svg" alt="NPM-0.1.0" /> <div class="DH5"></div>
+			<p><a href="https://github.com/axisj"><img src="https://img.shields.io/badge/AXISJ.com-Contributed-green.svg" alt="axisj-contributed"></a>
+<img src="https://img.shields.io/badge/Seowoo-Mondo&amp;Thomas-red.svg" alt=""></p>
+<h1>bootstrap-ax5picker</h1>
+<blockquote>
+<p><em>Dependencies</em></p>
+<ul>
+<li><em><a href="http://jquery.com/">jQuery 1.X+</a></em></li>
+<li><em><a href="http://ax5.io/ax5core">ax5core</a></em></li>
+<li><em><a href="http://getbootstrap.com/">bootstrap</a></em></li>
+</ul>
+</blockquote>
+<h3>Install by bower</h3>
+<pre class="prettyprint linenums lang-sh"><code>bower install bootstrap-ax5picker
+</code></pre>
+<p><a href="http://bower.io/#install-bower">bower</a> is web front-end package manager.
+using the <code>bower</code>, when you install the plug-in is installed to resolve the plug-in dependencies under the <code>bower_components</code> folder.<br>
+(You can change the folder location. <a href="http://bower.io/docs/config/#bowerrc-specification">.bowerrc</a> )</p>
+<p>It is recommended that you install by using the <code>bower</code>.
+If you've never used a bower is, you will be able to be used for <a href="http://bower.io/#install-bower">http://bower.io/#install-bower</a>.</p>
+<h3>Download code</h3>
+<ul>
+<li><a href="https://github.com/ax5ui/ax5core/releases">ax5core Github releases</a></li>
+<li><a href="https://github.com/ax5ui/bootstrap-ax5picker/releases">bootstrap-ax5picker Github releases</a></li>
+</ul>
+<h3>Insert the &quot;ax5picker&quot; in the HTML HEAD.</h3>
+<p>Location of the folder can be determined freely in your project. But be careful not to accidentally caused
+exactly the path.</p>
+<pre class="prettyprint linenums lang-html"><code>&lt;html&gt;
+    &lt;head&gt;
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;bower_components/bootstrap-ax5picker/dist/ax5picker.css&quot; /&gt;
+    
+        &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/jquery/dist/jquery.min.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/ax5core/dist/ax5core.min.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/bootstrap-ax5picker/dist/ax5picker.min.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+&lt;body&gt;
+....
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3>Basic Usages</h3>
+<pre class="prettyprint linenums lang-js"><code>var myPicker = new ax5.ui.picker({
+
+});
+
+</code></pre>
+<hr>
+<h3>Install by npm</h3>
+<p>If you do not use the bower, it can be downloaded by using the npm as second best.
+In npm, so pile on the package manager for the front end, you need to solve the problem of plug-in dependencies.</p>
+<pre class="prettyprint linenums lang-sh"><code>npm install jquery
+npm install ax5core
+npm install bootstrap-ax5picker
+</code></pre>
+<p>After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
+If the inconvenience in the process that you want to copy the file and can be easily copied by using a <code>gulp</code> or <code>grunt</code>.</p>
+<hr>
+<h3>Preview</h3>
+<ul>
+<li><a href="http://ax5.io/bootstrap-ax5picker/demo/index.html">See Demostration</a></li>
+</ul>
+<p>If you have any questions, please refer to the following <a href="https://github.com/ax5ui/ax5ui-kernel">gitHub</a></p>
+
+		</section>
+
+	
+				</div>
+			</div>
+		
+		</div>
+	</div>
+	<div class="docs-foot" id="docs-foot">
+		<div class="background-type background-type-0">
+			<div class="wrapper row">
+				<div class="col-md-6">
+					<h3>
+						<a href="https://github.com/ax5ui/ax5core">
+							<i class="icon-github"></i> Get ax5core</a>
+					</h3>
+					<p>
+						"ax5core" source code is being released on Github. When you click the link to move to Github
+						repository.
+						Feel the joy of contributing to open source. We are always waiting for your action.
+					</p>
+				</div>
+				<div class="col-md-6">
+					<h3>
+						<a href="/">
+							<i class="icon-axisj"></i> AX5UI Package</a>
+					</h3>
+					<p>
+						'AX5UI' can be used with Bootstrap theme. The development of the distribution of the various UI plug-in.
+						When you click the link to move to AX5UI index page.
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="background-type background-type-1">
+			<div class="wrapper">
+				<dl class="dl-horizontal">
+					<dt>Code licensed</dt>
+					<dd>MIT</dd>
+					<dt>Mantained by</dt>
+					<dd>Thomas Jang, Brant, Junho and Team AXISJ</dd>
+					<dt>Templete design by</dt>
+					<dd>Jorwrney Kim</dd>
+
+					<dt>Copyright</dt>
+					<dd>Opensource Group AXISJ -
+						<a href="https://www.axisj.com">www.axisj.com</a></dd>
+
+					<dt>DNS</dt>
+					<dd>
+						<a href="http://www.dnsever.com" target="dnsever">DNSEver</a>
+					</dd>
+				</dl>
+			</div>
+		</div>
+	</div>
+</div>
+
+		<script language="javascript">
+
+		</script>
+	
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-56252826-3', 'auto');
+ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+	$(document.body).ready(function () {
+		if (ax5.util.getCookie('stargazers_count')) {
+			$("#started-count").html(ax5.util.number(ax5.util.getCookie('stargazers_count'), {'money': true}));
+		}
+		
+		$.ajax({
+			method: "GET",
+			url: "https://api.github.com/repos/ax5ui/bootstrap-ax5picker",
+			success: function(data){
+				$("#started-count").html(ax5.util.number(data.stargazers_count, {'money': true}));
+				ax5.util.setCookie('stargazers_count', data.stargazers_count);
+			}
+		});
+	});
+</script>
+</body>
+</html>
