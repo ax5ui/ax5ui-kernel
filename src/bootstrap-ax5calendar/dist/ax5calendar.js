@@ -101,6 +101,10 @@
             if (cfg.selectable) {
                 this.setSelectable(cfg.selectable, false);
             }
+            // collect markerMap
+            if (cfg.marker) {
+                this.setMarker(cfg.marker, false);
+            }
 
             if (cfg.mode === "day" || cfg.mode === "d")
             {
@@ -210,7 +214,7 @@
                 })(),
                 loopDate,
                 thisMonth = dotDate.getMonth(),
-                thisDate = dotDate.getDate(),
+                thisDate,
                 itemStyles = {},
                 i,
                 k,
@@ -249,11 +253,12 @@
                 k = 0;
                 while (k < 7)
                 {
+                    thisDate = '' + U.date(loopDate, {"return": cfg.dateFormat});
                     po.push('<td class="calendar-col-' + k + '" style="' + U.css(itemStyles) + '">');
                     po.push('<a class="calendar-item-day '
                         + (function () {
                             if (cfg.selectable) {
-                                if (self.selectableMap[U.date(loopDate, {"return": cfg.dateFormat})]) {
+                                if (self.selectableMap[thisDate]) {
                                     return ( loopDate.getMonth() == thisMonth ) ? "live" : "";
                                 }
                                 else {
@@ -261,14 +266,14 @@
                                 }
                             }
                             else {
-                                return ( loopDate.getMonth() == thisMonth ) ? ( U.date(loopDate, {"return": "yyyymmdd"}) == U.date(_today, {"return": "yyyymmdd"}) ) ? "focus" : "live" : "";
+                                return ( loopDate.getMonth() == thisMonth ) ? ( thisDate == U.date(_today, {"return": "yyyymmdd"}) ) ? "focus" : "live" : "";
                             }
                         })()
                         + ' '
                         + (function () {
-                            return (self.markerMap[U.date(loopDate, {"return": cfg.dateFormat})]) ? self.markerMap[U.date(loopDate, {"return": cfg.dateFormat})].theme : '';
+                            return (self.markerMap[thisDate]) ? self.markerMap[thisDate].theme : '';
                         })()
-                        + '" data-calendar-item-date="' + U.date(loopDate, {"return": cfg.dateFormat}) + '"><span class="addon"></span>'
+                        + '" data-calendar-item-date="' + thisDate + '"><span class="addon"></span>'
                         + cfg.lang.dayTmpl.replace('%s', loopDate.getDate())
                         + '<span class="lunar"></span></a>');
                     po.push('</td>');

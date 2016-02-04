@@ -195,6 +195,9 @@
 							@include ax-background($ax5calendar-date-bg);
 							color: lighten($ax5calendar-date-text-color, 10%);
 						}
+						&.holiday{
+							color: $ax5calendar-sun-text-color;
+						}
 					}
 					.calendar-item-month {
 						display: block;

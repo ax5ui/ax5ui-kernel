@@ -35,7 +35,7 @@
             {label: "토"}
         ];
 
-        var myCalendar = new ax5.ui.calendar({
+        window.myCalendar = new ax5.ui.calendar({
             control: {
                 left: 'P',
                 yearTmpl: '%s',
@@ -62,10 +62,14 @@
             displayDate: (new Date()),
             mode: "day",
             selectMode: "day",
-            //selectable: {range:[{from: '2015-12-01', to: '2016-01-06'}]},
+
+            // selectable: {range:[{from: '2016-02-01', to: '2016-02-20'}]},
 
             marker: {
-                '2015-02-07':{theme:'holiday', label:'설날'}
+                '2016-02-07': {theme: 'holiday', label: '설날'},
+                '2016-02-08': {theme: 'holiday', label: '설날'},
+                '2016-02-09': {theme: 'holiday', label: '설날'},
+                '2016-02-10': {theme: 'holiday', label: '대체휴일'}
             },
             onClick: function () {
                 console.log(myCalendar.getSelection());
