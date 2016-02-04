@@ -62,7 +62,7 @@
             displayDate: (new Date()),
             mode: "day",
             selectMode: "day",
-            selectable: {from: '2015-12-01', to: '2016-01-06'},
+            //selectable: {range:[{from: '2015-12-01', to: '2016-01-06'}]},
 
             onClick: function () {
                 console.log(myCalendar.getSelection());
@@ -70,14 +70,11 @@
             onStateChanged: function () {
                 console.log(this);
             }
-            //, multipleSelect: 1
+            , multipleSelect: 2
         });
 
-        myCalendar.setSelection(['2016-01-11', '2016-01-12', '2016-01-13']);
-
-
-        myCalendar.newFn();
-
+        /// todo : 공휴일 표시에 대한 대안 필요.
+        myCalendar.setSelection(['2016-02-11', '2016-02-12', '2016-02-13']);
     });
 </script>
 

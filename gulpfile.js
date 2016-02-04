@@ -78,6 +78,16 @@ var PATHS = {
         js: "ax5calendar",
         doc_src: "src/ax5docs/_src_bootstrap-ax5calendar",
         doc_dest: "src/ax5docs/bootstrap-ax5calendar"
+    },
+    "bootstrap-ax5picker": {
+        isPlugin: true,
+        root: "src/bootstrap-ax5picker",
+        src: "src/bootstrap-ax5picker/src",
+        dest: "src/bootstrap-ax5picker/dist",
+        scss: "ax5picker.scss",
+        js: "ax5picker",
+        doc_src: "src/ax5docs/_src_bootstrap-ax5picker",
+        doc_dest: "src/ax5docs/bootstrap-ax5picker"
     }
 };
 

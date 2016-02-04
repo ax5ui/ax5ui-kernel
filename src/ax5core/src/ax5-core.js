@@ -146,6 +146,9 @@
             "ax5dialog": {
                 "501": "Duplicate call error"
             },
+            "ax5picker": {
+                "501": "Duplicate call error"
+            },
             "single-uploader": {
                 "460": "There are no files to be uploaded.",
                 "461": "There is no uploaded files."

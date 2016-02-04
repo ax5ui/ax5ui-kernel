@@ -28,9 +28,16 @@
             theme: 'default',
             width: 300,
             title: '',
-            msg: '',
+            lang: {
+                "ok": "ok", "cancel": "cancel"
+            },
             animateTime: 250
         };
+
+        this.config.btns = {
+            ok: {label: this.config.lang["ok"], theme: this.config.theme}
+        };
+
         cfg = this.config;
         cfg.id = 'ax5-picker-' + ax5.getGuid();
 
@@ -61,16 +68,10 @@
 		 * }, function(){});
          * ```
          */
-        this.alert = function (opts, callBack) {
-            if (U.isString(opts)) {
-                opts = {
-                    title: cfg.title,
-                    msg: opts
-                }
-            }
+        this.open = function (opts, callBack) {
 
             if (this.activePicker) {
-                console.log(ax5.info.getError("ax5picker", "501", "alert"));
+                console.log(ax5.info.getError("ax5picker", "501", "open"));
                 return this;
             }
 
@@ -79,13 +80,7 @@
             jQuery.extend(true, self.pickerConfig, opts);
             opts = self.pickerConfig;
 
-            opts.pickerType = "alert";
-            if (typeof opts.btns === "undefined") {
-                opts.btns = {
-                    ok: {label: cfg.lang["ok"], theme: opts.theme}
-                };
-            }
-            this.open(opts, callBack);
+            this._open(opts, callBack);
             return this;
         };
 
@@ -128,7 +123,7 @@
             return po.join('');
         };
 
-        this.open = function (opts, callBack) {
+        this._open = function (opts, callBack) {
             var
                 pos = {},
                 that;
@@ -160,17 +155,10 @@
             }
             this.activePicker.css(pos);
 
-            // bind button event
-            if (opts.pickerType === "prompt") {
-                this.activePicker.find("[data-ax-picker-prompt]").get(0).focus();
-            }
-            else {
-                this.activePicker.find("[data-ax-picker-btn]").get(0).focus();
-            }
-
             this.activePicker.find("[data-ax-picker-btn]").on(cfg.clickEventName, (function (e) {
                 this.btnOnClick(e || window.event, opts, callBack);
-            }).bind(this));
+            }).bind(this))
+                .get(0).focus();
 
             // bind key event
             jQuery(window).bind("keydown.ax-picker", (function (e) {
@@ -315,7 +303,7 @@
                 }).bind(this), cfg.animateTime);
             }
             return this;
-        }
+        };
 
         // 클래스 생성자
         this.main = (function () {
@@ -326,9 +314,9 @@
     };
     //== UI Class
 
-    //== ui class 공통 처리 구문
-    if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-    root.picker = axClass; // ax5.ui에 연결
-    //== ui class 공통 처리 구문
+    root.picker = (function(){
+        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
+        return axClass;
+    })(); // ax5.ui에 연결
 
 })(ax5.ui, ax5.ui.root);

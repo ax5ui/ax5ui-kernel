@@ -165,9 +165,9 @@
         }).apply(this, arguments);
     };
 
-    //== ui class 공통 처리 구문
-    if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-    root.mask = axClass; // ax5.ui에 연결
-    //== ui class 공통 처리 구문
+    root.mask = (function(){
+        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
+        return axClass;
+    })(); // ax5.ui에 연결
 
 })(ax5.ui, ax5.ui.root);
