@@ -250,7 +250,8 @@
                 while (k < 7)
                 {
                     po.push('<td class="calendar-col-' + k + '" style="' + U.css(itemStyles) + '">');
-                    po.push('<a class="calendar-item-day ' + (function () {
+                    po.push('<a class="calendar-item-day '
+                        + (function () {
                             if (cfg.selectable) {
                                 if (self.selectableMap[U.date(loopDate, {"return": cfg.dateFormat})]) {
                                     return ( loopDate.getMonth() == thisMonth ) ? "live" : "";
@@ -262,9 +263,12 @@
                             else {
                                 return ( loopDate.getMonth() == thisMonth ) ? ( U.date(loopDate, {"return": "yyyymmdd"}) == U.date(_today, {"return": "yyyymmdd"}) ) ? "focus" : "live" : "";
                             }
-                        })() + ' ' + (function () {
-                            return "";
-                        })() + '" data-calendar-item-date="' + U.date(loopDate, {"return": cfg.dateFormat}) + '"><span class="addon"></span>'
+                        })()
+                        + ' '
+                        + (function () {
+                            return (self.markerMap[U.date(loopDate, {"return": cfg.dateFormat})]) ? self.markerMap[U.date(loopDate, {"return": cfg.dateFormat})].theme : '';
+                        })()
+                        + '" data-calendar-item-date="' + U.date(loopDate, {"return": cfg.dateFormat}) + '"><span class="addon"></span>'
                         + cfg.lang.dayTmpl.replace('%s', loopDate.getDate())
                         + '<span class="lunar"></span></a>');
                     po.push('</td>');
@@ -352,18 +356,27 @@
                 while (k < 3)
                 {
                     po.push('<td class="calendar-col-' + i + '" style="' + U.css(itemStyles) + '">');
-                    po.push('<a class="calendar-item-month ' + (function () {
+                    po.push('<a class="calendar-item-month '
+                        + (function () {
                             if (cfg.selectable) {
                                 return (self.selectableMap[m]) ? 'live' : 'disable';
                             }
                             else {
                                 return 'live';
                             }
-                        })() + ' ' + (function () {
+                        })()
+                        + ' '
+                        + (function () {
                             return ( m == nMonth ) ? "focus" : "";
-                        })() + '" data-calendar-item-month="' + (function () {
+                        })()
+                        + ' '
+                        + (function () {
+                            return (self.markerMap[m]) ? self.markerMap[m].theme : '';
+                        })()
+                        + '" data-calendar-item-month="' + (function () {
                             return dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
-                        })() + '">'
+                        })()
+                        + '">'
                         + cfg.lang.months[m]
                         + '</a>');
                     po.push('</td>');
@@ -452,18 +465,30 @@
                 while (k < 4)
                 {
                     po.push('<td class="calendar-col-' + i + '" style="' + U.css(itemStyles) + '">');
-                    po.push('<a class="calendar-item-year ' + (function () {
+                    po.push('<a class="calendar-item-year '
+                        + (function () {
                             if (cfg.selectable) {
                                 return (self.selectableMap[y]) ? 'live' : 'disable';
                             }
                             else {
                                 return 'live';
                             }
-                        })() + ' ' + (function () {
+                        })()
+                        + ' '
+                        + (function () {
                             return ( y == nYear ) ? "focus" : "";
-                        })() + '" data-calendar-item-year="' + (function () {
+                        })()
+                        + ' '
+                        + (function () {
+                            return (self.selectableMap[y]) ? self.selectableMap[y].theme : '';
+                        })()
+                        + '" data-calendar-item-year="'
+                        + (function () {
                             return y + '-' + U.setDigit(dotDate.getMonth() + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
-                        })() + '">' + cfg.lang.yearTmpl.replace('%s', (y)) + '</a>');
+                        })()
+                        + '">'
+                        + cfg.lang.yearTmpl.replace('%s', (y))
+                        + '</a>');
                     po.push('</td>');
                     y++;
                     k++;
@@ -742,7 +767,7 @@
             var processor = {
                 'arr': function (v, map) {
                     map = {};
-                    if(!U.isArray(v)) return map;
+                    if (!U.isArray(v)) return map;
                     v.forEach(function (n) {
                         if (U.isDate(n))
                             n = U.date(n, {'return': cfg.dateFormat});
@@ -752,8 +777,8 @@
                 },
                 'obj': function (v, map) {
                     map = {};
-                    if(U.isArray(v)) return map;
-                    if(v.range) return map;
+                    if (U.isArray(v)) return map;
+                    if (v.range) return map;
                     for (var k in v) {
                         map[k] = v[k];
                     }
@@ -761,8 +786,8 @@
                 },
                 'range': function (v, map) {
                     map = {};
-                    if(U.isArray(v)) return map;
-                    if(!v.range) return map;
+                    if (U.isArray(v)) return map;
+                    if (!v.range) return map;
 
                     v.range.forEach(function (n) {
                         if (U.isDateFormat(n.from) && U.isDateFormat(n.to)) {
@@ -799,7 +824,7 @@
                                 break;
                             }
                         }
-                        if(Object.keys(result).length === 0){
+                        if (Object.keys(result).length === 0) {
                             result = processor.obj(selectable);
                         }
                     }
@@ -811,10 +836,63 @@
             };
         })();
 
-        this.setMarker = (function(){
-           return function(){
+        this.setMarker = (function () {
+            this.markerMap = {};
+            var processor = {
+                'obj': function (v, map) {
+                    map = {};
+                    if (U.isArray(v)) return map;
+                    if (v.range) return map;
+                    for (var k in v) {
+                        map[k] = v[k];
+                    }
+                    return map;
+                },
+                'range': function (v, map) {
+                    map = {};
+                    if (U.isArray(v)) return map;
+                    if (!v.range) return map;
 
-           }
+                    v.range.forEach(function (n) {
+                        if (U.isDateFormat(n.from) && U.isDateFormat(n.to)) {
+                            for (var d = U.date(n.from); d <= U.date(n.to); d.setDate(d.getDate() + 1)) {
+                                map[U.date(d, {"return": cfg.dateFormat})] = {theme: n.theme, label: n.label};
+                            }
+                        }
+                        else {
+                            for (var i = n.from; i <= n.to; i++) {
+                                map[i] = {theme: n.theme, label: n.label};
+                            }
+                        }
+                    });
+
+                    return map;
+                }
+            };
+
+            return function (marker, isPrint) {
+
+                var
+                    key,
+                    result = {}
+                    ;
+
+                if (cfg.marker = marker) {
+                    for (key in processor) {
+                        if (marker[key]) {
+                            result = processor[key](marker);
+                            break;
+                        }
+                    }
+                    if (Object.keys(result).length === 0) {
+                        result = processor.obj(marker);
+                    }
+                }
+
+                this.markerMap = result;
+                // 변경내용 적용하여 출력
+                if (isPrint !== false) this.changeMode();
+            };
         })();
 
         // 클래스 생성자
@@ -826,8 +904,7 @@
     };
     //== UI Class
 
-
-    root.calendar = (function(){
+    root.calendar = (function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
     })(); // ax5.ui에 연결
