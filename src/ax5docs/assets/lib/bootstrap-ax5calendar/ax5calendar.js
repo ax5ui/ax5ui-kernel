@@ -28,6 +28,7 @@
         this.target = null;
         this.selection = [];
         this.selectableMap = {};
+        this.markerMap = {};
         this.printedDay = {
             start: "", end: ""
         };
@@ -53,7 +54,6 @@
             multipleSelect: false,
             selectMode: 'day'
         };
-        // todo : selectMode 구현
 
         cfg = this.config;
         
@@ -809,6 +809,12 @@
                 // 변경내용 적용하여 출력
                 if (isPrint !== false) this.changeMode();
             };
+        })();
+
+        this.setMarker = (function(){
+           return function(){
+
+           }
         })();
 
         // 클래스 생성자

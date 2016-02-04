@@ -217,8 +217,7 @@
                 }
             }
         };
-        
-        // todo : confirm 타입 토스트일 때 키보드 이벤트 추가 할 수 있음.
+
         this.onKeyup = function (e, opts, callBack, target, k) {
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 if (this.queue.length > 0) this.close();
