@@ -875,7 +875,7 @@
                 }
             };
 
-            return function (marker, isPrint) {
+            return function (marker, isApply) {
 
                 var
                     key,
@@ -896,9 +896,18 @@
 
                 this.markerMap = result;
                 // 변경내용 적용하여 출력
-                if (isPrint !== false) this.changeMode();
+                if (isApply !== false) this.applyMarkerMap();
             };
         })();
+
+        this.applyMarkerMap = function(){
+            if (cfg.mode === "day" || cfg.mode === "d")
+            {
+                for(var k in this.markerMap){
+                    this.$["body"].find('[data-calendar-item-date="'+k+'"]').addClass(this.markerMap[k].theme);
+                }
+            }
+        };
 
         // 클래스 생성자
         this.main = (function () {

@@ -34,6 +34,7 @@ myCalendar.setConfig({
         dayTmpl: 'String' // %s
     },
     selectable: 'Array|Object',
+    marker: 'Object',
     multipleSelect: 'false|Number', // false
     onClick: "Function", // null
     onStateChanged: "Function" // null
@@ -168,6 +169,18 @@ selectable: { range: [{from: new Date(2016, 0, 1), to: new Date(2016, 0, 2)}] }
 selectable: { '2016-01-01': true, '2016-01-02': true }
 ```
 
+### marker
+
+Type: `Object`
+
+```js
+marker: {
+    '2016-02-07': {theme: 'holiday', label: '설날'},
+    '2016-02-08': {theme: 'holiday', label: '설날'},
+    '2016-02-09': {theme: 'holiday', label: '설날'},
+    '2016-02-10': {theme: 'holiday', label: '대체휴일'}
+}
+```
 
 ### multipleSelect
 
@@ -237,3 +250,16 @@ myCalendar.setSelectable({ range: [{from: new Date(), to: new Date()}] });
 myCalendar.setSelectable({ '2016-01-01': true, '2016-01-02': true });
 ```
 
+- - -
+
+## setMarker()
+`setMarker(marker[, isApply])`
+
+```js
+myCalendar.setMarker({
+    '2016-02-07': {theme: 'holiday', label: '설날'},
+    '2016-02-08': {theme: 'holiday', label: '설날'},
+    '2016-02-09': {theme: 'holiday', label: '설날'},
+    '2016-02-10': {theme: 'holiday', label: '대체휴일'}
+});
+```

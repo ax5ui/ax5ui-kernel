@@ -64,13 +64,14 @@
             selectMode: "day",
 
             // selectable: {range:[{from: '2016-02-01', to: '2016-02-20'}]},
-
+            /*
             marker: {
                 '2016-02-07': {theme: 'holiday', label: '설날'},
                 '2016-02-08': {theme: 'holiday', label: '설날'},
                 '2016-02-09': {theme: 'holiday', label: '설날'},
                 '2016-02-10': {theme: 'holiday', label: '대체휴일'}
             },
+            */
             onClick: function () {
                 console.log(myCalendar.getSelection());
             },
@@ -81,7 +82,14 @@
         });
 
         /// todo : 공휴일 표시에 대한 대안 필요.
-        myCalendar.setSelection(['2016-02-11', '2016-02-12', '2016-02-13']);
+        // myCalendar.setSelection(['2016-02-11', '2016-02-12', '2016-02-13']);
+
+        myCalendar.setMarker({
+            '2016-02-07': {theme: 'holiday', label: '설날'},
+            '2016-02-08': {theme: 'holiday', label: '설날'},
+            '2016-02-09': {theme: 'holiday', label: '설날'},
+            '2016-02-10': {theme: 'holiday', label: '대체휴일'}
+        });
     });
 </script>
 

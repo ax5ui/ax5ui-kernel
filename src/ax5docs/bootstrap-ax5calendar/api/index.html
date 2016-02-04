@@ -158,6 +158,7 @@ myCalendar.setConfig({
         dayTmpl: 'String' // %s
     },
     selectable: 'Array|Object',
+    marker: 'Object',
     multipleSelect: 'false|Number', // false
     onClick: &quot;Function&quot;, // null
     onStateChanged: &quot;Function&quot; // null
@@ -247,6 +248,15 @@ selectable: { range: [{from: new Date(2016, 0, 1), to: new Date(2016, 0, 2)}] }
 // Object
 selectable: { '2016-01-01': true, '2016-01-02': true }
 </code></pre>
+<h3>marker</h3>
+<p>Type: <code>Object</code></p>
+<pre class="prettyprint linenums lang-js"><code>marker: {
+    '2016-02-07': {theme: 'holiday', label: '설날'},
+    '2016-02-08': {theme: 'holiday', label: '설날'},
+    '2016-02-09': {theme: 'holiday', label: '설날'},
+    '2016-02-10': {theme: 'holiday', label: '대체휴일'}
+}
+</code></pre>
 <h3>multipleSelect</h3>
 <p>Type: <code>false|Number</code> [default: false]</p>
 <p>It defines the number of selectable date from the <code>Calendar</code>. It is determined the value of the false 1 is the same as.</p>
@@ -284,6 +294,16 @@ myCalendar.setSelectable([new Date(), ...]);
 myCalendar.setSelectable({ range: [{from: '2016-01-01', to: '2016-01-10'}] });
 myCalendar.setSelectable({ range: [{from: new Date(), to: new Date()}] });
 myCalendar.setSelectable({ '2016-01-01': true, '2016-01-02': true });
+</code></pre>
+<hr>
+<h2>setMarker()</h2>
+<p><code>setMarker(marker[, isApply])</code></p>
+<pre class="prettyprint linenums lang-js"><code>myCalendar.setMarker({
+    '2016-02-07': {theme: 'holiday', label: '설날'},
+    '2016-02-08': {theme: 'holiday', label: '설날'},
+    '2016-02-09': {theme: 'holiday', label: '설날'},
+    '2016-02-10': {theme: 'holiday', label: '대체휴일'}
+});
 </code></pre>
 
     
