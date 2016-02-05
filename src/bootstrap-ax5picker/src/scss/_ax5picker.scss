@@ -3,7 +3,7 @@
 	@include ax-background($ax5picker-bg);
 	border: $ax5picker-inner-border;
 	border-radius: $ax5picker-border-radius;
-	box-shadow: $ax5picker-box-shaodw;
+	box-shadow: $ax5picker-box-shadow;
 
 	z-index: $ax5picker-z-index;
 	position: fixed;
@@ -41,65 +41,23 @@
 		}
 	}
 
-
-	$arrow-size: 10px;
-	$arrow-border-width: 1px;
-
-	.ax-picker-arrow {
-		position: absolute;
-		width: 0;
-		height: 0;
-		left: 50%;
-		bottom: 0px;
-
-		&:before
-		{
-			content: ' ';
-			position: absolute;
-			width: 0;
-			height: 0;
-			left: - ($arrow-size);
-			bottom: - ($arrow-size * 2);
-
-			border-left: $arrow-size solid transparent;
-			border-right: $arrow-size solid transparent;
-			border-top: ($arrow-size * 2) solid #ddd;
-			/*
-			border: $arrow-size solid;
-			border-color: #ddd transparent transparent transparent;
-			*/
-			//border-color: #ddd transparent transparent #ddd;
-		}
-
-		&:after
-		{
-			content: ' ';
-			position: absolute;
-			width: 0;
-			height: 0;
-			left: - ($arrow-size);
-			bottom: - ($arrow-size * 2) + ($arrow-border-width * 2);
-
-			border-left: ($arrow-size) solid transparent;
-			border-right: ($arrow-size) solid transparent;
-			border-top: ($arrow-size * 2) solid #fff;
-
-			/*
-			border: ($arrow-size - $arrow-border-width) solid;
-			border-color: #fff transparent transparent transparent;
-
-			*/
-			//border-color: #fff transparent transparent #fff;
-		}
+	.ax-picker-arrow-top {
+		@include picker-arrow($ax5picker-arrow-size, $ax5picker-arrow-border-width, top);
 	}
-
-/*
-
-	*/
+	.ax-picker-arrow-right {
+		@include picker-arrow($ax5picker-arrow-size, $ax5picker-arrow-border-width, right);
+	}
+	.ax-picker-arrow-bottom {
+		@include picker-arrow($ax5picker-arrow-size, $ax5picker-arrow-border-width, bottom);
+	}
+	.ax-picker-arrow-left {
+		@include picker-arrow($ax5picker-arrow-size, $ax5picker-arrow-border-width, left);
+	}
 }
 
 @mixin picker-variant($text-color, $border, $heading-bg-color) {
 	border: $ax5picker-inner-border;
+	border-color: $ax5picker-inner-border-color;
 	.ax-picker-heading {
 		color: $text-color;
 		@include ax-background($heading-bg-color);
@@ -110,6 +68,110 @@
 	}
 	.ax-picker-body {
 
+	}
+}
+
+@mixin picker-arrow($arrow-size, $arrow-border-width, $arrow-direction){
+
+	//
+	//@debug( nth($ax5picker-inner-border, 3) );
+	$arrow-bg: nth($ax5picker-bg, 1);
+	$arrow-border-color: $ax5picker-inner-border-color;
+
+
+	position: absolute;
+	width: 0;
+	height: 0;
+
+	@if($arrow-direction == top) {
+		left: 50%;
+		top: 0px;
+	}
+	@else if($arrow-direction == right){
+		right: 0px;
+		top: 50%;
+	}
+	@else if($arrow-direction == bottom){
+		left: 50%;
+		bottom: 0px;
+	}
+	@else if($arrow-direction == left){
+		left: 0px;
+		top: 50%;
+	}
+
+	&:before
+	{
+		content: ' ';
+		position: absolute;
+		width: 0;
+		height: 0;
+
+		@if($arrow-direction == top) {
+			left: - ($arrow-size);
+			top: - ($arrow-size * 2);
+			border-left: $arrow-size solid transparent;
+			border-right: $arrow-size solid transparent;
+			border-bottom: ($arrow-size * 2) solid $arrow-border-color;
+		}
+		@else if($arrow-direction == right){
+			right: - ($arrow-size * 2);
+			top: - ($arrow-size);
+			border-top: $arrow-size solid transparent;
+			border-bottom: $arrow-size solid transparent;
+			border-left: ($arrow-size * 2) solid $arrow-border-color;
+		}
+		@else if($arrow-direction == bottom){
+			left: - ($arrow-size);
+			bottom: - ($arrow-size * 2);
+			border-left: $arrow-size solid transparent;
+			border-right: $arrow-size solid transparent;
+			border-top: ($arrow-size * 2) solid $arrow-border-color;
+		}
+		@else if($arrow-direction == left){
+			left: - ($arrow-size * 2);
+			top: - ($arrow-size);
+			border-top: $arrow-size solid transparent;
+			border-bottom: $arrow-size solid transparent;
+			border-right: ($arrow-size * 2) solid $arrow-border-color;
+		}
+	}
+
+	&:after
+	{
+		content: ' ';
+		position: absolute;
+		width: 0;
+		height: 0;
+
+		@if($arrow-direction == top) {
+			left: - ($arrow-size);
+			top: - ($arrow-size * 2) + ($arrow-border-width * 2);
+			border-left: ($arrow-size) solid transparent;
+			border-right: ($arrow-size) solid transparent;
+			border-bottom: ($arrow-size * 2) solid $arrow-bg;
+		}
+		@else if($arrow-direction == right){
+			right: - ($arrow-size * 2) + ($arrow-border-width * 2);
+			top: - ($arrow-size);
+			border-top: ($arrow-size) solid transparent;
+			border-bottom: ($arrow-size) solid transparent;
+			border-left: ($arrow-size * 2) solid $arrow-bg;
+		}
+		@else if($arrow-direction == bottom){
+			left: - ($arrow-size);
+			bottom: - ($arrow-size * 2) + ($arrow-border-width * 2);
+			border-left: ($arrow-size) solid transparent;
+			border-right: ($arrow-size) solid transparent;
+			border-top: ($arrow-size * 2) solid $arrow-bg;
+		}
+		@else if($arrow-direction == left){
+			left: - ($arrow-size * 2) + ($arrow-border-width * 2);
+			top: - ($arrow-size);
+			border-top: ($arrow-size) solid transparent;
+			border-bottom: ($arrow-size) solid transparent;
+			border-right: ($arrow-size * 2) solid $arrow-bg;
+		}
 	}
 }
 
