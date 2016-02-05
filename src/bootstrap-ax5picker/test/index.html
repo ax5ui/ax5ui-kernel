@@ -19,8 +19,35 @@
     var picker = new ax5.ui.picker();
 
     $(document.body).ready(function () {
+        picker.bind({
+            id: "",
+            target: "",
+            handler: {
+                icon: ""
+            },
+            openOn: "",
+            body: {
+                calendar: {}
+            },
+            onReady: function () {
 
+            }
+        });
 
+        picker.bind({
+            id: "",
+            target: "",
+            handler: {
+                icon: ""
+            },
+            openOn: ["targetFocus", "targetClick", "handlerFocus", "handlerClick"],
+            body: function (callBack) {
+
+            },
+            onReady: function () {
+
+            }
+        });
     });
 </script>
 
