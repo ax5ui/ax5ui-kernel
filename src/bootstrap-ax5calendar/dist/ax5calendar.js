@@ -52,7 +52,8 @@
                 dayTmpl: "%s"
             },
             multipleSelect: false,
-            selectMode: 'day'
+            selectMode: 'day',
+            defaultMarkerTheme: 'holiday'
         };
 
         cfg = this.config;
@@ -271,7 +272,7 @@
                         })()
                         + ' '
                         + (function () {
-                            return (self.markerMap[thisDate]) ? self.markerMap[thisDate].theme : '';
+                            return (self.markerMap[thisDate]) ? self.markerMap[thisDate].theme || cfg.defaultMarkerTheme : '';
                         })()
                         + '" data-calendar-item-date="' + thisDate + '"><span class="addon"></span>'
                         + cfg.lang.dayTmpl.replace('%s', loopDate.getDate())
@@ -307,6 +308,7 @@
             
             if (cfg.onStateChanged) {
                 var that = {
+                    self: this,
                     action: "printDay",
                     printedDay: this.printedDay
                 };
@@ -376,7 +378,7 @@
                         })()
                         + ' '
                         + (function () {
-                            return (self.markerMap[m]) ? self.markerMap[m].theme : '';
+                            return (self.markerMap[m]) ? self.markerMap[m].theme || cfg.defaultMarkerTheme : '';
                         })()
                         + '" data-calendar-item-month="' + (function () {
                             return dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2);
@@ -414,6 +416,7 @@
 
             if (cfg.onStateChanged) {
                 var that = {
+                    self: this,
                     action: "printMonth",
                     printedDay: this.printedDay
                 };
@@ -485,7 +488,7 @@
                         })()
                         + ' '
                         + (function () {
-                            return (self.selectableMap[y]) ? self.selectableMap[y].theme : '';
+                            return (self.selectableMap[y]) ? self.selectableMap[y].theme || cfg.defaultMarkerTheme : '';
                         })()
                         + '" data-calendar-item-year="'
                         + (function () {
@@ -524,6 +527,7 @@
 
             if (cfg.onStateChanged) {
                 var that = {
+                    self: this,
                     action: "printYear",
                     printedDay: this.printedDay
                 };
@@ -904,7 +908,7 @@
             if (cfg.mode === "day" || cfg.mode === "d")
             {
                 for(var k in this.markerMap){
-                    this.$["body"].find('[data-calendar-item-date="'+k+'"]').addClass(this.markerMap[k].theme);
+                    this.$["body"].find('[data-calendar-item-date="'+k+'"]').addClass(this.markerMap[k].theme || cfg.defaultMarkerTheme);
                 }
             }
         };

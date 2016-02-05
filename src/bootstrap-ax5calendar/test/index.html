@@ -11,7 +11,7 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="bower_components/bootstrap-ax5mask/dist/ax5mask.min.js"></script>
-    <script src="../dist/ax5calendar.js"></script>
+    <script src="../dist/ax5calendar.min.js"></script>
 </head>
 <body style="padding: 50px;">
 
@@ -85,10 +85,10 @@
         // myCalendar.setSelection(['2016-02-11', '2016-02-12', '2016-02-13']);
 
         myCalendar.setMarker({
-            '2016-02-07': {theme: 'holiday', label: '설날'},
-            '2016-02-08': {theme: 'holiday', label: '설날'},
-            '2016-02-09': {theme: 'holiday', label: '설날'},
-            '2016-02-10': {theme: 'holiday', label: '대체휴일'}
+            '2016-02-07': true,
+            '2016-02-08': true,
+            '2016-02-09': true,
+            '2016-02-10': true
         });
     });
 </script>

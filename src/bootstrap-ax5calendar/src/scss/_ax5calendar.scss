@@ -1,3 +1,9 @@
+@mixin extend-item-theme() {
+	&.holiday{
+		color: $ax5calendar-sun-text-color;
+	}
+}
+
 // mixins --------------------------------------------- end
 
 @include keyframes(ax5-ui-calendar-fadeout) {
@@ -195,9 +201,8 @@
 							@include ax-background($ax5calendar-date-bg);
 							color: lighten($ax5calendar-date-text-color, 10%);
 						}
-						&.holiday{
-							color: $ax5calendar-sun-text-color;
-						}
+
+						@include extend-item-theme();
 					}
 					.calendar-item-month {
 						display: block;
@@ -237,6 +242,7 @@
 							@include ax-background($ax5calendar-date-bg);
 							color: lighten($ax5calendar-date-text-color, 10%);
 						}
+						@include extend-item-theme();
 					}
 					.calendar-item-year {
 						display: block;
@@ -276,18 +282,24 @@
 							@include ax-background($ax5calendar-date-bg);
 							color: lighten($ax5calendar-date-text-color, 10%);
 						}
+						@include extend-item-theme();
 					}
 
 					&.calendar-col-0 {
 						.calendar-item-day.live {
 							color: $ax5calendar-sun-text-color;
+							@include extend-item-theme();
 						}
 					}
 					&.calendar-col-6 {
 						.calendar-item-day.live {
 							color: $ax5calendar-sat-text-color;
+							@include extend-item-theme();
 						}
 					}
+
+
+
 				}
 			}
 		}

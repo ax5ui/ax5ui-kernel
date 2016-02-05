@@ -12,7 +12,7 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<link rel="shortcut icon" href="../../assets/ax5favicon.ico" type="image/x-icon">
-	<title>ax5ui / bootstrap-ax5calendar : Change Calendar mode</title>
+	<title>ax5ui / bootstrap-ax5calendar : Marker</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -123,7 +123,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li ><a href="/bootstrap-ax5calendar/demo/index.html">Basic Calendar</a></li><li ><a href="/bootstrap-ax5calendar/demo/control.html">Control Calendar</a></li><li  class='active'><a href="/bootstrap-ax5calendar/demo/mode.html">Change Calendar mode</a></li><li ><a href="/bootstrap-ax5calendar/demo/dimensions.html">Calendar Dimensions</a></li><li ><a href="/bootstrap-ax5calendar/demo/select.html">Date Select</a></li><li ><a href="/bootstrap-ax5calendar/demo/selectable.html">Selectable</a></li><li ><a href="/bootstrap-ax5calendar/demo/marker.html">Marker</a></li><li ><a href="/bootstrap-ax5calendar/demo/lang.html">Language</a></li><li ><a href="/bootstrap-ax5calendar/demo/event.html">Event</a></li></ul>
+        <ul><li ><a href="/bootstrap-ax5calendar/demo/index.html">Basic Calendar</a></li><li ><a href="/bootstrap-ax5calendar/demo/control.html">Control Calendar</a></li><li ><a href="/bootstrap-ax5calendar/demo/mode.html">Change Calendar mode</a></li><li ><a href="/bootstrap-ax5calendar/demo/dimensions.html">Calendar Dimensions</a></li><li ><a href="/bootstrap-ax5calendar/demo/select.html">Date Select</a></li><li ><a href="/bootstrap-ax5calendar/demo/selectable.html">Selectable</a></li><li  class='active'><a href="/bootstrap-ax5calendar/demo/marker.html">Marker</a></li><li ><a href="/bootstrap-ax5calendar/demo/lang.html">Language</a></li><li ><a href="/bootstrap-ax5calendar/demo/event.html">Event</a></li></ul>
     
 					</div>
 				</div>
@@ -131,67 +131,108 @@
 					
 
         <section class="ax5docs-section">
-            <h1>Change Calendar mode</h1>
+            <h1>Marker</h1>
 
             <p>html</p>
-            <pre class="prettyprint linenums lang-html">&lt;div id="build-target">&lt;/div>
-&lt;div class="DH10">&lt;/div>
-&lt;button class="btn btn-default" data-change-calendar-mode="day">Day&lt;/button>
-&lt;button class="btn btn-default" data-change-calendar-mode="month">Month&lt;/button>
-&lt;button class="btn btn-default" data-change-calendar-mode="year">Year&lt;/button>
-&lt;div class="DH10">&lt;/div></pre><div id="build-target"></div>
-<div class="DH10"></div>
-<button class="btn btn-default" data-change-calendar-mode="day">Day</button>
-<button class="btn btn-default" data-change-calendar-mode="month">Month</button>
-<button class="btn btn-default" data-change-calendar-mode="year">Year</button>
-<div class="DH10"></div>
-
+            <pre class="prettyprint linenums lang-html">&lt;div id="build-target">&lt;/div></pre><div id="build-target"></div>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-        var buildTarget = $("#build-target");
-        buildTarget.html('&lt;div id="calendar-target" style="width:300px;border:1px solid #888;padding: 10px;">&lt;/div>');
+        var
+            buildTarget = $("#build-target"),
+            today = new Date(),
+            _c_date = ax5.util.date;
 
-        var myCalendar = new ax5.ui.calendar({
-            target: document.getElementById("calendar-target"),
-            displayDate: (new Date()),
-            mode: "year",
-            selectMode: "year"
+        buildTarget.html(
+            '&lt;div id="calendar-target-01" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;">&lt;/div>'
+            + '&lt;div id="calendar-target-02" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;">&lt;/div>'
+            + '&lt;div style="clear:both;">&lt;/div>'
+        );
+
+        // use Array
+        new ax5.ui.calendar({
+            target: document.getElementById("calendar-target-01"),
+            marker: (function () {
+                var marker = {};
+                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: -1}})] = true;
+                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: 0}})] = true;
+                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: 1}})] = true;
+                
+                console.log(marker);
+                
+                return marker;
+            })(),
+            onClick: function () {
+                console.log(this)
+            }
         });
 
-        $('[data-change-calendar-mode]').click(function () {
-            var mode = this.getAttribute('data-change-calendar-mode');
-            console.log(mode);
-            myCalendar
-                .setConfig({
-                    mode: mode,
-                    selectMode: mode
-                }, false)
-                .changeMode();
+        // use Object
+
+        new ax5.ui.calendar({
+            target: document.getElementById("calendar-target-02"),
+            onStateChanged: function () {
+                if (this.action == "printDay") {
+
+                    var holidays = {};
+                    holidays[_c_date(this.printedDay.start, {'return': 'yyyy-mm-dd', 'add': {d: 7}})] = {theme: 'holiday'};
+                    holidays[_c_date(this.printedDay.start, {'return': 'yyyy-mm-dd', 'add': {d: 8}})] = {theme: 'holiday'};
+                    holidays[_c_date(this.printedDay.start, {'return': 'yyyy-mm-dd', 'add': {d: 9}})] = {theme: 'holiday'};
+
+                    this.self.setMarker(holidays);
+                }
+            }
         });
+
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-        var buildTarget = $("#build-target");
-        buildTarget.html('<div id="calendar-target" style="width:300px;border:1px solid #888;padding: 10px;"></div>');
+        var
+            buildTarget = $("#build-target"),
+            today = new Date(),
+            _c_date = ax5.util.date;
 
-        var myCalendar = new ax5.ui.calendar({
-            target: document.getElementById("calendar-target"),
-            displayDate: (new Date()),
-            mode: "year",
-            selectMode: "year"
+        buildTarget.html(
+            '<div id="calendar-target-01" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;"></div>'
+            + '<div id="calendar-target-02" style="width:300px;border:1px solid #888;padding: 10px;float:left;margin: 10px;"></div>'
+            + '<div style="clear:both;"></div>'
+        );
+
+        // use Array
+        new ax5.ui.calendar({
+            target: document.getElementById("calendar-target-01"),
+            marker: (function () {
+                var marker = {};
+                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: -1}})] = true;
+                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: 0}})] = true;
+                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: 1}})] = true;
+                
+                console.log(marker);
+                
+                return marker;
+            })(),
+            onClick: function () {
+                console.log(this)
+            }
         });
 
-        $('[data-change-calendar-mode]').click(function () {
-            var mode = this.getAttribute('data-change-calendar-mode');
-            console.log(mode);
-            myCalendar
-                .setConfig({
-                    mode: mode,
-                    selectMode: mode
-                }, false)
-                .changeMode();
+        // use Object
+
+        new ax5.ui.calendar({
+            target: document.getElementById("calendar-target-02"),
+            onStateChanged: function () {
+                if (this.action == "printDay") {
+
+                    var holidays = {};
+                    holidays[_c_date(this.printedDay.start, {'return': 'yyyy-mm-dd', 'add': {d: 7}})] = {theme: 'holiday'};
+                    holidays[_c_date(this.printedDay.start, {'return': 'yyyy-mm-dd', 'add': {d: 8}})] = {theme: 'holiday'};
+                    holidays[_c_date(this.printedDay.start, {'return': 'yyyy-mm-dd', 'add': {d: 9}})] = {theme: 'holiday'};
+
+                    this.self.setMarker(holidays);
+                }
+            }
         });
+
     });
 </script></script>
         </section>
