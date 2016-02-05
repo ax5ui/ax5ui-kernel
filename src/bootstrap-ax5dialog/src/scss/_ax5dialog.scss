@@ -2,12 +2,14 @@
 	box-sizing: $ax5dialog-box-model;
 	background-color: $ax5dialog-bg;
 	border: $ax5dialog-inner-border;
+	border-radius: $ax5dialog-border-radius;
 	box-shadow: $ax5dialog-box-shaodw;
 
 	z-index: $ax5dialog-z-index;
 	position: fixed;
 	left: 0px;
 	top: 0px;
+	overflow: hidden;
 }
 
 @mixin ax-dialog-section() {

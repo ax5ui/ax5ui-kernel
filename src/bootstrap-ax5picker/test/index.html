@@ -13,7 +13,24 @@
     <script src="bower_components/bootstrap-ax5mask/dist/ax5mask.min.js"></script>
     <script src="../dist/ax5picker.js"></script>
 </head>
-<body>
+<body style="padding: 20px;">
+
+<!--http://bootstrap-datepicker.readthedocs.org/en/latest/-->
+<!--http://www.sitepoint.com/pure-css3-speech-bubbles/-->
+<!--https://css-tricks.com/examples/ShapesOfCSS/-->
+
+<div class="form-group">
+
+    <div class="ax5-ui-picker" style="width:400px;height: 300px;left: 20px;top:20px;">
+        <div class="ax-picker-arrow"></div>
+    </div>
+
+
+    <div class="input-group" data-ax5picker-date="1">
+        <input type="text" class="form-control">
+        <span class="input-group-addon">D</span>
+    </div>
+</div>
 
 <script>
     var picker = new ax5.ui.picker();
@@ -22,9 +39,6 @@
         picker.bind({
             id: "",
             target: "",
-            handler: {
-                icon: ""
-            },
             openOn: "",
             body: {
                 calendar: {}
@@ -37,9 +51,6 @@
         picker.bind({
             id: "",
             target: "",
-            handler: {
-                icon: ""
-            },
             openOn: ["targetFocus", "targetClick", "handlerFocus", "handlerClick"],
             body: function (callBack) {
 

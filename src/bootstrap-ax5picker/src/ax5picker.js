@@ -22,7 +22,8 @@
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
-        this.activePicker = null;
+
+        this.queue = [];
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
@@ -56,7 +57,7 @@
 
         this.bind = function () {
 
-        }
+        };
 
         // 클래스 생성자
         this.main = (function () {

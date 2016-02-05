@@ -56,7 +56,7 @@
 
         this.bind = function () {
 
-        }
+        };
 
         // 클래스 생성자
         this.main = (function () {

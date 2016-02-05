@@ -1,40 +1,38 @@
-@mixin ax-dialog() {
-	box-sizing: $ax5dialog-box-model;
-	background-color: $ax5dialog-bg;
-	border: $ax5dialog-inner-border;
-	box-shadow: $ax5dialog-box-shaodw;
+@mixin ax-picker() {
+	box-sizing: $ax5picker-box-model;
+	@include ax-background($ax5picker-bg);
+	border: $ax5picker-inner-border;
+	border-radius: $ax5picker-border-radius;
+	box-shadow: $ax5picker-box-shaodw;
 
-	z-index: $ax5dialog-z-index;
+	z-index: $ax5picker-z-index;
 	position: fixed;
 	left: 0px;
 	top: 0px;
+	//overflow: hidden;
 }
 
-@mixin ax-dialog-section() {
-	.ax-dialog-heading {
+@mixin ax-picker-section() {
+	.ax-picker-heading {
 		//font-size: 1em;
 		font-weight: 600;
-		padding: $ax5dialog-heading-padding;
+		padding: $ax5picker-heading-padding;
 		border-bottom: 1px solid transparent;
 		.badge {
 			font-size: 0.8em;
-			color: $ax5dialog-default-heading-bg;
-			background-color: $ax5dialog-default-text;
+			color: $ax5picker-default-heading-bg;
+			@include ax-background($ax5picker-default-text);
 		}
 	}
-	.ax-dialog-body {
-		padding: $ax5dialog-body-padding;
+	.ax-picker-body {
+		padding: $ax5picker-body-padding;
 		text-align: center;
-		.ax-dialog-msg {
-			padding-top: $ax5dialog-body-padding;
-			padding-bottom: $ax5dialog-body-padding;
+		.ax-picker-contents {
+			padding-top: $ax5picker-body-padding;
+			padding-bottom: $ax5picker-body-padding;
 		}
-		.ax-dialog-prompt {
-			text-align: left;
-			padding-bottom: $ax5dialog-body-padding/2;
-		}
-		.ax-dialog-buttons {
-			margin-top: $ax5dialog-body-padding;
+		.ax-picker-buttons {
+			margin-top: $ax5picker-body-padding;
 			button {
 				&:not(:last-child) {
 					margin-right: 3px;
@@ -42,26 +40,80 @@
 			}
 		}
 	}
-}
 
-@mixin dialog-variant($text-color, $border, $heading-bg-color) {
 
-	border: $ax5dialog-inner-border;
+	$arrow-size: 10px;
+	$arrow-border-width: 1px;
 
-	.ax-dialog-heading {
-		color: $text-color;
-		background: $heading-bg-color;
-		.badge {
-			color: $heading-bg-color;
-			background-color: $text-color;
+	.ax-picker-arrow {
+		position: absolute;
+		width: 0;
+		height: 0;
+		left: 50%;
+		bottom: 0px;
+
+		&:before
+		{
+			content: ' ';
+			position: absolute;
+			width: 0;
+			height: 0;
+			left: - ($arrow-size);
+			bottom: - ($arrow-size * 2);
+
+			border-left: $arrow-size solid transparent;
+			border-right: $arrow-size solid transparent;
+			border-top: ($arrow-size * 2) solid #ddd;
+			/*
+			border: $arrow-size solid;
+			border-color: #ddd transparent transparent transparent;
+			*/
+			//border-color: #ddd transparent transparent #ddd;
+		}
+
+		&:after
+		{
+			content: ' ';
+			position: absolute;
+			width: 0;
+			height: 0;
+			left: - ($arrow-size);
+			bottom: - ($arrow-size * 2) + ($arrow-border-width * 2);
+
+			border-left: ($arrow-size) solid transparent;
+			border-right: ($arrow-size) solid transparent;
+			border-top: ($arrow-size * 2) solid #fff;
+
+			/*
+			border: ($arrow-size - $arrow-border-width) solid;
+			border-color: #fff transparent transparent transparent;
+
+			*/
+			//border-color: #fff transparent transparent #fff;
 		}
 	}
-	.ax-dialog-body {
+
+/*
+
+	*/
+}
+
+@mixin picker-variant($text-color, $border, $heading-bg-color) {
+	border: $ax5picker-inner-border;
+	.ax-picker-heading {
+		color: $text-color;
+		@include ax-background($heading-bg-color);
+		.badge {
+			color: $heading-bg-color;
+			@include ax-background($text-color);
+		}
+	}
+	.ax-picker-body {
 
 	}
 }
 
-@include keyframes(ax-dialog) {
+@include keyframes(ax-picker) {
 	0% {
 		opacity: 0.0;
 		@include transform(scale(1));
@@ -77,7 +129,7 @@
 }
 
 
-@include keyframes(ax-dialog-destroy) {
+@include keyframes(ax-picker-destroy) {
 	from {
 		@include transform(scale(1));
 		opacity: 1.0;
@@ -90,32 +142,32 @@
 
 // mixins --------------------------------------------- end
 
-.ax5-ui-dialog {
-	@include animation(ax-dialog $ax5dialog-easing-time-open $ease-out-back);
+.ax5-ui-picker {
+	@include animation(ax-picker $ax5picker-easing-time-open $ease-out-back);
 	@include transform(translateZ(0));
 
-	@include ax-dialog();
-	@include ax-dialog-section();
+	@include ax-picker();
+	@include ax-picker-section();
 
-	@include dialog-variant($ax5dialog-default-text, $ax5dialog-default-border, $ax5dialog-default-heading-bg);
+	@include picker-variant($ax5picker-default-text, $ax5picker-default-border, $ax5picker-default-heading-bg);
 
 	&.primary {
-		@include dialog-variant($ax5dialog-primary-text, $ax5dialog-primary-border, $ax5dialog-primary-heading-bg);
+		@include picker-variant($ax5picker-primary-text, $ax5picker-primary-border, $ax5picker-primary-heading-bg);
 	}
 	&.success {
-		@include dialog-variant($ax5dialog-success-text, $ax5dialog-success-border, $ax5dialog-success-heading-bg);
+		@include picker-variant($ax5picker-success-text, $ax5picker-success-border, $ax5picker-success-heading-bg);
 	}
 	&.info {
-		@include dialog-variant($ax5dialog-info-text, $ax5dialog-info-border, $ax5dialog-info-heading-bg);
+		@include picker-variant($ax5picker-info-text, $ax5picker-info-border, $ax5picker-info-heading-bg);
 	}
 	&.warning {
-		@include dialog-variant($ax5dialog-warning-text, $ax5dialog-warning-border, $ax5dialog-warning-heading-bg);
+		@include picker-variant($ax5picker-warning-text, $ax5picker-warning-border, $ax5picker-warning-heading-bg);
 	}
 	&.danger {
-		@include dialog-variant($ax5dialog-danger-text, $ax5dialog-danger-border, $ax5dialog-danger-heading-bg);
+		@include picker-variant($ax5picker-danger-text, $ax5picker-danger-border, $ax5picker-danger-heading-bg);
 	}
 
 	&.destroy {
-		@include animation(ax-dialog-destroy $ax5dialog-easing-time-close $ease-in-back forwards);
+		@include animation(ax-picker-destroy $ax5picker-easing-time-close $ease-in-back forwards);
 	}
 }
