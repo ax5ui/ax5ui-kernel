@@ -1,7 +1,7 @@
 $ax5picker-z-index: 2000 !default;
 $ax5picker-box-model: border-box !default;
-//$ax5picker-bg: $panel-bg !default;
-$ax5picker-bg: #ccc !default;
+$ax5picker-bg: $panel-bg !default;
+
 $ax5picker-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.175) !default;
 $ax5picker-body-padding: $panel-body-padding !default;
 $ax5picker-heading-padding: $panel-heading-padding !default;
@@ -14,8 +14,7 @@ $ax5picker-arrow-border-width: 1px !default;
 
 //** Border color for elements within dialog
 $ax5picker-inner-border: 1px solid !default;
-//$ax5picker-inner-border-color: $panel-inner-border !default;
-$ax5picker-inner-border-color: #888 !default;
+$ax5picker-inner-border-color: $panel-inner-border !default;
 
 $ax5picker-footer-bg: $panel-footer-bg !default;
 
