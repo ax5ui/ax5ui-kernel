@@ -253,3 +253,17 @@
 		@include transform-origin(left center);
 	}
 }
+
+// picker handle
+.input-group{
+	&[data-ax5picker]{
+		.input-group-addon{
+			cursor: pointer;
+			&:not(:last-child){
+				border-left: 0px none;
+				border-right: 0px none;
+			}
+		}
+
+	}
+}

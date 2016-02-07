@@ -6,11 +6,13 @@
 
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5mask/dist/ax5mask.css"/>
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5calendar/dist/ax5calendar.css"/>
     <link rel="stylesheet" type="text/css" href="../dist/ax5picker.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="bower_components/bootstrap-ax5mask/dist/ax5mask.min.js"></script>
+    <script src="bower_components/bootstrap-ax5calendar/dist/ax5calendar.min.js"></script>
     <script src="../dist/ax5picker.js"></script>
 </head>
 <body style="padding: 20px;">
@@ -22,6 +24,7 @@
 
 <div class="form-group">
 
+    <!--
     <div class="ax5-ui-picker direction-bottom" style="width:400px;height: 300px;left: 100px;top: 100px;">
         <div class="ax-picker-heading">
             123
@@ -36,10 +39,17 @@
         </div>
         <div class="ax-picker-arrow"></div>
     </div>
+    -->
 
+    <div class="input-group" data-ax5picker="date-range">
+        <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
+        <span class="input-group-addon">~</span>
+        <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
+        <span class="input-group-addon">D</span>
+    </div>
 
-    <div class="input-group" data-ax5picker-date="1">
-        <input type="text" class="form-control">
+    <div class="input-group" data-ax5picker="date">
+        <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
         <span class="input-group-addon">D</span>
     </div>
 </div>
@@ -48,29 +58,41 @@
     var picker = new ax5.ui.picker();
 
     $(document.body).ready(function () {
-        picker.bind({
-            id: "",
-            target: "",
-            openOn: "",
-            body: {
-                calendar: {}
-            },
-            onReady: function () {
 
-            }
+        $('[data-ax5picker]').each(function () {
+            console.log(this.getAttribute("data-ax5picker"));
+
+            // picker body
+            /**
+             * date(date-range)
+             * datetime
+             * color
+             *
+             */
+
+
+            picker.bind({
+                target: this,
+                body: this.getAttribute("data-ax5picker")
+            });
+
         });
 
-        picker.bind({
-            id: "",
-            target: "",
-            openOn: ["targetFocus", "targetClick", "handlerFocus", "handlerClick"],
-            body: function (callBack) {
 
-            },
-            onReady: function () {
 
-            }
-        });
+        /*
+         picker.bind({
+         id: "",
+         target: "",
+         openOn: ["targetFocus", "targetClick", "handlerFocus", "handlerClick"],
+         body: function (callBack) {
+
+         },
+         onReady: function () {
+
+         }
+         });
+         */
     });
 </script>
 
