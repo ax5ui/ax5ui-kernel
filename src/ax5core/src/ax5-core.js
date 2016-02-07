@@ -147,6 +147,7 @@
                 "501": "Duplicate call error"
             },
             "ax5picker": {
+                "401": "Can not find target element",
                 "501": "Duplicate call error"
             },
             "single-uploader": {
