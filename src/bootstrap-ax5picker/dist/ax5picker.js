@@ -125,10 +125,32 @@
 
         this.open = (function () {
 
+            var getTmpl = function () {
+                return `
+                <div class="ax5-ui-picker">
+                    {{#title}}
+                        <div class="ax-picker-heading">{{title}}</div>
+                    {{/title}}
+                    <div class="ax-picker-body">
+                        <div class="ax-picker-contents">
+                        </div>
+                        {{#btns}}
+                            <div class="ax-picker-buttons">
+                            {{#btns}}
+                                {{#getEach}}
+                                <button data-ax-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
+                                {{/getEach}}
+                            {{/btns}}
+                            </div>
+                        {{/btns}}
+                    </div>
+                    <div class="ax-picker-arrow"></div>
+                </div>
+                `;
+            };
 
-
-            return function(opts, optIdx){
-
+            return function (opts, optIdx) {
+                return getTmpl(opts);
             }
         })();
 

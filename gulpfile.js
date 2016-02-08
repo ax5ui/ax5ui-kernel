@@ -8,6 +8,7 @@ var changed = require('gulp-changed');
 var marko_ax5 = require('gulp-marko-ax5');
 var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
+var babel = require('gulp-babel');
 
 var PATHS = {
     assets: {
@@ -131,11 +132,14 @@ for (var k in PATHS) {
         gulp.task(k + '-scripts', (function (k, __p) {
             return function () {
                 gulp.src(PATHS[k].src + '/*.js')
+                    .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(concat(__p.js + '.js'))
                     .pipe(gulp.dest(PATHS[k].dest))
+                    .pipe(babel({
+                        presets: ['es2015']
+                    }))
                     .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k))
                     .pipe(concat(__p.js + '.min.js'))
-                    .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(uglify())
                     .pipe(gulp.dest(PATHS[k].dest))
                     .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
