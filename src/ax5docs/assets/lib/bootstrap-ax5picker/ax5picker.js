@@ -125,9 +125,28 @@
 
         this.open = (function () {
 
+            var getTmpl = function () {
+                return ''
+                    + '<div class="ax5-ui-picker">'
+                    + '{{#title}}'
+                    + '<div class="ax-picker-heading">{{title}}</div>'
+                    + '{{/title}}'
+                    + '<div class="ax-picker-body">'
+                    + '<div class="ax-picker-contents">'
+                    + '</div>'
+                    + '{{#btns}}'
+                    + '<div class="ax-picker-buttons">'
+                    + '{{#btns}}'
+                    + '<button class="btn btn-default">{{label}}</button>'
+                    + '{{/btns}}'
+                    + '</div>'
+                    + '{{/btns}}'
+                    + '</div>'
+                    + '<div class="ax-picker-arrow"></div>'
+                    + '</div>';
+            };
 
-
-            return function(opts, optIdx){
+            return function (opts, optIdx) {
 
             }
         })();

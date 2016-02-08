@@ -2424,7 +2424,16 @@ ax5.ui = (function (core) {
      */
     function Context(view, parentContext) {
         this.view = view;
-        this.cache = {'.': this.view};
+        this.cache = {
+            '.': this.view,
+            'getEach': function () {
+                var returns = [];
+                for (var k in this) {
+                    returns.push({'@key': k, '@value': this[k]});
+                }
+                return returns;
+            }
+        };
         this.parent = parentContext;
     }
 
@@ -2550,7 +2559,6 @@ ax5.ui = (function (core) {
      */
     Writer.prototype.renderTokens = function renderTokens(tokens, context, partials, originalTemplate) {
         var buffer = '';
-
         var token, symbol, value;
         for (var i = 0, numTokens = tokens.length; i < numTokens; ++i) {
             value = undefined;
@@ -2587,8 +2595,8 @@ ax5.ui = (function (core) {
 
         if (isArray(value)) {
             for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
-                value[j].__i__ = j;
-                value[j].__first__ = (j === 0);
+                value[j]['@i'] = j;
+                value[j]['@first'] = (j === 0);
                 buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
             }
         }

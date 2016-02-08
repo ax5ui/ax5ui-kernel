@@ -1,0 +1,31 @@
+<tmpl-metadata>
+    <parent></parent>
+    <sort>3</sort>
+
+    <id>ax5.mustache</id>
+    <title>ax5.mustache</title>
+    <desc></desc>
+</tmpl-metadata>
+
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="ax5.mustache" page-id="ax5.mustache"
+            body-style="sub-page" with-inline-menu="true">
+    <layout-put into="visual">
+
+        <div class="contents">
+            <div class="style-sub-visual">
+                <div class="title">ax5.mustache</div>
+                <div class="description">this version added only a few of the key and function in the <b>mustache</b>.
+                </div>
+            </div>
+        </div>
+
+    </layout-put>
+    <layout-put into="body">
+
+        <ax5docs-md file="src/ax5core/API-ax5-mustache.md"></ax5docs-md>
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+</layout-use>
