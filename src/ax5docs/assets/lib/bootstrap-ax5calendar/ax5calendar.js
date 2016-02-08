@@ -901,6 +901,7 @@
                 this.markerMap = result;
                 // 변경내용 적용하여 출력
                 if (isApply !== false) this.applyMarkerMap();
+                return this;
             };
         })();
 

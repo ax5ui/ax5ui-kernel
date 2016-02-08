@@ -64,6 +64,8 @@
                 console.log(ax5.info.getError("ax5picker", "401", "bind"));
                 return this;
             }
+            opts.$target = jQuery(opts.target);
+
             if (!opts.id) {
                 opts.id = 'ax5-picker-' + ax5.getGuid();
             }
@@ -72,24 +74,67 @@
                     return this.id == opts.id;
                 }) === -1)
             {
-                this.bindPickerTarget(opts);
                 this.queue.push(opts);
+                this.bindPickerTarget(opts, this.queue.length - 1);
             }
 
             return this;
         };
 
-        this.bindPickerTarget = function(){
+        this.bindPickerTarget = (function () {
 
-        };
+            var pickerEvent = {
+                'focus': function (opts, optIdx, e) {
+                    //console.log(opts, e);
+                    this.open(opts, optIdx);
+                },
+                'click': function (opts, optIdx, e) {
+                    //console.log(opts, e);
+                    this.open(opts, optIdx);
+                }
+            };
 
-        this.open = function () {
+            var pickerType = {
+                'date': function (opts, optIdx) {
+                    // 1. 이벤트 바인딩
+                    // 2. ui 준비
 
-        };
+                    opts.$target
+                        .find('input[type="text"]')
+                        .unbind('focus.ax5picker')
+                        .bind('focus.ax5picker', pickerEvent.focus.bind(this, opts, optIdx));
+
+                    opts.$target
+                        .find('.input-group-addon')
+                        .unbind('click.ax5picker')
+                        .bind('click.ax5picker', pickerEvent.click.bind(this, opts, optIdx));
+                }
+            };
+
+            return function (opts, optIdx) {
+                for (var key in pickerType) {
+                    if (opts.type == key) {
+                        pickerType[key](opts, optIdx);
+                        break;
+                    }
+                }
+                return this;
+            }
+
+        })();
+
+        this.open = (function () {
+
+
+
+            return function(opts, optIdx){
+
+            }
+        })();
 
         this.close = function () {
 
-        }
+        };
 
         // 클래스 생성자
         this.main = (function () {

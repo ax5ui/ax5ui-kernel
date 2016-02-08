@@ -209,7 +209,12 @@ var idx = ax5.util.search(a, function () {
     return this == &quot;X&quot;;
 });
 console.log(a[idx]);
-// X
+
+idx = ax5.util.search(a, function () {
+    return this == &quot;B&quot;;
+});
+console.log(idx);
+// -1
 
 console.log(a[
     ax5.util.search(a, function (idx) {

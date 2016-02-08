@@ -98,7 +98,12 @@ var idx = ax5.util.search(a, function () {
     return this == "X";
 });
 console.log(a[idx]);
-// X
+
+idx = ax5.util.search(a, function () {
+    return this == "B";
+});
+console.log(idx);
+// -1
 
 console.log(a[
     ax5.util.search(a, function (idx) {
