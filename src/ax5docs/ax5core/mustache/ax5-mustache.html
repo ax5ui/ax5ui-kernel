@@ -164,7 +164,7 @@ You can use all of the API of <code>mustache</code> in the same way. I will intr
 * George Harrison (2) (false)
 * Ringo Star (3) (false)
 </code></pre>
-<h2>Object.getEach</h2>
+<h2>Object.@each</h2>
 <p>View:</p>
 <pre class="prettyprint linenums lang-js"><code>{
     &quot;beatles&quot;: {
@@ -177,9 +177,9 @@ You can use all of the API of <code>mustache</code> in the same way. I will intr
 </code></pre>
 <p>Template:</p>
 <pre><code>{{#beatles}}
-    {{#getEach}}
+    {{#@each}}
     * {{@key}} : {{@value.firstName}} {{@value.lastName}}
-    {{/getEach}}
+    {{/@each}}
 {{/beatles}}
 </code></pre>
 <p>Output:</p>

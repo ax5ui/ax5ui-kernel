@@ -354,7 +354,7 @@
         this.view = view;
         this.cache = {
             '.': this.view,
-            'getEach': function () {
+            '@each': function () {
                 var returns = [];
                 for (var k in this) {
                     returns.push({'@key': k, '@value': this[k]});

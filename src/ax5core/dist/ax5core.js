@@ -767,7 +767,8 @@
             var
                 result = false
                 ;
-            if(!O){ }
+            if (!O) {
+            }
             else if (O instanceof Date && !isNaN(O.valueOf())) {
                 result = true;
             }
@@ -1792,17 +1793,11 @@
         }
     })();
 
-    if (typeof module === "object" && module && 'exports' in module) {
-        module.exports = ax5; // commonJS
-    }
-    else {
-        root.ax5 = ax5;
-        if (typeof define === "function" && define.amd) define("_ax5", [], function () {
-            return ax5;
-        }); // requireJS
-    }
+    root.ax5 = (function () {
+        return ax5;
+    })(); // ax5.ui에 연결
 
-}).call(this);
+}).call(window);
 // 필수 Ployfill 확장 구문
 (function () {
     'use strict';
@@ -1978,7 +1973,7 @@
         'show,table,time,timeEnd,timeline,timelineEnd,timeStamp,trace,warn').split(',');
         while (prop = properties.pop()) con[prop] = con[prop] || empty;
         while (method = methods.pop()) con[method] = con[method] || dummy;
-    })(root.console = root.console || {}); // Using `this` for web workers.
+    })(window.console || {}); // Using `this` for web workers.
 
     // extend innerWidth ..
     var html = document.getElementsByTagName('html')[0];
@@ -1989,7 +1984,7 @@
     if (!window.scrollX) window.scrollX = window.pageXOffset || html.scrollLeft;
     if (!window.scrollY) window.scrollY = window.pageYOffset || html.scrollTop;
 
-}.call(this));
+}.call(window));
 /**
  * Refer to this by {@link ax5}.
  * @namespace ax5.ui
@@ -2426,7 +2421,7 @@ ax5.ui = (function (core) {
         this.view = view;
         this.cache = {
             '.': this.view,
-            'getEach': function () {
+            '@each': function () {
                 var returns = [];
                 for (var k in this) {
                     returns.push({'@key': k, '@value': this[k]});

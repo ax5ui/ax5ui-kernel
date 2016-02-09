@@ -173,7 +173,7 @@
         'show,table,time,timeEnd,timeline,timelineEnd,timeStamp,trace,warn').split(',');
         while (prop = properties.pop()) con[prop] = con[prop] || empty;
         while (method = methods.pop()) con[method] = con[method] || dummy;
-    })(root.console = root.console || {}); // Using `this` for web workers.
+    })(window.console || {}); // Using `this` for web workers.
 
     // extend innerWidth ..
     var html = document.getElementsByTagName('html')[0];
@@ -184,4 +184,4 @@
     if (!window.scrollX) window.scrollX = window.pageXOffset || html.scrollLeft;
     if (!window.scrollY) window.scrollY = window.pageYOffset || html.scrollTop;
 
-}.call(this));
+}.call(window));

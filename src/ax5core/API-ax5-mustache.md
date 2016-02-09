@@ -50,7 +50,7 @@ Output:
 * Ringo Star (3) (false)
 ```
 
-## Object.getEach
+## Object.@each
 
 View:
 ```js
@@ -67,9 +67,9 @@ View:
 Template:
 ```
 {{#beatles}}
-    {{#getEach}}
+    {{#@each}}
     * {{@key}} : {{@value.firstName}} {{@value.lastName}}
-    {{/getEach}}
+    {{/@each}}
 {{/beatles}}
 ```
 

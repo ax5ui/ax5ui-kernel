@@ -767,7 +767,8 @@
             var
                 result = false
                 ;
-            if(!O){ }
+            if (!O) {
+            }
             else if (O instanceof Date && !isNaN(O.valueOf())) {
                 result = true;
             }
@@ -1792,14 +1793,8 @@
         }
     })();
 
-    if (typeof module === "object" && module && 'exports' in module) {
-        module.exports = ax5; // commonJS
-    }
-    else {
-        root.ax5 = ax5;
-        if (typeof define === "function" && define.amd) define("_ax5", [], function () {
-            return ax5;
-        }); // requireJS
-    }
+    root.ax5 = (function () {
+        return ax5;
+    })(); // ax5.ui에 연결
 
-}).call(this);
+}).call(window);
