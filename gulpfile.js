@@ -138,15 +138,29 @@ for (var k in PATHS) {
                     .pipe(babel({
                         presets: ['es2015']
                     }))
-                    .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k))
                     .pipe(concat(__p.js + '.min.js'))
                     .pipe(uglify())
-                    .pipe(gulp.dest(PATHS[k].dest))
+                    .pipe(gulp.dest(PATHS[k].dest));
+            }
+        })(k, __p));
+    }
+}
+
+/**
+ * plugin copy to ~ ax5docs/assets/lib
+ */
+for (var k in PATHS) {
+    var __p = PATHS[k];
+    if (__p.isPlugin && __p.js) {
+        gulp.task(k + '-scripts-publish', (function (k, __p) {
+            return function () {
+                gulp.src(PATHS[k].root + '/**/*.*')
                     .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
             }
         })(k, __p));
     }
 }
+
 
 /**
  * ax5docs templete render
@@ -207,6 +221,20 @@ gulp.task('docs:all', function () {
         }
     }
 });
+
+/**
+ * clone a plugins to assets/ilb
+ */
+gulp.task('docs:lib-publish', (function () {
+    var tasks = [];
+    for (var k in PATHS) {
+        var __p = PATHS[k];
+        if (__p.isPlugin) {
+            tasks.push(k + '-scripts-publish');
+        }
+    }
+    return tasks;
+})());
 
 /**
  * watch

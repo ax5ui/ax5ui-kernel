@@ -29,7 +29,7 @@
 
 	<script src="../../assets/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 
-	<script src="../../assets/lib/ax5core/ax5core.min.js"></script>
+	<script src="../../assets/lib/ax5core/dist/ax5core.min.js"></script>
 
 	
 	<link rel="stylesheet" type="text/css" href="../../assets/css/docs.css">
@@ -37,12 +37,12 @@
 
 	
 	
-        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5toast/ax5toast.css">
-        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5toast/ax5toast.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5toast/dist/ax5toast.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5toast/dist/ax5toast.min.js"></script>
 
         <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css">
-        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/ax5calendar.css">
-        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/ax5calendar.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.js"></script>
     
 </head>
 <body>
@@ -155,7 +155,8 @@
                 toast.push(this.date);
             },
             onStateChanged: function () {
-                toast.push(JSON.stringify(this))
+                toast.push(this.action);
+                //console.log(this);
             }
         });
     });
@@ -175,7 +176,8 @@
                 toast.push(this.date);
             },
             onStateChanged: function () {
-                toast.push(JSON.stringify(this))
+                toast.push(this.action);
+                //console.log(this);
             }
         });
     });

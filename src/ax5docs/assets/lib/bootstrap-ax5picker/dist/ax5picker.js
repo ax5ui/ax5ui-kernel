@@ -1,5 +1,3 @@
-'use strict';
-
 // ax5.ui.picker
 (function (root, _SUPER_) {
 
@@ -18,8 +16,9 @@
     var U = ax5.util;
 
     //== UI Class
-    var axClass = function axClass() {
-        var self = this,
+    var axClass = function () {
+        var
+            self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -37,7 +36,7 @@
         };
 
         this.config.btns = {
-            ok: { label: this.config.lang["ok"], theme: this.config.theme }
+            ok: {label: this.config.lang["ok"], theme: this.config.theme}
         };
 
         cfg = this.config;
@@ -51,7 +50,9 @@
          * ```
          * ```
          */
-        this.init = function () {};
+        this.init = function () {
+
+        };
 
         this.bind = function (opts) {
             var pickerConfig = {};
@@ -70,8 +71,9 @@
             }
 
             if (U.search(this.queue, function () {
-                return this.id == opts.id;
-            }) === -1) {
+                    return this.id == opts.id;
+                }) === -1)
+            {
                 this.queue.push(opts);
                 this.bindPickerTarget(opts, this.queue.length - 1);
             }
@@ -79,27 +81,33 @@
             return this;
         };
 
-        this.bindPickerTarget = function () {
+        this.bindPickerTarget = (function () {
 
             var pickerEvent = {
-                'focus': function focus(opts, optIdx, e) {
+                'focus': function (opts, optIdx, e) {
                     //console.log(opts, e);
                     this.open(opts, optIdx);
                 },
-                'click': function click(opts, optIdx, e) {
+                'click': function (opts, optIdx, e) {
                     //console.log(opts, e);
                     this.open(opts, optIdx);
                 }
             };
 
             var pickerType = {
-                'date': function date(opts, optIdx) {
+                'date': function (opts, optIdx) {
                     // 1. 이벤트 바인딩
                     // 2. ui 준비
 
-                    opts.$target.find('input[type="text"]').unbind('focus.ax5picker').bind('focus.ax5picker', pickerEvent.focus.bind(this, opts, optIdx));
+                    opts.$target
+                        .find('input[type="text"]')
+                        .unbind('focus.ax5picker')
+                        .bind('focus.ax5picker', pickerEvent.focus.bind(this, opts, optIdx));
 
-                    opts.$target.find('.input-group-addon').unbind('click.ax5picker').bind('click.ax5picker', pickerEvent.click.bind(this, opts, optIdx));
+                    opts.$target
+                        .find('.input-group-addon')
+                        .unbind('click.ax5picker')
+                        .bind('click.ax5picker', pickerEvent.click.bind(this, opts, optIdx));
                 }
             };
 
@@ -111,33 +119,57 @@
                     }
                 }
                 return this;
-            };
-        }();
+            }
 
-        this.open = function () {
+        })();
 
-            var getTmpl = function getTmpl() {
-                return '\n                <div class="ax5-ui-picker">\n                    {{#title}}\n                        <div class="ax-picker-heading">{{title}}</div>\n                    {{/title}}\n                    <div class="ax-picker-body">\n                        <div class="ax-picker-contents">\n                        </div>\n                        {{#btns}}\n                            <div class="ax-picker-buttons">\n                            {{#btns}}\n                                {{#getEach}}\n                                <button data-ax-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                                {{/getEach}}\n                            {{/btns}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    <div class="ax-picker-arrow"></div>\n                </div>\n                ';
+        this.open = (function () {
+
+            var getTmpl = function () {
+                return `
+                <div class="ax5-ui-picker">
+                    {{#title}}
+                        <div class="ax-picker-heading">{{title}}</div>
+                    {{/title}}
+                    <div class="ax-picker-body">
+                        <div class="ax-picker-contents">
+                        </div>
+                        {{#btns}}
+                            <div class="ax-picker-buttons">
+                            {{#btns}}
+                                {{#getEach}}
+                                <button data-ax-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
+                                {{/getEach}}
+                            {{/btns}}
+                            </div>
+                        {{/btns}}
+                    </div>
+                    <div class="ax-picker-arrow"></div>
+                </div>
+                `;
             };
 
             return function (opts, optIdx) {
                 return getTmpl(opts);
-            };
-        }();
+            }
+        })();
 
-        this.close = function () {};
+        this.close = function () {
+
+        };
 
         // 클래스 생성자
-        this.main = function () {
+        this.main = (function () {
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
-        }.apply(this, arguments);
+        }).apply(this, arguments);
     };
     //== UI Class
 
-    root.picker = function () {
+    root.picker = (function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
-    }(); // ax5.ui에 연결
+    })(); // ax5.ui에 연결
+
 })(ax5.ui, ax5.ui.root);

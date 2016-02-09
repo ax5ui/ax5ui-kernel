@@ -17,8 +17,8 @@
         <include template="../_inc/include.html" id="demo-visual"/>
     </layout-put>
     <layout-put into="head-js">
-        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5picker/ax5picker.css"/>
-        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/ax5picker.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.min.js"></script>
     </layout-put>
     <layout-put into="body">
 
@@ -37,16 +37,7 @@
             <ax5docs-js run="true">
                 <script type="text/javascript">
                     $(document.body).ready(function () {
-                        var dialog = new ax5.ui.dialog({
-                            title: "AX5 Dialog"
-                        });
 
-                        $('#alert-open').click(function () {
-                            dialog.alert('Alert message');
-                        });
-                        $('#alert-close').click(function () {
-                            dialog.close();
-                        });
                     });
                 </script>
             </ax5docs-js>
@@ -59,41 +50,6 @@
             </p>
 
         </section>
-
-        <!-- doc-js alert callback -->
-        <section class="ax5docs-section">
-            <h2>Alert callBack</h2>
-
-            <p>
-                In the following example, after the alert, when the user clicks the [OK] button, run an anonymous function that is defined as the second argument,
-                To "this" anonymous function, you pass multiple arguments required developers.
-            </p>
-
-            <button class="btn btn-default" type="button" id="alert-open-callback">Alert</button>
-
-            <ax5docs-js run="true">
-                <script type="text/javascript">
-                    $(document.body).ready(function () {
-                        var dialog = new ax5.ui.dialog({
-                            title: "AX5 Dialog"
-                        });
-
-                        $('#alert-open-callback').click(function () {
-                            dialog.alert('Alert message', function () {
-                                console.log(this);
-                            });
-                        });
-                    });
-                </script>
-            </ax5docs-js>
-            <p>
-                To "this" anonymous function, has been included, such as the following objects. You can check directly open a console window.
-            </p>
-            <ax5docs-js>
-                {key: "ok", value: Object, dialogId: "ax5-dialog-2", btnTarget: button.btn.btn-default}
-            </ax5docs-js>
-        </section>
-
 
     </layout-put>
     <layout-put into="page-js">

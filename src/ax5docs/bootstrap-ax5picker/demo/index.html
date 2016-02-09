@@ -29,7 +29,7 @@
 
 	<script src="../../assets/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 
-	<script src="../../assets/lib/ax5core/ax5core.min.js"></script>
+	<script src="../../assets/lib/ax5core/dist/ax5core.min.js"></script>
 
 	
 	<link rel="stylesheet" type="text/css" href="../../assets/css/docs.css">
@@ -37,8 +37,8 @@
 
 	
 	
-        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5picker/ax5picker.css">
-        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/ax5picker.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.min.js"></script>
     
 </head>
 <body>
@@ -143,29 +143,11 @@
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog({
-            title: "AX5 Dialog"
-        });
 
-        $('#alert-open').click(function () {
-            dialog.alert('Alert message');
-        });
-        $('#alert-close').click(function () {
-            dialog.close();
-        });
     });
 &lt;/script></pre><script type="text/javascript">
     $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog({
-            title: "AX5 Dialog"
-        });
 
-        $('#alert-open').click(function () {
-            dialog.alert('Alert message');
-        });
-        $('#alert-close').click(function () {
-            dialog.close();
-        });
     });
 </script></script>
 
@@ -177,49 +159,6 @@
             </p>
 
         </section>
-
-        
-        <section class="ax5docs-section">
-            <h2>Alert callBack</h2>
-
-            <p>
-                In the following example, after the alert, when the user clicks the [OK] button, run an anonymous function that is defined as the second argument,
-                To "this" anonymous function, you pass multiple arguments required developers.
-            </p>
-
-            <button class="btn btn-default" type="button" id="alert-open-callback">Alert</button>
-
-            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog({
-            title: "AX5 Dialog"
-        });
-
-        $('#alert-open-callback').click(function () {
-            dialog.alert('Alert message', function () {
-                console.log(this);
-            });
-        });
-    });
-&lt;/script></pre><script type="text/javascript">
-    $(document.body).ready(function () {
-        var dialog = new ax5.ui.dialog({
-            title: "AX5 Dialog"
-        });
-
-        $('#alert-open-callback').click(function () {
-            dialog.alert('Alert message', function () {
-                console.log(this);
-            });
-        });
-    });
-</script></script>
-            <p>
-                To "this" anonymous function, has been included, such as the following objects. You can check directly open a console window.
-            </p>
-            <pre class="prettyprint linenums lang-js">{key: "ok", value: Object, dialogId: "ax5-dialog-2", btnTarget: button.btn.btn-default}</pre>
-        </section>
-
 
     
 				</div>

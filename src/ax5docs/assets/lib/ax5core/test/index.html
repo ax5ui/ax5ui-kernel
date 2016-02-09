@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../dist/ax5core.js"></script>
+</head>
+<body style="padding: 50px;">
+
+<script>
+    /*
+     console.log(ax5.util.cssNumber('100px'));
+     console.log(ax5.util.cssNumber(100));
+     console.log(ax5.util.cssNumber('100%'));
+     console.log(ax5.util.cssNumber('##100@'));
+
+     console.log(ax5.util.css({
+     background: "#ccc",
+     padding: "50px",
+     width: "100px"
+     }));
+     console.log(ax5.util.css('width:100px;padding: 50px; background: #ccc'));
+
+     console.log(ax5.util.isDateFormat('20160101'));
+     console.log(ax5.util.isDateFormat('2016*01*01'));
+     console.log(ax5.util.isDateFormat('20161132'));
+     */
+
+    var getTmpl = function () {
+        return ''
+            + '<div class="ax5-ui-picker">'
+            + '{{#arrs}}'
+            + '<div class="ax-picker-heading">{{@i}}{{@first}}</div>'
+            + '{{/arrs}}'
+            + '<div class="ax-picker-body">'
+            + '<div class="ax-picker-contents">'
+            + '</div>'
+            + '{{#btns}}'
+            + '<div class="ax-picker-buttons">'
+            + '{{#btns}}{{#getEach}}'
+            + '<button class="btn btn-default">{{@key}}{{@value.label}}</button>'
+            + '{{/getEach}}{{/btns}}'
+            + '</div>'
+            + '{{/btns}}'
+            + '</div>'
+            + '<div class="ax-picker-arrow"></div>'
+            + '</div>'
+
+        + '{{#beatles}}'
+            + '{{#@each}}'
+                + '* {{@key}} : {{@value.firstName}} {{@value.lastName}}'
+            + '{{/@each}}'
+        + '{{/beatles}}'
+
+            ;
+    };
+
+    var view = {
+        "beatles": {
+            "John": {"firstName": "John", "lastName": "Lennon"},
+            "Paul": {"firstName": "Paul", "lastName": "McCartney"},
+            "George": {"firstName": "George", "lastName": "Harrison"},
+            "Ringo": {"firstName": "Ringo", "lastName": "Star"}
+        },
+        arrs: [
+            {a:1},
+            {a:2},
+            {a:3}
+        ]
+    };
+    var output = ax5.mustache.render(getTmpl(), view);
+    console.log(view);
+    console.log(output);
+</script>
+
+</body>
+</html>
