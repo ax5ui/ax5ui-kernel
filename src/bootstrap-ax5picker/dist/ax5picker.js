@@ -86,11 +86,11 @@
             var pickerEvent = {
                 'focus': function (opts, optIdx, e) {
                     //console.log(opts, e);
-                    this.open(opts, optIdx);
+                    self.open(opts, optIdx);
                 },
                 'click': function (opts, optIdx, e) {
                     //console.log(opts, e);
-                    this.open(opts, optIdx);
+                    self.open(opts, optIdx);
                 }
             };
 
@@ -123,10 +123,8 @@
 
         })();
 
-        this.open = (function () {
-
-            var getTmpl = function () {
-                return `
+        this.getTmpl = function () {
+            return `
                 <div class="ax5-ui-picker">
                     {{#title}}
                         <div class="ax-picker-heading">{{title}}</div>
@@ -137,9 +135,9 @@
                         {{#btns}}
                             <div class="ax-picker-buttons">
                             {{#btns}}
-                                {{#getEach}}
+                                {{#@each}}
                                 <button data-ax-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
-                                {{/getEach}}
+                                {{/@each}}
                             {{/btns}}
                             </div>
                         {{/btns}}
@@ -147,11 +145,19 @@
                     <div class="ax-picker-arrow"></div>
                 </div>
                 `;
-            };
+        };
+
+        this.open = (function () {
 
             return function (opts, optIdx) {
-                return getTmpl(opts);
-            }
+
+                jQuery(document.body).append(
+                    ax5.mustache.render(this.getTmpl(opts, optIdx), opts)
+                );
+
+
+                return this;
+            };
         })();
 
         this.close = function () {
