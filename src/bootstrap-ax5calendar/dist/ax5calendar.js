@@ -107,18 +107,20 @@
                 this.setMarker(cfg.marker, false);
             }
 
-            if (cfg.mode === "day" || cfg.mode === "d")
-            {
-                this.printDay(cfg.displayDate);
-            }
-            else if (cfg.mode === "month" || cfg.mode === "m")
-            {
-                this.printMonth(cfg.displayDate);
-            }
-            else if (cfg.mode === "year" || cfg.mode === "y")
-            {
-                this.printYear(cfg.displayDate);
-            }
+            setTimeout((function(){
+                if (cfg.mode === "day" || cfg.mode === "d")
+                {
+                    this.printDay(cfg.displayDate);
+                }
+                else if (cfg.mode === "month" || cfg.mode === "m")
+                {
+                    this.printMonth(cfg.displayDate);
+                }
+                else if (cfg.mode === "year" || cfg.mode === "y")
+                {
+                    this.printYear(cfg.displayDate);
+                }
+            }).bind(this));
 
         };
         
@@ -222,6 +224,7 @@
                 frameWidth = this.$["body"].width(),
                 frameHeight = Math.floor(frameWidth * (6 / 7)) // 1week = 7days, 1month = 6weeks
                 ;
+
 
             if (cfg.dimensions.height) {
                 frameHeight = U.number(cfg.dimensions.height);
@@ -772,7 +775,7 @@
         };
 
         this.setSelectable = (function () {
-            this.selectableMap = {};
+            self.selectableMap = {};
             var processor = {
                 'arr': function (v, map) {
                     map = {};
@@ -846,7 +849,7 @@
         })();
 
         this.setMarker = (function () {
-            this.markerMap = {};
+            self.markerMap = {};
             var processor = {
                 'obj': function (v, map) {
                     map = {};
