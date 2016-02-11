@@ -148,7 +148,7 @@
             },
             "ax5picker": {
                 "401": "Can not find target element",
-                "501": "Duplicate call error"
+                "501": "Can not find content key"
             },
             "single-uploader": {
                 "460": "There are no files to be uploaded.",

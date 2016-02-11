@@ -34,11 +34,10 @@
 		padding: $ax5picker-body-padding;
 		text-align: center;
 		.ax-picker-contents {
-			padding-top: $ax5picker-body-padding;
-			padding-bottom: $ax5picker-body-padding;
+
 		}
 		.ax-picker-buttons {
-			margin-top: $ax5picker-body-padding;
+			padding: $ax5picker-buttons-padding;
 			button {
 				&:not(:last-child) {
 					margin-right: 3px;

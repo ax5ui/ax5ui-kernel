@@ -39,6 +39,8 @@
             ok: {label: this.config.lang["ok"], theme: this.config.theme}
         };
 
+        this.activePicker = null;
+
         cfg = this.config;
 
         /**
@@ -85,83 +87,189 @@
 
             var pickerEvent = {
                 'focus': function (opts, optIdx, e) {
-                    //console.log(opts, e);
-                    self.open(opts, optIdx);
+                    this.open(opts, optIdx);
                 },
                 'click': function (opts, optIdx, e) {
-                    //console.log(opts, e);
-                    self.open(opts, optIdx);
+                    this.open(opts, optIdx);
                 }
             };
 
             var pickerType = {
+                '@fn': function (opts, optIdx) {
+                    var
+                        config = {},
+                        inputLength = opts.$target.find('input[type="text"]').length;
+
+                    if (opts.content.config) jQuery.extend(true, config, opts.content.config);
+                    this.queue[optIdx] = jQuery.extend(true, this.queue[optIdx], config);
+                },
                 'date': function (opts, optIdx) {
                     // 1. 이벤트 바인딩
                     // 2. ui 준비
 
-                    opts.$target
-                        .find('input[type="text"]')
-                        .unbind('focus.ax5picker')
-                        .bind('focus.ax5picker', pickerEvent.focus.bind(this, opts, optIdx));
+                    var
+                        config = {},
+                        inputLength = opts.$target.find('input[type="text"]').length;
 
-                    opts.$target
-                        .find('.input-group-addon')
-                        .unbind('click.ax5picker')
-                        .bind('click.ax5picker', pickerEvent.click.bind(this, opts, optIdx));
+                    if (inputLength == 1) {
+                        // single date
+                        config = {
+                            width: 300
+                        }
+                    }
+                    else {
+                        // multi date
+                        config = {
+                            width: (300 * inputLength)
+                        }
+                    }
+
+                    if (opts.content.config) jQuery.extend(true, config, opts.content.config);
+                    this.queue[optIdx] = jQuery.extend(true, this.queue[optIdx], config);
+
                 }
             };
 
             return function (opts, optIdx) {
-                for (var key in pickerType) {
-                    if (opts.type == key) {
-                        pickerType[key](opts, optIdx);
-                        break;
+                if (!opts.content) {
+                    console.log(ax5.info.getError("ax5picker", "501", "bind"));
+                    return this;
+                }
+
+                // 함수타입
+                if (U.isFunction(opts.content)) {
+                    pickerType["@fn"].call(this, opts, optIdx);
+                }
+                else {
+                    for (var key in pickerType) {
+                        if (opts.content.type == key) {
+                            pickerType[key].call(this, opts, optIdx);
+                            break;
+                        }
                     }
                 }
+
+                opts.$target
+                    .find('input[type="text"]')
+                    .unbind('focus.ax5picker')
+                    .bind('focus.ax5picker', pickerEvent.focus.bind(this, opts, optIdx));
+
+                opts.$target
+                    .find('.input-group-addon')
+                    .unbind('click.ax5picker')
+                    .bind('click.ax5picker', pickerEvent.click.bind(this, opts, optIdx));
+
                 return this;
             }
 
         })();
 
-        this.getTmpl = function () {
+        this.getTmpl = function (opts, optIdx) {
+            // console.log(opts);
             return `
-                <div class="ax5-ui-picker">
-                    {{#title}}
-                        <div class="ax-picker-heading">{{title}}</div>
-                    {{/title}}
-                    <div class="ax-picker-body">
-                        <div class="ax-picker-contents">
-                        </div>
+            <div class="ax5-ui-picker {{theme}}" id="{{id}}">
+                {{#title}}
+                    <div class="ax-picker-heading">{{title}}</div>
+                {{/title}}
+                <div class="ax-picker-body">
+                    <div class="ax-picker-contents" data-modal-els="contents" style="width:{{width}}px;height:{{height}}px;"></div>
+                    {{#btns}}
+                        <div class="ax-picker-buttons">
                         {{#btns}}
-                            <div class="ax-picker-buttons">
-                            {{#btns}}
-                                {{#@each}}
-                                <button data-ax-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
-                                {{/@each}}
-                            {{/btns}}
-                            </div>
+                            {{#@each}}
+                            <button data-ax-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
+                            {{/@each}}
                         {{/btns}}
-                    </div>
-                    <div class="ax-picker-arrow"></div>
+                        </div>
+                    {{/btns}}
                 </div>
-                `;
+                <div class="ax-picker-arrow"></div>
+            </div>
+            `;
         };
 
         this.open = (function () {
 
             return function (opts, optIdx) {
 
-                jQuery(document.body).append(
-                    ax5.mustache.render(this.getTmpl(opts, optIdx), opts)
-                );
+                if (this.activePicker) {
+                    return this;
+                    this.activePicker.remove();
+                    this.activePicker = null;
+                }
+                this.activePicker = jQuery(ax5.mustache.render(this.getTmpl(opts, optIdx), opts));
 
+                // fill picker content
+                (function () {
 
+                })();
+
+                this.alignPicker(opts, optIdx, "append");
+
+                // unbind close
+                jQuery(window).bind("resize.ax5picker", function () {
+                    self.alignPicker(opts, optIdx);
+                });
                 return this;
             };
         })();
 
         this.close = function () {
 
+            jQuery(window).unbind("resize.ax5picker");
+        };
+
+        this.alignPicker = function (opts, optIdx, append) {
+
+            var
+                pos = {},
+                dim = {};
+
+            if (append) jQuery(document.body).append(this.activePicker);
+
+            pos = opts.$target.offset();
+            dim = {
+                width: opts.$target.outerWidth(),
+                height: opts.$target.outerHeight()
+            };
+
+            // picker css(width, left, top) & direction 결정
+            if (!opts.direction || opts.direction === "" || opts.direction === "auto") {
+                // set direction
+                opts.direction = "top";
+            }
+
+            if(append){
+                this.activePicker
+                    .addClass("direction-" + opts.direction);
+            }
+            this.activePicker
+                .css((function () {
+                    if (opts.direction == "top") {
+                        return {
+                            left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
+                            top: pos.top + dim.height + 12
+                        }
+                    }
+                    else if (opts.direction == "bottom") {
+                        return {
+                            left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
+                            top: pos.top - this.activePicker.outerHeight() - 12
+                        }
+                    }
+                    else if (opts.direction == "left") {
+                        return {
+                            left: pos.left + dim.width + 12,
+                            top: pos.top - dim.height / 2
+                        }
+                    }
+                    else if (opts.direction == "right") {
+                        return {
+                            left: pos.left - this.activePicker.outerWidth() - 12,
+                            top: pos.top - dim.height / 2
+                        }
+                    }
+                }).call(this));
         };
 
         // 클래스 생성자
