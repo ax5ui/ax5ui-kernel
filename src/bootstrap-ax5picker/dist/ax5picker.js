@@ -108,23 +108,32 @@
                     // 2. ui 준비
 
                     var
+                        calendarWidth = 270,
+                        calendarMargin = 10,
                         config = {},
                         inputLength = opts.$target.find('input[type="text"]').length;
 
                     if (inputLength == 1) {
                         // single date
                         config = {
-                            width: 300
+                            contentWidth: calendarWidth,
+                            width: calendarWidth,
+                            height: calendarWidth,
+                            margin: 0,
+                            inputLength: 1
                         }
                     }
                     else {
                         // multi date
                         config = {
-                            width: (300 * inputLength)
+                            contentWidth: (calendarWidth * inputLength) + ((inputLength - 1) * calendarMargin),
+                            width: calendarWidth,
+                            height: calendarWidth,
+                            margin: calendarMargin,
+                            inputLength: inputLength
                         }
                     }
 
-                    if (opts.content.config) jQuery.extend(true, config, opts.content.config);
                     this.queue[optIdx] = jQuery.extend(true, this.queue[optIdx], config);
 
                 }
@@ -172,7 +181,7 @@
                     <div class="ax-picker-heading">{{title}}</div>
                 {{/title}}
                 <div class="ax-picker-body">
-                    <div class="ax-picker-contents" data-modal-els="contents" style="width:{{width}}px;height:{{height}}px;"></div>
+                    <div class="ax-picker-contents" data-modal-els="contents" style="width:{{contentWidth}}px;"></div>
                     {{#btns}}
                         <div class="ax-picker-buttons">
                         {{#btns}}
@@ -190,6 +199,51 @@
 
         this.open = (function () {
 
+            var pickerContent = {
+                '@fn': function (opts, optIdx, callBack) {
+                    opts.content.call(opts, function (html) {
+                        callBack(html);
+                    });
+                    return true;
+                },
+                'date': function (opts, optIdx, pickerContents) {
+
+                    var html = [];
+                    for (var i = 0; i < opts.inputLength; i++) {
+                        html.push('<div '
+                            + 'style="width:' + U.cssNumber(opts.width) + ';float:left;" '
+                            + 'class="ax-picker-content-box" '
+                            + 'data-calendar-target="' + i + '"></div>');
+                        if (i < opts.inputLength - 1) html.push('<div style="width:' + opts.margin + 'px;float:left;height: 5px;"></div>');
+                    }
+                    html.push('<div style="clear:both;"></div>');
+                    pickerContents.html(html.join(''));
+
+                    // calendar bind
+                    pickerContents.find('[data-calendar-target]').each(function () {
+
+                        new ax5.ui.calendar({
+                            target: this,
+                            displayDate: (new Date()),
+                            control: {
+                                left: '<i class="fa fa-chevron-left"></i>',
+                                yearTmpl: '%s',
+                                monthTmpl: '%s',
+                                right: '<i class="fa fa-chevron-right"></i>',
+                                yearFirst: true
+                            },
+                            onClick: function () {
+                                console.log(this);
+                            },
+                            onStateChanged: function () {
+
+                            }
+                        });
+                    });
+
+                }
+            };
+
             return function (opts, optIdx) {
 
                 if (this.activePicker) {
@@ -198,18 +252,34 @@
                     this.activePicker = null;
                 }
                 this.activePicker = jQuery(ax5.mustache.render(this.getTmpl(opts, optIdx), opts));
+                var pickerContents = this.activePicker.find('[data-modal-els="contents"]');
 
                 // fill picker content
-                (function () {
+                var callBack = function (content) {
+                    pickerContents.html(content);
+                };
 
-                })();
+                // 함수타입
+                if (U.isFunction(opts.content)) {
+                    pickerContents.html("Loading..");
+                    pickerContent["@fn"].call(this, opts, optIdx, callBack);
+                }
+                else {
+                    for (var key in pickerContent) {
+                        if (opts.content.type == key) {
+                            pickerContent[key].call(this, opts, optIdx, pickerContents);
+                            break;
+                        }
+                    }
+                }
 
-                this.alignPicker(opts, optIdx, "append");
+                self.__alignPicker(opts, optIdx, "append");
 
                 // unbind close
                 jQuery(window).bind("resize.ax5picker", function () {
-                    self.alignPicker(opts, optIdx);
+                    self.__alignPicker(opts, optIdx);
                 });
+
                 return this;
             };
         })();
@@ -219,8 +289,8 @@
             jQuery(window).unbind("resize.ax5picker");
         };
 
-        this.alignPicker = function (opts, optIdx, append) {
-
+        /* private */
+        this.__alignPicker = function (opts, optIdx, append) {
             var
                 pos = {},
                 dim = {};
@@ -239,7 +309,7 @@
                 opts.direction = "top";
             }
 
-            if(append){
+            if (append) {
                 this.activePicker
                     .addClass("direction-" + opts.direction);
             }

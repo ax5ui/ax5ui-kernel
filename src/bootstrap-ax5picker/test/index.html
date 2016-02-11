@@ -7,12 +7,13 @@
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5mask/dist/ax5mask.css"/>
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5calendar/dist/ax5calendar.css"/>
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5picker.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="bower_components/bootstrap-ax5mask/dist/ax5mask.min.js"></script>
-    <script src="bower_components/bootstrap-ax5calendar/dist/ax5calendar.min.js"></script>
+    <script src="bower_components/bootstrap-ax5calendar/dist/ax5calendar.js"></script>
     <script src="../dist/ax5picker.js"></script>
 </head>
 <body style="padding: 100px;">
@@ -57,10 +58,20 @@
                 target: this,
                 direction: "top",
                 content: {
-                    type: 'date',
-                    config: {}
+                    type: 'date'
                 }
             });
+
+            /*
+            picker.bind({
+                target: this,
+                direction: "top",
+                content: function(callBack){
+                    var html = '';
+                    callBack(html);
+                }
+            });
+            */
 
         });
 
