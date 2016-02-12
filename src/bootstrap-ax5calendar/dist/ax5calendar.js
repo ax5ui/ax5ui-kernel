@@ -40,8 +40,9 @@
             displayDate: (new Date()),
             animateTime: 250,
             dimensions: {
-                controlHeight: '40px',
-                controlButtonWidth: '40px',
+                controlHeight: '40',
+                controlButtonWidth: '40',
+                colHeadHeight: '30',
                 itemPadding: 2
             },
             lang: {
@@ -107,7 +108,7 @@
                 this.setMarker(cfg.marker, false);
             }
 
-            setTimeout((function(){
+            setTimeout((function () {
                 if (cfg.mode === "day" || cfg.mode === "d")
                 {
                     this.printDay(cfg.displayDate);
@@ -187,7 +188,7 @@
                 }
                 
                 this.$["control-display"].find('[data-calendar-display]').on(cfg.clickEventName, (function (e) {
-                    target = U.findParentNode(e.target, function (target) {
+                    var target = U.findParentNode(e.target, function (target) {
                         if (target.getAttribute("data-calendar-display"))
                         {
                             return true;
@@ -225,9 +226,8 @@
                 frameHeight = Math.floor(frameWidth * (6 / 7)) // 1week = 7days, 1month = 6weeks
                 ;
 
-
             if (cfg.dimensions.height) {
-                frameHeight = U.number(cfg.dimensions.height);
+                frameHeight = U.number(cfg.dimensions.height) - U.number(cfg.dimensions.colHeadHeight);
             }
 
             itemStyles['height'] = Math.floor(frameHeight / 6) - U.number(cfg.dimensions.itemPadding) * 2 + 'px';
@@ -240,7 +240,7 @@
             k = 0;
             while (k < 7)
             {
-                po.push('<td class="calendar-col-' + k + '">');
+                po.push('<td class="calendar-col-' + k + '" style="height: ' + U.cssNumber(cfg.dimensions.colHeadHeight) + '">');
                 po.push(ax5.info.weekNames[k].label);
                 po.push('</td>');
                 k++;
@@ -337,7 +337,7 @@
                 ;
 
             if (cfg.dimensions.height) {
-                frameHeight = U.number(cfg.dimensions.height);
+                frameHeight = U.number(cfg.dimensions.height) - U.number(cfg.dimensions.colHeadHeight);
             }
 
             itemStyles['height'] = Math.floor(frameHeight / 4) - U.number(cfg.dimensions.itemPadding) * 2 + 'px';
@@ -348,7 +348,7 @@
             po.push('<thead>');
             po.push('<tr>');
             
-            po.push('<td class="calendar-col-0" colspan="3">'
+            po.push('<td class="calendar-col-0" colspan="3" style="height: ' + U.cssNumber(cfg.dimensions.colHeadHeight) + '">'
                 + cfg.lang.monthHeading
                 + '</td>');
             
@@ -446,7 +446,7 @@
                 ;
 
             if (cfg.dimensions.height) {
-                frameHeight = U.number(cfg.dimensions.height);
+                frameHeight = U.number(cfg.dimensions.height) - U.number(cfg.dimensions.colHeadHeight);
             }
 
             itemStyles['height'] = Math.floor(frameHeight / 5) - U.number(cfg.dimensions.itemPadding) * 2 + 'px';
@@ -457,7 +457,7 @@
             po.push('<thead>');
             po.push('<tr>');
             
-            po.push('<td class="calendar-col-0" colspan="4">'
+            po.push('<td class="calendar-col-0" colspan="4" style="height: ' + U.cssNumber(cfg.dimensions.colHeadHeight) + '">'
                 + cfg.lang.yearHeading
                 + '</td>');
             
@@ -908,11 +908,11 @@
             };
         })();
 
-        this.applyMarkerMap = function(){
+        this.applyMarkerMap = function () {
             if (cfg.mode === "day" || cfg.mode === "d")
             {
-                for(var k in this.markerMap){
-                    this.$["body"].find('[data-calendar-item-date="'+k+'"]').addClass(this.markerMap[k].theme || cfg.defaultMarkerTheme);
+                for (var k in this.markerMap) {
+                    this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass(this.markerMap[k].theme || cfg.defaultMarkerTheme);
                 }
             }
         };
