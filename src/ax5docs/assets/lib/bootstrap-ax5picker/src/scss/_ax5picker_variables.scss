@@ -3,9 +3,9 @@ $ax5picker-box-model: border-box !default;
 $ax5picker-bg: $panel-bg !default;
 
 $ax5picker-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.175) !default;
-$ax5picker-body-padding: $panel-body-padding !default;
+$ax5picker-body-padding: 5px !default;
 $ax5picker-heading-padding: $panel-heading-padding !default;
-$ax5picker-footer-padding: $panel-footer-padding !default;
+$ax5picker-buttons-padding: 10px 0px 5px 0px !default;
 $ax5picker-border-radius: 5px !default;
 $ax5picker-easing-time-open: 0.3s !default;
 $ax5picker-easing-time-close: 0.2s !default;

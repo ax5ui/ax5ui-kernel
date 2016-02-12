@@ -35,10 +35,10 @@
 		text-align: center;
 		.ax-picker-contents {
 			.ax-picker-content-box {
-				border: $ax5picker-inner-border;
-				border-color: $ax5picker-inner-border-color;
-				border-radius: $ax5picker-border-radius;
-				padding: $ax5picker-body-padding;
+				border: $ax5picker-content-border;
+				border-color: $ax5picker-content-border-color;
+				border-radius: $ax5picker-content-border-radius;
+				padding: $ax5picker-content-padding;
 				overflow: hidden;
 			}
 		}

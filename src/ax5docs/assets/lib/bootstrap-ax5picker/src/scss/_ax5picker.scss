@@ -34,11 +34,16 @@
 		padding: $ax5picker-body-padding;
 		text-align: center;
 		.ax-picker-contents {
-			padding-top: $ax5picker-body-padding;
-			padding-bottom: $ax5picker-body-padding;
+			.ax-picker-content-box {
+				border: $ax5picker-inner-border;
+				border-color: $ax5picker-inner-border-color;
+				border-radius: $ax5picker-border-radius;
+				padding: $ax5picker-body-padding;
+				overflow: hidden;
+			}
 		}
 		.ax-picker-buttons {
-			margin-top: $ax5picker-body-padding;
+			padding: $ax5picker-buttons-padding;
 			button {
 				&:not(:last-child) {
 					margin-right: 3px;
@@ -255,11 +260,11 @@
 }
 
 // picker handle
-.input-group{
-	&[data-ax5picker]{
-		.input-group-addon{
+.input-group {
+	&[data-ax5picker] {
+		.input-group-addon {
 			cursor: pointer;
-			&:not(:last-child){
+			&:not(:last-child) {
 				border-left: 0px none;
 				border-right: 0px none;
 			}

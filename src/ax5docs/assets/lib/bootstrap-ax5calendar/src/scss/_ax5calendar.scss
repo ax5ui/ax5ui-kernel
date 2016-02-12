@@ -98,9 +98,9 @@
 					cursor: pointer;
 					text-align: center;
 					font-size: $ax5calendar-header-font-size;
-
 					padding: $ax5calendar-header-padding;
 					border: $ax5calendar-header-border;
+					overflow: hidden;
 					@include ax-background($ax5calendar-header-bg);
 
 					color: $ax5calendar-live-text-color;

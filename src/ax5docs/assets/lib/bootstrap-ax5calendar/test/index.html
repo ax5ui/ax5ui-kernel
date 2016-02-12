@@ -15,7 +15,7 @@
 </head>
 <body style="padding: 50px;">
 
-<div id="calendar-target" style="width:300px;"></div>
+<div id="calendar-target" style="width:250px;"></div>
 
 <!--
 <button class="btn btn-default" data-calendar-move="prev">이전</button>
@@ -37,24 +37,23 @@
 
         window.myCalendar = new ax5.ui.calendar({
             control: {
-                left: 'P',
+                left: '≪',
                 yearTmpl: '%s',
                 monthTmpl: '%s',
-                right: 'N',
+                right: '≫',
                 yearFirst: true
             },
 
-            /*
-             dimensions: {
-             itemPadding: 2,
-             height: 250
-             },
-             */
+            dimensions: {
+                itemPadding: 1,
+                height: 200
+            },
+
             /*
              lang: {
-             year: "%s",
-             month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-             day: "%s"
+                 year: "%s",
+                 month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                 day: "%s"
              },
              */
 

@@ -27,7 +27,6 @@
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
-            width: 300,
             title: '',
             lang: {
                 "ok": "ok", "cancel": "cancel"
@@ -35,9 +34,11 @@
             animateTime: 250
         };
 
+        /*
         this.config.btns = {
             ok: {label: this.config.lang["ok"], theme: this.config.theme}
         };
+        */
 
         this.activePicker = null;
 
@@ -100,42 +101,32 @@
                         config = {},
                         inputLength = opts.$target.find('input[type="text"]').length;
 
-                    if (opts.content.config) jQuery.extend(true, config, opts.content.config);
-                    this.queue[optIdx] = jQuery.extend(true, this.queue[optIdx], config);
+                    this.queue[optIdx] = jQuery.extend(true, config, opts);
                 },
                 'date': function (opts, optIdx) {
                     // 1. 이벤트 바인딩
                     // 2. ui 준비
 
                     var
-                        calendarWidth = 270,
-                        calendarMargin = 10,
+                        contentWidth = (opts.content) ? opts.content.width || 270 : 270,
+                        contentMargin = (opts.content) ? opts.content.margin || 5 : 5,
                         config = {},
                         inputLength = opts.$target.find('input[type="text"]').length;
+    
+                    config = {
+                        contentWidth: (contentWidth * inputLength) + ((inputLength - 1) * contentMargin),
+                        content: {
+                            width: contentWidth,
+                            margin: contentMargin
+                        },
+                        inputLength: inputLength
+                    };
 
-                    if (inputLength == 1) {
-                        // single date
-                        config = {
-                            contentWidth: calendarWidth,
-                            width: calendarWidth,
-                            height: calendarWidth,
-                            margin: 0,
-                            inputLength: 1
-                        }
-                    }
-                    else {
-                        // multi date
-                        config = {
-                            contentWidth: (calendarWidth * inputLength) + ((inputLength - 1) * calendarMargin),
-                            width: calendarWidth,
-                            height: calendarWidth,
-                            margin: calendarMargin,
-                            inputLength: inputLength
-                        }
-                    }
+                    console.log(this.queue[optIdx]);
 
-                    this.queue[optIdx] = jQuery.extend(true, this.queue[optIdx], config);
+                    this.queue[optIdx] = jQuery.extend(true, config, opts);
 
+                    console.log(this.queue[optIdx]);
                 }
             };
 
@@ -161,12 +152,12 @@
                 opts.$target
                     .find('input[type="text"]')
                     .unbind('focus.ax5picker')
-                    .bind('focus.ax5picker', pickerEvent.focus.bind(this, opts, optIdx));
+                    .bind('focus.ax5picker', pickerEvent.focus.bind(this, this.queue[optIdx], optIdx));
 
                 opts.$target
                     .find('.input-group-addon')
                     .unbind('click.ax5picker')
-                    .bind('click.ax5picker', pickerEvent.click.bind(this, opts, optIdx));
+                    .bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
                 return this;
             }
@@ -211,34 +202,39 @@
                     var html = [];
                     for (var i = 0; i < opts.inputLength; i++) {
                         html.push('<div '
-                            + 'style="width:' + U.cssNumber(opts.width) + ';float:left;" '
+                            + 'style="width:' + U.cssNumber(opts.content.width) + ';float:left;" '
                             + 'class="ax-picker-content-box" '
                             + 'data-calendar-target="' + i + '"></div>');
-                        if (i < opts.inputLength - 1) html.push('<div style="width:' + opts.margin + 'px;float:left;height: 5px;"></div>');
+                        if (i < opts.inputLength - 1) html.push('<div style="width:' + opts.content.margin + 'px;float:left;height: 5px;"></div>');
                     }
                     html.push('<div style="clear:both;"></div>');
                     pickerContents.html(html.join(''));
 
+                    var calendarConfig = {
+                        displayDate: (new Date()),
+                        control: {
+                            left: '<i class="fa fa-chevron-left"></i>',
+                            yearTmpl: '%s',
+                            monthTmpl: '%s',
+                            right: '<i class="fa fa-chevron-right"></i>',
+                            yearFirst: true
+                        },
+                        onClick: function () {
+                            console.log(this);
+                        },
+                        onStateChanged: function () {
+
+                        }
+                    };
+
                     // calendar bind
                     pickerContents.find('[data-calendar-target]').each(function () {
+                        // calendarConfig extend ~
 
-                        new ax5.ui.calendar({
-                            target: this,
-                            displayDate: (new Date()),
-                            control: {
-                                left: '<i class="fa fa-chevron-left"></i>',
-                                yearTmpl: '%s',
-                                monthTmpl: '%s',
-                                right: '<i class="fa fa-chevron-right"></i>',
-                                yearFirst: true
-                            },
-                            onClick: function () {
-                                console.log(this);
-                            },
-                            onStateChanged: function () {
+                        calendarConfig = jQuery.extend(true, calendarConfig, opts.content.config||{});
+                        calendarConfig.target = this;
 
-                            }
-                        });
+                        new ax5.ui.calendar(calendarConfig);
                     });
 
                 }
