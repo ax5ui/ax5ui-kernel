@@ -112,7 +112,7 @@
                         contentMargin = (opts.content) ? opts.content.margin || 5 : 5,
                         config = {},
                         inputLength = opts.$target.find('input[type="text"]').length;
-    
+
                     config = {
                         contentWidth: (contentWidth * inputLength) + ((inputLength - 1) * contentMargin),
                         content: {
@@ -188,6 +188,15 @@
             `;
         };
 
+        this.setContentValue = function(bindId, inputIndex, val){
+            var opts = this.queue[ax5.util.search(this.queue, function(){
+                return this.id == bindId;
+            })];
+            if(opts){
+                jQuery(opts.$target.find('input[type="text"]').get(inputIndex)).val(val);
+            }
+        };
+
         this.open = (function () {
 
             var pickerContent = {
@@ -218,21 +227,18 @@
                             monthTmpl: '%s',
                             right: '<i class="fa fa-chevron-right"></i>',
                             yearFirst: true
-                        },
-                        onClick: function () {
-                            console.log(this);
-                        },
-                        onStateChanged: function () {
-
                         }
                     };
 
                     // calendar bind
-                    pickerContents.find('[data-calendar-target]').each(function () {
+                    pickerContents.find('[data-calendar-target]').each(function (idx) {
                         // calendarConfig extend ~
 
-                        calendarConfig = jQuery.extend(true, calendarConfig, opts.content.config||{});
+                        calendarConfig = jQuery.extend(true, calendarConfig, opts.content.config || {});
                         calendarConfig.target = this;
+                        calendarConfig.onClick = function () {
+                            self.setContentValue(opts.id, idx, this.date);
+                        };
 
                         new ax5.ui.calendar(calendarConfig);
                     });
@@ -250,15 +256,12 @@
                 this.activePicker = jQuery(ax5.mustache.render(this.getTmpl(opts, optIdx), opts));
                 var pickerContents = this.activePicker.find('[data-modal-els="contents"]');
 
-                // fill picker content
-                var callBack = function (content) {
-                    pickerContents.html(content);
-                };
-
-                // 함수타입
                 if (U.isFunction(opts.content)) {
+                    // 함수타입
                     pickerContents.html("Loading..");
-                    pickerContent["@fn"].call(this, opts, optIdx, callBack);
+                    pickerContent["@fn"].call(this, opts, optIdx, function (html) {
+                        pickerContents.html(html);
+                    });
                 }
                 else {
                     for (var key in pickerContent) {

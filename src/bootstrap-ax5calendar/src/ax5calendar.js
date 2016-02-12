@@ -49,7 +49,7 @@
                 yearHeading: "Choose the year",
                 monthHeading: "Choose the month",
                 yearTmpl: "%s",
-                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                months: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
                 dayTmpl: "%s"
             },
             multipleSelect: false,
