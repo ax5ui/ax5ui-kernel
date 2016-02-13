@@ -197,7 +197,6 @@
                 jQuery(opts.$target.find('input[type="text"]').get(inputIndex)).val(val);
 
                 if (opts.inputLength == 1) {
-                    console.log(opts.inputLength);
                     this.close();
                 }
             }
