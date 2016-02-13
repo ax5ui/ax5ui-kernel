@@ -238,10 +238,13 @@
                     // calendar bind
                     pickerContents.find('[data-calendar-target]').each(function (idx) {
                         // calendarConfig extend ~
-                        var dValue = opts.$target.find('input[type="text"]').get(idx).value;
-                        var d = ax5.util.date(dValue);
+                        var
+                            dValue = opts.$target.find('input[type="text"]').get(idx).value,
+                            d = ax5.util.date(dValue)
+                            ;
+
                         calendarConfig.displayDate = d;
-                        if(dValue) calendarConfig.selection = [d];
+                        if (dValue) calendarConfig.selection = [d];
                         calendarConfig = jQuery.extend(true, calendarConfig, opts.content.config || {});
                         calendarConfig.target = this;
                         calendarConfig.onClick = function () {
