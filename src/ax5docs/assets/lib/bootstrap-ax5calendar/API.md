@@ -23,6 +23,7 @@ myCalendar.setConfig({
         height: 'Number', // null
         controlHeight: 'Number', // 40
         controlButtonWidth: 'Number', // 40
+        colHeadHeight: 'Number', // 30
         itemPadding: 'Number' // 2
     },
     animateTime: 'Number', // 250
