@@ -27,6 +27,7 @@
 
         this.target = null;
         this.selection = [];
+        this.selectionMap = {};
         this.selectableMap = {};
         this.markerMap = {};
         this.printedDay = {
@@ -122,7 +123,6 @@
                     this.printYear(cfg.displayDate);
                 }
             }).bind(this));
-
         };
         
         this.getFrame = function () {
@@ -276,6 +276,10 @@
                         + ' '
                         + (function () {
                             return (self.markerMap[thisDate]) ? self.markerMap[thisDate].theme || cfg.defaultMarkerTheme : '';
+                        })()
+                        + ' '
+                        + (function () {
+                            return (self.selectionMap[thisDate]) ? "selected-day" : '';
                         })()
                         + '" data-calendar-item-date="' + thisDate + '"><span class="addon"></span>'
                         + cfg.lang.dayTmpl.replace('%s', loopDate.getDate())
@@ -760,9 +764,16 @@
 
             selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
             this.selection = selection.splice(0, selectableCount);
+
             this.selection.forEach(function (d) {
-                self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').addClass("selected-day");
+                self.selectionMap[U.date(d, {"return": cfg.dateFormat})] = true;
             });
+
+            setTimeout((function () {
+                this.selection.forEach(function (d) {
+                    self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').addClass("selected-day");
+                });
+            }).bind(this));
 
             return this;
         };
@@ -909,12 +920,14 @@
         })();
 
         this.applyMarkerMap = function () {
-            if (cfg.mode === "day" || cfg.mode === "d")
-            {
-                for (var k in this.markerMap) {
-                    this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass(this.markerMap[k].theme || cfg.defaultMarkerTheme);
+            setTimeout((function () {
+                if (cfg.mode === "day" || cfg.mode === "d")
+                {
+                    for (var k in this.markerMap) {
+                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass(this.markerMap[k].theme || cfg.defaultMarkerTheme);
+                    }
                 }
-            }
+            }).bind(this));
         };
 
         // 클래스 생성자
