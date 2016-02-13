@@ -41,6 +41,7 @@
         */
 
         this.activePicker = null;
+        this.activePickerQueueIndex = -1;
 
         cfg = this.config;
 
@@ -188,12 +189,17 @@
             `;
         };
 
-        this.setContentValue = function(bindId, inputIndex, val){
-            var opts = this.queue[ax5.util.search(this.queue, function(){
+        this.setContentValue = function (bindId, inputIndex, val) {
+            var opts = this.queue[ax5.util.search(this.queue, function () {
                 return this.id == bindId;
             })];
-            if(opts){
+            if (opts) {
                 jQuery(opts.$target.find('input[type="text"]').get(inputIndex)).val(val);
+
+                if (opts.inputLength == 1) {
+                    console.log(opts.inputLength);
+                    this.close();
+                }
             }
         };
 
@@ -254,6 +260,7 @@
                     this.activePicker = null;
                 }
                 this.activePicker = jQuery(ax5.mustache.render(this.getTmpl(opts, optIdx), opts));
+                this.activePickerQueueIndex = optIdx;
                 var pickerContents = this.activePicker.find('[data-modal-els="contents"]');
 
                 if (U.isFunction(opts.content)) {
@@ -272,11 +279,11 @@
                     }
                 }
 
-                self.__alignPicker(opts, optIdx, "append");
+                self.__alignPicker("append");
 
                 // unbind close
                 jQuery(window).bind("resize.ax5picker", function () {
-                    self.__alignPicker(opts, optIdx);
+                    self.__alignPicker();
                 });
 
                 return this;
@@ -284,13 +291,36 @@
         })();
 
         this.close = function () {
+            if (!this.activePicker) return this;
 
+            var
+                opts = this.queue[this.activePickerQueueIndex]
+                ;
+
+            this.activePicker.addClass("destroy");
             jQuery(window).unbind("resize.ax5picker");
+
+            setTimeout((function () {
+                this.activePicker.remove();
+                this.activePicker = null;
+                this.activePickerQueueIndex = -1;
+                if (opts && opts.onStateChanged) {
+                    that = {
+                        state: "close"
+                    };
+                    opts.onStateChanged.call(that, that);
+                }
+            }).bind(this), cfg.animateTime);
+
+            return this;
         };
 
         /* private */
-        this.__alignPicker = function (opts, optIdx, append) {
+        this.__alignPicker = function (append) {
+            if (!this.activePicker) return this;
+
             var
+                opts = this.queue[this.activePickerQueueIndex],
                 pos = {},
                 dim = {};
 
