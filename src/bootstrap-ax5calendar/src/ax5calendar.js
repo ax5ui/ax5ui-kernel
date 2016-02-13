@@ -99,7 +99,11 @@
                     this.move(e || window.event);
                 }).bind(this));
             }
-            
+
+            // collect selectableMap
+            if (cfg.selection) {
+                this.setSelection(cfg.selection, false);
+            }
             // collect selectableMap
             if (cfg.selectable) {
                 this.setSelectable(cfg.selectable, false);
@@ -759,24 +763,43 @@
          *
          * ```
          */
-        this.setSelection = function (selection) {
-            if (!U.isArray(selection)) return this;
+        this.setSelection = (function () {
+            self.selectionMap = {};
+            var processor = {
+                'arr': function(v, map, count){
+                    map = {};
+                    if (!U.isArray(v)) return map;
+                    self.selection = v = v.splice(0, count);
+                    v.forEach(function (n) {
+                        if (U.isDate(n))
+                            n = U.date(n, {'return': cfg.dateFormat});
+                        map[n] = true;
+                    });
+                    return map;
+                }
+            };
 
-            selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
-            this.selection = selection.splice(0, selectableCount);
+            return function (selection, isPrint) {
+                var
+                    result = {}
+                    ;
+                selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
 
-            this.selection.forEach(function (d) {
-                self.selectionMap[U.date(d, {"return": cfg.dateFormat})] = true;
-            });
+                if (cfg.selection = selection) {
+                    if (U.isArray(selection)) {
+                        result = processor.arr(selection, {}, selectableCount);
+                    }else{
+                        return this;
+                    }
+                }
 
-            setTimeout((function () {
-                this.selection.forEach(function (d) {
-                    self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').addClass("selected-day");
-                });
-            }).bind(this));
+                this.selectionMap = result;
+                // 변경내용 적용하여 출력
 
-            return this;
-        };
+                if (isPrint !== false) this.applySelectionMap();
+
+            };
+        })();
 
         /**
          * @method ax5.ui.calendar.getSelection
@@ -926,6 +949,14 @@
                     for (var k in this.markerMap) {
                         this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass(this.markerMap[k].theme || cfg.defaultMarkerTheme);
                     }
+                }
+            }).bind(this));
+        };
+
+        this.applySelectionMap = function(){
+            setTimeout((function () {
+                for (var k in this.selectionMap) {
+                    this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass("selected-day");
                 }
             }).bind(this));
         };
