@@ -302,13 +302,12 @@
                     }
                 }
 
-                self.__alignPicker("append");
-
                 // bind event picker btns
                 this.activePicker.find("[data-picker-btn]").on(cfg.clickEventName, (function (e) {
                     this.__onBtnClick(e || window.event, opts, optIdx);
                 }).bind(this));
 
+                self.__alignPicker("append");
                 jQuery(window).bind("resize.ax5picker", function () {
                     self.__alignPicker();
                 });
@@ -440,8 +439,20 @@
             return this;
         };
 
-        this.__onBtnClick = function(){
-            console.log('btn click');
+        this.__onBtnClick = function(e, target){
+            // console.log('btn click');
+            if (e.srcElement) e.target = e.srcElement;
+
+            target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-picker-btn")) {
+                    return true;
+                }
+            });
+
+            if (target) {
+                k = target.getAttribute("data-picker-btn");
+                console.log(k);
+            }
         };
 
         // 클래스 생성자
