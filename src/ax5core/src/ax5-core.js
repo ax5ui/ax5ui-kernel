@@ -1678,7 +1678,7 @@
                     return !result;
                 })())
                 {
-                    if (_target.parentNode) {
+                    if (_target.parentNode && _target.parentNode.parentNode) {
                         _target = _target.parentNode;
                     }
                     else {
