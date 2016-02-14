@@ -34,14 +34,10 @@
             animateTime: 250
         };
 
-        /*
-        this.config.btns = {
-            ok: {label: this.config.lang["ok"], theme: this.config.theme}
-        };
-        */
-
         this.activePicker = null;
         this.activePickerQueueIndex = -1;
+        this.openTimer = null;
+        this.closeTimer = null;
 
         cfg = this.config;
 
@@ -79,13 +75,13 @@
                 }) === -1)
             {
                 this.queue.push(opts);
-                this.bindPickerTarget(opts, this.queue.length - 1);
+                this.__bindPickerTarget(opts, this.queue.length - 1);
             }
 
             return this;
         };
 
-        this.bindPickerTarget = (function () {
+        this.__bindPickerTarget = (function () {
 
             var pickerEvent = {
                 'focus': function (opts, optIdx, e) {
@@ -101,6 +97,12 @@
                     var
                         config = {},
                         inputLength = opts.$target.find('input[type="text"]').length;
+
+                    if(inputLength > 1){
+                        config.btns = {
+                            ok: {label: cfg.lang["ok"], theme: cfg.theme}
+                        };
+                    }
 
                     this.queue[optIdx] = jQuery.extend(true, config, opts);
                 },
@@ -123,11 +125,13 @@
                         inputLength: inputLength
                     };
 
-                    console.log(this.queue[optIdx]);
+                    if(inputLength > 1){
+                        config.btns = {
+                            ok: {label: cfg.lang["ok"], theme: cfg.theme}
+                        };
+                    }
 
                     this.queue[optIdx] = jQuery.extend(true, config, opts);
-
-                    console.log(this.queue[optIdx]);
                 }
             };
 
@@ -165,7 +169,7 @@
 
         })();
 
-        this.getTmpl = function (opts, optIdx) {
+        this.__getTmpl = function (opts, optIdx) {
             // console.log(opts);
             return `
             <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">
@@ -202,6 +206,9 @@
             }
         };
 
+        /**
+         * need to user call method
+         */
         this.open = (function () {
 
             var pickerContent = {
@@ -258,6 +265,10 @@
             };
 
             return function (opts, optIdx, tryCount) {
+                /**
+                    다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문
+
+                 */
                 if(this.openTimer) clearTimeout(this.openTimer);
                 if (this.activePicker) {
                     if(this.activePickerQueueIndex == optIdx){
@@ -271,7 +282,7 @@
                     }).bind(this), cfg.animateTime);
                     return this;
                 }
-                this.activePicker = jQuery(ax5.mustache.render(this.getTmpl(opts, optIdx), opts));
+                this.activePicker = jQuery(ax5.mustache.render(this.__getTmpl(opts, optIdx), opts));
                 this.activePickerQueueIndex = optIdx;
                 var pickerContents = this.activePicker.find('[data-picker-els="contents"]');
 
@@ -293,7 +304,11 @@
 
                 self.__alignPicker("append");
 
-                // unbind close
+                // bind event picker btns
+                this.activePicker.find("[data-picker-btn]").on(cfg.clickEventName, (function (e) {
+                    this.__onBtnClick(e || window.event, opts, optIdx);
+                }).bind(this));
+
                 jQuery(window).bind("resize.ax5picker", function () {
                     self.__alignPicker();
                 });
@@ -316,6 +331,7 @@
         })();
 
         this.close = function () {
+            if(this.closeTimer) clearTimeout(this.closeTimer);
             if (!this.activePicker) return this;
 
             var
@@ -326,7 +342,7 @@
             jQuery(window).unbind("resize.ax5picker");
             jQuery(window).unbind("click.ax5picker");
 
-            setTimeout((function () {
+            this.closeTimer = setTimeout((function () {
                 if (this.activePicker) this.activePicker.remove();
                 this.activePicker = null;
                 this.activePickerQueueIndex = -1;
@@ -341,31 +357,6 @@
             return this;
         };
 
-        this.__onBodyClick = function (e, target) {
-            if (!this.activePicker) return this;
-
-            var
-                opts = this.queue[this.activePickerQueueIndex]
-                ;
-
-            target = U.findParentNode(e.target, function (target) {
-                if (target.getAttribute("data-picker-els"))
-                {
-                    return true;
-                }
-                else if (opts.$target.get(0) == target) {
-                    return true;
-                }
-            });
-            if (!target)
-            {
-                //console.log("i'm not picker");
-                this.close();
-                return this;
-            }
-            //console.log("i'm picker");
-            return this;
-        };
 
         /* private */
         this.__alignPicker = function (append) {
@@ -421,6 +412,36 @@
                         }
                     }
                 }).call(this));
+        };
+
+        this.__onBodyClick = function (e, target) {
+            if (!this.activePicker) return this;
+
+            var
+                opts = this.queue[this.activePickerQueueIndex]
+                ;
+
+            target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-picker-els"))
+                {
+                    return true;
+                }
+                else if (opts.$target.get(0) == target) {
+                    return true;
+                }
+            });
+            if (!target)
+            {
+                //console.log("i'm not picker");
+                this.close();
+                return this;
+            }
+            //console.log("i'm picker");
+            return this;
+        };
+
+        this.__onBtnClick = function(){
+            console.log('btn click');
         };
 
         // 클래스 생성자
