@@ -168,17 +168,17 @@
         this.getTmpl = function (opts, optIdx) {
             // console.log(opts);
             return `
-            <div class="ax5-ui-picker {{theme}}" id="{{id}}">
+            <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">
                 {{#title}}
                     <div class="ax-picker-heading">{{title}}</div>
                 {{/title}}
                 <div class="ax-picker-body">
-                    <div class="ax-picker-contents" data-modal-els="contents" style="width:{{contentWidth}}px;"></div>
+                    <div class="ax-picker-contents" data-picker-els="contents" style="width:{{contentWidth}}px;"></div>
                     {{#btns}}
                         <div class="ax-picker-buttons">
                         {{#btns}}
                             {{#@each}}
-                            <button data-ax-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
+                            <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
                             {{/@each}}
                         {{/btns}}
                         </div>
@@ -257,16 +257,23 @@
                 }
             };
 
-            return function (opts, optIdx) {
-
+            return function (opts, optIdx, tryCount) {
+                if(this.openTimer) clearTimeout(this.openTimer);
                 if (this.activePicker) {
+                    if(this.activePickerQueueIndex == optIdx){
+                        return this;
+                    }
+
+                    if(tryCount > 2) return this;
+                    this.close();
+                    this.openTimer = setTimeout((function () {
+                        this.open(opts, optIdx, (tryCount||0) + 1);
+                    }).bind(this), cfg.animateTime);
                     return this;
-                    this.activePicker.remove();
-                    this.activePicker = null;
                 }
                 this.activePicker = jQuery(ax5.mustache.render(this.getTmpl(opts, optIdx), opts));
                 this.activePickerQueueIndex = optIdx;
-                var pickerContents = this.activePicker.find('[data-modal-els="contents"]');
+                var pickerContents = this.activePicker.find('[data-picker-els="contents"]');
 
                 if (U.isFunction(opts.content)) {
                     // 함수타입
@@ -291,6 +298,19 @@
                     self.__alignPicker();
                 });
 
+                jQuery(window).bind("click.ax5picker", function (e) {
+                    e = e || window.event;
+                    self.__onBodyClick(e);
+                    try {
+                        if (e.preventDefault) e.preventDefault();
+                        if (e.stopPropagation) e.stopPropagation();
+                        e.cancelBubble = true;
+                    } catch (e) {
+
+                    }
+                    return false;
+                });
+
                 return this;
             };
         })();
@@ -304,9 +324,10 @@
 
             this.activePicker.addClass("destroy");
             jQuery(window).unbind("resize.ax5picker");
+            jQuery(window).unbind("click.ax5picker");
 
             setTimeout((function () {
-                this.activePicker.remove();
+                if (this.activePicker) this.activePicker.remove();
                 this.activePicker = null;
                 this.activePickerQueueIndex = -1;
                 if (opts && opts.onStateChanged) {
@@ -317,6 +338,32 @@
                 }
             }).bind(this), cfg.animateTime);
 
+            return this;
+        };
+
+        this.__onBodyClick = function (e, target) {
+            if (!this.activePicker) return this;
+
+            var
+                opts = this.queue[this.activePickerQueueIndex]
+                ;
+
+            target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-picker-els"))
+                {
+                    return true;
+                }
+                else if (opts.$target.get(0) == target) {
+                    return true;
+                }
+            });
+            if (!target)
+            {
+                //console.log("i'm not picker");
+                this.close();
+                return this;
+            }
+            //console.log("i'm picker");
             return this;
         };
 

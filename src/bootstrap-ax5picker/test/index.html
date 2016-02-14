@@ -32,6 +32,8 @@
         <span class="input-group-addon">D</span>
     </div>
 
+    <br/>
+
     <div class="input-group" data-ax5picker="date">
         <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
         <span class="input-group-addon">D</span>
@@ -71,12 +73,18 @@
                         },
                         lang: {
                             yearTmpl: "%s년",
-                            //months: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+                            months: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
                             dayTmpl: "%s"
                         }
                     }
                 }
             });
+
+
+            // todo : 멀티 input일 때 기본 버튼 사용
+            // todo : 버튼 확장 기능 지원
+            // todo : picker content 사용자 함수 처리 기능 지원
+            // todo : input에 pattern 적용
 
             /*
             picker.bind({
