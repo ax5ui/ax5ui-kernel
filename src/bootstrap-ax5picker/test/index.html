@@ -29,14 +29,14 @@
         <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
         <span class="input-group-addon">~</span>
         <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
-        <span class="input-group-addon">D</span>
+        <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
     </div>
 
     <br/>
 
     <div class="input-group" data-ax5picker="date">
         <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
-        <span class="input-group-addon">D</span>
+        <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
     </div>
 </div>
 
@@ -79,6 +79,16 @@
                     }
                 },
                 btns:{
+                    today: {label: "오늘", onClick: function(){
+                        if(this.bindedItem.inputLength == 1) {
+                            this.self.setContentValue(this.bindedID, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                        }else{
+                            this.self.setContentValue(this.bindedID, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                            this.self.setContentValue(this.bindedID, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                            this.self.close();
+                        }
+                    }},
+                    thisMonth: {label: "이번달 1일"},
                     ok: {label: "확인", theme: "default"}
                 }
             });

@@ -125,7 +125,7 @@
                         inputLength: inputLength
                     };
 
-                    if(inputLength > 1){
+                    if(inputLength > 1 && !opts.btns){
                         config.btns = {
                             ok: {label: cfg.lang["ok"], theme: cfg.theme}
                         };
@@ -468,8 +468,26 @@
             });
 
             if (target) {
+                var
+                    that,
+                    opts = this.queue[this.activePickerQueueIndex]
+                    ;
+
                 k = target.getAttribute("data-picker-btn");
-                console.log(k);
+
+                if (opts.btns && opts.btns[k].onClick) {
+                    that = {
+                        key: k,
+                        value: opts.btns[k],
+                        self: this,
+                        bindedID: opts.id,
+                        bindedItem: opts
+                    };
+                    opts.btns[k].onClick.call(that, k);
+                }
+                else{
+                    this.close();
+                }
             }
         };
 
