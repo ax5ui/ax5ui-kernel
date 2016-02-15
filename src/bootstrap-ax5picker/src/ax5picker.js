@@ -157,7 +157,9 @@
                 opts.$target
                     .find('input[type="text"]')
                     .unbind('focus.ax5picker')
-                    .bind('focus.ax5picker', pickerEvent.focus.bind(this, this.queue[optIdx], optIdx));
+                    .unbind('click.ax5picker')
+                    .bind('focus.ax5picker', pickerEvent.focus.bind(this, this.queue[optIdx], optIdx))
+                    .bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
                 opts.$target
                     .find('.input-group-addon')
@@ -282,6 +284,7 @@
                     }).bind(this), cfg.animateTime);
                     return this;
                 }
+
                 this.activePicker = jQuery(ax5.mustache.render(this.__getTmpl(opts, optIdx), opts));
                 this.activePickerQueueIndex = optIdx;
                 var pickerContents = this.activePicker.find('[data-picker-els="contents"]');
@@ -312,6 +315,20 @@
                     self.__alignPicker();
                 });
 
+                // bind key event
+                jQuery(window).bind("keyup.ax5picker", function (e) {
+                    e = e || window.event;
+                    self.__onBodyKeyup(e);
+                    try {
+                        if (e.preventDefault) e.preventDefault();
+                        if (e.stopPropagation) e.stopPropagation();
+                        e.cancelBubble = true;
+                    } catch (e) {
+
+                    }
+                    return false;
+                });
+
                 jQuery(window).bind("click.ax5picker", function (e) {
                     e = e || window.event;
                     self.__onBodyClick(e);
@@ -340,6 +357,7 @@
             this.activePicker.addClass("destroy");
             jQuery(window).unbind("resize.ax5picker");
             jQuery(window).unbind("click.ax5picker");
+            jQuery(window).unbind("keyup.ax5picker");
 
             this.closeTimer = setTimeout((function () {
                 if (this.activePicker) this.activePicker.remove();
@@ -452,6 +470,12 @@
             if (target) {
                 k = target.getAttribute("data-picker-btn");
                 console.log(k);
+            }
+        };
+
+        this.__onBodyKeyup = function(e){
+            if (e.keyCode == ax5.info.eventKeys.ESC) {
+                this.close();
             }
         };
 
