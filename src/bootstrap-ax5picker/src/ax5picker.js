@@ -195,13 +195,12 @@
             `;
         };
 
-        this.setContentValue = function (bindId, inputIndex, val) {
+        this.setContentValue = function (boundID, inputIndex, val) {
             var opts = this.queue[ax5.util.search(this.queue, function () {
-                return this.id == bindId;
+                return this.id == boundID;
             })];
             if (opts) {
                 jQuery(opts.$target.find('input[type="text"]').get(inputIndex)).val(val);
-
                 if (opts.inputLength == 1) {
                     this.close();
                 }
@@ -267,6 +266,20 @@
             };
 
             return function (opts, optIdx, tryCount) {
+                /**
+                 * open picker from the outside
+                 */
+                if(U.isString(opts) && typeof optIdx == "undefined"){
+                    optIdx = ax5.util.search(this.queue, function () {
+                        return this.id == opts;
+                    })
+                    opts = this.queue[optIdx];
+                    if(optIdx == -1) {
+                        console.log(ax5.info.getError("ax5picker", "402", "open"));
+                        return this;
+                    }
+                }
+
                 /**
                     다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문
 
