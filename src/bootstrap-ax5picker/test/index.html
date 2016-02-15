@@ -80,11 +80,11 @@
                 },
                 btns:{
                     today: {label: "오늘", onClick: function(){
-                        if(this.bindedItem.inputLength == 1) {
-                            this.self.setContentValue(this.bindedID, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                        if(this.boundObject.inputLength == 1) {
+                            this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
                         }else{
-                            this.self.setContentValue(this.bindedID, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
-                            this.self.setContentValue(this.bindedID, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                            this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                            this.self.setContentValue(this.boundObject.id, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
                             this.self.close();
                         }
                     }},

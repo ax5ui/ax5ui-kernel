@@ -480,8 +480,7 @@
                         key: k,
                         value: opts.btns[k],
                         self: this,
-                        bindedID: opts.id,
-                        bindedItem: opts
+                        boundObject: opts
                     };
                     opts.btns[k].onClick.call(that, k);
                 }
