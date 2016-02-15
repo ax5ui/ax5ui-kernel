@@ -282,6 +282,7 @@
 
             if (opts && opts.onStateChanged) {
                 that = {
+                    self: this,
                     state: "open"
                 };
                 opts.onStateChanged.call(that, that);
@@ -322,6 +323,7 @@
                 k = target.getAttribute("data-dialog-btn");
 
                 var that = {
+                    self: this,
                     key: k, value: opts.btns[k],
                     dialogId: opts.id,
                     btnTarget: target
@@ -367,6 +369,7 @@
             if (opts.dialogType === "prompt") {
                 if (e.keyCode == ax5.info.eventKeys.RETURN) {
                     var that = {
+                        self: this,
                         key: k, value: opts.btns[k],
                         dialogId: opts.id,
                         btnTarget: target
@@ -407,6 +410,7 @@
                     this.activeDialog = null;
                     if (opts && opts.onStateChanged) {
                         that = {
+                            self: this,
                             state: "close"
                         };
                         opts.onStateChanged.call(that, that);
