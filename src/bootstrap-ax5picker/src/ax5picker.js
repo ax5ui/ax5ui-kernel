@@ -98,6 +98,10 @@
                         config = {},
                         inputLength = opts.$target.find('input[type="text"]').length;
 
+                    config = {
+                        inputLength: inputLength
+                    };
+
                     if(inputLength > 1){
                         config.btns = {
                             ok: {label: cfg.lang["ok"], theme: cfg.theme}

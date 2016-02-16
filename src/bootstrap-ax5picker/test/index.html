@@ -64,7 +64,7 @@
              *
              */
 
-            if(this.getAttribute("data-ax5picker") == "date") {
+            if (this.getAttribute("data-ax5picker") == "date") {
                 picker.bind({
                     id: "my-picker-" + idx,
                     target: this,
@@ -117,19 +117,24 @@
                     }
                 });
             }
-            else if(this.getAttribute("data-ax5picker") == "custom"){
+            else if (this.getAttribute("data-ax5picker") == "custom") {
                 picker.bind({
                     target: this,
                     direction: "top",
-                    content: function(callBack){
-                        var html = '가나다라마바사';
+                    contentWidth: 200,
+                    content: function (callBack) {
+                        var html = ''
+                                + '가나다라마바사'
+                                + '<div style="padding: 10px;">'
+                                + '<button class="btn btn-default">기능 1</button>'
+                                + '</div>'
+                            ;
                         callBack(html);
                     }
                 });
             }
 
-            // todo : picker content 사용자 함수 처리 기능 지원
-            // todo : input에 pattern 적용
+            // todo : input에 formatter 적용
 
         });
 
