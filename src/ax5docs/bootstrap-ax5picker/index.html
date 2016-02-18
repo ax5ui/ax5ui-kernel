@@ -137,6 +137,7 @@
 <li><em><a href="http://jquery.com/">jQuery 1.X+</a></em></li>
 <li><em><a href="http://ax5.io/ax5core">ax5core</a></em></li>
 <li><em><a href="http://getbootstrap.com/">bootstrap</a></em></li>
+<li><em><a href="http://ax5.io/ax5calendar">ax5calendar</a></em></li>
 </ul>
 </blockquote>
 <h3>Install by bower</h3>
@@ -164,15 +165,29 @@ exactly the path.</p>
         &lt;script type=&quot;text/javascript&quot; src=&quot;bower_components/bootstrap-ax5picker/dist/ax5picker.min.js&quot;&gt;&lt;/script&gt;
     &lt;/head&gt;
 &lt;body&gt;
-....
+    &lt;div class=&quot;input-group&quot; id=&quot;pickerTarget&quot;&gt;
+        &lt;input type=&quot;text&quot; class=&quot;form-control&quot; placeholder=&quot;&quot; /&gt;
+        &lt;span class=&quot;input-group-addon&quot;&gt;&lt;i class=&quot;fa fa-calendar-o&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+    &lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
 <h3>Basic Usages</h3>
-<pre class="prettyprint linenums lang-js"><code>var myPicker = new ax5.ui.picker({
-
+<pre class="prettyprint linenums lang-js"><code>var picker = new ax5.ui.picker();
+picker.bind({
+    target: $(&quot;#pickerTarget&quot;),
+    direction: &quot;top&quot;,
+    contentWidth: 200,
+    content: function (callBack) {
+        var html = ''
+                + 'picker contents'
+                + '&lt;div style=&quot;padding: 10px;&quot;&gt;'
+                + '&lt;button class=&quot;btn btn-default&quot;&gt;FN 1&lt;/button&gt;'
+                + '&lt;/div&gt;'
+            ;
+        callBack(html);
+    }
 });
-
 </code></pre>
 <hr>
 <h3>Install by npm</h3>
@@ -181,6 +196,7 @@ In npm, so pile on the package manager for the front end, you need to solve the 
 <pre class="prettyprint linenums lang-sh"><code>npm install jquery
 npm install ax5core
 npm install bootstrap-ax5picker
+npm install bootstrap-ax5calendar
 </code></pre>
 <p>After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
 If the inconvenience in the process that you want to copy the file and can be easily copied by using a <code>gulp</code> or <code>grunt</code>.</p>
