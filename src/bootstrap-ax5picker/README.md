@@ -76,8 +76,8 @@ In npm, so pile on the package manager for the front end, you need to solve the 
 ```sh
 npm install jquery
 npm install ax5core
-npm install bootstrap-ax5picker
 npm install bootstrap-ax5calendar
+npm install bootstrap-ax5picker
 ```
 
 After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
