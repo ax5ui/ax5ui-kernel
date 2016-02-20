@@ -1,17 +1,11 @@
-<tmpl-metadata>
-    <parentId>demo</parentId>
-    <parent>Demo</parent>
-    <sort>4</sort>
+<tmpl-metadata parentId="demo" parentTitle="Demo" sort="4" id="prompt" title="Prompt" desc="" />
 
-    <id>prompt-custom</id>
-    <title>Prompt</title>
-    <desc></desc>
-</tmpl-metadata>
-
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Prompt" parent-id="demo"
-            page-id="prompt-custom" body-style="sub-page" with-menu="true">
+<layout-use template="${data.layoutPath}"
+            project-name="${data.projectName}"
+            parent-id="${data.metadata.parentId}" page-title="${data.metadata.title}" page-id="${data.metadata.id}"
+            body-style="sub-page" with-menu="true">
     <layout-put into="docs-menu">
-        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="prompt-custom"></ax5docs-get-sub-list>
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="${data.metadata.parentId}" activeId="${data.metadata.id}"></ax5docs-get-sub-list>
     </layout-put>
     <layout-put into="visual">
         <include template="../_inc/include.html" id="demo-visual"/>

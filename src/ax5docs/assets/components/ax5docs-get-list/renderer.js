@@ -74,19 +74,19 @@ exports.render = function (input, out) {
             });
 
             menus.forEach(function (dn) {
-                if (!dn.parent) {
+                if (!dn.parentId) {
                     trees.push(dn);
                 }
                 else {
                     var findMenuIndex = -1;
                     trees.forEach(function (mn, midx) {
-                        if (mn.title == dn.parent) {
+                        if (mn.id == dn.parentId) {
                             findMenuIndex = midx;
                             return false;
                         }
                     });
                     if (findMenuIndex == -1) {
-                        trees.push({title: dn.parent, id: (dn.parentId || dn.parent), child: [dn]});
+                        trees.push({title: dn.parentTitle, id: dn.parentId, child: [dn]});
                     }
                     else {
                         trees[findMenuIndex].child.push(dn);
@@ -94,6 +94,8 @@ exports.render = function (input, out) {
                 }
             });
         })();
+        
+        // console.log(trees);
 
         var getUrl = function (url) {
             return url;

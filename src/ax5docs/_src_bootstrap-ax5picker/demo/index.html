@@ -1,17 +1,11 @@
-<tmpl-metadata>
-    <parentId>demo</parentId>
-    <parent>Demo</parent>
-    <sort>1</sort>
+<tmpl-metadata parentId="demo" parentTitle="Demo" sort="1" id="basic" title="Picker Basic" desc="" />
 
-    <id>basic</id>
-    <title>Picker </title>
-    <desc></desc>
-</tmpl-metadata>
-
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="Basic Alert" parent-id="demo"
-            page-id="Picker" body-style="sub-page" with-menu="true">
+<layout-use template="${data.layoutPath}"
+            project-name="${data.projectName}"
+            parent-id="${data.metadata.parentId}" page-title="${data.metadata.title}" page-id="${data.metadata.id}"
+            body-style="sub-page" with-menu="true">
     <layout-put into="docs-menu">
-        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="demo" activeId="picker"></ax5docs-get-sub-list>
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="${data.metadata.parentId}" activeId="${data.metadata.id}"></ax5docs-get-sub-list>
     </layout-put>
     <layout-put into="visual">
         <include template="../_inc/include.html" id="demo-visual"/>
@@ -24,7 +18,7 @@
 
         <!-- doc-js Basic Alert -->
         <section class="ax5docs-section">
-            <h1>Basic Alert</h1>
+            <h1>Picker Basic</h1>
 
             <p>
                 ax5picker creates a dialog by extending the argument to be passed to the alert method to the attributes defined in setConfig, then delivered to the user.<br/>

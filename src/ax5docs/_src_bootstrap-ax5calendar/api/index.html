@@ -1,23 +1,17 @@
-<tmpl-metadata>
-    <parent></parent>
-    <sort>3</sort>
+<tmpl-metadata parentId="" parentTitle="" sort="3" id="api" title="API" desc="" />
 
-    <id>api</id>
-    <title>API</title>
-    <desc></desc>
-</tmpl-metadata>
-
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="API" page-id="api" body-style="sub-page" with-inline-menu="true">
+<layout-use template="${data.layoutPath}"
+            project-name="${data.projectName}"
+            parent-id="${data.metadata.parentId}" page-title="${data.metadata.title}" page-id="${data.metadata.id}"
+            body-style="sub-page" with-inline-menu="true">
     <layout-put into="visual">
-
         <div class="contents">
             <div class="style-sub-visual">
-                <div class="title">API</div>
+                <div class="title">${data.metadata.title}</div>
                 <div class="description">
                 </div>
             </div>
         </div>
-
     </layout-put>
     <layout-put into="body">
         <ax5docs-md file="src/bootstrap-ax5calendar/API.md"></ax5docs-md>

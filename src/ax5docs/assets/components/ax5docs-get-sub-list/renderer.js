@@ -31,22 +31,26 @@ exports.render = function (input, out) {
             files.forEach(function (src) {
 
                 var meta = (function () {
-                    var rawHtml = fs.readFileSync(src, 'utf8');
-                    var handler = new htmlparser.DefaultHandler(
-                        function (error) {}, {verbose: false, ignoreWhitespace: true}
-                    );
-                    var parser = new htmlparser.Parser(handler);
+
+                    var
+                        rawHtml = fs.readFileSync(src, 'utf8'),
+                        handler = new htmlparser.DefaultHandler(function (error) {}, {verbose: false, ignoreWhitespace: true}),
+                        parser = new htmlparser.Parser(handler)
+                        ;
+
                     parser.parseComplete(rawHtml);
 
-                    var obj = {};
-                    handler.dom.forEach(function (n) {
-                        if (n.name == "tmpl-metadata") {
-                            n.children.forEach(function (m) {
-                                if (m.children) obj[m.name] = m.children[0].data;
-                            });
-                            return false;
+                    var
+                        obj = {}, i = handler.dom.length
+                        ;
+
+                    while (i--) {
+                        if (handler.dom[i].name == "tmpl-metadata") {
+                            obj = handler.dom[i].attribs;
+                            break;
                         }
-                    });
+                    }
+
                     return obj;
                 })();
 
@@ -70,19 +74,19 @@ exports.render = function (input, out) {
             });
 
             menus.forEach(function (dn) {
-                if (!dn.parent) {
+                if (!dn.parentId) {
                     trees.push(dn);
                 }
                 else {
                     var findMenuIndex = -1;
                     trees.forEach(function (mn, midx) {
-                        if (mn.title == dn.parent) {
+                        if (mn.id == dn.parentId) {
                             findMenuIndex = midx;
                             return false;
                         }
                     });
                     if (findMenuIndex == -1) {
-                        trees.push({title: dn.parent, id: (dn.parentId||dn.parent), child: [dn]});
+                        trees.push({title: dn.parentTitle, id: dn.parentId, child: [dn]});
                     }
                     else {
                         trees[findMenuIndex].child.push(dn);
