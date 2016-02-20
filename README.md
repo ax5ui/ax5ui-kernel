@@ -10,30 +10,41 @@ ax5ui-kernel/
             _src_/
             _src_ax5core/
             _src_bootstrap-ax5dialog/
-            _src_bootstrap-ax5mask/
-            assets/
+            ... ax5ui plugin project document tmpls
+            ..
+            .
+            assets/ 
+                _layouts/   marko layout
+                components  marko custom tag renderer
+                css
+                include
+                js  
+                lib front plugin resource
+                .bowerrrc   bower manage folder config
+                ax5favicon.ico
+                bower.json  
             ax5core/
             bootstrap-ax5dialog/
-            bootstrap-ax5mask/
+            ... document dist folders
+            ..
+            .            
         booxstrap-ax5dialog/    ax5ui ax5dialog project
-        bootstrap-ax5mask/      ax5ui ax5mask project
+        ... ax5ui plugin projects
+        ..
+        .
     gulpfile.js
     marko-taglib.json
     package.json
 ```
 
 ## gulpfile.js
-- **default**
-- AX5CORE-docs
-- AX5CORE-scripts
-- AX5DIALOG-docs
-- AX5DIALOG-scripts
-- AX5MASK-docs
-- AX5MASK-scripts
-- AX5UI-docs
-- SASS
-- docs:all
-- watch
 
 
 ## marko-taglib.json
+
+```json
+{
+	"tags-dir": "src/ax5docs/assets/components"
+}
+```
+marko custom tag src
