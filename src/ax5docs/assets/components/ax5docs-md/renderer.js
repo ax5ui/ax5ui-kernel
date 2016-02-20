@@ -1,6 +1,7 @@
 exports.render = function (input, out) {
     var _s = "", s, _out, HTML, CSS, JS;
     var md = require('markdown-it')();
+    var strip_indent = require('strip-indent');
     var fs = require('fs'), readFileData;
 
     if (input.file) { // readme file 처리
@@ -12,7 +13,7 @@ exports.render = function (input, out) {
     else {
         _out = {
             w: function (text) {
-                _s = md.render(text).replace(/<pre><code class="(.*)">/g, function (match, str) {
+                _s = md.render(strip_indent(text)).replace(/<pre><code class="(.*)">/g, function (match, str) {
                     return '<pre class="prettyprint linenums ' + str.replace("language", "lang") + '"><code>';
                 });
             }

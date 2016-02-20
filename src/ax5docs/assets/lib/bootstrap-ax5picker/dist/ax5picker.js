@@ -34,14 +34,10 @@
             animateTime: 250
         };
 
-        /*
-        this.config.btns = {
-            ok: {label: this.config.lang["ok"], theme: this.config.theme}
-        };
-        */
-
         this.activePicker = null;
         this.activePickerQueueIndex = -1;
+        this.openTimer = null;
+        this.closeTimer = null;
 
         cfg = this.config;
 
@@ -79,13 +75,13 @@
                 }) === -1)
             {
                 this.queue.push(opts);
-                this.bindPickerTarget(opts, this.queue.length - 1);
+                this.__bindPickerTarget(opts, this.queue.length - 1);
             }
 
             return this;
         };
 
-        this.bindPickerTarget = (function () {
+        this.__bindPickerTarget = (function () {
 
             var pickerEvent = {
                 'focus': function (opts, optIdx, e) {
@@ -101,6 +97,16 @@
                     var
                         config = {},
                         inputLength = opts.$target.find('input[type="text"]').length;
+
+                    config = {
+                        inputLength: inputLength
+                    };
+
+                    if(inputLength > 1){
+                        config.btns = {
+                            ok: {label: cfg.lang["ok"], theme: cfg.theme}
+                        };
+                    }
 
                     this.queue[optIdx] = jQuery.extend(true, config, opts);
                 },
@@ -123,11 +129,13 @@
                         inputLength: inputLength
                     };
 
-                    console.log(this.queue[optIdx]);
+                    if(inputLength > 1 && !opts.btns){
+                        config.btns = {
+                            ok: {label: cfg.lang["ok"], theme: cfg.theme}
+                        };
+                    }
 
                     this.queue[optIdx] = jQuery.extend(true, config, opts);
-
-                    console.log(this.queue[optIdx]);
                 }
             };
 
@@ -153,7 +161,9 @@
                 opts.$target
                     .find('input[type="text"]')
                     .unbind('focus.ax5picker')
-                    .bind('focus.ax5picker', pickerEvent.focus.bind(this, this.queue[optIdx], optIdx));
+                    .unbind('click.ax5picker')
+                    .bind('focus.ax5picker', pickerEvent.focus.bind(this, this.queue[optIdx], optIdx))
+                    .bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
                 opts.$target
                     .find('.input-group-addon')
@@ -165,20 +175,20 @@
 
         })();
 
-        this.getTmpl = function (opts, optIdx) {
+        this.__getTmpl = function (opts, optIdx) {
             // console.log(opts);
             return `
-            <div class="ax5-ui-picker {{theme}}" id="{{id}}">
+            <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">
                 {{#title}}
                     <div class="ax-picker-heading">{{title}}</div>
                 {{/title}}
                 <div class="ax-picker-body">
-                    <div class="ax-picker-contents" data-modal-els="contents" style="width:{{contentWidth}}px;"></div>
+                    <div class="ax-picker-contents" data-picker-els="contents" style="width:{{contentWidth}}px;"></div>
                     {{#btns}}
                         <div class="ax-picker-buttons">
                         {{#btns}}
                             {{#@each}}
-                            <button data-ax-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
+                            <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
                             {{/@each}}
                         {{/btns}}
                         </div>
@@ -189,19 +199,21 @@
             `;
         };
 
-        this.setContentValue = function (bindId, inputIndex, val) {
+        this.setContentValue = function (boundID, inputIndex, val) {
             var opts = this.queue[ax5.util.search(this.queue, function () {
-                return this.id == bindId;
+                return this.id == boundID;
             })];
             if (opts) {
                 jQuery(opts.$target.find('input[type="text"]').get(inputIndex)).val(val);
-
                 if (opts.inputLength == 1) {
                     this.close();
                 }
             }
         };
 
+        /**
+         * need to user call method
+         */
         this.open = (function () {
 
             var pickerContent = {
@@ -238,7 +250,13 @@
                     // calendar bind
                     pickerContents.find('[data-calendar-target]').each(function (idx) {
                         // calendarConfig extend ~
-                        calendarConfig.displayDate = ax5.util.date(opts.$target.find('input[type="text"]').get(idx).value);
+                        var
+                            dValue = opts.$target.find('input[type="text"]').get(idx).value,
+                            d = ax5.util.date(dValue)
+                            ;
+
+                        calendarConfig.displayDate = d;
+                        if (dValue) calendarConfig.selection = [d];
                         calendarConfig = jQuery.extend(true, calendarConfig, opts.content.config || {});
                         calendarConfig.target = this;
                         calendarConfig.onClick = function () {
@@ -251,16 +269,42 @@
                 }
             };
 
-            return function (opts, optIdx) {
-
-                if (this.activePicker) {
-                    return this;
-                    this.activePicker.remove();
-                    this.activePicker = null;
+            return function (opts, optIdx, tryCount) {
+                /**
+                 * open picker from the outside
+                 */
+                if(U.isString(opts) && typeof optIdx == "undefined"){
+                    optIdx = ax5.util.search(this.queue, function () {
+                        return this.id == opts;
+                    })
+                    opts = this.queue[optIdx];
+                    if(optIdx == -1) {
+                        console.log(ax5.info.getError("ax5picker", "402", "open"));
+                        return this;
+                    }
                 }
-                this.activePicker = jQuery(ax5.mustache.render(this.getTmpl(opts, optIdx), opts));
+
+                /**
+                    다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문
+
+                 */
+                if(this.openTimer) clearTimeout(this.openTimer);
+                if (this.activePicker) {
+                    if(this.activePickerQueueIndex == optIdx){
+                        return this;
+                    }
+
+                    if(tryCount > 2) return this;
+                    this.close();
+                    this.openTimer = setTimeout((function () {
+                        this.open(opts, optIdx, (tryCount||0) + 1);
+                    }).bind(this), cfg.animateTime);
+                    return this;
+                }
+
+                this.activePicker = jQuery(ax5.mustache.render(this.__getTmpl(opts, optIdx), opts));
                 this.activePickerQueueIndex = optIdx;
-                var pickerContents = this.activePicker.find('[data-modal-els="contents"]');
+                var pickerContents = this.activePicker.find('[data-picker-els="contents"]');
 
                 if (U.isFunction(opts.content)) {
                     // 함수타입
@@ -278,11 +322,41 @@
                     }
                 }
 
-                self.__alignPicker("append");
+                // bind event picker btns
+                this.activePicker.find("[data-picker-btn]").on(cfg.clickEventName, (function (e) {
+                    this.__onBtnClick(e || window.event, opts, optIdx);
+                }).bind(this));
 
-                // unbind close
+                self.__alignPicker("append");
                 jQuery(window).bind("resize.ax5picker", function () {
                     self.__alignPicker();
+                });
+
+                // bind key event
+                jQuery(window).bind("keyup.ax5picker", function (e) {
+                    e = e || window.event;
+                    self.__onBodyKeyup(e);
+                    try {
+                        if (e.preventDefault) e.preventDefault();
+                        if (e.stopPropagation) e.stopPropagation();
+                        e.cancelBubble = true;
+                    } catch (e) {
+
+                    }
+                    return false;
+                });
+
+                jQuery(window).bind("click.ax5picker", function (e) {
+                    e = e || window.event;
+                    self.__onBodyClick(e);
+                    try {
+                        if (e.preventDefault) e.preventDefault();
+                        if (e.stopPropagation) e.stopPropagation();
+                        e.cancelBubble = true;
+                    } catch (e) {
+
+                    }
+                    return false;
                 });
 
                 return this;
@@ -290,6 +364,7 @@
         })();
 
         this.close = function () {
+            if(this.closeTimer) clearTimeout(this.closeTimer);
             if (!this.activePicker) return this;
 
             var
@@ -298,9 +373,11 @@
 
             this.activePicker.addClass("destroy");
             jQuery(window).unbind("resize.ax5picker");
+            jQuery(window).unbind("click.ax5picker");
+            jQuery(window).unbind("keyup.ax5picker");
 
-            setTimeout((function () {
-                this.activePicker.remove();
+            this.closeTimer = setTimeout((function () {
+                if (this.activePicker) this.activePicker.remove();
                 this.activePicker = null;
                 this.activePickerQueueIndex = -1;
                 if (opts && opts.onStateChanged) {
@@ -313,6 +390,7 @@
 
             return this;
         };
+
 
         /* private */
         this.__alignPicker = function (append) {
@@ -368,6 +446,71 @@
                         }
                     }
                 }).call(this));
+        };
+
+        this.__onBodyClick = function (e, target) {
+            if (!this.activePicker) return this;
+
+            var
+                opts = this.queue[this.activePickerQueueIndex]
+                ;
+
+            target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-picker-els"))
+                {
+                    return true;
+                }
+                else if (opts.$target.get(0) == target) {
+                    return true;
+                }
+            });
+            if (!target)
+            {
+                //console.log("i'm not picker");
+                this.close();
+                return this;
+            }
+            //console.log("i'm picker");
+            return this;
+        };
+
+        this.__onBtnClick = function(e, target){
+            // console.log('btn click');
+            if (e.srcElement) e.target = e.srcElement;
+
+            target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-picker-btn")) {
+                    return true;
+                }
+            });
+
+            if (target) {
+                var
+                    that,
+                    opts = this.queue[this.activePickerQueueIndex]
+                    ;
+
+                k = target.getAttribute("data-picker-btn");
+
+                if (opts.btns && opts.btns[k].onClick) {
+                    that = {
+                        key: k,
+                        value: opts.btns[k],
+                        self: this,
+                        boundObject: opts
+                    };
+                    opts.btns[k].onClick.call(that, k);
+                }
+                else{
+                    this.close();
+                }
+            }
+        };
+
+        this.__onBodyKeyup = function(e){
+            if (e.keyCode == ax5.info.eventKeys.ESC) {
+                this.close();
+            }
         };
 
         // 클래스 생성자

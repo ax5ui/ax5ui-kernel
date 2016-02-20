@@ -2,7 +2,7 @@
 	box-sizing: $ax5picker-box-model;
 
 	z-index: $ax5picker-z-index;
-	position: fixed;
+	position: absolute;
 	left: 0px;
 	top: 0px;
 	//overflow: hidden;
@@ -34,6 +34,8 @@
 		padding: $ax5picker-body-padding;
 		text-align: center;
 		.ax-picker-contents {
+			min-width: 50px;
+
 			.ax-picker-content-box {
 				border: $ax5picker-content-border;
 				border-color: $ax5picker-content-border-color;

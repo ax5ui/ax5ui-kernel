@@ -1,9 +1,10 @@
-<tmpl-metadata parentId="demo" parentTitle="Demo" sort="1" id="basic" title="Picker Basic" desc="" />
+<tmpl-metadata parentId="demo" parentTitle="Demo" sort="1" id="basic" title="Picker Basic" desc=""/>
 
 <layout-use template="${data.layoutPath}"
             project-name="${data.projectName}"
             parent-id="${data.metadata.parentId}" page-title="${data.metadata.title}" page-id="${data.metadata.id}"
             body-style="sub-page" with-menu="true">
+
     <layout-put into="docs-menu">
         <ax5docs-get-sub-list projectName="${data.projectName}" parentId="${data.metadata.parentId}" activeId="${data.metadata.id}"></ax5docs-get-sub-list>
     </layout-put>
@@ -11,37 +12,58 @@
         <include template="../_inc/include.html" id="demo-visual"/>
     </layout-put>
     <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css"/>
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.css"/>
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.min.js"></script>
     </layout-put>
     <layout-put into="body">
 
+
         <!-- doc-js Basic Alert -->
         <section class="ax5docs-section">
-            <h1>Picker Basic</h1>
+            <ax5docs-md>
+                # Picker Basic
 
-            <p>
-                ax5picker creates a dialog by extending the argument to be passed to the alert method to the attributes defined in setConfig, then delivered to the user.<br/>
-                how to call the dialog is, <code>alert</code>, <code>confirm</code> and <code>prompt</code>, we will introduce the basic use of alert in it.
-            </p>
+                > picker will be able to enter a value for the input element through the other UI.
 
-            <button class="btn btn-default" type="button" id="alert-open">Alert</button>
-            <button class="btn btn-default" type="button" id="alert-close">Alert Close</button>
+                The "content.type of picker" can be pre-used as such defined "date".
+                Or to define the "content" to "Function", you can define the "picker's content".
+            </ax5docs-md>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group" data-ax5picker="basic">
+                        <input type="text" class="form-control" placeholder="" />
+                        <span class="input-group-addon"><i class="fa fa-calculator"></i></span>
+                    </div>
+                </div>
+            </div>
 
             <ax5docs-js run="true">
                 <script type="text/javascript">
+                    var picker = new ax5.ui.picker();
+
                     $(document.body).ready(function () {
+
+                        picker.bind({
+                            target: $('[data-ax5picker="basic"]'),
+                            direction: "top",
+                            contentWidth: 200,
+                            content: function (callBack) {
+                                var html = ''
+                                        + '가나다라마바사'
+                                        + '<div style="padding: 10px;">'
+                                        + '<button class="btn btn-default">기능 1</button>'
+                                        + '</div>'
+                                    ;
+                                callBack(html);
+                            }
+                        });
 
                     });
                 </script>
             </ax5docs-js>
 
-
-            <p>
-                In the example, we introduce the basic use to output a alert dialog using <code>dialog.alert</code>.<br/>
-                However, you can not completely stopping the operation of the application as window.alert in dialog.alert.<br/>
-                If after the alert, user clicks the [OK] button, you need to pass an anonymous function as the second argument of the alert if there is a need of any such actions.
-            </p>
 
         </section>
 
@@ -49,4 +71,5 @@
     <layout-put into="page-js">
 
     </layout-put>
+
 </layout-use>

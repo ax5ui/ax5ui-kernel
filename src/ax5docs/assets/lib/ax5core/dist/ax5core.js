@@ -142,22 +142,7 @@
          * 세번째 자리수 옵션
          * @member {Object} ax5.info.errorMsg
          */
-        var errorMsg = {
-            "ax5dialog": {
-                "501": "Duplicate call error"
-            },
-            "ax5picker": {
-                "401": "Can not find target element",
-                "501": "Can not find content key"
-            },
-            "single-uploader": {
-                "460": "There are no files to be uploaded.",
-                "461": "There is no uploaded files."
-            },
-            "ax5calendar": {
-                "401": "Can not find target element"
-            }
-        };
+        var errorMsg = {};
 
         /**
          * 현재 페이지의 Url 정보를 리턴합니다.
@@ -1678,7 +1663,7 @@
                     return !result;
                 })())
                 {
-                    if (_target.parentNode) {
+                    if (_target.parentNode && _target.parentNode.parentNode) {
                         _target = _target.parentNode;
                     }
                     else {
@@ -1798,6 +1783,28 @@
     })(); // ax5.ui에 연결
 
 }).call(window);
+/**
+ * Created by tom on 16. 2. 15..
+ */
+
+ax5.info.errorMsg["ax5dialog"] = {
+    "501": "Duplicate call error"
+};
+
+ax5.info.errorMsg["ax5picker"] = {
+    "401": "Can not find target element",
+    "402": "Can not find boundID",
+    "501": "Can not find content key"
+};
+
+ax5.info.errorMsg["single-uploader"] = {
+    "460": "There are no files to be uploaded.",
+    "461": "There is no uploaded files."
+};
+
+ax5.info.errorMsg["ax5calendar"] = {
+    "401": "Can not find target element"
+};
 // 필수 Ployfill 확장 구문
 (function () {
     'use strict';

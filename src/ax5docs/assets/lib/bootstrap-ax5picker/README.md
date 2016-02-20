@@ -7,6 +7,7 @@
 > * _[jQuery 1.X+](http://jquery.com/)_
 > * _[ax5core](http://ax5.io/ax5core)_
 > * _[bootstrap](http://getbootstrap.com/)_
+> * _[ax5calendar](http://ax5.io/ax5calendar)_
 
 
 ### Install by bower
@@ -39,17 +40,31 @@ exactly the path.
         <script type="text/javascript" src="bower_components/bootstrap-ax5picker/dist/ax5picker.min.js"></script>
     </head>
 <body>
-....
+    <div class="input-group" id="pickerTarget">
+        <input type="text" class="form-control" placeholder="" />
+        <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+    </div>
 </body>
 </html>
 ```
 
 ### Basic Usages
 ```js
-var myPicker = new ax5.ui.picker({
-
+var picker = new ax5.ui.picker();
+picker.bind({
+    target: $("#pickerTarget"),
+    direction: "top",
+    contentWidth: 200,
+    content: function (callBack) {
+        var html = ''
+                + 'picker contents'
+                + '<div style="padding: 10px;">'
+                + '<button class="btn btn-default">FN 1</button>'
+                + '</div>'
+            ;
+        callBack(html);
+    }
 });
-
 ```
 
 ***
@@ -61,6 +76,7 @@ In npm, so pile on the package manager for the front end, you need to solve the 
 ```sh
 npm install jquery
 npm install ax5core
+npm install bootstrap-ax5calendar
 npm install bootstrap-ax5picker
 ```
 

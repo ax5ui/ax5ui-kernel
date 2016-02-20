@@ -1,11 +1,13 @@
 
 
 
+
     
     
     
     
     
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,6 +39,7 @@
 
 	
 	
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css">
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.css">
         <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.min.js"></script>
     
@@ -129,34 +132,69 @@
 				<div class="col-md-9">
 					
 
+
         
         <section class="ax5docs-section">
             <h1>Picker Basic</h1>
+<blockquote>
+<p>picker will be able to enter a value for the input element through the other UI.</p>
+</blockquote>
+<p>The &quot;content.type of picker&quot; can be pre-used as such defined &quot;date&quot;.
+Or to define the &quot;content&quot; to &quot;Function&quot;, you can define the &quot;picker's content&quot;.</p>
 
-            <p>
-                ax5picker creates a dialog by extending the argument to be passed to the alert method to the attributes defined in setConfig, then delivered to the user.<br>
-                how to call the dialog is, <code>alert</code>, <code>confirm</code> and <code>prompt</code>, we will introduce the basic use of alert in it.
-            </p>
 
-            <button class="btn btn-default" type="button" id="alert-open">Alert</button>
-            <button class="btn btn-default" type="button" id="alert-close">Alert Close</button>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group" data-ax5picker="basic">
+                        <input type="text" class="form-control" placeholder>
+                        <span class="input-group-addon"><i class="fa fa-calculator"></i></span>
+                    </div>
+                </div>
+            </div>
 
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    var picker = new ax5.ui.picker();
+
     $(document.body).ready(function () {
 
+        picker.bind({
+            target: $('[data-ax5picker="basic"]'),
+            direction: "top",
+            contentWidth: 200,
+            content: function (callBack) {
+                var html = ''
+                        + '가나다라마바사'
+                        + '&lt;div style="padding: 10px;">'
+                        + '&lt;button class="btn btn-default">기능 1&lt;/button>'
+                        + '&lt;/div>'
+                    ;
+                callBack(html);
+            }
+        });
+
     });
-&lt;/script></pre><script type="text/javascript">
+&lt;/script></pre><script type="text/javascript">var picker = new ax5.ui.picker();
+
     $(document.body).ready(function () {
+
+        picker.bind({
+            target: $('[data-ax5picker="basic"]'),
+            direction: "top",
+            contentWidth: 200,
+            content: function (callBack) {
+                var html = ''
+                        + '가나다라마바사'
+                        + '<div style="padding: 10px;">'
+                        + '<button class="btn btn-default">기능 1</button>'
+                        + '</div>'
+                    ;
+                callBack(html);
+            }
+        });
 
     });
 </script></script>
 
-
-            <p>
-                In the example, we introduce the basic use to output a alert dialog using <code>dialog.alert</code>.<br>
-                However, you can not completely stopping the operation of the application as window.alert in dialog.alert.<br>
-                If after the alert, user clicks the [OK] button, you need to pass an anonymous function as the second argument of the alert if there is a need of any such actions.
-            </p>
 
         </section>
 

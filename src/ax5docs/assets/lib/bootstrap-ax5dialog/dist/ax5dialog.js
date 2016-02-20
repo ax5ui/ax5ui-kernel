@@ -206,7 +206,7 @@
                 U.each(opts.input, function (k, v) {
                     po.push('<div class="form-group">');
                     if(this.label) po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
-                    po.push('    <input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="form-control ' + (this.theme || "") + '" data-ax-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
+                    po.push('    <input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="form-control ' + (this.theme || "") + '" data-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
                     if(this.help) {
                         po.push('    <p class="help-block">' + this.help.replace(/\n/g, "<br/>") + '</p>');
                     }
@@ -218,7 +218,7 @@
             po.push('<div class="ax-dialog-buttons">');
             po.push('<div class="ax-button-wrap">');
             U.each(opts.btns, function (k, v) {
-                po.push('<button type="button" data-ax-dialog-btn="' + k + '" class="btn btn-' + (this.theme||"default") + '">' + this.label + '</button>');
+                po.push('<button type="button" data-dialog-btn="' + k + '" class="btn btn-' + (this.theme||"default") + '">' + this.label + '</button>');
             });
             po.push('</div>');
             po.push('</div>');
@@ -261,27 +261,28 @@
 
             // bind button event
             if (opts.dialogType === "prompt") {
-                this.activeDialog.find("[data-ax-dialog-prompt]").get(0).focus();
+                this.activeDialog.find("[data-dialog-prompt]").get(0).focus();
             }
             else {
-                this.activeDialog.find("[data-ax-dialog-btn]").get(0).focus();
+                this.activeDialog.find("[data-dialog-btn]").get(0).focus();
             }
 
-            this.activeDialog.find("[data-ax-dialog-btn]").on(cfg.clickEventName, (function (e) {
+            this.activeDialog.find("[data-dialog-btn]").on(cfg.clickEventName, (function (e) {
                 this.btnOnClick(e || window.event, opts, callBack);
             }).bind(this));
 
             // bind key event
-            jQuery(window).bind("keydown.ax-dialog", (function (e) {
+            jQuery(window).bind("keydown.ax5dialog", (function (e) {
                 this.onKeyup(e || window.event, opts, callBack);
             }).bind(this));
 
-            jQuery(window).bind("resize.ax-dialog", (function (e) {
+            jQuery(window).bind("resize.ax5dialog", (function (e) {
                 this.align(e || window.event);
             }).bind(this));
 
             if (opts && opts.onStateChanged) {
                 that = {
+                    self: this,
                     state: "open"
                 };
                 opts.onStateChanged.call(that, that);
@@ -313,15 +314,16 @@
             if (e.srcElement) e.target = e.srcElement;
 
             target = U.findParentNode(e.target, function (target) {
-                if (target.getAttribute("data-ax-dialog-btn")) {
+                if (target.getAttribute("data-dialog-btn")) {
                     return true;
                 }
             });
 
             if (target) {
-                k = target.getAttribute("data-ax-dialog-btn");
+                k = target.getAttribute("data-dialog-btn");
 
                 var that = {
+                    self: this,
                     key: k, value: opts.btns[k],
                     dialogId: opts.id,
                     btnTarget: target
@@ -329,7 +331,7 @@
                 if (opts.dialogType === "prompt") {
                     var emptyKey = null;
                     for (var oi in opts.input) {
-                        that[oi] = this.activeDialog.find('[data-ax-dialog-prompt=' + oi + ']').val();
+                        that[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
                         if (that[oi] == "" || that[oi] == null) {
                             emptyKey = oi;
                             break;
@@ -350,7 +352,7 @@
                 else if (opts.dialogType === "prompt") {
                     if (k === 'ok') {
                         if (emptyKey) {
-                            this.activeDialog.find('[data-ax-dialog-prompt="' + emptyKey + '"]').get(0).focus();
+                            this.activeDialog.find('[data-dialog-prompt="' + emptyKey + '"]').get(0).focus();
                             return false;
                         }
                     }
@@ -367,13 +369,14 @@
             if (opts.dialogType === "prompt") {
                 if (e.keyCode == ax5.info.eventKeys.RETURN) {
                     var that = {
+                        self: this,
                         key: k, value: opts.btns[k],
                         dialogId: opts.id,
                         btnTarget: target
                     };
                     var emptyKey = null;
                     for (var oi in opts.input) {
-                        that[oi] = this.activeDialog.find('[data-ax-dialog-prompt=' + oi + ']').val();
+                        that[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
                         if (that[oi] == "" || that[oi] == null) {
                             emptyKey = oi;
                             break;
@@ -399,14 +402,15 @@
             if (this.activeDialog) {
                 opts = self.dialogConfig;
                 this.activeDialog.addClass("destroy");
-                jQuery(window).unbind("keydown.ax-dialog");
-                jQuery(window).unbind("resize.ax-dialog");
+                jQuery(window).unbind("keydown.ax5dialog");
+                jQuery(window).unbind("resize.ax5dialog");
 
                 setTimeout((function () {
                     this.activeDialog.remove();
                     this.activeDialog = null;
                     if (opts && opts.onStateChanged) {
                         that = {
+                            self: this,
                             state: "close"
                         };
                         opts.onStateChanged.call(that, that);
