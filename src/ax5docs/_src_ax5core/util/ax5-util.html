@@ -1,25 +1,15 @@
-<tmpl-metadata>
-    <parent></parent>
-    <sort>2</sort>
+<tmpl-metadata parentId="" parentTitle="" sort="3" id="ax5.util" title="ax5.util" desc="" />
 
-    <id>ax5.util</id>
-    <title>ax5.util</title>
-    <desc></desc>
-</tmpl-metadata>
-
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="ax5.util" page-id="ax5.util"
-            body-style="sub-page" with-inline-menu="true">
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="${data.metadata.title}" page-id="${data.metadata.id}" body-style="sub-page" with-inline-menu="true">
     <layout-put into="visual">
-
         <div class="contents">
             <div class="style-sub-visual">
-                <div class="title">ax5.util</div>
+                <div class="title">${data.metadata.title}</div>
                 <div class="description">"ax5core" is a utility for creating AX5UI Library. need to install on your
                     browser.
                 </div>
             </div>
         </div>
-
     </layout-put>
     <layout-put into="body">
 

@@ -1,24 +1,14 @@
-<tmpl-metadata>
-    <parent></parent>
-    <sort>3</sort>
+<tmpl-metadata parentId="" parentTitle="" sort="3" id="ax5.mustache" title="ax5.mustache" desc="" />
 
-    <id>ax5.mustache</id>
-    <title>ax5.mustache</title>
-    <desc></desc>
-</tmpl-metadata>
-
-<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="ax5.mustache" page-id="ax5.mustache"
-            body-style="sub-page" with-inline-menu="true">
+<layout-use template="${data.layoutPath}" project-name="${data.projectName}" page-title="${data.metadata.title}" page-id="${data.metadata.id}" body-style="sub-page" with-inline-menu="true">
     <layout-put into="visual">
-
         <div class="contents">
             <div class="style-sub-visual">
-                <div class="title">ax5.mustache</div>
+                <div class="title">${data.metadata.title}</div>
                 <div class="description">this version added only a few of the key and function in the <b>mustache</b>.
                 </div>
             </div>
         </div>
-
     </layout-put>
     <layout-put into="body">
 
