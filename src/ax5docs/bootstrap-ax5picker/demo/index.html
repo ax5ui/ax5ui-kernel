@@ -41,7 +41,7 @@
 	
         <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css">
         <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.css">
-        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.min.js"></script>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.js"></script>
     
 </head>
 <body>
@@ -145,6 +145,7 @@ Or to define the &quot;content&quot; to &quot;Function&quot;, you can define the
 
             <div class="row">
                 <div class="col-md-6">
+                    <label>Area</label>
                     <div class="input-group" data-ax5picker="basic">
                         <input type="text" class="form-control" placeholder>
                         <span class="input-group-addon"><i class="fa fa-calculator"></i></span>
@@ -160,15 +161,30 @@ Or to define the &quot;content&quot; to &quot;Function&quot;, you can define the
         picker.bind({
             target: $('[data-ax5picker="basic"]'),
             direction: "top",
-            contentWidth: 200,
+            contentWidth: 280,
             content: function (callBack) {
                 var html = ''
-                        + '가나다라마바사'
-                        + '&lt;div style="padding: 10px;">'
-                        + '&lt;button class="btn btn-default">기능 1&lt;/button>'
-                        + '&lt;/div>'
+                    +'&lt;form style="padding:0 5px;">'
+                        +'&lt;div class="form-group">'
+                            +'&lt;label for="exampleInputWidth">Width&lt;/label>'
+                            +'&lt;input type="number" class="form-control" id="exampleInputWidth" placeholder="">'
+                        +'&lt;/div>'
+                        +'&lt;div class="form-group">'
+                            +'&lt;label for="exampleInputHeight">Height&lt;/label>'
+                            +'&lt;input type="number" class="form-control" id="exampleInputHeight" placeholder="">'
+                        +'&lt;/div>'
+                    +'&lt;/form>'
                     ;
                 callBack(html);
+            },
+            btns: {
+                ok: {label: "Calculate", theme: "btn-primary", onClick: function () {
+
+                    /*
+                    this.self.setContentValue(this.boundObject.id, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                    this.self.close();
+                    */
+                }}
             }
         });
 
@@ -180,15 +196,30 @@ Or to define the &quot;content&quot; to &quot;Function&quot;, you can define the
         picker.bind({
             target: $('[data-ax5picker="basic"]'),
             direction: "top",
-            contentWidth: 200,
+            contentWidth: 280,
             content: function (callBack) {
                 var html = ''
-                        + '가나다라마바사'
-                        + '<div style="padding: 10px;">'
-                        + '<button class="btn btn-default">기능 1</button>'
-                        + '</div>'
+                    +'<form style="padding:0 5px;">'
+                        +'<div class="form-group">'
+                            +'<label for="exampleInputWidth">Width</label>'
+                            +'<input type="number" class="form-control" id="exampleInputWidth" placeholder="">'
+                        +'</div>'
+                        +'<div class="form-group">'
+                            +'<label for="exampleInputHeight">Height</label>'
+                            +'<input type="number" class="form-control" id="exampleInputHeight" placeholder="">'
+                        +'</div>'
+                    +'</form>'
                     ;
                 callBack(html);
+            },
+            btns: {
+                ok: {label: "Calculate", theme: "btn-primary", onClick: function () {
+
+                    /*
+                    this.self.setContentValue(this.boundObject.id, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                    this.self.close();
+                    */
+                }}
             }
         });
 

@@ -487,10 +487,9 @@
             if (target) {
                 var
                     that,
-                    opts = this.queue[this.activePickerQueueIndex]
+                    opts = this.queue[this.activePickerQueueIndex],
+                    k = target.getAttribute("data-picker-btn")
                     ;
-
-                k = target.getAttribute("data-picker-btn");
 
                 if (opts.btns && opts.btns[k].onClick) {
                     that = {
