@@ -34,7 +34,7 @@
                 <div class="col-md-6">
                     <label>Area</label>
                     <div class="input-group" data-ax5picker="basic">
-                        <input type="text" class="form-control" placeholder="" />
+                        <input type="text" class="form-control" placeholder=""/>
                         <span class="input-group-addon"><i class="fa fa-calculator"></i></span>
                     </div>
                 </div>
@@ -52,27 +52,36 @@
                             contentWidth: 280,
                             content: function (callBack) {
                                 var html = ''
-                                    +'<form style="padding:0 5px;">'
-                                        +'<div class="form-group">'
-                                            +'<label for="exampleInputWidth">Width</label>'
-                                            +'<input type="number" class="form-control" id="exampleInputWidth" placeholder="">'
-                                        +'</div>'
-                                        +'<div class="form-group">'
-                                            +'<label for="exampleInputHeight">Height</label>'
-                                            +'<input type="number" class="form-control" id="exampleInputHeight" placeholder="">'
-                                        +'</div>'
-                                    +'</form>'
+                                        + '<form style="padding:0 5px;">'
+                                        + '<div class="form-group">'
+                                        + '<label for="exampleInputWidth">Width</label>'
+                                        + '<input type="number" class="form-control" id="exampleInputWidth" placeholder="width" value="10">'
+                                        + '</div>'
+                                        + '<div class="form-group">'
+                                        + '<label for="exampleInputHeight">Height</label>'
+                                        + '<input type="number" class="form-control" id="exampleInputHeight" placeholder="height" value="10">'
+                                        + '</div>'
+                                        + '</form>'
                                     ;
                                 callBack(html);
                             },
+                            onStateChanged: function(){
+                                if(this.state == "open"){
+                                    // ..
+                                    console.log(this);
+                                }
+                            },
                             btns: {
-                                ok: {label: "Calculate", theme: "btn-primary", onClick: function () {
+                                ok: {
+                                    label: "Calculate", theme: "btn-primary", onClick: function () {
 
-                                    /*
-                                    this.self.setContentValue(this.boundObject.id, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
-                                    this.self.close();
-                                    */
-                                }}
+                                        var w = this.boundObject.pickerContent.find("#exampleInputWidth").val() || 1;
+                                        var h = this.boundObject.pickerContent.find("#exampleInputHeight").val() || 1;
+                                        this.self.setContentValue(this.boundObject.id, 0, w * h);
+                                        this.self.close();
+
+                                    }
+                                }
                             }
                         });
 

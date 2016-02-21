@@ -102,7 +102,7 @@
                         inputLength: inputLength
                     };
 
-                    if(inputLength > 1){
+                    if (inputLength > 1) {
                         config.btns = {
                             ok: {label: cfg.lang["ok"], theme: cfg.theme}
                         };
@@ -129,7 +129,7 @@
                         inputLength: inputLength
                     };
 
-                    if(inputLength > 1 && !opts.btns){
+                    if (inputLength > 1 && !opts.btns) {
                         config.btns = {
                             ok: {label: cfg.lang["ok"], theme: cfg.theme}
                         };
@@ -223,7 +223,7 @@
                     });
                     return true;
                 },
-                'date': function (opts, optIdx, pickerContents) {
+                'date': function (opts, optIdx) {
 
                     var html = [];
                     for (var i = 0; i < opts.inputLength; i++) {
@@ -234,7 +234,7 @@
                         if (i < opts.inputLength - 1) html.push('<div style="width:' + opts.content.margin + 'px;float:left;height: 5px;"></div>');
                     }
                     html.push('<div style="clear:both;"></div>');
-                    pickerContents.html(html.join(''));
+                    opts.pickerContent.html(html.join(''));
 
                     var calendarConfig = {
                         displayDate: (new Date()),
@@ -248,7 +248,7 @@
                     };
 
                     // calendar bind
-                    pickerContents.find('[data-calendar-target]').each(function (idx) {
+                    opts.pickerContent.find('[data-calendar-target]').each(function (idx) {
                         // calendarConfig extend ~
                         var
                             dValue = opts.$target.find('input[type="text"]').get(idx).value,
@@ -270,53 +270,54 @@
             };
 
             return function (opts, optIdx, tryCount) {
+
                 /**
                  * open picker from the outside
                  */
-                if(U.isString(opts) && typeof optIdx == "undefined"){
+                if (U.isString(opts) && typeof optIdx == "undefined") {
                     optIdx = ax5.util.search(this.queue, function () {
                         return this.id == opts;
                     })
                     opts = this.queue[optIdx];
-                    if(optIdx == -1) {
+                    if (optIdx == -1) {
                         console.log(ax5.info.getError("ax5picker", "402", "open"));
                         return this;
                     }
                 }
 
                 /**
-                    다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문
+                 다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문
 
                  */
-                if(this.openTimer) clearTimeout(this.openTimer);
+                if (this.openTimer) clearTimeout(this.openTimer);
                 if (this.activePicker) {
-                    if(this.activePickerQueueIndex == optIdx){
+                    if (this.activePickerQueueIndex == optIdx) {
                         return this;
                     }
 
-                    if(tryCount > 2) return this;
+                    if (tryCount > 2) return this;
                     this.close();
                     this.openTimer = setTimeout((function () {
-                        this.open(opts, optIdx, (tryCount||0) + 1);
+                        this.open(opts, optIdx, (tryCount || 0) + 1);
                     }).bind(this), cfg.animateTime);
                     return this;
                 }
 
                 this.activePicker = jQuery(ax5.mustache.render(this.__getTmpl(opts, optIdx), opts));
                 this.activePickerQueueIndex = optIdx;
-                var pickerContents = this.activePicker.find('[data-picker-els="contents"]');
+                opts.pickerContent = this.activePicker.find('[data-picker-els="contents"]');
 
                 if (U.isFunction(opts.content)) {
                     // 함수타입
-                    pickerContents.html("Loading..");
+                    opts.pickerContent.html("Loading..");
                     pickerContent["@fn"].call(this, opts, optIdx, function (html) {
-                        pickerContents.html(html);
+                        opts.pickerContent.html(html);
                     });
                 }
                 else {
                     for (var key in pickerContent) {
                         if (opts.content.type == key) {
-                            pickerContent[key].call(this, opts, optIdx, pickerContents);
+                            pickerContent[key].call(this, opts, optIdx);
                             break;
                         }
                     }
@@ -359,12 +360,21 @@
                     return false;
                 });
 
+                if (opts && opts.onStateChanged) {
+                    var that = {
+                        state: "open",
+                        self: this,
+                        boundObject: opts
+                    };
+                    opts.onStateChanged.call(that, that);
+                }
+
                 return this;
             };
         })();
 
         this.close = function () {
-            if(this.closeTimer) clearTimeout(this.closeTimer);
+            if (this.closeTimer) clearTimeout(this.closeTimer);
             if (!this.activePicker) return this;
 
             var
@@ -381,7 +391,7 @@
                 this.activePicker = null;
                 this.activePickerQueueIndex = -1;
                 if (opts && opts.onStateChanged) {
-                    that = {
+                    var that = {
                         state: "close"
                     };
                     opts.onStateChanged.call(that, that);
@@ -390,7 +400,6 @@
 
             return this;
         };
-
 
         /* private */
         this.__alignPicker = function (append) {
@@ -474,7 +483,7 @@
             return this;
         };
 
-        this.__onBtnClick = function(e, target){
+        this.__onBtnClick = function (e, target) {
             // console.log('btn click');
             if (e.srcElement) e.target = e.srcElement;
 
@@ -486,13 +495,12 @@
 
             if (target) {
                 var
-                    that,
                     opts = this.queue[this.activePickerQueueIndex],
                     k = target.getAttribute("data-picker-btn")
                     ;
 
                 if (opts.btns && opts.btns[k].onClick) {
-                    that = {
+                    var that = {
                         key: k,
                         value: opts.btns[k],
                         self: this,
@@ -500,13 +508,13 @@
                     };
                     opts.btns[k].onClick.call(that, k);
                 }
-                else{
+                else {
                     this.close();
                 }
             }
         };
 
-        this.__onBodyKeyup = function(e){
+        this.__onBodyKeyup = function (e) {
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
             }
