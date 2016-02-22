@@ -134,10 +134,10 @@ for (var k in PATHS) {
                 gulp.src(PATHS[k].src + '/*.js')
                     .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(concat(__p.js + '.js'))
-                    .pipe(gulp.dest(PATHS[k].dest))
                     .pipe(babel({
                         presets: ['es2015']
                     }))
+                    .pipe(gulp.dest(PATHS[k].dest))
                     .pipe(concat(__p.js + '.min.js'))
                     .pipe(uglify())
                     .pipe(gulp.dest(PATHS[k].dest));

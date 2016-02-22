@@ -1,3 +1,5 @@
+'use strict';
+
 // ax5.ui.picker
 (function (root, _SUPER_) {
 
@@ -16,9 +18,8 @@
     var U = ax5.util;
 
     //== UI Class
-    var axClass = function () {
-        var
-            self = this,
+    var axClass = function axClass() {
+        var self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -50,9 +51,7 @@
          * ```
          * ```
          */
-        this.init = function () {
-
-        };
+        this.init = function () {};
 
         this.bind = function (opts) {
             var pickerConfig = {};
@@ -71,9 +70,8 @@
             }
 
             if (U.search(this.queue, function () {
-                    return this.id == opts.id;
-                }) === -1)
-            {
+                return this.id == opts.id;
+            }) === -1) {
                 this.queue.push(opts);
                 this.__bindPickerTarget(opts, this.queue.length - 1);
             }
@@ -81,21 +79,20 @@
             return this;
         };
 
-        this.__bindPickerTarget = (function () {
+        this.__bindPickerTarget = function () {
 
             var pickerEvent = {
-                'focus': function (opts, optIdx, e) {
+                'focus': function focus(opts, optIdx, e) {
                     this.open(opts, optIdx);
                 },
-                'click': function (opts, optIdx, e) {
+                'click': function click(opts, optIdx, e) {
                     this.open(opts, optIdx);
                 }
             };
 
             var pickerType = {
-                '@fn': function (opts, optIdx) {
-                    var
-                        config = {},
+                '@fn': function fn(opts, optIdx) {
+                    var config = {},
                         inputLength = opts.$target.find('input[type="text"]').length;
 
                     config = {
@@ -104,24 +101,23 @@
 
                     if (inputLength > 1) {
                         config.btns = {
-                            ok: {label: cfg.lang["ok"], theme: cfg.theme}
+                            ok: { label: cfg.lang["ok"], theme: cfg.theme }
                         };
                     }
 
                     this.queue[optIdx] = jQuery.extend(true, config, opts);
                 },
-                'date': function (opts, optIdx) {
+                'date': function date(opts, optIdx) {
                     // 1. 이벤트 바인딩
                     // 2. ui 준비
 
-                    var
-                        contentWidth = (opts.content) ? opts.content.width || 270 : 270,
-                        contentMargin = (opts.content) ? opts.content.margin || 5 : 5,
+                    var contentWidth = opts.content ? opts.content.width || 270 : 270,
+                        contentMargin = opts.content ? opts.content.margin || 5 : 5,
                         config = {},
                         inputLength = opts.$target.find('input[type="text"]').length;
 
                     config = {
-                        contentWidth: (contentWidth * inputLength) + ((inputLength - 1) * contentMargin),
+                        contentWidth: contentWidth * inputLength + (inputLength - 1) * contentMargin,
                         content: {
                             width: contentWidth,
                             margin: contentMargin
@@ -131,7 +127,7 @@
 
                     if (inputLength > 1 && !opts.btns) {
                         config.btns = {
-                            ok: {label: cfg.lang["ok"], theme: cfg.theme}
+                            ok: { label: cfg.lang["ok"], theme: cfg.theme }
                         };
                     }
 
@@ -148,8 +144,7 @@
                 // 함수타입
                 if (U.isFunction(opts.content)) {
                     pickerType["@fn"].call(this, opts, optIdx);
-                }
-                else {
+                } else {
                     for (var key in pickerType) {
                         if (opts.content.type == key) {
                             pickerType[key].call(this, opts, optIdx);
@@ -158,45 +153,17 @@
                     }
                 }
 
-                opts.$target
-                    .find('input[type="text"]')
-                    .unbind('focus.ax5picker')
-                    .unbind('click.ax5picker')
-                    .bind('focus.ax5picker', pickerEvent.focus.bind(this, this.queue[optIdx], optIdx))
-                    .bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
+                opts.$target.find('input[type="text"]').unbind('focus.ax5picker').unbind('click.ax5picker').bind('focus.ax5picker', pickerEvent.focus.bind(this, this.queue[optIdx], optIdx)).bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
-                opts.$target
-                    .find('.input-group-addon')
-                    .unbind('click.ax5picker')
-                    .bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
+                opts.$target.find('.input-group-addon').unbind('click.ax5picker').bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
                 return this;
-            }
-
-        })();
+            };
+        }();
 
         this.__getTmpl = function (opts, optIdx) {
             // console.log(opts);
-            return `
-            <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">
-                {{#title}}
-                    <div class="ax-picker-heading">{{title}}</div>
-                {{/title}}
-                <div class="ax-picker-body">
-                    <div class="ax-picker-contents" data-picker-els="contents" style="width:{{contentWidth}}px;"></div>
-                    {{#btns}}
-                        <div class="ax-picker-buttons">
-                        {{#btns}}
-                            {{#@each}}
-                            <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
-                            {{/@each}}
-                        {{/btns}}
-                        </div>
-                    {{/btns}}
-                </div>
-                <div class="ax-picker-arrow"></div>
-            </div>
-            `;
+            return '\n            <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n                {{#title}}\n                    <div class="ax-picker-heading">{{title}}</div>\n                {{/title}}\n                <div class="ax-picker-body">\n                    <div class="ax-picker-contents" data-picker-els="contents" style="width:{{contentWidth}}px;"></div>\n                    {{#btns}}\n                        <div class="ax-picker-buttons">\n                        {{#btns}}\n                            {{#@each}}\n                            <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                            {{/@each}}\n                        {{/btns}}\n                        </div>\n                    {{/btns}}\n                </div>\n                <div class="ax-picker-arrow"></div>\n            </div>\n            ';
         };
 
         this.setContentValue = function (boundID, inputIndex, val) {
@@ -214,30 +181,27 @@
         /**
          * need to user call method
          */
-        this.open = (function () {
+        this.open = function () {
 
             var pickerContent = {
-                '@fn': function (opts, optIdx, callBack) {
+                '@fn': function fn(opts, optIdx, callBack) {
                     opts.content.call(opts, function (html) {
                         callBack(html);
                     });
                     return true;
                 },
-                'date': function (opts, optIdx) {
+                'date': function date(opts, optIdx) {
 
                     var html = [];
                     for (var i = 0; i < opts.inputLength; i++) {
-                        html.push('<div '
-                            + 'style="width:' + U.cssNumber(opts.content.width) + ';float:left;" '
-                            + 'class="ax-picker-content-box" '
-                            + 'data-calendar-target="' + i + '"></div>');
+                        html.push('<div ' + 'style="width:' + U.cssNumber(opts.content.width) + ';float:left;" ' + 'class="ax-picker-content-box" ' + 'data-calendar-target="' + i + '"></div>');
                         if (i < opts.inputLength - 1) html.push('<div style="width:' + opts.content.margin + 'px;float:left;height: 5px;"></div>');
                     }
                     html.push('<div style="clear:both;"></div>');
                     opts.pickerContent.html(html.join(''));
 
                     var calendarConfig = {
-                        displayDate: (new Date()),
+                        displayDate: new Date(),
                         control: {
                             left: '<i class="fa fa-chevron-left"></i>',
                             yearTmpl: '%s',
@@ -250,10 +214,8 @@
                     // calendar bind
                     opts.pickerContent.find('[data-calendar-target]').each(function (idx) {
                         // calendarConfig extend ~
-                        var
-                            dValue = opts.$target.find('input[type="text"]').get(idx).value,
-                            d = ax5.util.date(dValue)
-                            ;
+                        var dValue = opts.$target.find('input[type="text"]').get(idx).value,
+                            d = ax5.util.date(dValue);
 
                         calendarConfig.displayDate = d;
                         if (dValue) calendarConfig.selection = [d];
@@ -265,7 +227,6 @@
 
                         new ax5.ui.calendar(calendarConfig);
                     });
-
                 }
             };
 
@@ -277,7 +238,7 @@
                 if (U.isString(opts) && typeof optIdx == "undefined") {
                     optIdx = ax5.util.search(this.queue, function () {
                         return this.id == opts;
-                    })
+                    });
                     opts = this.queue[optIdx];
                     if (optIdx == -1) {
                         console.log(ax5.info.getError("ax5picker", "402", "open"));
@@ -287,8 +248,7 @@
 
                 /**
                  다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문
-
-                 */
+                  */
                 if (this.openTimer) clearTimeout(this.openTimer);
                 if (this.activePicker) {
                     if (this.activePickerQueueIndex == optIdx) {
@@ -297,9 +257,9 @@
 
                     if (tryCount > 2) return this;
                     this.close();
-                    this.openTimer = setTimeout((function () {
+                    this.openTimer = setTimeout(function () {
                         this.open(opts, optIdx, (tryCount || 0) + 1);
-                    }).bind(this), cfg.animateTime);
+                    }.bind(this), cfg.animateTime);
                     return this;
                 }
 
@@ -313,8 +273,7 @@
                     pickerContent["@fn"].call(this, opts, optIdx, function (html) {
                         opts.pickerContent.html(html);
                     });
-                }
-                else {
+                } else {
                     for (var key in pickerContent) {
                         if (opts.content.type == key) {
                             pickerContent[key].call(this, opts, optIdx);
@@ -324,9 +283,9 @@
                 }
 
                 // bind event picker btns
-                this.activePicker.find("[data-picker-btn]").on(cfg.clickEventName, (function (e) {
+                this.activePicker.find("[data-picker-btn]").on(cfg.clickEventName, function (e) {
                     this.__onBtnClick(e || window.event, opts, optIdx);
-                }).bind(this));
+                }.bind(this));
 
                 self.__alignPicker("append");
                 jQuery(window).bind("resize.ax5picker", function () {
@@ -341,9 +300,7 @@
                         if (e.preventDefault) e.preventDefault();
                         if (e.stopPropagation) e.stopPropagation();
                         e.cancelBubble = true;
-                    } catch (e) {
-
-                    }
+                    } catch (e) {}
                     return false;
                 });
 
@@ -354,9 +311,7 @@
                         if (e.preventDefault) e.preventDefault();
                         if (e.stopPropagation) e.stopPropagation();
                         e.cancelBubble = true;
-                    } catch (e) {
-
-                    }
+                    } catch (e) {}
                     return false;
                 });
 
@@ -371,22 +326,20 @@
 
                 return this;
             };
-        })();
+        }();
 
         this.close = function () {
             if (this.closeTimer) clearTimeout(this.closeTimer);
             if (!this.activePicker) return this;
 
-            var
-                opts = this.queue[this.activePickerQueueIndex]
-                ;
+            var opts = this.queue[this.activePickerQueueIndex];
 
             this.activePicker.addClass("destroy");
             jQuery(window).unbind("resize.ax5picker");
             jQuery(window).unbind("click.ax5picker");
             jQuery(window).unbind("keyup.ax5picker");
 
-            this.closeTimer = setTimeout((function () {
+            this.closeTimer = setTimeout(function () {
                 if (this.activePicker) this.activePicker.remove();
                 this.activePicker = null;
                 this.activePickerQueueIndex = -1;
@@ -396,7 +349,7 @@
                     };
                     opts.onStateChanged.call(that, that);
                 }
-            }).bind(this), cfg.animateTime);
+            }.bind(this), cfg.animateTime);
 
             return this;
         };
@@ -405,8 +358,7 @@
         this.__alignPicker = function (append) {
             if (!this.activePicker) return this;
 
-            var
-                opts = this.queue[this.activePickerQueueIndex],
+            var opts = this.queue[this.activePickerQueueIndex],
                 pos = {},
                 dim = {};
 
@@ -425,56 +377,46 @@
             }
 
             if (append) {
-                this.activePicker
-                    .addClass("direction-" + opts.direction);
+                this.activePicker.addClass("direction-" + opts.direction);
             }
-            this.activePicker
-                .css((function () {
-                    if (opts.direction == "top") {
-                        return {
-                            left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
-                            top: pos.top + dim.height + 12
-                        }
-                    }
-                    else if (opts.direction == "bottom") {
-                        return {
-                            left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
-                            top: pos.top - this.activePicker.outerHeight() - 12
-                        }
-                    }
-                    else if (opts.direction == "left") {
-                        return {
-                            left: pos.left + dim.width + 12,
-                            top: pos.top - dim.height / 2
-                        }
-                    }
-                    else if (opts.direction == "right") {
-                        return {
-                            left: pos.left - this.activePicker.outerWidth() - 12,
-                            top: pos.top - dim.height / 2
-                        }
-                    }
-                }).call(this));
+            this.activePicker.css(function () {
+                if (opts.direction == "top") {
+                    return {
+                        left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
+                        top: pos.top + dim.height + 12
+                    };
+                } else if (opts.direction == "bottom") {
+                    return {
+                        left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
+                        top: pos.top - this.activePicker.outerHeight() - 12
+                    };
+                } else if (opts.direction == "left") {
+                    return {
+                        left: pos.left + dim.width + 12,
+                        top: pos.top - dim.height / 2
+                    };
+                } else if (opts.direction == "right") {
+                    return {
+                        left: pos.left - this.activePicker.outerWidth() - 12,
+                        top: pos.top - dim.height / 2
+                    };
+                }
+            }.call(this));
         };
 
         this.__onBodyClick = function (e, target) {
             if (!this.activePicker) return this;
 
-            var
-                opts = this.queue[this.activePickerQueueIndex]
-                ;
+            var opts = this.queue[this.activePickerQueueIndex];
 
             target = U.findParentNode(e.target, function (target) {
-                if (target.getAttribute("data-picker-els"))
-                {
+                if (target.getAttribute("data-picker-els")) {
                     return true;
-                }
-                else if (opts.$target.get(0) == target) {
+                } else if (opts.$target.get(0) == target) {
                     return true;
                 }
             });
-            if (!target)
-            {
+            if (!target) {
                 //console.log("i'm not picker");
                 this.close();
                 return this;
@@ -494,10 +436,8 @@
             });
 
             if (target) {
-                var
-                    opts = this.queue[this.activePickerQueueIndex],
-                    k = target.getAttribute("data-picker-btn")
-                    ;
+                var opts = this.queue[this.activePickerQueueIndex],
+                    k = target.getAttribute("data-picker-btn");
 
                 if (opts.btns && opts.btns[k].onClick) {
                     var that = {
@@ -507,8 +447,7 @@
                         boundObject: opts
                     };
                     opts.btns[k].onClick.call(that, k);
-                }
-                else {
+                } else {
                     this.close();
                 }
             }
@@ -521,17 +460,16 @@
         };
 
         // 클래스 생성자
-        this.main = (function () {
+        this.main = function () {
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
-        }).apply(this, arguments);
+        }.apply(this, arguments);
     };
     //== UI Class
 
-    root.picker = (function () {
+    root.picker = function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
-    })(); // ax5.ui에 연결
-
+    }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);

@@ -494,13 +494,13 @@
             });
 
             if (target) {
-                var
+                let
                     opts = this.queue[this.activePickerQueueIndex],
                     k = target.getAttribute("data-picker-btn")
                     ;
 
                 if (opts.btns && opts.btns[k].onClick) {
-                    var that = {
+                    let that = {
                         key: k,
                         value: opts.btns[k],
                         self: this,
