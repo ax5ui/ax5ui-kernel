@@ -125,7 +125,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5picker/demo/index.html">Picker Basic</a></li></ul>
+        <ul><li  class='active'><a href="/bootstrap-ax5picker/demo/index.html">Picker Basic</a></li><li ><a href="/bootstrap-ax5picker/demo/picker-date.html">Picker Date</a></li></ul>
     
 					</div>
 				</div>
@@ -186,7 +186,7 @@ Or to define the &quot;content&quot; to &quot;Function&quot;, you can define the
             btns: {
                 ok: {
                     label: "Calculate", theme: "btn-primary", onClick: function () {
-
+                        // console.log(this);
                         var w = this.boundObject.pickerContent.find("#exampleInputWidth").val() || 1;
                         var h = this.boundObject.pickerContent.find("#exampleInputHeight").val() || 1;
                         this.self.setContentValue(this.boundObject.id, 0, w * h);
@@ -230,7 +230,7 @@ Or to define the &quot;content&quot; to &quot;Function&quot;, you can define the
             btns: {
                 ok: {
                     label: "Calculate", theme: "btn-primary", onClick: function () {
-
+                        // console.log(this);
                         var w = this.boundObject.pickerContent.find("#exampleInputWidth").val() || 1;
                         var h = this.boundObject.pickerContent.find("#exampleInputHeight").val() || 1;
                         this.self.setContentValue(this.boundObject.id, 0, w * h);
@@ -243,6 +243,19 @@ Or to define the &quot;content&quot; to &quot;Function&quot;, you can define the
 
     });
 </script></script>
+
+            <p>When the user clicks on the <code>btns</code>,<code>onClick</code> is called.
+Contains a variety of objects necessary for programming of the passed <code>onClick &gt; this</code> from <code>picker</code>.
+In the example, we used <code>this.boundObject</code> and <code>this.self</code>.</p>
+<p><strong>onClick &gt; this</strong></p>
+<pre class="prettyprint linenums lang-json"><code>{
+    &quot;self&quot;: [picker class instance],
+    &quot;boundObject&quot;: [Object],
+    &quot;key&quot;: [String], // btns's key
+    &quot;value&quot;: [Object] // btns click object
+}
+</code></pre>
+
 
 
         </section>

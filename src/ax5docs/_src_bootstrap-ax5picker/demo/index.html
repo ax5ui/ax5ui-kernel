@@ -74,7 +74,7 @@
                             btns: {
                                 ok: {
                                     label: "Calculate", theme: "btn-primary", onClick: function () {
-
+                                        // console.log(this);
                                         var w = this.boundObject.pickerContent.find("#exampleInputWidth").val() || 1;
                                         var h = this.boundObject.pickerContent.find("#exampleInputHeight").val() || 1;
                                         this.self.setContentValue(this.boundObject.id, 0, w * h);
@@ -88,6 +88,22 @@
                     });
                 </script>
             </ax5docs-js>
+
+            <ax5docs-md>
+                When the user clicks on the `btns`,` onClick` is called.
+                Contains a variety of objects necessary for programming of the passed `onClick > this` from `picker`.
+                In the example, we used `this.boundObject` and `this.self`.
+
+                **onClick > this**
+                ```json
+                {
+                    "self": [picker class instance],
+                    "boundObject": [Object],
+                    "key": [String], // btns's key
+                    "value": [Object] // btns click object
+                }
+                ```
+            </ax5docs-md>
 
 
         </section>
