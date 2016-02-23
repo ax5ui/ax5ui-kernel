@@ -170,17 +170,52 @@ picker.bind({
 <p>Type: <code>String</code> &quot;top|left|right|bottom|auto&quot;</p>
 <h3>content</h3>
 <p>Type: <code>Function|Object</code></p>
+<ul>
+<li>Function</li>
+</ul>
+<pre class="prettyprint linenums lang-js"><code>function (callBack) {
+    var html = 'HTML CONTENT';
+    callBack(html);
+}
+</code></pre>
+<ul>
+<li>Object</li>
+</ul>
+<pre class="prettyprint linenums lang-js"><code>{
+    width: 270,
+    margin: 10,
+    type: 'date',
+    config: {
+        // calendar UI config
+    }
+}
+</code></pre>
 <h3>contentWidth</h3>
 <p>Type: <code>Number</code></p>
 <p>If the content type of the function, recommended to set this value.</p>
 <h3>btns</h3>
 <p>Type: <code>Object</code></p>
+<pre class="prettyprint linenums lang-js"><code>{
+    ok: {label: &quot;확인&quot;, theme: &quot;default&quot;}
+}
+</code></pre>
 <hr>
 <h2>setContentValue()</h2>
+<p><code>setContentValue(boundObjectId, inputSeq, value)</code></p>
+<h3>boundObjectId</h3>
+<p>Type: <code>String</code></p>
+<p>picker unique id</p>
+<h3>inputSeq</h3>
+<p>.input-group's input seq</p>
 <hr>
 <h2>open()</h2>
+<p><code>open(boundObjectId)</code></p>
+<h3>boundObjectId</h3>
+<p>Type: <code>String</code></p>
+<p>picker unique id</p>
 <hr>
 <h2>close()</h2>
+<p><code>close()</code></p>
 
     
 				</div>

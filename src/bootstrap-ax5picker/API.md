@@ -62,6 +62,25 @@ Type: `String` "top|left|right|bottom|auto"
 
 Type: `Function|Object`
 
+- Function
+```js
+function (callBack) {
+    var html = 'HTML CONTENT';
+    callBack(html);
+}
+```
+- Object
+```js
+{
+    width: 270,
+    margin: 10,
+    type: 'date',
+    config: {
+        // calendar UI config
+    }
+}
+```
+
 ### contentWidth
 
 Type: `Number`
@@ -72,14 +91,42 @@ If the content type of the function, recommended to set this value.
 
 Type: `Object`
 
+```js
+{
+    ok: {label: "확인", theme: "default"}
+}
+```
+
 - - -
 
 ## setContentValue()
+
+`setContentValue(boundObjectId, inputSeq, value)`
+
+### boundObjectId
+
+Type: `String`
+ 
+picker unique id
+
+### inputSeq
+
+.input-group's input seq
 
 - - -
 
 ## open()
 
+`open(boundObjectId)`
+
+### boundObjectId
+
+Type: `String`
+
+picker unique id
+
 - - -
 
 ## close()
+
+`close()`
