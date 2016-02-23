@@ -8,4 +8,5 @@ git subsplit publish --heads="master" --no-tags src/bootstrap-ax5toast:https://g
 git subsplit publish --heads="master" --no-tags src/bootstrap-ax5modal:https://github.com/ax5ui/bootstrap-ax5modal.git
 git subsplit publish --heads="master" --no-tags src/bootstrap-ax5calendar:https://github.com/ax5ui/bootstrap-ax5calendar.git
 git subsplit publish --heads="master" --no-tags src/bootstrap-ax5picker:https://github.com/ax5ui/bootstrap-ax5picker.git
+git subsplit publish --heads="master" --no-tags src/bootstrap-ax5formatter:https://github.com/ax5ui/bootstrap-ax5formatter.git
 rm -rf .subsplit/

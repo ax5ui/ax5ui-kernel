@@ -1,0 +1,60 @@
+<tmpl-metadata parentId="demo" parentTitle="Demo" sort="1" id="basic" title="formatter Basic" desc=""/>
+
+<layout-use template="${data.layoutPath}"
+            project-name="${data.projectName}"
+            parent-id="${data.metadata.parentId}" page-title="${data.metadata.title}" page-id="${data.metadata.id}"
+            body-style="sub-page" with-menu="true">
+
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="${data.metadata.parentId}" activeId="${data.metadata.id}"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css"/>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5formatter/dist/ax5formatter.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5formatter/dist/ax5formatter.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+
+        <!-- doc-js Basic Alert -->
+        <section class="ax5docs-section">
+            <ax5docs-md>
+                # formatter Basic
+            </ax5docs-md>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label>Area</label>
+                    <div class="input-group" data-ax5formatter="basic">
+                        <input type="text" class="form-control" placeholder=""/>
+                        <span class="input-group-addon"><i class="fa fa-calculator"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    var formatter = new ax5.ui.formatter();
+
+                    $(document.body).ready(function () {
+
+                    });
+                </script>
+            </ax5docs-js>
+
+            <ax5docs-md>
+
+            </ax5docs-md>
+
+
+        </section>
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+
+</layout-use>

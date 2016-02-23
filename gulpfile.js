@@ -89,6 +89,16 @@ var PATHS = {
         js: "ax5picker",
         doc_src: "src/ax5docs/_src_bootstrap-ax5picker",
         doc_dest: "src/ax5docs/bootstrap-ax5picker"
+    },
+    "bootstrap-ax5formatter": {
+        isPlugin: true,
+        root: "src/bootstrap-ax5formatter",
+        src: "src/bootstrap-ax5formatter/src",
+        dest: "src/bootstrap-ax5formatter/dist",
+        scss: "ax5formatter.scss",
+        js: "ax5formatter",
+        doc_src: "src/ax5docs/_src_bootstrap-ax5formatter",
+        doc_dest: "src/ax5docs/bootstrap-ax5formatter"
     }
 };
 
