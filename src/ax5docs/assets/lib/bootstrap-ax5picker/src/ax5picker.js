@@ -209,6 +209,7 @@
                     this.close();
                 }
             }
+            return this;
         };
 
         /**
