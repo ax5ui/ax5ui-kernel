@@ -234,7 +234,7 @@
 
             opts.id = (opts.id || cfg.id);
 
-            box = {
+            var box = {
                 width: opts.width
             };
             jQuery(document.body).append(this.getContent(opts.id, opts));
@@ -292,7 +292,8 @@
 
         this.align = function(e){
             if(!this.activeDialog) return this;
-            var opts = self.dialogConfig,
+            var
+                opts = self.dialogConfig,
                 box = {
                     width: opts.width,
                     height: opts.height
@@ -418,7 +419,7 @@
                 }).bind(this), cfg.animateTime);
             }
             return this;
-        }
+        };
 
         // 클래스 생성자
         this.main = (function () {

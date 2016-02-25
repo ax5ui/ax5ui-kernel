@@ -1,3 +1,5 @@
+'use strict';
+
 // ax5.ui.dialog
 (function (root, _SUPER_) {
 
@@ -16,9 +18,8 @@
     var U = ax5.util;
 
     //== UI Class
-    var axClass = function () {
-        var
-            self = this,
+    var axClass = function axClass() {
+        var self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -47,10 +48,8 @@
          * ```
          * ```
          */
-            //== class body start
-        this.init = function () {
-
-        };
+        //== class body start
+        this.init = function () {};
 
         /**
          * open the dialog of alert type
@@ -61,9 +60,9 @@
          * @example
          * ```
          * myDialog.alert({
-		 *  title: 'app title',
-		 *  msg: 'alert'
-		 * }, function(){});
+        *  title: 'app title',
+        *  msg: 'alert'
+        * }, function(){});
          * ```
          */
         this.alert = function (opts, callBack) {
@@ -71,10 +70,10 @@
                 opts = {
                     title: cfg.title,
                     msg: opts
-                }
+                };
             }
 
-            if(this.activeDialog) {
+            if (this.activeDialog) {
                 console.log(ax5.info.getError("ax5dialog", "501", "alert"));
                 return this;
             }
@@ -87,7 +86,7 @@
             opts.dialogType = "alert";
             if (typeof opts.btns === "undefined") {
                 opts.btns = {
-                    ok: {label: cfg.lang["ok"], theme: opts.theme}
+                    ok: { label: cfg.lang["ok"], theme: opts.theme }
                 };
             }
             this.open(opts, callBack);
@@ -103,9 +102,9 @@
          * @example
          * ```
          * myDialog.confirm({
-		 *  title: 'app title',
-		 *  msg: 'confirm'
-		 * }, function(){});
+        *  title: 'app title',
+        *  msg: 'confirm'
+        * }, function(){});
          * ```
          */
         this.confirm = function (opts, callBack) {
@@ -113,10 +112,10 @@
                 opts = {
                     title: cfg.title,
                     msg: opts
-                }
+                };
             }
 
-            if(this.activeDialog) {
+            if (this.activeDialog) {
                 console.log(ax5.info.getError("ax5dialog", "501", "confirm"));
                 return this;
             }
@@ -127,11 +126,11 @@
             opts = self.dialogConfig;
 
             opts.dialogType = "confirm";
-            opts.theme = (opts.theme || cfg.theme || "");
+            opts.theme = opts.theme || cfg.theme || "";
             if (typeof opts.btns === "undefined") {
                 opts.btns = {
-                    ok: {label: cfg.lang["ok"], theme: opts.theme},
-                    cancel: {label: cfg.lang["cancel"]}
+                    ok: { label: cfg.lang["ok"], theme: opts.theme },
+                    cancel: { label: cfg.lang["cancel"] }
                 };
             }
             this.open(opts, callBack);
@@ -147,9 +146,9 @@
          * @example
          * ```
          * myDialog.prompt({
-		 *  title: 'app title',
-		 *  msg: 'alert'
-		 * }, function(){});
+        *  title: 'app title',
+        *  msg: 'alert'
+        * }, function(){});
          * ```
          */
         this.prompt = function (opts, callBack) {
@@ -157,10 +156,10 @@
                 opts = {
                     title: cfg.title,
                     msg: opts
-                }
+                };
             }
 
-            if(this.activeDialog) {
+            if (this.activeDialog) {
                 console.log(ax5.info.getError("ax5dialog", "501", "prompt"));
                 return this;
             }
@@ -171,17 +170,17 @@
             opts = self.dialogConfig;
 
             opts.dialogType = "prompt";
-            opts.theme = (opts.theme || cfg.theme || "");
+            opts.theme = opts.theme || cfg.theme || "";
 
             if (typeof opts.input === "undefined") {
                 opts.input = {
-                    value: {label: ""}
+                    value: { label: "" }
                 };
             }
             if (typeof opts.btns === "undefined") {
                 opts.btns = {
-                    ok: {label: cfg.lang["ok"], theme: opts.theme},
-                    cancel: {label: cfg.lang["cancel"]}
+                    ok: { label: cfg.lang["ok"], theme: opts.theme },
+                    cancel: { label: cfg.lang["cancel"] }
                 };
             }
             this.open(opts, callBack);
@@ -189,25 +188,24 @@
         };
 
         this.getContent = function (dialogId, opts) {
-            var
-                po = [];
+            var po = [];
 
             po.push('<div id="' + dialogId + '" data-ax5-ui="dialog" class="ax5-ui-dialog ' + opts.theme + '">');
             po.push('<div class="ax-dialog-heading">');
-            po.push((opts.title || cfg.title || ""));
+            po.push(opts.title || cfg.title || "");
             po.push('</div>');
             po.push('<div class="ax-dialog-body">');
-                po.push('<div class="ax-dialog-msg">');
-                po.push((opts.msg || cfg.msg || "").replace(/\n/g, "<br/>"));
-                po.push('</div>');
+            po.push('<div class="ax-dialog-msg">');
+            po.push((opts.msg || cfg.msg || "").replace(/\n/g, "<br/>"));
+            po.push('</div>');
 
             if (opts.input) {
                 po.push('<div class="ax-dialog-prompt">');
                 U.each(opts.input, function (k, v) {
                     po.push('<div class="form-group">');
-                    if(this.label) po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
+                    if (this.label) po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
                     po.push('    <input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="form-control ' + (this.theme || "") + '" data-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
-                    if(this.help) {
+                    if (this.help) {
                         po.push('    <p class="help-block">' + this.help.replace(/\n/g, "<br/>") + '</p>');
                     }
                     po.push('</div>');
@@ -218,7 +216,7 @@
             po.push('<div class="ax-dialog-buttons">');
             po.push('<div class="ax-button-wrap">');
             U.each(opts.btns, function (k, v) {
-                po.push('<button type="button" data-dialog-btn="' + k + '" class="btn btn-' + (this.theme||"default") + '">' + this.label + '</button>');
+                po.push('<button type="button" data-dialog-btn="' + k + '" class="btn btn-' + (this.theme || "default") + '">' + this.label + '</button>');
             });
             po.push('</div>');
             po.push('</div>');
@@ -228,19 +226,18 @@
         };
 
         this.open = function (opts, callBack) {
-            var
-                pos = {},
+            var pos = {},
                 that;
 
-            opts.id = (opts.id || cfg.id);
+            opts.id = opts.id || cfg.id;
 
-            box = {
+            var box = {
                 width: opts.width
             };
             jQuery(document.body).append(this.getContent(opts.id, opts));
 
             this.activeDialog = jQuery('#' + opts.id);
-            this.activeDialog.css({width: box.width});
+            this.activeDialog.css({ width: box.width });
 
             // dialog 높이 구하기 - 너비가 정해지면 높이가 변경 될 것.
             opts.height = box.height = this.activeDialog.height();
@@ -252,8 +249,7 @@
 
                 pos.top = h / 2 - box.height / 2;
                 pos.left = w / 2 - box.width / 2;
-            }
-            else {
+            } else {
                 pos.left = opts.position.left || 0;
                 pos.top = opts.position.top || 0;
             }
@@ -262,23 +258,22 @@
             // bind button event
             if (opts.dialogType === "prompt") {
                 this.activeDialog.find("[data-dialog-prompt]").get(0).focus();
-            }
-            else {
+            } else {
                 this.activeDialog.find("[data-dialog-btn]").get(0).focus();
             }
 
-            this.activeDialog.find("[data-dialog-btn]").on(cfg.clickEventName, (function (e) {
+            this.activeDialog.find("[data-dialog-btn]").on(cfg.clickEventName, function (e) {
                 this.btnOnClick(e || window.event, opts, callBack);
-            }).bind(this));
+            }.bind(this));
 
             // bind key event
-            jQuery(window).bind("keydown.ax5dialog", (function (e) {
+            jQuery(window).bind("keydown.ax5dialog", function (e) {
                 this.onKeyup(e || window.event, opts, callBack);
-            }).bind(this));
+            }.bind(this));
 
-            jQuery(window).bind("resize.ax5dialog", (function (e) {
+            jQuery(window).bind("resize.ax5dialog", function (e) {
                 this.align(e || window.event);
-            }).bind(this));
+            }.bind(this));
 
             if (opts && opts.onStateChanged) {
                 that = {
@@ -290,19 +285,18 @@
             return this;
         };
 
-        this.align = function(e){
-            if(!this.activeDialog) return this;
+        this.align = function (e) {
+            if (!this.activeDialog) return this;
             var opts = self.dialogConfig,
                 box = {
-                    width: opts.width,
-                    height: opts.height
-                };
+                width: opts.width,
+                height: opts.height
+            };
             //- position 정렬
             if (typeof opts.position === "undefined" || opts.position === "center") {
                 box.top = window.innerHeight / 2 - box.height / 2;
                 box.left = window.innerWidth / 2 - box.width / 2;
-            }
-            else {
+            } else {
                 box.left = opts.position.left || 0;
                 box.top = opts.position.top || 0;
             }
@@ -340,16 +334,13 @@
                 }
                 if (opts.btns[k].onClick) {
                     opts.btns[k].onClick.call(that, k);
-                }
-                else if (opts.dialogType === "alert") {
+                } else if (opts.dialogType === "alert") {
                     if (callBack) callBack.call(that, k);
                     this.close();
-                }
-                else if (opts.dialogType === "confirm") {
+                } else if (opts.dialogType === "confirm") {
                     if (callBack) callBack.call(that, k);
                     this.close();
-                }
-                else if (opts.dialogType === "prompt") {
+                } else if (opts.dialogType === "prompt") {
                     if (k === 'ok') {
                         if (emptyKey) {
                             this.activeDialog.find('[data-dialog-prompt="' + emptyKey + '"]').get(0).focus();
@@ -405,7 +396,7 @@
                 jQuery(window).unbind("keydown.ax5dialog");
                 jQuery(window).unbind("resize.ax5dialog");
 
-                setTimeout((function () {
+                setTimeout(function () {
                     this.activeDialog.remove();
                     this.activeDialog = null;
                     if (opts && opts.onStateChanged) {
@@ -415,23 +406,22 @@
                         };
                         opts.onStateChanged.call(that, that);
                     }
-                }).bind(this), cfg.animateTime);
+                }.bind(this), cfg.animateTime);
             }
             return this;
-        }
+        };
 
         // 클래스 생성자
-        this.main = (function () {
-            if(arguments && U.isObject(arguments[0])) {
+        this.main = function () {
+            if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
-        }).apply(this, arguments);
+        }.apply(this, arguments);
     };
     //== UI Class
 
-    root.dialog = (function(){
+    root.dialog = function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
-    })(); // ax5.ui에 연결
-
+    }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);

@@ -1,5 +1,5 @@
 {
-	"name": "bootstrap-ax5dialog-tester",
+	"name": "bootstrap-ax5picker-tester",
 	"dependencies": {
 		"jquery": "^1.11.0",
 		"ax5core": ">=0.4.0",
