@@ -73,6 +73,43 @@
 
         this.__bindFormatterTarget = (function () {
 
+            var ctrlKeys = {
+                "18": "KEY_ALT",
+                "8": "KEY_BACKSPACE",
+                "17": "KEY_CONTROL",
+                "46": "KEY_DELETE",
+                "40": "KEY_DOWN",
+                "35": "KEY_END",
+                "187": "KEY_EQUAL",
+                "27": "KEY_ESC",
+                "36": "KEY_HOME",
+                "45": "KEY_INSERT",
+                "37": "KEY_LEFT",
+                "189": "KEY_MINUS",
+                "34": "KEY_PAGEDOWN",
+                "33": "KEY_PAGEUP",
+                "190": "KEY_PERIOD",
+                "13": "KEY_RETURN",
+                "39": "KEY_RIGHT",
+                "16": "KEY_SHIFT",
+                "32": "KEY_SPACE",
+                "9": "KEY_TAB",
+                "38": "KEY_UP",
+                "91": "KEY_WINDOW"
+                //"107" : "NUMPAD_ADD",
+                //"194" : "NUMPAD_COMMA",
+                //"110" : "NUMPAD_DECIMAL",
+                //"111" : "NUMPAD_DIVIDE",
+                //"12" : "NUMPAD_EQUAL",
+                //"106" : "NUMPAD_MULTIPLY",
+                //"109" : "NUMPAD_SUBTRACT"
+            };
+
+            var numKeys = {
+                '48': '', '49': '', '50': '', '51': '', '52': '', '53': '', '54': '', '55': '', '56': '', '57': '',
+                '96': '', '97': '', '98': '', '99': '', '100': '', '101': '', '102': '', '103': '', '104': '', '105': ''
+            };
+
             var formatterPattern = {
                 "money": function () {
 
@@ -98,43 +135,19 @@
             };
 
             /*
-            {
-                BACKSPACE: 8, TAB: 9,
-                RETURN: 13, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, DELETE: 46,
-                HOME: 36, END: 35, PAGEUP: 33, PAGEDOWN: 34, INSERT: 45, SPACE: 32
-            }
+
             */
 
             var formatterEvent = {
                 'keydown': function (opts, optIdx, e) {
                     console.log(e.which);
-                    if (
-                        e.which &&
-                        (
-                            e.which > 47 && e.which < 58 ||
-                            e.which > 36 && e.which < 41 ||
-                            e.which > 95 && e.which < 106 ||
-                            e.which == axf.Event.KEY_BACKSPACE ||
-                            e.which == axf.Event.KEY_TAB ||
-                            e.which == axf.Event.KEY_RETURN ||
-                            e.which == axf.Event.KEY_DELETE ||
-                            e.which == axf.Event.NUMPAD_SUBTRACT ||
-                            e.which == axf.Event.NUMPAD_DECIMAL ||
-                            e.which == axf.Event.KEY_MINUS ||
-                            e.which == axf.Event.KEY_EQUAL ||
-                            e.which == axf.Event.KEY_PERIOD ||
-                            e.which == axf.Event.KEY_HOME ||
-                            e.which == axf.Event.KEY_END
-                        )
-                    ){
 
-                    }
                 }
             };
 
             return function (opts, optIdx) {
                 if (!opts.pattern) {
-                    if(opts.$target.get(0).tagName == "INPUT"){
+                    if (opts.$target.get(0).tagName == "INPUT") {
                         opts.pattern = opts.$target
                             .attr('data-ax5formatter');
                     }
