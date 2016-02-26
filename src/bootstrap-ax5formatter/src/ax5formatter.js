@@ -96,9 +96,39 @@
 
                 }
             };
+
+            /*
+            {
+                BACKSPACE: 8, TAB: 9,
+                RETURN: 13, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, DELETE: 46,
+                HOME: 36, END: 35, PAGEUP: 33, PAGEDOWN: 34, INSERT: 45, SPACE: 32
+            }
+            */
+
             var formatterEvent = {
                 'keydown': function (opts, optIdx, e) {
                     console.log(e.which);
+                    if (
+                        e.which &&
+                        (
+                            e.which > 47 && e.which < 58 ||
+                            e.which > 36 && e.which < 41 ||
+                            e.which > 95 && e.which < 106 ||
+                            e.which == axf.Event.KEY_BACKSPACE ||
+                            e.which == axf.Event.KEY_TAB ||
+                            e.which == axf.Event.KEY_RETURN ||
+                            e.which == axf.Event.KEY_DELETE ||
+                            e.which == axf.Event.NUMPAD_SUBTRACT ||
+                            e.which == axf.Event.NUMPAD_DECIMAL ||
+                            e.which == axf.Event.KEY_MINUS ||
+                            e.which == axf.Event.KEY_EQUAL ||
+                            e.which == axf.Event.KEY_PERIOD ||
+                            e.which == axf.Event.KEY_HOME ||
+                            e.which == axf.Event.KEY_END
+                        )
+                    ){
+
+                    }
                 }
             };
 
