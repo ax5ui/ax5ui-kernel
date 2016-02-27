@@ -92,7 +92,7 @@
                 "13": "KEY_RETURN",
                 "39": "KEY_RIGHT",
                 "16": "KEY_SHIFT",
-                "32": "KEY_SPACE",
+                // "32": "KEY_SPACE",
                 "9": "KEY_TAB",
                 "38": "KEY_UP",
                 "91": "KEY_WINDOW"
@@ -106,42 +106,81 @@
             };
 
             var numKeys = {
-                '48': '', '49': '', '50': '', '51': '', '52': '', '53': '', '54': '', '55': '', '56': '', '57': '',
-                '96': '', '97': '', '98': '', '99': '', '100': '', '101': '', '102': '', '103': '', '104': '', '105': ''
+                '48': 1, '49': 1, '50': 1, '51': 1, '52': 1, '53': 1, '54': 1, '55': 1, '56': 1, '57': 1,
+                '96': 1, '97': 1, '98': 1, '99': 1, '100': 1, '101': 1, '102': 1, '103': 1, '104': 1, '105': 1
             };
 
-            var formatterPattern = {
-                "money": function () {
-
+            var setEnterableKeyCodes = {
+                "money": function (opts, optIdx) {
+                    var enterableKeyCodes = {
+                        '188':',', '190':'.'
+                    };
+                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "number": function () {
-
+                "number": function (opts, optIdx) {
+                    var enterableKeyCodes = {
+                        '190':'.'
+                    };
+                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "date": function () {
-
+                "date": function (opts, optIdx) {
+                    var enterableKeyCodes = {
+                        '189':'-', '191':'/'
+                    };
+                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "time": function () {
-
+                "time": function (opts, optIdx) {
+                    var enterableKeyCodes = {
+                        '186':':'
+                    };
+                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "bizno": function () {
-
+                "bizno": function (opts, optIdx) {
+                    var enterableKeyCodes = {
+                        '189':'-'
+                    };
+                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "phone": function () {
-
+                "phone": function (opts, optIdx) {
+                    var enterableKeyCodes = {
+                        '189':'-', '188':','
+                    };
+                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "custom": function () {
-
+                "custom": function (opts, optIdx) {
+                    var enterableKeyCodes = {};
+                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 }
             };
 
-            /*
-
-            */
+            var eventStop = function(e) {
+                // 이벤트 중지 구문
+                if (e.preventDefault) e.preventDefault();
+                if (e.stopPropagation) e.stopPropagation();
+                e.cancelBubble = true;
+                return false;
+                // 이벤트 중지 구문 끝
+            };
 
             var formatterEvent = {
                 'keydown': function (opts, optIdx, e) {
-                    console.log(e.which);
+                    var isStop = false;
 
+                    if(e.which && opts.enterableKeyCodes[e.which]){
+
+                    }
+                    else{
+                        console.log(e.which, opts.enterableKeyCodes);
+                        isStop = true;
+                    }
+                    if(isStop) eventStop(e);
                 }
             };
 
@@ -164,9 +203,9 @@
                 }
 
                 // 함수타입
-                for (var key in formatterPattern) {
+                for (var key in setEnterableKeyCodes) {
                     if (opts.pattern == key) {
-                        formatterPattern[key].call(this, opts, optIdx);
+                        setEnterableKeyCodes[key].call(this, opts, optIdx);
                         break;
                     }
                 }
