@@ -1,3 +1,5 @@
+"use strict";
+
 // ax5.ui.formatter
 (function (root, _SUPER_) {
 
@@ -14,9 +16,8 @@
     var U = ax5.util;
 
     //== UI Class
-    var axClass = function () {
-        var
-            self = this,
+    var axClass = function axClass() {
+        var self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -40,9 +41,7 @@
          * ```
          * ```
          */
-        this.init = function () {
-
-        };
+        this.init = function () {};
 
         this.bind = function (opts) {
             var formatterConfig = {};
@@ -61,9 +60,8 @@
             }
 
             if (U.search(this.queue, function () {
-                    return this.id == opts.id;
-                }) === -1)
-            {
+                return this.id == opts.id;
+            }) === -1) {
                 this.queue.push(opts);
                 this.__bindFormatterTarget(opts, this.queue.length - 1);
             }
@@ -71,7 +69,7 @@
             return this;
         };
 
-        this.__bindFormatterTarget = (function () {
+        this.__bindFormatterTarget = function () {
 
             var ctrlKeys = {
                 "18": "KEY_ALT",
@@ -111,56 +109,56 @@
             };
 
             var setEnterableKeyCodes = {
-                "money": function (opts, optIdx) {
+                "money": function money(opts, optIdx) {
                     var enterableKeyCodes = {
-                        '188':',', '190':'.'
+                        '188': ',', '190': '.'
                     };
                     enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
                     opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "number": function (opts, optIdx) {
+                "number": function number(opts, optIdx) {
                     var enterableKeyCodes = {
-                        '190':'.'
+                        '190': '.'
                     };
                     enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
                     opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "date": function (opts, optIdx) {
+                "date": function date(opts, optIdx) {
                     var enterableKeyCodes = {
-                        '189':'-', '191':'/'
+                        '189': '-', '191': '/'
                     };
                     enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
                     opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "time": function (opts, optIdx) {
+                "time": function time(opts, optIdx) {
                     var enterableKeyCodes = {
-                        '186':':'
+                        '186': ':'
                     };
                     enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
                     opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "bizno": function (opts, optIdx) {
+                "bizno": function bizno(opts, optIdx) {
                     var enterableKeyCodes = {
-                        '189':'-'
+                        '189': '-'
                     };
                     enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
                     opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "phone": function (opts, optIdx) {
+                "phone": function phone(opts, optIdx) {
                     var enterableKeyCodes = {
-                        '189':'-', '188':','
+                        '189': '-', '188': ','
                     };
                     enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
                     opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
-                "custom": function (opts, optIdx) {
+                "custom": function custom(opts, optIdx) {
                     var enterableKeyCodes = {};
                     enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
                     opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 }
             };
 
-            var eventStop = function(e) {
+            var eventStop = function eventStop(e) {
                 // 이벤트 중지 구문
                 if (e.preventDefault) e.preventDefault();
                 if (e.stopPropagation) e.stopPropagation();
@@ -169,33 +167,27 @@
                 // 이벤트 중지 구문 끝
             };
 
-            var setPattern = {
-
-            };
+            var setPattern = {};
 
             var formatterEvent = {
                 /* 키 다운 이벤트에서 입력할 수 없는 키 입력을 방어 */
-                'keydown': function (opts, optIdx, e) {
+                'keydown': function keydown(opts, optIdx, e) {
                     var isStop = false;
 
-                    if(e.which && opts.enterableKeyCodes[e.which]){
-
-                    }
-                    else{
+                    if (e.which && opts.enterableKeyCodes[e.which]) {} else {
                         console.log(e.which, opts.enterableKeyCodes);
                         isStop = true;
                     }
-                    if(isStop) eventStop(e);
+                    if (isStop) eventStop(e);
                 },
                 /* 키 업 이벤트에서 패턴을 적용 */
-                'keyup': function(opts, optIdx, e){
+                'keyup': function keyup(opts, optIdx, e) {
                     var elem = opts.$input.get(0);
                     var elemFocusPosition;
                     if ('selectionStart' in elem) {
                         // Standard-compliant browsers
                         elemFocusPosition = elem.selectionStart;
-                    }
-                    else if (document.selection) {
+                    } else if (document.selection) {
                         // IE
                         //elem.focus();
                         var sel = document.selection.createRange();
@@ -206,21 +198,15 @@
 
                     opts.$input.data("focusPosition", elemFocusPosition);
                     opts.$input.data("prevLen", elem.value.length);
-
-
                 }
             };
 
             return function (opts, optIdx) {
                 if (!opts.pattern) {
                     if (opts.$target.get(0).tagName == "INPUT") {
-                        opts.pattern = opts.$target
-                            .attr('data-ax5formatter');
-                    }
-                    else {
-                        opts.pattern = opts.$target
-                            .find('input[type="text"]')
-                            .attr('data-ax5formatter');
+                        opts.pattern = opts.$target.attr('data-ax5formatter');
+                    } else {
+                        opts.pattern = opts.$target.find('input[type="text"]').attr('data-ax5formatter');
                     }
                     if (!opts.pattern) {
                         console.log(ax5.info.getError("ax5formatter", "501", "bind"));
@@ -238,41 +224,32 @@
                 }
 
                 opts.$input = opts.$target.find('input[type="text"]');
-                opts.$input
-                    .unbind('keydown.ax5formatter')
-                    .bind('keydown.ax5formatter', formatterEvent.keydown.bind(this, this.queue[optIdx], optIdx));
+                opts.$input.unbind('keydown.ax5formatter').bind('keydown.ax5formatter', formatterEvent.keydown.bind(this, this.queue[optIdx], optIdx));
 
-                opts.$input
-                    .unbind('keyup.ax5formatter')
-                    .bind('keyup.ax5formatter', formatterEvent.keyup.bind(this, this.queue[optIdx], optIdx));
-
-
+                opts.$input.unbind('keyup.ax5formatter').bind('keyup.ax5formatter', formatterEvent.keyup.bind(this, this.queue[optIdx], optIdx));
 
                 return this;
-
-            }
-
-        })();
+            };
+        }();
 
         // 클래스 생성자
-        this.main = (function () {
+        this.main = function () {
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
-        }).apply(this, arguments);
+        }.apply(this, arguments);
     };
     //== UI Class
 
-    root.formatter = (function () {
+    root.formatter = function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
-    })(); // ax5.ui에 연결
-
+    }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);
 
 ax5.ui.formatter_instance = new ax5.ui.formatter();
 
-$.fn.ax5formatter = (function () {
+$.fn.ax5formatter = function () {
     return function (config) {
         if (typeof config == "undefined") config = {};
         $.each(this, function () {
@@ -283,5 +260,5 @@ $.fn.ax5formatter = (function () {
             ax5.ui.formatter_instance.bind(config);
         });
         return this;
-    }
-})();
+    };
+}();
