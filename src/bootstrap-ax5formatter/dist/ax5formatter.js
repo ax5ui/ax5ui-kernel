@@ -167,7 +167,39 @@
                 // 이벤트 중지 구문 끝
             };
 
-            var setPattern = {};
+            var getPatternValue = {
+                "money": function money(opts, optIdx, e, val) {
+                    var regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
+                        arrNumber = val.split('.'),
+                        returnValue;
+
+                    arrNumber[0] += '.';
+
+                    do {
+                        arrNumber[0] = arrNumber[0].replace(regExpPattern, '$1,$2');
+                    } while (regExpPattern.test(arrNumber[0]));
+
+                    if (arrNumber.length > 1) {
+
+                        //if (Object.isNumber(obj.config.max_round)) {
+                        //    returnValue = arrNumber[0] + arrNumber[1].left(obj.config.max_round);
+                        //}
+                        //else {
+                        returnValue = arrNumber.join('');
+                        //}
+                    } else {
+                            returnValue = arrNumber[0].split('.')[0];
+                        }
+
+                    return returnValue;
+                },
+                "number": function number(opts, optIdx) {},
+                "date": function date(opts, optIdx) {},
+                "time": function time(opts, optIdx) {},
+                "bizno": function bizno(opts, optIdx) {},
+                "phone": function phone(opts, optIdx) {},
+                "custom": function custom(opts, optIdx) {}
+            };
 
             var formatterEvent = {
                 /* 키 다운 이벤트에서 입력할 수 없는 키 입력을 방어 */
@@ -198,6 +230,7 @@
 
                     opts.$input.data("focusPosition", elemFocusPosition);
                     opts.$input.data("prevLen", elem.value.length);
+                    elem.value = getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value);
                 }
             };
 
