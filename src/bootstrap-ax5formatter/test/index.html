@@ -20,6 +20,12 @@
         <input type="text" class="form-control" placeholder="" data-ax5formatter="money" />
     </div>
 </div>
+<div class="form-group" id="ax5formatter-01-1">
+    <div class="input-group">
+        <span class="input-group-addon">Money(int)</span>
+        <input type="text" class="form-control" placeholder="" data-ax5formatter="money(int)" />
+    </div>
+</div>
 <div class="form-group">
     <div class="input-group" id="ax5formatter-02">
         <span class="input-group-addon">Date</span>
@@ -36,12 +42,14 @@
 <!--https://css-tricks.com/snippets/javascript/javascript-keycodes/-->
 <script type="text/javascript">
 
-    //$('[data-ax5formatter]').ax5formatter();
+    $('[data-ax5formatter]').ax5formatter();
 
+    /*
     $('#ax5formatter-01').ax5formatter();
+    $('#ax5formatter-01-1').ax5formatter();
     $('#ax5formatter-02').ax5formatter();
     $('#ax5formatter-03').ax5formatter();
-
+    */
     /**
      * {
      *  pattern: "" // money, money(int), number, number(int), date, date(time), time, bizno, phone, custom

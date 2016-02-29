@@ -13,6 +13,28 @@
      */
     var U = ax5.util;
 
+    var setSelectionRange = function (input, pos) {
+        if (typeof pos == "undefined") {
+            pos = input.value.length;
+        }
+        if (input.setSelectionRange) {
+            input.focus();
+            input.setSelectionRange(pos, pos);
+        }
+        else if (input.createTextRange) {
+            var range = input.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', pos);
+            range.moveStart('character', pos);
+            range.select();
+        }
+        else if (input.selectionStart) {
+            input.focus();
+            input.selectionStart = pos;
+            input.selectionEnd = pos;
+        }
+    };
+
     //== UI Class
     var axClass = function () {
         var
@@ -59,7 +81,7 @@
             if (!opts.id) {
                 opts.id = 'ax5-formatter-' + ax5.getGuid();
             }
-
+            
             if (U.search(this.queue, function () {
                     return this.id == opts.id;
                 }) === -1)
@@ -88,7 +110,7 @@
                 "189": "KEY_MINUS",
                 "34": "KEY_PAGEDOWN",
                 "33": "KEY_PAGEUP",
-                "190": "KEY_PERIOD",
+                // "190": "KEY_PERIOD",
                 "13": "KEY_RETURN",
                 "39": "KEY_RIGHT",
                 "16": "KEY_SHIFT",
@@ -113,8 +135,16 @@
             var setEnterableKeyCodes = {
                 "money": function (opts, optIdx) {
                     var enterableKeyCodes = {
-                        '188': ',', '190': '.'
+                        '188': ','
                     };
+
+                    if (opts.patternArgument == "int") {
+                        // 소수점 입력 안됨
+                    }
+                    else {
+                        enterableKeyCodes['190'] = "."; // 소수점 입력 허용
+                    }
+
                     enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
                     opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
@@ -172,6 +202,7 @@
             var getPatternValue = {
                 "money": function (opts, optIdx, e, val) {
                     var
+                        val = val.replace(/[^0-9^\.^\-]/g, ""),
                         regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
                         arrNumber = val.split('.'),
                         returnValue
@@ -184,13 +215,12 @@
                     } while (regExpPattern.test(arrNumber[0]));
 
                     if (arrNumber.length > 1) {
-
-                        //if (Object.isNumber(obj.config.max_round)) {
-                        //    returnValue = arrNumber[0] + arrNumber[1].left(obj.config.max_round);
-                        //}
-                        //else {
-                        returnValue = arrNumber.join('');
-                        //}
+                        if (U.isNumber(opts.maxRound)) {
+                            returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
+                        }
+                        else {
+                            returnValue = arrNumber.join('');
+                        }
                     }
                     else {
                         returnValue = arrNumber[0].split('.')[0];
@@ -199,7 +229,25 @@
                     return returnValue;
                 },
                 "number": function (opts, optIdx) {
+                    var
+                        val = val.replace(/[^0-9^\.^\-]/g, ""),
+                        arrNumber = val.split('.'),
+                        returnValue
+                        ;
 
+                    if (arrNumber.length > 1) {
+                        if (U.isNumber(opts.maxRound)) {
+                            returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
+                        }
+                        else {
+                            returnValue = arrNumber.join('');
+                        }
+                    }
+                    else {
+                        returnValue = arrNumber[0].split('.')[0];
+                    }
+
+                    return returnValue;
                 },
                 "date": function (opts, optIdx) {
 
@@ -222,20 +270,24 @@
                 /* 키 다운 이벤트에서 입력할 수 없는 키 입력을 방어 */
                 'keydown': function (opts, optIdx, e) {
                     var isStop = false;
-
+                    //console.log(e.which, opts.enterableKeyCodes[e.which]);
                     if (e.which && opts.enterableKeyCodes[e.which]) {
 
                     }
                     else {
-                        console.log(e.which, opts.enterableKeyCodes);
+                        //console.log(e.which, opts.enterableKeyCodes);
                         isStop = true;
                     }
                     if (isStop) eventStop(e);
                 },
                 /* 키 업 이벤트에서 패턴을 적용 */
                 'keyup': function (opts, optIdx, e) {
-                    var elem = opts.$input.get(0);
-                    var elemFocusPosition;
+                    var elem = opts.$input.get(0),
+                        elemFocusPosition,
+                        beforeValue,
+                        selection, selectionLength
+                        ;
+
                     if ('selectionStart' in elem) {
                         // Standard-compliant browsers
                         elemFocusPosition = elem.selectionStart;
@@ -243,21 +295,24 @@
                     else if (document.selection) {
                         // IE
                         //elem.focus();
-                        var sel = document.selection.createRange();
-                        var selLen = document.selection.createRange().text.length;
-                        sel.moveStart('character', -elem.value.length);
-                        elemFocusPosition = sel.text.length - selLen;
+                        selection = document.selection.createRange();
+                        selectionLength = document.selection.createRange().text.length;
+                        selection.moveStart('character', -elem.value.length);
+                        elemFocusPosition = selection.text.length - selectionLength;
                     }
 
-                    opts.$input.data("focusPosition", elemFocusPosition);
-                    opts.$input.data("prevLen", elem.value.length);
-                    elem.value = getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value);
-
+                    beforeValue = elem.value;
+                    
+                    if (getPatternValue[opts.pattern]) {
+                        elem.value = getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value);
+                        setSelectionRange(elem, elemFocusPosition + elem.value.length - beforeValue.length);
+                    }
                 }
             };
 
             return function (opts, optIdx) {
                 if (!opts.pattern) {
+                    
                     if (opts.$target.get(0).tagName == "INPUT") {
                         opts.pattern = opts.$target
                             .attr('data-ax5formatter');
@@ -274,6 +329,12 @@
                     }
                 }
 
+                var re = /[^\(^\))]+/gi,
+                    matched = opts.pattern.match(re);
+                
+                opts.pattern = matched[0];
+                opts.patternArgument = matched[1] || "";
+
                 // 함수타입
                 for (var key in setEnterableKeyCodes) {
                     if (opts.pattern == key) {
@@ -282,7 +343,7 @@
                     }
                 }
 
-                opts.$input = opts.$target.find('input[type="text"]');
+                opts.$input = (opts.$target.get(0).tagName == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
                 opts.$input
                     .unbind('keydown.ax5formatter')
                     .bind('keydown.ax5formatter', formatterEvent.keydown.bind(this, this.queue[optIdx], optIdx));
@@ -323,6 +384,7 @@ $.fn.ax5formatter = (function () {
                 target: this
             };
             config = $.extend(true, defaultConfig, config);
+            
             ax5.ui.formatter_instance.bind(config);
         });
         return this;
