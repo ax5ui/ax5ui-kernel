@@ -83,7 +83,7 @@
                 return this.id == opts.id;
             }) === -1) {
                 this.queue.push(opts);
-                this.__bindFormatterTarget(this.queue[this.queue.length - 1], this.queue.length - 1);
+                this.__bindFormatterTarget(opts, this.queue.length - 1);
             }
 
             return this;
@@ -185,6 +185,15 @@
                 }
             };
 
+            var eventStop = function eventStop(e) {
+                // 이벤트 중지 구문
+                if (e.preventDefault) e.preventDefault();
+                if (e.stopPropagation) e.stopPropagation();
+                e.cancelBubble = true;
+                return false;
+                // 이벤트 중지 구문 끝
+            };
+
             var getPatternValue = {
                 "money": function money(opts, optIdx, e, val) {
                     var val = val.replace(/[^0-9^\.^\-]/g, ""),
@@ -210,9 +219,9 @@
 
                     return returnValue;
                 },
-                "number": function number(opts, optIdx, e, val) {
-                    val = val.replace(/[^0-9^\.^\-]/g, "");
-                    var arrNumber = val.split('.'),
+                "number": function number(opts, optIdx) {
+                    var val = val.replace(/[^0-9^\.^\-]/g, ""),
+                        arrNumber = val.split('.'),
                         returnValue;
 
                     if (arrNumber.length > 1) {
@@ -227,73 +236,11 @@
 
                     return returnValue;
                 },
-                "date": function date(opts, optIdx, e, val) {
-                    val = val.replace(/\D/g, "");
-                    var regExpPattern = /^([12][0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
-
-                    if (opts.patternArgument == "time") {
-                        regExpPattern = /^([12][0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,2})? ?([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
-                    }
-
-                    var matchedPattern = val.match(regExpPattern),
-                        returnValue = val.replace(regExpPattern, function (a, b) {
-                        var nval = [arguments[1]];
-                        if (arguments[2]) nval.push('-' + arguments[2]);
-                        if (arguments[3]) nval.push('-' + arguments[3]);
-                        if (opts.patternArgument == "time") {
-                            if (arguments[4]) nval.push(' ' + arguments[4]);
-                            if (arguments[5]) nval.push(':' + arguments[5]);
-                            if (arguments[6]) nval.push(':' + arguments[6]);
-                        }
-                        return nval.join('');
-                    });
-
-                    if (!matchedPattern) returnValue = returnValue.length > 4 ? U.left(returnValue, 4) : returnValue;
-
-                    return returnValue;
-                },
-                "time": function time(opts, optIdx, e, val) {
-                    val = val.replace(/\D/g, "");
-                    var regExpPattern = /^([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
-
-                    var matchedPattern = val.match(regExpPattern),
-                        returnValue = val.replace(regExpPattern, function (a, b) {
-                        var nval = [arguments[1]];
-                        if (arguments[2]) nval.push(':' + arguments[2]);
-                        if (arguments[3]) nval.push(':' + arguments[3]);
-                        return nval.join('');
-                    });
-
-                    if (!matchedPattern) returnValue = returnValue.length > 2 ? U.left(returnValue, 2) : returnValue;
-
-                    return returnValue;
-                },
-                "bizno": function bizno(opts, optIdx, e, val) {
-                    val = val.replace(/\D/g, "");
-                    var regExpPattern = /^([0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,5})?.*$/,
-                        returnValue = val.replace(regExpPattern, function (a, b) {
-                        var nval = [arguments[1]];
-                        if (arguments[2]) nval.push(arguments[2]);
-                        if (arguments[3]) nval.push(arguments[3]);
-                        return nval.join("-");
-                    });
-
-                    return returnValue;
-                },
-                "phone": function phone(opts, optIdx, e, val) {
-                    val = val.replace(/\D/g, "");
-                    var regExpPattern3 = /^([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/,
-                        returnValue = val.replace(regExpPattern3, function (a, b) {
-                        var nval = [arguments[1]];
-                        if (arguments[2]) nval.push(arguments[2]);
-                        if (arguments[3]) nval.push(arguments[3]);
-                        if (arguments[4]) nval.push(arguments[4]);
-                        if (arguments[5]) nval.push(arguments[5]);
-                        return nval.join("-");
-                    });
-                    return returnValue;
-                },
-                "custom": function custom(opts, optIdx, e, val) {}
+                "date": function date(opts, optIdx) {},
+                "time": function time(opts, optIdx) {},
+                "bizno": function bizno(opts, optIdx) {},
+                "phone": function phone(opts, optIdx) {},
+                "custom": function custom(opts, optIdx) {}
             };
 
             var formatterEvent = {
@@ -305,7 +252,7 @@
                         //console.log(e.which, opts.enterableKeyCodes);
                         isStop = true;
                     }
-                    if (isStop) ax5.util.stopEvent(e);
+                    if (isStop) eventStop(e);
                 },
                 /* 키 업 이벤트에서 패턴을 적용 */
                 'keyup': function keyup(opts, optIdx, e) {
@@ -398,7 +345,8 @@ $.fn.ax5formatter = function () {
             var defaultConfig = {
                 target: this
             };
-            config = $.extend(true, config, defaultConfig);
+            config = $.extend(true, defaultConfig, config);
+
             ax5.ui.formatter_instance.bind(config);
         });
         return this;

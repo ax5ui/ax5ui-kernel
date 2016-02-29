@@ -230,11 +230,13 @@
         this.open = function (opts, callBack) {
             var
                 pos = {},
-                that;
+                that,
+                box
+                ;
 
             opts.id = (opts.id || cfg.id);
 
-            var box = {
+            box = {
                 width: opts.width
             };
             jQuery(document.body).append(this.getContent(opts.id, opts));

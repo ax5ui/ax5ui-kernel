@@ -20,3 +20,9 @@ ax5.info.errorMsg["single-uploader"] = {
 ax5.info.errorMsg["ax5calendar"] = {
     "401": "Can not find target element"
 };
+
+ax5.info.errorMsg["ax5formatter"] = {
+    "401": "Can not find target element",
+    "402": "Can not find boundID",
+    "501": "Can not find pattern"
+};
