@@ -1729,6 +1729,23 @@
             }
         }
 
+        /**
+         * @method ax5.util.stopEvent
+         * @param {Event} e
+         * @example
+         * ```
+         * ax5.util.stopEvent(e);
+         * ```
+         */
+        function stopEvent(e) {
+            // 이벤트 중지 구문
+            if (e.preventDefault) e.preventDefault();
+            if (e.stopPropagation) e.stopPropagation();
+            e.cancelBubble = true;
+            return false;
+            // 이벤트 중지 구문 끝
+        }
+
         return {
             alert: alert,
             each: each,
@@ -1774,7 +1791,8 @@
             cssNumber: cssNumber,
             css: css,
             isDate: isDate,
-            isDateFormat: isDateFormat
+            isDateFormat: isDateFormat,
+            stopEvent: stopEvent
         }
     })();
 

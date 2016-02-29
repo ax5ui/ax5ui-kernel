@@ -415,7 +415,7 @@ jQuery('#id').bind("click.app_expand", function(e){
     if(target.id !== "client-aside"){
         // some action
     }
-});
+}); 
 ```
 
 ## ax5.util.cssNumber
@@ -440,4 +440,9 @@ console.log(ax5.util.css({
 // background:#ccc;padding:50px;width:100px;
 console.log(ax5.util.css('width:100px;padding: 50px; background: #ccc'));
 // {width: "100px", padding: "50px", background: "#ccc"}
+```
+
+## ax5.util.stopEvent
+```js
+ax5.util.stopEvent(e);
 ```
