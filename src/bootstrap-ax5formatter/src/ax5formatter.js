@@ -314,11 +314,10 @@
                 /* 키 다운 이벤트에서 입력할 수 없는 키 입력을 방어 */
                 'keydown': function (opts, optIdx, e) {
                     var isStop = false;
-                    //console.log(e.which, opts.enterableKeyCodes[e.which]);
                     if (e.which && opts.enterableKeyCodes[e.which]) {
-
+                        opts.$input.data("__prevValue__", opts.$input.val());
                     }
-                    else {
+                    else if(!e.metaKey && !e.ctrlKey && !e.shiftKey){
                         //console.log(e.which, opts.enterableKeyCodes);
                         isStop = true;
                     }
@@ -347,7 +346,7 @@
 
                     beforeValue = elem.value;
                     
-                    if (getPatternValue[opts.pattern]) {
+                    if (getPatternValue[opts.pattern] && opts.$input.data("__prevValue__") != elem.value) {
                         elem.value = getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value);
                         setSelectionRange(elem, elemFocusPosition + elem.value.length - beforeValue.length);
                     }
