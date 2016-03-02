@@ -14,6 +14,7 @@
      * ```
      */
     var U = ax5.util;
+    var TODAY = new Date();
 
     var setSelectionRange = function setSelectionRange(input, pos) {
         if (typeof pos == "undefined") {
@@ -186,7 +187,7 @@
             };
 
             var getPatternValue = {
-                "money": function money(opts, optIdx, e, val) {
+                "money": function money(opts, optIdx, e, val, eType) {
                     var val = val.replace(/[^0-9^\.^\-]/g, ""),
                         regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
                         arrNumber = val.split('.'),
@@ -210,7 +211,7 @@
 
                     return returnValue;
                 },
-                "number": function number(opts, optIdx, e, val) {
+                "number": function number(opts, optIdx, e, val, eType) {
                     val = val.replace(/[^0-9^\.^\-]/g, "");
                     var arrNumber = val.split('.'),
                         returnValue;
@@ -227,32 +228,77 @@
 
                     return returnValue;
                 },
-                "date": function date(opts, optIdx, e, val) {
+                "date": function date(opts, optIdx, e, val, eType) {
                     val = val.replace(/\D/g, "");
-                    var regExpPattern = /^([12][0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
+                    var regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
 
                     if (opts.patternArgument == "time") {
-                        regExpPattern = /^([12][0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,2})? ?([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
+                        regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})? ?([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
                     }
 
                     var matchedPattern = val.match(regExpPattern),
-                        returnValue = val.replace(regExpPattern, function (a, b) {
-                        var nval = [arguments[1]];
-                        if (arguments[2]) nval.push('-' + arguments[2]);
-                        if (arguments[3]) nval.push('-' + arguments[3]);
+                        returnValue = "",
+                        inspectValue = function inspectValue(val, format, inspect, data) {
+                        var _val = {
+                            'Y': function Y(v) {
+                                if (typeof v == "undefined") v = TODAY.getFullYear();
+                                if (v == '0000') v = TODAY.getFullYear();
+                                return v.length < 4 ? U.setDigit(v, 4) : v;
+                            },
+                            'M': function M(v) {
+                                if (typeof v == "undefined") v = TODAY.getMonth() + 1;
+                                return v > 12 ? 12 : v == 0 ? '01' : U.setDigit(v, 2);
+                            },
+                            'D': function D(v) {
+                                if (typeof v == "undefined") v = TODAY.getDate() + 1;
+                                var dLen = U.daysOfMonth(data[1], data[2] - 1);
+                                return v > dLen ? dLen : v == 0 ? '01' : U.setDigit(v, 2);
+                            },
+                            'h': function h(v) {
+                                if (!v) v = 0;
+                                return v > 23 ? 23 : U.setDigit(v, 2);
+                            },
+                            'm': function m(v) {
+                                if (!v) v = 0;
+                                return v > 59 ? 59 : U.setDigit(v, 2);
+                            },
+                            's': function s(v) {
+                                if (!v) v = 0;
+                                return v > 59 ? 59 : U.setDigit(v, 2);
+                            }
+                        };
+                        return inspect ? _val[format](val) : val;
+                    };
+
+                    returnValue = val.replace(regExpPattern, function (a, b) {
+                        var nval = [inspectValue(arguments[1], "Y", eType)];
+                        if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
+                        if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
                         if (opts.patternArgument == "time") {
-                            if (arguments[4]) nval.push(' ' + arguments[4]);
-                            if (arguments[5]) nval.push(':' + arguments[5]);
-                            if (arguments[6]) nval.push(':' + arguments[6]);
+                            if (arguments[4] || eType) nval.push(' ' + inspectValue(arguments[4], "h", eType));
+                            if (arguments[5] || eType) nval.push(':' + inspectValue(arguments[5], "m", eType));
+                            if (arguments[6] || eType) nval.push(':' + inspectValue(arguments[6], "s", eType));
                         }
                         return nval.join('');
                     });
 
-                    if (!matchedPattern) returnValue = returnValue.length > 4 ? U.left(returnValue, 4) : returnValue;
+                    if (eType == 'blur' && !matchedPattern) {
+                        returnValue = function () {
+                            var nval = [inspectValue(returnValue, "Y", eType)];
+                            nval.push('-' + inspectValue(0, "M", eType));
+                            nval.push('-' + inspectValue(0, "D", eType, arguments));
+                            if (opts.patternArgument == "time") {
+                                nval.push(' ' + inspectValue(0, "h", eType));
+                                nval.push(':' + inspectValue(0, "m", eType));
+                                nval.push(':' + inspectValue(0, "s", eType));
+                            }
+                            return nval.join('');
+                        }();
+                    } else if (!matchedPattern) returnValue = returnValue.length > 4 ? U.left(returnValue, 4) : returnValue;
 
                     return returnValue;
                 },
-                "time": function time(opts, optIdx, e, val) {
+                "time": function time(opts, optIdx, e, val, eType) {
                     val = val.replace(/\D/g, "");
                     var regExpPattern = /^([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
 
@@ -268,7 +314,7 @@
 
                     return returnValue;
                 },
-                "bizno": function bizno(opts, optIdx, e, val) {
+                "bizno": function bizno(opts, optIdx, e, val, eType) {
                     val = val.replace(/\D/g, "");
                     var regExpPattern = /^([0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,5})?.*$/,
                         returnValue = val.replace(regExpPattern, function (a, b) {
@@ -280,7 +326,7 @@
 
                     return returnValue;
                 },
-                "phone": function phone(opts, optIdx, e, val) {
+                "phone": function phone(opts, optIdx, e, val, eType) {
                     val = val.replace(/\D/g, "");
                     var regExpPattern3 = /^([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/,
                         returnValue = val.replace(regExpPattern3, function (a, b) {
@@ -293,16 +339,17 @@
                     });
                     return returnValue;
                 },
-                "custom": function custom(opts, optIdx, e, val) {}
+                "custom": function custom(opts, optIdx, e, val, eType) {}
             };
 
             var formatterEvent = {
+                'focus': function focus(opts, optIdx, e) {
+                    if (!opts.$input.data("__originValue__")) opts.$input.data("__originValue__", opts.$input.val());
+                },
                 /* 키 다운 이벤트에서 입력할 수 없는 키 입력을 방어 */
                 'keydown': function keydown(opts, optIdx, e) {
                     var isStop = false;
-                    if (e.which && opts.enterableKeyCodes[e.which]) {
-                        opts.$input.data("__prevValue__", opts.$input.val());
-                    } else if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {
+                    if (e.which && opts.enterableKeyCodes[e.which]) {} else if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {
                         //console.log(e.which, opts.enterableKeyCodes);
                         isStop = true;
                     }
@@ -313,6 +360,7 @@
                     var elem = opts.$input.get(0),
                         elemFocusPosition,
                         beforeValue,
+                        newValue,
                         selection,
                         selectionLength;
 
@@ -329,10 +377,25 @@
                     }
 
                     beforeValue = elem.value;
+                    newValue = getPatternValue[opts.pattern] ? getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value) : beforeValue;
 
-                    if (getPatternValue[opts.pattern] && opts.$input.data("__prevValue__") != elem.value) {
-                        elem.value = getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value);
-                        setSelectionRange(elem, elemFocusPosition + elem.value.length - beforeValue.length);
+                    if (newValue != beforeValue) {
+                        opts.$input.val(newValue).trigger("change");
+                        setSelectionRange(elem, elemFocusPosition + newValue.length - beforeValue.length);
+                    }
+                },
+
+                'blur': function blur(opts, optIdx, e) {
+                    var elem = opts.$input.get(0),
+                        beforeValue,
+                        newValue;
+
+                    opts.$input.removeData("__originValue__");
+
+                    beforeValue = elem.value;
+                    newValue = getPatternValue[opts.pattern] ? getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value, 'blur') : beforeValue;
+                    if (newValue != beforeValue) {
+                        opts.$input.val(newValue).trigger("change");
                     }
                 }
             };
@@ -367,9 +430,14 @@
                 }
 
                 opts.$input = opts.$target.get(0).tagName == "INPUT" ? opts.$target : opts.$target.find('input[type="text"]');
+
+                opts.$input.unbind('focus.ax5formatter').bind('focus.ax5formatter', formatterEvent.focus.bind(this, this.queue[optIdx], optIdx));
+
                 opts.$input.unbind('keydown.ax5formatter').bind('keydown.ax5formatter', formatterEvent.keydown.bind(this, this.queue[optIdx], optIdx));
 
                 opts.$input.unbind('keyup.ax5formatter').bind('keyup.ax5formatter', formatterEvent.keyup.bind(this, this.queue[optIdx], optIdx));
+
+                opts.$input.unbind('blur.ax5formatter').bind('blur.ax5formatter', formatterEvent.blur.bind(this, this.queue[optIdx], optIdx));
 
                 return this;
             };

@@ -17,7 +17,7 @@
 <div class="form-group" id="ax5formatter-01">
     <div class="input-group">
         <span class="input-group-addon">Money</span>
-        <input name="1" type="text" class="form-control" placeholder="" data-ax5formatter="money" />
+        <input name="1" type="text" class="form-control" placeholder="" data-ax5formatter="money" onchange="console.log('change event : ' + this.value);" />
     </div>
 </div>
 <div class="form-group" id="ax5formatter-01-1">
@@ -68,24 +68,6 @@
      *  patternString: ""
      * }
      */
-
-
-    function validateDate(val) {
-        val = val.replace(/\D/g, "");
-        regExpPattern = /^([12][0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
-        console.log(val.match(regExpPattern));
-        returnValue = val.replace(regExpPattern, function(a, b) {
-            var nval = [arguments[1]];
-            if (arguments[2]) nval.push(arguments[2]);
-            if (arguments[3]) nval.push(arguments[3]);
-            return nval.join("-");
-        });
-        
-        console.log(returnValue);
-    }
-
-    validateDate("2");
-    validateDate("2016/1121");
 
 </script>
 
