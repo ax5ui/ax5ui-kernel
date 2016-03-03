@@ -1687,23 +1687,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
 
-        /**
-         * @method ax5.util.stopEvent
-         * @param {Event} e
-         * @example
-         * ```
-         * ax5.util.stopEvent(e);
-         * ```
-         */
-        function stopEvent(e) {
-            // 이벤트 중지 구문
-            if (e.preventDefault) e.preventDefault();
-            if (e.stopPropagation) e.stopPropagation();
-            e.cancelBubble = true;
-            return false;
-            // 이벤트 중지 구문 끝
-        }
-
         return {
             alert: alert,
             each: each,
@@ -1749,8 +1732,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             cssNumber: cssNumber,
             css: css,
             isDate: isDate,
-            isDateFormat: isDateFormat,
-            stopEvent: stopEvent
+            isDateFormat: isDateFormat
         };
     }();
 
@@ -1779,12 +1761,6 @@ ax5.info.errorMsg["single-uploader"] = {
 
 ax5.info.errorMsg["ax5calendar"] = {
     "401": "Can not find target element"
-};
-
-ax5.info.errorMsg["ax5formatter"] = {
-    "401": "Can not find target element",
-    "402": "Can not find boundID",
-    "501": "Can not find pattern"
 };
 // 필수 Ployfill 확장 구문
 (function () {

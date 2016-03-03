@@ -253,29 +253,29 @@
                         inspectValue = function (val, format, inspect, data) {
                             var _val = {
                                 'Y': function (v) {
-                                    if(typeof v == "undefined") v = TODAY.getFullYear();
-                                    if(v == '0000')  v = TODAY.getFullYear();
+                                    if (typeof v == "undefined") v = TODAY.getFullYear();
+                                    if (v == '0000')  v = TODAY.getFullYear();
                                     return (v.length < 4) ? U.setDigit(v, 4) : v;
                                 },
                                 'M': function (v) {
-                                    if(typeof v == "undefined") v = TODAY.getMonth() + 1;
+                                    if (typeof v == "undefined") v = TODAY.getMonth() + 1;
                                     return v > 12 ? 12 : v == 0 ? '01' : U.setDigit(v, 2);
                                 },
                                 'D': function (v) {
-                                    if(typeof v == "undefined") v = TODAY.getDate() + 1;
+                                    if (typeof v == "undefined") v = TODAY.getDate() + 1;
                                     var dLen = U.daysOfMonth(data[1], data[2] - 1);
                                     return v > dLen ? dLen : v == 0 ? '01' : U.setDigit(v, 2);
                                 },
                                 'h': function (v) {
-                                    if(!v) v = 0;
+                                    if (!v) v = 0;
                                     return v > 23 ? 23 : U.setDigit(v, 2);
                                 },
                                 'm': function (v) {
-                                    if(!v) v = 0;
+                                    if (!v) v = 0;
                                     return v > 59 ? 59 : U.setDigit(v, 2);
                                 },
                                 's': function (v) {
-                                    if(!v) v = 0;
+                                    if (!v) v = 0;
                                     return v > 59 ? 59 : U.setDigit(v, 2);
                                 }
                             };
@@ -294,9 +294,8 @@
                         return nval.join('');
                     });
 
-                    
                     if (eType == 'blur' && !matchedPattern) {
-                        returnValue = (function(){
+                        returnValue = (function () {
                             var nval = [inspectValue(returnValue, "Y", eType)];
                             nval.push('-' + inspectValue(0, "M", eType));
                             nval.push('-' + inspectValue(0, "D", eType, arguments));
@@ -354,7 +353,7 @@
                     return returnValue;
                 },
                 "custom": function (opts, optIdx, e, val, eType) {
-                    
+
                 }
             };
             
