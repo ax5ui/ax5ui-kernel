@@ -353,7 +353,9 @@
                     return returnValue;
                 },
                 "custom": function (opts, optIdx, e, val, eType) {
-
+                    if(opts.getPatternValue){
+                        return opts.getPatternValue.call(opts, {event:e, $input:opts.$input, value:val});
+                    }
                 }
             };
             

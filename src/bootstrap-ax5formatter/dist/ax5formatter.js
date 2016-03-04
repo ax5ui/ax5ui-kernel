@@ -339,7 +339,11 @@
                     });
                     return returnValue;
                 },
-                "custom": function custom(opts, optIdx, e, val, eType) {}
+                "custom": function custom(opts, optIdx, e, val, eType) {
+                    if (opts.getPatternValue) {
+                        return opts.getPatternValue.call(opts, { event: e, $input: opts.$input, value: val });
+                    }
+                }
             };
 
             var formatterEvent = {
