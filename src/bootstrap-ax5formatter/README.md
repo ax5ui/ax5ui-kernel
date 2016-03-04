@@ -32,11 +32,12 @@ exactly the path.
 ```html
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="bower_components/bootstrap-ax5formatter/dist/ax5formatter.css" />
-    
+        <link rel="stylesheet" type="text/css" 
+        href="bower_components/bootstrap-ax5formatter/dist/ax5formatter.css" />
         <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="bower_components/ax5core/dist/ax5core.min.js"></script>
-        <script type="text/javascript" src="bower_components/bootstrap-ax5formatter/dist/ax5formatter.min.js"></script>
+        <script type="text/javascript" 
+        src="bower_components/bootstrap-ax5formatter/dist/ax5formatter.min.js"></script>
     </head>
 <body>
     <div class="form-group">
