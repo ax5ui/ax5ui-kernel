@@ -82,7 +82,7 @@
             }
             opts.$target = jQuery(opts.target);
             opts.$input = (opts.$target.get(0).tagName == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
-            opts.id = opts.$input.data("ax5-formatter");
+            if(!opts.id) opts.id = opts.$input.data("ax5-formatter");
 
             if (!opts.id) {
                 opts.id = 'ax5-formatter-' + ax5.getGuid();
