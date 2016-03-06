@@ -166,7 +166,7 @@
                 opts.$target.find('.input-group-addon').unbind('click.ax5picker').bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
                 if (opts.content.formatter && ax5.ui.formatter) {
-                    opts.$target.ax5formatter(opts.content.formatter);
+                    opts.$target.find('input[type="text"]').ax5formatter(opts.content.formatter);
                 }
 
                 return this;
