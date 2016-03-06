@@ -57,13 +57,25 @@
     </div>
 </div>
 
+<div class="form-group" id="formatter-test">
+    <div class="input-group">
+        <span class="input-group-addon">Phone</span>
+        <input name="4" type="text" class="form-control" placeholder="" data-ax5formatter="phone" />
+        <span class="input-group-addon">Date</span>
+        <input name="4" type="text" class="form-control" placeholder="" data-ax5formatter="date" value="20160122" />
+    </div>
+</div>
+
 <!--https://css-tricks.com/snippets/javascript/javascript-keycodes/-->
 <script type="text/javascript">
 
     $('[data-ax5formatter]').ax5formatter();
+    /*
     $('#ax5formatter-01').ax5formatter({
         pattern: "date"
     });
+    */
+
     $('#ax5formatter-custom').ax5formatter({
         pattern: "custom",
         getPatternValue: function(obj){
@@ -78,7 +90,7 @@
             return obj.value.replace(/./g, "*");
         }
     });
-
+    $('#formatter-test').ax5formatter();
     /**
      * {
      *  pattern: "" // money, money(int), number, number(int), date, date(time), time, bizno, phone, custom

@@ -81,8 +81,23 @@
                 return this;
             }
             opts.$target = jQuery(opts.target);
+
+            if (opts.$target.get(0).tagName == "INPUT") {
+                opts.$input = opts.$target;
+            }
+            else {
+                opts.$input = opts.$target.find('input[type="text"]');
+                if (opts.$input.length > 1) {
+                    opts.$input.each(function () {
+                        opts.target = this;
+                        self.bind(opts);
+                    });
+                    return this;
+                }
+            }
+
             opts.$input = (opts.$target.get(0).tagName == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
-            if(!opts.id) opts.id = opts.$input.data("ax5-formatter");
+            if (!opts.id) opts.id = opts.$input.data("ax5-formatter");
 
             if (!opts.id) {
                 opts.id = 'ax5-formatter-' + ax5.getGuid();
@@ -97,7 +112,7 @@
                 this.queue.push(opts);
                 this.__bindFormatterTarget(this.queue[this.queue.length - 1], this.queue.length - 1);
             }
-            else{
+            else {
                 this.queue[optIdx] = opts;
                 this.__bindFormatterTarget(this.queue[optIdx], optIdx);
             }
@@ -232,7 +247,7 @@
                     return returnValue;
                 },
                 "number": function (opts, optIdx, e, val, eType) {
-                    val = val.replace(/[^0-9^\.^\-]/g, "")
+                    val = val.replace(/[^0-9^\.^\-]/g, "");
                     var arrNumber = val.split('.'),
                         returnValue
                         ;
@@ -253,6 +268,7 @@
                 },
                 "date": function (opts, optIdx, e, val, eType) {
                     val = val.replace(/\D/g, "");
+                    if(val == "") return val;
                     var regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
                     
                     if (opts.patternArgument == "time") {
@@ -265,7 +281,7 @@
                             var _val = {
                                 'Y': function (v) {
                                     if (typeof v == "undefined") v = TODAY.getFullYear();
-                                    if (v == '0000')  v = TODAY.getFullYear();
+                                    if (v == '' || v == '0000')  v = TODAY.getFullYear();
                                     return (v.length < 4) ? U.setDigit(v, 4) : v;
                                 },
                                 'M': function (v) {
@@ -364,8 +380,8 @@
                     return returnValue;
                 },
                 "custom": function (opts, optIdx, e, val, eType) {
-                    if(opts.getPatternValue){
-                        return opts.getPatternValue.call(opts, {event:e, $input:opts.$input, value:val});
+                    if (opts.getPatternValue) {
+                        return opts.getPatternValue.call(opts, {event: e, $input: opts.$input, value: val});
                     }
                 }
             };
@@ -436,7 +452,6 @@
             return function (opts, optIdx) {
 
                 if (!opts.pattern) {
-                    
                     if (opts.$target.get(0).tagName == "INPUT") {
                         opts.pattern = opts.$target
                             .attr('data-ax5formatter');
@@ -482,6 +497,8 @@
                 opts.$input
                     .unbind('blur.ax5formatter')
                     .bind('blur.ax5formatter', formatterEvent.blur.bind(this, this.queue[optIdx], optIdx));
+
+                formatterEvent.blur.call(this, this.queue[optIdx], optIdx);
                 
                 return this;
                 

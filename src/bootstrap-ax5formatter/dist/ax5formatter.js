@@ -253,6 +253,7 @@
                 },
                 "date": function date(opts, optIdx, e, val, eType) {
                     val = val.replace(/\D/g, "");
+                    if (val == "") return val;
                     var regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
 
                     if (opts.patternArgument == "time") {
@@ -430,7 +431,6 @@
             return function (opts, optIdx) {
 
                 if (!opts.pattern) {
-
                     if (opts.$target.get(0).tagName == "INPUT") {
                         opts.pattern = opts.$target.attr('data-ax5formatter');
                     } else {
@@ -464,6 +464,8 @@
                 opts.$input.unbind('keyup.ax5formatter').bind('keyup.ax5formatter', formatterEvent.keyup.bind(this, this.queue[optIdx], optIdx));
 
                 opts.$input.unbind('blur.ax5formatter').bind('blur.ax5formatter', formatterEvent.blur.bind(this, this.queue[optIdx], optIdx));
+
+                formatterEvent.blur.call(this, this.queue[optIdx], optIdx);
 
                 return this;
             };
