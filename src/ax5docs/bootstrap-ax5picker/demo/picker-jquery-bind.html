@@ -1,16 +1,20 @@
 
 
 
+
     
     
     
+    
+    
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<link rel="shortcut icon" href="../../assets/ax5favicon.ico" type="image/x-icon">
-	<title>ax5ui / bootstrap-ax5picker : API</title>
+	<title>ax5ui / bootstrap-ax5picker : Picker jQuery bind</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -35,9 +39,15 @@
 
 	
 	
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.css">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.js"></script>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.min.js"></script>
+    
 </head>
 <body>
-<div class="docs sub-page with-inline-menu ">
+<div class="docs sub-page  with-menu">
 	<div class="docs-header">
 		<div class="docs-header-tool" id="docs-header-tool">
 			<nav class="navbar navbar-default">
@@ -61,7 +71,7 @@
 						<ul class="nav navbar-nav" id="docs-menu-print-target">
 							
 							
-								<li ><a href="/bootstrap-ax5picker/demo/index.html">Demo</a></li><li class='active'><a href="/bootstrap-ax5picker/api/index.html">API</a></li>
+								<li class='active'><a href="/bootstrap-ax5picker/demo/index.html">Demo</a></li><li ><a href="/bootstrap-ax5picker/api/index.html">API</a></li>
 							
 						</ul>
 
@@ -103,123 +113,72 @@
 	<div class="docs-visual">
 		<div class="pattern"></div>
 		
-
         <div class="contents">
-            <div class="style-sub-visual">
-                <div class="title">API</div>
-                <div class="description">
-                </div>
-            </div>
-        </div>
-
+    <div class="style-sub-visual">
+        <div class="title">Demostration</div>
+        <div class="description">Introduces the basic use of bootstrap-ax5picker UI.</div>
+    </div>
+</div>
     
 	</div>
 	<div class="docs-body" id="docs-body">
 		<div class="wrapper">
 		
 			<div class="row">
-				<div class="col-md-3 hidden-print hidden-xs hidden-sm">
-					<div class="docs-menu" id="docs-inline-menu"></div>
+				<div class="col-md-3">
+					<div class="docs-menu" id="docs-menu">
+						
+        <ul><li ><a href="/bootstrap-ax5picker/demo/index.html">Picker Basic</a></li><li ><a href="/bootstrap-ax5picker/demo/picker-date.html">Picker Date</a></li><li ><a href="/bootstrap-ax5picker/demo/picker-multidate.html">Picker Multi Date</a></li><li ><a href="/bootstrap-ax5picker/demo/picker-date-btns.html">Picker Buttons</a></li><li  class='active'><a href="/bootstrap-ax5picker/demo/picker-jquery-bind.html">Picker jQuery bind</a></li></ul>
+    
+					</div>
 				</div>
 				<div class="col-md-9">
 					
-        <h1>Basic Usage</h1>
-<blockquote>
-<p>picker will be able to enter a value for the input element through the other UI.</p>
-</blockquote>
-<h2>bind()</h2>
-<p><code>bind(Options)</code></p>
-<pre class="prettyprint linenums lang-js"><code>var picker = new ax5.ui.picker();
 
-picker.bind({
-    target: $(&quot;#input&quot;),
-    direction: &quot;top&quot;,
-    contentWidth: 200,
-    content: function (callBack) {
-        var html = ''
-                + 'HTML CONTENT'
-            ;
-        callBack(html);
-    }
-);
 
-picker.bind({
-    id: &quot;my-picker-01&quot;,
-    target: $(&quot;#input&quot;),
-    direction: &quot;top&quot;,
-    contentWidth: 200,
-    content: {
-        width: 270,
-        margin: 10,
-        type: 'date',
-        config: {
-            // calendar UI config
-        },
-        formatter: {
-            pattern: 'date'
-        }
-    },
-    btns: {
-        ok: {label: &quot;확인&quot;, theme: &quot;default&quot;}
-    }
-);
-</code></pre>
-<h3>id</h3>
-<p>Type: <code>String</code></p>
-<p>picker unique id</p>
-<h3>target</h3>
-<p>Type: <code>Dom Element | jQuery Object</code></p>
-<p>&quot;.input-Group&quot; elements that are the target of the picker</p>
-<h3>direction</h3>
-<p>Type: <code>String</code> &quot;top|left|right|bottom|auto&quot;</p>
-<h3>content</h3>
-<p>Type: <code>Function|Object</code></p>
-<ul>
-<li>Function</li>
-</ul>
-<pre class="prettyprint linenums lang-js"><code>function (callBack) {
-    var html = 'HTML CONTENT';
-    callBack(html);
-}
-</code></pre>
-<ul>
-<li>Object</li>
-</ul>
-<pre class="prettyprint linenums lang-js"><code>{
-    width: 270,
-    margin: 10,
-    type: 'date',
-    config: {
-        // calendar UI config
-    }
-}
-</code></pre>
-<h3>contentWidth</h3>
-<p>Type: <code>Number</code></p>
-<p>If the content type of the function, recommended to set this value.</p>
-<h3>btns</h3>
-<p>Type: <code>Object</code></p>
-<pre class="prettyprint linenums lang-js"><code>{
-    ok: {label: &quot;확인&quot;, theme: &quot;default&quot;}
-}
-</code></pre>
-<hr>
-<h2>setContentValue()</h2>
-<p><code>setContentValue(boundObjectId, inputSeq, value)</code></p>
-<h3>boundObjectId</h3>
-<p>Type: <code>String</code></p>
-<p>picker unique id</p>
-<h3>inputSeq</h3>
-<p>.input-group's input seq</p>
-<hr>
-<h2>open()</h2>
-<p><code>open(boundObjectId)</code></p>
-<h3>boundObjectId</h3>
-<p>Type: <code>String</code></p>
-<p>picker unique id</p>
-<hr>
-<h2>close()</h2>
-<p><code>close()</code></p>
+        
+        <section class="ax5docs-section">
+            <h1>Picker (jQuery bind)</h1>
+
+
+            <p>
+                <b>Paste the following code into the <code>&lt;head></code> section of your site's HTML.</b>
+            </p>
+            <pre class="prettyprint linenums lang-html">&lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+&lt;link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.css">
+&lt;script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.min.js">&lt;/script></pre>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label>Date</label>
+                    <div class="input-group" data-ax5picker="basic">
+                        <input type="text" class="form-control" placeholder="yyyy/mm/dd">
+                        <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $(document.body).ready(function () {
+        $('[data-ax5picker="basic"]').ax5picker({
+            direction: "top",
+            content: {
+                type: 'date'
+            }
+        });
+    });
+&lt;/script></pre><script type="text/javascript">$(document.body).ready(function () {
+        $('[data-ax5picker="basic"]').ax5picker({
+            direction: "top",
+            content: {
+                type: 'date'
+            }
+        });
+    });
+</script></script>
+
+
+        </section>
 
     
 				</div>
