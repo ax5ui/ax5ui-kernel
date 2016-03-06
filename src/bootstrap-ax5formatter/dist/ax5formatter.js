@@ -65,9 +65,7 @@
         this.init = function () {};
 
         this.bind = function (opts) {
-            var formatterConfig = {},
-                optIdx;
-
+            var formatterConfig = {};
             jQuery.extend(true, formatterConfig, cfg);
             if (opts) jQuery.extend(true, formatterConfig, opts);
             opts = formatterConfig;
@@ -77,23 +75,16 @@
                 return this;
             }
             opts.$target = jQuery(opts.target);
-            opts.$input = opts.$target.get(0).tagName == "INPUT" ? opts.$target : opts.$target.find('input[type="text"]');
-            if (!opts.id) opts.id = opts.$input.data("ax5-formatter");
 
             if (!opts.id) {
                 opts.id = 'ax5-formatter-' + ax5.getGuid();
-                opts.$input.data("ax5-formatter", opts.id);
             }
-            optIdx = U.search(this.queue, function () {
-                return this.id == opts.id;
-            });
 
-            if (optIdx === -1) {
+            if (U.search(this.queue, function () {
+                return this.id == opts.id;
+            }) === -1) {
                 this.queue.push(opts);
                 this.__bindFormatterTarget(this.queue[this.queue.length - 1], this.queue.length - 1);
-            } else {
-                this.queue[optIdx] = opts;
-                this.__bindFormatterTarget(this.queue[optIdx], optIdx);
             }
 
             return this;
@@ -414,7 +405,6 @@
             };
 
             return function (opts, optIdx) {
-
                 if (!opts.pattern) {
 
                     if (opts.$target.get(0).tagName == "INPUT") {
@@ -442,6 +432,8 @@
                         break;
                     }
                 }
+
+                opts.$input = opts.$target.get(0).tagName == "INPUT" ? opts.$target : opts.$target.find('input[type="text"]');
 
                 opts.$input.unbind('focus.ax5formatter').bind('focus.ax5formatter', formatterEvent.focus.bind(this, this.queue[optIdx], optIdx));
 

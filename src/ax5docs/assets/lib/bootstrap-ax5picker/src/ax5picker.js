@@ -55,7 +55,10 @@
         };
 
         this.bind = function (opts) {
-            var pickerConfig = {};
+            var
+                pickerConfig = {},
+                optIdx;
+
             jQuery.extend(true, pickerConfig, cfg);
             if (opts) jQuery.extend(true, pickerConfig, opts);
             opts = pickerConfig;
@@ -65,17 +68,24 @@
                 return this;
             }
             opts.$target = jQuery(opts.target);
+            if(!opts.id) opts.id = opts.$target.data("ax5-picker");
 
             if (!opts.id) {
                 opts.id = 'ax5-picker-' + ax5.getGuid();
+                opts.$target.data("ax5-picker", opts.id);
             }
+            optIdx = U.search(this.queue, function () {
+                return this.id == opts.id;
+            });
 
-            if (U.search(this.queue, function () {
-                    return this.id == opts.id;
-                }) === -1)
+            if (optIdx === -1)
             {
                 this.queue.push(opts);
                 this.__bindPickerTarget(opts, this.queue.length - 1);
+            }
+            else{
+                this.queue[optIdx] = opts;
+                this.__bindPickerTarget(this.queue[optIdx], optIdx);
             }
 
             return this;
@@ -536,3 +546,19 @@
     })(); // ax5.ui에 연결
 
 })(ax5.ui, ax5.ui.root);
+
+ax5.ui.picker_instance = new ax5.ui.picker();
+
+$.fn.ax5picker = (function () {
+    return function (config) {
+        if (typeof config == "undefined") config = {};
+        $.each(this, function () {
+            var defaultConfig = {
+                target: this
+            };
+            config = $.extend(true, config, defaultConfig);
+            ax5.ui.picker_instance.bind(config);
+        });
+        return this;
+    }
+})();

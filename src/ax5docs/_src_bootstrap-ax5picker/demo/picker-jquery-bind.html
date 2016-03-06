@@ -1,0 +1,70 @@
+<tmpl-metadata parentId="demo" parentTitle="Demo" sort="5" id="picker-jquery" title="Picker jQuery bind" desc=""/>
+
+<layout-use template="${data.layoutPath}"
+            project-name="${data.projectName}"
+            parent-id="${data.metadata.parentId}" page-title="${data.metadata.title}" page-id="${data.metadata.id}"
+            body-style="sub-page" with-menu="true">
+
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="${data.metadata.parentId}" activeId="${data.metadata.id}"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css"/>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.css"/>
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5picker/dist/ax5picker.js"></script>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.min.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+
+        <!-- doc-js Basic Alert -->
+        <section class="ax5docs-section">
+            <ax5docs-md>
+                # Picker (jQuery bind)
+            </ax5docs-md>
+
+            <p>
+                <b>Paste the following code into the <code>&lt;head&gt;</code> section of your site's HTML.</b>
+            </p>
+            <ax5docs-html>
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+                <link rel="stylesheet" type="text/css" href="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.css"/>
+                <script type="text/javascript" src="../../assets/lib/bootstrap-ax5calendar/dist/ax5calendar.min.js"></script>
+            </ax5docs-html>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label>Date</label>
+                    <div class="input-group" data-ax5picker="basic">
+                        <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
+                        <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $(document.body).ready(function () {
+                        $('[data-ax5picker="basic"]').ax5picker({
+                            direction: "top",
+                            content: {
+                                type: 'date'
+                            }
+                        });
+                    });
+                </script>
+            </ax5docs-js>
+
+
+        </section>
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+
+</layout-use>
