@@ -1,11 +1,11 @@
 {
-	"name": "bootstrap-ax5picker",
+	"name": "bootstrap-ax5formatter",
 	"version": "0.3.0",
-	"description": "A picker plugin that works with Bootstrap & jQuery",
+	"description": "A formatter plugin that works with Bootstrap & jQuery",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/ax5ui/bootstrap-ax5picker"
+		"url": "git+https://github.com/ax5ui/bootstrap-ax5formatter"
 	},
 	"author": {
 		"name": "Thomas Jang",

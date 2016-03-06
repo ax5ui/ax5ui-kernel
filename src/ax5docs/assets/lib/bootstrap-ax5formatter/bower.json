@@ -1,20 +1,19 @@
 {
-	"name": "bootstrap-ax5picker",
+	"name": "bootstrap-ax5formatter",
 	"version": "0.3.0",
-	"description": "A picker plugin that works with Bootstrap & jQuery",
+	"description": "A formatter plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
 	],
-	"description": "",
-	"main": "dist/ax5picker.js",
+	"main": "dist/ax5formatter.js",
 	"keywords": [
 		"bootstrap",
 		"jquery",
 		"ax5ui",
 		"plugin",
 		"bootstrap jQuery plugins",
-		"picker",
-		"bootstrap-ax5picker",
+		"formatter",
+		"bootstrap-ax5formatter",
 		"javascript ui"
 	],
 	"dependencies": {
