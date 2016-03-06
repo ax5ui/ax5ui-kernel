@@ -32,6 +32,9 @@ picker.bind({
         type: 'date',
         config: {
             // calendar UI config
+        },
+        formatter: {
+            pattern: 'date'
         }
     },
     btns: {

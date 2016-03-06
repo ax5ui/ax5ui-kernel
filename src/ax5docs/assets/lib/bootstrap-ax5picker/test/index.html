@@ -14,7 +14,8 @@
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="bower_components/bootstrap-ax5mask/dist/ax5mask.min.js"></script>
     <script src="bower_components/bootstrap-ax5calendar/dist/ax5calendar.js"></script>
-    <script src="../dist/ax5picker.min.js"></script>
+    <script src="bower_components/bootstrap-ax5formatter/dist/ax5formatter.js"></script>
+    <script src="../dist/ax5picker.js"></script>
 </head>
 <body style="padding: 100px;">
 
@@ -66,6 +67,9 @@
                         months: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
                         dayTmpl: "%s"
                     }
+                },
+                formatter: {
+                    pattern: 'date'
                 }
             },
             btns: {
