@@ -78,6 +78,16 @@
 
     $('#ax5formatter-custom').ax5formatter({
         pattern: "custom",
+        getEnterableKeyCodes: function(){
+            return {
+                '65':'a',
+                '66':'b',
+                '67':'c',
+                '68':'d',
+                '69':'e',
+                '70':'f'
+            };
+        },
         getPatternValue: function(obj){
             /*
             console.log(obj);

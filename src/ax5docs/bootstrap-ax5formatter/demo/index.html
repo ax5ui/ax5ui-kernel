@@ -14,7 +14,7 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<link rel="shortcut icon" href="../../assets/ax5favicon.ico" type="image/x-icon">
-	<title>ax5ui / bootstrap-ax5formatter : formatter Money</title>
+	<title>ax5ui / bootstrap-ax5formatter : Formatter Money</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -125,7 +125,7 @@
 				<div class="col-md-3">
 					<div class="docs-menu" id="docs-menu">
 						
-        <ul><li  class='active'><a href="/bootstrap-ax5formatter/demo/index.html">formatter Money</a></li></ul>
+        <ul><li  class='active'><a href="/bootstrap-ax5formatter/demo/index.html">Formatter Money</a></li><li ><a href="/bootstrap-ax5formatter/demo/date.html">Formatter Date</a></li><li ><a href="/bootstrap-ax5formatter/demo/custom.html">Formatter Custom</a></li></ul>
     
 					</div>
 				</div>
@@ -135,48 +135,55 @@
 
         
         <section class="ax5docs-section">
-            <h1>formatter Money</h1>
+            <h1>Formatter Money</h1>
+<p><strong>Paste the following code into the <code>head</code> section of your site's HTML.</strong></p>
 <pre class="prettyprint linenums lang-html"><code>&lt;script type=&quot;text/javascript&quot; src=&quot;src/bootstrap-ax5formatter/dist/ax5formatter.js&quot;&gt;&lt;/script&gt;
 </code></pre>
 
 
 
-            <div class="row">
-                <div class="col-md-6">
+            HTML
+            <pre class="prettyprint linenums lang-html">&lt;div class="form-group" id="ax5formatter-01">
+    &lt;div class="input-group">
+        &lt;span class="input-group-addon">Money&lt;/span>
+        &lt;input name="1" type="text" class="form-control" placeholder data-ax5formatter="money" value="9999.99">
+    &lt;/div>
+&lt;/div>
+&lt;div class="form-group">
+    &lt;div class="input-group" id="ax5formatter-01-1">
+        &lt;span class="input-group-addon">Money(int)&lt;/span>
+        &lt;input name="2" type="text" class="form-control" placeholder data-ax5formatter="money(int)">
+    &lt;/div>
+&lt;/div>
+&lt;div class="form-group">
+    &lt;div class="input-group">
+        &lt;span class="input-group-addon">Money&lt;/span>
+        &lt;input name="2" type="text" class="form-control" placeholder="1,000,000" data-ax5formatter="money" data-ax5="formatter">
+    &lt;/div>
+&lt;/div></pre><div class="form-group" id="ax5formatter-01">
+    <div class="input-group">
+        <span class="input-group-addon">Money</span>
+        <input name="1" type="text" class="form-control" placeholder data-ax5formatter="money" value="9999.99">
+    </div>
+</div>
+<div class="form-group">
+    <div class="input-group" id="ax5formatter-01-1">
+        <span class="input-group-addon">Money(int)</span>
+        <input name="2" type="text" class="form-control" placeholder data-ax5formatter="money(int)">
+    </div>
+</div>
+<div class="form-group">
+    <div class="input-group">
+        <span class="input-group-addon">Money</span>
+        <input name="2" type="text" class="form-control" placeholder="1,000,000" data-ax5formatter="money" data-ax5="formatter">
+    </div>
+</div>
 
-                    <div class="form-group" id="ax5formatter-01">
-                        <div class="input-group">
-                            <span class="input-group-addon">Money</span>
-                            <input name="1" type="text" class="form-control" placeholder data-ax5formatter="money" value="9999.99">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group" id="ax5formatter-01-1">
-                            <span class="input-group-addon">Money(int)</span>
-                            <input name="2" type="text" class="form-control" placeholder data-ax5formatter="money(int)">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <span class="input-group-addon">Money</span>
-                            <input name="2" type="text" class="form-control" placeholder="1,000,000" data-ax5formatter="money" data-ax5="formatter">
-                        </div>
-                    </div>
 
-                </div>
-            </div>
-
+            JS
             <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
-    $(document.body).ready(function () {
-        $('[data-ax5formatter]').ax5formatter();
-        //$('#ax5formatter-01').ax5formatter();
-        //$('[data-ax5="formatter"]').ax5formatter();
-    });
-&lt;/script></pre><script type="text/javascript">$(document.body).ready(function () {
-        $('[data-ax5formatter]').ax5formatter();
-        //$('#ax5formatter-01').ax5formatter();
-        //$('[data-ax5="formatter"]').ax5formatter();
-    });
+    $('[data-ax5formatter]').ax5formatter();
+&lt;/script></pre><script type="text/javascript">$('[data-ax5formatter]').ax5formatter();
 </script></script>
 
             

@@ -1,4 +1,4 @@
-<tmpl-metadata parentId="demo" parentTitle="Demo" sort="1" id="basic" title="formatter Money" desc=""/>
+<tmpl-metadata parentId="demo" parentTitle="Demo" sort="2" id="formatter-date" title="Formatter Date" desc=""/>
 
 <layout-use template="${data.layoutPath}"
             project-name="${data.projectName}"
@@ -21,7 +21,7 @@
         <!-- doc-js Basic Alert -->
         <section class="ax5docs-section">
             <ax5docs-md>
-                # formatter Money
+                # Formatter Date
 
                 **Paste the following code into the `head` section of your site's HTML.**
                 ```html
@@ -33,22 +33,22 @@
             HTML
             <ax5docs-html run="true">
 
-                <div class="form-group" id="ax5formatter-01">
-                    <div class="input-group">
-                        <span class="input-group-addon">Money</span>
-                        <input name="1" type="text" class="form-control" placeholder="" data-ax5formatter="money" value="9999.99"/>
-                    </div>
-                </div>
                 <div class="form-group">
-                    <div class="input-group" id="ax5formatter-01-1">
-                        <span class="input-group-addon">Money(int)</span>
-                        <input name="2" type="text" class="form-control" placeholder="" data-ax5formatter="money(int)"/>
+                    <div class="input-group">
+                        <span class="input-group-addon">Date</span>
+                        <input name="3" type="text" class="form-control" placeholder="yyyy-mm-dd" data-ax5formatter="date" />
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group">
-                        <span class="input-group-addon">Money</span>
-                        <input name="2" type="text" class="form-control" placeholder="1,000,000" data-ax5formatter="money" data-ax5="formatter"/>
+                        <span class="input-group-addon">Date(time)</span>
+                        <input name="3" type="text" class="form-control" placeholder="yyyy-mm-dd hh:mi:ss" data-ax5formatter="date(time)" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">Time</span>
+                        <input name="3" type="text" class="form-control" placeholder="hh:mi:ss" data-ax5formatter="time" />
                     </div>
                 </div>
 

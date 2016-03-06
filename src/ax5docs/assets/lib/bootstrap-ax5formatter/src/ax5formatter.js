@@ -211,9 +211,13 @@
                     opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
                 },
                 "custom": function (opts, optIdx) {
-                    var enterableKeyCodes = {};
-                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
+
+                    if (opts.getEnterableKeyCodes) {
+                        opts.enterableKeyCodes = opts.getEnterableKeyCodes.call(opts, {$input: opts.$input});
+                    }
+                    else{
+                        opts.enterableKeyCodes = null;
+                    }
                 }
             };
             
@@ -393,7 +397,10 @@
                 /* 키 다운 이벤트에서 입력할 수 없는 키 입력을 방어 */
                 'keydown': function (opts, optIdx, e) {
                     var isStop = false;
-                    if (e.which && opts.enterableKeyCodes[e.which]) {
+                    if(!opts.enterableKeyCodes){
+
+                    }
+                    else if (e.which && opts.enterableKeyCodes[e.which]) {
                         
                     }
                     else if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {

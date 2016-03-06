@@ -1,4 +1,4 @@
-<tmpl-metadata parentId="demo" parentTitle="Demo" sort="2" id="formatter-date" title="formatter Date" desc=""/>
+<tmpl-metadata parentId="demo" parentTitle="Demo" sort="3" id="formatter-custom" title="Formatter Custom" desc=""/>
 
 <layout-use template="${data.layoutPath}"
             project-name="${data.projectName}"
@@ -21,7 +21,7 @@
         <!-- doc-js Basic Alert -->
         <section class="ax5docs-section">
             <ax5docs-md>
-                # formatter Date
+                # Formatter Custom
 
                 **Paste the following code into the `head` section of your site's HTML.**
                 ```html
@@ -32,41 +32,51 @@
 
             HTML
             <ax5docs-html run="true">
-
                 <div class="form-group">
                     <div class="input-group">
-                        <span class="input-group-addon">Date</span>
-                        <input name="3" type="text" class="form-control" placeholder="yyyy-mm-dd" data-ax5formatter="date" />
+                        <span class="input-group-addon">Custom</span>
+                        <input name="3" type="text" class="form-control" placeholder="" data-ax5formatter-custom="01"/>
                     </div>
                 </div>
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-addon">Date(time)</span>
-                        <input name="3" type="text" class="form-control" placeholder="yyyy-mm-dd hh:mi:ss" data-ax5formatter="date(time)" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-addon">Time</span>
-                        <input name="3" type="text" class="form-control" placeholder="hh:mi:ss" data-ax5formatter="time" />
-                    </div>
-                </div>
-
             </ax5docs-html>
-            
 
             JS
             <ax5docs-js run="true">
                 <script type="text/javascript">
-                    $('[data-ax5formatter]').ax5formatter();
+                    $('[data-ax5formatter-custom="01"]').ax5formatter({
+                        pattern: "custom",
+                        getEnterableKeyCodes: function(obj){
+                            /*
+                            console.log(this);
+                            console.log(obj);
+                            {
+                                \$input: jQueryObject of input element
+                            }
+                             */
+                            return {
+                                '65':'a',
+                                '66':'b',
+                                '67':'c',
+                                '68':'d',
+                                '69':'e',
+                                '70':'f'
+                            };
+                        },
+                        getPatternValue: function (obj) {
+                            /*
+                            console.log(this);
+                            console.log(obj);
+                            {
+                                event: Event,
+                                \$input: jQueryObject of input element,
+                                value: value of input element
+                            }
+                             */
+                            return obj.value.replace(/./g, "*");
+                        }
+                    });
                 </script>
             </ax5docs-js>
-
-            <ax5docs-md>
-
-            </ax5docs-md>
-
-
         </section>
 
     </layout-put>

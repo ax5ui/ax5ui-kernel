@@ -1,16 +1,20 @@
 
 
 
+
     
     
     
+    
+    
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<link rel="shortcut icon" href="../../assets/ax5favicon.ico" type="image/x-icon">
-	<title>ax5ui / bootstrap-ax5formatter : API</title>
+	<title>ax5ui / bootstrap-ax5formatter : Formatter Date</title>
 
 	
 	<script src="../../assets/lib/jquery/jquery.min.js"></script>
@@ -35,9 +39,12 @@
 
 	
 	
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css">
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5formatter/dist/ax5formatter.js"></script>
+    
 </head>
 <body>
-<div class="docs sub-page with-inline-menu ">
+<div class="docs sub-page  with-menu">
 	<div class="docs-header">
 		<div class="docs-header-tool" id="docs-header-tool">
 			<nav class="navbar navbar-default">
@@ -61,7 +68,7 @@
 						<ul class="nav navbar-nav" id="docs-menu-print-target">
 							
 							
-								<li ><a href="/bootstrap-ax5formatter/demo/index.html">Demo</a></li><li class='active'><a href="/bootstrap-ax5formatter/api/index.html">API</a></li>
+								<li class='active'><a href="/bootstrap-ax5formatter/demo/index.html">Demo</a></li><li ><a href="/bootstrap-ax5formatter/api/index.html">API</a></li>
 							
 						</ul>
 
@@ -103,63 +110,86 @@
 	<div class="docs-visual">
 		<div class="pattern"></div>
 		
-
         <div class="contents">
-            <div class="style-sub-visual">
-                <div class="title">API</div>
-                <div class="description">
-                </div>
-            </div>
-        </div>
-
+    <div class="style-sub-visual">
+        <div class="title">Demostration</div>
+        <div class="description">Introduces the basic use of bootstrap-ax5formatter UI.</div>
+    </div>
+</div>
     
 	</div>
 	<div class="docs-body" id="docs-body">
 		<div class="wrapper">
 		
 			<div class="row">
-				<div class="col-md-3 hidden-print hidden-xs hidden-sm">
-					<div class="docs-menu" id="docs-inline-menu"></div>
+				<div class="col-md-3">
+					<div class="docs-menu" id="docs-menu">
+						
+        <ul><li ><a href="/bootstrap-ax5formatter/demo/index.html">Formatter Money</a></li><li  class='active'><a href="/bootstrap-ax5formatter/demo/date.html">Formatter Date</a></li><li ><a href="/bootstrap-ax5formatter/demo/custom.html">Formatter Custom</a></li></ul>
+    
+					</div>
 				</div>
 				<div class="col-md-9">
 					
-        <h1>Basic Usage</h1>
-<blockquote>
-<p>formatting the value of the bound Input in the desired format. And, to limit to enter the only permitted string.</p>
-</blockquote>
-<h2>bind()</h2>
-<p><code>bind(Options)</code></p>
-<pre class="prettyprint linenums lang-js"><code>var formatter = new ax5.ui.formatter();
 
-formatter.bind({
-    target: $(&quot;#input&quot;),
-    pattern: &quot;date&quot;
-);
 
-picker.bind({
-    target: $(&quot;#input&quot;),
-    pattern: &quot;custom&quot;,
-    getEnterableKeyCodes: function(){},
-    getPatternValue: function(){}
-);
+        
+        <section class="ax5docs-section">
+            <h1>Formatter Date</h1>
+<p><strong>Paste the following code into the <code>head</code> section of your site's HTML.</strong></p>
+<pre class="prettyprint linenums lang-html"><code>&lt;script type=&quot;text/javascript&quot; src=&quot;src/bootstrap-ax5formatter/dist/ax5formatter.js&quot;&gt;&lt;/script&gt;
 </code></pre>
-<h3>id</h3>
-<p>Type: <code>String</code></p>
-<p>formatter unique id</p>
-<h3>target</h3>
-<p>Type: <code>Dom Element | jQuery Object</code></p>
-<p>&quot;.input-Group&quot; elements that are the target of the picker</p>
-<h3>pattern</h3>
-<p>Type: <code>String</code> &quot;money|money(int)|date|date(time)|time|bizno|phone|custom&quot;</p>
-<h3>getEnterableKeyCodes</h3>
-<p>Type: <code>Function</code></p>
-<p>You can define the keyCode collection to allow input.</p>
-<h3>getPatternValue</h3>
-<p>Type: <code>Function</code></p>
-<p>It can be converted to the format required the entered value.</p>
-<hr>
-<h1>jQuery widget</h1>
-<p><code>ax5formatter()</code></p>
+
+
+
+            HTML
+            <pre class="prettyprint linenums lang-html">&lt;div class="form-group">
+    &lt;div class="input-group">
+        &lt;span class="input-group-addon">Date&lt;/span>
+        &lt;input name="3" type="text" class="form-control" placeholder="yyyy-mm-dd" data-ax5formatter="date">
+    &lt;/div>
+&lt;/div>
+&lt;div class="form-group">
+    &lt;div class="input-group">
+        &lt;span class="input-group-addon">Date(time)&lt;/span>
+        &lt;input name="3" type="text" class="form-control" placeholder="yyyy-mm-dd hh:mi:ss" data-ax5formatter="date(time)">
+    &lt;/div>
+&lt;/div>
+&lt;div class="form-group">
+    &lt;div class="input-group">
+        &lt;span class="input-group-addon">Time&lt;/span>
+        &lt;input name="3" type="text" class="form-control" placeholder="hh:mi:ss" data-ax5formatter="time">
+    &lt;/div>
+&lt;/div></pre><div class="form-group">
+    <div class="input-group">
+        <span class="input-group-addon">Date</span>
+        <input name="3" type="text" class="form-control" placeholder="yyyy-mm-dd" data-ax5formatter="date">
+    </div>
+</div>
+<div class="form-group">
+    <div class="input-group">
+        <span class="input-group-addon">Date(time)</span>
+        <input name="3" type="text" class="form-control" placeholder="yyyy-mm-dd hh:mi:ss" data-ax5formatter="date(time)">
+    </div>
+</div>
+<div class="form-group">
+    <div class="input-group">
+        <span class="input-group-addon">Time</span>
+        <input name="3" type="text" class="form-control" placeholder="hh:mi:ss" data-ax5formatter="time">
+    </div>
+</div>
+            
+
+            JS
+            <pre class="prettyprint linenums lang-js">&lt;script type="text/javascript">
+    $('[data-ax5formatter]').ax5formatter();
+&lt;/script></pre><script type="text/javascript">$('[data-ax5formatter]').ax5formatter();
+</script></script>
+
+            
+
+
+        </section>
 
     
 				</div>

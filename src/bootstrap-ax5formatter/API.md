@@ -1,52 +1,30 @@
 # Basic Usage
-> picker will be able to enter a value for the input element through the other UI.
+> formatting the value of the bound Input in the desired format. And, to limit to enter the only permitted string.
 
 ## bind()
 `bind(Options)`
 
-
-
 ```js
-var picker = new ax5.ui.picker();
+var formatter = new ax5.ui.formatter();
 
-picker.bind({
+formatter.bind({
     target: $("#input"),
-    direction: "top",
-    contentWidth: 200,
-    content: function (callBack) {
-        var html = ''
-                + 'HTML CONTENT'
-            ;
-        callBack(html);
-    }
+    pattern: "date"
 );
 
 picker.bind({
-    id: "my-picker-01",
     target: $("#input"),
-    direction: "top",
-    contentWidth: 200,
-    content: {
-        width: 270,
-        margin: 10,
-        type: 'date',
-        config: {
-            // calendar UI config
-        }
-    },
-    btns: {
-        ok: {label: "확인", theme: "default"}
-    }
+    pattern: "custom",
+    getEnterableKeyCodes: function(){},
+    getPatternValue: function(){}
 );
 ```
-
-
 
 ### id
 
 Type: `String` 
 
-picker unique id
+formatter unique id
 
 ### target
 
@@ -54,79 +32,25 @@ Type: `Dom Element | jQuery Object`
 
 ".input-Group" elements that are the target of the picker
 
-### direction
+### pattern
 
-Type: `String` "top|left|right|bottom|auto"
+Type: `String` "money|money(int)|date|date(time)|time|bizno|phone|custom"
 
-### content
+### getEnterableKeyCodes
 
-Type: `Function|Object`
+Type: `Function`
 
-- Function
-```js
-function (callBack) {
-    var html = 'HTML CONTENT';
-    callBack(html);
-}
-```
-- Object
-```js
-{
-    width: 270,
-    margin: 10,
-    type: 'date',
-    config: {
-        // calendar UI config
-    }
-}
-```
+You can define the keyCode collection to allow input.
 
-### contentWidth
+### getPatternValue
 
-Type: `Number`
+Type: `Function`
 
-If the content type of the function, recommended to set this value.
+It can be converted to the format required the entered value.
 
-### btns
-
-Type: `Object`
-
-```js
-{
-    ok: {label: "확인", theme: "default"}
-}
-```
 
 - - -
 
-## setContentValue()
+# jQuery widget
 
-`setContentValue(boundObjectId, inputSeq, value)`
-
-### boundObjectId
-
-Type: `String`
- 
-picker unique id
-
-### inputSeq
-
-.input-group's input seq
-
-- - -
-
-## open()
-
-`open(boundObjectId)`
-
-### boundObjectId
-
-Type: `String`
-
-picker unique id
-
-- - -
-
-## close()
-
-`close()`
+`ax5formatter()`
