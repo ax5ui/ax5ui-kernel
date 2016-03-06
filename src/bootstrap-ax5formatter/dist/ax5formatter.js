@@ -65,7 +65,9 @@
         this.init = function () {};
 
         this.bind = function (opts) {
-            var formatterConfig = {};
+            var formatterConfig = {},
+                optIdx;
+
             jQuery.extend(true, formatterConfig, cfg);
             if (opts) jQuery.extend(true, formatterConfig, opts);
             opts = formatterConfig;
@@ -76,15 +78,36 @@
             }
             opts.$target = jQuery(opts.target);
 
-            if (!opts.id) {
-                opts.id = 'ax5-formatter-' + ax5.getGuid();
+            if (opts.$target.get(0).tagName == "INPUT") {
+                opts.$input = opts.$target;
+            } else {
+                opts.$input = opts.$target.find('input[type="text"]');
+                if (opts.$input.length > 1) {
+                    opts.$input.each(function () {
+                        opts.target = this;
+                        self.bind(opts);
+                    });
+                    return this;
+                }
             }
 
-            if (U.search(this.queue, function () {
+            opts.$input = opts.$target.get(0).tagName == "INPUT" ? opts.$target : opts.$target.find('input[type="text"]');
+            if (!opts.id) opts.id = opts.$input.data("ax5-formatter");
+
+            if (!opts.id) {
+                opts.id = 'ax5-formatter-' + ax5.getGuid();
+                opts.$input.data("ax5-formatter", opts.id);
+            }
+            optIdx = U.search(this.queue, function () {
                 return this.id == opts.id;
-            }) === -1) {
+            });
+
+            if (optIdx === -1) {
                 this.queue.push(opts);
                 this.__bindFormatterTarget(this.queue[this.queue.length - 1], this.queue.length - 1);
+            } else {
+                this.queue[optIdx] = opts;
+                this.__bindFormatterTarget(this.queue[optIdx], optIdx);
             }
 
             return this;
@@ -242,7 +265,7 @@
                         var _val = {
                             'Y': function Y(v) {
                                 if (typeof v == "undefined") v = TODAY.getFullYear();
-                                if (v == '0000') v = TODAY.getFullYear();
+                                if (v == '' || v == '0000') v = TODAY.getFullYear();
                                 return v.length < 4 ? U.setDigit(v, 4) : v;
                             },
                             'M': function M(v) {
@@ -405,6 +428,7 @@
             };
 
             return function (opts, optIdx) {
+
                 if (!opts.pattern) {
 
                     if (opts.$target.get(0).tagName == "INPUT") {
@@ -432,8 +456,6 @@
                         break;
                     }
                 }
-
-                opts.$input = opts.$target.get(0).tagName == "INPUT" ? opts.$target : opts.$target.find('input[type="text"]');
 
                 opts.$input.unbind('focus.ax5formatter').bind('focus.ax5formatter', formatterEvent.focus.bind(this, this.queue[optIdx], optIdx));
 
