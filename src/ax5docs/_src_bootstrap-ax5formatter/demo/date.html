@@ -1,0 +1,77 @@
+<tmpl-metadata parentId="demo" parentTitle="Demo" sort="1" id="basic" title="formatter Money" desc=""/>
+
+<layout-use template="${data.layoutPath}"
+            project-name="${data.projectName}"
+            parent-id="${data.metadata.parentId}" page-title="${data.metadata.title}" page-id="${data.metadata.id}"
+            body-style="sub-page" with-menu="true">
+
+    <layout-put into="docs-menu">
+        <ax5docs-get-sub-list projectName="${data.projectName}" parentId="${data.metadata.parentId}" activeId="${data.metadata.id}"></ax5docs-get-sub-list>
+    </layout-put>
+    <layout-put into="visual">
+        <include template="../_inc/include.html" id="demo-visual"/>
+    </layout-put>
+    <layout-put into="head-js">
+        <link rel="stylesheet" type="text/css" href="../../assets/lib/font-awesome/css/font-awesome.css"/>
+        <script type="text/javascript" src="../../assets/lib/bootstrap-ax5formatter/dist/ax5formatter.js"></script>
+    </layout-put>
+    <layout-put into="body">
+
+
+        <!-- doc-js Basic Alert -->
+        <section class="ax5docs-section">
+            <ax5docs-md>
+                # formatter Money
+
+                **Paste the following code into the `head` section of your site's HTML.**
+                ```html
+                <script type="text/javascript" src="src/bootstrap-ax5formatter/dist/ax5formatter.js"></script>
+                ```
+            </ax5docs-md>
+
+
+            HTML
+            <ax5docs-html run="true">
+
+                <div class="form-group" id="ax5formatter-01">
+                    <div class="input-group">
+                        <span class="input-group-addon">Money</span>
+                        <input name="1" type="text" class="form-control" placeholder="" data-ax5formatter="money" value="9999.99"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group" id="ax5formatter-01-1">
+                        <span class="input-group-addon">Money(int)</span>
+                        <input name="2" type="text" class="form-control" placeholder="" data-ax5formatter="money(int)"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">Money</span>
+                        <input name="2" type="text" class="form-control" placeholder="1,000,000" data-ax5formatter="money" data-ax5="formatter"/>
+                    </div>
+                </div>
+
+            </ax5docs-html>
+            
+
+            JS
+            <ax5docs-js run="true">
+                <script type="text/javascript">
+                    $('[data-ax5formatter]').ax5formatter();
+                </script>
+            </ax5docs-js>
+
+            <ax5docs-md>
+
+            </ax5docs-md>
+
+
+        </section>
+
+    </layout-put>
+    <layout-put into="page-js">
+
+    </layout-put>
+
+</layout-use>
