@@ -5,7 +5,6 @@
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
 	],
-	"description": "",
 	"main": "dist/ax5picker.js",
 	"keywords": [
 		"bootstrap",
