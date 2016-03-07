@@ -1,0 +1,26 @@
+{
+	"name": "ax5ui-modal",
+	"version": "0.5.0",
+	"authors": [
+		"ThomasJ <tom@axisj.com>"
+	],
+	"description": "",
+	"main": "dist/ax5modal.js",
+	"keywords": [
+		"bootstrap",
+		"jquery",
+		"ax5ui",
+		"plugin",
+		"bootstrap jQuery plugins",
+		"modal",
+		"ax5ui-modal",
+		"javascript ui"
+	],
+	"dependencies": {
+		"jquery": "^1.11.0",
+		"ax5core": ">=0.4.0",
+		"bootstrap": "^3.3.6"
+	},
+	"license": "MIT",
+	"homepage": "ax5.io"
+}

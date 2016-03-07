@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../dist/ax5modal.css"/>
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-mask/dist/ax5mask.css"/>
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/ax5core/dist/ax5core.js"></script>
+    <script src="bower_components/ax5ui-mask/dist/ax5mask.min.js"></script>
+    <script src="../dist/ax5modal.js"></script>
+</head>
+<body style="padding: 50px;">
+
+    <button class="btn btn-danger" id="modal-open">Modal open</button>
+    <button class="btn btn-danger" id="modal-close">Modal close</button>
+
+
+<script>
+    var modal = new ax5.ui.modal();
+
+    function modalCallBack(){
+        modal.close();
+    }
+
+    $(document.body).ready(function () {
+        modal.setConfig({
+            onStateChanged: function(){
+                console.log(this);
+            }
+        });
+        $("#modal-open").click(function(){
+            modal.open({
+                fullScreen: true,
+                iframe: {
+                    method: "get",
+                    url: "/ax5docs/ax5ui-modal/demo/modal-iframe-content.html",
+                    param: "callBack=modalCallBack"
+                },
+            });
+        });
+        $("#modal-close").click(function(){
+            modal.close();
+        });
+    });
+</script>
+
+</body>
+</html>

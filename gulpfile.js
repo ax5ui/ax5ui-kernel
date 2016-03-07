@@ -5,22 +5,11 @@ var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var changed = require('gulp-changed');
-var marko_ax5 = require('gulp-marko-ax5');
 var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
 var babel = require('gulp-babel');
 
 var PATHS = {
-    assets: {
-        src: "src/ax5docs/assets"
-    },
-    ax5docs: {
-        css_src: "src/ax5docs/assets/css",
-        css_dest: "src/ax5docs/assets/css",
-        ax5core: "src/ax5docs/assets/lib/ax5core",
-        doc_src: "src/ax5docs/_src_",
-        doc_dest: "src/ax5docs"
-    },
     ax5core: {
         isPlugin: true,
         root: "src/ax5core",
@@ -30,75 +19,75 @@ var PATHS = {
         doc_src: "src/ax5docs/_src_ax5core",
         doc_dest: "src/ax5docs/ax5core"
     },
-    "bootstrap-ax5dialog": {
+    "ax5ui-dialog": {
         isPlugin: true,
-        root: "src/bootstrap-ax5dialog",
-        src: "src/bootstrap-ax5dialog/src",
-        dest: "src/bootstrap-ax5dialog/dist",
+        root: "src/ax5ui-dialog",
+        src: "src/ax5ui-dialog/src",
+        dest: "src/ax5ui-dialog/dist",
         scss: "ax5dialog.scss",
         js: "ax5dialog",
-        doc_src: "src/ax5docs/_src_bootstrap-ax5dialog",
-        doc_dest: "src/ax5docs/bootstrap-ax5dialog"
+        doc_src: "src/ax5docs/_src_ax5ui-dialog",
+        doc_dest: "src/ax5docs/ax5ui-dialog"
     },
-    "bootstrap-ax5mask": {
+    "ax5ui-mask": {
         isPlugin: true,
-        root: "src/bootstrap-ax5mask",
-        src: "src/bootstrap-ax5mask/src",
-        dest: "src/bootstrap-ax5mask/dist",
+        root: "src/ax5ui-mask",
+        src: "src/ax5ui-mask/src",
+        dest: "src/ax5ui-mask/dist",
         scss: "ax5mask.scss",
         js: "ax5mask",
-        doc_src: "src/ax5docs/_src_bootstrap-ax5mask",
-        doc_dest: "src/ax5docs/bootstrap-ax5mask"
+        doc_src: "src/ax5docs/_src_ax5ui-mask",
+        doc_dest: "src/ax5docs/ax5ui-mask"
     },
-    "bootstrap-ax5toast": {
+    "ax5ui-toast": {
         isPlugin: true,
-        root: "src/bootstrap-ax5toast",
-        src: "src/bootstrap-ax5toast/src",
-        dest: "src/bootstrap-ax5toast/dist",
+        root: "src/ax5ui-toast",
+        src: "src/ax5ui-toast/src",
+        dest: "src/ax5ui-toast/dist",
         scss: "ax5toast.scss",
         js: "ax5toast",
-        doc_src: "src/ax5docs/_src_bootstrap-ax5toast",
-        doc_dest: "src/ax5docs/bootstrap-ax5toast"
+        doc_src: "src/ax5docs/_src_ax5ui-toast",
+        doc_dest: "src/ax5docs/ax5ui-toast"
     },
-    "bootstrap-ax5modal": {
+    "ax5ui-modal": {
         isPlugin: true,
-        root: "src/bootstrap-ax5modal",
-        src: "src/bootstrap-ax5modal/src",
-        dest: "src/bootstrap-ax5modal/dist",
+        root: "src/ax5ui-modal",
+        src: "src/ax5ui-modal/src",
+        dest: "src/ax5ui-modal/dist",
         scss: "ax5modal.scss",
         js: "ax5modal",
-        doc_src: "src/ax5docs/_src_bootstrap-ax5modal",
-        doc_dest: "src/ax5docs/bootstrap-ax5modal"
+        doc_src: "src/ax5docs/_src_ax5ui-modal",
+        doc_dest: "src/ax5docs/ax5ui-modal"
     },
-    "bootstrap-ax5calendar": {
+    "ax5ui-calendar": {
         isPlugin: true,
-        root: "src/bootstrap-ax5calendar",
-        src: "src/bootstrap-ax5calendar/src",
-        dest: "src/bootstrap-ax5calendar/dist",
+        root: "src/ax5ui-calendar",
+        src: "src/ax5ui-calendar/src",
+        dest: "src/ax5ui-calendar/dist",
         scss: "ax5calendar.scss",
         js: "ax5calendar",
-        doc_src: "src/ax5docs/_src_bootstrap-ax5calendar",
-        doc_dest: "src/ax5docs/bootstrap-ax5calendar"
+        doc_src: "src/ax5docs/_src_ax5ui-calendar",
+        doc_dest: "src/ax5docs/ax5ui-calendar"
     },
-    "bootstrap-ax5picker": {
+    "ax5ui-picker": {
         isPlugin: true,
-        root: "src/bootstrap-ax5picker",
-        src: "src/bootstrap-ax5picker/src",
-        dest: "src/bootstrap-ax5picker/dist",
+        root: "src/ax5ui-picker",
+        src: "src/ax5ui-picker/src",
+        dest: "src/ax5ui-picker/dist",
         scss: "ax5picker.scss",
         js: "ax5picker",
-        doc_src: "src/ax5docs/_src_bootstrap-ax5picker",
-        doc_dest: "src/ax5docs/bootstrap-ax5picker"
+        doc_src: "src/ax5docs/_src_ax5ui-picker",
+        doc_dest: "src/ax5docs/ax5ui-picker"
     },
-    "bootstrap-ax5formatter": {
+    "ax5ui-formatter": {
         isPlugin: true,
-        root: "src/bootstrap-ax5formatter",
-        src: "src/bootstrap-ax5formatter/src",
-        dest: "src/bootstrap-ax5formatter/dist",
+        root: "src/ax5ui-formatter",
+        src: "src/ax5ui-formatter/src",
+        dest: "src/ax5ui-formatter/dist",
         scss: "ax5formatter.scss",
         js: "ax5formatter",
-        doc_src: "src/ax5docs/_src_bootstrap-ax5formatter",
-        doc_dest: "src/ax5docs/bootstrap-ax5formatter"
+        doc_src: "src/ax5docs/_src_ax5ui-formatter",
+        doc_dest: "src/ax5docs/ax5ui-formatter"
     }
 };
 
@@ -111,13 +100,6 @@ function errorAlert(error) {
 /**
  * SASS
  */
-gulp.task('docs-scss', function () {
-    gulp.src(PATHS.ax5docs.css_src + '/docs.scss')
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(sass({outputStyle: 'compressed'}))
-        .pipe(gulp.dest(PATHS.ax5docs.css_dest));
-});
-
 for (var k in PATHS) {
     var __p = PATHS[k];
     if (__p.isPlugin && __p.scss) {
@@ -126,8 +108,7 @@ for (var k in PATHS) {
                 gulp.src(PATHS[k].src + '/' + __p.scss)
                     .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(sass({outputStyle: 'compressed'}))
-                    .pipe(gulp.dest(PATHS[k].dest))
-                    .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
+                    .pipe(gulp.dest(PATHS[k].dest));
             }
         })(k, __p));
     }
@@ -171,88 +152,10 @@ for (var k in PATHS) {
     }
 }
 
-
-/**
- * ax5docs templete render
- */
-gulp.task('AX5UI-docs', function () {
-    return gulp.src(PATHS['ax5docs'].doc_src + '/**/*.html')
-        .pipe(changed(PATHS['ax5docs'].doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(marko_ax5({
-            projectName: "ax5ui",
-            layoutPath: PATHS.assets.src + '/_layouts/root.marko',
-            layoutModalPath: PATHS.assets.src + '/_layouts/modal.marko'
-        }))
-        .pipe(gulp.dest(PATHS['ax5docs'].doc_dest));
-});
-
-for (var k in PATHS) {
-    var __p = PATHS[k];
-    if (__p.isPlugin) {
-        gulp.task(k + '-docs', (function(k, __p){
-            return function () {
-                return gulp.src(PATHS[k].doc_src + '/**/*.html')
-                    .pipe(changed(PATHS[k].doc_dest, {extension: '.html', hasChanged: changed.compareSha1Digest}))
-                    .pipe(plumber({errorHandler: errorAlert}))
-                    .pipe(marko_ax5({
-                        projectName: k,
-                        layoutPath: PATHS.assets.src + '/_layouts/index.marko',
-                        layoutModalPath: PATHS.assets.src + '/_layouts/modal.marko'
-                    }))
-                    .pipe(gulp.dest(PATHS[k].doc_dest));
-            }
-        })(k, __p) );
-    }
-}
-
-gulp.task('docs:all', function () {
-
-    gulp.src(PATHS['ax5docs'].doc_src + '/**/*.html')
-        .pipe(marko_ax5({
-            projectName: "ax5ui",
-            layoutPath: PATHS.assets.src + '/_layouts/root.marko',
-            layoutModalPath: PATHS.assets.src + '/_layouts/modal.marko'
-        }))
-        .pipe(plumber({errorHandler: errorAlert}))
-        .pipe(gulp.dest(PATHS['ax5docs'].doc_dest));
-
-    for (var k in PATHS) {
-        var __p = PATHS[k];
-        if (__p.isPlugin) {
-            gulp.src(PATHS[k].doc_src + '/**/*.html')
-                .pipe(marko_ax5({
-                    projectName: k,
-                    layoutPath: PATHS.assets.src + '/_layouts/index.marko',
-                    layoutModalPath: PATHS.assets.src + '/_layouts/modal.marko'
-                }))
-                .pipe(plumber({errorHandler: errorAlert}))
-                .pipe(gulp.dest(PATHS[k].doc_dest));
-        }
-    }
-});
-
-/**
- * clone a plugins to assets/ilb
- */
-gulp.task('docs:lib-publish', (function () {
-    var tasks = [];
-    for (var k in PATHS) {
-        var __p = PATHS[k];
-        if (__p.isPlugin) {
-            tasks.push(k + '-scripts-publish');
-        }
-    }
-    return tasks;
-})());
-
 /**
  * watch
  */
 gulp.task('default', function () {
-
-    // SASS
-    gulp.watch(PATHS.ax5docs.css_src + '/**/*.scss', ['docs-scss']);
 
     // scripts
     for (var k in PATHS) {
@@ -263,29 +166,6 @@ gulp.task('default', function () {
         }
         if (__p.isPlugin && __p.scss) {
             gulp.watch(PATHS[k].src + '/**/*.scss', [k + '-scss']);
-        }
-    }
-
-    // docs watch
-    gulp.watch(PATHS.assets.src + '/_layouts/root.marko', ['default', 'AX5UI-docs']);
-
-    var docs_list = [];
-    for (var k in PATHS) {
-        var __p = PATHS[k];
-        if (__p.isPlugin) {
-            docs_list.push(k + '-docs');
-        }
-    }
-    gulp.watch(PATHS.assets.src + '/_layouts/index.marko', docs_list);
-    gulp.watch(PATHS.assets.src + '/components/**/*.js', docs_list);
-
-    // for MD
-    gulp.watch(PATHS.ax5docs.doc_src + '/**/*.html', ['AX5UI-docs']);
-    for (var k in PATHS) {
-        var __p = PATHS[k];
-        if (__p.isPlugin) {
-            //console.log(k);
-            gulp.watch([PATHS[k].doc_src + '/**/*.html', PATHS[k].root + '/**/*.md'], [k + '-docs']);
         }
     }
 
