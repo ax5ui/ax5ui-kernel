@@ -137,20 +137,6 @@ for (var k in PATHS) {
     }
 }
 
-/**
- * plugin copy to ~ ax5docs/assets/lib
- */
-for (var k in PATHS) {
-    var __p = PATHS[k];
-    if (__p.isPlugin && __p.js) {
-        gulp.task(k + '-scripts-publish', (function (k, __p) {
-            return function () {
-                gulp.src(PATHS[k].root + '/**/*.*')
-                    .pipe(gulp.dest(PATHS.assets.src + '/lib/' + k));
-            }
-        })(k, __p));
-    }
-}
 
 /**
  * watch
