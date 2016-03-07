@@ -227,7 +227,8 @@
 
         this.open = function (opts, callBack) {
             var pos = {},
-                that;
+                that,
+                box;
 
             opts.id = opts.id || cfg.id;
 
