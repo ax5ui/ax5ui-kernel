@@ -3,6 +3,7 @@ node_modules
 *.marko.js
 *.html.js
 .idea
+*.ignore.js
 *.iml
 .DS_Store
 **/test/bower_components

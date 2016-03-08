@@ -8,4 +8,5 @@ git subsplit publish --heads="master" --no-tags src/ax5ui-modal:https://github.c
 git subsplit publish --heads="master" --no-tags src/ax5ui-calendar:https://github.com/ax5ui/ax5ui-calendar.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-picker:https://github.com/ax5ui/ax5ui-picker.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-formatter:https://github.com/ax5ui/ax5ui-formatter.git
+git subsplit publish --heads="master" --no-tags src/ax5ui-menu:https://github.com/ax5ui/ax5ui-menu.git
 rm -rf .subsplit/
