@@ -5,9 +5,8 @@
 - 메뉴바 형태
     - top / bottom
     - left / right
-- 컨텍스트 포지션
-    - absolute
-    - relative
+- standAlone 타입
+    - 포지션 (absolute/relative)
 
 ### 아이템 컨테이너 
 - stack
