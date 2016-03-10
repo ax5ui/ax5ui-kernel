@@ -5,8 +5,8 @@
 - 메뉴바 형태
     - top / bottom
     - left / right
-- 컨텍스트 형태
-    - float
+- 컨텍스트 포지션
+    - absolute
     - relative
 
 ### 아이템 컨테이너 
