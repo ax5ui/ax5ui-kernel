@@ -19,6 +19,10 @@
     $(document.body).ready(function () {
         var menu = new ax5.ui.menu();
         menu.setConfig({
+            width: 300,
+            onStateChanged: function(){
+
+            },
             items: [
                 {
                     label: "Menu Parent 0",
