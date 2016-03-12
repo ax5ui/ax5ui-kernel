@@ -6,17 +6,67 @@
 
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../dist/ax5formatter.css"/>
+    <link rel="stylesheet" type="text/css" href="../dist/ax5menu.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/ax5core/dist/ax5core.js"></script>
-    <script src="../dist/ax5menu.js"></script>
+    <script src="bower_components/ax5core/dist/ax5core.min.js"></script>
+    <script src="../dist/ax5menu.min.js"></script>
 </head>
 <body style="padding: 50px;">
 
 <!--https://css-tricks.com/snippets/javascript/javascript-keycodes/-->
 <script type="text/javascript">
+    $(document.body).ready(function () {
+        var menu = new ax5.ui.menu();
+        menu.setConfig({
+            items: [
+                {
+                    label: "Menu Parent 0",
+                    items: [
+                        {
+                            label: "Menu Z",
+                            data: {},
+                            role: "",
+                            accelerator: "CmdOrCtrl+Z"
+                        },
+                        {
+                            label: "Menu A",
+                            data: {},
+                            role: "",
+                            accelerator: "CmdOrCtrl+A"
+                        }
+                    ]
+                },
+                {
+                    label: "Menu Parent 1",
+                    items: [
+                        {
+                            label: "Menu Z",
+                            data: {},
+                            role: "",
+                            accelerator: "CmdOrCtrl+Z"
+                        },
+                        {
+                            label: "Menu A",
+                            data: {},
+                            role: "",
+                            accelerator: "CmdOrCtrl+A"
+                        }
+                    ]
+                }
+            ]
+        });
 
+        menu.onclick = function () {
+
+        };
+
+        $(window).bind("contextmenu", function(e){
+            console.log(e);
+            var targetElement;
+            menu.popup(e, targetElement);
+        });
+    });
 </script>
 
 </body>

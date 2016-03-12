@@ -48,7 +48,7 @@
     };
     //== UI Class
     
-    root.formatter = (function () {
+    root.menu = (function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
     })(); // ax5.ui에 연결
