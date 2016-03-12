@@ -10,7 +10,7 @@ var notify = require("gulp-notify");
 var babel = require('gulp-babel');
 
 var PATHS = {
-    ax5core: {
+    "ax5core": {
         isPlugin: true,
         root: "src/ax5core",
         src: "src/ax5core/src",
@@ -87,7 +87,7 @@ function errorAlert(error) {
     notify.onError({title: "Gulp Error", message: "Check your terminal", sound: "Purr"})(error); //Error Notification
     console.log(error.toString());//Prints Error to Console
     this.emit("end"); //End function
-};
+}
 
 /**
  * SASS
@@ -128,7 +128,6 @@ for (var k in PATHS) {
         })(k, __p));
     }
 }
-
 
 /**
  * watch
