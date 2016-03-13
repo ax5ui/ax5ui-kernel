@@ -37,7 +37,7 @@
         };
 
         this.__getTmpl = function () {
-            return "\n            <div class=\"ax5-ui-menu {{theme}}\" id=\"{{id}}\" data-menu-els=\"root\">\n                <div class=\"ax-menu-body\">\n\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
+            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
         };
 
         this.popup = function () {};

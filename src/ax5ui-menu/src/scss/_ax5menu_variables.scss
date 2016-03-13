@@ -1,0 +1,46 @@
+$ax5menu-z-index: 2000 !default;
+$ax5menu-bg: $panel-bg !default;
+$ax5menu-inner-border: 1px solid !default;
+$ax5menu-inner-border-color: $panel-inner-border !default;
+
+$ax5menu-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.175) !default;
+$ax5menu-border-radius: 5px !default;
+
+$ax5menu-body-padding: 5px !default;
+$ax5menu-heading-padding: $panel-heading-padding !default;
+$ax5menu-buttons-padding: 10px 0px 5px 0px !default;
+
+$ax5menu-content-border: 0px solid !default;
+$ax5menu-content-border-color: none !default;
+$ax5menu-content-border-radius: 0px !default;
+$ax5menu-content-padding: 0px !default;
+
+$ax5menu-easing-time-open: 0.3s !default;
+$ax5menu-easing-time-close: 0.2s !default;
+$ax5menu-arrow-size: 10px !default;
+$ax5menu-arrow-border-width: 1px !default;
+
+//** Border color for elements within dialog
+$ax5menu-default-text: $panel-default-text !default;
+$ax5menu-default-border-color: $panel-default-border !default;
+$ax5menu-default-heading-bg: $panel-default-heading-bg !default;
+
+$ax5menu-primary-text: $panel-primary-text !default;
+$ax5menu-primary-border-color: $panel-primary-border !default;
+$ax5menu-primary-heading-bg: $panel-primary-heading-bg !default;
+
+$ax5menu-success-text: $panel-success-text !default;
+$ax5menu-success-border-color: $panel-success-border !default;
+$ax5menu-success-heading-bg: $panel-success-heading-bg !default;
+
+$ax5menu-info-text: $panel-info-text !default;
+$ax5menu-info-border-color: $panel-info-border !default;
+$ax5menu-info-heading-bg: $panel-info-heading-bg !default;
+
+$ax5menu-warning-text: $panel-warning-text !default;
+$ax5menu-warning-border-color: $panel-warning-border !default;
+$ax5menu-warning-heading-bg: $panel-warning-heading-bg !default;
+
+$ax5menu-danger-text: $panel-danger-text !default;
+$ax5menu-danger-border-color: $panel-danger-border !default;
+$ax5menu-danger-heading-bg: $panel-danger-heading-bg !default;

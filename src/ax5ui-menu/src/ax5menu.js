@@ -38,7 +38,7 @@
 
         this.__getTmpl = function () {
             return `
-            <div class="ax5-ui-menu {{theme}}" id="{{id}}" data-menu-els="root">
+            <div class="ax5-ui-menu {{theme}}">
                 <div class="ax-menu-body">
 
                 </div>

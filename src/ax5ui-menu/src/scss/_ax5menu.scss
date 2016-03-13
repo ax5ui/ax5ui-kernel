@@ -1,0 +1,249 @@
+@mixin ax-menu() {
+	box-sizing: border-box;
+
+	z-index: $ax5menu-z-index;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	//overflow: hidden;
+}
+
+@mixin picker-variant($text-color, $border-color, $heading-bg-color) {
+
+	@include ax-background($ax5menu-bg);
+	border: $ax5menu-inner-border;
+	border-color: $border-color;
+	border-radius: $ax5menu-border-radius;
+	box-shadow: $ax5menu-box-shadow;
+
+	.ax-menu-heading {
+		font-weight: 600;
+		padding: $ax5menu-heading-padding;
+		border-bottom: 1px solid transparent;
+		@include border-top-radius($ax5menu-border-radius - 1);
+
+		color: $text-color;
+		@include ax-background($heading-bg-color);
+		.badge {
+			font-size: 0.8em;
+			color: $heading-bg-color;
+			@include ax-background($text-color);
+		}
+	}
+	.ax-menu-body {
+		padding: $ax5menu-body-padding;
+		text-align: center;
+		.ax-menu-contents {
+			min-width: 50px;
+
+			.ax-menu-content-box {
+				border: $ax5menu-content-border;
+				border-color: $ax5menu-content-border-color;
+				border-radius: $ax5menu-content-border-radius;
+				padding: $ax5menu-content-padding;
+				overflow: hidden;
+			}
+		}
+		.ax-menu-buttons {
+			padding: $ax5menu-buttons-padding;
+			button {
+				&:not(:last-child) {
+					margin-right: 3px;
+				}
+			}
+		}
+	}
+
+	&.direction-top {
+		.ax-menu-arrow {
+			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, top);
+		}
+	}
+	&.direction-right {
+		.ax-menu-arrow {
+			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, right);
+		}
+	}
+	&.direction-bottom {
+		.ax-menu-arrow {
+			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, bottom);
+		}
+	}
+	&.direction-left {
+		.ax-menu-arrow {
+			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, left);
+		}
+	}
+
+}
+
+@mixin picker-arrow($arrow-size, $arrow-border-width, $border-color, $arrow-direction) {
+
+	//
+	//@debug( nth($ax5menu-inner-border, 3) );
+	$arrow-bg: nth($ax5menu-bg, 1);
+	$arrow-border-color: $border-color;
+
+	position: absolute;
+	width: 0;
+	height: 0;
+
+	@if ($arrow-direction == top) {
+		left: 50%;
+		top: 0px;
+	} @else if ($arrow-direction == right) {
+		right: 0px;
+		top: 50%;
+	} @else if ($arrow-direction == bottom) {
+		left: 50%;
+		bottom: 0px;
+	} @else if ($arrow-direction == left) {
+		left: 0px;
+		top: 50%;
+	}
+
+	&:before {
+		content: ' ';
+		position: absolute;
+		width: 0;
+		height: 0;
+
+		@if ($arrow-direction == top) {
+			left: - ($arrow-size);
+			top: - ($arrow-size * 2);
+			border-left: $arrow-size solid transparent;
+			border-right: $arrow-size solid transparent;
+			border-bottom: ($arrow-size * 2) solid $arrow-border-color;
+		} @else if ($arrow-direction == right) {
+			right: - ($arrow-size * 2);
+			top: - ($arrow-size);
+			border-top: $arrow-size solid transparent;
+			border-bottom: $arrow-size solid transparent;
+			border-left: ($arrow-size * 2) solid $arrow-border-color;
+		} @else if ($arrow-direction == bottom) {
+			left: - ($arrow-size);
+			bottom: - ($arrow-size * 2);
+			border-left: $arrow-size solid transparent;
+			border-right: $arrow-size solid transparent;
+			border-top: ($arrow-size * 2) solid $arrow-border-color;
+		} @else if ($arrow-direction == left) {
+			left: - ($arrow-size * 2);
+			top: - ($arrow-size);
+			border-top: $arrow-size solid transparent;
+			border-bottom: $arrow-size solid transparent;
+			border-right: ($arrow-size * 2) solid $arrow-border-color;
+		}
+	}
+
+	&:after {
+		content: ' ';
+		position: absolute;
+		width: 0;
+		height: 0;
+
+		@if ($arrow-direction == top) {
+			left: - ($arrow-size);
+			top: - ($arrow-size * 2) + ($arrow-border-width * 2);
+			border-left: ($arrow-size) solid transparent;
+			border-right: ($arrow-size) solid transparent;
+			border-bottom: ($arrow-size * 2) solid $arrow-bg;
+		} @else if ($arrow-direction == right) {
+			right: - ($arrow-size * 2) + ($arrow-border-width * 2);
+			top: - ($arrow-size);
+			border-top: ($arrow-size) solid transparent;
+			border-bottom: ($arrow-size) solid transparent;
+			border-left: ($arrow-size * 2) solid $arrow-bg;
+		} @else if ($arrow-direction == bottom) {
+			left: - ($arrow-size);
+			bottom: - ($arrow-size * 2) + ($arrow-border-width * 2);
+			border-left: ($arrow-size) solid transparent;
+			border-right: ($arrow-size) solid transparent;
+			border-top: ($arrow-size * 2) solid $arrow-bg;
+		} @else if ($arrow-direction == left) {
+			left: - ($arrow-size * 2) + ($arrow-border-width * 2);
+			top: - ($arrow-size);
+			border-top: ($arrow-size) solid transparent;
+			border-bottom: ($arrow-size) solid transparent;
+			border-right: ($arrow-size * 2) solid $arrow-bg;
+		}
+	}
+}
+
+@include keyframes(ax-menu) {
+	0% {
+		opacity: 0.0;
+		@include transform(scale(1));
+	}
+	1% {
+		opacity: 0.0;
+		@include transform(scale(0.3));
+	}
+	100% {
+		opacity: 1.0;
+		@include transform(scale(1));
+	}
+}
+
+@include keyframes(ax-menu-destroy) {
+	from {
+		@include transform(scale(1));
+		opacity: 1.0;
+	}
+	to {
+		@include transform(scale(0.5));
+		opacity: 0.0;
+	}
+}
+
+// mixins --------------------------------------------- end
+
+.ax5-ui-menu {
+	@include ax-menu();
+
+	@include perspective(1000px);
+	@include transform-style(preserve-3d);
+
+	@include animation(ax-menu $ax5menu-easing-time-open $ease-out-back);
+	@include transform(translateZ(0));
+	@include transform-origin(center top);
+	/* flip type
+	@include backface-visibility(visible);
+	@include transform(translateY(0%) rotateX(0deg));
+	*/
+
+	@include picker-variant($ax5menu-default-text, $ax5menu-default-border-color, $ax5menu-default-heading-bg);
+
+	&.primary {
+		@include picker-variant($ax5menu-primary-text, $ax5menu-primary-border-color, $ax5menu-primary-heading-bg);
+	}
+	&.success {
+		@include picker-variant($ax5menu-success-text, $ax5menu-success-border-color, $ax5menu-success-heading-bg);
+	}
+	&.info {
+		@include picker-variant($ax5menu-info-text, $ax5menu-info-border-color, $ax5menu-info-heading-bg);
+	}
+	&.warning {
+		@include picker-variant($ax5menu-warning-text, $ax5menu-warning-border-color, $ax5menu-warning-heading-bg);
+	}
+	&.danger {
+		@include picker-variant($ax5menu-danger-text, $ax5menu-danger-border-color, $ax5menu-danger-heading-bg);
+	}
+
+	&.destroy {
+		@include animation(ax-menu-destroy $ax5menu-easing-time-close $ease-in-back forwards);
+	}
+
+	&.direction-top {
+		@include transform-origin(center top);
+	}
+	&.direction-right {
+		@include transform-origin(right center);
+	}
+	&.direction-bottom {
+		@include transform-origin(center bottom);
+
+	}
+	&.direction-left {
+		@include transform-origin(left center);
+	}
+}
