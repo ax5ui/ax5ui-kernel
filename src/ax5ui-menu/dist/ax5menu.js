@@ -42,18 +42,24 @@
 
         /** private **/
         this.__getTmpl = function () {
-            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
+            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                    <div class=\"ax-menu-item\">{{label}}</div>\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
         };
 
         /** private **/
         this.__popup = function (opt, items) {
-            var data = opt;
+            var data = opt,
+                activeMenu;
             data.items = items;
-            jQuery(ax5.mustache.render(this.__getTmpl(), data));
+            activeMenu = jQuery(ax5.mustache.render(this.__getTmpl(), data));
+            jQuery(document.body).append(activeMenu);
+
+            this.__align(activeMenu);
         };
 
         /** private **/
-        this.__align = function () {};
+        this.__align = function (activeMenu) {
+            console.log(activeMenu.height());
+        };
 
         /**
          * @method ax5.ui.menu.popup

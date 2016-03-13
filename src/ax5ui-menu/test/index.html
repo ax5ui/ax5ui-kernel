@@ -65,8 +65,9 @@
 
         };
 
-        $(window).bind("contextmenu", function (e) {;
+        $(window).bind("contextmenu", function (e) {
             menu.popup(e);
+            ax5.util.stopEvent(e);
             // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
         });
     });

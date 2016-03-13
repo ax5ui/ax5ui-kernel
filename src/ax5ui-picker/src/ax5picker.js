@@ -213,6 +213,13 @@
             `;
         };
 
+        /**
+         * @method ax5.ui.picker.setContentValue
+         * @param {String} boundID
+         * @param {Number} inputIndex
+         * @param {String} val
+         * @returns {ax5.ui.picker} this
+         */
         this.setContentValue = function (boundID, inputIndex, val) {
             var opts = this.queue[ax5.util.search(this.queue, function () {
                 return this.id == boundID;
