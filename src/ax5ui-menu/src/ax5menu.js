@@ -22,7 +22,11 @@
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
         this.config = {
-            animateTime: 250
+            theme: "default",
+            width: 200,
+            direction: "top-left", // top-left|top-right|bottom-left|bottom-right
+            animateTime: 250,
+            items: []
         };
         
         this.openTimer = null;
@@ -35,6 +39,7 @@
             self.menuId = ax5.getGuid();
         };
 
+        /** private **/
         this.__getTmpl = function () {
             return `
             <div class="ax5-ui-menu {{theme}}">
@@ -46,37 +51,60 @@
             `;
         };
 
+        /** private **/
+        this.__popup = function (opt, items) {
+            var data = opt;
+            data.items = items;
+            jQuery(ax5.mustache.render(this.__getTmpl(), data))
+        };
+
+        /** private **/
+        this.__align = function () {
+
+        };
+
         /**
          * @method ax5.ui.menu.popup
          * @param {Event|Object} e - Event or Object
+         * @param {Object} [opt]
          * @returns {ax5.ui.menu} this
          */
         this.popup = (function () {
 
             var getOption = {
-                'event': function () {
-
+                'event': function (e, opt) {
+                    e = {
+                        left: e.clientX,
+                        top: e.clientY,
+                        width: cfg.width,
+                        theme: cfg.theme,
+                        direction: cfg.direction
+                    };
+                    opt = jQuery.extend(true, e, opt);
+                    return opt;
                 },
-                'object': function () {
-
+                'object': function (e, opt) {
+                    e = {
+                        left: e.left,
+                        top: e.top,
+                        width: e.width || cfg.width,
+                        theme: e.theme || cfg.theme,
+                        direction: e.direction || cfg.direction
+                    };
+                    opt = jQuery.extend(true, e, opt);
+                    return opt;
                 }
             };
 
+            return function (e, opt) {
 
-
-            return function (e) {
-
-                if(!e) return this;
-                var opt = getOption[((typeof e.clientX == "undefined") ? "object" : "event")].call(this);
-
+                if (!e) return this;
+                opt = getOption[((typeof e.clientX == "undefined") ? "object" : "event")].call(this, e, opt);
+                this.__popup(opt, cfg.items);
 
                 return this;
             }
         })();
-
-        this.__popup = function () {
-
-        };
 
         /**
          * @method ax5.ui.menu.close
