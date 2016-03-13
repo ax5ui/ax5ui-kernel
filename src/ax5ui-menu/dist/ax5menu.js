@@ -32,6 +32,7 @@
 
         this.openTimer = null;
         this.closeTimer = null;
+        this.queue = [];
 
         cfg = this.config;
 
@@ -46,19 +47,37 @@
         };
 
         /** private **/
-        this.__popup = function (opt, items) {
+        this.__popup = function (opt, items, depth) {
             var data = opt,
                 activeMenu;
             data.items = items;
             activeMenu = jQuery(ax5.mustache.render(this.__getTmpl(), data));
             jQuery(document.body).append(activeMenu);
 
-            this.__align(activeMenu);
+            // remove queue
+            var removed = this.queue.splice(depth);
+            removed.forEach(function (n) {
+                n.$target.remove();
+            });
+            this.queue.push({
+                '$target': activeMenu
+            });
+
+            this.__align(activeMenu, data);
+            return this;
         };
 
         /** private **/
-        this.__align = function (activeMenu) {
-            console.log(activeMenu.height());
+        this.__align = function (activeMenu, data) {
+            //console.log(activeMenu.height());
+
+            activeMenu.css({
+                left: data.left,
+                top: data.top,
+                width: data.width
+            });
+
+            return this;
         };
 
         /**
@@ -98,7 +117,7 @@
 
                 if (!e) return this;
                 opt = getOption[typeof e.clientX == "undefined" ? "object" : "event"].call(this, e, opt);
-                this.__popup(opt, cfg.items);
+                this.__popup(opt, cfg.items, 0); // 0 is seq of queue
 
                 return this;
             };
