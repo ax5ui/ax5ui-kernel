@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // ax5.ui.menu
 (function (root, _SUPER_) {
@@ -37,7 +37,7 @@
         };
 
         this.__getTmpl = function () {
-            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
+            return '\n            <div class="ax5-ui-menu {{theme}}">\n                <div class="ax-menu-body">\n\n                </div>\n                <div class="ax-menu-arrow"></div>\n            </div>\n            ';
         };
 
         /**
@@ -45,10 +45,21 @@
          * @param {Event|Object} e - Event or Object
          * @returns {ax5.ui.menu} this
          */
-        this.popup = function (e) {
+        this.popup = function () {
 
-            return this;
-        };
+            var getOption = {
+                'event': function event() {},
+                'object': function object() {}
+            };
+
+            return function (e) {
+
+                if (!e) return this;
+                var opt = getOption[typeof e.clientX == "undefined" ? "object" : "event"].call(this);
+
+                return this;
+            };
+        }();
 
         this.__popup = function () {};
 

@@ -51,10 +51,28 @@
          * @param {Event|Object} e - Event or Object
          * @returns {ax5.ui.menu} this
          */
-        this.popup = function (e) {
+        this.popup = (function () {
 
-            return this;
-        };
+            var getOption = {
+                'event': function () {
+
+                },
+                'object': function () {
+
+                }
+            };
+
+
+
+            return function (e) {
+
+                if(!e) return this;
+                var opt = getOption[((typeof e.clientX == "undefined") ? "object" : "event")].call(this);
+
+
+                return this;
+            }
+        })();
 
         this.__popup = function () {
 
