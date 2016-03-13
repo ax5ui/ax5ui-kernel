@@ -227,7 +227,9 @@
         };
 
         /**
-         * need to user call method
+         * @method ax5.ui.picker.open
+         * @param {String} boundObjectId
+         * @returns {ax5.ui.picker} this
          */
         this.open = (function () {
 
@@ -388,6 +390,10 @@
             };
         })();
 
+        /**
+         * @method ax5.ui.picker.close
+         * @returns {ax5.ui.picker} this
+         */
         this.close = function () {
             if (this.closeTimer) clearTimeout(this.closeTimer);
             if (!this.activePicker) return this;
