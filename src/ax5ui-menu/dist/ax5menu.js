@@ -40,9 +40,26 @@
             return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
         };
 
-        this.popup = function () {};
+        /**
+         * @method ax5.ui.menu.popup
+         * @param {Event|Object} e - Event or Object
+         * @returns {ax5.ui.menu} this
+         */
+        this.popup = function (e) {
 
-        this.close = function () {};
+            return this;
+        };
+
+        this.__popup = function () {};
+
+        /**
+         * @method ax5.ui.menu.close
+         * @returns {ax5.ui.menu} this
+         */
+        this.close = function () {
+
+            return this;
+        };
 
         // 클래스 생성자
         this.main = function () {

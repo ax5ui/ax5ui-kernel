@@ -20,7 +20,7 @@
         var menu = new ax5.ui.menu();
         menu.setConfig({
             width: 300,
-            onStateChanged: function(){
+            onStateChanged: function () {
 
             },
             items: [
@@ -65,10 +65,10 @@
 
         };
 
-        $(window).bind("contextmenu", function(e){
+        $(window).bind("contextmenu", function (e) {
             console.log(e);
-            var targetElement;
-            menu.popup(e, targetElement);
+            menu.popup(e);
+            // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
         });
     });
 </script>

@@ -35,7 +35,6 @@
             self.menuId = ax5.getGuid();
         };
 
-
         this.__getTmpl = function () {
             return `
             <div class="ax5-ui-menu {{theme}}">
@@ -47,12 +46,27 @@
             `;
         };
 
-        this.popup = function(){
+        /**
+         * @method ax5.ui.menu.popup
+         * @param {Event|Object} e - Event or Object
+         * @returns {ax5.ui.menu} this
+         */
+        this.popup = function (e) {
+
+            return this;
+        };
+
+        this.__popup = function () {
 
         };
 
-        this.close = function(){
+        /**
+         * @method ax5.ui.menu.close
+         * @returns {ax5.ui.menu} this
+         */
+        this.close = function () {
 
+            return this;
         };
 
         // 클래스 생성자
