@@ -24,7 +24,7 @@
 
         this.config = {
             theme: "default",
-            width: 200,
+            width: 100,
             direction: "top-left", // top-left|top-right|bottom-left|bottom-right
             animateTime: 250,
             items: []

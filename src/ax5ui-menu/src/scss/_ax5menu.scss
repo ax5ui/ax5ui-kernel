@@ -12,7 +12,7 @@
 
 	@include ax-background($ax5menu-bg);
 	border: $ax5menu-inner-border;
-	border-color: $border-color;
+	border-color: $ax5menu-inner-border-color;
 	border-radius: $ax5menu-border-radius;
 	box-shadow: $ax5menu-box-shadow;
 
@@ -33,15 +33,16 @@
 	.ax-menu-body {
 		padding: $ax5menu-body-padding;
 		text-align: center;
-		.ax-menu-contents {
-			min-width: 50px;
-
-			.ax-menu-content-box {
-				border: $ax5menu-content-border;
-				border-color: $ax5menu-content-border-color;
-				border-radius: $ax5menu-content-border-radius;
-				padding: $ax5menu-content-padding;
-				overflow: hidden;
+		.ax-menu-item {
+			padding: $ax5menu-item-padding;
+			text-align: left;
+			background: $ax5menu-item-bg;
+			color: $ax5menu-item-text;
+			cursor: pointer;
+			font-size: $ax5menu-item-font-size;
+			&:hover{
+				background: $ax5menu-item-hover-bg;
+				color: $ax5menu-item-hover-text;
 			}
 		}
 		.ax-menu-buttons {
