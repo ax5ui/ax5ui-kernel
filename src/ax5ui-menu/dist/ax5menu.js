@@ -43,7 +43,7 @@
 
         /** private **/
         this.__getTmpl = function () {
-            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                    <div class=\"ax-menu-item\">{{label}}</div>\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
+            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                    <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\">\n                    {{#icon}}\n                    <span class=\"ax-menu-item-icon\">{{.}}</span>\n                    {{/icon}}\n                    {{label}}\n                    {{#@hasChild}}\n                        A\n                    {{/@hasChild}}\n                    </div>\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
         };
 
         /** private **/
@@ -51,6 +51,10 @@
             var data = opt,
                 activeMenu;
             data.items = items;
+            data['@depth'] = depth;
+            data['@hasChild'] = function () {
+                return this.items && this.items.length > 0;
+            };
             activeMenu = jQuery(ax5.mustache.render(this.__getTmpl(), data));
             jQuery(document.body).append(activeMenu);
 

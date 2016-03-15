@@ -46,7 +46,15 @@
             <div class="ax5-ui-menu {{theme}}">
                 <div class="ax-menu-body">
                     {{#items}}
-                    <div class="ax-menu-item">{{label}}</div>
+                    <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}">
+                    {{#icon}}
+                    <span class="ax-menu-item-icon">{{.}}</span>
+                    {{/icon}}
+                    {{label}}
+                    {{#@hasChild}}
+                        A
+                    {{/@hasChild}}
+                    </div>
                     {{/items}}
                 </div>
                 <div class="ax-menu-arrow"></div>
@@ -60,6 +68,10 @@
                 activeMenu
                 ;
             data.items = items;
+            data['@depth'] = depth;
+            data['@hasChild'] = function(){
+                return this.items && this.items.length > 0;
+            };
             activeMenu = jQuery(ax5.mustache.render(this.__getTmpl(), data));
             jQuery(document.body).append(activeMenu);
 
