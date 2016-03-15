@@ -47,13 +47,16 @@
                 <div class="ax-menu-body">
                     {{#items}}
                     <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}">
-                    {{#icon}}
-                    <span class="ax-menu-item-icon">{{.}}</span>
-                    {{/icon}}
-                    {{label}}
-                    {{#@hasChild}}
-                        A
-                    {{/@hasChild}}
+                        {{#icon}}
+                        <span class="ax-menu-item-icon">{{.}}</span>
+                        {{/icon}}
+                        {{label}}
+                        {{#accelerator}}
+                        <span class="ax-menu-item-accelerator">{{.}}</span>
+                        {{/accelerator}}
+                        {{#@hasChild}}
+                            A
+                        {{/@hasChild}}
                     </div>
                     {{/items}}
                 </div>
