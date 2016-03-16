@@ -47,15 +47,13 @@
                 <div class="ax-menu-body">
                     {{#items}}
                     <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}">
-                        {{#icon}}
-                        <span class="ax-menu-item-icon">{{.}}</span>
-                        {{/icon}}
-                        {{label}}
+                        <span class="ax-menu-item-cell ax-menu-item-icon">{{icon}}</span>
+                        <span class="ax-menu-item-cell ax-menu-item-label">{{label}}</span>
                         {{#accelerator}}
-                        <span class="ax-menu-item-accelerator">{{.}}</span>
+                        <span class="ax-menu-item-cell ax-menu-item-accelerator">{{.}}</span>
                         {{/accelerator}}
                         {{#@hasChild}}
-                            A
+                        <span class="ax-menu-item-cell ax-menu-item-handle">{{{cfg.arrowIcon}}}</span>
                         {{/@hasChild}}
                     </div>
                     {{/items}}
@@ -70,6 +68,9 @@
             var data = opt,
                 activeMenu
                 ;
+            data.cfg = {
+                arrowIcon: cfg.arrowIcon
+            };
             data.items = items;
             data['@depth'] = depth;
             data['@hasChild'] = function(){

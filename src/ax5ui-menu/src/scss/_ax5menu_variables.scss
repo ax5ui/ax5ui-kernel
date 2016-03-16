@@ -20,12 +20,16 @@ $ax5menu-easing-time-close: 0.2s !default;
 $ax5menu-arrow-size: 10px !default;
 $ax5menu-arrow-border-width: 1px !default;
 
-$ax5menu-item-padding: 2px 7px;
+$ax5menu-item-padding: 2px 5px;
 $ax5menu-item-bg: #eee;
 $ax5menu-item-text: #444;
 $ax5menu-item-hover-bg: #999;
 $ax5menu-item-hover-text: #fff;
 $ax5menu-item-font-size: 13px;
+
+$ax5menu-item-icon-width: 13px;
+$ax5menu-item-accelerator-width: 13px;
+$ax5menu-item-handle-width: 14px;
 
 //** Border color for elements within dialog
 $ax5menu-default-text: $panel-default-text !default;

@@ -33,6 +33,8 @@
 	.ax-menu-body {
 		padding: $ax5menu-body-padding;
 		text-align: center;
+		position: relative;
+		overflow: hidden;
 		.ax-menu-item {
 			padding: $ax5menu-item-padding;
 			text-align: left;
@@ -43,6 +45,38 @@
 			&:hover{
 				background: $ax5menu-item-hover-bg;
 				color: $ax5menu-item-hover-text;
+			}
+
+			display: table;
+			position: relative;
+			border-collapse: separate;
+			box-sizing: border-box;
+			overflow: hidden;
+			table-layout: fixed;
+			width: 100%;
+
+			.ax-menu-item-cell{
+				box-sizing: border-box;
+				display: table-cell;
+				vertical-align: middle;
+				white-space: nowrap;
+
+
+				&.ax-menu-item-icon{
+					width: $ax5menu-item-icon-width;
+				}
+				&.ax-menu-item-label{
+
+				}
+				&.ax-menu-item-accelerator{
+					width: $ax5menu-item-accelerator-width;
+				}
+				&.ax-menu-item-handle{
+					overflow: hidden;
+					width: $ax5menu-item-handle-width;
+					font-size: $ax5menu-item-handle-width;
+					text-align: center;
+				}
 			}
 		}
 		.ax-menu-buttons {
