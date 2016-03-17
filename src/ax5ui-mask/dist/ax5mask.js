@@ -1,3 +1,5 @@
+'use strict';
+
 // ax5.ui.mask
 (function (root, _SUPER_) {
     /**
@@ -15,10 +17,8 @@
      */
     var U = ax5.util;
 
-    var axClass = function () {
-        var
-            self = this
-            ;
+    var axClass = function axClass() {
+        var self = this;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
         this.maskContent = '';
@@ -29,7 +29,6 @@
         };
         var cfg = this.config;
 
-
         /**
          * Preferences of Mask UI
          * @method ax5.ui.mask.setConfig
@@ -38,10 +37,10 @@
          * @example
          * ```
          * setConfig({
-		 *      target : {Element|AX5 nodelist}, // 마스크 처리할 대상
-		 *      content : {String}, // 마스크안에 들어가는 내용물
-		 *      onStateChanged: function(){} // 마스크 상태변경 시 호출되는 함수 this.type으로 예외처리 가능
-		 * }
+        *      target : {Element|AX5 nodelist}, // 마스크 처리할 대상
+        *      content : {String}, // 마스크안에 들어가는 내용물
+        *      onStateChanged: function(){} // 마스크 상태변경 시 호출되는 함수 this.type으로 예외처리 가능
+        * }
          * ```
          */
         this.init = function () {
@@ -65,20 +64,20 @@
          * @example
          * ```js
          * my_mask.open({
-		 *     target: document.body,
-		 *     content: "<h1>Loading..</h1>",
-		 *     onStateChanged: function () {
-		 *
-		 *     }
-		 * });
+        *     target: document.body,
+        *     content: "<h1>Loading..</h1>",
+        *     onStateChanged: function () {
+        *
+        *     }
+        * });
          *
          * my_mask.open({
-		 *     target: $("#mask-target").get(0), // dom Element
-		 *     content: "<h1>Loading..</h1>",
-		 *     onStateChanged: function () {
-		 *
-		 *     }
-		 * });
+        *     target: $("#mask-target").get(0), // dom Element
+        *     content: "<h1>Loading..</h1>",
+        *     onStateChanged: function () {
+        *
+        *     }
+        * });
          * ```
          */
         this.open = function (config) {
@@ -90,8 +89,13 @@
             jQuery.extend(true, self.maskConfig, config);
 
             var config = self.maskConfig,
-                target = config.target, $target = jQuery(target),
-                po = [], css, maskId = 'ax-mask-' + ax5.getGuid(), $mask, css = {},
+                target = config.target,
+                $target = jQuery(target),
+                po = [],
+                css,
+                maskId = 'ax-mask-' + ax5.getGuid(),
+                $mask,
+                css = {},
                 that = {};
 
             po.push('<div class="ax-mask ' + config.theme + '" id="' + maskId + '">');
@@ -107,13 +111,13 @@
 
             if (target !== document.body) {
                 css = {
-                    position: "absolute",
+                    position: config.position || "absolute",
                     left: $target.offset().left,
                     top: $target.offset().top,
                     width: $target.outerWidth(),
                     height: $target.outerHeight()
                 };
-                if(typeof self.maskConfig.zIndex !== "undefined"){
+                if (typeof self.maskConfig.zIndex !== "undefined") {
                     css["z-index"] = self.maskConfig.zIndex;
                 }
                 $target.addClass("ax-masking");
@@ -124,6 +128,15 @@
             this.status = "on";
             $mask.css(css);
 
+            if (config.onClick) {
+                $mask.click(function () {
+                    that = {
+                        state: "open",
+                        type: "click"
+                    };
+                    config.onClick.call(that, that);
+                });
+            }
             if (config.onStateChanged) {
                 that = {
                     state: "open"
@@ -143,7 +156,8 @@
          * ```
          */
         this.close = function () {
-            var config = this.maskConfig, that;
+            var config = this.maskConfig,
+                that;
             this.$mask.remove();
             this.$target.removeClass("ax-masking");
             if (config && config.onStateChanged) {
@@ -156,18 +170,16 @@
         };
         //== class body end
 
-
         // 클래스 생성자
-        this.main = (function () {
-            if(arguments && U.isObject(arguments[0])) {
+        this.main = function () {
+            if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
-        }).apply(this, arguments);
+        }.apply(this, arguments);
     };
 
-    root.mask = (function(){
+    root.mask = function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
-    })(); // ax5.ui에 연결
-
+    }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);

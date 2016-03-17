@@ -29,7 +29,6 @@
         };
         var cfg = this.config;
 
-
         /**
          * Preferences of Mask UI
          * @method ax5.ui.mask.setConfig
@@ -107,13 +106,13 @@
 
             if (target !== document.body) {
                 css = {
-                    position: "absolute",
+                    position: config.position || "absolute",
                     left: $target.offset().left,
                     top: $target.offset().top,
                     width: $target.outerWidth(),
                     height: $target.outerHeight()
                 };
-                if(typeof self.maskConfig.zIndex !== "undefined"){
+                if (typeof self.maskConfig.zIndex !== "undefined") {
                     css["z-index"] = self.maskConfig.zIndex;
                 }
                 $target.addClass("ax-masking");
@@ -124,6 +123,15 @@
             this.status = "on";
             $mask.css(css);
 
+            if (config.onClick) {
+                $mask.click(function(){
+                    that = {
+                        state: "open",
+                        type: "click"
+                    };
+                    config.onClick.call(that, that);
+                });
+            }
             if (config.onStateChanged) {
                 that = {
                     state: "open"
@@ -156,16 +164,15 @@
         };
         //== class body end
 
-
         // 클래스 생성자
         this.main = (function () {
-            if(arguments && U.isObject(arguments[0])) {
+            if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
         }).apply(this, arguments);
     };
 
-    root.mask = (function(){
+    root.mask = (function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
     })(); // ax5.ui에 연결

@@ -16,7 +16,12 @@
     $(document.body).ready(function(){
         var mask = new ax5.ui.mask();
         $("#mask-open").click(function(){
-            mask.open();
+            mask.open({
+                position: "fixed",
+                onClick: function(){
+                    console.log(this);
+                }
+            });
         });
     });
 </script>
