@@ -19,13 +19,15 @@
     $(document.body).ready(function () {
         var menu = new ax5.ui.menu();
         menu.setConfig({
+            theme: 'danger',
             width: 150,
-            arrowIcon: '<i class="fa fa-caret-right"></i>',
+            icons: {'arrow':'<i class="fa fa-caret-right"></i>'},
             onStateChanged: function () {
 
             },
             items: [
                 {
+                    icon: '<i class="fa fa-bluetooth"></i>',
                     label: "Menu Parent 0",
                     items: [
                         {
@@ -43,6 +45,7 @@
                     ]
                 },
                 {
+                    icon: '<i class="fa fa-mixcloud"></i>',
                     label: "Menu Parent 1",
                     items: [
                         {

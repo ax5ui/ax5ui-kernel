@@ -43,15 +43,17 @@
 
         /** private **/
         this.__getTmpl = function () {
-            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                    <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\">\n                        <span class=\"ax-menu-item-cell ax-menu-item-icon\">{{icon}}</span>\n                        <span class=\"ax-menu-item-cell ax-menu-item-label\">{{label}}</span>\n                        {{#accelerator}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-accelerator\">{{.}}</span>\n                        {{/accelerator}}\n                        {{#@hasChild}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.arrowIcon}}}</span>\n                        {{/@hasChild}}\n                    </div>\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
+            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                    <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\">\n                        <span class=\"ax-menu-item-cell ax-menu-item-icon\">{{{icon}}}</span>\n                        <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                        {{#accelerator}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-accelerator\">{{.}}</span>\n                        {{/accelerator}}\n                        {{#@hasChild}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                        {{/@hasChild}}\n                    </div>\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
         };
 
         /** private **/
         this.__popup = function (opt, items, depth) {
             var data = opt,
                 activeMenu;
+
+            data.theme = opt.theme || cfg.theme;
             data.cfg = {
-                arrowIcon: cfg.arrowIcon
+                icons: jQuery.extend({}, cfg.icons)
             };
             data.items = items;
             data['@depth'] = depth;

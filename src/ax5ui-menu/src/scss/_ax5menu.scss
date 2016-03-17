@@ -8,13 +8,14 @@
 	//overflow: hidden;
 }
 
-@mixin picker-variant($text-color, $border-color, $heading-bg-color) {
+@mixin picker-variant($text-color, $border-color, $heading-bg-color, $item-bg, $item-color, $item-hover-bg, $item-hover-color) {
 
 	@include ax-background($ax5menu-bg);
 	border: $ax5menu-inner-border;
-	border-color: $ax5menu-inner-border-color;
+	border-color: $border-color;
 	border-radius: $ax5menu-border-radius;
 	box-shadow: $ax5menu-box-shadow;
+	color: $text-color;
 
 	.ax-menu-heading {
 		font-weight: 600;
@@ -35,16 +36,18 @@
 		text-align: center;
 		position: relative;
 		overflow: hidden;
+
 		.ax-menu-item {
 			padding: $ax5menu-item-padding;
 			text-align: left;
-			background: $ax5menu-item-bg;
-			color: $ax5menu-item-text;
+			background: $item-bg;
+			color: $item-color;
 			cursor: pointer;
 			font-size: $ax5menu-item-font-size;
+
 			&:hover{
-				background: $ax5menu-item-hover-bg;
-				color: $ax5menu-item-hover-text;
+				background: $item-hover-bg;
+				color: $item-hover-color;
 			}
 
 			display: table;
@@ -61,9 +64,9 @@
 				vertical-align: middle;
 				white-space: nowrap;
 
-
 				&.ax-menu-item-icon{
 					width: $ax5menu-item-icon-width;
+					text-align: center;
 				}
 				&.ax-menu-item-label{
 
@@ -246,22 +249,28 @@
 	@include transform(translateY(0%) rotateX(0deg));
 	*/
 
-	@include picker-variant($ax5menu-default-text, $ax5menu-default-border-color, $ax5menu-default-heading-bg);
+	@include picker-variant($ax5menu-default-text, $ax5menu-default-border-color, $ax5menu-default-heading-bg,
+			$ax5menu-default-item-bg, $ax5menu-default-item-text, $ax5menu-default-item-hover-bg, $ax5menu-default-item-hover-text);
 
 	&.primary {
-		@include picker-variant($ax5menu-primary-text, $ax5menu-primary-border-color, $ax5menu-primary-heading-bg);
+		@include picker-variant($ax5menu-primary-text, $ax5menu-primary-border-color, $ax5menu-primary-heading-bg,
+				$ax5menu-primary-item-bg, $ax5menu-primary-item-text, $ax5menu-primary-item-hover-bg, $ax5menu-primary-item-hover-text);
 	}
 	&.success {
-		@include picker-variant($ax5menu-success-text, $ax5menu-success-border-color, $ax5menu-success-heading-bg);
+		@include picker-variant($ax5menu-success-text, $ax5menu-success-border-color, $ax5menu-success-heading-bg,
+				$ax5menu-success-item-bg, $ax5menu-success-item-text, $ax5menu-success-item-hover-bg, $ax5menu-success-item-hover-text);
 	}
 	&.info {
-		@include picker-variant($ax5menu-info-text, $ax5menu-info-border-color, $ax5menu-info-heading-bg);
+		@include picker-variant($ax5menu-info-text, $ax5menu-info-border-color, $ax5menu-info-heading-bg,
+				$ax5menu-info-item-bg, $ax5menu-info-item-text, $ax5menu-info-item-hover-bg, $ax5menu-info-item-hover-text);
 	}
 	&.warning {
-		@include picker-variant($ax5menu-warning-text, $ax5menu-warning-border-color, $ax5menu-warning-heading-bg);
+		@include picker-variant($ax5menu-warning-text, $ax5menu-warning-border-color, $ax5menu-warning-heading-bg,
+				$ax5menu-warning-item-bg, $ax5menu-warning-item-text, $ax5menu-warning-item-hover-bg, $ax5menu-warning-item-hover-text);
 	}
 	&.danger {
-		@include picker-variant($ax5menu-danger-text, $ax5menu-danger-border-color, $ax5menu-danger-heading-bg);
+		@include picker-variant($ax5menu-danger-text, $ax5menu-danger-border-color, $ax5menu-danger-heading-bg,
+				$ax5menu-danger-item-bg, $ax5menu-danger-item-text, $ax5menu-danger-item-hover-bg, $ax5menu-danger-item-hover-text);
 	}
 
 	&.destroy {

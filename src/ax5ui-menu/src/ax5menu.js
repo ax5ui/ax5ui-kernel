@@ -47,13 +47,13 @@
                 <div class="ax-menu-body">
                     {{#items}}
                     <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}">
-                        <span class="ax-menu-item-cell ax-menu-item-icon">{{icon}}</span>
-                        <span class="ax-menu-item-cell ax-menu-item-label">{{label}}</span>
+                        <span class="ax-menu-item-cell ax-menu-item-icon">{{{icon}}}</span>
+                        <span class="ax-menu-item-cell ax-menu-item-label">{{{label}}}</span>
                         {{#accelerator}}
                         <span class="ax-menu-item-cell ax-menu-item-accelerator">{{.}}</span>
                         {{/accelerator}}
                         {{#@hasChild}}
-                        <span class="ax-menu-item-cell ax-menu-item-handle">{{{cfg.arrowIcon}}}</span>
+                        <span class="ax-menu-item-cell ax-menu-item-handle">{{{cfg.icons.arrow}}}</span>
                         {{/@hasChild}}
                     </div>
                     {{/items}}
@@ -68,8 +68,10 @@
             var data = opt,
                 activeMenu
                 ;
+
+            data.theme = opt.theme || cfg.theme;
             data.cfg = {
-                arrowIcon: cfg.arrowIcon
+                icons: jQuery.extend({}, cfg.icons)
             };
             data.items = items;
             data['@depth'] = depth;
