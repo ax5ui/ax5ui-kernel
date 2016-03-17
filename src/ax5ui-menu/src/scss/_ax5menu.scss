@@ -73,6 +73,15 @@
 				}
 				&.ax-menu-item-accelerator{
 					width: $ax5menu-item-accelerator-width;
+					text-align: right;
+					padding-right: 5px;
+					.item-wrap {
+						display: block;
+						width: 100%;
+						vertical-align: middle;
+						@include ellipsis();
+						//@include hide-text;
+					}
 				}
 				&.ax-menu-item-handle{
 					overflow: hidden;

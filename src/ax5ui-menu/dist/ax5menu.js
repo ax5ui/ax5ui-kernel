@@ -43,7 +43,7 @@
 
         /** private **/
         this.__getTmpl = function () {
-            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                    <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\">\n                        <span class=\"ax-menu-item-cell ax-menu-item-icon\">{{{icon}}}</span>\n                        <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                        {{#accelerator}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-accelerator\">{{.}}</span>\n                        {{/accelerator}}\n                        {{#@hasChild}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                        {{/@hasChild}}\n                    </div>\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
+            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                    <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\">\n                        <span class=\"ax-menu-item-cell ax-menu-item-icon\">{{{icon}}}</span>\n                        <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                        {{#accelerator}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-accelerator\"><span class=\"item-wrap\">{{.}}</span></span>\n                        {{/accelerator}}\n                        {{#@hasChild}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                        {{/@hasChild}}\n                    </div>\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
         };
 
         /** private **/
@@ -70,6 +70,26 @@
             });
             this.queue.push({
                 '$target': activeMenu
+            });
+
+            activeMenu.find('[data-menu-item-index]').bind("mouseover", function () {
+                var depth = this.getAttribute("data-menu-item-depth"),
+                    index = this.getAttribute("data-menu-item-index");
+
+                if (activeMenu.attr("data-selected-menu-item-index") != index) {
+                    activeMenu.attr("data-selected-menu-item-index", index);
+
+                    if (items[index].items && items[index].items.length > 0) {
+                        var $this = $(this),
+                            offset = $this.offset(),
+                            childOpt = {
+                            left: offset.left + $this.width() - 2,
+                            top: offset.top
+                        };
+                        childOpt = jQuery.extend(true, opt, childOpt);
+                        self.__popup(childOpt, items[index].items, depth + 1);
+                    }
+                }
             });
 
             this.__align(activeMenu, data);
