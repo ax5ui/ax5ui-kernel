@@ -161,6 +161,17 @@
         };
     }
 
+    // splice ie8 <= polyfill
+    (function () {
+        if (!document.documentMode || document.documentMode >= 9) return false;
+        var _splice = Array.prototype.splice;
+        Array.prototype.splice = function () {
+            var args = Array.prototype.slice.call(arguments);
+            if (typeof args[1] === "undefined") args[1] = this.length - args[0];
+            return _splice.apply(this, args);
+        };
+    })();
+
     // Console-polyfill. MIT license. https://github.com/paulmillr/console-polyfill
     // Make it safe to do console.log() always.
     (function (con) {
