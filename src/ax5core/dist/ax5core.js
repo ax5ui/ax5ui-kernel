@@ -1697,9 +1697,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         function stopEvent(e) {
             // 이벤트 중지 구문
-            if (e.preventDefault) e.preventDefault();
-            if (e.stopPropagation) e.stopPropagation();
+            if (!e) var e = window.event;
+
+            //e.cancelBubble is supported by IE -
+            // this will kill the bubbling process.
             e.cancelBubble = true;
+            e.returnValue = false;
+
+            //e.stopPropagation works only in Firefox.
+            if (e.stopPropagation) e.stopPropagation();
+            if (e.preventDefault) e.preventDefault();
+
             return false;
             // 이벤트 중지 구문 끝
         }

@@ -1,5 +1,7 @@
 /** require bourbon */
-/** ax5-ui-mixin : version 1.0 */
+/** ax5-ui-mixin : version 1.1 */
+
+$hack_ie67: '.';
 
 @mixin placeholder($color: $input-color-placeholder) {
 	// Firefox
