@@ -91,9 +91,6 @@
         // todo : icon width, accelerator width, 스크립트로 정의 가능도록 변경
 
         $(document).bind("contextmenu", function (e) {
-            
-            console.log(e);
-            
             menu.popup(e);
             ax5.util.stopEvent(e);
             // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}

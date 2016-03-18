@@ -102,6 +102,13 @@
                 }
             });
 
+            // is Root
+            if (depth == 0) {
+                jQuery(document).bind("click.ax5menu", function (e) {
+                    console.log(e);
+                });
+            }
+
             this.__align(activeMenu, data);
             return this;
         };
@@ -166,7 +173,7 @@
          * @returns {ax5.ui.menu} this
          */
         this.close = function () {
-
+            jQuery(document).unbind("click.ax5menu");
             return this;
         };
 
