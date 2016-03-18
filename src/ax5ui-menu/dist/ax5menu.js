@@ -24,7 +24,9 @@
 
         this.config = {
             theme: "default",
-            width: 100,
+            //width: 200,
+            iconWidth: 20,
+            acceleratorWidth: 100,
             direction: "top-left", // top-left|top-right|bottom-left|bottom-right
             animateTime: 250,
             items: []
@@ -43,7 +45,7 @@
 
         /** private **/
         this.__getTmpl = function () {
-            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                    <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\">\n                        <span class=\"ax-menu-item-cell ax-menu-item-icon\">{{{icon}}}</span>\n                        <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                        {{#accelerator}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-accelerator\"><span class=\"item-wrap\">{{.}}</span></span>\n                        {{/accelerator}}\n                        {{#@hasChild}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                        {{/@hasChild}}\n                    </div>\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
+            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                    <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\">\n                        <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{icon}}}</span>\n                        <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                        {{#accelerator}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-accelerator\" style=\"width:{{cfg.acceleratorWidth}}px;\"><span class=\"item-wrap\">{{.}}</span></span>\n                        {{/accelerator}}\n                        {{#@hasChild}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                        {{/@hasChild}}\n                    </div>\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
         };
 
         /** private **/
@@ -53,7 +55,9 @@
 
             data.theme = opt.theme || cfg.theme;
             data.cfg = {
-                icons: jQuery.extend({}, cfg.icons)
+                icons: jQuery.extend({}, cfg.icons),
+                iconWidth: opt.iconWidth || cfg.iconWidth,
+                acceleratorWidth: opt.acceleratorWidth || cfg.acceleratorWidth
             };
             data.items = items;
             data['@depth'] = depth;
@@ -64,7 +68,9 @@
             jQuery(document.body).append(activeMenu);
 
             // remove queue
+
             var removed = this.queue.splice(depth);
+
             removed.forEach(function (n) {
                 n.$target.remove();
             });
@@ -88,6 +94,10 @@
                         };
                         childOpt = jQuery.extend(true, opt, childOpt);
                         self.__popup(childOpt, items[index].items, depth + 1);
+                    } else {
+                        self.queue.splice(Number(depth) + 1).forEach(function (n) {
+                            n.$target.remove();
+                        });
                     }
                 }
             });
@@ -102,8 +112,7 @@
 
             activeMenu.css({
                 left: data.left,
-                top: data.top,
-                width: data.width
+                top: data.top
             });
 
             return this;

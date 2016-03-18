@@ -20,8 +20,13 @@
         var menu = new ax5.ui.menu();
         menu.setConfig({
             theme: 'danger',
-            width: 200,
-            icons: {'arrow':'<i class="fa fa-caret-right"></i>'},
+            //width: 200,
+            iconWidth: 20,
+            acceleratorWidth: 100,
+            icons: {
+                'arrow':'<i class="fa fa-caret-right"></i>'
+            },
+
             onStateChanged: function () {
 
             },
@@ -39,8 +44,8 @@
                         {
                             label: "Menu A",
                             data: {},
-                            role: "",
-                            accelerator: "CmdOrCtrl+A"
+                            role: ""
+                            //accelerator: "CmdOrCtrl+A"
                         }
                     ]
                 },
@@ -52,13 +57,27 @@
                             label: "Menu Z",
                             data: {},
                             role: "",
-                            accelerator: "CmdOrCtrl+Z"
+                            //accelerator: "CmdOrCtrl+Z",
+                            items: [
+                                {
+                                    label: "Menu Z",
+                                    data: {},
+                                    role: ""
+                                    //accelerator: "CmdOrCtrl+Z"
+                                },
+                                {
+                                    label: "Menu A",
+                                    data: {},
+                                    role: ""
+                                    //accelerator: "CmdOrCtrl+A"
+                                }
+                            ]
                         },
                         {
                             label: "Menu A",
                             data: {},
-                            role: "",
-                            accelerator: "CmdOrCtrl+A"
+                            role: ""
+                            //accelerator: "CmdOrCtrl+A"
                         }
                     ]
                 }
@@ -71,7 +90,10 @@
 
         // todo : icon width, accelerator width, 스크립트로 정의 가능도록 변경
 
-        $(window).bind("contextmenu", function (e) {
+        $(document).bind("contextmenu", function (e) {
+            
+            console.log(e);
+            
             menu.popup(e);
             ax5.util.stopEvent(e);
             // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
