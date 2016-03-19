@@ -6,10 +6,12 @@
 
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-toast/dist/ax5toast.css"/>
     <link rel="stylesheet" type="text/css" href="../dist/ax5menu.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/ax5core/dist/ax5core.min.js"></script>
+    <script src="bower_components/ax5ui-toast/dist/ax5toast.min.js"></script>
     <script src="../dist/ax5menu.min.js"></script>
 </head>
 <body style="padding: 50px;">
@@ -17,18 +19,21 @@
 <!--https://css-tricks.com/snippets/javascript/javascript-keycodes/-->
 <script type="text/javascript">
     $(document.body).ready(function () {
-        var menu = new ax5.ui.menu();
-        menu.setConfig({
-            theme: 'danger',
+        var toast = new ax5.ui.toast({containerPosition: "top-right"});
+        var menu = new ax5.ui.menu({
+            theme: 'default',
             //width: 200,
             iconWidth: 22,
             acceleratorWidth: 100,
             icons: {
                 'arrow':'<i class="fa fa-caret-right"></i>'
             },
-
             onStateChanged: function () {
 
+            },
+            onClick: function(){
+                console.log(this);
+                toast.push(JSON.stringify(this));
             },
             items: [
                 {
@@ -49,6 +54,7 @@
                         }
                     ]
                 },
+                {divide:true},
                 {
                     icon: '<i class="fa fa-mixcloud"></i>',
                     label: "Menu Parent 1",
@@ -80,13 +86,28 @@
                             //accelerator: "CmdOrCtrl+A"
                         }
                     ]
+                },
+                {
+                    icon: '<i class="fa fa-bluetooth"></i>',
+                    label: "Menu Parent 2"
+                },
+                {
+                    icon: '<i class="fa fa-user"></i>',
+                    label: "Menu Parent 3"
+                },
+                {
+                    icon: '<i class="fa fa-industry"></i>',
+                    label: "Menu Parent 4"
                 }
             ]
         });
 
-        menu.onclick = function () {
-
+        /*
+        menu.onClick = function () {
+            console.log(this);
+            toast.push(JSON.stringify(this));
         };
+        */
 
         // todo : icon width, accelerator width, 스크립트로 정의 가능도록 변경
 

@@ -46,7 +46,7 @@
 			cursor: pointer;
 			font-size: $ax5menu-item-font-size;
 
-			&:hover{
+			&:hover, &.hover{
 				background: $item-hover-bg;
 				color: $item-hover-color;
 			}
@@ -58,12 +58,16 @@
 			overflow: hidden;
 			//table-layout: fixed;
 			width: 100%;
+			height: $ax5menu-item-font-size + 5;
 
 			.ax-menu-item-cell{
 				box-sizing: border-box;
 				display: table-cell;
 				vertical-align: middle;
 				white-space: nowrap;
+				font-size: $ax5menu-item-font-size;
+				line-height: $ax5menu-item-font-size + 5;
+				padding: 0px 0px 0px 0px;
 
 				&.ax-menu-item-icon{
 					text-align: center;
@@ -73,25 +77,27 @@
 				}
 				&.ax-menu-item-accelerator{
 					text-align: right;
-					padding-right: 5px;
+					padding: 0px 5px 0px 0px;
 					.item-wrap {
-						display: block;
 						width: 100%;
 						vertical-align: middle;
 						@include ellipsis();
-						//@include hide-text;
+						display: block;
 					}
 				}
 				&.ax-menu-item-handle{
 					overflow: hidden;
 					width: $ax5menu-item-handle-width;
-					font-size: $ax5menu-item-handle-width;
 					text-align: center;
 				}
 			}
 		}
+		.ax-menu-item-divide{
+			border-top: $ax5menu-inner-border;
+			border-color: lighten($border-color, 0%);
+			margin: $ax5menu-body-padding;
+		}
 		.ax-menu-buttons {
-			padding: $ax5menu-buttons-padding;
 			button {
 				&:not(:last-child) {
 					margin-right: 3px;

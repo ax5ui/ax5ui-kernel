@@ -1794,6 +1794,10 @@ ax5.info.errorMsg["ax5formatter"] = {
     "402": "Can not find boundID",
     "501": "Can not find pattern"
 };
+
+ax5.info.errorMsg["ax5menu"] = {
+    "501": "Can not find menu item"
+};
 // 필수 Ployfill 확장 구문
 (function () {
     'use strict';
