@@ -18,14 +18,15 @@
         var
             self = this,
             cfg;
-        
+
         if (_SUPER_) _SUPER_.call(this); // 부모호출
         
         this.config = {
             theme: "default",
             //width: 200,
-            iconWidth: 20,
+            iconWidth: 22,
             acceleratorWidth: 100,
+            menuBodyPadding: 5,
             direction: "top-left", // top-left|top-right|bottom-left|bottom-right
             animateTime: 250,
             items: []
@@ -106,8 +107,8 @@
                         var $this = $(this),
                             offset = $this.offset(),
                             childOpt = {
-                                left: offset.left + $this.width() - 2,
-                                top: offset.top
+                                left: offset.left + $this.width() - cfg.menuBodyPadding,
+                                top: offset.top - cfg.menuBodyPadding - 1
                             };
                         childOpt = jQuery.extend(true, opt, childOpt);
                         self.__popup(childOpt, items[index].items, (depth + 1));
