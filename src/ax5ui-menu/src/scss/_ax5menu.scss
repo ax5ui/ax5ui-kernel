@@ -46,7 +46,7 @@
 			cursor: pointer;
 			font-size: $ax5menu-item-font-size;
 
-			&:hover, &.hover{
+			&:hover, &.hover {
 				background: $item-hover-bg;
 				color: $item-hover-color;
 			}
@@ -60,7 +60,7 @@
 			width: 100%;
 			height: $ax5menu-item-font-size + 5;
 
-			.ax-menu-item-cell{
+			.ax-menu-item-cell {
 				box-sizing: border-box;
 				display: table-cell;
 				vertical-align: middle;
@@ -68,16 +68,20 @@
 				font-size: $ax5menu-item-font-size;
 				line-height: $ax5menu-item-font-size + 5;
 				padding: 0px 0px 0px 0px;
-
-				&.ax-menu-item-icon{
+				&.ax-menu-item-checkbox {
+					overflow: hidden;
+					width: $ax5menu-item-checkbox-width;
 					text-align: center;
 				}
-				&.ax-menu-item-label{
+				&.ax-menu-item-icon {
+					text-align: center;
+				}
+				&.ax-menu-item-label {
 					padding-right: 10px;
 				}
-				&.ax-menu-item-accelerator{
+				&.ax-menu-item-accelerator {
 					text-align: right;
-					padding: 0px 5px 0px 0px;
+					padding: 0px 7px 0px 0px;
 					.item-wrap {
 						width: 100%;
 						vertical-align: middle;
@@ -85,17 +89,21 @@
 						display: block;
 					}
 				}
-				&.ax-menu-item-handle{
+				&.ax-menu-item-handle {
 					overflow: hidden;
 					width: $ax5menu-item-handle-width;
 					text-align: center;
 				}
 			}
 		}
-		.ax-menu-item-divide{
+		.ax-menu-item-divide {
 			border-top: $ax5menu-inner-border;
 			border-color: lighten($border-color, 0%);
 			margin: $ax5menu-body-padding;
+		}
+		.ax-menu-item-html{
+			padding: $ax5menu-item-html-padding;
+			text-align: left;
 		}
 		.ax-menu-buttons {
 			button {

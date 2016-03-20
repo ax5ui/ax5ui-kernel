@@ -18,20 +18,21 @@
 
 <!--https://css-tricks.com/snippets/javascript/javascript-keycodes/-->
 <script type="text/javascript">
+    var menu, toast;
     $(document.body).ready(function () {
-        var toast = new ax5.ui.toast({containerPosition: "top-right"});
-        var menu = new ax5.ui.menu({
+        toast = new ax5.ui.toast({containerPosition: "top-right"});
+        menu = new ax5.ui.menu({
             theme: 'default',
             //width: 200,
-            iconWidth: 22,
+            iconWidth: 20,
             acceleratorWidth: 100,
             icons: {
-                'arrow':'<i class="fa fa-caret-right"></i>'
+                'arrow': '<i class="fa fa-caret-right"></i>'
             },
             onStateChanged: function () {
 
             },
-            onClick: function(){
+            onClick: function () {
                 console.log(this);
                 toast.push(JSON.stringify(this));
             },
@@ -54,7 +55,7 @@
                         }
                     ]
                 },
-                {divide:true},
+                {divide: true},
                 {
                     icon: '<i class="fa fa-mixcloud"></i>',
                     label: "Menu Parent 1",
@@ -92,12 +93,20 @@
                     label: "Menu Parent 2"
                 },
                 {
-                    icon: '<i class="fa fa-user"></i>',
                     label: "Menu Parent 3"
                 },
                 {
-                    icon: '<i class="fa fa-industry"></i>',
                     label: "Menu Parent 4"
+                },
+                {divide: true},
+                {
+                    html: function () {
+                        console.log(this);
+                        return '<div style="text-align: center;">' +
+                            '<button class="btn btn-primary" onclick="window.menu.close();">OK</button> ' +
+                            '<button class="btn btn-danger" onclick="window.menu.close();">CANCLE</button>' +
+                            '</div>';
+                    }
                 }
             ]
         });
@@ -109,7 +118,8 @@
         };
         */
 
-        // todo : icon width, accelerator width, 스크립트로 정의 가능도록 변경
+        // todo : checked 옵션 사용여부 기능 추가
+        // todo :
 
         $(document).bind("contextmenu", function (e) {
             menu.popup(e);

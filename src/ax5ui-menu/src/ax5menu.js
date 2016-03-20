@@ -49,12 +49,20 @@
             <div class="ax5-ui-menu {{theme}}">
                 <div class="ax-menu-body">
                     {{#items}}
-                        {{#divide}}
-                        <div class="ax-menu-item-divide"></div>
-                        {{/divide}}
-                        {{^divide}}
+                        {{^@isMenu}}
+                            {{#divide}}
+                            <div class="ax-menu-item-divide" data-menu-item-index="{{@i}}"></div>
+                            {{/divide}}
+                            {{#html}}
+                            <div class="ax-menu-item-html" data-menu-item-index="{{@i}}">{{{@html}}}</div>
+                            {{/html}}
+                        {{/@isMenu}}
+                        {{#@isMenu}}
                         <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}" data-menu-item-path="{{@path}}.{{@i}}">
-                            <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{icon}}}</span>
+                            <span class="ax-menu-item-cell ax-menu-item-checkbox">{{checked}}</span>
+                            {{#icon}}
+                            <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>
+                            {{/icon}}
                             <span class="ax-menu-item-cell ax-menu-item-label">{{{label}}}</span>
                             {{#accelerator}}
                             <span class="ax-menu-item-cell ax-menu-item-accelerator" style="width:{{cfg.acceleratorWidth}}px;"><span class="item-wrap">{{.}}</span></span>
@@ -63,7 +71,7 @@
                             <span class="ax-menu-item-cell ax-menu-item-handle">{{{cfg.icons.arrow}}}</span>
                             {{/@hasChild}}
                         </div>
-                        {{/divide}}
+                        {{/@isMenu}}
 
                     {{/items}}
                 </div>
@@ -84,6 +92,23 @@
                 iconWidth: opt.iconWidth || cfg.iconWidth,
                 acceleratorWidth: opt.acceleratorWidth || cfg.acceleratorWidth
             };
+
+            items.forEach(function(n){
+                if(n.html || n.divide){
+                    n['@isMenu'] = false;
+                    if(n.html){
+                        n['@html'] = n.html.call({
+                            item: n,
+                            config: cfg,
+                            opt: opt
+                        });
+                    }
+                }
+                else{
+                    n['@isMenu'] = true;
+                }
+            });
+
             data.items = items;
             data['@depth'] = depth;
             data['@path'] = path || "root";
@@ -136,40 +161,7 @@
 
             // is Root
             if(depth == 0) {
-                jQuery(document).bind("click.ax5menu", function (e) {
-                    var target = U.findParentNode(e.target, function (target) {
-                        if (target.getAttribute("data-menu-item-index"))
-                        {
-                            return true;
-                        }
-                    });
-                    if (target)
-                    {
-                        // click item
-                        var item = (function(path){
-                            var item;
-                            try {
-                                item = (Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].items[') + "];")).call(self);
-                            }catch (e){
-                                console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
-                            }
-                            return item;
-                        })(target.getAttribute("data-menu-item-path"));
-
-                        if(self.onClick){
-                            self.onClick.call(item, item);
-                            if(!item.items || item.items.length == 0) self.close();
-                        }
-                        if(cfg.onClick){
-                            cfg.onClick.call(item, item);
-                            if(!item.items || item.items.length == 0) self.close();
-                        }
-                    }
-                    else
-                    {
-                        self.close();
-                    }
-                });
+                jQuery(document).bind("click.ax5menu", this.__clickItem.bind(this));
                 jQuery(window).bind("keydown.ax5menu", function (e) {
                     if (e.which == ax5.info.eventKeys.ESC) {
                         self.close();
@@ -183,7 +175,46 @@
             this.__align(activeMenu, data);
             return this;
         };
-        
+
+        /** click **/
+        this.__clickItem = function(e){
+            var target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-menu-item-index"))
+                {
+                    return true;
+                }
+            });
+            if (target)
+            {
+                // click item
+                var item = (function(path){
+                    if(!path) return false;
+                    var item;
+                    try {
+                        item = (Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].items[') + "];")).call(self);
+                    }catch (e){
+                        console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
+                    }
+                    return item;
+                })(target.getAttribute("data-menu-item-path"));
+
+                if(!item) return this;
+
+                if(self.onClick){
+                    self.onClick.call(item, item);
+                    if(!item.items || item.items.length == 0) self.close();
+                }
+                if(cfg.onClick){
+                    cfg.onClick.call(item, item);
+                    if(!item.items || item.items.length == 0) self.close();
+                }
+            }
+            else
+            {
+                self.close();
+            }
+            return this;
+        };
         /** private **/
         this.__align = function (activeMenu, data) {
             //console.log(activeMenu.height());
