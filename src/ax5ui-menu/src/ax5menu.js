@@ -231,7 +231,11 @@
                 l = data.left, t = data.top;
 
             if (l + w > ww) {
-                l = data['@parent'].left - w + cfg.menuBodyPadding;
+                if(data['@parent']) {
+                    l = data['@parent'].left - w + cfg.menuBodyPadding;
+                }else{
+                    l = ww - w;
+                }
             }
             if (t + h > wh) {
                 t = wh - h;
