@@ -163,6 +163,7 @@
 
             if (opts && opts.onStateChanged) {
                 var that = {
+                    self: this,
                     state: "open",
                     toastId: opts.id
                 };
@@ -253,6 +254,7 @@
 
                 if (opts && opts.onStateChanged) {
                     that = {
+                        self: this,
                         state: "close",
                         toastId: opts.id
                     };

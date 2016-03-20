@@ -1,6 +1,8 @@
+'use strict';
+
 // ax5.ui.toast
 (function (root, _SUPER_) {
-    
+
     /**
      * @class ax5.ui.toast
      * @classdesc
@@ -13,13 +15,12 @@
      * var my_toast = new ax5.ui.toast();
      * ```
      */
-    
+
     var U = ax5.util;
-    
+
     //== UI Class
-    var axClass = function () {
-        var
-            self = this,
+    var axClass = function axClass() {
+        var self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -40,7 +41,7 @@
             containerPosition: "bottom-left"
         };
         cfg = this.config;
-        
+
         /**
          * Preferences of toast UI
          * @method ax5.ui.toast.set_config
@@ -50,19 +51,18 @@
          * ```
          * ```
          */
-            //== class body start
+        //== class body start
         this.init = function () {
             // after set_config();
             self.containerId = ax5.getGuid();
             var styles = [];
-            if(cfg.zIndex){
+            if (cfg.zIndex) {
                 styles.push("z-index:" + cfg.zIndex);
             }
-            jQuery(document.body).append('<div class="ax5-ui-toast-container ' + cfg.containerPosition + '" data-toast-container="' +
-                '' + self.containerId + '" style="' + styles.join(";") + '"></div>');
+            jQuery(document.body).append('<div class="ax5-ui-toast-container ' + cfg.containerPosition + '" data-toast-container="' + '' + self.containerId + '" style="' + styles.join(";") + '"></div>');
             this.toastContainer = jQuery('[data-toast-container="' + self.containerId + '"]');
         };
-        
+
         this.push = function (opts, callBack) {
             if (!self.containerId) {
                 this.init();
@@ -71,7 +71,7 @@
                 opts = {
                     title: cfg.title,
                     msg: opts
-                }
+                };
             }
             opts.toastType = "push";
 
@@ -83,7 +83,7 @@
             this.open(opts, callBack);
             return this;
         };
-        
+
         this.confirm = function (opts, callBack) {
             if (!self.containerId) {
                 this.init();
@@ -92,7 +92,7 @@
                 opts = {
                     title: cfg.title,
                     msg: opts
-                }
+                };
             }
             opts.toastType = "confirm";
 
@@ -103,19 +103,19 @@
 
             if (typeof opts.btns === "undefined") {
                 opts.btns = {
-                    ok: {label: cfg.lang["ok"], theme: opts.theme}
+                    ok: { label: cfg.lang["ok"], theme: opts.theme }
                 };
             }
             this.open(opts, callBack);
             return this;
         };
-        
+
         this.getContent = function (toastId, opts) {
             var po = [];
             po.push('<div id="' + toastId + '" data-ax5-ui="toast" class="ax5-ui-toast ' + opts.theme + '">');
             if (opts.icon) {
                 po.push('<div class="ax-toast-icon">');
-                po.push((opts.icon || ""));
+                po.push(opts.icon || "");
                 po.push('</div>');
             }
             po.push('<div class="ax-toast-body">');
@@ -130,8 +130,7 @@
                 });
                 po.push('</div>');
                 po.push('</div>');
-            }
-            else {
+            } else {
                 po.push('<a class="ax-toast-close" data-ax-toast-btn="ok">' + (opts.closeIcon || '') + '</a>');
             }
 
@@ -139,11 +138,10 @@
             po.push('</div>');
             return po.join('');
         };
-        
+
         this.open = function (opts, callBack) {
-            var
-                toastBox;
-            
+            var toastBox;
+
             opts.id = 'ax5-toast-' + self.containerId + '-' + this.queue.length;
             box = {
                 width: opts.width
@@ -151,42 +149,40 @@
 
             if (U.left(cfg.containerPosition, '-') == 'bottom') {
                 this.toastContainer.append(this.getContent(opts.id, opts));
-            }
-            else {
+            } else {
                 this.toastContainer.prepend(this.getContent(opts.id, opts));
             }
 
             toastBox = jQuery('#' + opts.id);
-            toastBox.css({width: box.width});
+            toastBox.css({ width: box.width });
             opts.toastBox = toastBox;
             this.queue.push(opts);
 
             if (opts && opts.onStateChanged) {
                 var that = {
+                    self: this,
                     state: "open",
                     toastId: opts.id
                 };
                 opts.onStateChanged.call(that, that);
             }
-            
+
             if (opts.toastType === "push") {
                 // 자동 제거 타이머 시작
-                setTimeout((function () {
+                setTimeout(function () {
                     this.close(opts, toastBox, callBack);
-                }).bind(this), cfg.displayTime);
+                }.bind(this), cfg.displayTime);
 
-                toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, (function (e) {
+                toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, function (e) {
                     this.btnOnClick(e || window.event, opts, toastBox, callBack);
-                }).bind(this));
-            }
-            else if (opts.toastType === "confirm") {
-                toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, (function (e) {
+                }.bind(this));
+            } else if (opts.toastType === "confirm") {
+                toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, function (e) {
                     this.btnOnClick(e || window.event, opts, toastBox, callBack);
-                }).bind(this));
+                }.bind(this));
             }
-
         };
-        
+
         this.btnOnClick = function (e, opts, toastBox, callBack, target, k) {
 
             target = U.findParentNode(e.target, function (target) {
@@ -199,19 +195,17 @@
                 k = target.getAttribute("data-ax-toast-btn");
 
                 var that = {
-                    key: k, value: (opts.btns) ? opts.btns[k] : k,
+                    key: k, value: opts.btns ? opts.btns[k] : k,
                     toastId: opts.id,
                     btn_target: target
                 };
-                
+
                 if (opts.btns && opts.btns[k].onClick) {
                     opts.btns[k].onClick.call(that, k);
-                }
-                else if (opts.toastType === "push") {
+                } else if (opts.toastType === "push") {
                     if (callBack) callBack.call(that, k);
                     this.close(opts, toastBox);
-                }
-                else if (opts.toastType === "confirm") {
+                } else if (opts.toastType === "confirm") {
                     if (callBack) callBack.call(that, k);
                     this.close(opts, toastBox);
                 }
@@ -223,7 +217,7 @@
                 if (this.queue.length > 0) this.close();
             }
         };
-        
+
         /**
          * close the toast
          * @method ax5.ui.toast.close
@@ -239,7 +233,7 @@
                 toastBox = opts.toastBox;
             }
 
-            toastBox.addClass((opts.toastType == "push") ? "removed" : "destroy");
+            toastBox.addClass(opts.toastType == "push" ? "removed" : "destroy");
             this.queue = U.filter(this.queue, function () {
                 return opts.id != this.id;
             });
@@ -253,6 +247,7 @@
 
                 if (opts && opts.onStateChanged) {
                     that = {
+                        self: this,
                         state: "close",
                         toastId: opts.id
                     };
@@ -263,17 +258,16 @@
         };
 
         // 클래스 생성자
-        this.main = (function () {
-            if(arguments && U.isObject(arguments[0])) {
+        this.main = function () {
+            if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
-        }).apply(this, arguments);
+        }.apply(this, arguments);
     };
     //== UI Class
 
-    root.toast = (function(){
+    root.toast = function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
-    })(); // ax5.ui에 연결
-
+    }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);
