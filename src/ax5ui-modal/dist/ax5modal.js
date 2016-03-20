@@ -1,6 +1,8 @@
+"use strict";
+
 // ax5.ui.modal
 (function (root, _SUPER_) {
-    
+
     /**
      * @class ax5.ui.modal
      * @classdesc
@@ -13,13 +15,12 @@
      * var my_modal = new ax5.ui.modal();
      * ```
      */
-    
+
     var U = ax5.util;
-    
+
     //== UI Class
-    var axClass = function () {
-        var
-            self = this,
+    var axClass = function axClass() {
+        var self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -40,7 +41,7 @@
         };
         cfg = this.config; // extended config copy cfg
         cfg.id = 'ax5-modal-' + ax5.getGuid(); // instance id
-        
+
         /**
          * Preferences of modal UI
          * @method ax5.ui.modal.setConfig
@@ -50,20 +51,17 @@
          * ```
          * ```
          */
-            //== class body start
-        this.init = function () {
-            
-        };
-        
+        //== class body start
+        this.init = function () {};
+
         this.getContent = function (modalId, opts) {
-            var
-                po = [],
+            var po = [],
                 styles = [];
 
-            if(opts.zIndex){
+            if (opts.zIndex) {
                 styles.push("z-index:" + opts.zIndex);
             }
-            
+
             po.push('<div id="' + modalId + '" data-modal-els="root" class="ax5-ui-modal ' + opts.theme + ' ' + (opts.fullScreen ? "fullscreen" : "") + '" style="' + styles.join(";") + '">');
             po.push('<div class="ax-modal-body" data-modal-els="body">');
             // use iframe
@@ -73,7 +71,7 @@
                 po.push('</div>');
                 po.push('<form name="' + modalId + '-form" data-modal-els="iframe-form">');
                 po.push('<input type="hidden" name="modalId" value="' + modalId + '" />');
-                if(typeof opts.iframe.param === "string"){
+                if (typeof opts.iframe.param === "string") {
                     opts.iframe.param = ax5.util.param(opts.iframe.param);
                 }
                 for (var p in opts.iframe.param) {
@@ -91,7 +89,7 @@
                 opts = {
                     title: cfg.title,
                     msg: opts
-                }
+                };
             }
 
             self.modalConfig = {};
@@ -104,11 +102,10 @@
         };
 
         this._open = function (opts, callBack) {
-            var
-                that;
+            var that;
 
             jQuery(document.body).append(this.getContent(opts.id, opts));
-            
+
             this.activeModal = jQuery('#' + opts.id);
 
             // 파트수집
@@ -116,17 +113,18 @@
                 "root": this.activeModal.find('[data-modal-els="root"]'),
                 "body": this.activeModal.find('[data-modal-els="body"]')
             };
-            
+
             if (opts.iframe) {
                 this.$["iframe-wrap"] = this.activeModal.find('[data-modal-els="iframe-wrap"]');
                 this.$["iframe"] = this.activeModal.find('[data-modal-els="iframe"]');
                 this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
             }
-            
+
             //- position 정렬
             this.align();
 
             that = {
+                self: this,
                 id: opts.id,
                 theme: opts.theme,
                 width: opts.width,
@@ -136,22 +134,20 @@
             };
 
             if (opts.iframe) {
-                
-                console.log();
-                
-                this.$["iframe-wrap"].css({height: opts.height});
-                this.$["iframe"].css({height: opts.height});
-                
+
+                this.$["iframe-wrap"].css({ height: opts.height });
+                this.$["iframe"].css({ height: opts.height });
+
                 // iframe content load
-                this.$["iframe-form"].attr({"method": opts.iframe.method});
-                this.$["iframe-form"].attr({"target": opts.id + "-frame"});
-                this.$["iframe-form"].attr({"action": opts.iframe.url});
-                this.$["iframe"].on("load", (function () {
+                this.$["iframe-form"].attr({ "method": opts.iframe.method });
+                this.$["iframe-form"].attr({ "target": opts.id + "-frame" });
+                this.$["iframe-form"].attr({ "action": opts.iframe.url });
+                this.$["iframe"].on("load", function () {
                     if (opts && opts.onStateChanged) {
                         that.state = "load";
                         opts.onStateChanged.call(that, that);
                     }
-                }).bind(this));
+                }.bind(this));
                 this.$["iframe-form"].submit();
             }
 
@@ -162,64 +158,57 @@
 
             // bind key event
             if (opts.closeToEsc) {
-                jQuery(window).bind("keydown.ax-modal", (function (e) {
+                jQuery(window).bind("keydown.ax-modal", function (e) {
                     this.onkeyup(e || window.event);
-                }).bind(this));
+                }.bind(this));
             }
-            jQuery(window).bind("resize.ax-modal", (function (e) {
+            jQuery(window).bind("resize.ax-modal", function (e) {
                 this.align(null, e || window.event);
-            }).bind(this));
+            }.bind(this));
         };
 
         this.align = function (position, e) {
             if (!this.activeModal) return this;
             var opts = self.modalConfig,
                 box = {
-                    width: opts.width,
-                    height: opts.height
-                };
+                width: opts.width,
+                height: opts.height
+            };
 
-            if(opts.fullScreen){
+            if (opts.fullScreen) {
                 box.width = jQuery(window).width();
                 box.height = jQuery(window).height();
                 box.left = 0;
                 box.top = 0;
 
                 if (opts.iframe) {
-                    this.$["iframe-wrap"].css({height: box.height});
-                    this.$["iframe"].css({height: box.height});
+                    this.$["iframe-wrap"].css({ height: box.height });
+                    this.$["iframe"].css({ height: box.height });
                 }
-            }
-            else{
+            } else {
                 if (position) {
                     jQuery.extend(true, opts.position, position);
                 }
 
                 //- position 정렬
                 if (opts.position.left == "left") {
-                    box.left = (opts.position.margin || 0);
-                }
-                else if (opts.position.left == "right") {
+                    box.left = opts.position.margin || 0;
+                } else if (opts.position.left == "right") {
                     // window.innerWidth;
                     box.left = jQuery(window).width() - box.width - (opts.position.margin || 0);
-                }
-                else if (opts.position.left == "center") {
+                } else if (opts.position.left == "center") {
                     box.left = jQuery(window).width() / 2 - box.width / 2;
-                }
-                else {
+                } else {
                     box.left = opts.position.left || 0;
                 }
 
                 if (opts.position.top == "top") {
-                    box.top = (opts.position.margin || 0);
-                }
-                else if (opts.position.top == "bottom") {
+                    box.top = opts.position.margin || 0;
+                } else if (opts.position.top == "bottom") {
                     box.top = jQuery(window).height() - box.height - (opts.position.margin || 0);
-                }
-                else if (opts.position.top == "middle") {
+                } else if (opts.position.top == "middle") {
                     box.top = jQuery(window).height() / 2 - box.height / 2;
-                }
-                else {
+                } else {
                     box.top = opts.position.top || 0;
                 }
             }
@@ -227,13 +216,13 @@
             this.activeModal.css(box);
             return this;
         };
-        
+
         this.onkeyup = function (e) {
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
             }
         };
-        
+
         /**
          * close the modal
          * @method ax5.ui.modal.close
@@ -250,16 +239,17 @@
                 jQuery(window).unbind("keydown.ax-modal");
                 jQuery(window).unbind("resize.ax-modal");
 
-                setTimeout((function () {
+                setTimeout(function () {
                     this.activeModal.remove();
                     this.activeModal = null;
                     if (opts && opts.onStateChanged) {
                         that = {
+                            self: this,
                             state: "close"
                         };
                         opts.onStateChanged.call(that, that);
                     }
-                }).bind(this), cfg.animateTime);
+                }.bind(this), cfg.animateTime);
             }
             return this;
         };
@@ -278,9 +268,9 @@
                 }
                 if (css.height) {
                     self.modalConfig.height = this.activeModal.height();
-                    if(this.$["iframe"]) {
-                        this.$["iframe-wrap"].css({height: self.modalConfig.height});
-                        this.$["iframe"].css({height: self.modalConfig.height});
+                    if (this.$["iframe"]) {
+                        this.$["iframe-wrap"].css({ height: self.modalConfig.height });
+                        this.$["iframe"].css({ height: self.modalConfig.height });
                     }
                 }
             }
@@ -288,17 +278,16 @@
         };
 
         // 클래스 생성자
-        this.main = (function () {
-            if(arguments && U.isObject(arguments[0])) {
+        this.main = function () {
+            if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
-        }).apply(this, arguments);
+        }.apply(this, arguments);
     };
     //== UI Class
 
-    root.modal = (function(){
+    root.modal = function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
-    })(); // ax5.ui에 연결
-    
+    }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);

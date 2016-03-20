@@ -127,6 +127,7 @@
             this.align();
 
             that = {
+                self: this,
                 id: opts.id,
                 theme: opts.theme,
                 width: opts.width,
@@ -136,9 +137,7 @@
             };
 
             if (opts.iframe) {
-                
-                console.log();
-                
+
                 this.$["iframe-wrap"].css({height: opts.height});
                 this.$["iframe"].css({height: opts.height});
                 
@@ -255,6 +254,7 @@
                     this.activeModal = null;
                     if (opts && opts.onStateChanged) {
                         that = {
+                            self: this,
                             state: "close"
                         };
                         opts.onStateChanged.call(that, that);
