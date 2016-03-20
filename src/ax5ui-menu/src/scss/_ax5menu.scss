@@ -38,6 +38,7 @@
 		position: relative;
 		overflow: hidden;
 
+		$ax-menu-item-height: $ax5menu-item-font-size + 5;
 		.ax-menu-item {
 			padding: $ax5menu-item-padding;
 			text-align: left;
@@ -46,11 +47,6 @@
 			cursor: pointer;
 			font-size: $ax5menu-item-font-size;
 
-			&:hover, &.hover {
-				background: $item-hover-bg;
-				color: $item-hover-color;
-			}
-
 			display: table;
 			position: relative;
 			border-collapse: separate;
@@ -58,7 +54,7 @@
 			overflow: hidden;
 			//table-layout: fixed;
 			width: 100%;
-			height: $ax5menu-item-font-size + 5;
+			height: $ax-menu-item-height;
 
 			.ax-menu-item-cell {
 				box-sizing: border-box;
@@ -66,15 +62,40 @@
 				vertical-align: middle;
 				white-space: nowrap;
 				font-size: $ax5menu-item-font-size;
-				line-height: $ax5menu-item-font-size + 5;
+				line-height: $ax-menu-item-height;
 				padding: 0px 0px 0px 0px;
 				&.ax-menu-item-checkbox {
 					overflow: hidden;
 					width: $ax5menu-item-checkbox-width;
 					text-align: center;
+					.item-checkbox-wrap{
+						position: relative;
+						display: block;
+						height: $ax-menu-item-height;
+
+						&:after {
+							content: '';
+							width: 10px;
+							height: 5px;
+							position: absolute;
+							top: ($ax-menu-item-height - 10) / 2;
+							left: ($ax-menu-item-height - 10) / 2;
+							border: 2px solid $item-color;
+							border-top: none;
+							border-right: none;
+							background: transparent;
+							opacity: 0;
+							@include transform(rotate(-50deg));
+						}
+						&[data-item-checked]{
+							&:after {
+								opacity: 1;
+							}
+						}
+					}
 				}
 				&.ax-menu-item-icon {
-					text-align: center;
+					text-align: left;
 				}
 				&.ax-menu-item-label {
 					padding-right: 10px;
@@ -93,6 +114,20 @@
 					overflow: hidden;
 					width: $ax5menu-item-handle-width;
 					text-align: center;
+				}
+			}
+
+			&:hover, &.hover {
+				background: $item-hover-bg;
+				color: $item-hover-color;
+				.ax-menu-item-cell{
+					&.ax-menu-item-checkbox {
+						.item-checkbox-wrap{
+							&:after {
+								border-color: $item-hover-color;
+							}
+						}
+					}
 				}
 			}
 		}

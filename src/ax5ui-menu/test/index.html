@@ -22,7 +22,7 @@
     $(document.body).ready(function () {
         toast = new ax5.ui.toast({containerPosition: "top-right"});
         menu = new ax5.ui.menu({
-            theme: 'default',
+            theme: 'primary',
             //width: 200,
             iconWidth: 20,
             acceleratorWidth: 100,
@@ -38,7 +38,8 @@
             },
             items: [
                 {
-                    icon: '<i class="fa fa-bluetooth"></i>',
+                    checked: true,
+                    icon: '<i class="fa fa-archive"></i>',
                     label: "Menu Parent 0",
                     items: [
                         {

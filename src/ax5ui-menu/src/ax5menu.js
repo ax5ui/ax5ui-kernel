@@ -59,7 +59,9 @@
                         {{/@isMenu}}
                         {{#@isMenu}}
                         <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}" data-menu-item-path="{{@path}}.{{@i}}">
-                            <span class="ax-menu-item-cell ax-menu-item-checkbox">{{checked}}</span>
+                            <span class="ax-menu-item-cell ax-menu-item-checkbox">
+                                <span class="item-checkbox-wrap" {{#checked}}data-item-checked="true"{{/checked}}></span>
+                            </span>
                             {{#icon}}
                             <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>
                             {{/icon}}
