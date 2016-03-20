@@ -231,6 +231,26 @@
 
                 if (!item) return this;
 
+                if (item.check) {
+                    (function (items) {
+                        var setValue = {
+                            'checkbox': function (value) {
+                                this.checked = !value;
+                            },
+                            'radio': function (value) {
+                                var name = this.name;
+                                items.forEach(function (n) {
+                                    if (n.check && n.check.type === 'radio' && n.check.name == name) {
+                                        n.check.checked = false;
+                                    }
+                                });
+                                this.checked = true;
+                            }
+                        };
+                        if (setValue[this.type]) setValue[this.type].call(this, this.checked);
+                    }).call(item.check, cfg.items);
+                }
+
                 if (self.onClick) {
                     self.onClick.call(item, item);
                     if (!item.items || item.items.length == 0) self.close();
@@ -346,7 +366,24 @@
          * @returns {Object} statusCheckItem
          */
         this.getCheckValue = function () {
-            return cfg.items;
+            var checkItems = {},
+                collectItem = function (items) {
+                    var i = items.length;
+                    while (i--) {
+                        if (items[i].check && items[i].check.checked) {
+                            if(!checkItems[items[i].check.name]) checkItems[items[i].check.name] = items[i].check.value;
+                            else{
+                                if(U.isString(checkItems[items[i].check.name])) checkItems[items[i].check.name] = [checkItems[items[i].check.name]];
+                                checkItems[items[i].check.name].push(items[i].check.value);
+                            }
+                        }
+                        if (items[i].items && items[i].items.length > 0) collectItem(items[i].items);
+                    }
+                };
+
+            collectItem(cfg.items);
+
+            return checkItems;
         };
 
         // 클래스 생성자

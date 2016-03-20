@@ -19,6 +19,14 @@
 <!--https://css-tricks.com/snippets/javascript/javascript-keycodes/-->
 <script type="text/javascript">
     var menu, toast;
+
+    var menuCallBack = function(act){
+        if(act == 'ok'){
+            console.log(menu.getCheckValue());
+        }
+        menu.close();
+    };
+
     $(document.body).ready(function () {
         toast = new ax5.ui.toast({containerPosition: "top-right"});
         menu = new ax5.ui.menu({
@@ -30,10 +38,12 @@
                 'arrow': '<i class="fa fa-caret-right"></i>'
             },
             onStateChanged: function () {
-
+                if(this.state == 'close') {
+                    console.log(this.self.getCheckValue());
+                }
             },
             onClick: function () {
-                console.log(this);
+                // console.log(this);
                 toast.push(JSON.stringify(this));
             },
             items: [
@@ -101,22 +111,40 @@
                     ]
                 },
                 {
+                    check: {
+                        type: 'radio',
+                        name: 'radioName',
+                        value: '1',
+                        checked: false
+                    },
                     icon: '<i class="fa fa-bluetooth"></i>',
                     label: "Menu Parent 2"
                 },
                 {
+                    check: {
+                        type: 'radio',
+                        name: 'radioName',
+                        value: '2',
+                        checked: false
+                    },
                     label: "Menu Parent 3"
                 },
                 {
+                    check: {
+                        type: 'radio',
+                        name: 'radioName',
+                        value: '3',
+                        checked: false
+                    },
                     label: "Menu Parent 4"
                 },
                 {divide: true},
                 {
                     html: function () {
-                        console.log(this);
+                        // console.log(this);
                         return '<div style="text-align: center;">' +
-                            '<button class="btn btn-primary" onclick="window.menu.close();">OK</button> ' +
-                            '<button class="btn btn-danger" onclick="window.menu.close();">CANCLE</button>' +
+                            '<button class="btn btn-primary" onclick="menuCallBack(\'ok\');">OK</button> ' +
+                            '<button class="btn btn-danger" onclick="menuCallBack(\'cancel\');">CANCEL</button>' +
                             '</div>';
                     }
                 }
