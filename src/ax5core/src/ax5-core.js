@@ -1269,7 +1269,11 @@
                 p = {};
                 each(O.split(reAmp), function () {
                     var item = this.split(reEq);
-                    p[item[0]] = item[1];
+                    if (!p[item[0]]) p[item[0]] = item[1];
+                    else {
+                        if (isString(p[item[0]])) p[item[0]] = [p[item[0]]];
+                        p[item[0]].push(item[1]);
+                    }
                 });
                 return p;
             }
@@ -1739,7 +1743,7 @@
          */
         function stopEvent(e) {
             // 이벤트 중지 구문
-            if(!e) var e = window.event;
+            if (!e) var e = window.event;
 
             //e.cancelBubble is supported by IE -
             // this will kill the bubbling process.
@@ -1747,8 +1751,8 @@
             e.returnValue = false;
 
             //e.stopPropagation works only in Firefox.
-            if ( e.stopPropagation ) e.stopPropagation();
-            if ( e.preventDefault ) e.preventDefault();
+            if (e.stopPropagation) e.stopPropagation();
+            if (e.preventDefault) e.preventDefault();
 
             return false;
             // 이벤트 중지 구문 끝

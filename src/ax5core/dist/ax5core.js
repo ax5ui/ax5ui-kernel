@@ -1243,7 +1243,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 p = {};
                 each(O.split(reAmp), function () {
                     var item = this.split(reEq);
-                    p[item[0]] = item[1];
+                    if (!p[item[0]]) p[item[0]] = item[1];else {
+                        if (isString(p[item[0]])) p[item[0]] = [p[item[0]]];
+                        p[item[0]].push(item[1]);
+                    }
                 });
                 return p;
             } else {
