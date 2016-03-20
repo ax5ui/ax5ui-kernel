@@ -40,19 +40,29 @@
         cfg = this.config;
 
         this.init = function () {
+            var that;
             // after set_config();
             self.menuId = ax5.getGuid();
+
+            if (cfg.onStateChanged) {
+                that = {
+                    self: this,
+                    state: "init"
+                };
+                cfg.onStateChanged.call(that, that);
+            }
         };
 
         /** private **/
         this.__getTmpl = function () {
-            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                        {{^@isMenu}}\n                            {{#divide}}\n                            <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                            {{/divide}}\n                            {{#html}}\n                            <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                            {{/html}}\n                        {{/@isMenu}}\n                        {{#@isMenu}}\n                        <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\" data-menu-item-path=\"{{@path}}.{{@i}}\">\n                            <span class=\"ax-menu-item-cell ax-menu-item-checkbox\">\n                                <span class=\"item-checkbox-wrap\" {{#checked}}data-item-checked=\"true\"{{/checked}}></span>\n                            </span>\n                            {{#icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                            {{/icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                            {{#accelerator}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-accelerator\" style=\"width:{{cfg.acceleratorWidth}}px;\"><span class=\"item-wrap\">{{.}}</span></span>\n                            {{/accelerator}}\n                            {{#@hasChild}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                            {{/@hasChild}}\n                        </div>\n                        {{/@isMenu}}\n\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
+            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                        {{^@isMenu}}\n                            {{#divide}}\n                            <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                            {{/divide}}\n                            {{#html}}\n                            <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                            {{/html}}\n                        {{/@isMenu}}\n                        {{#@isMenu}}\n                        <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\" data-menu-item-path=\"{{@path}}.{{@i}}\">\n                            <span class=\"ax-menu-item-cell ax-menu-item-checkbox\">\n                                {{#check}}\n                                <span class=\"item-checkbox-wrap useCheckBox\" {{#checked}}data-item-checked=\"true\"{{/checked}}></span>\n                                {{/check}}\n                                {{^check}}\n                                <span class=\"item-checkbox-wrap\"></span>\n                                {{/check}}\n                            </span>\n                            {{#icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                            {{/icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                            {{#accelerator}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-accelerator\" style=\"width:{{cfg.acceleratorWidth}}px;\"><span class=\"item-wrap\">{{.}}</span></span>\n                            {{/accelerator}}\n                            {{#@hasChild}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                            {{/@hasChild}}\n                        </div>\n                        {{/@isMenu}}\n\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
         };
 
         /** private **/
         this.__popup = function (opt, items, depth, path) {
             var data = opt,
-                activeMenu;
+                activeMenu,
+                that;
 
             data.theme = opt.theme || cfg.theme;
             data.cfg = {
@@ -140,6 +150,14 @@
                 jQuery(window).bind("resize.ax5menu", function (e) {
                     self.close();
                 });
+
+                if (cfg.onStateChanged) {
+                    that = {
+                        self: this,
+                        state: "popup"
+                    };
+                    cfg.onStateChanged.call(that, that);
+                }
             }
 
             this.__align(activeMenu, data);
@@ -181,6 +199,7 @@
             }
             return this;
         };
+
         /** private **/
         this.__align = function (activeMenu, data) {
             //console.log(data['@parent']);
@@ -256,6 +275,8 @@
          * @returns {ax5.ui.menu} this
          */
         this.close = function () {
+            var that;
+
             jQuery(document).unbind("click.ax5menu");
             jQuery(window).unbind("keydown.ax5menu");
             jQuery(window).unbind("resize.ax5menu");
@@ -264,7 +285,24 @@
                 n.$target.remove();
             });
             this.queue = [];
+
+            if (cfg.onStateChanged) {
+                that = {
+                    self: this,
+                    state: "close"
+                };
+                cfg.onStateChanged.call(that, that);
+            }
+
             return this;
+        };
+
+        /**
+         * @method ax5.ui.menu.getCheckValue
+         * @returns {Object} statusCheckItem
+         */
+        this.getCheckValue = function () {
+            return cfg.items;
         };
 
         // 클래스 생성자

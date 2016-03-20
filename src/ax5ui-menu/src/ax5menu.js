@@ -39,8 +39,17 @@
         cfg = this.config;
         
         this.init = function () {
+            var that;
             // after set_config();
             self.menuId = ax5.getGuid();
+
+            if (cfg.onStateChanged) {
+                that = {
+                    self: this,
+                    state: "init"
+                };
+                cfg.onStateChanged.call(that, that);
+            }
         };
         
         /** private **/
@@ -60,7 +69,12 @@
                         {{#@isMenu}}
                         <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}" data-menu-item-path="{{@path}}.{{@i}}">
                             <span class="ax-menu-item-cell ax-menu-item-checkbox">
-                                <span class="item-checkbox-wrap" {{#checked}}data-item-checked="true"{{/checked}}></span>
+                                {{#check}}
+                                <span class="item-checkbox-wrap useCheckBox" {{#checked}}data-item-checked="true"{{/checked}}></span>
+                                {{/check}}
+                                {{^check}}
+                                <span class="item-checkbox-wrap"></span>
+                                {{/check}}
                             </span>
                             {{#icon}}
                             <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>
@@ -85,7 +99,8 @@
         /** private **/
         this.__popup = function (opt, items, depth, path) {
             var data = opt,
-                activeMenu
+                activeMenu,
+                that
                 ;
             
             data.theme = opt.theme || cfg.theme;
@@ -178,6 +193,14 @@
                 jQuery(window).bind("resize.ax5menu", function (e) {
                     self.close();
                 });
+
+                if (cfg.onStateChanged) {
+                    that = {
+                        self: this,
+                        state: "popup"
+                    };
+                    cfg.onStateChanged.call(that, that);
+                }
             }
             
             this.__align(activeMenu, data);
@@ -222,6 +245,7 @@
             }
             return this;
         };
+
         /** private **/
         this.__align = function (activeMenu, data) {
             //console.log(data['@parent']);
@@ -231,9 +255,10 @@
                 l = data.left, t = data.top;
 
             if (l + w > ww) {
-                if(data['@parent']) {
+                if (data['@parent']) {
                     l = data['@parent'].left - w + cfg.menuBodyPadding;
-                }else{
+                }
+                else {
                     l = ww - w;
                 }
             }
@@ -294,6 +319,8 @@
          * @returns {ax5.ui.menu} this
          */
         this.close = function () {
+            var that;
+
             jQuery(document).unbind("click.ax5menu");
             jQuery(window).unbind("keydown.ax5menu");
             jQuery(window).unbind("resize.ax5menu");
@@ -302,9 +329,26 @@
                 n.$target.remove();
             });
             this.queue = [];
+
+            if (cfg.onStateChanged) {
+                that = {
+                    self: this,
+                    state: "close"
+                };
+                cfg.onStateChanged.call(that, that);
+            }
+
             return this;
         };
-        
+
+        /**
+         * @method ax5.ui.menu.getCheckValue
+         * @returns {Object} statusCheckItem
+         */
+        this.getCheckValue = function () {
+            return cfg.items;
+        };
+
         // 클래스 생성자
         this.main = (function () {
             if (arguments && U.isObject(arguments[0])) {

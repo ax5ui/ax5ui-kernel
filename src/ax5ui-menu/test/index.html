@@ -38,17 +38,28 @@
             },
             items: [
                 {
-                    checked: true,
                     icon: '<i class="fa fa-archive"></i>',
                     label: "Menu Parent 0",
                     items: [
                         {
+                            check: {
+                                type: 'checkbox',
+                                name: 'A',
+                                value: '0',
+                                checked: false
+                            },
                             label: "Menu Z",
                             data: {},
                             role: "",
                             accelerator: "CmdOrCtrl+Z"
                         },
                         {
+                            check: {
+                                type: 'checkbox',
+                                name: 'A',
+                                value: '1',
+                                checked: true
+                            },
                             label: "Menu A",
                             data: {},
                             role: ""

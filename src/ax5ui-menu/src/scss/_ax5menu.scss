@@ -74,23 +74,25 @@
 						width: $ax5menu-item-checkbox-width;
 						height: $ax-menu-item-height;
 
-						&:after {
-							content: '';
-							width: 10px;
-							height: 5px;
-							position: absolute;
-							top: ($ax-menu-item-height - 10) / 2;
-							left: ($ax-menu-item-height - 10) / 2;
-							border: 2px solid $item-color;
-							border-top: none;
-							border-right: none;
-							background: transparent;
-							opacity: 0;
-							@include transform(rotate(-50deg));
-						}
-						&[data-item-checked]{
+						&.useCheckBox{
 							&:after {
-								opacity: 1;
+								content: '';
+								width: 10px;
+								height: 5px;
+								position: absolute;
+								top: ($ax-menu-item-height - 10) / 2;
+								left: ($ax-menu-item-height - 10) / 2;
+								border: 2px solid $item-color;
+								border-top: none;
+								border-right: none;
+								background: transparent;
+								opacity: 0.1;
+								@include transform(rotate(-50deg));
+							}
+							&[data-item-checked]{
+								&:after {
+									opacity: 1;
+								}
 							}
 						}
 					}
