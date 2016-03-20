@@ -134,6 +134,7 @@
             }
             if (config.onStateChanged) {
                 that = {
+                    self: this,
                     state: "open"
                 };
                 config.onStateChanged.call(that, that);
@@ -156,6 +157,7 @@
             this.$target.removeClass("ax-masking");
             if (config && config.onStateChanged) {
                 that = {
+                    self: this,
                     state: "close"
                 };
                 config.onStateChanged.call(that, that);
