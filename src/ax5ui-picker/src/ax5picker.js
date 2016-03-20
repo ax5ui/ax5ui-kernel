@@ -386,8 +386,8 @@
 
                 if (opts && opts.onStateChanged) {
                     var that = {
-                        state: "open",
                         self: this,
+                        state: "open",
                         boundObject: opts
                     };
                     opts.onStateChanged.call(that, that);
@@ -420,6 +420,7 @@
                 this.activePickerQueueIndex = -1;
                 if (opts && opts.onStateChanged) {
                     var that = {
+                        self: this,
                         state: "close"
                     };
                     opts.onStateChanged.call(that, that);

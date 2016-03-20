@@ -178,6 +178,13 @@
             return '\n            <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n                {{#title}}\n                    <div class="ax-picker-heading">{{title}}</div>\n                {{/title}}\n                <div class="ax-picker-body">\n                    <div class="ax-picker-contents" data-picker-els="contents" style="width:{{contentWidth}}px;"></div>\n                    {{#btns}}\n                        <div class="ax-picker-buttons">\n                        {{#btns}}\n                            {{#@each}}\n                            <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                            {{/@each}}\n                        {{/btns}}\n                        </div>\n                    {{/btns}}\n                </div>\n                <div class="ax-picker-arrow"></div>\n            </div>\n            ';
         };
 
+        /**
+         * @method ax5.ui.picker.setContentValue
+         * @param {String} boundID
+         * @param {Number} inputIndex
+         * @param {String} val
+         * @returns {ax5.ui.picker} this
+         */
         this.setContentValue = function (boundID, inputIndex, val) {
             var opts = this.queue[ax5.util.search(this.queue, function () {
                 return this.id == boundID;
@@ -332,8 +339,8 @@
 
                 if (opts && opts.onStateChanged) {
                     var that = {
-                        state: "open",
                         self: this,
+                        state: "open",
                         boundObject: opts
                     };
                     opts.onStateChanged.call(that, that);
@@ -364,6 +371,7 @@
                 this.activePickerQueueIndex = -1;
                 if (opts && opts.onStateChanged) {
                     var that = {
+                        self: this,
                         state: "close"
                     };
                     opts.onStateChanged.call(that, that);
