@@ -110,7 +110,13 @@
                         var $this = $(this),
                             offset = $this.offset(),
                             childOpt = {
-                            left: offset.left + $this.width() - cfg.menuBodyPadding,
+                            '@parent': {
+                                left: offset.left,
+                                top: offset.top,
+                                width: $this.outerWidth(),
+                                height: $this.outerHeight()
+                            },
+                            left: offset.left + $this.outerWidth() - cfg.menuBodyPadding,
                             top: offset.top - cfg.menuBodyPadding - 1
                         };
                         childOpt = jQuery.extend(true, opt, childOpt);
@@ -177,12 +183,23 @@
         };
         /** private **/
         this.__align = function (activeMenu, data) {
-            //console.log(activeMenu.height());
+            //console.log(data['@parent']);
+            var $window = $(window),
+                wh = $window.height(),
+                ww = $window.width(),
+                h = activeMenu.outerHeight(),
+                w = activeMenu.outerWidth(),
+                l = data.left,
+                t = data.top;
 
-            activeMenu.css({
-                left: data.left,
-                top: data.top
-            });
+            if (l + w > ww) {
+                l = data['@parent'].left - w + cfg.menuBodyPadding;
+            }
+            if (t + h > wh) {
+                t = wh - h;
+            }
+
+            activeMenu.css({ left: l, top: t });
 
             return this;
         };

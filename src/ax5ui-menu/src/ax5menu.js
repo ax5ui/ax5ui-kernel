@@ -95,10 +95,10 @@
                 acceleratorWidth: opt.acceleratorWidth || cfg.acceleratorWidth
             };
 
-            items.forEach(function(n){
-                if(n.html || n.divide){
+            items.forEach(function (n) {
+                if (n.html || n.divide) {
                     n['@isMenu'] = false;
-                    if(n.html){
+                    if (n.html) {
                         n['@html'] = n.html.call({
                             item: n,
                             config: cfg,
@@ -106,7 +106,7 @@
                         });
                     }
                 }
-                else{
+                else {
                     n['@isMenu'] = true;
                 }
             });
@@ -147,13 +147,19 @@
                         var $this = $(this),
                             offset = $this.offset(),
                             childOpt = {
-                                left: offset.left + $this.width() - cfg.menuBodyPadding,
+                                '@parent': {
+                                    left: offset.left,
+                                    top: offset.top,
+                                    width: $this.outerWidth(),
+                                    height: $this.outerHeight()
+                                },
+                                left: offset.left + $this.outerWidth() - cfg.menuBodyPadding,
                                 top: offset.top - cfg.menuBodyPadding - 1
                             };
                         childOpt = jQuery.extend(true, opt, childOpt);
                         self.__popup(childOpt, items[index].items, (depth + 1), path);
                     }
-                    else{
+                    else {
                         self.queue.splice(Number(depth) + 1).forEach(function (n) {
                             n.$target.remove();
                         });
@@ -162,7 +168,7 @@
             });
 
             // is Root
-            if(depth == 0) {
+            if (depth == 0) {
                 jQuery(document).bind("click.ax5menu", this.__clickItem.bind(this));
                 jQuery(window).bind("keydown.ax5menu", function (e) {
                     if (e.which == ax5.info.eventKeys.ESC) {
@@ -179,7 +185,7 @@
         };
 
         /** click **/
-        this.__clickItem = function(e){
+        this.__clickItem = function (e) {
             var target = U.findParentNode(e.target, function (target) {
                 if (target.getAttribute("data-menu-item-index"))
                 {
@@ -189,42 +195,49 @@
             if (target)
             {
                 // click item
-                var item = (function(path){
-                    if(!path) return false;
+                var item = (function (path) {
+                    if (!path) return false;
                     var item;
                     try {
                         item = (Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].items[') + "];")).call(self);
-                    }catch (e){
+                    } catch (e) {
                         console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
                     }
                     return item;
                 })(target.getAttribute("data-menu-item-path"));
 
-                if(!item) return this;
+                if (!item) return this;
 
-                if(self.onClick){
+                if (self.onClick) {
                     self.onClick.call(item, item);
-                    if(!item.items || item.items.length == 0) self.close();
+                    if (!item.items || item.items.length == 0) self.close();
                 }
-                if(cfg.onClick){
+                if (cfg.onClick) {
                     cfg.onClick.call(item, item);
-                    if(!item.items || item.items.length == 0) self.close();
+                    if (!item.items || item.items.length == 0) self.close();
                 }
             }
-            else
-            {
+            else {
                 self.close();
             }
             return this;
         };
         /** private **/
         this.__align = function (activeMenu, data) {
-            //console.log(activeMenu.height());
-            
-            activeMenu.css({
-                left: data.left,
-                top: data.top
-            });
+            //console.log(data['@parent']);
+            var $window = $(window),
+                wh = $window.height(), ww = $window.width(),
+                h = activeMenu.outerHeight(), w = activeMenu.outerWidth(),
+                l = data.left, t = data.top;
+
+            if (l + w > ww) {
+                l = data['@parent'].left - w + cfg.menuBodyPadding;
+            }
+            if (t + h > wh) {
+                t = wh - h;
+            }
+
+            activeMenu.css({left: l, top: t});
             
             return this;
         };
