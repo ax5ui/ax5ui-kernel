@@ -268,6 +268,43 @@
 @mixin ax-menubar() {
 	box-sizing: border-box;
 	height: 100%;
+	position: relative;
+	.ax-menu-body {
+		display: table;
+		height: 100%;
+		border-collapse: separate;
+		box-sizing: border-box;
+
+		.ax-menu-item{
+			display: table-cell;
+			height: 100%;
+			vertical-align: middle;
+			white-space: nowrap;
+			box-sizing: border-box;
+			padding: $ax5menubar-item-padding;
+			cursor: pointer;
+			font-size: $ax5menu-item-font-size;
+
+			.ax-menu-item-cell{
+				white-space: nowrap;
+			}
+		}
+	}
+}
+
+@mixin menubar-variant($text-color, $border-color, $heading-bg-color, $item-bg, $item-color, $item-hover-bg, $item-hover-color) {
+	.ax-menu-body {
+		.ax-menu-item{
+			color: $item-color;
+			.ax-menu-item-cell{
+
+			}
+			&:hover, &.hover {
+				background: $item-hover-bg;
+				color: $item-hover-color;
+			}
+		}
+	}
 }
 
 @include keyframes(ax-menu) {
@@ -357,5 +394,27 @@
 
 .ax5-ui-menubar {
 	@include ax-menubar();
+	@include menubar-variant($ax5menu-default-text, $ax5menu-default-border-color, $ax5menu-default-heading-bg,
+			$ax5menu-default-item-bg, $ax5menu-default-item-text, $ax5menu-default-item-hover-bg, $ax5menu-default-item-hover-text);
 
+	&.primary {
+		@include menubar-variant($ax5menu-primary-text, $ax5menu-primary-border-color, $ax5menu-primary-heading-bg,
+				$ax5menu-primary-item-bg, $ax5menu-primary-item-text, $ax5menu-primary-item-hover-bg, $ax5menu-primary-item-hover-text);
+	}
+	&.success {
+		@include menubar-variant($ax5menu-success-text, $ax5menu-success-border-color, $ax5menu-success-heading-bg,
+				$ax5menu-success-item-bg, $ax5menu-success-item-text, $ax5menu-success-item-hover-bg, $ax5menu-success-item-hover-text);
+	}
+	&.info {
+		@include menubar-variant($ax5menu-info-text, $ax5menu-info-border-color, $ax5menu-info-heading-bg,
+				$ax5menu-info-item-bg, $ax5menu-info-item-text, $ax5menu-info-item-hover-bg, $ax5menu-info-item-hover-text);
+	}
+	&.warning {
+		@include menubar-variant($ax5menu-warning-text, $ax5menu-warning-border-color, $ax5menu-warning-heading-bg,
+				$ax5menu-warning-item-bg, $ax5menu-warning-item-text, $ax5menu-warning-item-hover-bg, $ax5menu-warning-item-hover-text);
+	}
+	&.danger {
+		@include menubar-variant($ax5menu-danger-text, $ax5menu-danger-border-color, $ax5menu-danger-heading-bg,
+				$ax5menu-danger-item-bg, $ax5menu-danger-item-text, $ax5menu-danger-item-hover-bg, $ax5menu-danger-item-hover-text);
+	}
 }
