@@ -9,8 +9,7 @@
 	//overflow: hidden;
 }
 
-@mixin picker-variant($text-color, $border-color, $heading-bg-color, $item-bg, $item-color, $item-hover-bg, $item-hover-color) {
-
+@mixin menu-variant($text-color, $border-color, $heading-bg-color, $item-bg, $item-color, $item-hover-bg, $item-hover-color) {
 	@include ax-background($ax5menu-bg);
 	border: $ax5menu-inner-border;
 	border-color: $border-color;
@@ -172,7 +171,6 @@
 			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, left);
 		}
 	}
-
 }
 
 @mixin picker-arrow($arrow-size, $arrow-border-width, $border-color, $arrow-direction) {
@@ -267,6 +265,11 @@
 	}
 }
 
+@mixin ax-menubar() {
+	box-sizing: border-box;
+	height: 100%;
+}
+
 @include keyframes(ax-menu) {
 	0% {
 		opacity: 0.0;
@@ -309,27 +312,27 @@
 	@include transform(translateY(0%) rotateX(0deg));
 	*/
 
-	@include picker-variant($ax5menu-default-text, $ax5menu-default-border-color, $ax5menu-default-heading-bg,
+	@include menu-variant($ax5menu-default-text, $ax5menu-default-border-color, $ax5menu-default-heading-bg,
 			$ax5menu-default-item-bg, $ax5menu-default-item-text, $ax5menu-default-item-hover-bg, $ax5menu-default-item-hover-text);
 
 	&.primary {
-		@include picker-variant($ax5menu-primary-text, $ax5menu-primary-border-color, $ax5menu-primary-heading-bg,
+		@include menu-variant($ax5menu-primary-text, $ax5menu-primary-border-color, $ax5menu-primary-heading-bg,
 				$ax5menu-primary-item-bg, $ax5menu-primary-item-text, $ax5menu-primary-item-hover-bg, $ax5menu-primary-item-hover-text);
 	}
 	&.success {
-		@include picker-variant($ax5menu-success-text, $ax5menu-success-border-color, $ax5menu-success-heading-bg,
+		@include menu-variant($ax5menu-success-text, $ax5menu-success-border-color, $ax5menu-success-heading-bg,
 				$ax5menu-success-item-bg, $ax5menu-success-item-text, $ax5menu-success-item-hover-bg, $ax5menu-success-item-hover-text);
 	}
 	&.info {
-		@include picker-variant($ax5menu-info-text, $ax5menu-info-border-color, $ax5menu-info-heading-bg,
+		@include menu-variant($ax5menu-info-text, $ax5menu-info-border-color, $ax5menu-info-heading-bg,
 				$ax5menu-info-item-bg, $ax5menu-info-item-text, $ax5menu-info-item-hover-bg, $ax5menu-info-item-hover-text);
 	}
 	&.warning {
-		@include picker-variant($ax5menu-warning-text, $ax5menu-warning-border-color, $ax5menu-warning-heading-bg,
+		@include menu-variant($ax5menu-warning-text, $ax5menu-warning-border-color, $ax5menu-warning-heading-bg,
 				$ax5menu-warning-item-bg, $ax5menu-warning-item-text, $ax5menu-warning-item-hover-bg, $ax5menu-warning-item-hover-text);
 	}
 	&.danger {
-		@include picker-variant($ax5menu-danger-text, $ax5menu-danger-border-color, $ax5menu-danger-heading-bg,
+		@include menu-variant($ax5menu-danger-text, $ax5menu-danger-border-color, $ax5menu-danger-heading-bg,
 				$ax5menu-danger-item-bg, $ax5menu-danger-item-text, $ax5menu-danger-item-hover-bg, $ax5menu-danger-item-hover-text);
 	}
 
@@ -350,4 +353,9 @@
 	&.direction-left {
 		@include transform-origin(left center);
 	}
+}
+
+.ax5-ui-menubar {
+	@include ax-menubar();
+
 }

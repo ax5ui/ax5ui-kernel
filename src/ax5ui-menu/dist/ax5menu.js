@@ -59,6 +59,11 @@
         };
 
         /** private **/
+        this.__getTmpl_menuBar = function () {
+            return "\n            <div class=\"ax5-ui-menubar {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                        {{^@isMenu}}\n                            {{#divide}}\n                            <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                            {{/divide}}\n                            {{#html}}\n                            <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                            {{/html}}\n                        {{/@isMenu}}\n                        {{#@isMenu}}\n                        <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\" data-menu-item-path=\"{{@path}}.{{@i}}\">\n                            {{#icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                            {{/icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                        </div>\n                        {{/@isMenu}}\n                    {{/items}}\n                </div>\n            </div>\n            ";
+        };
+
+        /** private **/
         this.__popup = function (opt, items, depth, path) {
             var data = opt,
                 activeMenu,
@@ -285,6 +290,56 @@
                 if (!e) return this;
                 opt = getOption[typeof e.clientX == "undefined" ? "object" : "event"].call(this, e, opt);
                 this.__popup(opt, cfg.items, 0); // 0 is seq of queue
+
+                return this;
+            };
+        }();
+
+        /**
+         * @method ax5.ui.menu.attach
+         * @param {Element|jQueryObject} el
+         * @returns {ax5.ui.menu} this
+         */
+        this.attach = function () {
+
+            return function (el, opt) {
+                var data = {};
+                var items = cfg.items;
+
+                if (typeof opt === "undefined") opt = {};
+
+                data.theme = opt.theme || cfg.theme;
+                data.cfg = {
+                    icons: jQuery.extend({}, cfg.icons),
+                    iconWidth: opt.iconWidth || cfg.iconWidth,
+                    acceleratorWidth: opt.acceleratorWidth || cfg.acceleratorWidth
+                };
+
+                items.forEach(function (n) {
+                    if (n.html || n.divide) {
+                        n['@isMenu'] = false;
+                        if (n.html) {
+                            n['@html'] = n.html.call({
+                                item: n,
+                                config: cfg,
+                                opt: opt
+                            });
+                        }
+                    } else {
+                        n['@isMenu'] = true;
+                    }
+                });
+
+                data.items = items;
+                data['@depth'] = 0;
+                data['@path'] = "root";
+                data['@hasChild'] = function () {
+                    return this.items && this.items.length > 0;
+                };
+
+                var activeMenu = jQuery(ax5.mustache.render(this.__getTmpl_menuBar(), data));
+                self.$attachedTarget = jQuery(el);
+                self.$attachedTarget.html(activeMenu);
 
                 return this;
             };
