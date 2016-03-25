@@ -341,6 +341,8 @@
                 self.$attachedTarget = jQuery(el);
                 self.$attachedTarget.html(activeMenu);
 
+                activeMenu.bind("click", function (e) {});
+
                 return this;
             };
         }();
