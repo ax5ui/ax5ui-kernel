@@ -109,7 +109,7 @@
 
             jQuery(document.body).append(po.join(''));
 
-            if (target !== document.body) {
+            if (target && target !== jQuery(document.body).get(0)) {
                 css = {
                     position: config.position || "absolute",
                     left: $target.offset().left,

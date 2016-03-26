@@ -11,6 +11,9 @@
 </head>
 <body>
 
+<div id="user-content" style="width:300px;height:300px;border: 1px solid #000;"></div>
+
+
 <button type="button" id="mask-open">mask-open</button>
 <script>
     $(document.body).ready(function(){
@@ -18,6 +21,7 @@
         $("#mask-open").click(function(){
             mask.open({
                 position: "fixed",
+                target: $("#user-content").get(0),
                 onClick: function(){
                     console.log(this);
                 }
