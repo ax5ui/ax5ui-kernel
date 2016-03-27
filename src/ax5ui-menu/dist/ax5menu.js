@@ -302,6 +302,20 @@
          */
         this.attach = function () {
 
+            var getOption = {
+                'object': function object(e, opt) {
+                    e = {
+                        left: e.left,
+                        top: e.top,
+                        width: e.width || cfg.width,
+                        theme: e.theme || cfg.theme,
+                        direction: e.direction || cfg.direction
+                    };
+                    opt = jQuery.extend(true, e, opt);
+                    return opt;
+                }
+            };
+
             return function (el, opt) {
                 var data = {};
                 var items = cfg.items;
@@ -341,7 +355,30 @@
                 self.$attachedTarget = jQuery(el);
                 self.$attachedTarget.html(activeMenu);
 
-                activeMenu.bind("click", function (e) {});
+                // click, mouseover
+                activeMenu.bind("click", function (e) {
+                    if (!e) return this;
+
+                    var target = U.findParentNode(e.target, function (target) {
+                        if (target.getAttribute("data-menu-item-index")) {
+                            return true;
+                        }
+                    });
+                    if (target) {
+                        var $target = $(target),
+                            offset = $target.offset(),
+                            height = $target.height(),
+                            index = Number(target.getAttribute("data-menu-item-index"));
+
+                        opt = getOption["object"].call(this, { left: offset.left, top: offset.top + height }, opt);
+
+                        console.log(cfg.items[index].items);
+
+                        if (cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
+                            self.__popup(opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
+                        }
+                    }
+                });
 
                 return this;
             };
