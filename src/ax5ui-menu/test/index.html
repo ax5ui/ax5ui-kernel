@@ -161,7 +161,7 @@
                 'arrow': '<i class="fa fa-caret-right"></i>'
             },
             onClick: function () {
-                console.log(this);
+                //console.log(this);
             },
             items: [
                 {
@@ -195,35 +195,39 @@
                     ]
                 },
                 {
-                    check: {
-                        type: 'radio',
-                        name: 'radioName',
-                        value: '1',
-                        checked: false
-                    },
-                    icon: '<i class="fa fa-bluetooth"></i>',
-                    label: "Menu Parent 2"
-                },
-                {
-                    check: {
-                        type: 'radio',
-                        name: 'radioName',
-                        value: '2',
-                        checked: false
-                    },
-                    label: "Menu Parent 3"
-                },
-                {
-                    check: {
-                        type: 'radio',
-                        name: 'radioName',
-                        value: '3',
-                        checked: false
-                    },
-                    label: "Menu Parent 4"
+                    icon: '<i class="fa fa-mixcloud"></i>',
+                    label: "Menu Parent 1",
+                    items: [
+                        {
+                            label: "Menu Z",
+                            data: {},
+                            role: "",
+                            //accelerator: "CmdOrCtrl+Z",
+                            items: [
+                                {
+                                    label: "Menu Z",
+                                    data: {},
+                                    role: ""
+                                    //accelerator: "CmdOrCtrl+Z"
+                                },
+                                {
+                                    label: "Menu A",
+                                    data: {},
+                                    role: ""
+                                    //accelerator: "CmdOrCtrl+A"
+                                }
+                            ]
+                        },
+                        {
+                            label: "Menu A",
+                            data: {},
+                            role: ""
+                            //accelerator: "CmdOrCtrl+A"
+                        }
+                    ]
                 }
             ]
-        })
+        });
         /*
         menu.onClick = function () {
             console.log(this);

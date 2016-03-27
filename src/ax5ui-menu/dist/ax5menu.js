@@ -165,6 +165,8 @@
                 }
             }
 
+            // console.log(data);
+
             this.__align(activeMenu, data);
             return this;
         };
@@ -311,7 +313,7 @@
                         theme: e.theme || cfg.theme,
                         direction: e.direction || cfg.direction
                     };
-                    opt = jQuery.extend(true, e, opt);
+                    opt = jQuery.extend(true, opt, e);
                     return opt;
                 }
             };
@@ -356,7 +358,7 @@
                 self.$attachedTarget.html(activeMenu);
 
                 // click, mouseover
-                activeMenu.bind("click", function (e) {
+                self.$attachedTarget.bind("click", function (e) {
                     if (!e) return this;
 
                     var target = U.findParentNode(e.target, function (target) {
@@ -371,8 +373,6 @@
                             index = Number(target.getAttribute("data-menu-item-index"));
 
                         opt = getOption["object"].call(this, { left: offset.left, top: offset.top + height }, opt);
-
-                        console.log(cfg.items[index].items);
 
                         if (cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
                             self.__popup(opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
