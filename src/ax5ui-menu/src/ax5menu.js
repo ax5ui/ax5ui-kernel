@@ -27,7 +27,8 @@
             iconWidth: 22,
             acceleratorWidth: 100,
             menuBodyPadding: 5,
-            direction: "top-left", // top-left|top-right|bottom-left|bottom-right
+            //direction: "top", // top|bottom
+            position: {left: 0, top: 0},
             animateTime: 250,
             items: []
         };
@@ -162,7 +163,7 @@
             };
             activeMenu = jQuery(ax5.mustache.render(this.__getTmpl(), data));
             jQuery(document.body).append(activeMenu);
-            
+
             // remove queue
 
             var removed = this.queue.splice(depth);
@@ -212,6 +213,7 @@
 
             // is Root
             if (depth == 0) {
+                if (data.direction) activeMenu.addClass("direction-" + data.direction);
                 jQuery(document).bind("click.ax5menu", this.__clickItem.bind(this));
                 jQuery(window).bind("keydown.ax5menu", function (e) {
                     if (e.which == ax5.info.eventKeys.ESC) {
@@ -335,9 +337,14 @@
                         left: e.clientX,
                         top: e.clientY,
                         width: cfg.width,
-                        theme: cfg.theme,
-                        direction: cfg.direction
+                        theme: cfg.theme
                     };
+
+                    if (cfg.position) {
+                        if (cfg.position.left) e.left += cfg.position.left;
+                        if (cfg.position.top) e.top += cfg.position.top;
+                    }
+
                     opt = jQuery.extend(true, e, opt);
                     return opt;
                 },
@@ -346,9 +353,14 @@
                         left: e.left,
                         top: e.top,
                         width: e.width || cfg.width,
-                        theme: e.theme || cfg.theme,
-                        direction: e.direction || cfg.direction
+                        theme: e.theme || cfg.theme
                     };
+
+                    if (cfg.position) {
+                        if (cfg.position.left) e.left += cfg.position.left;
+                        if (cfg.position.top) e.top += cfg.position.top;
+                    }
+
                     opt = jQuery.extend(true, e, opt);
                     return opt;
                 }
@@ -440,12 +452,17 @@
                         var
                             $target = $(target),
                             offset = $target.offset(),
-                            height = $target.height(),
+                            height = $target.outerHeight(),
                             index = Number(target.getAttribute("data-menu-item-index"));
+
+                        if (cfg.position) {
+                            if (cfg.position.left) offset.left += cfg.position.left;
+                            if (cfg.position.top) offset.top += cfg.position.top;
+                        }
 
                         opt = getOption["object"].call(this, {left: offset.left, top: offset.top + height}, opt);
 
-                        if(cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
+                        if (cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
                             self.__popup(opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
                         }
                     }

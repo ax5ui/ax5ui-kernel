@@ -152,24 +152,41 @@
 	}
 
 	&.direction-top {
+		@include ax-border-radius(0, "top");
+		@include ax-border-radius($ax5menu-border-radius, "bottom");
+
+		/*
 		.ax-menu-arrow {
 			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, top);
 		}
+		*/
 	}
 	&.direction-right {
+		@include ax-border-radius(0, "right");
+		@include ax-border-radius($ax5menu-border-radius, "left");
+		/*
 		.ax-menu-arrow {
 			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, right);
 		}
+		*/
 	}
 	&.direction-bottom {
+		@include ax-border-radius(0, "bottom");
+		@include ax-border-radius($ax5menu-border-radius, "top");
+		/*
 		.ax-menu-arrow {
 			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, bottom);
 		}
+		*/
 	}
 	&.direction-left {
+		@include ax-border-radius(0, "right");
+		@include ax-border-radius($ax5menu-border-radius, "right");
+		/*
 		.ax-menu-arrow {
 			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, left);
 		}
+		*/
 	}
 }
 
