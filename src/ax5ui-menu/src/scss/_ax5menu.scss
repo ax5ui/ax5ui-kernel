@@ -7,6 +7,7 @@
 	top: 0px;
 	#{$hack_ie67}width: 100px;
 	//overflow: hidden;
+	opacity: 0.95;
 }
 
 @mixin menu-variant($text-color, $border-color, $heading-bg-color, $item-bg, $item-color, $item-hover-bg, $item-hover-color) {
@@ -336,7 +337,7 @@
 		//@include transform(scale(0.3));
 	}
 	100% {
-		opacity: 1.0;
+		opacity: 0.95;
 		//@include transform(scale(1));
 	}
 }

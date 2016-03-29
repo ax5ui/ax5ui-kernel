@@ -43,6 +43,9 @@
                 'arrow': '<i class="fa fa-caret-right"></i>'
             },
             onStateChanged: function () {
+                
+                console.log(this);
+                
                 if(this.state == 'close') {
                     console.log(this.self.getCheckValue());
                 }
@@ -163,8 +166,11 @@
             icons: {
                 'arrow': '<i class="fa fa-caret-right"></i>'
             },
+            onStateChanged: function () {
+                console.log(this);
+            },
             onClick: function () {
-                //console.log(this);
+                console.log(this);
             },
             items: [
                 {
