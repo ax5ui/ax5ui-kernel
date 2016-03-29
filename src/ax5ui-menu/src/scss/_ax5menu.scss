@@ -155,44 +155,46 @@
 		@include ax-border-radius(0, "top");
 		@include ax-border-radius($ax5menu-border-radius, "bottom");
 
-		/*
-		.ax-menu-arrow {
-			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, top);
+		&.with-arrow {
+			.ax-menu-arrow {
+				@include menu-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, top);
+			}
 		}
-		*/
 	}
 	&.direction-right {
 		@include ax-border-radius(0, "right");
 		@include ax-border-radius($ax5menu-border-radius, "left");
-		/*
-		.ax-menu-arrow {
-			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, right);
+
+		&.with-arrow {
+			.ax-menu-arrow {
+				@include menu-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, right);
+			}
 		}
-		*/
 	}
 	&.direction-bottom {
 		@include ax-border-radius(0, "bottom");
 		@include ax-border-radius($ax5menu-border-radius, "top");
-		/*
-		.ax-menu-arrow {
-			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, bottom);
+
+		&.with-arrow {
+			.ax-menu-arrow {
+				@include menu-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, bottom);
+			}
 		}
-		*/
 	}
 	&.direction-left {
 		@include ax-border-radius(0, "right");
 		@include ax-border-radius($ax5menu-border-radius, "right");
-		/*
-		.ax-menu-arrow {
-			@include picker-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, left);
+
+		&.with-arrow {
+			.ax-menu-arrow {
+				@include menu-arrow($ax5menu-arrow-size, $ax5menu-arrow-border-width, $border-color, left);
+			}
 		}
-		*/
 	}
 }
 
-@mixin picker-arrow($arrow-size, $arrow-border-width, $border-color, $arrow-direction) {
+@mixin menu-arrow($arrow-size, $arrow-border-width, $border-color, $arrow-direction) {
 
-	//
 	//@debug( nth($ax5menu-inner-border, 3) );
 	$arrow-bg: nth($ax5menu-bg, 1);
 	$arrow-border-color: $border-color;

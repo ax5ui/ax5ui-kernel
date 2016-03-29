@@ -37,6 +37,7 @@
         this.openTimer = null;
         this.closeTimer = null;
         this.queue = [];
+        this.menuBar = {};
 
         cfg = this.config;
 
@@ -61,7 +62,7 @@
 
         /** private **/
         this.__getTmpl_menuBar = function () {
-            return "\n            <div class=\"ax5-ui-menubar {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                        {{^@isMenu}}\n                            {{#divide}}\n                            <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                            {{/divide}}\n                            {{#html}}\n                            <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                            {{/html}}\n                        {{/@isMenu}}\n                        {{#@isMenu}}\n                        <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\" data-menu-item-path=\"{{@path}}.{{@i}}\">\n                            {{#icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                            {{/icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                        </div>\n                        {{/@isMenu}}\n                    {{/items}}\n                </div>\n            </div>\n            ";
+            return "\n            <div class=\"ax5-ui-menubar {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                        {{^@isMenu}}\n                            {{#divide}}\n                            <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                            {{/divide}}\n                            {{#html}}\n                            <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                            {{/html}}\n                        {{/@isMenu}}\n                        {{#@isMenu}}\n                        <div class=\"ax-menu-item\" data-menu-item-index=\"{{@i}}\">\n                            {{#icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                            {{/icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                        </div>\n                        {{/@isMenu}}\n                    {{/items}}\n                </div>\n            </div>\n            ";
         };
 
         /** private **/
@@ -359,18 +360,16 @@
                 });
 
                 data.items = items;
-                data['@depth'] = 0;
-                data['@path'] = "root";
-                data['@hasChild'] = function () {
-                    return this.items && this.items.length > 0;
-                };
 
                 var activeMenu = jQuery(ax5.mustache.render(this.__getTmpl_menuBar(), data));
-                self.$attachedTarget = jQuery(el);
-                self.$attachedTarget.html(activeMenu);
+                self.menuBar = {
+                    target: jQuery(el),
+                    opened: false
+                };
+                self.menuBar.target.html(activeMenu);
 
                 // click, mouseover
-                self.$attachedTarget.bind("click", function (e) {
+                self.menuBar.target.bind("click", function (e) {
                     if (!e) return this;
 
                     var target = U.findParentNode(e.target, function (target) {
@@ -383,6 +382,9 @@
                             offset = $target.offset(),
                             height = $target.outerHeight(),
                             index = Number(target.getAttribute("data-menu-item-index"));
+
+                        self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
+                        $target.addClass("hover");
 
                         if (cfg.position) {
                             if (cfg.position.left) offset.left += cfg.position.left;
@@ -407,6 +409,8 @@
          */
         this.close = function () {
             var that;
+
+            if (self.menuBar && self.menuBar.target) self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
 
             jQuery(document).unbind("click.ax5menu");
             jQuery(window).unbind("keydown.ax5menu");
