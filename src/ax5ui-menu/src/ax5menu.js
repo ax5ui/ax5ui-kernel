@@ -175,7 +175,6 @@
                 '$target': activeMenu
             });
 
-
             activeMenu.find('[data-menu-item-index]').bind("mouseover", function () {
                 var
                     depth = this.getAttribute("data-menu-item-depth"),
@@ -399,6 +398,30 @@
                 }
             };
 
+            var popUpChildMenu = function (target, opt) {
+                var
+                    $target = $(target),
+                    offset = $target.offset(),
+                    height = $target.outerHeight(),
+                    index = Number(target.getAttribute("data-menu-item-index"));
+
+                self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
+                self.menuBar.opened = true;
+                $target.attr("data-menu-item-opened", "true");
+                $target.addClass("hover");
+
+                if (cfg.position) {
+                    if (cfg.position.left) offset.left += cfg.position.left;
+                    if (cfg.position.top) offset.top += cfg.position.top;
+                }
+
+                opt = getOption["object"].call(this, {left: offset.left, top: offset.top + height}, opt);
+
+                if (cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
+                    self.__popup(opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
+                }
+            };
+
             return function (el, opt) {
                 var data = {};
                 var items = cfg.items;
@@ -440,38 +463,22 @@
                 // click, mouseover
                 self.menuBar.target.bind("click", function (e) {
                     if (!e) return this;
-
                     var target = U.findParentNode(e.target, function (target) {
-                        if (target.getAttribute("data-menu-item-index"))
-                        {
+                        if (target.getAttribute("data-menu-item-index")) {
                             return true;
                         }
                     });
-                    if (target)
-                    {
-                        var
-                            $target = $(target),
-                            offset = $target.offset(),
-                            height = $target.outerHeight(),
-                            index = Number(target.getAttribute("data-menu-item-index"));
-
-                        self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
-                        $target.addClass("hover");
-
-                        if (cfg.position) {
-                            if (cfg.position.left) offset.left += cfg.position.left;
-                            if (cfg.position.top) offset.top += cfg.position.top;
-                        }
-
-                        opt = getOption["object"].call(this, {left: offset.left, top: offset.top + height}, opt);
-
-                        if (cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
-                            self.__popup(opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
-                        }
-                    }
-
+                    if (target) popUpChildMenu(target, opt);
                 });
-
+                self.menuBar.target.bind("mouseover", function (e) {
+                    if (!self.menuBar.opened) return false;
+                    var target = U.findParentNode(e.target, function (target) {
+                        if (target.getAttribute("data-menu-item-index")) {
+                            return true;
+                        }
+                    });
+                    if (target) popUpChildMenu(target, opt);
+                });
                 return this;
             }
         })();
@@ -483,7 +490,10 @@
         this.close = function () {
             var that;
 
-            if(self.menuBar && self.menuBar.target) self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
+            if (self.menuBar && self.menuBar.target) {
+                self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
+                self.menuBar.opened = false;
+            }
 
             jQuery(document).unbind("click.ax5menu");
             jQuery(window).unbind("keydown.ax5menu");
