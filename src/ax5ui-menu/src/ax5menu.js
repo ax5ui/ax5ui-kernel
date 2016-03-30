@@ -39,6 +39,25 @@
         this.menuBar = {};
         
         cfg = this.config;
+
+        var appEventAttach = function(active){
+            if(active) {
+                jQuery(document).unbind("click.ax5menu").bind("click.ax5menu", self.__clickItem.bind(this));
+                jQuery(window).unbind("keydown.ax5menu").bind("keydown.ax5menu", function (e) {
+                    if (e.which == ax5.info.eventKeys.ESC) {
+                        self.close();
+                    }
+                });
+                jQuery(window).unbind("resize.ax5menu").bind("resize.ax5menu", function (e) {
+                    self.close();
+                });
+            }
+            else{
+                jQuery(document).unbind("click.ax5menu");
+                jQuery(window).unbind("keydown.ax5menu");
+                jQuery(window).unbind("resize.ax5menu");
+            }
+        };
         
         this.init = function () {
             var that;
@@ -215,26 +234,26 @@
             // is Root
             if (depth == 0) {
                 if (data.direction) activeMenu.addClass("direction-" + data.direction);
-                jQuery(document).bind("click.ax5menu", this.__clickItem.bind(this));
-                jQuery(window).bind("keydown.ax5menu", function (e) {
-                    if (e.which == ax5.info.eventKeys.ESC) {
-                        self.close();
-                    }
-                });
-                jQuery(window).bind("resize.ax5menu", function (e) {
-                    self.close();
-                });
-
                 if (cfg.onStateChanged) {
                     that = {
                         self: this,
+                        items: items,
+                        parent: (function (path) {
+                            if (!path) return false;
+                            var item;
+                            try {
+                                item = (Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].items[') + "];")).call(self);
+                            } catch (e) {
+                                console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
+                            }
+                            return item;
+                        })(data['@path']),
                         state: "popup"
                     };
+
                     cfg.onStateChanged.call(that, that);
                 }
             }
-            
-            // console.log(data);
             
             this.__align(activeMenu, data);
             return this;
@@ -368,11 +387,12 @@
             };
             
             return function (e, opt) {
-                
+
                 if (!e) return this;
                 opt = getOption[((typeof e.clientX == "undefined") ? "object" : "event")].call(this, e, opt);
                 this.__popup(opt, cfg.items, 0); // 0 is seq of queue
-                
+                appEventAttach(true); // 이벤트 연결
+
                 return this;
             }
         })();
@@ -404,9 +424,13 @@
                     offset = $target.offset(),
                     height = $target.outerHeight(),
                     index = Number(target.getAttribute("data-menu-item-index"));
+                
+                if(self.menuBar.openedIndex == index) return false;
 
                 self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
                 self.menuBar.opened = true;
+                self.menuBar.openedIndex = index;
+
                 $target.attr("data-menu-item-opened", "true");
                 $target.addClass("hover");
 
@@ -419,6 +443,7 @@
 
                 if (cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
                     self.__popup(opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
+                    appEventAttach(true); // 이벤트 연결
                 }
             };
 
@@ -493,11 +518,10 @@
             if (self.menuBar && self.menuBar.target) {
                 self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
                 self.menuBar.opened = false;
+                self.menuBar.openedIndex = null;
             }
 
-            jQuery(document).unbind("click.ax5menu");
-            jQuery(window).unbind("keydown.ax5menu");
-            jQuery(window).unbind("resize.ax5menu");
+            appEventAttach(false); // 이벤트 제거
 
             this.queue.forEach(function (n) {
                 n.$target.remove();
