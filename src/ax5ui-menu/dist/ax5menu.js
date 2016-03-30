@@ -16,7 +16,8 @@
     var U = ax5.util;
 
     //== UI Class
-    var axClass = function axClass() {
+    var axClass;
+    axClass = function axClass() {
         var self = this,
             cfg;
 
@@ -29,7 +30,8 @@
             acceleratorWidth: 100,
             menuBodyPadding: 5,
             //direction: "top", // top|bottom
-            position: { left: 0, top: 0 },
+            offset: { left: 0, top: 0 },
+            position: "fixed",
             animateTime: 250,
             items: []
         };
@@ -144,6 +146,7 @@
 
                         var $this = $(this),
                             offset = $this.offset(),
+                            scrollTop = cfg.position == "fixed" ? $(document).scrollTop() : 0,
                             childOpt = {
                             '@parent': {
                                 left: offset.left,
@@ -152,8 +155,9 @@
                                 height: $this.outerHeight()
                             },
                             left: offset.left + $this.outerWidth() - cfg.menuBodyPadding,
-                            top: offset.top - cfg.menuBodyPadding - 1
+                            top: offset.top - cfg.menuBodyPadding - 1 - scrollTop
                         };
+
                         childOpt = jQuery.extend(true, opt, childOpt);
                         self.__popup(childOpt, items[index].items, depth + 1, path);
                     } else {
@@ -176,9 +180,7 @@
                             var item;
                             try {
                                 item = Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].items[') + "];").call(self);
-                            } catch (e) {
-                                console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
-                            }
+                            } catch (e) {}
                             return item;
                         }(data['@path']),
                         state: "popup"
@@ -257,7 +259,8 @@
                 h = activeMenu.outerHeight(),
                 w = activeMenu.outerWidth(),
                 l = data.left,
-                t = data.top;
+                t = data.top,
+                position = cfg.position || "fixed";
 
             if (l + w > ww) {
                 if (data['@parent']) {
@@ -270,7 +273,7 @@
                 t = wh - h;
             }
 
-            activeMenu.css({ left: l, top: t });
+            activeMenu.css({ left: l, top: t, position: position });
 
             return this;
         };
@@ -285,6 +288,8 @@
 
             var getOption = {
                 'event': function event(e, opt) {
+                    //var xOffset = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft);
+                    //var yOffset = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
                     e = {
                         left: e.clientX,
                         top: e.clientY,
@@ -292,9 +297,9 @@
                         theme: cfg.theme
                     };
 
-                    if (cfg.position) {
-                        if (cfg.position.left) e.left += cfg.position.left;
-                        if (cfg.position.top) e.top += cfg.position.top;
+                    if (cfg.offset) {
+                        if (cfg.offset.left) e.left += cfg.offset.left;
+                        if (cfg.offset.top) e.top += cfg.offset.top;
                     }
 
                     opt = jQuery.extend(true, e, opt);
@@ -308,9 +313,9 @@
                         theme: e.theme || cfg.theme
                     };
 
-                    if (cfg.position) {
-                        if (cfg.position.left) e.left += cfg.position.left;
-                        if (cfg.position.top) e.top += cfg.position.top;
+                    if (cfg.offset) {
+                        if (cfg.offset.left) e.left += cfg.offset.left;
+                        if (cfg.offset.top) e.top += cfg.offset.top;
                     }
 
                     opt = jQuery.extend(true, e, opt);
@@ -354,7 +359,8 @@
                 var $target = $(target),
                     offset = $target.offset(),
                     height = $target.outerHeight(),
-                    index = Number(target.getAttribute("data-menu-item-index"));
+                    index = Number(target.getAttribute("data-menu-item-index")),
+                    scrollTop = cfg.position == "fixed" ? $(document).scrollTop() : 0;
 
                 if (self.menuBar.openedIndex == index) return false;
 
@@ -365,12 +371,12 @@
                 $target.attr("data-menu-item-opened", "true");
                 $target.addClass("hover");
 
-                if (cfg.position) {
-                    if (cfg.position.left) offset.left += cfg.position.left;
-                    if (cfg.position.top) offset.top += cfg.position.top;
+                if (cfg.offset) {
+                    if (cfg.offset.left) offset.left += cfg.offset.left;
+                    if (cfg.offset.top) offset.top += cfg.offset.top;
                 }
 
-                opt = getOption["object"].call(this, { left: offset.left, top: offset.top + height }, opt);
+                opt = getOption["object"].call(this, { left: offset.left, top: offset.top + height - scrollTop }, opt);
 
                 if (cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
                     self.__popup(opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue

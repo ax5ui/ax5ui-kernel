@@ -2,7 +2,7 @@
 	box-sizing: border-box;
 
 	z-index: $ax5menu-z-index;
-	position: absolute;
+	position: fixed;
 	left: 0px;
 	top: 0px;
 	#{$hack_ie67}width: 100px;
