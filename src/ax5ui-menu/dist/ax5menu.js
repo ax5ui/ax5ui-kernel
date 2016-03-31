@@ -229,7 +229,7 @@
                                         n.check.checked = false;
                                     }
                                 });
-                                this.checked = true;
+                                this.checked = !value;
                             }
                         };
                         if (setValue[this.type]) setValue[this.type].call(this, this.checked);
@@ -239,9 +239,10 @@
                 if (self.onClick) {
                     self.onClick.call(item, item);
                     if (!item.items || item.items.length == 0) self.close();
-                }
-                if (cfg.onClick) {
+                } else if (cfg.onClick) {
                     cfg.onClick.call(item, item);
+                    if (!item.items || item.items.length == 0) self.close();
+                } else {
                     if (!item.items || item.items.length == 0) self.close();
                 }
             } else {
