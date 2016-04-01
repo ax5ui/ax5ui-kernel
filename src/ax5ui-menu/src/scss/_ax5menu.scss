@@ -89,7 +89,7 @@
 								opacity: 0.1;
 								@include transform(rotate(-50deg));
 							}
-							&[data-item-checked]{
+							&[data-item-checked="true"]{
 								&:after {
 									opacity: 1;
 								}

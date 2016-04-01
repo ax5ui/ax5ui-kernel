@@ -33,7 +33,8 @@
             offset: { left: 0, top: 0 },
             position: "fixed",
             animateTime: 250,
-            items: []
+            items: [],
+            itemClickAndClose: true
         };
 
         this.openTimer = null;
@@ -128,8 +129,12 @@
             removed.forEach(function (n) {
                 n.$target.remove();
             });
+
+            console.log(data);
+
             this.queue.push({
-                '$target': activeMenu
+                '$target': activeMenu,
+                'data': jQuery.extend({}, data)
             });
 
             activeMenu.find('[data-menu-item-index]').bind("mouseover", function () {
@@ -196,6 +201,9 @@
 
         /** click **/
         this.__clickItem = function (e) {
+            var selfClose = function selfClose(items) {
+                if ((!items || items.length == 0) && cfg.itemClickAndClose) self.close();
+            };
             var target = U.findParentNode(e.target, function (target) {
                 if (target.getAttribute("data-menu-item-index")) {
                     return true;
@@ -203,6 +211,9 @@
             });
             if (target) {
                 // click item
+
+                //console.log(target.getAttribute("data-menu-item-index"));
+
                 var item = function (path) {
                     if (!path) return false;
                     var item;
@@ -234,19 +245,28 @@
                         };
                         if (setValue[this.type]) setValue[this.type].call(this, this.checked);
                     }).call(item.check, cfg.items);
+
+                    if (!cfg.itemClickAndClose) {
+                        // update contents..
+                        self.queue.forEach(function (n) {
+                            n.$target.find('[data-menu-item-index]').each(function () {
+                                var item = n.data.items[this.getAttribute("data-menu-item-index")];
+                                if (item.check) {
+                                    jQuery(this).find(".item-checkbox-wrap").attr("data-item-checked", item.check.checked);
+                                }
+                            });
+                        });
+                    }
                 }
 
                 if (self.onClick) {
                     self.onClick.call(item, item);
-                    if (!item.items || item.items.length == 0) self.close();
                 } else if (cfg.onClick) {
                     cfg.onClick.call(item, item);
-                    if (!item.items || item.items.length == 0) self.close();
-                } else {
-                    if (!item.items || item.items.length == 0) self.close();
                 }
+                selfClose(item.items);
             } else {
-                self.close();
+                selfClose();
             }
             return this;
         };
