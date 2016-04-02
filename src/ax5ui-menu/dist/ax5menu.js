@@ -247,7 +247,6 @@
                     }).call(item.check, cfg.items);
 
                     if (!cfg.itemClickAndClose) {
-                        // update contents..
                         self.queue.forEach(function (n) {
                             n.$target.find('[data-menu-item-index]').each(function () {
                                 var item = n.data.items[this.getAttribute("data-menu-item-index")];
