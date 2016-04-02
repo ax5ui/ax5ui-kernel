@@ -1,8 +1,8 @@
 {
 	"name": "ax5ui-modal",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"description": "A modal plugin that works with Bootstrap & jQuery",
-	"license": "MIT",
+	"license": "Apache 2.0",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ax5ui/ax5ui-modal"

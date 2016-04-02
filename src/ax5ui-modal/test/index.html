@@ -20,26 +20,23 @@
 
 
 <script>
-    var modal = new ax5.ui.modal();
+    var modal = new ax5.ui.modal({});
+    modal.onStateChanged = function(){
+        console.log(this);
+    };
 
     function modalCallBack(){
         modal.close();
     }
 
     $(document.body).ready(function () {
-        modal.setConfig({
-            onStateChanged: function(){
-                console.log(this);
-            }
-        });
         $("#modal-open").click(function(){
             modal.open({
-                fullScreen: true,
                 iframe: {
                     method: "get",
                     url: "/ax5docs/ax5ui-modal/demo/modal-iframe-content.html",
                     param: "callBack=modalCallBack"
-                },
+                }
             });
         });
         $("#modal-close").click(function(){

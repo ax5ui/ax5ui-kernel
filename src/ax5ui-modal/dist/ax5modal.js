@@ -6,10 +6,8 @@
     /**
      * @class ax5.ui.modal
      * @classdesc
-     * @version v0.0.1
+     * @version 0.5.3
      * @author tom@axisj.com
-     * @logs
-     * 2014-06-23 tom : 시작
      * @example
      * ```
      * var my_modal = new ax5.ui.modal();
@@ -52,7 +50,9 @@
          * ```
          */
         //== class body start
-        this.init = function () {};
+        this.init = function () {
+            this.onStateChanged = cfg.onStateChanged;
+        };
 
         this.getContent = function (modalId, opts) {
             var po = [],
@@ -143,9 +143,11 @@
                 this.$["iframe-form"].attr({ "target": opts.id + "-frame" });
                 this.$["iframe-form"].attr({ "action": opts.iframe.url });
                 this.$["iframe"].on("load", function () {
+                    that.state = "load";
                     if (opts && opts.onStateChanged) {
-                        that.state = "load";
                         opts.onStateChanged.call(that, that);
+                    } else if (this.onStateChanged) {
+                        this.onStateChanged.call(that, that);
                     }
                 }.bind(this));
                 this.$["iframe-form"].submit();
@@ -154,6 +156,8 @@
             if (callBack) callBack.call(that);
             if (opts && opts.onStateChanged) {
                 opts.onStateChanged.call(that, that);
+            } else if (this.onStateChanged) {
+                this.onStateChanged.call(that, that);
             }
 
             // bind key event
@@ -242,12 +246,14 @@
                 setTimeout(function () {
                     this.activeModal.remove();
                     this.activeModal = null;
+                    that = {
+                        self: this,
+                        state: "close"
+                    };
                     if (opts && opts.onStateChanged) {
-                        that = {
-                            self: this,
-                            state: "close"
-                        };
                         opts.onStateChanged.call(that, that);
+                    } else if (this.onStateChanged) {
+                        this.onStateChanged.call(that, that);
                     }
                 }.bind(this), cfg.animateTime);
             }
