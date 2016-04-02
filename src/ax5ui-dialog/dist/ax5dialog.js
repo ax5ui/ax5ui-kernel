@@ -6,10 +6,8 @@
     /**
      * @class ax5.ui.dialog
      * @classdesc
-     * @version v0.0.1
+     * @version 0.6.4
      * @author tom@axisj.com
-     * @logs
-     * 2014-06-15 tom : 시작
      * @example
      * ```
      * var myDialog = new ax5.ui.dialog();
@@ -49,7 +47,11 @@
          * ```
          */
         //== class body start
-        this.init = function () {};
+        this.init = function () {
+
+            this.onStateChanged = cfg.onStateChanged;
+            // this.onLoad = cfg.onLoad;
+        };
 
         /**
          * open the dialog of alert type
@@ -276,12 +278,14 @@
                 this.align(e || window.event);
             }.bind(this));
 
+            that = {
+                self: this,
+                state: "open"
+            };
             if (opts && opts.onStateChanged) {
-                that = {
-                    self: this,
-                    state: "open"
-                };
                 opts.onStateChanged.call(that, that);
+            } else if (this.onStateChanged) {
+                this.onStateChanged.call(that, that);
             }
             return this;
         };
@@ -400,12 +404,14 @@
                 setTimeout(function () {
                     this.activeDialog.remove();
                     this.activeDialog = null;
+                    that = {
+                        self: this,
+                        state: "close"
+                    };
                     if (opts && opts.onStateChanged) {
-                        that = {
-                            self: this,
-                            state: "close"
-                        };
                         opts.onStateChanged.call(that, that);
+                    } else if (this.onStateChanged) {
+                        this.onStateChanged.call(that, that);
                     }
                 }.bind(this), cfg.animateTime);
             }

@@ -4,10 +4,8 @@
     /**
      * @class ax5.ui.dialog
      * @classdesc
-     * @version v0.0.1
+     * @version 0.6.4
      * @author tom@axisj.com
-     * @logs
-     * 2014-06-15 tom : 시작
      * @example
      * ```
      * var myDialog = new ax5.ui.dialog();
@@ -47,8 +45,11 @@
          * ```
          * ```
          */
-            //== class body start
+        //== class body start
         this.init = function () {
+
+            this.onStateChanged = cfg.onStateChanged;
+            // this.onLoad = cfg.onLoad;
 
         };
 
@@ -74,7 +75,7 @@
                 }
             }
 
-            if(this.activeDialog) {
+            if (this.activeDialog) {
                 console.log(ax5.info.getError("ax5dialog", "501", "alert"));
                 return this;
             }
@@ -116,7 +117,7 @@
                 }
             }
 
-            if(this.activeDialog) {
+            if (this.activeDialog) {
                 console.log(ax5.info.getError("ax5dialog", "501", "confirm"));
                 return this;
             }
@@ -160,7 +161,7 @@
                 }
             }
 
-            if(this.activeDialog) {
+            if (this.activeDialog) {
                 console.log(ax5.info.getError("ax5dialog", "501", "prompt"));
                 return this;
             }
@@ -197,17 +198,17 @@
             po.push((opts.title || cfg.title || ""));
             po.push('</div>');
             po.push('<div class="ax-dialog-body">');
-                po.push('<div class="ax-dialog-msg">');
-                po.push((opts.msg || cfg.msg || "").replace(/\n/g, "<br/>"));
-                po.push('</div>');
+            po.push('<div class="ax-dialog-msg">');
+            po.push((opts.msg || cfg.msg || "").replace(/\n/g, "<br/>"));
+            po.push('</div>');
 
             if (opts.input) {
                 po.push('<div class="ax-dialog-prompt">');
                 U.each(opts.input, function (k, v) {
                     po.push('<div class="form-group">');
-                    if(this.label) po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
+                    if (this.label) po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
                     po.push('    <input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="form-control ' + (this.theme || "") + '" data-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
-                    if(this.help) {
+                    if (this.help) {
                         po.push('    <p class="help-block">' + this.help.replace(/\n/g, "<br/>") + '</p>');
                     }
                     po.push('</div>');
@@ -218,7 +219,7 @@
             po.push('<div class="ax-dialog-buttons">');
             po.push('<div class="ax-button-wrap">');
             U.each(opts.btns, function (k, v) {
-                po.push('<button type="button" data-dialog-btn="' + k + '" class="btn btn-' + (this.theme||"default") + '">' + this.label + '</button>');
+                po.push('<button type="button" data-dialog-btn="' + k + '" class="btn btn-' + (this.theme || "default") + '">' + this.label + '</button>');
             });
             po.push('</div>');
             po.push('</div>');
@@ -253,7 +254,7 @@
                 var h = window.innerHeight;
 
                 pos.top = h / 2 - box.height / 2;
-                pos.left = w / 2 - box.width / 2;
+                pos.left = w / 2 - box.width / 2; 
             }
             else {
                 pos.left = opts.position.left || 0;
@@ -282,18 +283,21 @@
                 this.align(e || window.event);
             }).bind(this));
 
+            that = {
+                self: this,
+                state: "open"
+            };
             if (opts && opts.onStateChanged) {
-                that = {
-                    self: this,
-                    state: "open"
-                };
                 opts.onStateChanged.call(that, that);
+            }
+            else if (this.onStateChanged) {
+                this.onStateChanged.call(that, that);
             }
             return this;
         };
 
-        this.align = function(e){
-            if(!this.activeDialog) return this;
+        this.align = function (e) {
+            if (!this.activeDialog) return this;
             var
                 opts = self.dialogConfig,
                 box = {
@@ -411,12 +415,15 @@
                 setTimeout((function () {
                     this.activeDialog.remove();
                     this.activeDialog = null;
+                    that = {
+                        self: this,
+                        state: "close"
+                    };
                     if (opts && opts.onStateChanged) {
-                        that = {
-                            self: this,
-                            state: "close"
-                        };
                         opts.onStateChanged.call(that, that);
+                    }
+                    else if (this.onStateChanged) {
+                        this.onStateChanged.call(that, that);
                     }
                 }).bind(this), cfg.animateTime);
             }
@@ -425,14 +432,14 @@
 
         // 클래스 생성자
         this.main = (function () {
-            if(arguments && U.isObject(arguments[0])) {
+            if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
         }).apply(this, arguments);
     };
     //== UI Class
 
-    root.dialog = (function(){
+    root.dialog = (function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
     })(); // ax5.ui에 연결

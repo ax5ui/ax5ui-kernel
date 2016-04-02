@@ -170,3 +170,16 @@ promptDialog.prompt({
 
 ## close()
 `close()`
+
+### onStateChanged
+
+Type: `Function`
+
+`onStateChanged` function can be defined in setConfig method or new ax5.ui.dialog initialization method.
+However, you can us to define an event function after initialization, if necessary
+
+```js
+myDialog.onStateChanged = function(){
+    console.log(this);
+}
+```
