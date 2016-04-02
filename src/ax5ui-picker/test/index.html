@@ -45,10 +45,10 @@
 </div>
 
 <script>
-    var picker = new ax5.ui.picker();
 
     $(document.body).ready(function () {
 
+        /*
         $('[data-ax5picker="date"]').ax5picker({
             direction: "top",
             content: {
@@ -117,6 +117,18 @@
         });
 
         return;
+        */
+        var picker = new ax5.ui.picker({
+            onStateChanged: function(){
+                console.log(this);
+            }
+        });
+        /*
+        picker.onStateChanged = function(){
+            console.log(this);
+        };
+        */
+
         $('[data-ax5picker]').each(function (idx) {
 
             if (this.getAttribute("data-ax5picker") == "date") {
@@ -140,6 +152,9 @@
                                 months: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
                                 dayTmpl: "%s"
                             }
+                        },
+                        formatter: {
+                            pattern: 'date'
                         }
                     },
                     btns: {

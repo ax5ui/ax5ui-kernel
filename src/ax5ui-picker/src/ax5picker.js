@@ -4,10 +4,8 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version v0.0.1
+     * @version 0.4.3
      * @author tom@axisj.com
-     * @logs
-     * 2015-02-02 tom : 시작
      * @example
      * ```
      * var myPicker = new ax5.ui.picker();
@@ -51,7 +49,7 @@
          * ```
          */
         this.init = function () {
-
+            this.onStateChanged = cfg.onStateChanged;
         };
 
         this.bind = function (opts) {
@@ -68,7 +66,7 @@
                 return this;
             }
             opts.$target = jQuery(opts.target);
-            if(!opts.id) opts.id = opts.$target.data("ax5-picker");
+            if (!opts.id) opts.id = opts.$target.data("ax5-picker");
 
             if (!opts.id) {
                 opts.id = 'ax5-picker-' + ax5.getGuid();
@@ -78,12 +76,11 @@
                 return this.id == opts.id;
             });
 
-            if (optIdx === -1)
-            {
+            if (optIdx === -1) {
                 this.queue.push(opts);
                 this.__bindPickerTarget(opts, this.queue.length - 1);
             }
-            else{
+            else {
                 this.queue[optIdx] = opts;
                 this.__bindPickerTarget(this.queue[optIdx], optIdx);
             }
@@ -180,7 +177,7 @@
                     .unbind('click.ax5picker')
                     .bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
-                if(opts.content.formatter && ax5.ui.formatter){
+                if (opts.content.formatter && ax5.ui.formatter) {
                     opts.$target.find('input[type="text"]').ax5formatter(opts.content.formatter);
                 }
 
@@ -295,6 +292,8 @@
 
             return function (opts, optIdx, tryCount) {
 
+                var that;
+
                 /**
                  * open picker from the outside
                  */
@@ -361,36 +360,25 @@
                 jQuery(window).bind("keyup.ax5picker", function (e) {
                     e = e || window.event;
                     self.__onBodyKeyup(e);
-                    try {
-                        if (e.preventDefault) e.preventDefault();
-                        if (e.stopPropagation) e.stopPropagation();
-                        e.cancelBubble = true;
-                    } catch (e) {
-
-                    }
-                    return false;
+                    U.stopEvent(e);
                 });
 
                 jQuery(window).bind("click.ax5picker", function (e) {
                     e = e || window.event;
                     self.__onBodyClick(e);
-                    try {
-                        if (e.preventDefault) e.preventDefault();
-                        if (e.stopPropagation) e.stopPropagation();
-                        e.cancelBubble = true;
-                    } catch (e) {
-
-                    }
-                    return false;
+                    U.stopEvent(e);
                 });
 
+                that = {
+                    self: this,
+                    state: "open",
+                    boundObject: opts
+                };
                 if (opts && opts.onStateChanged) {
-                    var that = {
-                        self: this,
-                        state: "open",
-                        boundObject: opts
-                    };
                     opts.onStateChanged.call(that, that);
+                }
+                else if(this.onStateChanged) {
+                    this.onStateChanged.call(that, that);
                 }
 
                 return this;
@@ -406,7 +394,8 @@
             if (!this.activePicker) return this;
 
             var
-                opts = this.queue[this.activePickerQueueIndex]
+                opts = this.queue[this.activePickerQueueIndex],
+                that
                 ;
 
             this.activePicker.addClass("destroy");
@@ -418,12 +407,15 @@
                 if (this.activePicker) this.activePicker.remove();
                 this.activePicker = null;
                 this.activePickerQueueIndex = -1;
+                that = {
+                    self: this,
+                    state: "close"
+                };
                 if (opts && opts.onStateChanged) {
-                    var that = {
-                        self: this,
-                        state: "close"
-                    };
                     opts.onStateChanged.call(that, that);
+                }
+                else if(this.onStateChanged) {
+                    this.onStateChanged.call(that, that);
                 }
             }).bind(this), cfg.animateTime);
 
@@ -494,16 +486,14 @@
                 ;
 
             target = U.findParentNode(e.target, function (target) {
-                if (target.getAttribute("data-picker-els"))
-                {
+                if (target.getAttribute("data-picker-els")) {
                     return true;
                 }
                 else if (opts.$target.get(0) == target) {
                     return true;
                 }
             });
-            if (!target)
-            {
+            if (!target) {
                 //console.log("i'm not picker");
                 this.close();
                 return this;

@@ -6,10 +6,8 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version v0.0.1
+     * @version 0.4.3
      * @author tom@axisj.com
-     * @logs
-     * 2015-02-02 tom : 시작
      * @example
      * ```
      * var myPicker = new ax5.ui.picker();
@@ -51,7 +49,9 @@
          * ```
          * ```
          */
-        this.init = function () {};
+        this.init = function () {
+            this.onStateChanged = cfg.onStateChanged;
+        };
 
         this.bind = function (opts) {
             var pickerConfig = {},
@@ -254,6 +254,8 @@
 
             return function (opts, optIdx, tryCount) {
 
+                var that;
+
                 /**
                  * open picker from the outside
                  */
@@ -318,32 +320,24 @@
                 jQuery(window).bind("keyup.ax5picker", function (e) {
                     e = e || window.event;
                     self.__onBodyKeyup(e);
-                    try {
-                        if (e.preventDefault) e.preventDefault();
-                        if (e.stopPropagation) e.stopPropagation();
-                        e.cancelBubble = true;
-                    } catch (e) {}
-                    return false;
+                    U.stopEvent(e);
                 });
 
                 jQuery(window).bind("click.ax5picker", function (e) {
                     e = e || window.event;
                     self.__onBodyClick(e);
-                    try {
-                        if (e.preventDefault) e.preventDefault();
-                        if (e.stopPropagation) e.stopPropagation();
-                        e.cancelBubble = true;
-                    } catch (e) {}
-                    return false;
+                    U.stopEvent(e);
                 });
 
+                that = {
+                    self: this,
+                    state: "open",
+                    boundObject: opts
+                };
                 if (opts && opts.onStateChanged) {
-                    var that = {
-                        self: this,
-                        state: "open",
-                        boundObject: opts
-                    };
                     opts.onStateChanged.call(that, that);
+                } else if (this.onStateChanged) {
+                    this.onStateChanged.call(that, that);
                 }
 
                 return this;
@@ -358,7 +352,8 @@
             if (this.closeTimer) clearTimeout(this.closeTimer);
             if (!this.activePicker) return this;
 
-            var opts = this.queue[this.activePickerQueueIndex];
+            var opts = this.queue[this.activePickerQueueIndex],
+                that;
 
             this.activePicker.addClass("destroy");
             jQuery(window).unbind("resize.ax5picker");
@@ -369,12 +364,14 @@
                 if (this.activePicker) this.activePicker.remove();
                 this.activePicker = null;
                 this.activePickerQueueIndex = -1;
+                that = {
+                    self: this,
+                    state: "close"
+                };
                 if (opts && opts.onStateChanged) {
-                    var that = {
-                        self: this,
-                        state: "close"
-                    };
                     opts.onStateChanged.call(that, that);
+                } else if (this.onStateChanged) {
+                    this.onStateChanged.call(that, that);
                 }
             }.bind(this), cfg.animateTime);
 

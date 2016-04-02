@@ -4,8 +4,6 @@
 ## bind()
 `bind(Options)`
 
-
-
 ```js
 var picker = new ax5.ui.picker();
 
@@ -43,8 +41,6 @@ picker.bind({
 );
 ```
 
-
-
 ### id
 
 Type: `String` 
@@ -65,14 +61,14 @@ Type: `String` "top|left|right|bottom|auto"
 
 Type: `Function|Object`
 
-- Function
+- **Function**
 ```js
 function (callBack) {
     var html = 'HTML CONTENT';
     callBack(html);
 }
 ```
-- Object
+- **Object**
 ```js
 {
     width: 270,
@@ -80,9 +76,21 @@ function (callBack) {
     type: 'date',
     config: {
         // calendar UI config
+    },
+    formatter: {
+        // formatter UI config
     }
 }
 ```
+- **width** `Number`
+- **margin** `Number`
+- **type** `String`
+  - date
+  - autocomplete
+  - ...
+- **config** `Object`
+- **formatter** `Object`
+
 
 ### contentWidth
 
@@ -102,6 +110,27 @@ Type: `Object`
 
 - - -
 
+## onStateChanged
+
+Type: `Function`
+
+`onStateChanged` function can be defined in setConfig method or new ax5.ui.picker initialization method.
+However, you can us to define an event function after initialization, if necessary
+
+```js
+var picker = new ax5.ui.picker({
+    onStateChanged: function(){
+        console.log(this);
+    }
+});
+
+picker.onStateChanged = function(){
+    console.log(this);
+}
+```
+
+- - -
+
 ## setContentValue()
 
 `setContentValue(boundObjectId, inputSeq, value)`
@@ -109,7 +138,7 @@ Type: `Object`
 ### boundObjectId
 
 Type: `String`
- 
+
 picker unique id
 
 ### inputSeq
@@ -133,3 +162,19 @@ picker unique id
 ## close()
 
 `close()`
+
+***
+
+# jQuery extends
+## ax5picker
+`$(query).ax5picker({bindConfigs})`
+```js
+$('[data-ax5picker="date"]').ax5picker({
+    direction: "top",
+    content: {
+        width: 270,
+        margin: 10,
+        type: 'date'
+    }
+});
+```
