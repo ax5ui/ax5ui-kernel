@@ -264,3 +264,33 @@ myCalendar.setMarker({
     '2016-02-10': {theme: 'holiday', label: '대체휴일'}
 });
 ```
+
+- - -
+
+## onStateChanged
+
+Type: `Function`
+
+`onStateChanged` function can be defined in setConfig method or new ax5.ui.calendar initialization method.
+However, you can us to define an event function after initialization, if necessary
+
+```js
+myCalendar.onStateChanged = function(){
+    console.log(this);
+}
+```
+
+- - -
+
+## onClick
+
+Type: `Function`
+
+`onClick` function can be defined in setConfig method or new ax5.ui.calendar initialization method.
+However, you can us to define an event function after initialization, if necessary
+
+```js
+myCalendar.onClick = function(){
+    console.log(this);
+}
+```

@@ -80,7 +80,7 @@
 
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
-            this.onLoad = cfg.onLoad;
+            // this.onLoad = cfg.onLoad;
 
             if (!cfg.target) {
                 console.log(ax5.info.getError("ax5calendar", "401", "setConfig"));
