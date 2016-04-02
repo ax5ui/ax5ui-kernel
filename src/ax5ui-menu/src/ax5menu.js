@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.menu
      * @classdesc
-     * @version 0.4.4
+     * @version 0.4.5
      * @author tom@axisj.com
      * @example
      * ```
@@ -70,6 +70,7 @@
              */
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
+            this.onLoad = cfg.onLoad;
 
             if (this.onStateChanged) {
                 that = {
@@ -267,6 +268,15 @@
             }
 
             this.__align(activeMenu, data);
+
+            if (this.onLoad) {
+                that = {
+                    self: this,
+                    items: items,
+                    element: activeMenu.get(0)
+                };
+                this.onLoad.call(that, that);
+            }
             return this;
         };
 
@@ -310,7 +320,7 @@
                         if (setValue[this.type]) setValue[this.type].call(this, this.checked);
                     }).call(item.check, cfg.items);
 
-                    if(!cfg.itemClickAndClose) {
+                    if (!cfg.itemClickAndClose) {
                         self.queue.forEach(function (n) {
                             n.$target.find('[data-menu-item-index]').each(function () {
                                 var item = n.data.items[this.getAttribute("data-menu-item-index")];
@@ -373,7 +383,7 @@
                     //var xOffset = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft);
                     //var yOffset = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
                     //console.log(e.pageY);
-                    
+
                     e = {
                         left: e.clientX,
                         top: (cfg.position == "fixed") ? e.clientY : e.pageY,
