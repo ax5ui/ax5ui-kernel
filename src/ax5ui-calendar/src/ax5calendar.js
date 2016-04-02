@@ -3,7 +3,7 @@
     /**
      * @class ax5.ui.calendar
      * @classdesc
-     * @version v0.0.1
+     * @version 0.7.5
      * @author tom@axisj.com
      * @logs
      * 2014-06-21 tom : 시작
@@ -77,6 +77,11 @@
             //== class body start
         this.init = function () {
             // after setConfig();
+
+            this.onStateChanged = cfg.onStateChanged;
+            this.onClick = cfg.onClick;
+            this.onLoad = cfg.onLoad;
+
             if (!cfg.target) {
                 console.log(ax5.info.getError("ax5calendar", "401", "setConfig"));
             }
@@ -317,13 +322,13 @@
                 start: tableStartDate, end: loopDate
             };
             
-            if (cfg.onStateChanged) {
+            if (this.onStateChanged) {
                 var that = {
                     self: this,
                     action: "printDay",
                     printedDay: this.printedDay
                 };
-                cfg.onStateChanged.call(that, that);
+                this.onStateChanged.call(that, that);
             }
             
             this.setDisplay();
@@ -425,13 +430,13 @@
                 start: dotDate.getFullYear() + '-' + U.setDigit(tableStartMonth + 1, 2), end: dotDate.getFullYear() + '-' + U.setDigit(m, 2)
             };
 
-            if (cfg.onStateChanged) {
+            if (this.onStateChanged) {
                 var that = {
                     self: this,
                     action: "printMonth",
                     printedDay: this.printedDay
                 };
-                cfg.onStateChanged.call(that, that);
+                this.onStateChanged.call(that, that);
             }
 
             this.setDisplay();
@@ -536,13 +541,13 @@
                 start: tableStartYear, end: y - 1
             };
 
-            if (cfg.onStateChanged) {
+            if (this.onStateChanged) {
                 var that = {
                     self: this,
                     action: "printYear",
                     printedDay: this.printedDay
                 };
-                cfg.onStateChanged.call(that, that);
+                this.onStateChanged.call(that, that);
             }
 
             this.setDisplay();
@@ -586,9 +591,9 @@
                         jQuery(target).addClass("selected-day");
                         self.selection.push(value);
 
-                        if (cfg.onClick)
+                        if (self.onClick)
                         {
-                            cfg.onClick.call({
+                            self.onClick.call({
                                 date: value, target: this.target, dateElement: target
                             });
                         }
@@ -607,9 +612,9 @@
                             jQuery(target).addClass("selected-month");
                             self.selection.push(value);
 
-                            if (cfg.onClick)
+                            if (self.onClick)
                             {
-                                cfg.onClick.call({
+                                self.onClick.call({
                                     date: value, target: this.target, dateElement: target
                                 });
                             }
@@ -632,9 +637,9 @@
                             jQuery(target).addClass("selected-year");
                             self.selection.push(value);
 
-                            if (cfg.onClick)
+                            if (self.onClick)
                             {
-                                cfg.onClick.call({
+                                self.onClick.call({
                                     date: value, target: this.target, dateElement: target
                                 });
                             }
