@@ -14,7 +14,7 @@ ax5.util.getType(document.createDocumentFragment()); // "fragment"
 Javascript object type name is not clear. so util.getType method very useful.
 
 ---
-
+f
 ## ax5.util.is(Type)
 Return argument object type is [type] result.
 ```js

@@ -74,6 +74,11 @@
         containerPosition: "bottom-right",
         closeIcon: '<i class="fa fa-times"></i>'
     });
+
+    toast.onStateChanged = function(){
+        console.log(this);
+    };
+    
     var toast_confirm = new ax5.ui.toast();
     toast_confirm.setConfig({
         icon: '<i class="fa fa-bug"></i>',
@@ -84,7 +89,10 @@
     $(document.body).ready(function () {
 
         $("#toast-open").click(function(){
-            toast.push("12312312");
+            toast.push({
+                icon: '<i class="fa fa-book"></i>',
+                msg:"999999"
+            });
         });
         $("#toast-confirm").click(function(){
             toast_confirm.confirm("12312312");

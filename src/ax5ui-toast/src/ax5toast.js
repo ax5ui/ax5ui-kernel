@@ -40,7 +40,17 @@
             containerPosition: "bottom-left"
         };
         cfg = this.config;
-        
+
+        var onStateChanged = function(opts, that){
+            if (opts && opts.onStateChanged) {
+                opts.onStateChanged.call(that, that);
+            }
+            else if(this.onStateChanged) {
+                this.onStateChanged.call(that, that);
+            }
+            return true;
+        };
+
         /**
          * Preferences of toast UI
          * @method ax5.ui.toast.set_config
@@ -52,6 +62,7 @@
          */
             //== class body start
         this.init = function () {
+            this.onStateChanged = cfg.onStateChanged;
             // after set_config();
             self.containerId = ax5.getGuid();
             var styles = [];
@@ -76,8 +87,7 @@
             opts.toastType = "push";
 
             self.dialogConfig = {};
-            jQuery.extend(true, self.dialogConfig, cfg);
-            jQuery.extend(true, self.dialogConfig, opts);
+            jQuery.extend(true, self.dialogConfig, cfg, opts);
             opts = self.dialogConfig;
 
             this.open(opts, callBack);
@@ -97,8 +107,7 @@
             opts.toastType = "confirm";
 
             self.dialogConfig = {};
-            jQuery.extend(true, self.dialogConfig, cfg);
-            jQuery.extend(true, self.dialogConfig, opts);
+            jQuery.extend(true, self.dialogConfig, cfg, opts);
             opts = self.dialogConfig;
 
             if (typeof opts.btns === "undefined") {
@@ -142,12 +151,12 @@
         
         this.open = function (opts, callBack) {
             var
-                toastBox;
-            
+                toastBox,
+                box = {
+                    width: opts.width
+                };
+
             opts.id = 'ax5-toast-' + self.containerId + '-' + this.queue.length;
-            box = {
-                width: opts.width
-            };
 
             if (U.left(cfg.containerPosition, '-') == 'bottom') {
                 this.toastContainer.append(this.getContent(opts.id, opts));
@@ -161,14 +170,11 @@
             opts.toastBox = toastBox;
             this.queue.push(opts);
 
-            if (opts && opts.onStateChanged) {
-                var that = {
-                    self: this,
-                    state: "open",
-                    toastId: opts.id
-                };
-                opts.onStateChanged.call(that, that);
-            }
+            onStateChanged.call(this, opts, {
+                self: this,
+                state: "open",
+                toastId: opts.id
+            });
             
             if (opts.toastType === "push") {
                 // 자동 제거 타이머 시작
@@ -244,7 +250,7 @@
             this.queue = U.filter(this.queue, function () {
                 return opts.id != this.id;
             });
-            setTimeout(function () {
+            setTimeout((function () {
                 var that = {
                     toastId: opts.id
                 };
@@ -252,15 +258,13 @@
                 toastBox.remove();
                 if (callBack) callBack.call(that);
 
-                if (opts && opts.onStateChanged) {
-                    that = {
-                        self: this,
-                        state: "close",
-                        toastId: opts.id
-                    };
-                    opts.onStateChanged.call(that, that);
-                }
-            }, cfg.animateTime);
+                that = {
+                    self: this,
+                    state: "close",
+                    toastId: opts.id
+                };
+                onStateChanged.call(this, opts, that);
+            }).bind(this), cfg.animateTime);
             return this;
         };
 

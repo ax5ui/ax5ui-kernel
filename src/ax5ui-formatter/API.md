@@ -12,7 +12,7 @@ formatter.bind({
     pattern: "date"
 );
 
-picker.bind({
+formatter.bind({
     target: $("#input"),
     pattern: "custom",
     getEnterableKeyCodes: function(){},

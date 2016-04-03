@@ -47,7 +47,18 @@ exactly the path.
 
 ### Basic Usages
 ```js
+var menu = new ax5.ui.menu({
+    theme: 'primary',
+    items: [
+        {label: "Menu 0"},
+        {label: "Menu 1"}
+    ]
+});
 
+$(document).bind("contextmenu", function (e) {
+    menu.popup(e); // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
+    ax5.util.stopEvent(e);
+});
 ```
 
 ***

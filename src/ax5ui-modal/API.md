@@ -138,3 +138,18 @@ modal.align({left:"left", top:"top", margin: 20});
 
 ## close()
 `close()`
+
+- - -
+
+## onStateChanged
+
+Type: `Function`
+
+`onStateChanged` function can be defined in setConfig method or new ax5.ui.modal initialization method.
+However, you can us to define an event function after initialization, if necessary
+
+```js
+modal.onStateChanged = function(){
+    console.log(this);
+}
+```
