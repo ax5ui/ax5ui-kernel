@@ -23,6 +23,10 @@
 -->
 
 <script>
+    var
+    today = new Date(),
+    _c_date = ax5.util.date;
+
     $(document.body).ready(function () {
 
         ax5.info.weekNames = [
@@ -63,32 +67,44 @@
             selectMode: "day",
 
             // selectable: {range:[{from: '2016-02-01', to: '2016-02-20'}]},
-            /*
+            marker: (function () {
+                var marker = {};
+                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: -1}})] = true;
+                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: 0}})] = true;
+                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: 1}})] = true;
+
+                console.log(marker);
+
+                return marker;
+            })(),
+/*
             marker: {
-                '2016-02-07': {theme: 'holiday', label: '설날'},
-                '2016-02-08': {theme: 'holiday', label: '설날'},
-                '2016-02-09': {theme: 'holiday', label: '설날'},
-                '2016-02-10': {theme: 'holiday', label: '대체휴일'}
+                '2016-04-07': {theme: 'holiday', label: '설날'},
+                '2016-04-08': {theme: 'holiday', label: '설날'},
+                '2016-04-09': {theme: 'holiday', label: '설날'},
+                '2016-04-10': {theme: 'holiday', label: '대체휴일'}
             },
-            */
+*/
             onClick: function () {
                 console.log(myCalendar.getSelection());
             },
             onStateChanged: function () {
                 console.log(this);
             }
-            , multipleSelect: 1
+            , multipleSelect: 2
         });
 
         /// todo : 공휴일 표시에 대한 대안 필요.
-        myCalendar.setSelection(['2016-02-11', '2016-02-12', '2016-02-13']);
+        myCalendar.setSelection(['2016-04-11', '2016-04-12', '2016-04-13']);
 
+        /*
         myCalendar.setMarker({
-            '2016-02-07': true,
-            '2016-02-08': true,
-            '2016-02-09': true,
-            '2016-02-10': true
+            '2016-04-07': true,
+            '2016-04-08': true,
+            '2016-04-09': true,
+            '2016-04-10': true
         });
+        */
     });
 </script>
 
