@@ -1,128 +1,62 @@
 // ax5.ui.formatter
 (function (root, _SUPER_) {
-    
+
     /**
      * @class ax5.ui.formatter
      * @classdesc
-     * @version v0.0.1
+     * @version 0.4.1
      * @author tom@axisj.com
      * @example
      * ```
      * var formatter = new ax5.ui.formatter();
      * ```
      */
-    var U = ax5.util;
-    var TODAY = new Date();
+    var U = ax5.util,
+        TODAY = new Date();
 
-    var setSelectionRange = function (input, pos) {
-        if (typeof pos == "undefined") {
-            pos = input.value.length;
-        }
-        if (input.setSelectionRange) {
-            input.focus();
-            input.setSelectionRange(pos, pos);
-        }
-        else if (input.createTextRange) {
-            var range = input.createTextRange();
-            range.collapse(true);
-            range.moveEnd('character', pos);
-            range.moveStart('character', pos);
-            range.select();
-        }
-        else if (input.selectionStart) {
-            input.focus();
-            input.selectionStart = pos;
-            input.selectionEnd = pos;
-        }
-    };
-    
+    var
+        setSelectionRange = function (input, pos) {
+            if (typeof pos == "undefined") {
+                pos = input.value.length;
+            }
+            if (input.setSelectionRange) {
+                input.focus();
+                input.setSelectionRange(pos, pos);
+            }
+            else if (input.createTextRange) {
+                var range = input.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', pos);
+                range.moveStart('character', pos);
+                range.select();
+            }
+            else if (input.selectionStart) {
+                input.focus();
+                input.selectionStart = pos;
+                input.selectionEnd = pos;
+            }
+        };
+
     //== UI Class
     var axClass = function () {
         var
             self = this,
             cfg;
-        
+
         if (_SUPER_) _SUPER_.call(this); // 부모호출
-        
+
         this.queue = [];
         this.config = {
             animateTime: 250
         };
-        
+
         this.openTimer = null;
         this.closeTimer = null;
-        
+
         cfg = this.config;
-        
-        /**
-         * Preferences of formatter UI
-         * @method ax5.ui.formatter.setConfig
-         * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.formatter}
-         * @example
-         * ```
-         * ```
-         */
-        this.init = function () {
-            
-        };
-        
-        this.bind = function (opts) {
-            var
-                formatterConfig = {},
-                optIdx;
 
-            jQuery.extend(true, formatterConfig, cfg);
-            if (opts) jQuery.extend(true, formatterConfig, opts);
-            opts = formatterConfig;
-            
-            if (!opts.target) {
-                console.log(ax5.info.getError("ax5formatter", "401", "bind"));
-                return this;
-            }
-            opts.$target = jQuery(opts.target);
-
-            if (opts.$target.get(0).tagName == "INPUT") {
-                opts.$input = opts.$target;
-            }
-            else {
-                opts.$input = opts.$target.find('input[type="text"]');
-                if (opts.$input.length > 1) {
-                    opts.$input.each(function () {
-                        opts.target = this;
-                        self.bind(opts);
-                    });
-                    return this;
-                }
-            }
-
-            opts.$input = (opts.$target.get(0).tagName == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
-            if (!opts.id) opts.id = opts.$input.data("ax5-formatter");
-
-            if (!opts.id) {
-                opts.id = 'ax5-formatter-' + ax5.getGuid();
-                opts.$input.data("ax5-formatter", opts.id);
-            }
-            optIdx = U.search(this.queue, function () {
-                return this.id == opts.id;
-            });
-
-            if (optIdx === -1)
-            {
-                this.queue.push(opts);
-                this.__bindFormatterTarget(this.queue[this.queue.length - 1], this.queue.length - 1);
-            }
-            else {
-                this.queue[optIdx] = opts;
-                this.__bindFormatterTarget(this.queue[optIdx], optIdx);
-            }
-
-            return this;
-        };
-        
-        this.__bindFormatterTarget = (function () {
-            
-            var ctrlKeys = {
+        var
+            ctrlKeys = {
                 "18": "KEY_ALT",
                 "8": "KEY_BACKSPACE",
                 "17": "KEY_CONTROL",
@@ -152,76 +86,66 @@
                 //"12" : "NUMPAD_EQUAL",
                 //"106" : "NUMPAD_MULTIPLY",
                 //"109" : "NUMPAD_SUBTRACT"
-            };
-            
-            var numKeys = {
+            },
+            numKeys = {
                 '48': 1, '49': 1, '50': 1, '51': 1, '52': 1, '53': 1, '54': 1, '55': 1, '56': 1, '57': 1,
                 '96': 1, '97': 1, '98': 1, '99': 1, '100': 1, '101': 1, '102': 1, '103': 1, '104': 1, '105': 1
-            };
-            
-            var setEnterableKeyCodes = {
+            },
+            setEnterableKeyCodes = {
                 "money": function (opts, optIdx) {
                     var enterableKeyCodes = {
                         '188': ','
                     };
-                    
+
                     if (opts.patternArgument == "int") {
                         // 소수점 입력 안됨
                     }
                     else {
                         enterableKeyCodes['190'] = "."; // 소수점 입력 허용
                     }
-                    
-                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
+
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                 },
                 "number": function (opts, optIdx) {
                     var enterableKeyCodes = {
                         '190': '.'
                     };
-                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                 },
                 "date": function (opts, optIdx) {
                     var enterableKeyCodes = {
                         '189': '-', '191': '/'
                     };
-                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                 },
                 "time": function (opts, optIdx) {
                     var enterableKeyCodes = {
                         '186': ':'
                     };
-                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                 },
                 "bizno": function (opts, optIdx) {
                     var enterableKeyCodes = {
                         '189': '-'
                     };
-                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                 },
                 "phone": function (opts, optIdx) {
                     var enterableKeyCodes = {
                         '189': '-', '188': ','
                     };
-                    enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys);
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, numKeys);
+                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                 },
                 "custom": function (opts, optIdx) {
-
                     if (opts.getEnterableKeyCodes) {
                         opts.enterableKeyCodes = opts.getEnterableKeyCodes.call(opts, {$input: opts.$input});
                     }
-                    else{
+                    else {
                         opts.enterableKeyCodes = null;
                     }
                 }
-            };
-            
-            var getPatternValue = {
+            },
+            getPatternValue = {
                 "money": function (opts, optIdx, e, val, eType) {
                     var
                         val = val.replace(/[^0-9^\.^\-]/g, ""),
@@ -229,13 +153,13 @@
                         arrNumber = val.split('.'),
                         returnValue
                         ;
-                    
+
                     arrNumber[0] += '.';
-                    
+
                     do {
                         arrNumber[0] = arrNumber[0].replace(regExpPattern, '$1,$2');
                     } while (regExpPattern.test(arrNumber[0]));
-                    
+
                     if (arrNumber.length > 1) {
                         if (U.isNumber(opts.maxRound)) {
                             returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
@@ -247,7 +171,7 @@
                     else {
                         returnValue = arrNumber[0].split('.')[0];
                     }
-                    
+
                     return returnValue;
                 },
                 "number": function (opts, optIdx, e, val, eType) {
@@ -255,7 +179,7 @@
                     var arrNumber = val.split('.'),
                         returnValue
                         ;
-                    
+
                     if (arrNumber.length > 1) {
                         if (U.isNumber(opts.maxRound)) {
                             returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
@@ -267,18 +191,18 @@
                     else {
                         returnValue = arrNumber[0].split('.')[0];
                     }
-                    
+
                     return returnValue;
                 },
                 "date": function (opts, optIdx, e, val, eType) {
                     val = val.replace(/\D/g, "");
-                    if(val == "") return val;
+                    if (val == "") return val;
                     var regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
-                    
+
                     if (opts.patternArgument == "time") {
                         regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})? ?([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
                     }
-                    
+
                     var matchedPattern = val.match(regExpPattern),
                         returnValue = "",
                         inspectValue = function (val, format, inspect, data) {
@@ -312,7 +236,7 @@
                             };
                             return (inspect) ? _val[format](val) : val;
                         };
-                    
+
                     returnValue = val.replace(regExpPattern, function (a, b) {
                         var nval = [inspectValue(arguments[1], "Y", eType)];
                         if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
@@ -339,13 +263,13 @@
                         })();
                     }
                     else if (!matchedPattern) returnValue = (returnValue.length > 4) ? U.left(returnValue, 4) : returnValue;
-                    
+
                     return returnValue;
                 },
                 "time": function (opts, optIdx, e, val, eType) {
                     val = val.replace(/\D/g, "");
                     var regExpPattern = /^([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
-                    
+
                     var matchedPattern = val.match(regExpPattern),
                         returnValue = val.replace(regExpPattern, function (a, b) {
                             var nval = [arguments[1]];
@@ -353,9 +277,9 @@
                             if (arguments[3]) nval.push(':' + arguments[3]);
                             return nval.join('');
                         });
-                    
+
                     if (!matchedPattern) returnValue = (returnValue.length > 2) ? U.left(returnValue, 2) : returnValue;
-                    
+
                     return returnValue;
                 },
                 "bizno": function (opts, optIdx, e, val, eType) {
@@ -367,7 +291,7 @@
                             if (arguments[3]) nval.push(arguments[3]);
                             return nval.join("-");
                         });
-                    
+
                     return returnValue;
                 },
                 "phone": function (opts, optIdx, e, val, eType) {
@@ -388,20 +312,19 @@
                         return opts.getPatternValue.call(opts, {event: e, $input: opts.$input, value: val});
                     }
                 }
-            };
-            
-            var formatterEvent = {
+            },
+            formatterEvent = {
                 'focus': function (opts, optIdx, e) {
                     if (!opts.$input.data("__originValue__")) opts.$input.data("__originValue__", opts.$input.val());
                 },
                 /* 키 다운 이벤트에서 입력할 수 없는 키 입력을 방어 */
                 'keydown': function (opts, optIdx, e) {
                     var isStop = false;
-                    if(!opts.enterableKeyCodes){
+                    if (!opts.enterableKeyCodes) {
 
                     }
                     else if (e.which && opts.enterableKeyCodes[e.which]) {
-                        
+
                     }
                     else if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {
                         //console.log(e.which, opts.enterableKeyCodes);
@@ -417,7 +340,7 @@
                         newValue,
                         selection, selectionLength
                         ;
-                    
+
                     if ('selectionStart' in elem) {
                         // Standard-compliant browsers
                         elemFocusPosition = elem.selectionStart;
@@ -430,33 +353,31 @@
                         selection.moveStart('character', -elem.value.length);
                         elemFocusPosition = selection.text.length - selectionLength;
                     }
-                    
+
                     beforeValue = elem.value;
                     newValue = (getPatternValue[opts.pattern]) ? getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value) : beforeValue;
-                    
+
                     if (newValue != beforeValue) {
                         opts.$input.val(newValue).trigger("change");
                         setSelectionRange(elem, elemFocusPosition + newValue.length - beforeValue.length);
                     }
                 },
-                
                 'blur': function (opts, optIdx, e) {
                     var elem = opts.$input.get(0),
                         beforeValue,
                         newValue
                         ;
-                    
+
                     opts.$input.removeData("__originValue__");
-                    
+
                     beforeValue = elem.value;
                     newValue = (getPatternValue[opts.pattern]) ? getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value, 'blur') : beforeValue;
                     if (newValue != beforeValue) {
                         opts.$input.val(newValue).trigger("change");
                     }
                 }
-            };
-            
-            return function (opts, optIdx) {
+            },
+            bindFormatterTarget = function (opts, optIdx) {
 
                 if (!opts.pattern) {
                     if (opts.$target.get(0).tagName == "INPUT") {
@@ -474,13 +395,13 @@
                         return this;
                     }
                 }
-                
+
                 var re = /[^\(^\))]+/gi,
                     matched = opts.pattern.match(re);
-                
+
                 opts.pattern = matched[0];
                 opts.patternArgument = matched[1] || "";
-                
+
                 // 함수타입
                 for (var key in setEnterableKeyCodes) {
                     if (opts.pattern == key) {
@@ -492,27 +413,90 @@
                 opts.$input
                     .unbind('focus.ax5formatter')
                     .bind('focus.ax5formatter', formatterEvent.focus.bind(this, this.queue[optIdx], optIdx));
-                
+
                 opts.$input
                     .unbind('keydown.ax5formatter')
                     .bind('keydown.ax5formatter', formatterEvent.keydown.bind(this, this.queue[optIdx], optIdx));
-                
+
                 opts.$input
                     .unbind('keyup.ax5formatter')
                     .bind('keyup.ax5formatter', formatterEvent.keyup.bind(this, this.queue[optIdx], optIdx));
-                
+
                 opts.$input
                     .unbind('blur.ax5formatter')
                     .bind('blur.ax5formatter', formatterEvent.blur.bind(this, this.queue[optIdx], optIdx));
 
                 formatterEvent.blur.call(this, this.queue[optIdx], optIdx);
-                
+
                 return this;
-                
+
+            };
+
+        /**
+         * Preferences of formatter UI
+         * @method ax5.ui.formatter.setConfig
+         * @param {Object} config - 클래스 속성값
+         * @returns {ax5.ui.formatter}
+         * @example
+         * ```
+         * ```
+         */
+        this.init = function () {
+
+        };
+
+        this.bind = function (opts) {
+            var
+                formatterConfig = {},
+                optIdx;
+
+            jQuery.extend(true, formatterConfig, cfg);
+            if (opts) jQuery.extend(true, formatterConfig, opts);
+            opts = formatterConfig;
+
+            if (!opts.target) {
+                console.log(ax5.info.getError("ax5formatter", "401", "bind"));
+                return this;
             }
-            
-        })();
-        
+            opts.$target = jQuery(opts.target);
+
+            if (opts.$target.get(0).tagName == "INPUT") {
+                opts.$input = opts.$target;
+            }
+            else {
+                opts.$input = opts.$target.find('input[type="text"]');
+                if (opts.$input.length > 1) {
+                    opts.$input.each(function () {
+                        opts.target = this;
+                        self.bind(opts);
+                    });
+                    return this;
+                }
+            }
+
+            opts.$input = (opts.$target.get(0).tagName == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
+            if (!opts.id) opts.id = opts.$input.data("ax5-formatter");
+
+            if (!opts.id) {
+                opts.id = 'ax5-formatter-' + ax5.getGuid();
+                opts.$input.data("ax5-formatter", opts.id);
+            }
+            optIdx = U.search(this.queue, function () {
+                return this.id == opts.id;
+            });
+
+            if (optIdx === -1) {
+                this.queue.push(opts);
+                bindFormatterTarget.call(this, this.queue[this.queue.length - 1], this.queue.length - 1);
+            }
+            else {
+                this.queue[optIdx] = opts;
+                bindFormatterTarget.call(this, this.queue[optIdx], optIdx);
+            }
+
+            return this;
+        };
+
         // 클래스 생성자
         this.main = (function () {
             if (arguments && U.isObject(arguments[0])) {
@@ -521,12 +505,12 @@
         }).apply(this, arguments);
     };
     //== UI Class
-    
+
     root.formatter = (function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
     })(); // ax5.ui에 연결
-    
+
 })(ax5.ui, ax5.ui.root);
 
 ax5.ui.formatter_instance = new ax5.ui.formatter();
