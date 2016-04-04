@@ -6,7 +6,7 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version 0.4.3
+     * @version 0.4.4
      * @author tom@axisj.com
      * @example
      * ```
@@ -40,54 +40,15 @@
 
         cfg = this.config;
 
-        /**
-         * Preferences of picker UI
-         * @method ax5.ui.picker.setConfig
-         * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.picker}
-         * @example
-         * ```
-         * ```
-         */
-        this.init = function () {
-            this.onStateChanged = cfg.onStateChanged;
-        };
-
-        this.bind = function (opts) {
-            var pickerConfig = {},
-                optIdx;
-
-            jQuery.extend(true, pickerConfig, cfg);
-            if (opts) jQuery.extend(true, pickerConfig, opts);
-            opts = pickerConfig;
-
-            if (!opts.target) {
-                console.log(ax5.info.getError("ax5picker", "401", "bind"));
-                return this;
+        var onStateChanged = function onStateChanged(opts, that) {
+            if (opts && opts.onStateChanged) {
+                opts.onStateChanged.call(that, that);
+            } else if (this.onStateChanged) {
+                this.onStateChanged.call(that, that);
             }
-            opts.$target = jQuery(opts.target);
-            if (!opts.id) opts.id = opts.$target.data("ax5-picker");
-
-            if (!opts.id) {
-                opts.id = 'ax5-picker-' + ax5.getGuid();
-                opts.$target.data("ax5-picker", opts.id);
-            }
-            optIdx = U.search(this.queue, function () {
-                return this.id == opts.id;
-            });
-
-            if (optIdx === -1) {
-                this.queue.push(opts);
-                this.__bindPickerTarget(opts, this.queue.length - 1);
-            } else {
-                this.queue[optIdx] = opts;
-                this.__bindPickerTarget(this.queue[optIdx], optIdx);
-            }
-
-            return this;
-        };
-
-        this.__bindPickerTarget = function () {
+            return true;
+        },
+            bindPickerTarget = function () {
 
             var pickerEvent = {
                 'focus': function focus(opts, optIdx, e) {
@@ -171,11 +132,158 @@
 
                 return this;
             };
-        }();
-
-        this.__getTmpl = function (opts, optIdx) {
+        }(),
+            getTmpl = function getTmpl(opts, optIdx) {
             // console.log(opts);
-            return '\n            <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n                {{#title}}\n                    <div class="ax-picker-heading">{{title}}</div>\n                {{/title}}\n                <div class="ax-picker-body">\n                    <div class="ax-picker-contents" data-picker-els="contents" style="width:{{contentWidth}}px;"></div>\n                    {{#btns}}\n                        <div class="ax-picker-buttons">\n                        {{#btns}}\n                            {{#@each}}\n                            <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                            {{/@each}}\n                        {{/btns}}\n                        </div>\n                    {{/btns}}\n                </div>\n                <div class="ax-picker-arrow"></div>\n            </div>\n            ';
+            return '\n                <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n                    {{#title}}\n                        <div class="ax-picker-heading">{{title}}</div>\n                    {{/title}}\n                    <div class="ax-picker-body">\n                        <div class="ax-picker-contents" data-picker-els="contents" style="width:{{contentWidth}}px;"></div>\n                        {{#btns}}\n                            <div class="ax-picker-buttons">\n                            {{#btns}}\n                                {{#@each}}\n                                <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    <div class="ax-picker-arrow"></div>\n                </div>\n                ';
+        },
+            alignPicker = function alignPicker(append) {
+            if (!this.activePicker) return this;
+
+            var opts = this.queue[this.activePickerQueueIndex],
+                pos = {},
+                dim = {};
+
+            if (append) jQuery(document.body).append(this.activePicker);
+
+            pos = opts.$target.offset();
+            dim = {
+                width: opts.$target.outerWidth(),
+                height: opts.$target.outerHeight()
+            };
+
+            // picker css(width, left, top) & direction 결정
+            if (!opts.direction || opts.direction === "" || opts.direction === "auto") {
+                // set direction
+                opts.direction = "top";
+            }
+
+            if (append) {
+                this.activePicker.addClass("direction-" + opts.direction);
+            }
+            this.activePicker.css(function () {
+                if (opts.direction == "top") {
+                    return {
+                        left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
+                        top: pos.top + dim.height + 12
+                    };
+                } else if (opts.direction == "bottom") {
+                    return {
+                        left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
+                        top: pos.top - this.activePicker.outerHeight() - 12
+                    };
+                } else if (opts.direction == "left") {
+                    return {
+                        left: pos.left + dim.width + 12,
+                        top: pos.top - dim.height / 2
+                    };
+                } else if (opts.direction == "right") {
+                    return {
+                        left: pos.left - this.activePicker.outerWidth() - 12,
+                        top: pos.top - dim.height / 2
+                    };
+                }
+            }.call(this));
+        },
+            onBodyClick = function onBodyClick(e, target) {
+            if (!this.activePicker) return this;
+
+            var opts = this.queue[this.activePickerQueueIndex];
+
+            target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-picker-els")) {
+                    return true;
+                } else if (opts.$target.get(0) == target) {
+                    return true;
+                }
+            });
+            if (!target) {
+                //console.log("i'm not picker");
+                this.close();
+                return this;
+            }
+            //console.log("i'm picker");
+            return this;
+        },
+            onBtnClick = function onBtnClick(e, target) {
+            // console.log('btn click');
+            if (e.srcElement) e.target = e.srcElement;
+
+            target = U.findParentNode(e.target, function (target) {
+                if (target.getAttribute("data-picker-btn")) {
+                    return true;
+                }
+            });
+
+            if (target) {
+                var opts = this.queue[this.activePickerQueueIndex],
+                    k = target.getAttribute("data-picker-btn");
+
+                if (opts.btns && opts.btns[k].onClick) {
+                    var that = {
+                        key: k,
+                        value: opts.btns[k],
+                        self: this,
+                        boundObject: opts
+                    };
+                    opts.btns[k].onClick.call(that, k);
+                } else {
+                    this.close();
+                }
+            }
+        },
+            onBodyKeyup = function onBodyKeyup(e) {
+            if (e.keyCode == ax5.info.eventKeys.ESC) {
+                this.close();
+            }
+        };
+        /// private end
+
+        /**
+         * Preferences of picker UI
+         * @method ax5.ui.picker.setConfig
+         * @param {Object} config - 클래스 속성값
+         * @returns {ax5.ui.picker}
+         * @example
+         * ```
+         * ```
+         */
+        this.init = function () {
+            this.onStateChanged = cfg.onStateChanged;
+        };
+
+        this.bind = function (opts) {
+            var pickerConfig = {},
+                optIdx;
+
+            jQuery.extend(true, pickerConfig, cfg);
+            if (opts) jQuery.extend(true, pickerConfig, opts);
+            opts = pickerConfig;
+
+            if (!opts.target) {
+                console.log(ax5.info.getError("ax5picker", "401", "bind"));
+                return this;
+            }
+            opts.$target = jQuery(opts.target);
+            if (!opts.id) opts.id = opts.$target.data("ax5-picker");
+
+            if (!opts.id) {
+                opts.id = 'ax5-picker-' + ax5.getGuid();
+                opts.$target.data("ax5-picker", opts.id);
+            }
+            optIdx = U.search(this.queue, function () {
+                return this.id == opts.id;
+            });
+
+            if (optIdx === -1) {
+                this.queue.push(opts);
+                bindPickerTarget.call(this, opts, this.queue.length - 1);
+            } else {
+                this.queue[optIdx] = opts;
+                bindPickerTarget.call(this, this.queue[optIdx], optIdx);
+            }
+
+            return this;
         };
 
         /**
@@ -254,8 +362,6 @@
 
             return function (opts, optIdx, tryCount) {
 
-                var that;
-
                 /**
                  * open picker from the outside
                  */
@@ -287,7 +393,7 @@
                     return this;
                 }
 
-                this.activePicker = jQuery(ax5.mustache.render(this.__getTmpl(opts, optIdx), opts));
+                this.activePicker = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), opts));
                 this.activePickerQueueIndex = optIdx;
                 opts.pickerContent = this.activePicker.find('[data-picker-els="contents"]');
 
@@ -308,37 +414,32 @@
 
                 // bind event picker btns
                 this.activePicker.find("[data-picker-btn]").on(cfg.clickEventName, function (e) {
-                    this.__onBtnClick(e || window.event, opts, optIdx);
+                    onBtnClick.call(this, e || window.event, opts, optIdx);
                 }.bind(this));
 
-                self.__alignPicker("append");
+                alignPicker.call(this, "append");
                 jQuery(window).bind("resize.ax5picker", function () {
-                    self.__alignPicker();
-                });
+                    alignPicker.call(this);
+                }.bind(this));
 
                 // bind key event
                 jQuery(window).bind("keyup.ax5picker", function (e) {
                     e = e || window.event;
-                    self.__onBodyKeyup(e);
+                    onBodyKeyup.call(this, e);
                     U.stopEvent(e);
-                });
+                }.bind(this));
 
                 jQuery(window).bind("click.ax5picker", function (e) {
                     e = e || window.event;
-                    self.__onBodyClick(e);
+                    onBodyClick.call(this, e);
                     U.stopEvent(e);
-                });
+                }.bind(this));
 
-                that = {
+                onStateChanged.call(this, opts, {
                     self: this,
                     state: "open",
                     boundObject: opts
-                };
-                if (opts && opts.onStateChanged) {
-                    opts.onStateChanged.call(that, that);
-                } else if (this.onStateChanged) {
-                    this.onStateChanged.call(that, that);
-                }
+                });
 
                 return this;
             };
@@ -348,12 +449,11 @@
          * @method ax5.ui.picker.close
          * @returns {ax5.ui.picker} this
          */
-        this.close = function () {
+        this.close = function (opts) {
             if (this.closeTimer) clearTimeout(this.closeTimer);
             if (!this.activePicker) return this;
 
-            var opts = this.queue[this.activePickerQueueIndex],
-                that;
+            opts = this.queue[this.activePickerQueueIndex];
 
             this.activePicker.addClass("destroy");
             jQuery(window).unbind("resize.ax5picker");
@@ -364,123 +464,14 @@
                 if (this.activePicker) this.activePicker.remove();
                 this.activePicker = null;
                 this.activePickerQueueIndex = -1;
-                that = {
+
+                onStateChanged.call(this, opts, {
                     self: this,
                     state: "close"
-                };
-                if (opts && opts.onStateChanged) {
-                    opts.onStateChanged.call(that, that);
-                } else if (this.onStateChanged) {
-                    this.onStateChanged.call(that, that);
-                }
+                });
             }.bind(this), cfg.animateTime);
 
             return this;
-        };
-
-        /* private */
-        this.__alignPicker = function (append) {
-            if (!this.activePicker) return this;
-
-            var opts = this.queue[this.activePickerQueueIndex],
-                pos = {},
-                dim = {};
-
-            if (append) jQuery(document.body).append(this.activePicker);
-
-            pos = opts.$target.offset();
-            dim = {
-                width: opts.$target.outerWidth(),
-                height: opts.$target.outerHeight()
-            };
-
-            // picker css(width, left, top) & direction 결정
-            if (!opts.direction || opts.direction === "" || opts.direction === "auto") {
-                // set direction
-                opts.direction = "top";
-            }
-
-            if (append) {
-                this.activePicker.addClass("direction-" + opts.direction);
-            }
-            this.activePicker.css(function () {
-                if (opts.direction == "top") {
-                    return {
-                        left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
-                        top: pos.top + dim.height + 12
-                    };
-                } else if (opts.direction == "bottom") {
-                    return {
-                        left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
-                        top: pos.top - this.activePicker.outerHeight() - 12
-                    };
-                } else if (opts.direction == "left") {
-                    return {
-                        left: pos.left + dim.width + 12,
-                        top: pos.top - dim.height / 2
-                    };
-                } else if (opts.direction == "right") {
-                    return {
-                        left: pos.left - this.activePicker.outerWidth() - 12,
-                        top: pos.top - dim.height / 2
-                    };
-                }
-            }.call(this));
-        };
-
-        this.__onBodyClick = function (e, target) {
-            if (!this.activePicker) return this;
-
-            var opts = this.queue[this.activePickerQueueIndex];
-
-            target = U.findParentNode(e.target, function (target) {
-                if (target.getAttribute("data-picker-els")) {
-                    return true;
-                } else if (opts.$target.get(0) == target) {
-                    return true;
-                }
-            });
-            if (!target) {
-                //console.log("i'm not picker");
-                this.close();
-                return this;
-            }
-            //console.log("i'm picker");
-            return this;
-        };
-
-        this.__onBtnClick = function (e, target) {
-            // console.log('btn click');
-            if (e.srcElement) e.target = e.srcElement;
-
-            target = U.findParentNode(e.target, function (target) {
-                if (target.getAttribute("data-picker-btn")) {
-                    return true;
-                }
-            });
-
-            if (target) {
-                var opts = this.queue[this.activePickerQueueIndex],
-                    k = target.getAttribute("data-picker-btn");
-
-                if (opts.btns && opts.btns[k].onClick) {
-                    var that = {
-                        key: k,
-                        value: opts.btns[k],
-                        self: this,
-                        boundObject: opts
-                    };
-                    opts.btns[k].onClick.call(that, k);
-                } else {
-                    this.close();
-                }
-            }
-        };
-
-        this.__onBodyKeyup = function (e) {
-            if (e.keyCode == ax5.info.eventKeys.ESC) {
-                this.close();
-            }
         };
 
         // 클래스 생성자
