@@ -6,10 +6,8 @@
     /**
      * @class ax5.ui.toast
      * @classdesc
-     * @version v0.0.1
+     * @version 0.2.3
      * @author tom@axisj.com
-     * @logs
-     * 2014-06-17 tom : 시작
      * @example
      * ```
      * var my_toast = new ax5.ui.toast();
@@ -21,7 +19,9 @@
     //== UI Class
     var axClass = function axClass() {
         var self = this,
-            cfg;
+            cfg,
+            toastSeq = 0,
+            toastSeqClear = null;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
         this.toastContainer = null;
@@ -40,6 +40,7 @@
             animateTime: 250,
             containerPosition: "bottom-left"
         };
+
         cfg = this.config;
 
         var onStateChanged = function onStateChanged(opts, that) {
@@ -49,116 +50,37 @@
                 this.onStateChanged.call(that, that);
             }
             return true;
-        };
+        },
+            getContentTmpl = function getContentTmpl() {
+            return '\n                <div id="{{toastId}}" data-ax5-ui="toast" class="ax5-ui-toast {{theme}}">\n                    {{#icon}}\n                    <div class="ax-toast-icon">{{{.}}}</div>\n                    {{/icon}}\n                    <div class="ax-toast-body">{{{msg}}}</div>\n                    {{#btns}}\n                    <div class="ax-toast-buttons">\n                        <div class="ax-button-wrap">\n                        {{#@each}}\n                        <button type="button" data-ax-toast-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{{@value.label}}}</button>\n                        {{/@each}}\n                        </div>\n                    </div>\n                    {{/btns}}\n                    {{^btns}}\n                    <a class="ax-toast-close" data-ax-toast-btn="ok">{{{closeIcon}}}</a>\n                    {{/btns}}\n                    <div style="clear:both;"></div>\n                </div>\n                ';
+        },
+            getContent = function getContent(toastId, opts) {
+            var data = {
+                toastId: toastId,
+                theme: opts.theme,
+                icon: opts.icon,
+                msg: (opts.msg || "").replace(/\n/g, "<br/>"),
+                btns: opts.btns,
+                closeIcon: opts.closeIcon
+            };
 
-        /**
-         * Preferences of toast UI
-         * @method ax5.ui.toast.set_config
-         * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.toast}
-         * @example
-         * ```
-         * ```
-         */
-        //== class body start
-        this.init = function () {
-            this.onStateChanged = cfg.onStateChanged;
-            // after set_config();
-            self.containerId = ax5.getGuid();
-            var styles = [];
-            if (cfg.zIndex) {
-                styles.push("z-index:" + cfg.zIndex);
-            }
-            jQuery(document.body).append('<div class="ax5-ui-toast-container ' + cfg.containerPosition + '" data-toast-container="' + '' + self.containerId + '" style="' + styles.join(";") + '"></div>');
-            this.toastContainer = jQuery('[data-toast-container="' + self.containerId + '"]');
-        };
+            return ax5.mustache.render(getContentTmpl(), data);
+        },
+            open = function open(opts, callBack) {
+            if (toastSeqClear) clearTimeout(toastSeqClear);
 
-        this.push = function (opts, callBack) {
-            if (!self.containerId) {
-                this.init();
-            }
-            if (U.isString(opts)) {
-                opts = {
-                    title: cfg.title,
-                    msg: opts
-                };
-            }
-            opts.toastType = "push";
-
-            self.dialogConfig = {};
-            jQuery.extend(true, self.dialogConfig, cfg, opts);
-            opts = self.dialogConfig;
-
-            this.open(opts, callBack);
-            return this;
-        };
-
-        this.confirm = function (opts, callBack) {
-            if (!self.containerId) {
-                this.init();
-            }
-            if (U.isString(opts)) {
-                opts = {
-                    title: cfg.title,
-                    msg: opts
-                };
-            }
-            opts.toastType = "confirm";
-
-            self.dialogConfig = {};
-            jQuery.extend(true, self.dialogConfig, cfg, opts);
-            opts = self.dialogConfig;
-
-            if (typeof opts.btns === "undefined") {
-                opts.btns = {
-                    ok: { label: cfg.lang["ok"], theme: opts.theme }
-                };
-            }
-            this.open(opts, callBack);
-            return this;
-        };
-
-        this.getContent = function (toastId, opts) {
-            var po = [];
-            po.push('<div id="' + toastId + '" data-ax5-ui="toast" class="ax5-ui-toast ' + opts.theme + '">');
-            if (opts.icon) {
-                po.push('<div class="ax-toast-icon">');
-                po.push(opts.icon || "");
-                po.push('</div>');
-            }
-            po.push('<div class="ax-toast-body">');
-            po.push((opts.msg || "").replace(/\n/g, "<br/>"));
-            po.push('</div>');
-
-            if (opts.btns) {
-                po.push('<div class="ax-toast-buttons">');
-                po.push('<div class="ax-button-wrap">');
-                U.each(opts.btns, function (k, v) {
-                    po.push('<button type="button" data-ax-toast-btn="' + k + '" class="btn btn-' + (this.theme || "default") + '">' + this.label + '</button>');
-                });
-                po.push('</div>');
-                po.push('</div>');
-            } else {
-                po.push('<a class="ax-toast-close" data-ax-toast-btn="ok">' + (opts.closeIcon || '') + '</a>');
-            }
-
-            po.push('<div style="clear:both;"></div>');
-            po.push('</div>');
-            return po.join('');
-        };
-
-        this.open = function (opts, callBack) {
             var toastBox,
                 box = {
                 width: opts.width
             };
 
-            opts.id = 'ax5-toast-' + self.containerId + '-' + this.queue.length;
+            opts.id = 'ax5-toast-' + self.containerId + '-' + ++toastSeq;
+            if (jQuery('#' + opts.id).get(0)) return this;
 
             if (U.left(cfg.containerPosition, '-') == 'bottom') {
-                this.toastContainer.append(this.getContent(opts.id, opts));
+                this.toastContainer.append(getContent(opts.id, opts));
             } else {
-                this.toastContainer.prepend(this.getContent(opts.id, opts));
+                this.toastContainer.prepend(getContent(opts.id, opts));
             }
 
             toastBox = jQuery('#' + opts.id);
@@ -179,17 +101,15 @@
                 }.bind(this), cfg.displayTime);
 
                 toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, function (e) {
-                    this.btnOnClick(e || window.event, opts, toastBox, callBack);
+                    btnOnClick.call(this, e || window.event, opts, toastBox, callBack);
                 }.bind(this));
             } else if (opts.toastType === "confirm") {
                 toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, function (e) {
-                    this.btnOnClick(e || window.event, opts, toastBox, callBack);
+                    btnOnClick.call(this, e || window.event, opts, toastBox, callBack);
                 }.bind(this));
             }
-        };
-
-        this.btnOnClick = function (e, opts, toastBox, callBack, target, k) {
-
+        },
+            btnOnClick = function btnOnClick(e, opts, toastBox, callBack, target, k) {
             target = U.findParentNode(e.target, function (target) {
                 if (target.getAttribute("data-ax-toast-btn")) {
                     return true;
@@ -215,12 +135,90 @@
                     this.close(opts, toastBox);
                 }
             }
-        };
-
-        this.onKeyup = function (e, opts, callBack, target, k) {
+        },
+            onKeyup = function onKeyup(e, opts, callBack, target, k) {
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 if (this.queue.length > 0) this.close();
             }
+        };
+
+        /**
+         * Preferences of toast UI
+         * @method ax5.ui.toast.set_config
+         * @param {Object} config - 클래스 속성값
+         * @returns {ax5.ui.toast}
+         * @example
+         * ```
+         * ```
+         */
+        //== class body start
+        this.init = function () {
+            this.onStateChanged = cfg.onStateChanged;
+            // after set_config();
+            self.containerId = ax5.getGuid();
+            var styles = [];
+            if (cfg.zIndex) {
+                styles.push("z-index:" + cfg.zIndex);
+            }
+            jQuery(document.body).append('<div class="ax5-ui-toast-container ' + cfg.containerPosition + '" data-toast-container="' + '' + self.containerId + '" style="' + styles.join(";") + '"></div>');
+            this.toastContainer = jQuery('[data-toast-container="' + self.containerId + '"]');
+        };
+
+        /**
+         * @method ax5.ui.toast.push
+         * @param opts
+         * @param callBack
+         * @returns {ax5.ui.toast}
+         */
+        this.push = function (opts, callBack) {
+            if (!self.containerId) {
+                this.init();
+            }
+            if (U.isString(opts)) {
+                opts = {
+                    title: cfg.title,
+                    msg: opts
+                };
+            }
+            opts.toastType = "push";
+
+            self.dialogConfig = {};
+            jQuery.extend(true, self.dialogConfig, cfg, opts);
+            opts = self.dialogConfig;
+
+            open.call(this, opts, callBack);
+            return this;
+        };
+
+        /**
+         * @method ax5.ui.toast.confirm
+         * @param opts
+         * @param callBack
+         * @returns {ax5.ui.toast}
+         */
+        this.confirm = function (opts, callBack) {
+            if (!self.containerId) {
+                this.init();
+            }
+            if (U.isString(opts)) {
+                opts = {
+                    title: cfg.title,
+                    msg: opts
+                };
+            }
+            opts.toastType = "confirm";
+
+            self.dialogConfig = {};
+            jQuery.extend(true, self.dialogConfig, cfg, opts);
+            opts = self.dialogConfig;
+
+            if (typeof opts.btns === "undefined") {
+                opts.btns = {
+                    ok: { label: cfg.lang["ok"], theme: opts.theme }
+                };
+            }
+            open.call(this, opts, callBack);
+            return this;
         };
 
         /**
@@ -256,6 +254,15 @@
                     toastId: opts.id
                 };
                 onStateChanged.call(this, opts, that);
+
+                // 3초후에도 아무 일이 없다면 완전히 제거
+                if (this.queue.length === 0) {
+                    if (toastSeqClear) clearTimeout(toastSeqClear);
+                    toastSeqClear = setTimeout(function () {
+                        /// console.log("try clear seq");
+                        if (this.queue.length === 0) toastSeq = 0;
+                    }.bind(this), 3000);
+                }
             }.bind(this), cfg.animateTime);
             return this;
         };
