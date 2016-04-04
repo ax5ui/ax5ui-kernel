@@ -6,7 +6,7 @@
     /**
      * @class ax5.ui.modal
      * @classdesc
-     * @version 0.5.3
+     * @version 0.5.4
      * @author tom@axisj.com
      * @example
      * ```
@@ -40,71 +40,39 @@
         cfg = this.config; // extended config copy cfg
         cfg.id = 'ax5-modal-' + ax5.getGuid(); // instance id
 
-        /**
-         * Preferences of modal UI
-         * @method ax5.ui.modal.setConfig
-         * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.modal}
-         * @example
-         * ```
-         * ```
-         */
-        //== class body start
-        this.init = function () {
-            this.onStateChanged = cfg.onStateChanged;
-        };
-
-        this.getContent = function (modalId, opts) {
-            var po = [],
-                styles = [];
+        var onStateChanged = function onStateChanged(opts, that) {
+            if (opts && opts.onStateChanged) {
+                opts.onStateChanged.call(that, that);
+            } else if (this.onStateChanged) {
+                this.onStateChanged.call(that, that);
+            }
+            return true;
+        },
+            getContentTmpl = function getContentTmpl() {
+            return "\n                <div id=\"{{modalId}}\" data-modal-els=\"root\" class=\"ax5-ui-modal {{theme}} {{fullscreen}}\" style=\"{{styles}}\">\n                    <div class=\"ax-modal-body\" data-modal-els=\"body\">\n                    {{#iframe}}\n                        <div data-modal-els=\"iframe-wrap\" style=\"-webkit-overflow-scrolling: touch; overflow: auto;position: relative;\">\n                        <iframe name=\"{{modalId}}-frame\" src=\"\" width=\"100%\" height=\"100%\" frameborder=\"0\" data-modal-els=\"iframe\" style=\"position: absolute;left:0;top:0;\"></iframe>\n                        </div>\n                        <form name=\"{{modalId}}-form\" data-modal-els=\"iframe-form\">\n                        <input type=\"hidden\" name=\"modalId\" value=\"{{modalId}}\" />\n                        {{#param}}\n                        {{#@each}}\n                        <input type=\"hidden\" name=\"{{@key}}\" value=\"{{@value}}\" />\n                        {{/@each}}\n                        {{/param}}\n                        </form>\n                    {{/iframe}}\n                    </div>\n                </div>\n                ";
+        },
+            getContent = function getContent(modalId, opts) {
+            var data = {
+                modalId: modalId,
+                theme: opts.theme,
+                fullScreen: opts.fullScreen ? "fullscreen" : "",
+                styles: [],
+                iframe: opts.iframe
+            };
 
             if (opts.zIndex) {
-                styles.push("z-index:" + opts.zIndex);
+                data.styles.push("z-index:" + opts.zIndex);
+            }
+            if (typeof data.iframe.param === "string") {
+                data.iframe.param = ax5.util.param(data.iframe.param);
             }
 
-            po.push('<div id="' + modalId + '" data-modal-els="root" class="ax5-ui-modal ' + opts.theme + ' ' + (opts.fullScreen ? "fullscreen" : "") + '" style="' + styles.join(";") + '">');
-            po.push('<div class="ax-modal-body" data-modal-els="body">');
-            // use iframe
-            if (opts.iframe) {
-                po.push('<div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">');
-                po.push('<iframe name="' + modalId + '-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>');
-                po.push('</div>');
-                po.push('<form name="' + modalId + '-form" data-modal-els="iframe-form">');
-                po.push('<input type="hidden" name="modalId" value="' + modalId + '" />');
-                if (typeof opts.iframe.param === "string") {
-                    opts.iframe.param = ax5.util.param(opts.iframe.param);
-                }
-                for (var p in opts.iframe.param) {
-                    po.push('<input type="hidden" name="' + p + '" value="' + opts.iframe.param[p] + '" />');
-                }
-                po.push('</form>');
-            }
-            po.push('</div>');
-            po.push('</div>');
-            return po.join('');
-        };
-
-        this.open = function (opts, callBack) {
-            if (U.isString(opts)) {
-                opts = {
-                    title: cfg.title,
-                    msg: opts
-                };
-            }
-
-            self.modalConfig = {};
-            jQuery.extend(true, self.modalConfig, cfg);
-            jQuery.extend(true, self.modalConfig, opts);
-            opts = self.modalConfig;
-
-            this._open(opts, callBack);
-            return this;
-        };
-
-        this._open = function (opts, callBack) {
+            return ax5.mustache.render(getContentTmpl(), data);
+        },
+            open = function open(opts, callBack) {
             var that;
 
-            jQuery(document.body).append(this.getContent(opts.id, opts));
+            jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
             this.activeModal = jQuery('#' + opts.id);
 
@@ -121,7 +89,7 @@
             }
 
             //- position 정렬
-            this.align();
+            align.call(this);
 
             that = {
                 self: this,
@@ -144,34 +112,25 @@
                 this.$["iframe-form"].attr({ "action": opts.iframe.url });
                 this.$["iframe"].on("load", function () {
                     that.state = "load";
-                    if (opts && opts.onStateChanged) {
-                        opts.onStateChanged.call(that, that);
-                    } else if (this.onStateChanged) {
-                        this.onStateChanged.call(that, that);
-                    }
+                    onStateChanged.call(this, opts, that);
                 }.bind(this));
                 this.$["iframe-form"].submit();
             }
 
             if (callBack) callBack.call(that);
-            if (opts && opts.onStateChanged) {
-                opts.onStateChanged.call(that, that);
-            } else if (this.onStateChanged) {
-                this.onStateChanged.call(that, that);
-            }
+            onStateChanged.call(this, opts, that);
 
             // bind key event
             if (opts.closeToEsc) {
                 jQuery(window).bind("keydown.ax-modal", function (e) {
-                    this.onkeyup(e || window.event);
+                    onkeyup.call(this, e || window.event);
                 }.bind(this));
             }
             jQuery(window).bind("resize.ax-modal", function (e) {
-                this.align(null, e || window.event);
+                align.call(this, null, e || window.event);
             }.bind(this));
-        };
-
-        this.align = function (position, e) {
+        },
+            align = function align(position, e) {
             if (!this.activeModal) return this;
             var opts = self.modalConfig,
                 box = {
@@ -219,12 +178,53 @@
 
             this.activeModal.css(box);
             return this;
-        };
-
-        this.onkeyup = function (e) {
+        },
+            onkeyup = function onkeyup(e) {
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
             }
+        };
+
+        /// private end
+
+        /**
+         * Preferences of modal UI
+         * @method ax5.ui.modal.setConfig
+         * @param {Object} config - 클래스 속성값
+         * @returns {ax5.ui.modal}
+         * @example
+         * ```
+         * ```
+         */
+        //== class body start
+        this.init = function () {
+            this.onStateChanged = cfg.onStateChanged;
+        };
+
+        /**
+         * open the modal
+         * @method ax5.ui.modal.open
+         * @returns {ax5.ui.modal}
+         * @example
+         * ```
+         * my_modal.open();
+         * ```
+         */
+        this.open = function (opts, callBack) {
+            if (U.isString(opts)) {
+                opts = {
+                    title: cfg.title,
+                    msg: opts
+                };
+            }
+
+            self.modalConfig = {};
+            jQuery.extend(true, self.modalConfig, cfg);
+            jQuery.extend(true, self.modalConfig, opts);
+            opts = self.modalConfig;
+
+            open.call(this, opts, callBack);
+            return this;
         };
 
         /**
@@ -250,11 +250,10 @@
                         self: this,
                         state: "close"
                     };
-                    if (opts && opts.onStateChanged) {
-                        opts.onStateChanged.call(that, that);
-                    } else if (this.onStateChanged) {
-                        this.onStateChanged.call(that, that);
-                    }
+                    onStateChanged.call(this, opts, {
+                        self: this,
+                        state: "close"
+                    });
                 }.bind(this), cfg.animateTime);
             }
             return this;
