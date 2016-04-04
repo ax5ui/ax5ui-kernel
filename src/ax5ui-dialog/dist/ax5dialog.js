@@ -37,6 +37,31 @@
         cfg = this.config;
         cfg.id = 'ax5-dialog-' + ax5.getGuid();
 
+        var onStateChanged = function onStateChanged(opts, that) {
+            if (opts && opts.onStateChanged) {
+                opts.onStateChanged.call(that, that);
+            } else if (this.onStateChanged) {
+                this.onStateChanged.call(that, that);
+            }
+            return true;
+        },
+            getContentTmpl = function getContentTmpl() {
+            return '\n                <div id="{{dialogId}}" data-ax5-ui="dialog" class="ax5-ui-dialog {{theme}}">\n                    <div class="ax-dialog-heading">\n                        {{{title}}}\n                    </div>\n                    <div class="ax-dialog-body">\n                        <div class="ax-dialog-msg">{{{msg}}}</div>\n                        \n                        {{#input}}\n                        <div class="ax-dialog-prompt">\n                            {{#@each}}\n                            <div class="form-group">\n                            {{#@value.label}}\n                            <label>{{#_crlf}}{{.}}{{/_crlf}}</label>\n                            {{/@value.label}}\n                            <input type="{{@value.type}}" placeholder="{{@value.placeholder}}" class="form-control {{@value.theme}}" data-dialog-prompt="{{@key}}" style="width:100%;" value="{{@value.value}}" />\n                            {{#@value.help}}\n                            <p class="help-block">{{#_crlf}}{{.}}{{/_crlf}}</p>\n                            {{/@value.help}}\n                            </div>\n                            {{/@each}}\n                        </div>\n                        {{/input}}\n                        \n                        <div class="ax-dialog-buttons">\n                            <div class="ax-button-wrap">\n                            {{#btns}}\n                                {{#@each}}\n                                <button type="button" data-dialog-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        </div>\n                    </div>\n                </div>  \n                ';
+        },
+            getContent = function getContent(dialogId, opts) {
+            var data = {
+                dialogId: dialogId,
+                title: opts.title || cfg.title || "",
+                msg: (opts.msg || cfg.msg || "").replace(/\n/g, "<br/>"),
+                input: opts.input,
+                btns: opts.btns,
+                '_crlf': function _crlf() {
+                    return this.replace(/\n/g, "<br/>");
+                }
+            };
+            return ax5.mustache.render(getContentTmpl(), data);
+        };
+
         /**
          * Preferences of dialog UI
          * @method ax5.ui.dialog.setConfig
@@ -189,44 +214,6 @@
             return this;
         };
 
-        this.getContent = function (dialogId, opts) {
-            var po = [];
-
-            po.push('<div id="' + dialogId + '" data-ax5-ui="dialog" class="ax5-ui-dialog ' + opts.theme + '">');
-            po.push('<div class="ax-dialog-heading">');
-            po.push(opts.title || cfg.title || "");
-            po.push('</div>');
-            po.push('<div class="ax-dialog-body">');
-            po.push('<div class="ax-dialog-msg">');
-            po.push((opts.msg || cfg.msg || "").replace(/\n/g, "<br/>"));
-            po.push('</div>');
-
-            if (opts.input) {
-                po.push('<div class="ax-dialog-prompt">');
-                U.each(opts.input, function (k, v) {
-                    po.push('<div class="form-group">');
-                    if (this.label) po.push('    <label>' + this.label.replace(/\n/g, "<br/>") + '</label>');
-                    po.push('    <input type="' + (this.type || 'text') + '" placeholder="' + (this.placeholder || "") + ' " class="form-control ' + (this.theme || "") + '" data-dialog-prompt="' + k + '" style="width:100%;" value="' + (this.value || "") + '" />');
-                    if (this.help) {
-                        po.push('    <p class="help-block">' + this.help.replace(/\n/g, "<br/>") + '</p>');
-                    }
-                    po.push('</div>');
-                });
-                po.push('</div>');
-            }
-
-            po.push('<div class="ax-dialog-buttons">');
-            po.push('<div class="ax-button-wrap">');
-            U.each(opts.btns, function (k, v) {
-                po.push('<button type="button" data-dialog-btn="' + k + '" class="btn btn-' + (this.theme || "default") + '">' + this.label + '</button>');
-            });
-            po.push('</div>');
-            po.push('</div>');
-            po.push('</div>');
-            po.push('</div>');
-            return po.join('');
-        };
-
         this.open = function (opts, callBack) {
             var pos = {},
                 that,
@@ -237,7 +224,7 @@
             box = {
                 width: opts.width
             };
-            jQuery(document.body).append(this.getContent(opts.id, opts));
+            jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
             this.activeDialog = jQuery('#' + opts.id);
             this.activeDialog.css({ width: box.width });
