@@ -6,7 +6,7 @@
     /**
      * @class ax5.ui.menu
      * @classdesc
-     * @version 0.4.5
+     * @version 0.4.6
      * @author tom@axisj.com
      * @example
      * ```
@@ -44,55 +44,42 @@
 
         var appEventAttach = function appEventAttach(active) {
             if (active) {
-                jQuery(document).unbind("click.ax5menu-" + self.menuId).bind("click.ax5menu-" + self.menuId, self.__clickItem.bind(this));
-                jQuery(window).unbind("keydown.ax5menu-" + self.menuId).bind("keydown.ax5menu-" + self.menuId, function (e) {
+                jQuery(document).unbind("click.ax5menu-" + this.menuId).bind("click.ax5menu-" + this.menuId, clickItem.bind(this));
+                jQuery(window).unbind("keydown.ax5menu-" + this.menuId).bind("keydown.ax5menu-" + this.menuId, function (e) {
                     if (e.which == ax5.info.eventKeys.ESC) {
                         self.close();
                     }
                 });
-                jQuery(window).unbind("resize.ax5menu-" + self.menuId).bind("resize.ax5menu-" + self.menuId, function (e) {
+                jQuery(window).unbind("resize.ax5menu-" + this.menuId).bind("resize.ax5menu-" + this.menuId, function (e) {
                     self.close();
                 });
             } else {
-                jQuery(document).unbind("click.ax5menu-" + self.menuId);
-                jQuery(window).unbind("keydown.ax5menu-" + self.menuId);
-                jQuery(window).unbind("resize.ax5menu-" + self.menuId);
+                jQuery(document).unbind("click.ax5menu-" + this.menuId);
+                jQuery(window).unbind("keydown.ax5menu-" + this.menuId);
+                jQuery(window).unbind("resize.ax5menu-" + this.menuId);
             }
-        };
-
-        this.init = function () {
-            var that;
-            // after set_config();
-            self.menuId = ax5.getGuid();
-
-            /**
-             * config에 선언된 이벤트 함수들을 this로 이동시켜 주어 나중에 인스턴스.on... 으로 처리 가능 하도록 변경
-             */
-            this.onStateChanged = cfg.onStateChanged;
-            this.onClick = cfg.onClick;
-            this.onLoad = cfg.onLoad;
-
-            if (this.onStateChanged) {
-                that = {
-                    self: this,
-                    state: "init"
-                };
+        },
+            onStateChanged = function onStateChanged(opts, that) {
+            if (opts && opts.onStateChanged) {
+                opts.onStateChanged.call(that, that);
+            } else if (this.onStateChanged) {
                 this.onStateChanged.call(that, that);
             }
-        };
-
-        /** private **/
-        this.__getTmpl = function () {
-            return "\n            <div class=\"ax5-ui-menu {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                        {{^@isMenu}}\n                            {{#divide}}\n                            <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                            {{/divide}}\n                            {{#html}}\n                            <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                            {{/html}}\n                        {{/@isMenu}}\n                        {{#@isMenu}}\n                        <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\" data-menu-item-path=\"{{@path}}.{{@i}}\">\n                            <span class=\"ax-menu-item-cell ax-menu-item-checkbox\">\n                                {{#check}}\n                                <span class=\"item-checkbox-wrap useCheckBox\" {{#checked}}data-item-checked=\"true\"{{/checked}}></span>\n                                {{/check}}\n                                {{^check}}\n                                <span class=\"item-checkbox-wrap\"></span>\n                                {{/check}}\n                            </span>\n                            {{#icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                            {{/icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                            {{#accelerator}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-accelerator\" style=\"width:{{cfg.acceleratorWidth}}px;\"><span class=\"item-wrap\">{{.}}</span></span>\n                            {{/accelerator}}\n                            {{#@hasChild}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                            {{/@hasChild}}\n                        </div>\n                        {{/@isMenu}}\n\n                    {{/items}}\n                </div>\n                <div class=\"ax-menu-arrow\"></div>\n            </div>\n            ";
-        };
-
-        /** private **/
-        this.__getTmpl_menuBar = function () {
-            return "\n            <div class=\"ax5-ui-menubar {{theme}}\">\n                <div class=\"ax-menu-body\">\n                    {{#items}}\n                        {{^@isMenu}}\n                            {{#divide}}\n                            <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                            {{/divide}}\n                            {{#html}}\n                            <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                            {{/html}}\n                        {{/@isMenu}}\n                        {{#@isMenu}}\n                        <div class=\"ax-menu-item\" data-menu-item-index=\"{{@i}}\">\n                            {{#icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                            {{/icon}}\n                            <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                        </div>\n                        {{/@isMenu}}\n                    {{/items}}\n                </div>\n            </div>\n            ";
-        };
-
-        /** private **/
-        this.__popup = function (opt, items, depth, path) {
+            return true;
+        },
+            onLoad = function onLoad(that) {
+            if (this.onLoad) {
+                this.onLoad.call(that, that);
+            }
+            return true;
+        },
+            getTmpl = function getTmpl() {
+            return "\n                <div class=\"ax5-ui-menu {{theme}}\">\n                    <div class=\"ax-menu-body\">\n                        {{#items}}\n                            {{^@isMenu}}\n                                {{#divide}}\n                                <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                                {{/divide}}\n                                {{#html}}\n                                <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                                {{/html}}\n                            {{/@isMenu}}\n                            {{#@isMenu}}\n                            <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\" data-menu-item-path=\"{{@path}}.{{@i}}\">\n                                <span class=\"ax-menu-item-cell ax-menu-item-checkbox\">\n                                    {{#check}}\n                                    <span class=\"item-checkbox-wrap useCheckBox\" {{#checked}}data-item-checked=\"true\"{{/checked}}></span>\n                                    {{/check}}\n                                    {{^check}}\n                                    <span class=\"item-checkbox-wrap\"></span>\n                                    {{/check}}\n                                </span>\n                                {{#icon}}\n                                <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                                {{/icon}}\n                                <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                                {{#accelerator}}\n                                <span class=\"ax-menu-item-cell ax-menu-item-accelerator\" style=\"width:{{cfg.acceleratorWidth}}px;\"><span class=\"item-wrap\">{{.}}</span></span>\n                                {{/accelerator}}\n                                {{#@hasChild}}\n                                <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                                {{/@hasChild}}\n                            </div>\n                            {{/@isMenu}}\n    \n                        {{/items}}\n                    </div>\n                    <div class=\"ax-menu-arrow\"></div>\n                </div>\n                ";
+        },
+            getTmpl_menuBar = function getTmpl_menuBar() {
+            return "\n                <div class=\"ax5-ui-menubar {{theme}}\">\n                    <div class=\"ax-menu-body\">\n                        {{#items}}\n                            {{^@isMenu}}\n                                {{#divide}}\n                                <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                                {{/divide}}\n                                {{#html}}\n                                <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                                {{/html}}\n                            {{/@isMenu}}\n                            {{#@isMenu}}\n                            <div class=\"ax-menu-item\" data-menu-item-index=\"{{@i}}\">\n                                {{#icon}}\n                                <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                                {{/icon}}\n                                <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{label}}}</span>\n                            </div>\n                            {{/@isMenu}}\n                        {{/items}}\n                    </div>\n                </div>\n                ";
+        },
+            popup = function popup(opt, items, depth, path) {
             var data = opt,
                 activeMenu,
                 that;
@@ -125,7 +112,7 @@
             data['@hasChild'] = function () {
                 return this.items && this.items.length > 0;
             };
-            activeMenu = jQuery(ax5.mustache.render(this.__getTmpl(), data));
+            activeMenu = jQuery(ax5.mustache.render(getTmpl(), data));
             jQuery(document.body).append(activeMenu);
 
             // remove queue
@@ -167,7 +154,7 @@
                         };
 
                         childOpt = jQuery.extend(true, opt, childOpt);
-                        self.__popup(childOpt, items[index].items, depth + 1, path);
+                        popup.call(self, childOpt, items[index].items, depth + 1, path);
                     } else {
                         self.queue.splice(Number(depth) + 1).forEach(function (n) {
                             n.$target.remove();
@@ -179,40 +166,31 @@
             // is Root
             if (depth == 0) {
                 if (data.direction) activeMenu.addClass("direction-" + data.direction);
-                if (this.onStateChanged) {
-                    that = {
-                        self: this,
-                        items: items,
-                        parent: function (path) {
-                            if (!path) return false;
-                            var item = null;
-                            try {
-                                item = Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].items[') + "];").call(self);
-                            } catch (e) {}
-                            return item;
-                        }(data['@path']),
-                        state: "popup"
-                    };
-
-                    this.onStateChanged.call(that, that);
-                }
-            }
-
-            this.__align(activeMenu, data);
-
-            if (this.onLoad) {
-                that = {
+                onStateChanged.call(this, null, {
                     self: this,
                     items: items,
-                    element: activeMenu.get(0)
-                };
-                this.onLoad.call(that, that);
+                    parent: function (path) {
+                        if (!path) return false;
+                        var item = null;
+                        try {
+                            item = Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].items[') + "];").call(self);
+                        } catch (e) {}
+                        return item;
+                    }(data['@path']),
+                    state: "popup"
+                });
             }
-            return this;
-        };
 
-        /** click **/
-        this.__clickItem = function (e) {
+            align.call(this, activeMenu, data);
+            onLoad.call(this, {
+                self: this,
+                items: items,
+                element: activeMenu.get(0)
+            });
+
+            return this;
+        },
+            clickItem = function clickItem(e) {
             var target = U.findParentNode(e.target, function (target) {
                 if (target.getAttribute("data-menu-item-index")) {
                     return true;
@@ -271,10 +249,8 @@
                 self.close();
             }
             return this;
-        };
-
-        /** private **/
-        this.__align = function (activeMenu, data) {
+        },
+            align = function align(activeMenu, data) {
             //console.log(data['@parent']);
             var $window = $(window),
                 $document = $(document),
@@ -301,6 +277,24 @@
             activeMenu.css({ left: l, top: t, position: position });
 
             return this;
+        };
+
+        /// private end
+
+        this.init = function () {
+            self.menuId = ax5.getGuid();
+
+            /**
+             * config에 선언된 이벤트 함수들을 this로 이동시켜 주어 나중에 인스턴스.on... 으로 처리 가능 하도록 변경
+             */
+            this.onStateChanged = cfg.onStateChanged;
+            this.onClick = cfg.onClick;
+            this.onLoad = cfg.onLoad;
+
+            onStateChanged.call(this, null, {
+                self: this,
+                state: "init"
+            });
         };
 
         /**
@@ -353,8 +347,8 @@
 
                 if (!e) return this;
                 opt = getOption[typeof e.clientX == "undefined" ? "object" : "event"].call(this, e, opt);
-                this.__popup(opt, cfg.items, 0); // 0 is seq of queue
-                appEventAttach(true); // 이벤트 연결
+                popup.call(this, opt, cfg.items, 0); // 0 is seq of queue
+                appEventAttach.call(this, true); // 이벤트 연결
 
                 return this;
             };
@@ -405,8 +399,8 @@
                 opt = getOption["object"].call(this, { left: offset.left, top: offset.top + height - scrollTop }, opt);
 
                 if (cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
-                    self.__popup(opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
-                    appEventAttach(true); // 이벤트 연결
+                    popup.call(self, opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
+                    appEventAttach.call(self, true); // 이벤트 연결
                 }
             };
 
@@ -440,7 +434,7 @@
 
                 data.items = items;
 
-                var activeMenu = jQuery(ax5.mustache.render(this.__getTmpl_menuBar(), data));
+                var activeMenu = jQuery(ax5.mustache.render(getTmpl_menuBar(), data));
                 self.menuBar = {
                     target: jQuery(el),
                     opened: false
@@ -483,20 +477,17 @@
                 self.menuBar.openedIndex = null;
             }
 
-            appEventAttach(false); // 이벤트 제거
+            appEventAttach.call(this, false); // 이벤트 제거
 
             this.queue.forEach(function (n) {
                 n.$target.remove();
             });
             this.queue = [];
 
-            if (this.onStateChanged) {
-                that = {
-                    self: this,
-                    state: "close"
-                };
-                this.onStateChanged.call(that, that);
-            }
+            onStateChanged.call(this, null, {
+                self: this,
+                state: "close"
+            });
 
             return this;
         };

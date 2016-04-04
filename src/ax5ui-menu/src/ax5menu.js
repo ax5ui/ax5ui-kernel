@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.menu
      * @classdesc
-     * @version 0.4.5
+     * @version 0.4.6
      * @author tom@axisj.com
      * @example
      * ```
@@ -41,213 +41,201 @@
 
         cfg = this.config;
 
-        var appEventAttach = function (active) {
-            if (active) {
-                jQuery(document).unbind("click.ax5menu-" + self.menuId).bind("click.ax5menu-" + self.menuId, self.__clickItem.bind(this));
-                jQuery(window).unbind("keydown.ax5menu-" + self.menuId).bind("keydown.ax5menu-" + self.menuId, function (e) {
-                    if (e.which == ax5.info.eventKeys.ESC) {
+        var
+            appEventAttach = function (active) {
+                if (active) {
+                    jQuery(document).unbind("click.ax5menu-" + this.menuId).bind("click.ax5menu-" + this.menuId, clickItem.bind(this));
+                    jQuery(window).unbind("keydown.ax5menu-" + this.menuId).bind("keydown.ax5menu-" + this.menuId, function (e) {
+                        if (e.which == ax5.info.eventKeys.ESC) {
+                            self.close();
+                        }
+                    });
+                    jQuery(window).unbind("resize.ax5menu-" + this.menuId).bind("resize.ax5menu-" + this.menuId, function (e) {
                         self.close();
-                    }
-                });
-                jQuery(window).unbind("resize.ax5menu-" + self.menuId).bind("resize.ax5menu-" + self.menuId, function (e) {
-                    self.close();
-                });
-            }
-            else {
-                jQuery(document).unbind("click.ax5menu-" + self.menuId);
-                jQuery(window).unbind("keydown.ax5menu-" + self.menuId);
-                jQuery(window).unbind("resize.ax5menu-" + self.menuId);
-            }
-        };
-
-        this.init = function () {
-            var that;
-            // after set_config();
-            self.menuId = ax5.getGuid();
-
-            /**
-             * config에 선언된 이벤트 함수들을 this로 이동시켜 주어 나중에 인스턴스.on... 으로 처리 가능 하도록 변경
-             */
-            this.onStateChanged = cfg.onStateChanged;
-            this.onClick = cfg.onClick;
-            this.onLoad = cfg.onLoad;
-
-            if (this.onStateChanged) {
-                that = {
-                    self: this,
-                    state: "init"
-                };
-                this.onStateChanged.call(that, that);
-            }
-        };
-
-        /** private **/
-        this.__getTmpl = function () {
-            return `
-            <div class="ax5-ui-menu {{theme}}">
-                <div class="ax-menu-body">
-                    {{#items}}
-                        {{^@isMenu}}
-                            {{#divide}}
-                            <div class="ax-menu-item-divide" data-menu-item-index="{{@i}}"></div>
-                            {{/divide}}
-                            {{#html}}
-                            <div class="ax-menu-item-html" data-menu-item-index="{{@i}}">{{{@html}}}</div>
-                            {{/html}}
-                        {{/@isMenu}}
-                        {{#@isMenu}}
-                        <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}" data-menu-item-path="{{@path}}.{{@i}}">
-                            <span class="ax-menu-item-cell ax-menu-item-checkbox">
-                                {{#check}}
-                                <span class="item-checkbox-wrap useCheckBox" {{#checked}}data-item-checked="true"{{/checked}}></span>
-                                {{/check}}
-                                {{^check}}
-                                <span class="item-checkbox-wrap"></span>
-                                {{/check}}
-                            </span>
-                            {{#icon}}
-                            <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>
-                            {{/icon}}
-                            <span class="ax-menu-item-cell ax-menu-item-label">{{{label}}}</span>
-                            {{#accelerator}}
-                            <span class="ax-menu-item-cell ax-menu-item-accelerator" style="width:{{cfg.acceleratorWidth}}px;"><span class="item-wrap">{{.}}</span></span>
-                            {{/accelerator}}
-                            {{#@hasChild}}
-                            <span class="ax-menu-item-cell ax-menu-item-handle">{{{cfg.icons.arrow}}}</span>
-                            {{/@hasChild}}
-                        </div>
-                        {{/@isMenu}}
-
-                    {{/items}}
-                </div>
-                <div class="ax-menu-arrow"></div>
-            </div>
-            `;
-        };
-
-        /** private **/
-        this.__getTmpl_menuBar = function () {
-            return `
-            <div class="ax5-ui-menubar {{theme}}">
-                <div class="ax-menu-body">
-                    {{#items}}
-                        {{^@isMenu}}
-                            {{#divide}}
-                            <div class="ax-menu-item-divide" data-menu-item-index="{{@i}}"></div>
-                            {{/divide}}
-                            {{#html}}
-                            <div class="ax-menu-item-html" data-menu-item-index="{{@i}}">{{{@html}}}</div>
-                            {{/html}}
-                        {{/@isMenu}}
-                        {{#@isMenu}}
-                        <div class="ax-menu-item" data-menu-item-index="{{@i}}">
-                            {{#icon}}
-                            <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>
-                            {{/icon}}
-                            <span class="ax-menu-item-cell ax-menu-item-label">{{{label}}}</span>
-                        </div>
-                        {{/@isMenu}}
-                    {{/items}}
-                </div>
-            </div>
-            `;
-        };
-
-        /** private **/
-        this.__popup = function (opt, items, depth, path) {
-            var data = opt,
-                activeMenu,
-                that
-                ;
-
-            data.theme = opt.theme || cfg.theme;
-            data.cfg = {
-                icons: jQuery.extend({}, cfg.icons),
-                iconWidth: opt.iconWidth || cfg.iconWidth,
-                acceleratorWidth: opt.acceleratorWidth || cfg.acceleratorWidth
-            };
-
-            items.forEach(function (n) {
-                if (n.html || n.divide) {
-                    n['@isMenu'] = false;
-                    if (n.html) {
-                        n['@html'] = n.html.call({
-                            item: n,
-                            config: cfg,
-                            opt: opt
-                        });
-                    }
+                    });
                 }
                 else {
-                    n['@isMenu'] = true;
+                    jQuery(document).unbind("click.ax5menu-" + this.menuId);
+                    jQuery(window).unbind("keydown.ax5menu-" + this.menuId);
+                    jQuery(window).unbind("resize.ax5menu-" + this.menuId);
                 }
-            });
-
-            data.items = items;
-            data['@depth'] = depth;
-            data['@path'] = path || "root";
-            data['@hasChild'] = function () {
-                return this.items && this.items.length > 0;
-            };
-            activeMenu = jQuery(ax5.mustache.render(this.__getTmpl(), data));
-            jQuery(document.body).append(activeMenu);
-
-            // remove queue
-
-            var removed = this.queue.splice(depth);
-            removed.forEach(function (n) {
-                n.$target.remove();
-            });
-
-            this.queue.push({
-                '$target': activeMenu,
-                'data': jQuery.extend({}, data)
-            });
-
-            activeMenu.find('[data-menu-item-index]').bind("mouseover", function () {
-                var
-                    depth = this.getAttribute("data-menu-item-depth"),
-                    index = this.getAttribute("data-menu-item-index"),
-                    path = this.getAttribute("data-menu-item-path")
+            },
+            onStateChanged = function (opts, that) {
+                if (opts && opts.onStateChanged) {
+                    opts.onStateChanged.call(that, that);
+                }
+                else if (this.onStateChanged) {
+                    this.onStateChanged.call(that, that);
+                }
+                return true;
+            },
+            onLoad = function(that){
+                if (this.onLoad) {
+                    this.onLoad.call(that, that);
+                }
+                return true;
+            },
+            getTmpl = function () {
+                return `
+                <div class="ax5-ui-menu {{theme}}">
+                    <div class="ax-menu-body">
+                        {{#items}}
+                            {{^@isMenu}}
+                                {{#divide}}
+                                <div class="ax-menu-item-divide" data-menu-item-index="{{@i}}"></div>
+                                {{/divide}}
+                                {{#html}}
+                                <div class="ax-menu-item-html" data-menu-item-index="{{@i}}">{{{@html}}}</div>
+                                {{/html}}
+                            {{/@isMenu}}
+                            {{#@isMenu}}
+                            <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}" data-menu-item-path="{{@path}}.{{@i}}">
+                                <span class="ax-menu-item-cell ax-menu-item-checkbox">
+                                    {{#check}}
+                                    <span class="item-checkbox-wrap useCheckBox" {{#checked}}data-item-checked="true"{{/checked}}></span>
+                                    {{/check}}
+                                    {{^check}}
+                                    <span class="item-checkbox-wrap"></span>
+                                    {{/check}}
+                                </span>
+                                {{#icon}}
+                                <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>
+                                {{/icon}}
+                                <span class="ax-menu-item-cell ax-menu-item-label">{{{label}}}</span>
+                                {{#accelerator}}
+                                <span class="ax-menu-item-cell ax-menu-item-accelerator" style="width:{{cfg.acceleratorWidth}}px;"><span class="item-wrap">{{.}}</span></span>
+                                {{/accelerator}}
+                                {{#@hasChild}}
+                                <span class="ax-menu-item-cell ax-menu-item-handle">{{{cfg.icons.arrow}}}</span>
+                                {{/@hasChild}}
+                            </div>
+                            {{/@isMenu}}
+    
+                        {{/items}}
+                    </div>
+                    <div class="ax-menu-arrow"></div>
+                </div>
+                `;
+            },
+            getTmpl_menuBar = function () {
+                return `
+                <div class="ax5-ui-menubar {{theme}}">
+                    <div class="ax-menu-body">
+                        {{#items}}
+                            {{^@isMenu}}
+                                {{#divide}}
+                                <div class="ax-menu-item-divide" data-menu-item-index="{{@i}}"></div>
+                                {{/divide}}
+                                {{#html}}
+                                <div class="ax-menu-item-html" data-menu-item-index="{{@i}}">{{{@html}}}</div>
+                                {{/html}}
+                            {{/@isMenu}}
+                            {{#@isMenu}}
+                            <div class="ax-menu-item" data-menu-item-index="{{@i}}">
+                                {{#icon}}
+                                <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>
+                                {{/icon}}
+                                <span class="ax-menu-item-cell ax-menu-item-label">{{{label}}}</span>
+                            </div>
+                            {{/@isMenu}}
+                        {{/items}}
+                    </div>
+                </div>
+                `;
+            },
+            popup = function (opt, items, depth, path) {
+                var data = opt,
+                    activeMenu,
+                    that
                     ;
 
-                activeMenu.find('[data-menu-item-index]').removeClass("hover");
-                jQuery(this).addClass("hover");
-                if (activeMenu.attr("data-selected-menu-item-index") != index) {
-                    activeMenu.attr("data-selected-menu-item-index", index);
+                data.theme = opt.theme || cfg.theme;
+                data.cfg = {
+                    icons: jQuery.extend({}, cfg.icons),
+                    iconWidth: opt.iconWidth || cfg.iconWidth,
+                    acceleratorWidth: opt.acceleratorWidth || cfg.acceleratorWidth
+                };
 
-                    if (items[index].items && items[index].items.length > 0) {
-
-                        var $this = $(this),
-                            offset = $this.offset(),
-                            scrollTop = (cfg.position == "fixed" ? $(document).scrollTop() : 0),
-                            childOpt = {
-                                '@parent': {
-                                    left: offset.left,
-                                    top: offset.top,
-                                    width: $this.outerWidth(),
-                                    height: $this.outerHeight()
-                                },
-                                left: offset.left + $this.outerWidth() - cfg.menuBodyPadding,
-                                top: offset.top - cfg.menuBodyPadding - 1 - scrollTop
-                            };
-
-                        childOpt = jQuery.extend(true, opt, childOpt);
-                        self.__popup(childOpt, items[index].items, (depth + 1), path);
+                items.forEach(function (n) {
+                    if (n.html || n.divide) {
+                        n['@isMenu'] = false;
+                        if (n.html) {
+                            n['@html'] = n.html.call({
+                                item: n,
+                                config: cfg,
+                                opt: opt
+                            });
+                        }
                     }
                     else {
-                        self.queue.splice(Number(depth) + 1).forEach(function (n) {
-                            n.$target.remove();
-                        });
+                        n['@isMenu'] = true;
                     }
-                }
-            });
+                });
 
-            // is Root
-            if (depth == 0) {
-                if (data.direction) activeMenu.addClass("direction-" + data.direction);
-                if (this.onStateChanged) {
-                    that = {
+                data.items = items;
+                data['@depth'] = depth;
+                data['@path'] = path || "root";
+                data['@hasChild'] = function () {
+                    return this.items && this.items.length > 0;
+                };
+                activeMenu = jQuery(ax5.mustache.render(getTmpl(), data));
+                jQuery(document.body).append(activeMenu);
+
+                // remove queue
+
+                var removed = this.queue.splice(depth);
+                removed.forEach(function (n) {
+                    n.$target.remove();
+                });
+
+                this.queue.push({
+                    '$target': activeMenu,
+                    'data': jQuery.extend({}, data)
+                });
+
+                activeMenu.find('[data-menu-item-index]').bind("mouseover", function () {
+                    var
+                        depth = this.getAttribute("data-menu-item-depth"),
+                        index = this.getAttribute("data-menu-item-index"),
+                        path = this.getAttribute("data-menu-item-path")
+                        ;
+
+                    activeMenu.find('[data-menu-item-index]').removeClass("hover");
+                    jQuery(this).addClass("hover");
+                    if (activeMenu.attr("data-selected-menu-item-index") != index) {
+                        activeMenu.attr("data-selected-menu-item-index", index);
+
+                        if (items[index].items && items[index].items.length > 0) {
+
+                            var $this = $(this),
+                                offset = $this.offset(),
+                                scrollTop = (cfg.position == "fixed" ? $(document).scrollTop() : 0),
+                                childOpt = {
+                                    '@parent': {
+                                        left: offset.left,
+                                        top: offset.top,
+                                        width: $this.outerWidth(),
+                                        height: $this.outerHeight()
+                                    },
+                                    left: offset.left + $this.outerWidth() - cfg.menuBodyPadding,
+                                    top: offset.top - cfg.menuBodyPadding - 1 - scrollTop
+                                };
+
+                            childOpt = jQuery.extend(true, opt, childOpt);
+                            popup.call(self, childOpt, items[index].items, (depth + 1), path);
+                        }
+                        else {
+                            self.queue.splice(Number(depth) + 1).forEach(function (n) {
+                                n.$target.remove();
+                            });
+                        }
+                    }
+                });
+
+                // is Root
+                if (depth == 0) {
+                    if (data.direction) activeMenu.addClass("direction-" + data.direction);
+                    onStateChanged.call(this, null, {
                         self: this,
                         items: items,
                         parent: (function (path) {
@@ -261,90 +249,80 @@
                             return item;
                         })(data['@path']),
                         state: "popup"
-                    };
-
-                    this.onStateChanged.call(that, that);
+                    });
                 }
-            }
 
-            this.__align(activeMenu, data);
-
-            if (this.onLoad) {
-                that = {
+                align.call(this, activeMenu, data);
+                onLoad.call(this, {
                     self: this,
                     items: items,
                     element: activeMenu.get(0)
-                };
-                this.onLoad.call(that, that);
-            }
-            return this;
-        };
+                });
 
-        /** click **/
-        this.__clickItem = function (e) {
-            var target = U.findParentNode(e.target, function (target) {
-                if (target.getAttribute("data-menu-item-index")) {
-                    return true;
-                }
-            });
-            if (target) {
-                var item = (function (path) {
-                    if (!path) return false;
-                    var item;
-                    try {
-                        item = (Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].items[') + "];")).call(self);
-                    } catch (e) {
-                        console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
+                return this;
+            },
+            clickItem = function (e) {
+                var target = U.findParentNode(e.target, function (target) {
+                    if (target.getAttribute("data-menu-item-index")) {
+                        return true;
                     }
-                    return item;
-                })(target.getAttribute("data-menu-item-path"));
+                });
+                if (target) {
+                    var item = (function (path) {
+                        if (!path) return false;
+                        var item;
+                        try {
+                            item = (Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].items[') + "];")).call(self);
+                        } catch (e) {
+                            console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
+                        }
+                        return item;
+                    })(target.getAttribute("data-menu-item-path"));
 
-                if (!item) return this;
+                    if (!item) return this;
 
-                if (item.check) {
-                    (function (items) {
-                        var setValue = {
-                            'checkbox': function (value) {
-                                this.checked = !value;
-                            },
-                            'radio': function (value) {
-                                var name = this.name;
-                                items.forEach(function (n) {
-                                    if (n.check && n.check.type === 'radio' && n.check.name == name) {
-                                        n.check.checked = false;
+                    if (item.check) {
+                        (function (items) {
+                            var setValue = {
+                                'checkbox': function (value) {
+                                    this.checked = !value;
+                                },
+                                'radio': function (value) {
+                                    var name = this.name;
+                                    items.forEach(function (n) {
+                                        if (n.check && n.check.type === 'radio' && n.check.name == name) {
+                                            n.check.checked = false;
+                                        }
+                                    });
+                                    this.checked = !value;
+                                }
+                            };
+                            if (setValue[this.type]) setValue[this.type].call(this, this.checked);
+                        }).call(item.check, cfg.items);
+
+                        if (!cfg.itemClickAndClose) {
+                            self.queue.forEach(function (n) {
+                                n.$target.find('[data-menu-item-index]').each(function () {
+                                    var item = n.data.items[this.getAttribute("data-menu-item-index")];
+                                    if (item.check) {
+                                        jQuery(this).find(".item-checkbox-wrap").attr("data-item-checked", item.check.checked);
                                     }
                                 });
-                                this.checked = !value;
-                            }
-                        };
-                        if (setValue[this.type]) setValue[this.type].call(this, this.checked);
-                    }).call(item.check, cfg.items);
-
-                    if (!cfg.itemClickAndClose) {
-                        self.queue.forEach(function (n) {
-                            n.$target.find('[data-menu-item-index]').each(function () {
-                                var item = n.data.items[this.getAttribute("data-menu-item-index")];
-                                if (item.check) {
-                                    jQuery(this).find(".item-checkbox-wrap").attr("data-item-checked", item.check.checked);
-                                }
                             });
-                        });
+                        }
                     }
-                }
 
-                if (self.onClick) {
-                    self.onClick.call(item, item);
+                    if (self.onClick) {
+                        self.onClick.call(item, item);
+                    }
+                    if ((!item.items || item.items.length == 0) && cfg.itemClickAndClose) self.close();
                 }
-                if ((!item.items || item.items.length == 0) && cfg.itemClickAndClose) self.close();
-            }
-            else {
-                self.close();
-            }
-            return this;
-        };
-
-        /** private **/
-        this.__align = function (activeMenu, data) {
+                else {
+                    self.close();
+                }
+                return this;
+            },
+            align = function (activeMenu, data) {
             //console.log(data['@parent']);
             var $window = $(window), $document = $(document),
                 wh = (cfg.position == "fixed") ? $window.height() : $document.height(), ww = $window.width(),
@@ -368,6 +346,24 @@
             activeMenu.css({left: l, top: t, position: position});
 
             return this;
+        };
+
+        /// private end
+
+        this.init = function () {
+            self.menuId = ax5.getGuid();
+
+            /**
+             * config에 선언된 이벤트 함수들을 this로 이동시켜 주어 나중에 인스턴스.on... 으로 처리 가능 하도록 변경
+             */
+            this.onStateChanged = cfg.onStateChanged;
+            this.onClick = cfg.onClick;
+            this.onLoad = cfg.onLoad;
+
+            onStateChanged.call(this, null, {
+                self: this,
+                state: "init"
+            });
         };
 
         /**
@@ -420,8 +416,8 @@
 
                 if (!e) return this;
                 opt = getOption[((typeof e.clientX == "undefined") ? "object" : "event")].call(this, e, opt);
-                this.__popup(opt, cfg.items, 0); // 0 is seq of queue
-                appEventAttach(true); // 이벤트 연결
+                popup.call(this, opt, cfg.items, 0); // 0 is seq of queue
+                appEventAttach.call(this, true); // 이벤트 연결
 
                 return this;
             }
@@ -473,8 +469,8 @@
                 opt = getOption["object"].call(this, {left: offset.left, top: offset.top + height - scrollTop}, opt);
 
                 if (cfg.items && cfg.items[index].items && cfg.items[index].items.length) {
-                    self.__popup(opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
-                    appEventAttach(true); // 이벤트 연결
+                    popup.call(self, opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
+                    appEventAttach.call(self, true); // 이벤트 연결
                 }
             };
 
@@ -509,7 +505,7 @@
 
                 data.items = items;
 
-                var activeMenu = jQuery(ax5.mustache.render(this.__getTmpl_menuBar(), data));
+                var activeMenu = jQuery(ax5.mustache.render(getTmpl_menuBar(), data));
                 self.menuBar = {
                     target: jQuery(el),
                     opened: false
@@ -552,20 +548,17 @@
                 self.menuBar.openedIndex = null;
             }
 
-            appEventAttach(false); // 이벤트 제거
+            appEventAttach.call(this, false); // 이벤트 제거
 
             this.queue.forEach(function (n) {
                 n.$target.remove();
             });
             this.queue = [];
 
-            if (this.onStateChanged) {
-                that = {
-                    self: this,
-                    state: "close"
-                };
-                this.onStateChanged.call(that, that);
-            }
+            onStateChanged.call(this, null, {
+                self: this,
+                state: "close"
+            });
 
             return this;
         };

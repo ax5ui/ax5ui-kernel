@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-menu",
-	"version": "0.4.5",
+	"version": "0.4.6",
 	"description": "A menu plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
