@@ -3,11 +3,8 @@
     /**
      * @class ax5.ui.mask
      * @classdesc
-     * @version v0.0.1
+     * @version 0.6.4
      * @author tom@axisj.com
-     * @logs
-     * 2014-04-01 tom : 시작
-     * 2015-12-27 tom : refactoring
      * @example
      * ```
      * var my_mask = new ax5.ui.mask();
@@ -17,7 +14,8 @@
 
     var axClass = function () {
         var
-            self = this
+            self = this,
+            cfg
             ;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -27,7 +25,34 @@
             theme: '',
             target: jQuery(document.body).get(0)
         };
-        var cfg = this.config;
+
+        cfg = this.config;
+
+        var
+            onStateChanged = function (opts, that) {
+                if (opts && opts.onStateChanged) {
+                    opts.onStateChanged.call(that, that);
+                }
+                else if (this.onStateChanged) {
+                    this.onStateChanged.call(that, that);
+                }
+                return true;
+            },
+            getBodyTmpl = function(){
+                return `
+                <div class="ax-mask {{theme}}" id="{{maskId}}">
+                    <div class="ax-mask-bg"></div>
+                    <div class="ax-mask-content">
+                        <div class="ax-mask-body">
+                        {{{body}}}
+                        </div>
+                    </div>
+                </div>
+                `;
+            },
+            setBody = function (content) {
+                this.maskContent = content;
+            };
 
         /**
          * Preferences of Mask UI
@@ -45,15 +70,9 @@
          */
         this.init = function () {
             // after setConfig();
-            if (this.config.content) this.setBody(this.config.content);
-        };
-
-        this.setBody = function (content) {
-            this.maskContent = content;
-        };
-
-        this.getBody = function () {
-            return this.maskContent;
+            this.onStateChanged = cfg.onStateChanged;
+            this.onClick = cfg.onClick;
+            if (this.config.content) setBody.call(this, this.config.content);
         };
 
         /**
@@ -80,33 +99,29 @@
 		 * });
          * ```
          */
-        this.open = function (config) {
+        this.open = function (options) {
 
             if (this.status === "on") this.close();
-            if (config && config.content) this.setBody(config.content);
+            if (options && options.content) setBody.call(this, options.content);
             self.maskConfig = {};
-            jQuery.extend(true, self.maskConfig, this.config);
-            jQuery.extend(true, self.maskConfig, config);
+            jQuery.extend(true, self.maskConfig, this.config, options);
 
-            var config = self.maskConfig,
-                target = config.target, $target = jQuery(target),
+            var _cfg = self.maskConfig,
+                target = _cfg.target, $target = jQuery(target),
                 po = [], css, maskId = 'ax-mask-' + ax5.getGuid(), $mask, css = {},
                 that = {};
 
-            po.push('<div class="ax-mask ' + config.theme + '" id="' + maskId + '">');
-            po.push('<div class="ax-mask-bg"></div>');
-            po.push('<div class="ax-mask-content">');
-            po.push('<div class="ax-mask-body">');
-            po.push(self.getBody());
-            po.push('</div>');
-            po.push('</div>');
-            po.push('</div>');
-
-            jQuery(document.body).append(po.join(''));
+            jQuery(document.body).append(
+                ax5.mustache.render(getBodyTmpl(), {
+                    theme: _cfg.theme,
+                    maskId: maskId,
+                    body: this.maskContent
+                })
+            );
 
             if (target && target !== jQuery(document.body).get(0)) {
                 css = {
-                    position: config.position || "absolute",
+                    position: _cfg.position || "absolute",
                     left: $target.offset().left,
                     top: $target.offset().top,
                     width: $target.outerWidth(),
@@ -123,22 +138,21 @@
             this.status = "on";
             $mask.css(css);
 
-            if (config.onClick) {
-                $mask.click(function(){
+            if (this.onClick) {
+                $mask.click(function () {
                     that = {
+                        self: this,
                         state: "open",
                         type: "click"
                     };
-                    config.onClick.call(that, that);
+                    this.onClick.call(that, that);
                 });
             }
-            if (config.onStateChanged) {
-                that = {
-                    self: this,
-                    state: "open"
-                };
-                config.onStateChanged.call(that, that);
-            }
+
+            onStateChanged.call(this, null, {
+                self: this,
+                state: "open"
+            });
             return this;
         };
 
@@ -152,16 +166,13 @@
          * ```
          */
         this.close = function () {
-            var config = this.maskConfig, that;
             this.$mask.remove();
             this.$target.removeClass("ax-masking");
-            if (config && config.onStateChanged) {
-                that = {
-                    self: this,
-                    state: "close"
-                };
-                config.onStateChanged.call(that, that);
-            }
+
+            onStateChanged.call(this, null, {
+                self: this,
+                state: "close"
+            });
             return this;
         };
         //== class body end

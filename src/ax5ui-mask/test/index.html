@@ -17,7 +17,7 @@
 <button type="button" id="mask-open">mask-open</button>
 <script>
     $(document.body).ready(function(){
-        var mask = new ax5.ui.mask();
+        window.mask = new ax5.ui.mask();
         $("#mask-open").click(function(){
             mask.open({
                 position: "fixed",
