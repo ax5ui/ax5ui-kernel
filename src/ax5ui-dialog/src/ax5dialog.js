@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.dialog
      * @classdesc
-     * @version 0.6.5
+     * @version 0.6.6
      * @author tom@axisj.com
      * @example
      * ```
@@ -44,6 +44,8 @@
                 else if (this.onStateChanged) {
                     this.onStateChanged.call(that, that);
                 }
+
+                that = null;
                 return true;
             },
             getContentTmpl = function () {
@@ -96,7 +98,13 @@
                             return this.replace(/\n/g, "<br/>");
                         }
                     };
-                return ax5.mustache.render(getContentTmpl(), data);
+
+                try {
+                    return ax5.mustache.render(getContentTmpl(), data);
+                }
+                finally {
+                    data = null;
+                }
             },
             open = function (opts, callBack) {
                 var
@@ -153,6 +161,9 @@
                     self: this,
                     state: "open"
                 });
+
+                pos = null;
+                box = null;
             },
             align = function (e) {
                 if (!this.activeDialog) return this;
@@ -172,9 +183,14 @@
                     box.top = opts.position.top || 0;
                 }
                 this.activeDialog.css(box);
+
+                opts = null;
+                box = null;
+
                 return this;
             },
             btnOnClick = function (e, opts, callBack, target, k) {
+                var that;
                 if (e.srcElement) e.target = e.srcElement;
 
                 target = U.findParentNode(e.target, function (target) {
@@ -186,7 +202,7 @@
                 if (target) {
                     k = target.getAttribute("data-dialog-btn");
 
-                    var that = {
+                    that = {
                         self: this,
                         key: k, value: opts.btns[k],
                         dialogId: opts.id,
@@ -224,20 +240,30 @@
                         this.close();
                     }
                 }
+
+                that = null;
+                opts = null;
+                callBack = null;
+                target = null;
+                k = null;
             },
             onKeyup = function (e, opts, callBack, target, k) {
+                var
+                    that,
+                    emptyKey = null;
+
                 if (e.keyCode == ax5.info.eventKeys.ESC) {
                     this.close();
                 }
                 if (opts.dialogType === "prompt") {
                     if (e.keyCode == ax5.info.eventKeys.RETURN) {
-                        var that = {
+                        that = {
                             self: this,
                             key: k, value: opts.btns[k],
                             dialogId: opts.id,
                             btnTarget: target
                         };
-                        var emptyKey = null;
+
                         for (var oi in opts.input) {
                             that[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
                             if (that[oi] == "" || that[oi] == null) {
@@ -245,11 +271,22 @@
                                 break;
                             }
                         }
-                        if (emptyKey) return false;
+                        if (emptyKey){
+                            that = null;
+                            emptyKey = null;
+                            return false;
+                        }
                         if (callBack) callBack.call(that, k);
                         this.close();
                     }
                 }
+
+                that = null;
+                emptyKey = null;
+                opts = null;
+                callBack = null;
+                target = null;
+                k = null;
             };
 
         /**
@@ -307,6 +344,9 @@
                 };
             }
             open.call(this, opts, callBack);
+
+            opts = null;
+            callBack = null;
             return this;
         };
 
@@ -350,6 +390,9 @@
                 };
             }
             open.call(this, opts, callBack);
+
+            opts = null;
+            callBack = null;
             return this;
         };
 
@@ -399,6 +442,9 @@
                 };
             }
             open.call(this, opts, callBack);
+
+            opts = null;
+            callBack = null;
             return this;
         };
 
@@ -431,6 +477,9 @@
                     else if (this.onStateChanged) {
                         this.onStateChanged.call(that, that);
                     }
+
+                    opts = null;
+                    that = null;
                 }).bind(this), cfg.animateTime);
             }
             return this;
