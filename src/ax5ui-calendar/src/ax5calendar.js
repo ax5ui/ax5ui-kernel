@@ -3,7 +3,7 @@
     /**
      * @class ax5.ui.calendar
      * @classdesc
-     * @version 0.7.6
+     * @version 0.7.7
      * @author tom@axisj.com
      * @logs
      * 2014-06-21 tom : 시작
@@ -67,7 +67,8 @@
                 else if (this.onStateChanged) {
                     this.onStateChanged.call(that, that);
                 }
-                return true;
+
+                that = null;
             },
             getFrameTmpl = function () {
                 return `
@@ -84,10 +85,12 @@
                 `;
             },
             getFrame = function () {
-                var data = jQuery.extend(true, {}, cfg, {
-                    controlCSS: {},
-                    controlButtonCSS: {}
-                });
+                var
+                    data = jQuery.extend(true, {}, cfg, {
+                        controlCSS: {},
+                        controlButtonCSS: {}
+                    }),
+                    tmpl = getFrameTmpl();
 
                 data.controlButtonCSS["height"] = data.controlCSS["height"] = U.cssNumber(cfg.dimensions.controlHeight);
                 data.controlButtonCSS["line-height"] = data.controlCSS["line-height"] = U.cssNumber(cfg.dimensions.controlHeight);
@@ -96,7 +99,14 @@
                 data.controlCSS = U.css(data.controlCSS);
                 data.controlButtonCSS = U.css(data.controlButtonCSS);
 
-                return ax5.mustache.render(getFrameTmpl(), data);
+
+                try {
+                    return ax5.mustache.render(tmpl, data);
+                }
+                finally {
+                    data = null;
+                    tmpl = null;
+                }
             },
             getDayTmpl = function () {
                 return `
@@ -197,9 +207,13 @@
                 `;
             },
             setDisplay = function () {
-                if (cfg.control) {
-                    var myDate = U.date(cfg.displayDate), yy = "", mm = "";
+                var
+                    myDate = U.date(cfg.displayDate),
+                    yy = "",
+                    mm = "",
+                    yy1, yy2;
 
+                if (cfg.control) {
                     if (cfg.mode == "day" || cfg.mode == "d") {
                         yy = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', myDate.getFullYear()) : myDate.getFullYear();
                         mm = (cfg.control.monthTmpl) ? cfg.control.monthTmpl.replace('%s', cfg.lang.months[myDate.getMonth()]) : cfg.lang.months[myDate.getMonth()];
@@ -221,8 +235,8 @@
                         this.$["control-display"].html('<span data-calendar-display="year">' + yy + '</span>');
                     }
                     else if (cfg.mode == "year" || cfg.mode == "y") {
-                        var yy1 = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', myDate.getFullYear() - 10) : myDate.getFullYear() - 10;
-                        var yy2 = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', Number(myDate.getFullYear()) + 9) : Number(myDate.getFullYear()) + 9;
+                        yy1 = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', myDate.getFullYear() - 10) : myDate.getFullYear() - 10;
+                        yy2 = (cfg.control.yearTmpl) ? cfg.control.yearTmpl.replace('%s', Number(myDate.getFullYear()) + 9) : Number(myDate.getFullYear()) + 9;
                         this.$["control-display"].html(yy1 + ' ~ ' + yy2);
                     }
 
@@ -231,14 +245,21 @@
                             if (target.getAttribute("data-calendar-display")) {
                                 return true;
                             }
-                        });
+                        }), mode;
                         if (target) {
-                            var mode = target.getAttribute("data-calendar-display");
+                            mode = target.getAttribute("data-calendar-display");
                             this.changeMode(mode);
                         }
+                        target = null;
+                        mode = null;
                     }).bind(this));
                 }
 
+                myDate = null;
+                yy = null;
+                mm = null;
+                yy1 = null;
+                yy2 = null;
                 return this;
             },
             printDay = function (nowDate) {
@@ -249,7 +270,12 @@
                     tableStartDate = (function () {
                         var day = monthStratDate.getDay();
                         if (day == 0) day = 7;
-                        return U.date(monthStratDate, {add: {d: -day}});
+                        try {
+                            return U.date(monthStratDate, {add: {d: -day}});
+                        }
+                        finally {
+                            day = null;
+                        }
                     })(),
                     loopDate,
                     thisMonth = dotDate.getMonth(),
@@ -257,7 +283,9 @@
                     i,
                     k,
                     frameWidth = this.$["body"].width(),
-                    frameHeight = Math.floor(frameWidth * (6 / 7)) // 1week = 7days, 1month = 6weeks
+                    frameHeight = Math.floor(frameWidth * (6 / 7)), // 1week = 7days, 1month = 6weeks
+                    data,
+                    tmpl = getDayTmpl()
                     ;
 
                 if (cfg.dimensions.height) {
@@ -268,7 +296,7 @@
                 itemStyles['line-height'] = itemStyles['height'];
                 itemStyles['padding'] = U.cssNumber(cfg.dimensions.itemPadding);
 
-                var data = {
+                data = {
                     weekNames: [].concat(ax5.info.weekNames),
                     list: []
                 };
@@ -315,11 +343,14 @@
 
                         k++;
                         loopDate = U.date(loopDate, {add: {d: 1}});
+
+                        thisDate = null;
+                        _date = null;
                     }
                     i++;
                 }
 
-                this.$["body"].html(ax5.mustache.render(getDayTmpl(), data));
+                this.$["body"].html(ax5.mustache.render(tmpl, data));
                 this.$["body"].find('[data-calendar-item-date]').on(cfg.clickEventName, function (e) {
                     e = e || window.event;
                     onclick.call(self, e, 'date');
@@ -336,19 +367,34 @@
                     printedDay: this.printedDay
                 });
                 setDisplay.call(this);
+
+                dotDate = null;
+                monthStratDate = null;
+                _today = null;
+                tableStartDate = null;
+                loopDate = null;
+                thisMonth = null;
+                itemStyles = null;
+                i = null;
+                k = null;
+                frameWidth = null;
+                frameHeight = null;
+                data = null;
+                tmpl = null;
             },
             printMonth = function (nowDate) {
                 var
                     dotDate = U.date(nowDate),
                     nMonth = dotDate.getMonth(),
-                    po = [],
                     itemStyles = {},
                     i,
                     k,
                     m,
                     tableStartMonth,
                     frameWidth = this.$["body"].width(),
-                    frameHeight = Math.floor(frameWidth * (6 / 7))
+                    frameHeight = Math.floor(frameWidth * (6 / 7)),
+                    data,
+                    tmpl = getMonthTmpl()
                     ;
 
                 if (cfg.dimensions.height) {
@@ -359,7 +405,7 @@
                 itemStyles['line-height'] = itemStyles['height'];
                 itemStyles['padding'] = U.cssNumber(cfg.dimensions.itemPadding);
 
-                var data = {
+                data = {
                     colHeadHeight: U.cssNumber(cfg.dimensions.colHeadHeight),
                     colHeadLabel: cfg.lang.monthHeading,
                     list: []
@@ -399,11 +445,12 @@
                         data.list.push(_month);
                         m++;
                         k++;
+                        _month = null;
                     }
                     i++;
                 }
 
-                this.$["body"].html(ax5.mustache.render(getMonthTmpl(), data));
+                this.$["body"].html(ax5.mustache.render(tmpl, data));
                 this.$["body"].find('[data-calendar-item-month]').on(cfg.clickEventName, function (e) {
                     e = e || window.event;
                     onclick.call(self, e, 'month');
@@ -421,6 +468,18 @@
                     printedDay: this.printedDay
                 });
                 setDisplay.call(this);
+
+                dotDate = null;
+                nMonth = null;
+                itemStyles = null;
+                i = null;
+                k = null;
+                m = null;
+                tableStartMonth = null;
+                frameWidth = null;
+                frameHeight = null;
+                data = null;
+                tmpl = null;
             },
             printYear = function (nowDate) {
                 var
@@ -432,7 +491,9 @@
                     y,
                     tableStartYear,
                     frameWidth = this.$["body"].width(),
-                    frameHeight = Math.floor(frameWidth * (6 / 7))
+                    frameHeight = Math.floor(frameWidth * (6 / 7)),
+                    data,
+                    tmpl = getYearTmpl()
                     ;
 
                 if (cfg.dimensions.height) {
@@ -443,7 +504,7 @@
                 itemStyles['line-height'] = itemStyles['height'];
                 itemStyles['padding'] = U.cssNumber(cfg.dimensions.itemPadding);
 
-                var data = {
+                data = {
                     colHeadHeight: U.cssNumber(cfg.dimensions.colHeadHeight),
                     colHeadLabel: cfg.lang.yearHeading,
                     list: []
@@ -483,11 +544,12 @@
                         data.list.push(_year);
                         y++;
                         k++;
+                        _year = null;
                     }
                     i++;
                 }
 
-                this.$["body"].html(ax5.mustache.render(getYearTmpl(), data));
+                this.$["body"].html(ax5.mustache.render(tmpl, data));
                 this.$["body"].find('[data-calendar-item-year]').on(cfg.clickEventName, function (e) {
                     e = (e || window.event);
                     onclick.call(this, e, 'year');
@@ -504,8 +566,25 @@
                     printedDay: this.printedDay
                 });
                 setDisplay.call(this);
+
+                dotDate = null;
+                nYear = null;
+                itemStyles = null;
+                i = null;
+                k = null;
+                y = null;
+                tableStartYear = null;
+                frameWidth = null;
+                frameHeight = null;
+                data = null;
+                tmpl = null;
             },
             onclick = function (e, mode, target, value) {
+                var
+                    removed,
+                    dt,
+                    selectable;
+
                 mode = mode || "date";
                 target = U.findParentNode(e.target, function (target) {
                     if (target.getAttribute("data-calendar-item-" + mode)) {
@@ -515,11 +594,8 @@
                 if (target) {
                     value = target.getAttribute("data-calendar-item-" + mode);
 
-                    var
-                        dt = U.date(value, {"return": cfg.dateFormat}),
-                        selectable = true
-                        ;
-
+                    dt = U.date(value, {"return": cfg.dateFormat});
+                    selectable = true;
                     selectableCount = (cfg.multipleSelect) ? (U.isNumber(cfg.multipleSelect)) ? cfg.multipleSelect : 2 : 1;
 
                     if (cfg.selectable) {
@@ -530,7 +606,7 @@
                         if (selectable) {
 
                             if (self.selection.length >= selectableCount) {
-                                var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
+                                removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
                                 removed.forEach(function (d) {
                                     self.$["body"].find('[data-calendar-item-date="' + U.date(d, {"return": cfg.dateFormat}) + '"]').removeClass("selected-day");
                                 });
@@ -550,7 +626,7 @@
                         if (cfg.selectMode == "month") {
                             if (selectable) {
                                 if (self.selection.length >= selectableCount) {
-                                    var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
+                                    removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
                                     removed.forEach(function (d) {
                                         self.$["body"].find('[data-calendar-item-month="' + U.date(d, {"return": 'yyyy-mm-dd'}) + '"]').removeClass("selected-month");
                                     });
@@ -574,7 +650,7 @@
                         if (cfg.selectMode == "year") {
                             if (selectable) {
                                 if (self.selection.length >= selectableCount) {
-                                    var removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
+                                    removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
                                     removed.forEach(function (d) {
                                         self.$["body"].find('[data-calendar-item-year="' + U.date(d, {"return": 'yyyy-mm-dd'}) + '"]').removeClass("selected-year");
                                     });
@@ -595,6 +671,13 @@
                         }
                     }
                 }
+
+                mode = null;
+                target = null;
+                value = null;
+                removed = null;
+                dt = null;
+                selectable = null;
             },
             move = function (e, target, value) {
                 target = U.findParentNode(e.target, function (target) {
@@ -633,6 +716,9 @@
                         printYear.call(this, cfg.displayDate);
                     }
                 }
+
+                target = null;
+                value = null;
             },
             applyMarkerMap = function () {
                 setTimeout((function () {
@@ -786,11 +872,12 @@
                     }
                 }
 
-                this.selectionMap = result;
+                this.selectionMap = jQuery.extend({}, result);
                 // 변경내용 적용하여 출력
 
                 if (isPrint !== false) applySelectionMap.call(this);
 
+                result = null;
             };
         })();
 
@@ -891,6 +978,8 @@
                     for (var k in v) {
                         map[k] = v[k];
                     }
+
+                    v = null;
                     return map;
                 },
                 'range': function (v, map) {
@@ -911,6 +1000,7 @@
                         }
                     });
 
+                    v = null;
                     return map;
                 }
             };
