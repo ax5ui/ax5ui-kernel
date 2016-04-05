@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.toast
      * @classdesc
-     * @version 0.2.3
+     * @version 0.2.4
      * @author tom@axisj.com
      * @example
      * ```
@@ -49,6 +49,9 @@
                 else if (this.onStateChanged) {
                     this.onStateChanged.call(that, that);
                 }
+
+                opts = null;
+                that = null;
                 return true;
             },
             getContentTmpl = function () {
@@ -85,10 +88,16 @@
                         closeIcon: opts.closeIcon
                     };
 
-                return ax5.mustache.render(getContentTmpl(), data);
+                try {
+                    return ax5.mustache.render(getContentTmpl(), data);
+                }
+                finally {
+                    toastId = null;
+                    data = null;
+                }
             },
             open = function (opts, callBack) {
-                if(toastSeqClear) clearTimeout(toastSeqClear);
+                if (toastSeqClear) clearTimeout(toastSeqClear);
 
                 var
                     toastBox,
@@ -120,7 +129,7 @@
                 if (opts.toastType === "push") {
                     // 자동 제거 타이머 시작
                     setTimeout((function () {
-                        this.close(opts, toastBox, callBack);
+                        this.close(opts, callBack);
                     }).bind(this), cfg.displayTime);
 
                     toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, (function (e) {
@@ -132,6 +141,8 @@
                         btnOnClick.call(this, e || window.event, opts, toastBox, callBack);
                     }).bind(this));
                 }
+
+                box = null;
             },
             btnOnClick = function (e, opts, toastBox, callBack, target, k) {
                 target = U.findParentNode(e.target, function (target) {
@@ -161,11 +172,13 @@
                         this.close(opts, toastBox);
                     }
                 }
-            },
-            onKeyup = function (e, opts, callBack, target, k) {
-                if (e.keyCode == ax5.info.eventKeys.ESC) {
-                    if (this.queue.length > 0) this.close();
-                }
+
+                e = null;
+                opts = null;
+                toastBox = null;
+                callBack = null;
+                target = null;
+                k = null;
             };
 
         /**
@@ -214,6 +227,9 @@
             opts = self.dialogConfig;
 
             open.call(this, opts, callBack);
+
+            opts = null;
+            callBack = null;
             return this;
         };
 
@@ -245,6 +261,9 @@
                 };
             }
             open.call(this, opts, callBack);
+
+            opts = null;
+            callBack = null;
             return this;
         };
 
@@ -257,12 +276,12 @@
          * my_toast.close();
          * ```
          */
-        this.close = function (opts, toastBox, callBack) {
-            if (typeof toastBox === "undefined") {
+        this.close = function (opts, callBack) {
+            if (typeof opts === "undefined") {
                 opts = U.last(this.queue);
-                toastBox = opts.toastBox;
             }
 
+            var toastBox = opts.toastBox;
             toastBox.addClass((opts.toastType == "push") ? "removed" : "destroy");
             this.queue = U.filter(this.queue, function () {
                 return opts.id != this.id;
@@ -283,14 +302,20 @@
                 onStateChanged.call(this, opts, that);
 
                 // 3초후에도 아무 일이 없다면 완전히 제거
-                if(this.queue.length === 0){
-                    if(toastSeqClear) clearTimeout(toastSeqClear);
+                if (this.queue.length === 0) {
+                    if (toastSeqClear) clearTimeout(toastSeqClear);
                     toastSeqClear = setTimeout((function () {
                         /// console.log("try clear seq");
-                        if(this.queue.length === 0) toastSeq = 0;
+                        if (this.queue.length === 0) toastSeq = 0;
                     }).bind(this), 3000);
                 }
+
+                that = null;
+                opts = null;
+                callBack = null;
+                toastBox = null;
             }).bind(this), cfg.animateTime);
+
             return this;
         };
 
