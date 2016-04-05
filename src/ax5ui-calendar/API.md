@@ -1,8 +1,13 @@
 # Basic Usage
 > calendar UI
 
+How to initialize the properties of the UI, there are two.
+You can pass the property values of the UI to `setConfig`.
+Using the `new` you can pass when you initialize the UI.
+
 ## setConfig()
 `setConfig([options, callInit=true])`
+
 ```js
 var myCalendar = new ax5.ui.calendar();
 myCalendar.setConfig({

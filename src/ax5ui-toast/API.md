@@ -1,9 +1,13 @@
 # Basic Usage
 > toast is a UI that can be used as an alternative means of window.alert, window.confirm and window.prompt
 
+How to initialize the properties of the UI, there are two.
+You can pass the property values of the UI to `setConfig`.
+Using the `new` you can pass when you initialize the UI.
+
+
 ## setConfig()
-`setConfig([options])`
-You define the default settings for the toast. Create a ax5.ui.toast instance, using the setConfig method in that instance, you can define a default value.
+`setConfig([options, callInit=true])`
  
 ```js
 var myToast = new ax5.ui.toast();

@@ -1,9 +1,12 @@
 # Basic Usage
 > Modal UI, hold does not exceed the current page, you can use in order to process a simple user input and information. In some cases, by the other page so as to output in the modal, it can also handle the task of more diverse forms.
 
+How to initialize the properties of the UI, there are two.
+You can pass the property values of the UI to `setConfig`.
+Using the `new` you can pass when you initialize the UI.
+
 ## setConfig()
-`setConfig([options])`
-You define the default settings for the modal. Create a ax5.ui.modal instance, using the setConfig method in that instance, you can define a default value.
+`setConfig([options, callInit=true])`
  
 ```js
 var myModal = new ax5.ui.modal();
