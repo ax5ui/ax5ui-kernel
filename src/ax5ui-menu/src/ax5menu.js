@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.menu
      * @classdesc
-     * @version 0.4.7
+     * @version 0.4.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -67,12 +67,17 @@
                 else if (this.onStateChanged) {
                     this.onStateChanged.call(that, that);
                 }
+
+                opts = null;
+                that = null;
                 return true;
             },
-            onLoad = function(that){
+            onLoad = function (that) {
                 if (this.onLoad) {
                     this.onLoad.call(that, that);
                 }
+
+                that = null;
                 return true;
             },
             getTmpl = function () {
@@ -144,9 +149,10 @@
                 `;
             },
             popup = function (opt, items, depth, path) {
-                var data = opt,
+                var
+                    data = opt,
                     activeMenu,
-                    that
+                    removed
                     ;
 
                 data.theme = opt.theme || cfg.theme;
@@ -183,7 +189,7 @@
 
                 // remove queue
 
-                var removed = this.queue.splice(depth);
+                removed = this.queue.splice(depth);
                 removed.forEach(function (n) {
                     n.$target.remove();
                 });
@@ -197,19 +203,28 @@
                     var
                         depth = this.getAttribute("data-menu-item-depth"),
                         index = this.getAttribute("data-menu-item-index"),
-                        path = this.getAttribute("data-menu-item-path")
-                        ;
+                        path = this.getAttribute("data-menu-item-path"),
+                        $this,
+                        offset,
+                        scrollTop,
+                        childOpt,
+                        _items,
+                        _activeMenu;
 
-                    activeMenu.find('[data-menu-item-index]').removeClass("hover");
-                    jQuery(this).addClass("hover");
-                    if (activeMenu.attr("data-selected-menu-item-index") != index) {
-                        activeMenu.attr("data-selected-menu-item-index", index);
+                    if (depth != null && typeof depth != "undefined") {
+                        _items = self.queue[depth].data.items[index].items;
+                        _activeMenu = self.queue[depth].$target;
+                        _activeMenu.find('[data-menu-item-index]').removeClass("hover");
+                        jQuery(this).addClass("hover");
 
-                        if (items[index].items && items[index].items.length > 0) {
+                        if (_activeMenu.attr("data-selected-menu-item-index") != index) {
+                            _activeMenu.attr("data-selected-menu-item-index", index);
 
-                            var $this = $(this),
-                                offset = $this.offset(),
-                                scrollTop = (cfg.position == "fixed" ? $(document).scrollTop() : 0),
+                            if (_items && _items.length > 0) {
+
+                                $this = $(this);
+                                offset = $this.offset();
+                                scrollTop = (cfg.position == "fixed" ? $(document).scrollTop() : 0);
                                 childOpt = {
                                     '@parent': {
                                         left: offset.left,
@@ -221,15 +236,26 @@
                                     top: offset.top - cfg.menuBodyPadding - 1 - scrollTop
                                 };
 
-                            childOpt = jQuery.extend(true, opt, childOpt);
-                            popup.call(self, childOpt, items[index].items, (depth + 1), path);
-                        }
-                        else {
-                            self.queue.splice(Number(depth) + 1).forEach(function (n) {
-                                n.$target.remove();
-                            });
+                                childOpt = jQuery.extend(true, opt, childOpt);
+                                popup.call(self, childOpt, _items, (Number(depth) + 1), path);
+                            }
+                            else {
+                                self.queue.splice(Number(depth) + 1).forEach(function (n) {
+                                    n.$target.remove();
+                                });
+                            }
                         }
                     }
+
+                    depth = null;
+                    index = null;
+                    path = null;
+                    $this = null;
+                    offset = null;
+                    scrollTop = null;
+                    childOpt = null;
+                    _items = null;
+                    _activeMenu = null;
                 });
 
                 // is Root
@@ -259,16 +285,24 @@
                     element: activeMenu.get(0)
                 });
 
+                data = null;
+                activeMenu = null;
+                removed = null;
+                opt = null;
+                items = null;
+                depth = null;
+                path = null;
+
                 return this;
             },
-            clickItem = function (e) {
-                var target = U.findParentNode(e.target, function (target) {
+            clickItem = function (e, target, item) {
+                target = U.findParentNode(e.target, function (target) {
                     if (target.getAttribute("data-menu-item-index")) {
                         return true;
                     }
                 });
                 if (target) {
-                    var item = (function (path) {
+                    item = (function (path) {
                         if (!path) return false;
                         var item;
                         try {
@@ -276,7 +310,13 @@
                         } catch (e) {
                             console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
                         }
-                        return item;
+
+                        try {
+                            return item;
+                        }
+                        finally {
+                            item = null;
+                        }
                     })(target.getAttribute("data-menu-item-path"));
 
                     if (!item) return this;
@@ -298,6 +338,7 @@
                                 }
                             };
                             if (setValue[this.type]) setValue[this.type].call(this, this.checked);
+                            setValue = null;
                         }).call(item.check, cfg.items);
 
                         if (!cfg.itemClickAndClose) {
@@ -320,33 +361,52 @@
                 else {
                     self.close();
                 }
+
+                target = null;
+                item = null;
                 return this;
             },
             align = function (activeMenu, data) {
-            //console.log(data['@parent']);
-            var $window = $(window), $document = $(document),
-                wh = (cfg.position == "fixed") ? $window.height() : $document.height(), ww = $window.width(),
-                h = activeMenu.outerHeight(), w = activeMenu.outerWidth(),
-                l = data.left, t = data.top,
-                position = cfg.position || "fixed";
+                //console.log(data['@parent']);
+                var
+                    $window = $(window),
+                    $document = $(document),
+                    wh = (cfg.position == "fixed") ? $window.height() : $document.height(),
+                    ww = $window.width(),
+                    h = activeMenu.outerHeight(),
+                    w = activeMenu.outerWidth(),
+                    l = data.left,
+                    t = data.top,
+                    position = cfg.position || "fixed";
 
-            if (l + w > ww) {
-                if (data['@parent']) {
-                    l = data['@parent'].left - w + cfg.menuBodyPadding;
+                if (l + w > ww) {
+                    if (data['@parent']) {
+                        l = data['@parent'].left - w + cfg.menuBodyPadding;
+                    }
+                    else {
+                        l = ww - w;
+                    }
                 }
-                else {
-                    l = ww - w;
+
+                if (t + h > wh) {
+                    t = wh - h;
                 }
-            }
 
-            if (t + h > wh) {
-                t = wh - h;
-            }
+                activeMenu.css({left: l, top: t, position: position});
 
-            activeMenu.css({left: l, top: t, position: position});
-
-            return this;
-        };
+                activeMenu = null;
+                data = null;
+                $window = null;
+                $document = null;
+                wh = null;
+                ww = null;
+                h = null;
+                w = null;
+                l = null;
+                t = null;
+                position = null;
+                return this;
+            };
 
         /// private end
 
@@ -392,7 +452,14 @@
                         if (cfg.offset.top) e.top += cfg.offset.top;
                     }
                     opt = jQuery.extend(true, e, opt);
-                    return opt;
+
+                    try {
+                        return opt;
+                    }
+                    finally {
+                        e = null;
+                        //opt = null;
+                    }
                 },
                 'object': function (e, opt) {
                     e = {
@@ -408,7 +475,14 @@
                     }
 
                     opt = jQuery.extend(true, e, opt);
-                    return opt;
+
+                    try {
+                        return opt;
+                    }
+                    finally {
+                        e = null;
+                        //opt = null;
+                    }
                 }
             };
 
@@ -419,6 +493,8 @@
                 popup.call(this, opt, cfg.items, 0); // 0 is seq of queue
                 appEventAttach.call(this, true); // 이벤트 연결
 
+                e = null;
+                //opt = null;
                 return this;
             }
         })();
@@ -440,7 +516,14 @@
                         direction: e.direction || cfg.direction
                     };
                     opt = jQuery.extend(true, opt, e);
-                    return opt;
+
+                    try {
+                        return opt;
+                    }
+                    finally {
+                        e = null;
+                        opt = null;
+                    }
                 }
             };
 
@@ -472,11 +555,21 @@
                     popup.call(self, opt, cfg.items[index].items, 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
                     appEventAttach.call(self, true); // 이벤트 연결
                 }
+
+                target = null;
+                opt = null;
+                $target = null;
+                offset = null;
+                height = null;
+                index = null;
+                scrollTop = null;
             };
 
             return function (el, opt) {
-                var data = {};
-                var items = cfg.items;
+                var
+                    data = {},
+                    items = cfg.items,
+                    activeMenu;
 
                 if (typeof opt === "undefined") opt = {};
 
@@ -505,7 +598,7 @@
 
                 data.items = items;
 
-                var activeMenu = jQuery(ax5.mustache.render(getTmpl_menuBar(), data));
+                activeMenu = jQuery(ax5.mustache.render(getTmpl_menuBar(), data));
                 self.menuBar = {
                     target: jQuery(el),
                     opened: false
@@ -521,6 +614,8 @@
                         }
                     });
                     if (target) popUpChildMenu(target, opt);
+
+                    target = null;
                 });
                 self.menuBar.target.bind("mouseover", function (e) {
                     if (!self.menuBar.opened) return false;
@@ -530,7 +625,16 @@
                         }
                     });
                     if (target) popUpChildMenu(target, opt);
+
+                    target = null;
                 });
+
+                el = null;
+                opt = null;
+                data = null;
+                items = null;
+                activeMenu = null;
+
                 return this;
             }
         })();
@@ -540,7 +644,6 @@
          * @returns {ax5.ui.menu} this
          */
         this.close = function () {
-            var that;
 
             if (self.menuBar && self.menuBar.target) {
                 self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
@@ -585,7 +688,13 @@
 
             collectItem(cfg.items);
 
-            return checkItems;
+            try {
+                return checkItems;
+            }
+            finally {
+                checkItems = null;
+                collectItem = null;
+            }
         };
 
         // 클래스 생성자
