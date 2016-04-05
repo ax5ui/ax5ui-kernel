@@ -15,6 +15,7 @@
 
 
 <button type="button" id="mask-open">mask-open</button>
+<button type="button" id="mask-close">mask-close</button>
 <script>
     $(document.body).ready(function(){
         window.mask = new ax5.ui.mask();
@@ -26,6 +27,9 @@
                     console.log(this);
                 }
             });
+        });
+        $("#mask-close").click(function(){
+            mask.close();
         });
     });
 </script>

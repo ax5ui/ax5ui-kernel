@@ -5,7 +5,7 @@
     /**
      * @class ax5.ui.mask
      * @classdesc
-     * @version 0.6.4
+     * @version 0.6.5
      * @author tom@axisj.com
      * @example
      * ```
@@ -34,6 +34,9 @@
             } else if (this.onStateChanged) {
                 this.onStateChanged.call(that, that);
             }
+
+            opts = null;
+            that = null;
             return true;
         },
             getBodyTmpl = function getBodyTmpl() {
@@ -98,18 +101,18 @@
             var _cfg = self.maskConfig,
                 target = _cfg.target,
                 $target = jQuery(target),
-                po = [],
-                css,
                 maskId = 'ax-mask-' + ax5.getGuid(),
                 $mask,
                 css = {},
-                that = {};
-
-            jQuery(document.body).append(ax5.mustache.render(getBodyTmpl(), {
+                that = {},
+                bodyTmpl = getBodyTmpl(),
+                body = ax5.mustache.render(bodyTmpl, {
                 theme: _cfg.theme,
                 maskId: maskId,
                 body: this.maskContent
-            }));
+            });
+
+            jQuery(document.body).append(body);
 
             if (target && target !== jQuery(document.body).get(0)) {
                 css = {
@@ -145,6 +148,18 @@
                 self: this,
                 state: "open"
             });
+
+            options = null;
+            _cfg = null;
+            target = null;
+            $target = null;
+            maskId = null;
+            $mask = null;
+            css = null;
+            that = null;
+            bodyTmpl = null;
+            body = null;
+
             return this;
         };
 
