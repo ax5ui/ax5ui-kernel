@@ -35,6 +35,7 @@
         "gulp-sourcemaps": "",
         "gulp-util": "*",
 
+        "gulp-clean": "",
         "nodegit": ""
     }
 }

@@ -7,3 +7,4 @@ node_modules
 *.iml
 .DS_Store
 **/test/bower_components
+_git
