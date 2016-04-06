@@ -6,7 +6,7 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version 0.4.4
+     * @version 0.4.5
      * @author tom@axisj.com
      * @example
      * ```
@@ -75,6 +75,9 @@
                     }
 
                     this.queue[optIdx] = jQuery.extend(true, config, opts);
+
+                    config = null;
+                    inputLength = null;
                 },
                 'date': function date(opts, optIdx) {
                     // 1. 이벤트 바인딩
@@ -101,6 +104,11 @@
                     }
 
                     this.queue[optIdx] = jQuery.extend(true, config, opts);
+
+                    contentWidth = null;
+                    contentMargin = null;
+                    config = null;
+                    inputLength = null;
                 }
             };
 
@@ -283,6 +291,8 @@
                 bindPickerTarget.call(this, this.queue[optIdx], optIdx);
             }
 
+            pickerConfig = null;
+            optIdx = null;
             return this;
         };
 
@@ -303,6 +313,11 @@
                     this.close();
                 }
             }
+
+            opts = null;
+            boundID = null;
+            inputIndex = null;
+            val = null;
             return this;
         };
 
