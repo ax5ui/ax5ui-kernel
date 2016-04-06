@@ -150,29 +150,3 @@ gulp.task('default', function () {
     }
 
 });
-
-gulp.task('git-clean', function () {
-    return gulp.src('_git/*', {read: false}).pipe(clean());
-});
-
-gulp.task('git-clone', ['git-clean'], function () {
-    for (var k in PATHS) {
-
-        Git.Clone("https://github.com/ax5ui/" + k, "_git/" + k).then((function (repository) {
-
-            Git.Repository.open("_git/" + this.k)
-                .then(function (repository) {
-                    return repository.getBranchCommit("master");
-                })
-                .then(function (commit) {
-                    return commit.message();
-                })
-                .then(function (message) {
-                    console.log(message);
-                });
-
-        }).bind({k: k}), function (err) {
-            console.log('err', err);
-        });
-    }
-});
