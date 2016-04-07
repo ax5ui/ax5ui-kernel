@@ -49,6 +49,13 @@ exactly the path.
 </html>
 ```
 
+### USE CDN
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-picker/master/dist/ax5picker.css
+https://cdn.rawgit.com/ax5ui/ax5ui-picker/master/dist/ax5picker.js
+https://cdn.rawgit.com/ax5ui/ax5ui-picker/master/dist/ax5picker.min.js
+```
+
 ### Basic Usages
 ```js
 var picker = new ax5.ui.picker();

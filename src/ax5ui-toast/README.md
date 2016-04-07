@@ -42,6 +42,13 @@ exactly the path.
 </html>
 ```
 
+### USE CDN
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-toast/master/dist/ax5toast.css
+https://cdn.rawgit.com/ax5ui/ax5ui-toast/master/dist/ax5toast.js
+https://cdn.rawgit.com/ax5ui/ax5ui-toast/master/dist/ax5toast.min.js
+```
+
 ### Basic Usages
 ```js
 var myToast = new ax5.ui.toast({

@@ -44,6 +44,15 @@ exactly the path.
 </html>
 ```
 
+
+### USE CDN
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-dialog/master/dist/ax5dialog.css
+https://cdn.rawgit.com/ax5ui/ax5ui-dialog/master/dist/ax5dialog.js
+https://cdn.rawgit.com/ax5ui/ax5ui-dialog/master/dist/ax5dialog.min.js
+```
+
+
 ### Basic Usages
 ```js
 var myDialog = new ax5.ui.dialog({

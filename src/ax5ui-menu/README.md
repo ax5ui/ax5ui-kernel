@@ -45,6 +45,13 @@ exactly the path.
 </html>
 ```
 
+### USE CDN
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.css
+https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.js
+https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.min.js
+```
+
 ### Basic Usages
 ```js
 var menu = new ax5.ui.menu({

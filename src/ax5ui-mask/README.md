@@ -42,6 +42,14 @@ exactly the path.
 </html>
 ```
 
+
+### USE CDN
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.css
+https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.js
+https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.min.js
+```
+
 ### Basic Usages
 ```js
 var mask = new ax5.ui.mask();

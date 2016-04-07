@@ -42,6 +42,13 @@ exactly the path.
 </html>
 ```
 
+### USE CDN
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-modal/master/dist/ax5modal.css
+https://cdn.rawgit.com/ax5ui/ax5ui-modal/master/dist/ax5modal.js
+https://cdn.rawgit.com/ax5ui/ax5ui-modal/master/dist/ax5modal.min.js
+```
+
 ### Basic Usages
 ```js
 var modal = new ax5.ui.modal();

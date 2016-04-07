@@ -56,6 +56,13 @@ exactly the path.
 </html>
 ```
 
+### USE CDN
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-formatter/master/dist/ax5formatter.css
+https://cdn.rawgit.com/ax5ui/ax5ui-formatter/master/dist/ax5formatter.js
+https://cdn.rawgit.com/ax5ui/ax5ui-formatter/master/dist/ax5formatter.min.js
+```
+
 ### Basic Usages
 ```js
 $('[data-ax5formatter]').ax5formatter();

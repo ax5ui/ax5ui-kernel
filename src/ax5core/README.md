@@ -41,11 +41,8 @@ exactly the path.
 
 ### Use CDN
 ```html
-<script src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.js"></script>
-```
-or
-```html
-<script src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"></script>
+https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.js
+https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js
 ```
 ***
 

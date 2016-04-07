@@ -45,6 +45,13 @@ exactly the path.
 </html>
 ```
 
+### USE CDN
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.css
+https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.js
+https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.min.js
+```
+
 ### Basic Usages
 ```js
 var myCalendar = new ax5.ui.calendar({
