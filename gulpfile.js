@@ -83,6 +83,14 @@ var PATHS = {
         dest: "src/ax5ui-menu/dist",
         scss: "ax5menu.scss",
         js: "ax5menu"
+    },
+    "ax5ui-select": {
+        isPlugin: true,
+        root: "src/ax5ui-select",
+        src: "src/ax5ui-select/src",
+        dest: "src/ax5ui-select/dist",
+        scss: "ax5select.scss",
+        js: "ax5select"
     }
 };
 
