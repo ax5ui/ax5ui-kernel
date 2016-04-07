@@ -39,6 +39,16 @@ exactly the path.
 ```
 ***
 
+### Use CDN
+```html
+<script src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.js"></script>
+```
+or
+```html
+<script src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"></script>
+```
+***
+
 ### Install by npm
 
 If you do not use the bower, it can be downloaded by using the npm as second best.
