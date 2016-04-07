@@ -177,7 +177,7 @@
 	}
 	1% {
 		opacity: 0.0;
-		@include transform(scale(0.3));
+		@include transform(scale(0.95));
 	}
 	100% {
 		opacity: 1.0;
@@ -202,7 +202,7 @@
 		opacity: 1.0;
 	}
 	to {
-		@include transform(scale(0.5));
+		@include transform(scale(0.95));
 		opacity: 0.0;
 	}
 }
