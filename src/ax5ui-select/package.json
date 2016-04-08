@@ -1,11 +1,11 @@
 {
-	"name": "ax5ui-picker",
-	"version": "0.4.5",
-	"description": "A picker plugin that works with Bootstrap & jQuery",
-	"license": "Apache 2.0",
+	"name": "ax5ui-select",
+	"version": "0.0.1",
+	"description": "A select plugin that works with Bootstrap & jQuery",
+	"license": "http://www.apache.org/licenses/LICENSE-2.0",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/ax5ui/ax5ui-picker"
+		"url": "git+https://github.com/ax5ui/ax5ui-select"
 	},
 	"author": {
 		"name": "Thomas Jang",
@@ -18,8 +18,8 @@
 		"ax5ui",
 		"plugin",
 		"bootstrap jQuery plugins",
-		"picker",
-		"ax5ui-picker",
+		"select",
+		"ax5ui-select",
 		"javascript ui"
 	],
 	"dependencies": {
