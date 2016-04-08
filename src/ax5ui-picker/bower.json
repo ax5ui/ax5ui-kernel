@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-picker",
-	"version": "0.4.6",
+	"version": "0.4.7",
 	"description": "A picker plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
@@ -19,8 +19,8 @@
 	"dependencies": {
 		"jquery": "^1.11.0",
 		"ax5core": "",
-		"ax5calendar": "",
-		"ax5formatter": "",
+		"ax5ui-calendar": "",
+		"ax5ui-formatter": "",
 		"bootstrap": "^3.3.6"
 	},
 	"license": "MIT",
