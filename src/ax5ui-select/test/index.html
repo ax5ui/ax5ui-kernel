@@ -14,25 +14,23 @@
 </head>
 <body style="padding: 10px;">
 
+<form name="forms">
     <h1>form-group</h1>
     <div class="form-group">
-        <div class="input-group" data-ax5select="true">
-            <input type="text" class="form-control" placeholder=""/>
-            <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
-        </div>
-    </div>
-
-    <h1>input-group</h1>
-    <div class="input-group" data-ax5select='{
-        "multiple": true,
-        "options": []
-    }'>
-        <input type="text" class="form-control" placeholder=""/>
-        <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+        <select class="form-control" name="select1" multiple="multiple" data-ax5select="true">
+            <option value="1">value 1</option>
+            <option value="2">value 2</option>
+            <option value="3">value 3</option>
+            <option value="4">value 4</option>
+            <option value="5">value 5</option>
+        </select>
     </div>
 
     <h1>form-control</h1>
-    <input type="text" class="form-control" data-ax5select="true" placeholder=""/>
+    <select class="form-control" name="select1" multiple="multiple" data-ax5select='{
+        "options": []
+    }'></select>
+</form>
 
 <script>
     $(document.body).ready(function () {
