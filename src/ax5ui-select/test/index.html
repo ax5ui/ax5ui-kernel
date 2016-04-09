@@ -14,8 +14,25 @@
 </head>
 <body style="padding: 10px;">
 
+    <h1>form-group</h1>
+    <div class="form-group">
+        <div class="input-group" data-ax5select="true">
+            <input type="text" class="form-control" placeholder=""/>
+            <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+        </div>
+    </div>
 
+    <h1>input-group</h1>
+    <div class="input-group" data-ax5select='{
+        "multiple": true,
+        "options": []
+    }'>
+        <input type="text" class="form-control" placeholder=""/>
+        <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+    </div>
 
+    <h1>form-control</h1>
+    <input type="text" class="form-control" data-ax5select="true" placeholder=""/>
 
 <script>
     $(document.body).ready(function () {
