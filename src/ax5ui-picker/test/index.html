@@ -42,14 +42,13 @@
 </div>
 
 <h1>Custom</h1>
-<div class="form-group" data-ax5picker="custom">
-    <input type="text" class="form-control" placeholder=""/>
+<div class="form-group">
+    <input type="text" data-ax5picker="custom" class="form-control" placeholder=""/>
 </div>
 
 <h1>Autocomplete</h1>
-<div class="form-group" data-ax5picker="autocomplete">
-    <input type="text" class="form-control" placeholder=""/>
-</div>
+
+<input type="text" class="form-control" data-ax5picker="autocomplete" placeholder=""/>
 
 <script>
 // todo : picker align 기능 추가
@@ -207,6 +206,22 @@
                                 + '<button class="btn btn-default">기능 1</button>'
                                 + '</div>'
                             ;
+                        callBack(html);
+                    }
+                });
+            }
+            else if (this.getAttribute("data-ax5picker") == "autocomplete") {
+                picker.bind({
+                    target: this,
+                    direction: "top",
+                    contentWidth: 200,
+                    content: function (callBack) {
+                        var html = ''
+                                        + '가나다라마바사'
+                                        + '<div style="padding: 10px;">'
+                                        + '<button class="btn btn-default">기능 1</button>'
+                                        + '</div>'
+                                ;
                         callBack(html);
                     }
                 });

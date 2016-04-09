@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version 0.4.7
+     * @version 0.4.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -116,6 +116,8 @@
                 };
 
                 return function (opts, optIdx) {
+                    var _input;
+                    
                     if (!opts.content) {
                         console.log(ax5.info.getError("ax5picker", "501", "bind"));
                         return this;
@@ -134,22 +136,27 @@
                         }
                     }
 
-                    opts.$target
-                        .find('input[type="text"]')
+                    _input = (opts.target.tagName.toUpperCase() == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
+
+                    console.log(_input);
+                    
+                    _input
                         .unbind('focus.ax5picker')
                         .unbind('click.ax5picker')
                         .bind('focus.ax5picker', pickerEvent.focus.bind(this, this.queue[optIdx], optIdx))
                         .bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
-                    opts.$target
-                        .find('.input-group-addon')
+                    _input
                         .unbind('click.ax5picker')
                         .bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
                     if (opts.content.formatter && ax5.ui.formatter) {
-                        opts.$target.find('input[type="text"]').ax5formatter(opts.content.formatter);
+                        _input.ax5formatter(opts.content.formatter);
                     }
 
+                    _input = null;
+                    opts = null;
+                    optIdx = null;
                     return this;
                 }
 
