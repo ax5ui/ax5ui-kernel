@@ -6,7 +6,7 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version 0.4.8
+     * @version 0.4.9
      * @author tom@axisj.com
      * @example
      * ```
@@ -133,12 +133,9 @@
                 }
 
                 _input = opts.target.tagName.toUpperCase() == "INPUT" ? opts.$target : opts.$target.find('input[type="text"]');
-
-                console.log(_input);
-
                 _input.unbind('focus.ax5picker').unbind('click.ax5picker').bind('focus.ax5picker', pickerEvent.focus.bind(this, this.queue[optIdx], optIdx)).bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
-                _input.unbind('click.ax5picker').bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
+                opts.$target.find('.input-group-addon').unbind('click.ax5picker').bind('click.ax5picker', pickerEvent.click.bind(this, this.queue[optIdx], optIdx));
 
                 if (opts.content.formatter && ax5.ui.formatter) {
                     _input.ax5formatter(opts.content.formatter);
