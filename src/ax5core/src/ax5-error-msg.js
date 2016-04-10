@@ -1,7 +1,3 @@
-/**
- * Created by tom on 16. 2. 15..
- */
-
 ax5.info.errorMsg["ax5dialog"] = {
     "501": "Duplicate call error"
 };

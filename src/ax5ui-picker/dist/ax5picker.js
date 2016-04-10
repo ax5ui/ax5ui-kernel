@@ -399,7 +399,7 @@
 
                 /**
                  다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문
-                  */
+                 */
                 if (this.openTimer) clearTimeout(this.openTimer);
                 if (this.activePicker) {
                     if (this.activePickerQueueIndex == optIdx) {

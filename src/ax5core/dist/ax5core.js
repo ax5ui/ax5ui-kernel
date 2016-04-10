@@ -1769,10 +1769,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return ax5;
     }(); // ax5.ui에 연결
 }).call(window);
-/**
- * Created by tom on 16. 2. 15..
- */
-
 ax5.info.errorMsg["ax5dialog"] = {
     "501": "Duplicate call error"
 };
@@ -1800,6 +1796,12 @@ ax5.info.errorMsg["ax5formatter"] = {
 
 ax5.info.errorMsg["ax5menu"] = {
     "501": "Can not find menu item"
+};
+
+ax5.info.errorMsg["ax5select"] = {
+    "401": "Can not find target element",
+    "402": "Can not find boundID",
+    "501": "Can not find content key"
 };
 // 필수 Ployfill 확장 구문
 (function () {
