@@ -440,7 +440,7 @@
                 if (U.isString(opts) && typeof optIdx == "undefined") {
                     optIdx = ax5.util.search(this.queue, function () {
                         return this.id == opts;
-                    })
+                    });
                     opts = this.queue[optIdx];
                     if (optIdx == -1) {
                         console.log(ax5.info.getError("ax5picker", "402", "open"));

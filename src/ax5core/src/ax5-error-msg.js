@@ -30,3 +30,9 @@ ax5.info.errorMsg["ax5formatter"] = {
 ax5.info.errorMsg["ax5menu"] = {
     "501": "Can not find menu item"
 };
+
+ax5.info.errorMsg["ax5select"] = {
+    "401": "Can not find target element",
+    "402": "Can not find boundID",
+    "501": "Can not find content key"
+};

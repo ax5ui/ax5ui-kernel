@@ -44,7 +44,32 @@
                 this.onStateChanged.call(that, that);
             }
             return true;
-        };
+        },
+            onClick = function onClick() {},
+            bindSelectTarget = function () {
+            var selectEvent = {
+                'click': function click(opts, optIdx, e) {
+                    self.open(opts, optIdx);
+                }
+            };
+
+            return function (opts, optIdx) {
+                var _select;
+
+                if (!opts.content) {
+                    console.log(ax5.info.getError("ax5select", "501", "bind"));
+                    return this;
+                }
+
+                _select = opts.target.tagName.toUpperCase() == "INPUT" ? opts.$target : opts.$target.find('input[type="text"]');
+                _select.unbind('click.ax5picker').bind('click.ax5picker', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
+
+                _select = null;
+                opts = null;
+                optIdx = null;
+                return this;
+            };
+        }();
         /// private end
 
         /**
@@ -85,16 +110,38 @@
 
             if (optIdx === -1) {
                 this.queue.push(opts);
-                bindselectTarget.call(this, opts, this.queue.length - 1);
+                bindSelectTarget.call(this, opts, this.queue.length - 1);
             } else {
                 this.queue[optIdx] = opts;
-                bindselectTarget.call(this, this.queue[optIdx], optIdx);
+                bindSelectTarget.call(this, this.queue[optIdx], optIdx);
             }
 
             selectConfig = null;
             optIdx = null;
             return this;
         };
+
+        this.open = function () {
+
+            var getOptionsContent = {};
+
+            return function (opts, optIdx, tryCount) {
+
+                /**
+                 * open select from the outside
+                 */
+                if (U.isString(opts) && typeof optIdx == "undefined") {
+                    optIdx = ax5.util.search(this.queue, function () {
+                        return this.id == opts;
+                    });
+                    opts = this.queue[optIdx];
+                    if (optIdx == -1) {
+                        console.log(ax5.info.getError("ax5select", "402", "open"));
+                        return this;
+                    }
+                }
+            };
+        }();
 
         // 클래스 생성자
         this.main = function () {
