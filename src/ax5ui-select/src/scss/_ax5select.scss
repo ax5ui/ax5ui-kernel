@@ -1,12 +1,12 @@
 /// override bootstrap.form-control
 
 @mixin input-size($parent, $input-height) {
-    select[multiple][data-ax5select]#{$parent} {
+    [data-ax5select] select[multiple]#{$parent} {
         height: $input-height;
     }
 }
 
-select[multiple][data-ax5select].form-control {
+[data-ax5select] select[multiple].form-control {
     height: $input-height-base;
 }
 
@@ -14,13 +14,22 @@ select[multiple][data-ax5select].form-control {
 @include input-size('.input-lg', $input-height-large);
 
 .form-group-sm {
-    select[multiple][data-ax5select].form-control {
+    [data-ax5select] select[multiple].form-control {
         height: auto;
     }
 }
 .form-group-lg {
-    select[multiple][data-ax5select].form-control {
+    [data-ax5select] select[multiple].form-control {
         height: auto;
+    }
+}
+
+.form-inline{
+    @media (min-width: $screen-sm-min) {
+        // Inline-block all the things for "inline"
+        [data-ax5select] {
+            display: inline-block;
+        }
     }
 }
 

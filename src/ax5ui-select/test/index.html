@@ -14,27 +14,36 @@
 </head>
 <body style="padding: 10px;">
 
-<form name="forms">
+<form name="forms" class="form-inline">
     <h1>form-group</h1>
     <div class="form-group">
-        <select class="form-control" name="select1" multiple="multiple" data-ax5select="true">
-            <option value="1">value 1</option>
-            <option value="2">value 2</option>
-            <option value="3">value 3</option>
-            <option value="4">value 4</option>
-            <option value="5">value 5</option>
-        </select>
+        <div data-ax5select="true">
+            <select class="form-control" name="select1" multiple="multiple">
+                <option value="1">value 1</option>
+                <option value="2">value 2</option>
+                <option value="3">value 3</option>
+                <option value="4">value 4</option>
+                <option value="5">value 5</option>
+            </select>
+        </div>
     </div>
 
     <h1>form-control</h1>
-    <select class="form-control" name="select1" multiple="multiple" data-ax5select='{
-        "options": []
-    }'></select>
+    <div data-ax5select='{"options": []}'>
+        <select class="form-control" name="select1" multiple="multiple"></select>
+    </div>
 </form>
 
 <script>
-
+    var select = new ax5.ui.select();
     $(document.body).ready(function () {
+
+        $('[data-ax5select]').each(function () {
+            select.bind({
+                target: this
+            });
+        });
+
 
     });
 </script>

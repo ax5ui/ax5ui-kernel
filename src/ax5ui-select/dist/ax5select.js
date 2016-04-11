@@ -45,33 +45,11 @@
             }
             return true;
         },
-            onClick = function onClick() {},
-            bindSelectTarget = function () {
-            var selectEvent = {
-                'click': function click(opts, optIdx, e) {
-                    self.open(opts, optIdx);
-                }
-            };
-
-            return function (opts, optIdx) {
-                var _select;
-
-                if (!opts.content) {
-                    console.log(ax5.info.getError("ax5select", "501", "bind"));
-                    return this;
-                }
-
-                _select = opts.target.tagName.toUpperCase() == "INPUT" ? opts.$target : opts.$target.find('input[type="text"]');
-                _select.unbind('click.ax5picker').bind('click.ax5picker', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
-
-                _select = null;
-                opts = null;
-                optIdx = null;
-                return this;
-            };
-        }(),
-            getTmpl = function getTmpl(opts, optIdx) {
-            return '\n                <div class="ax5-ui-select {{theme}}" id="{{id}}" data-select-els="root">\n                    <div class="ax-select-body">\n                        <div class="ax-select-contents" data-select-els="contents" style="width:{{contentWidth}}px;"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
+            getOptionGroupTmpl = function getOptionGroupTmpl() {
+            return '\n                <div class="ax5-ui-select-option-group {{theme}}" id="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-contents" data-select-els="contents" style="width:{{contentWidth}}px;"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
+        },
+            getTmpl = function getTmpl() {
+            return '\n                <div class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">\n                    <div data-ax5-select-display="label"></div>\n                    <div data-ax5-select-display="addon"></div>\n                </div>\n                ';
         },
             alignSelect = function alignSelect(append) {
             if (!this.activeSelect) return this;
@@ -145,7 +123,26 @@
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
             }
-        };
+        },
+            bindSelectTarget = function () {
+            var selectEvent = {
+                'click': function click(opts, optIdx, e) {
+                    self.open(opts, optIdx);
+                }
+            };
+
+            return function (opts, optIdx) {
+                var _select;
+
+                _select = opts.target.tagName.toUpperCase() == "INPUT" ? opts.$target : opts.$target.find('input[type="text"]');
+                _select.unbind('click.ax5picker').bind('click.ax5picker', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
+
+                _select = null;
+                opts = null;
+                optIdx = null;
+                return this;
+            };
+        }();
         /// private end
 
         /**

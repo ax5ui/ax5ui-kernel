@@ -46,43 +46,21 @@
                 }
                 return true;
             },
-            onClick = function () {
-
-            },
-            bindSelectTarget = (function () {
-                var selectEvent = {
-                    'click': function (opts, optIdx, e) {
-                        self.open(opts, optIdx);
-                    }
-                };
-
-                return function (opts, optIdx) {
-                    var _select;
-
-                    if (!opts.content) {
-                        console.log(ax5.info.getError("ax5select", "501", "bind"));
-                        return this;
-                    }
-
-
-                    _select = (opts.target.tagName.toUpperCase() == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
-                    _select
-                        .unbind('click.ax5picker')
-                        .bind('click.ax5picker', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
-
-                    _select = null;
-                    opts = null;
-                    optIdx = null;
-                    return this;
-                }
-            })(),
-            getTmpl = function (opts, optIdx) {
+            getOptionGroupTmpl = function () {
                 return `
-                <div class="ax5-ui-select {{theme}}" id="{{id}}" data-select-els="root">
+                <div class="ax5-ui-select-option-group {{theme}}" id="{{id}}">
                     <div class="ax-select-body">
                         <div class="ax-select-contents" data-select-els="contents" style="width:{{contentWidth}}px;"></div>
                     </div>
                     <div class="ax-select-arrow"></div>
+                </div>
+                `;
+            },
+            getTmpl = function () {
+                return `
+                <div class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">
+                    <div data-ax5-select-display="label"></div>
+                    <div data-ax5-select-display="addon"></div>
                 </div>
                 `;
             },
@@ -167,7 +145,28 @@
                 if (e.keyCode == ax5.info.eventKeys.ESC) {
                     this.close();
                 }
-            };
+            },
+            bindSelectTarget = (function () {
+                var selectEvent = {
+                    'click': function (opts, optIdx, e) {
+                        self.open(opts, optIdx);
+                    }
+                };
+
+                return function (opts, optIdx) {
+                    var _select;
+
+                    _select = (opts.target.tagName.toUpperCase() == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
+                    _select
+                        .unbind('click.ax5picker')
+                        .bind('click.ax5picker', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
+
+                    _select = null;
+                    opts = null;
+                    optIdx = null;
+                    return this;
+                }
+            })();
         /// private end
 
         /**
