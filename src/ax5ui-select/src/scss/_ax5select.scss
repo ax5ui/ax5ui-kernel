@@ -1,5 +1,4 @@
 /// override bootstrap.form-control
-
 @mixin input-size($parent, $input-height) {
     [data-ax5select] select[multiple]#{$parent} {
         height: $input-height;
@@ -33,6 +32,18 @@
     }
 }
 
+// select group
+[data-ax5select]{
+    position: relative;
+}
+
 /// select-display
+.ax5-ui-select-display{
+    position:absolute;
+
+}
 
 /// select-option-group
+.ax5-ui-select-option-group{
+
+}

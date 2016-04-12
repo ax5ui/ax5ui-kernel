@@ -152,20 +152,28 @@
                         self.open(opts, optIdx);
                     }
                 };
+                
+                var appendDisplay = function(){
+                    
+                };
 
                 return function (opts, optIdx) {
                     var _select;
 
-                    _select = (opts.target.tagName.toUpperCase() == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
-                    _select
-                        .unbind('click.ax5picker')
-                        .bind('click.ax5picker', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
+                    
 
-                    _select = null;
+                    /*
+                    _select = opts.$target.find('select');
+                    _select
+                        .unbind('click.ax5select')
+                        .bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
+                        */
+
+                    //_select = null;
                     opts = null;
                     optIdx = null;
                     return this;
-                }
+                };
             })();
         /// private end
 
