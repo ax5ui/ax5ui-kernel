@@ -51,6 +51,18 @@
             getTmpl = function getTmpl() {
             return '\n                <div class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">\n                    <div data-ax5-select-display="label"></div>\n                    <div data-ax5-select-display="addon"></div>\n                </div>\n                ';
         },
+            alignSelectDisplay = function alignSelectDisplay() {
+            var i = this.queue.length;
+            while (i--) {
+                if (this.queue[i].$display) {
+                    this.queue[i].$display.css({
+                        width: this.queue[i].select.outerWidth(),
+                        height: this.queue[i].select.outerHeight()
+                    });
+                }
+            }
+            return this;
+        },
             alignSelect = function alignSelect(append) {
             if (!this.activeSelect) return this;
 
@@ -131,23 +143,13 @@
                 }
             };
 
-            var appendDisplay = function appendDisplay() {};
-
             return function (opts, optIdx) {
 
-                if (opts.$display) {
+                if (!opts.$display) {
                     opts.$display = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), opts));
                     opts.$target.append(opts.$display);
+                    alignSelectDisplay.call(this);
                 }
-
-                /*
-                 var _select;
-                _select = opts.$target.find('select');
-                _select
-                    .unbind('click.ax5select')
-                    .bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
-                    */
-                //_select = null;
 
                 opts = null;
                 optIdx = null;
@@ -167,6 +169,9 @@
          */
         this.init = function () {
             this.onStateChanged = cfg.onStateChanged;
+            jQuery(window).bind("resize.ax5select", function () {
+                alignSelectDisplay.call(this);
+            }.bind(this));
         };
 
         this.bind = function (opts) {
@@ -188,6 +193,8 @@
                 opts.id = 'ax5-select-' + ax5.getGuid();
                 opts.$target.data("ax5-select", opts.id);
             }
+            opts.select = opts.$target.find('select');
+
             optIdx = U.search(this.queue, function () {
                 return this.id == opts.id;
             });
@@ -307,6 +314,8 @@
         this.main = function () {
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
+            } else {
+                this.init();
             }
         }.apply(this, arguments);
     };
