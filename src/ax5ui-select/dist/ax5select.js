@@ -134,16 +134,21 @@
             var appendDisplay = function appendDisplay() {};
 
             return function (opts, optIdx) {
-                var _select;
+
+                if (opts.$display) {
+                    opts.$display = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), opts));
+                    opts.$target.append(opts.$display);
+                }
 
                 /*
+                 var _select;
                 _select = opts.$target.find('select');
                 _select
                     .unbind('click.ax5select')
                     .bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
                     */
-
                 //_select = null;
+
                 opts = null;
                 optIdx = null;
                 return this;
