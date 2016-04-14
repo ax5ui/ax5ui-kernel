@@ -17,13 +17,14 @@
         height: auto;
     }
 }
+
 .form-group-lg {
     [data-ax5select] select[multiple].form-control {
         height: auto;
     }
 }
 
-.form-inline{
+.form-inline {
     @media (min-width: $screen-sm-min) {
         // Inline-block all the things for "inline"
         [data-ax5select] {
@@ -33,18 +34,76 @@
 }
 
 // select group
-[data-ax5select]{
+[data-ax5select] {
     position: relative;
 }
 
 /// select-display
-.ax5-ui-select-display{
-    position:absolute;
+.ax5-ui-select-display {
+    position: absolute;
     left: 0px;
     top: 0px;
+    padding: 0px;
+
+    .ax5-ui-select-display-table {
+        width: 100%;
+        height: 100%;
+        display: table;
+        table-layout: fixed;
+        border-collapse: collapse;
+        @include user-select(none);
+
+        [data-ax5-select-display="label"] {
+            display: table-cell;
+            vertical-align: middle;
+            padding: $ax5select-label-padding;
+        }
+        [data-ax5-select-display="addon"] {
+            display: table-cell;
+            vertical-align: middle;
+            width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
+            text-align: center;
+            &[data-ax5-select-opened="false"] {
+                .addon-icon-closed {
+                    display: block;
+                }
+                .addon-icon-opened {
+                    display: none;
+                }
+            }
+            &[data-ax5-select-opened="true"] {
+                .addon-icon-closed {
+                    display: none;
+                }
+                .addon-icon-opened {
+                    display: block;
+                }
+            }
+            .addon-icon-closed {
+                text-align: left;
+                .addon-icon-arrow {
+                    content: '';
+                    width: 0px;
+                    height: 0px;
+                    display: inline-block;
+                    border-left: $ax5select-addon-icon-height solid transparent;
+                    border-right: $ax5select-addon-icon-height solid transparent;
+                    border-top: ($ax5select-addon-icon-height * 1.414) solid $ax5select-addon-icon-color;
+                    background: transparent;
+                    opacity: 1;
+                }
+            }
+            .addon-icon-opened {
+                text-align: left;
+                .addon-icon-arrow {
+
+                }
+            }
+        }
+    }
 }
 
 /// select-option-group
-.ax5-ui-select-option-group{
+.ax5-ui-select-option-group {
 
 }

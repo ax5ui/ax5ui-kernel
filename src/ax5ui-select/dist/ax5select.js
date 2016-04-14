@@ -49,7 +49,7 @@
             return '\n                <div class="ax5-ui-select-option-group {{theme}}" id="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-contents" data-select-els="contents" style="width:{{contentWidth}}px;"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
-            return '\n                <div class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">\n                    <div data-ax5-select-display="label"></div>\n                    <div data-ax5-select-display="addon"></div>\n                </div>\n                ';
+            return '\n                <div class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">\n                    <div class="ax5-ui-select-display-table">\n                        <div data-ax5-select-display="label">L</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </div>\n                ';
         },
             alignSelectDisplay = function alignSelectDisplay() {
             var i = this.queue.length;
@@ -151,8 +151,8 @@
                     alignSelectDisplay.call(this);
                 }
 
-                opts = null;
-                optIdx = null;
+                //opts = null;
+                //optIdx = null;
                 return this;
             };
         }();
@@ -174,27 +174,31 @@
             }.bind(this));
         };
 
+        /**
+         * bind select
+         * @method ax5.ui.select.bind
+         * @param {Object} opts
+         * @param {String} [opts.id]
+         * @param {Element} opts.target
+         * @param {Object[]} opts.options
+         * @returns {ax5.ui.select}
+         */
         this.bind = function (opts) {
             var selectConfig = {},
                 optIdx;
 
-            jQuery.extend(true, selectConfig, cfg);
-            if (opts) jQuery.extend(true, selectConfig, opts);
-            opts = selectConfig;
-
+            opts = jQuery.extend(true, selectConfig, cfg, opts);
             if (!opts.target) {
                 console.log(ax5.info.getError("ax5select", "401", "bind"));
                 return this;
             }
             opts.$target = jQuery(opts.target);
             if (!opts.id) opts.id = opts.$target.data("ax5-select");
-
             if (!opts.id) {
                 opts.id = 'ax5-select-' + ax5.getGuid();
                 opts.$target.data("ax5-select", opts.id);
             }
             opts.select = opts.$target.find('select');
-
             optIdx = U.search(this.queue, function () {
                 return this.id == opts.id;
             });
@@ -203,7 +207,7 @@
                 this.queue.push(opts);
                 bindSelectTarget.call(this, opts, this.queue.length - 1);
             } else {
-                this.queue[optIdx] = opts;
+                jQuery.extend(true, this.queue[optIdx], opts);
                 bindSelectTarget.call(this, this.queue[optIdx], optIdx);
             }
 
@@ -212,6 +216,14 @@
             return this;
         };
 
+        /**
+         * open the optionBox of select
+         * @method ax5.ui.select.open
+         * @param {(Object|String)} opts
+         * @param {Number} [optIdx]
+         * @param {Number} [tryCount]
+         * @returns {ax5.ui.select}
+         */
         this.open = function () {
 
             var setSelectContent = {};
@@ -282,8 +294,18 @@
         }();
 
         /**
-         * @method ax5.ui.picker.close
-         * @returns {ax5.ui.picker} this
+         * @method ax5.ui.select.update
+         * @param {(Object|String)} opts
+         * @returns {ax5.ui.select}
+         */
+        this.update = function () {
+
+            return this;
+        };
+
+        /**
+         * @method ax5.ui.select.close
+         * @returns {ax5.ui.select}
          */
         this.close = function (opts) {
             if (this.closeTimer) clearTimeout(this.closeTimer);

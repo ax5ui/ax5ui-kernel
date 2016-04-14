@@ -270,9 +270,7 @@
             var pickerConfig = {},
                 optIdx;
 
-            jQuery.extend(true, pickerConfig, cfg);
-            if (opts) jQuery.extend(true, pickerConfig, opts);
-            opts = pickerConfig;
+            opts = jQuery.extend(true, pickerConfig, cfg, opts);
 
             if (!opts.target) {
                 console.log(ax5.info.getError("ax5picker", "401", "bind"));
@@ -293,7 +291,7 @@
                 this.queue.push(opts);
                 bindPickerTarget.call(this, opts, this.queue.length - 1);
             } else {
-                this.queue[optIdx] = opts;
+                jQuery.extend(true, this.queue[optIdx], opts);
                 bindPickerTarget.call(this, this.queue[optIdx], optIdx);
             }
 
