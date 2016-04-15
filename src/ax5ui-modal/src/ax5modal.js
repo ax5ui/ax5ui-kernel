@@ -83,7 +83,7 @@
                 if (opts.zIndex) {
                     data.styles.push("z-index:" + opts.zIndex);
                 }
-                if (typeof data.iframe.param === "string") {
+                if (data.iframe && typeof data.iframe.param === "string") {
                     data.iframe.param = ax5.util.param(data.iframe.param);
                 }
 
