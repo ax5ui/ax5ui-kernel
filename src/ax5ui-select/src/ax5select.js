@@ -58,7 +58,7 @@
             },
             getTmpl = function () {
                 return `
-                <div class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">
+                <a class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">
                     <div class="ax5-ui-select-display-table">
                         <div data-ax5-select-display="label">L</div>
                         <div data-ax5-select-display="addon" data-ax5-select-opened="false">
@@ -72,7 +72,7 @@
                             {{/icons}}
                         </div>
                     </div>
-                </div>
+                </a>
                 `;
             },
             alignSelectDisplay = function () {
@@ -184,8 +184,8 @@
                         alignSelectDisplay.call(this);
                     }
 
-                    //opts = null;
-                    //optIdx = null;
+                    opts = null;
+                    optIdx = null;
                     return this;
                 };
             })();

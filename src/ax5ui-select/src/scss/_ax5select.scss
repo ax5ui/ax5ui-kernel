@@ -14,13 +14,13 @@
 
 .form-group-sm {
     [data-ax5select] select[multiple].form-control {
-        height: auto;
+        height: $input-height-small;
     }
 }
 
 .form-group-lg {
     [data-ax5select] select[multiple].form-control {
-        height: auto;
+        height: $input-height-large;
     }
 }
 
@@ -36,6 +36,35 @@
 // select group
 [data-ax5select] {
     position: relative;
+    select{
+        opacity: 0;
+    }
+}
+
+@mixin ax5-ui-select-display-theme($border-color, $font-color) {
+    &:hover, &:active, &:focus {
+        border-color: $border-color;
+        color: $font-color;
+        text-decoration: none;
+
+        .ax5-ui-select-display-table {
+            [data-ax5-select-display="label"] {
+
+            }
+            [data-ax5-select-display="addon"] {
+                .addon-icon-closed {
+                    .addon-icon-arrow {
+                        border-top-color: $font-color;
+                    }
+                }
+                .addon-icon-opened {
+                    .addon-icon-arrow {
+                        border-bottom-color: $font-color;
+                    }
+                }
+            }
+        }
+    }
 }
 
 /// select-display
@@ -101,6 +130,31 @@
             }
         }
     }
+
+    // themes
+    $border-colors: (
+            default: $ax5select-default-border-color,
+            primary: $ax5select-primary-border-color,
+            success: $ax5select-success-border-color,
+            info: $ax5select-info-border-color,
+            warning: $ax5select-warning-border-color,
+            danger: $ax5select-danger-border-color
+    );
+    $font-colors: (
+            default: $ax5select-default-font-color,
+            primary: $ax5select-primary-font-color,
+            success: $ax5select-success-font-color,
+            info: $ax5select-info-font-color,
+            warning: $ax5select-warning-font-color,
+            danger: $ax5select-danger-font-color
+    );
+
+    @each $theme in $border-colors {
+        &.#{nth($theme, 1)} {
+            @include ax5-ui-select-display-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
+        }
+    }
+
 }
 
 /// select-option-group

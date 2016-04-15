@@ -49,7 +49,7 @@
             return '\n                <div class="ax5-ui-select-option-group {{theme}}" id="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-contents" data-select-els="contents" style="width:{{contentWidth}}px;"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
-            return '\n                <div class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">\n                    <div class="ax5-ui-select-display-table">\n                        <div data-ax5-select-display="label">L</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </div>\n                ';
+            return '\n                <a class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">\n                    <div class="ax5-ui-select-display-table">\n                        <div data-ax5-select-display="label">L</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
         },
             alignSelectDisplay = function alignSelectDisplay() {
             var i = this.queue.length;
@@ -151,8 +151,8 @@
                     alignSelectDisplay.call(this);
                 }
 
-                //opts = null;
-                //optIdx = null;
+                opts = null;
+                optIdx = null;
                 return this;
             };
         }();
