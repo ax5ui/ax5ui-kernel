@@ -1,4 +1,3 @@
-
 //== calendar
 $ax5calendar-control-bg: ($panel-default-heading-bg) !default; // color, (color1, color2), (pos, color1, color2) 모두 사용가능
 $ax5calendar-control-border: 1px solid $panel-default-border !default;
@@ -14,7 +13,7 @@ $ax5calendar-header-font-size: ceil(($font-size-base * 0.8)) !default;
 
 $ax5calendar-body-bg: (#FFFFFF, #FFFFFF) !default;
 $ax5calendar-body-border: 0px none !default;
-$ax5calendar-body-font-size: $font-size-base !default;
+$ax5calendar-body-font-size: ceil(($font-size-base * 1)) !default;
 $ax5calendar-body-animation-in: ax5-ui-calendar-fadein !default;
 $ax5calendar-body-animation-out: ax5-ui-calendar-fadeout !default;
 

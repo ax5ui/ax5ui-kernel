@@ -110,6 +110,7 @@
             }
             .addon-icon-closed {
                 text-align: left;
+                line-height: ($ax5select-addon-icon-height * 1.414);
                 .addon-icon-arrow {
                     content: '';
                     width: 0px;

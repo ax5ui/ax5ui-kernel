@@ -136,7 +136,7 @@
 						line-height: inherit;
 						@include ax-background($ax5calendar-date-bg);
 						color: $ax5calendar-date-text-color;
-						font-size: 16px;
+						font-size: $ax5calendar-body-font-size;
 
 						span.addon {
 							position: absolute;
@@ -214,7 +214,7 @@
 						line-height: inherit;
 						@include ax-background($ax5calendar-date-bg);
 						color: $ax5calendar-date-text-color;
-						font-size: 16px;
+						font-size: $ax5calendar-body-font-size;
 
 						&.live {
 							@include ax-background($ax5calendar-live-bg);
@@ -254,7 +254,7 @@
 						line-height: inherit;
 						@include ax-background($ax5calendar-date-bg);
 						color: $ax5calendar-date-text-color;
-						font-size: 16px;
+						font-size: $ax5calendar-body-font-size;
 
 						&.live {
 							@include ax-background($ax5calendar-live-bg);
