@@ -485,11 +485,15 @@
                     }
                 }
             };
+            var updateTheme = function(theme){
+                if(theme) cfg.theme = theme;
+            };
 
             return function (e, opt) {
 
                 if (!e) return this;
                 opt = getOption[((typeof e.clientX == "undefined") ? "object" : "event")].call(this, e, opt);
+                updateTheme(opt.theme);
                 popup.call(this, opt, cfg.items, 0); // 0 is seq of queue
                 appEventAttach.call(this, true); // 이벤트 연결
 

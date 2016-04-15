@@ -175,6 +175,7 @@
         attached();
 
         $(document).bind("contextmenu", function (e) {
+            //menu.popup(e, {theme:"danger"});
             menu.popup(e);
             ax5.util.stopEvent(e);
             // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
