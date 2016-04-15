@@ -182,6 +182,10 @@
                         opts.$display = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), opts));
                         opts.$target.append(opts.$display);
                         alignSelectDisplay.call(this);
+
+                        opts.$display
+                            .unbind('click.ax5select')
+                            .bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
                     }
 
                     opts = null;
