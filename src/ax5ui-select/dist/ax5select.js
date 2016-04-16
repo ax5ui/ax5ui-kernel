@@ -1,5 +1,11 @@
 'use strict';
 
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 // ax5.ui.select
 (function (root, _SUPER_) {
 
@@ -30,7 +36,7 @@
             animateTime: 250
         };
 
-        this.activeSelect = null;
+        this.activeSelectOptionGroup = null;
         this.activeSelectQueueIndex = -1;
         this.openTimer = null;
         this.closeTimer = null;
@@ -46,7 +52,7 @@
             return true;
         },
             getOptionGroupTmpl = function getOptionGroupTmpl() {
-            return '\n                <div class="ax5-ui-select-option-group {{theme}}" id="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-contents" data-select-els="contents" style="width:{{contentWidth}}px;"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
+            return '\n                <div class="ax5-ui-select-option-group {{theme}}" id="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content" style="width:{{contentWidth}}px;"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
             return '\n                <a class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">\n                    <div class="ax5-ui-select-display-table">\n                        <div data-ax5-select-display="label">L</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
@@ -228,7 +234,9 @@
          */
         this.open = function () {
 
-            var setSelectContent = {};
+            var setSelectContent = {
+                'sync': function sync() {}
+            };
 
             return function (opts, optIdx, tryCount) {
 
@@ -263,9 +271,9 @@
                     return this;
                 }
 
-                this.activeSelect = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), opts));
+                this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, opts, optIdx), opts));
                 this.activeSelectQueueIndex = optIdx;
-                setSelectContent.call(this, opts, optIdx);
+                opts.optionGroupContent = setSelectContent['sync'].call(this, opts, optIdx);
 
                 alignSelect.call(this, "append");
                 jQuery(window).bind("resize.ax5select", function () {

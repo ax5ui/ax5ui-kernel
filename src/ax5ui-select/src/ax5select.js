@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 // ax5.ui.select
 (function (root, _SUPER_) {
 
@@ -29,7 +35,7 @@
             animateTime: 250
         };
 
-        this.activeSelect = null;
+        this.activeSelectOptionGroup = null;
         this.activeSelectQueueIndex = -1;
         this.openTimer = null;
         this.closeTimer = null;
@@ -50,7 +56,7 @@
                 return `
                 <div class="ax5-ui-select-option-group {{theme}}" id="{{id}}">
                     <div class="ax-select-body">
-                        <div class="ax-select-contents" data-select-els="contents" style="width:{{contentWidth}}px;"></div>
+                        <div class="ax-select-option-group-content" data-select-els="content" style="width:{{contentWidth}}px;"></div>
                     </div>
                     <div class="ax-select-arrow"></div>
                 </div>
@@ -265,9 +271,14 @@
          */
         this.open = (function () {
 
-            var setSelectContent = {};
+            var setSelectContent = {
+                'sync': function(){
+
+                }
+            };
 
             return function (opts, optIdx, tryCount) {
+
 
                 /**
                  * open select from the outside
@@ -300,9 +311,10 @@
                     return this;
                 }
 
-                this.activeSelect = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), opts));
+                this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, opts, optIdx), opts));
                 this.activeSelectQueueIndex = optIdx;
-                setSelectContent.call(this, opts, optIdx);
+                opts.optionGroupContent =
+                setSelectContent['sync'].call(this, opts, optIdx);
 
                 alignSelect.call(this, "append");
                 jQuery(window).bind("resize.ax5select", (function () {
