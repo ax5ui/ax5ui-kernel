@@ -167,7 +167,7 @@
                         <div class="ax-picker-heading">{{title}}</div>
                     {{/title}}
                     <div class="ax-picker-body">
-                        <div class="ax-picker-contents" data-picker-els="contents" style="width:{{contentWidth}}px;"></div>
+                        <div class="ax-picker-content" data-picker-els="content" style="width:{{contentWidth}}px;"></div>
                         {{#btns}}
                             <div class="ax-picker-buttons">
                             {{#btns}}
@@ -465,7 +465,7 @@
 
                 this.activePicker = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), opts));
                 this.activePickerQueueIndex = optIdx;
-                opts.pickerContent = this.activePicker.find('[data-picker-els="contents"]');
+                opts.pickerContent = this.activePicker.find('[data-picker-els="content"]');
 
                 if (U.isFunction(opts.content)) {
                     // 함수타입

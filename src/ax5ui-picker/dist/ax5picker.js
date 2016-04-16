@@ -149,7 +149,7 @@
         }(),
             getTmpl = function getTmpl(opts, optIdx) {
             // console.log(opts);
-            return '\n                <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n                    {{#title}}\n                        <div class="ax-picker-heading">{{title}}</div>\n                    {{/title}}\n                    <div class="ax-picker-body">\n                        <div class="ax-picker-contents" data-picker-els="contents" style="width:{{contentWidth}}px;"></div>\n                        {{#btns}}\n                            <div class="ax-picker-buttons">\n                            {{#btns}}\n                                {{#@each}}\n                                <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    <div class="ax-picker-arrow"></div>\n                </div>\n                ';
+            return '\n                <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n                    {{#title}}\n                        <div class="ax-picker-heading">{{title}}</div>\n                    {{/title}}\n                    <div class="ax-picker-body">\n                        <div class="ax-picker-content" data-picker-els="content" style="width:{{contentWidth}}px;"></div>\n                        {{#btns}}\n                            <div class="ax-picker-buttons">\n                            {{#btns}}\n                                {{#@each}}\n                                <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    <div class="ax-picker-arrow"></div>\n                </div>\n                ';
         },
             alignPicker = function alignPicker(append) {
             if (!this.activePicker) return this;
@@ -414,7 +414,7 @@
 
                 this.activePicker = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), opts));
                 this.activePickerQueueIndex = optIdx;
-                opts.pickerContent = this.activePicker.find('[data-picker-els="contents"]');
+                opts.pickerContent = this.activePicker.find('[data-picker-els="content"]');
 
                 if (U.isFunction(opts.content)) {
                     // 함수타입
