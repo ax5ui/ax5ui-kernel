@@ -56,7 +56,9 @@
                 return `
                 <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">
                     <div class="ax-select-body">
-                        <div class="ax-select-option-group-content" data-select-els="content" style="width:{{contentWidth}}px;"></div>
+                        <div class="ax-select-option-group-content" data-select-els="content">
+                        
+                        </div>
                     </div>
                     <div class="ax-select-arrow"></div>
                 </div>
@@ -183,12 +185,12 @@
                 };
 
                 return function (opts, optIdx) {
-                    var data = {}, selectElement;
+                    var data = {};
 
                     if (!opts.$display) {
-                        selectElement = opts.select.get(0);
+                        syncSelectOptions.call(this, opts, optIdx);
                         data.id = opts.id;
-                        data.label = (selectElement.options && selectElement.options.length > 0) ? selectElement.options[(selectElement.selectedIndex>-1) ? selectElement.selectedIndex: 0].text : "";
+                        data.label = opts.selectedText;
                         data.formSize = (function(){
                             if(opts.select.hasClass("input-lg")) return "input-lg";
                             if(opts.select.hasClass("input-sm")) return "input-sm";
@@ -204,12 +206,24 @@
                     }
 
                     data = null;
-                    selectElement = null;
                     opts = null;
                     optIdx = null;
                     return this;
                 };
-            })();
+            })(),
+            syncSelectOptions = function(opts, optIdx, options){
+                // todo : opts.selectedText, opts.selectedValue, opts.selectedIndex
+                if(options){
+                    opts.options = [].concat(options);
+                    // select options 태그 생성
+                    return opts.options;
+                }
+                else {
+                    // select options 태그와 opts.options를 비교 하여 동기화 한다.
+                    var scriptOptions = [], elementOptions = [];
+
+                }
+            };
         /// private end
 
         /**
@@ -254,6 +268,14 @@
                 opts.$target.data("ax5-select", opts.id);
             }
             opts.select = opts.$target.find('select');
+
+            // target attribute data
+            (function(data) {
+                if(!data.error){
+                    opts = jQuery.extend(true, opts, data);
+                }
+            })(U.parseJson(opts.$target.attr("data-ax5select")));
+
             optIdx = U.search(this.queue, function () {
                 return this.id == opts.id;
             });

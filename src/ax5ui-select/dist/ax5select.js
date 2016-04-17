@@ -52,7 +52,7 @@
             return true;
         },
             getOptionGroupTmpl = function getOptionGroupTmpl() {
-            return '\n                <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content" style="width:{{contentWidth}}px;"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
+            return '\n                <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        \n                        </div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
             return '\n                <a class="form-control {{formSize}} ax5-ui-select-display {{theme}}" data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
@@ -150,13 +150,12 @@
             };
 
             return function (opts, optIdx) {
-                var data = {},
-                    selectElement;
+                var data = {};
 
                 if (!opts.$display) {
-                    selectElement = opts.select.get(0);
+                    syncSelectOptions.call(this, opts, optIdx);
                     data.id = opts.id;
-                    data.label = selectElement.options && selectElement.options.length > 0 ? selectElement.options[selectElement.selectedIndex > -1 ? selectElement.selectedIndex : 0].text : "";
+                    data.label = opts.selectedText;
                     data.formSize = function () {
                         if (opts.select.hasClass("input-lg")) return "input-lg";
                         if (opts.select.hasClass("input-sm")) return "input-sm";
@@ -170,12 +169,23 @@
                 }
 
                 data = null;
-                selectElement = null;
                 opts = null;
                 optIdx = null;
                 return this;
             };
-        }();
+        }(),
+            syncSelectOptions = function syncSelectOptions(opts, optIdx, options) {
+            // todo : opts.selectedText, opts.selectedValue, opts.selectedIndex
+            if (options) {
+                opts.options = [].concat(options);
+                // select options 태그 생성
+                return opts.options;
+            } else {
+                // select options 태그와 opts.options를 비교 하여 동기화 한다.
+                var scriptOptions = [],
+                    elementOptions = [];
+            }
+        };
         /// private end
 
         /**
@@ -219,6 +229,14 @@
                 opts.$target.data("ax5-select", opts.id);
             }
             opts.select = opts.$target.find('select');
+
+            // target attribute data
+            (function (data) {
+                if (!data.error) {
+                    opts = jQuery.extend(true, opts, data);
+                }
+            })(U.parseJson(opts.$target.attr("data-ax5select")));
+
             optIdx = U.search(this.queue, function () {
                 return this.id == opts.id;
             });
