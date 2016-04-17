@@ -52,10 +52,10 @@
             return true;
         },
             getOptionGroupTmpl = function getOptionGroupTmpl() {
-            return '\n                <div class="ax5-ui-select-option-group {{theme}}" id="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content" style="width:{{contentWidth}}px;"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
+            return '\n                <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content" style="width:{{contentWidth}}px;"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
-            return '\n                <a class="form-control ax5-ui-select-display {{theme}}" id="{{id}}">\n                    <div class="ax5-ui-select-display-table">\n                        <div data-ax5-select-display="label">L</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
+            return '\n                <a class="form-control {{formSize}} ax5-ui-select-display {{theme}}" data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
         },
             alignSelectDisplay = function alignSelectDisplay() {
             var i = this.queue.length;
@@ -69,14 +69,14 @@
             }
             return this;
         },
-            alignSelect = function alignSelect(append) {
-            if (!this.activeSelect) return this;
+            alignSelectOptionGroup = function alignSelectOptionGroup(append) {
+            if (!this.activeSelectOptionGroup) return this;
 
             var opts = this.queue[this.activeSelectQueueIndex],
                 pos = {},
                 dim = {};
 
-            if (append) jQuery(document.body).append(this.activeSelect);
+            if (append) jQuery(document.body).append(this.activeSelectOptionGroup);
 
             pos = opts.$target.offset();
             dim = {
@@ -91,18 +91,18 @@
             }
 
             if (append) {
-                this.activeSelect.addClass("direction-" + opts.direction);
+                this.activeSelectOptionGroup.addClass("direction-" + opts.direction);
             }
-            this.activeSelect.css(function () {
+            this.activeSelectOptionGroup.css(function () {
                 if (opts.direction == "top") {
                     return {
-                        left: pos.left + dim.width / 2 - this.activeSelect.outerWidth() / 2,
+                        left: pos.left + dim.width / 2 - this.activeSelectOptionGroup.outerWidth() / 2,
                         top: pos.top + dim.height + 12
                     };
                 } else if (opts.direction == "bottom") {
                     return {
-                        left: pos.left + dim.width / 2 - this.activeSelect.outerWidth() / 2,
-                        top: pos.top - this.activeSelect.outerHeight() - 12
+                        left: pos.left + dim.width / 2 - this.activeSelectOptionGroup.outerWidth() / 2,
+                        top: pos.top - this.activeSelectOptionGroup.outerHeight() - 12
                     };
                 } else if (opts.direction == "left") {
                     return {
@@ -111,14 +111,14 @@
                     };
                 } else if (opts.direction == "right") {
                     return {
-                        left: pos.left - this.activeSelect.outerWidth() - 12,
+                        left: pos.left - this.activeSelectOptionGroup.outerWidth() - 12,
                         top: pos.top - dim.height / 2
                     };
                 }
             }.call(this));
         },
             onBodyClick = function onBodyClick(e, target) {
-            if (!this.activeSelect) return this;
+            if (!this.activeSelectOptionGroup) return this;
 
             var opts = this.queue[this.activeSelectQueueIndex];
 
@@ -150,15 +150,27 @@
             };
 
             return function (opts, optIdx) {
+                var data = {},
+                    selectElement;
 
                 if (!opts.$display) {
-                    opts.$display = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), opts));
+                    selectElement = opts.select.get(0);
+                    data.id = opts.id;
+                    data.label = selectElement.options && selectElement.options.length > 0 ? selectElement.options[selectElement.selectedIndex > -1 ? selectElement.selectedIndex : 0].text : "";
+                    data.formSize = function () {
+                        if (opts.select.hasClass("input-lg")) return "input-lg";
+                        if (opts.select.hasClass("input-sm")) return "input-sm";
+                    }();
+
+                    opts.$display = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), data));
                     opts.$target.append(opts.$display);
                     alignSelectDisplay.call(this);
 
                     opts.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
                 }
 
+                data = null;
+                selectElement = null;
                 opts = null;
                 optIdx = null;
                 return this;
@@ -234,11 +246,8 @@
          */
         this.open = function () {
 
-            var setSelectContent = {
-                'sync': function sync() {}
-            };
-
             return function (opts, optIdx, tryCount) {
+                var data = {};
 
                 /**
                  * open select from the outside
@@ -258,7 +267,7 @@
                  다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문
                  */
                 if (this.openTimer) clearTimeout(this.openTimer);
-                if (this.activeSelect) {
+                if (this.activeSelectOptionGroup) {
                     if (this.activeSelectQueueIndex == optIdx) {
                         return this;
                     }
@@ -271,13 +280,16 @@
                     return this;
                 }
 
-                this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, opts, optIdx), opts));
-                this.activeSelectQueueIndex = optIdx;
-                opts.optionGroupContent = setSelectContent['sync'].call(this, opts, optIdx);
+                console.log(opts);
+                data.id = opts.id;
+                data.theme = opts.theme;
 
-                alignSelect.call(this, "append");
+                this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, opts, optIdx), data));
+                this.activeSelectQueueIndex = optIdx;
+
+                alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append
                 jQuery(window).bind("resize.ax5select", function () {
-                    alignSelect.call(this);
+                    alignSelectOptionGroup.call(this);
                 }.bind(this));
 
                 // bind key event
@@ -299,6 +311,7 @@
                     boundObject: opts
                 });
 
+                data = null;
                 return this;
             };
         }();
@@ -319,18 +332,18 @@
          */
         this.close = function (opts) {
             if (this.closeTimer) clearTimeout(this.closeTimer);
-            if (!this.activeSelect) return this;
+            if (!this.activeSelectOptionGroup) return this;
 
             opts = this.queue[this.activeSelectQueueIndex];
 
-            this.activeSelect.addClass("destroy");
+            this.activeSelectOptionGroup.addClass("destroy");
             jQuery(window).unbind("resize.ax5select");
             jQuery(window).unbind("click.ax5select");
             jQuery(window).unbind("keyup.ax5select");
 
             this.closeTimer = setTimeout(function () {
-                if (this.activeSelect) this.activeSelect.remove();
-                this.activeSelect = null;
+                if (this.activeSelectOptionGroup) this.activeSelectOptionGroup.remove();
+                this.activeSelectOptionGroup = null;
                 this.activeSelectQueueIndex = -1;
 
                 onStateChanged.call(this, opts, {

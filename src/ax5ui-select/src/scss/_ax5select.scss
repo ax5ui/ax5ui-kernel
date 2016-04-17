@@ -73,6 +73,9 @@
     left: 0px;
     top: 0px;
     padding: 0px;
+    &:hover {
+        text-decoration: none;
+    }
 
     .ax5-ui-select-display-table {
         width: 100%;
@@ -86,6 +89,7 @@
             display: table-cell;
             vertical-align: middle;
             padding: $ax5select-label-padding;
+
         }
         [data-ax5-select-display="addon"] {
             display: table-cell;
