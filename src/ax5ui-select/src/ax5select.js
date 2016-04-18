@@ -32,7 +32,13 @@
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
             title: '',
-            animateTime: 250
+            animateTime: 250,
+
+            columnKeys: {
+                optionValue: 'value',
+                optionText: 'text',
+                optionSelected: 'selected'
+            }
         };
 
         this.activeSelectOptionGroup = null;
@@ -188,12 +194,12 @@
                     var data = {};
 
                     if (!opts.$display) {
-                        syncSelectOptions.call(this, opts, optIdx);
+                        syncSelectOptions.call(this, opts, optIdx, opts.options);
                         data.id = opts.id;
                         data.label = opts.selectedText;
-                        data.formSize = (function(){
-                            if(opts.select.hasClass("input-lg")) return "input-lg";
-                            if(opts.select.hasClass("input-sm")) return "input-sm";
+                        data.formSize = (function () {
+                            if (opts.select.hasClass("input-lg")) return "input-lg";
+                            if (opts.select.hasClass("input-sm")) return "input-sm";
                         })();
 
                         opts.$display = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), data));
@@ -211,18 +217,39 @@
                     return this;
                 };
             })(),
-            syncSelectOptions = function(opts, optIdx, options){
+            syncSelectOptions = function (opts, optIdx, options) {
+                var po, elementOptions, newOptions,
+                    selected;
                 // todo : opts.selectedText, opts.selectedValue, opts.selectedIndex
-                if(options){
+                if (options) {
                     opts.options = [].concat(options);
                     // select options 태그 생성
-                    return opts.options;
+                    po = [];
+                    opts.options.forEach(function (O) {
+                        po.push('<option value="' + O[cfg.columnKeys.optionValue] + '" ' + (O[cfg.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[cfg.columnKeys.optionText] + '</option>');
+                    });
+                    opts.select.html(po.join(''));
                 }
                 else {
-                    // select options 태그와 opts.options를 비교 하여 동기화 한다.
-                    var scriptOptions = [], elementOptions = [];
-
+                    elementOptions = U.toArray(opts.select.get(0).options);
+                    // select option 스크립트 생성
+                    newOptions = [];
+                    elementOptions.forEach(function(O){
+                        var option = {}
+                        option[cfg.columnKeys.optionValue] = O.value;
+                        option[cfg.columnKeys.optionText] = O.text;
+                        option[cfg.columnKeys.optionSelected] = O.selected;
+                        newOptions.push(option);
+                        option = null;
+                    });
+                    opts.options = newOptions;
                 }
+
+                console.log(opts.options);
+                po = null;
+                elementOptions = null;
+                newOptions = null;
+                return opts.options;
             };
         /// private end
 
@@ -270,11 +297,11 @@
             opts.select = opts.$target.find('select');
 
             // target attribute data
-            (function(data) {
-                if(!data.error){
+            (function (data) {
+                if (U.isObject(data) && !data.error) {
                     opts = jQuery.extend(true, opts, data);
                 }
-            })(U.parseJson(opts.$target.attr("data-ax5select")));
+            })(U.parseJson(opts.$target.attr("data-ax5select"), true));
 
             optIdx = U.search(this.queue, function () {
                 return this.id == opts.id;
