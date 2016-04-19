@@ -217,40 +217,61 @@
                     return this;
                 };
             })(),
-            syncSelectOptions = function (opts, optIdx, options) {
-                var po, elementOptions, newOptions,
-                    selected;
-                // todo : opts.selectedText, opts.selectedValue, opts.selectedIndex
-                if (options) {
-                    opts.options = [].concat(options);
-                    // select options 태그 생성
-                    po = [];
-                    opts.options.forEach(function (O) {
-                        po.push('<option value="' + O[cfg.columnKeys.optionValue] + '" ' + (O[cfg.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[cfg.columnKeys.optionText] + '</option>');
-                    });
-                    opts.select.html(po.join(''));
-                }
-                else {
-                    elementOptions = U.toArray(opts.select.get(0).options);
-                    // select option 스크립트 생성
-                    newOptions = [];
-                    elementOptions.forEach(function(O){
-                        var option = {}
-                        option[cfg.columnKeys.optionValue] = O.value;
-                        option[cfg.columnKeys.optionText] = O.text;
-                        option[cfg.columnKeys.optionSelected] = O.selected;
-                        newOptions.push(option);
-                        option = null;
-                    });
-                    opts.options = newOptions;
-                }
+            syncSelectOptions = (function () {
+                var setSelected = function (opts, optIdx, O) {
+                    if (!O) {
+                        opts.selected = {};
+                    }
+                    else {
+                        if (U.isArray(opts.selected)) {
+                            opts.selected.push(O);
+                        }
+                        else {
+                            opts.selected = $.extend({}, O);
+                        }
+                    }
+                };
 
-                console.log(opts.options);
-                po = null;
-                elementOptions = null;
-                newOptions = null;
-                return opts.options;
-            };
+                return function (opts, optIdx, options) {
+                    var po, elementOptions, newOptions;
+                    setSelected(opts, optIdx, false); // opts.selected 초기화
+
+                    if (options) {
+                        opts.options = [].concat(options);
+                        // select options 태그 생성
+                        po = [];
+                        opts.options.forEach(function (O, OIndex) {
+                            po.push('<option value="' + O[cfg.columnKeys.optionValue] + '" ' + (O[cfg.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[cfg.columnKeys.optionText] + '</option>');
+                            if(O[cfg.columnKeys.optionSelected]) setSelected(opts, optIdx, O);
+                        });
+                        opts.select.html(po.join(''));
+                    }
+                    else {
+                        elementOptions = U.toArray(opts.select.get(0).options);
+                        // select option 스크립트 생성
+                        newOptions = [];
+                        elementOptions.forEach(function (O, OIndex) {
+                            var option = {};
+                            option[cfg.columnKeys.optionValue] = O.value;
+                            option[cfg.columnKeys.optionText] = O.text;
+                            option[cfg.columnKeys.optionSelected] = O.selected;
+                            option['@index'] = OIndex;
+                            if(O.selected) setSelected(opts, optIdx, option);
+                            newOptions.push(option);
+                            option = null;
+                        });
+                        opts.options = newOptions;
+                    }
+
+                    if(typeof opts.selected[cfg.columnKeys.optionValue] === "undefined"){
+                        // 첫번째 옵션을 선택된 값으로 처리 하기
+                    }
+                    po = null;
+                    elementOptions = null;
+                    newOptions = null;
+                    return opts.options;
+                }
+            })();
         /// private end
 
         /**
