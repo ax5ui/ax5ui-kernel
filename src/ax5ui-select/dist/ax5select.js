@@ -35,6 +35,9 @@
             title: '',
             animateTime: 250,
 
+            lang: {
+                empty: '...'
+            },
             columnKeys: {
                 optionValue: 'value',
                 optionText: 'text',
@@ -161,7 +164,7 @@
                 if (!opts.$display) {
                     syncSelectOptions.call(this, opts, optIdx, opts.options);
                     data.id = opts.id;
-                    data.label = opts.selectedText;
+                    data.label = opts.selected.text;
                     data.formSize = function () {
                         if (opts.select.hasClass("input-lg")) return "input-lg";
                         if (opts.select.hasClass("input-sm")) return "input-sm";
@@ -191,6 +194,9 @@
                         opts.selected = $.extend({}, O);
                     }
                 }
+            };
+            var setSelectedFirst = function setSelectedFirst(opts, optIdx) {
+                if (opts.options[0]) opts.selected = $.extend({}, opts.options[0]);else opts.selected = { text: cfg.lang.empty };
             };
 
             return function (opts, optIdx, options) {
@@ -225,6 +231,7 @@
 
                 if (typeof opts.selected[cfg.columnKeys.optionValue] === "undefined") {
                     // 첫번째 옵션을 선택된 값으로 처리 하기
+                    setSelectedFirst(opts, optIdx);
                 }
                 po = null;
                 elementOptions = null;
@@ -344,7 +351,6 @@
                     return this;
                 }
 
-                console.log(opts);
                 data.id = opts.id;
                 data.theme = opts.theme;
 

@@ -34,6 +34,9 @@
             title: '',
             animateTime: 250,
 
+            lang: {
+                empty: '...'
+            },
             columnKeys: {
                 optionValue: 'value',
                 optionText: 'text',
@@ -196,7 +199,7 @@
                     if (!opts.$display) {
                         syncSelectOptions.call(this, opts, optIdx, opts.options);
                         data.id = opts.id;
-                        data.label = opts.selectedText;
+                        data.label = opts.selected.text;
                         data.formSize = (function () {
                             if (opts.select.hasClass("input-lg")) return "input-lg";
                             if (opts.select.hasClass("input-sm")) return "input-sm";
@@ -231,6 +234,10 @@
                         }
                     }
                 };
+                var setSelectedFirst = function (opts, optIdx) {
+                    if (opts.options[0]) opts.selected = $.extend({}, opts.options[0]);
+                    else  opts.selected = {text: cfg.lang.empty};
+                };
 
                 return function (opts, optIdx, options) {
                     var po, elementOptions, newOptions;
@@ -242,7 +249,7 @@
                         po = [];
                         opts.options.forEach(function (O, OIndex) {
                             po.push('<option value="' + O[cfg.columnKeys.optionValue] + '" ' + (O[cfg.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[cfg.columnKeys.optionText] + '</option>');
-                            if(O[cfg.columnKeys.optionSelected]) setSelected(opts, optIdx, O);
+                            if (O[cfg.columnKeys.optionSelected]) setSelected(opts, optIdx, O);
                         });
                         opts.select.html(po.join(''));
                     }
@@ -256,15 +263,16 @@
                             option[cfg.columnKeys.optionText] = O.text;
                             option[cfg.columnKeys.optionSelected] = O.selected;
                             option['@index'] = OIndex;
-                            if(O.selected) setSelected(opts, optIdx, option);
+                            if (O.selected) setSelected(opts, optIdx, option);
                             newOptions.push(option);
                             option = null;
                         });
                         opts.options = newOptions;
                     }
 
-                    if(typeof opts.selected[cfg.columnKeys.optionValue] === "undefined"){
+                    if (typeof opts.selected[cfg.columnKeys.optionValue] === "undefined") {
                         // 첫번째 옵션을 선택된 값으로 처리 하기
+                        setSelectedFirst(opts, optIdx);
                     }
                     po = null;
                     elementOptions = null;
@@ -386,8 +394,6 @@
                     return this;
                 }
 
-
-                console.log(opts);
                 data.id = opts.id;
                 data.theme = opts.theme;
 
