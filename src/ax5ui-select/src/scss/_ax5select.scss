@@ -36,7 +36,7 @@
 // select group
 [data-ax5select] {
     position: relative;
-    select{
+    select {
         opacity: 0;
     }
 }
@@ -73,6 +73,7 @@
     left: 0px;
     top: 0px;
     padding: 0px;
+
     &:hover {
         text-decoration: none;
     }
@@ -81,7 +82,7 @@
         width: 100%;
         height: 100%;
         display: table;
-        table-layout: fixed;
+        //table-layout: fixed;
         border-collapse: collapse;
         @include user-select(none);
 
@@ -89,7 +90,7 @@
             display: table-cell;
             vertical-align: middle;
             padding: $ax5select-label-padding;
-
+            white-space: nowrap;
         }
         [data-ax5-select-display="addon"] {
             display: table-cell;
@@ -113,6 +114,7 @@
                 }
             }
             .addon-icon-closed {
+                width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
                 text-align: left;
                 line-height: ($ax5select-addon-icon-height * 1.414);
                 .addon-icon-arrow {
@@ -128,6 +130,7 @@
                 }
             }
             .addon-icon-opened {
+                width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
                 text-align: left;
                 .addon-icon-arrow {
 
@@ -169,7 +172,7 @@
 
         }
     }
-    .ax-select-arrow{
+    .ax-select-arrow {
 
     }
 }

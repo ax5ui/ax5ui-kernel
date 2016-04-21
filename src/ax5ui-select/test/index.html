@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5select.css"/>
@@ -18,9 +18,9 @@
     <h1>form-group</h1>
     <div class="form-group">
         <div data-ax5select="true">
-            <select class="form-control" name="select1" multiple="multiple">
-                <option value="1">value 1 ~!@#!@#@</option>
-                <option value="2">value 2</option>
+            <select class="form-control" name="select1">
+                <option value="1" selected="selected">value 1 ~!@#!@#@</option>
+                <option value="2" selected="selected">value 2</option>
                 <option value="3">value 3</option>
                 <option value="4">value 4</option>
                 <option value="5">value 5</option>
@@ -29,7 +29,7 @@
     </div>
 
     <h1>form-control sm</h1>
-    <div data-ax5select='{"options": [{value:"optionValue1", text:"optionText1"},{value:"optionValue2", text:"optionText2"}]}'>
+    <div data-ax5select='{"options": [{value:"optionValue1", text:"optionText1", selected:true},{value:"optionValue2", text:"optionText2", selected:true}]}'>
         <select class="form-control input-sm" name="select1" multiple="multiple">
             <option value="1">value 1 ~!@#!@#@</option>
         </select>
@@ -37,7 +37,7 @@
 
 
     <h1>form-control lg</h1>
-    <div data-ax5select='{"options": [{value:"optionValue1", text:"optionText1"},{value:"optionValue2", text:"optionText2"}]}'>
+    <div data-ax5select='{"options": [{value:"optionValue1", text:"optionText1", selected:true},{value:"optionValue2", text:"optionText2", selected:true}]}'>
         <select class="form-control input-lg" name="select1" multiple="multiple">
             <option value="1">value 1 ~!@#!@#@</option>
         </select>

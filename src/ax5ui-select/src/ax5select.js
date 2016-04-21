@@ -35,7 +35,8 @@
             animateTime: 250,
 
             lang: {
-                emptyOfSelected: ''
+                emptyOfSelected: '',
+                multipleLabel: '"{{label}}"외 {{length}}건'
             },
             columnKeys: {
                 optionValue: 'value',
@@ -61,12 +62,14 @@
                 }
                 return true;
             },
-            getOptionGroupTmpl = function () {
+            getOptionGroupTmpl = function (columnKeys) {
                 return `
                 <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">
                     <div class="ax-select-body">
                         <div class="ax-select-option-group-content" data-select-els="content">
-                        
+                        {{#options}}
+                            <div>{{${columnKeys.optionValue}}} // {{${columnKeys.optionText}}}</div>
+                        {{/options}}
                         </div>
                     </div>
                     <div class="ax-select-arrow"></div>
@@ -76,7 +79,7 @@
             getTmpl = function () {
                 return `
                 <a class="form-control {{formSize}} ax5-ui-select-display {{theme}}" data-ax5-select-display="{{id}}">
-                    <div class="ax5-ui-select-display-table">
+                    <div class="ax5-ui-select-display-table" data-select-els="display-table">
                         <div data-ax5-select-display="label">{{label}}</div>
                         <div data-ax5-select-display="addon" data-ax5-select-opened="false">
                             {{#icons}}
@@ -93,12 +96,16 @@
                 `;
             },
             alignSelectDisplay = function () {
-                var i = this.queue.length;
+                var i = this.queue.length, w;
                 while (i--) {
                     if (this.queue[i].$display) {
+
+                        this.queue[i].$display.css({width:"auto"});
+                        w = Math.max(this.queue[i].select.outerWidth(), this.queue[i].$display.find('[data-select-els="display-table"]').outerWidth());
                         this.queue[i].$display.css({
-                            width: this.queue[i].select.outerWidth(),
-                            height: this.queue[i].select.outerHeight()
+                            width: w,
+                            height: this.queue[i].select.outerHeight(),
+                            lineHeight: this.queue[i].select.outerHeight()+'px'
                         });
                     }
                 }
@@ -194,19 +201,28 @@
                 };
                 var getLabel = function (opts, optIdx) {
                     var labels = [];
-                    if (U.isArray(opts.selected)) {
-
-                        /*
-                        console.log(opts.selected);
-                        result = U.reduce(opts.selected, function (p, n) {
-                            return this.pickup;
+                    if (U.isArray(opts.selected) && opts.selected.length > 0) {
+                        opts.selected.forEach(function (n) {
+                            if (n.selected) labels.push(n[cfg.columnKeys.optionText]);
                         });
-                        */
                     }
                     else {
-
+                        if (opts.options[0]) labels[0] = opts.options[0][cfg.columnKeys.optionText];
+                        else labels[0] = "";
                     }
-                    return opts.selected.text;
+
+                    return (function () {
+                        if (opts.multiple && labels.length > 1) {
+                            var data = {
+                                label: labels[0],
+                                length: labels.length - 1
+                            };
+                            return ax5.mustache.render(cfg.lang.multipleLabel, data);
+                        }
+                        else {
+                            return labels[0];
+                        }
+                    })();
                 };
 
                 return function (opts, optIdx) {
@@ -239,15 +255,11 @@
             syncSelectOptions = (function () {
                 var setSelected = function (opts, optIdx, O) {
                     if (!O) {
-                        opts.selected = {};
+                        opts.selected = [];
                     }
                     else {
-                        if (U.isArray(opts.selected)) {
-                            opts.selected.push(O);
-                        }
-                        else {
-                            opts.selected = $.extend({}, O);
-                        }
+                        if(opts.multiple) opts.selected.push(jQuery.extend({}, O));
+                        else opts.selected[0] = jQuery.extend({}, O);
                     }
                 };
 
@@ -332,6 +344,7 @@
                 opts.$target.data("ax5-select", opts.id);
             }
             opts.select = opts.$target.find('select');
+            opts.multiple = opts.select.attr("multiple");
 
             // target attribute data
             (function (data) {
@@ -404,8 +417,9 @@
 
                 data.id = opts.id;
                 data.theme = opts.theme;
+                data.options = opts.options;
 
-                this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, opts, optIdx), data));
+                this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, cfg.columnKeys), data));
                 this.activeSelectQueueIndex = optIdx;
 
                 alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append
@@ -443,6 +457,11 @@
          * @returns {ax5.ui.select}
          */
         this.update = function () {
+            // multiple
+            // options
+            // width, height
+            // label
+            // selected
 
             return this;
         };
