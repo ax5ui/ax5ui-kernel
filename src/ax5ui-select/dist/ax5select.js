@@ -36,7 +36,7 @@
             animateTime: 250,
 
             lang: {
-                empty: '...'
+                emptyOfSelected: ''
             },
             columnKeys: {
                 optionValue: 'value',
@@ -157,6 +157,19 @@
                     self.open(opts, optIdx);
                 }
             };
+            var getLabel = function getLabel(opts, optIdx) {
+                var labels = [];
+                if (U.isArray(opts.selected)) {
+
+                    /*
+                    console.log(opts.selected);
+                    result = U.reduce(opts.selected, function (p, n) {
+                        return this.pickup;
+                    });
+                    */
+                } else {}
+                return opts.selected.text;
+            };
 
             return function (opts, optIdx) {
                 var data = {};
@@ -164,7 +177,7 @@
                 if (!opts.$display) {
                     syncSelectOptions.call(this, opts, optIdx, opts.options);
                     data.id = opts.id;
-                    data.label = opts.selected.text;
+                    data.label = getLabel.call(this, opts, optIdx);
                     data.formSize = function () {
                         if (opts.select.hasClass("input-lg")) return "input-lg";
                         if (opts.select.hasClass("input-sm")) return "input-sm";
@@ -194,9 +207,6 @@
                         opts.selected = $.extend({}, O);
                     }
                 }
-            };
-            var setSelectedFirst = function setSelectedFirst(opts, optIdx) {
-                if (opts.options[0]) opts.selected = $.extend({}, opts.options[0]);else opts.selected = { text: cfg.lang.empty };
             };
 
             return function (opts, optIdx, options) {
@@ -229,10 +239,6 @@
                     opts.options = newOptions;
                 }
 
-                if (typeof opts.selected[cfg.columnKeys.optionValue] === "undefined") {
-                    // 첫번째 옵션을 선택된 값으로 처리 하기
-                    setSelectedFirst(opts, optIdx);
-                }
                 po = null;
                 elementOptions = null;
                 newOptions = null;

@@ -86,6 +86,13 @@ result = ax5.util.filter(list, function () {
     return (this.isdel != 1);
 });
 console.log(JSON.stringify(result));
+
+var filObject = {a:1, s:"string", oa:{pickup:true, name:"AXISJ"}, os:{pickup:true, name:"AX5"}};
+result = ax5.util.filter( filObject, function(){
+	return this.pickup;
+});
+console.log( ax5.util.toJson(result) );
+// [{"pickup": , "name": "AXISJ"}, {"pickup": , "name": "AX5"}]
 ```
 
 ---
