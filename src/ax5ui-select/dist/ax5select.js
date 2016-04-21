@@ -62,7 +62,7 @@
             return true;
         },
             getOptionGroupTmpl = function getOptionGroupTmpl(columnKeys) {
-            return '\n                <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div>{{' + columnKeys.optionValue + '}} // {{' + columnKeys.optionText + '}}</div>\n                        {{/options}}\n                        </div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
+            return '\n                <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div>{{' + columnKeys.optionValue + '}} // {{' + columnKeys.optionText + '}}// {{' + columnKeys.optionSelected + '}}</div>\n                        {{/options}}\n                        </div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
             return '\n                <a class="form-control {{formSize}} ax5-ui-select-display {{theme}}" data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
@@ -77,8 +77,7 @@
                     w = Math.max(this.queue[i].select.outerWidth(), this.queue[i].$display.find('[data-select-els="display-table"]').outerWidth());
                     this.queue[i].$display.css({
                         width: w,
-                        height: this.queue[i].select.outerHeight(),
-                        lineHeight: this.queue[i].select.outerHeight() + 'px'
+                        height: this.queue[i].select.outerHeight()
                     });
                 }
             }

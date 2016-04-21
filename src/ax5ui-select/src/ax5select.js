@@ -68,7 +68,7 @@
                     <div class="ax-select-body">
                         <div class="ax-select-option-group-content" data-select-els="content">
                         {{#options}}
-                            <div>{{${columnKeys.optionValue}}} // {{${columnKeys.optionText}}}</div>
+                            <div>{{${columnKeys.optionValue}}} // {{${columnKeys.optionText}}}// {{${columnKeys.optionSelected}}}</div>
                         {{/options}}
                         </div>
                     </div>
@@ -104,9 +104,9 @@
                         w = Math.max(this.queue[i].select.outerWidth(), this.queue[i].$display.find('[data-select-els="display-table"]').outerWidth());
                         this.queue[i].$display.css({
                             width: w,
-                            height: this.queue[i].select.outerHeight(),
-                            lineHeight: this.queue[i].select.outerHeight()+'px'
+                            height: this.queue[i].select.outerHeight()
                         });
+
                     }
                 }
                 return this;

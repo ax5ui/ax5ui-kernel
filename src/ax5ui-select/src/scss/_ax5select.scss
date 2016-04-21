@@ -36,7 +36,10 @@
 // select group
 [data-ax5select] {
     position: relative;
+    overflow: visible;
     select {
+        z-index: 1;
+        position: absolute;
         opacity: 0;
     }
 }
@@ -69,9 +72,11 @@
 
 /// select-display
 .ax5-ui-select-display {
-    position: absolute;
-    left: 0px;
-    top: 0px;
+    position: relative;
+    z-index: 2;
+    //position: absolute;
+    //left: 0px;
+    //top: 0px;
     padding: 0px;
 
     &:hover {
