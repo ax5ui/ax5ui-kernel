@@ -141,26 +141,16 @@
                     .css((function () {
                         if (opts.direction == "top") {
                             return {
-                                left: pos.left + dim.width / 2 - this.activeSelectOptionGroup.outerWidth() / 2,
-                                top: pos.top + dim.height + 12
+                                left: pos.left,
+                                top: pos.top + dim.height + 1,
+                                width: dim.width
                             }
                         }
                         else if (opts.direction == "bottom") {
                             return {
-                                left: pos.left + dim.width / 2 - this.activeSelectOptionGroup.outerWidth() / 2,
-                                top: pos.top - this.activeSelectOptionGroup.outerHeight() - 12
-                            }
-                        }
-                        else if (opts.direction == "left") {
-                            return {
-                                left: pos.left + dim.width + 12,
-                                top: pos.top - dim.height / 2
-                            }
-                        }
-                        else if (opts.direction == "right") {
-                            return {
-                                left: pos.left - this.activeSelectOptionGroup.outerWidth() - 12,
-                                top: pos.top - dim.height / 2
+                                left: pos.left,
+                                top: pos.top - this.activeSelectOptionGroup.outerHeight() - 1,
+                                width: dim.width
                             }
                         }
                     }).call(this));

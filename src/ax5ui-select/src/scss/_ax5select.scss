@@ -70,6 +70,67 @@
     }
 }
 
+@mixin ax5-ui-select-option-group-theme($border-color, $font-color) {
+    border-color: $border-color;
+    color: $font-color;
+
+
+    &.direction-top {
+
+    }
+    &.direction-right {
+
+    }
+    &.direction-bottom {
+
+    }
+    &.direction-left {
+
+    }
+}
+
+// themes
+$border-colors: (
+        default: $ax5select-default-border-color,
+        primary: $ax5select-primary-border-color,
+        success: $ax5select-success-border-color,
+        info: $ax5select-info-border-color,
+        warning: $ax5select-warning-border-color,
+        danger: $ax5select-danger-border-color
+);
+$font-colors: (
+        default: $ax5select-default-font-color,
+        primary: $ax5select-primary-font-color,
+        success: $ax5select-success-font-color,
+        info: $ax5select-info-font-color,
+        warning: $ax5select-warning-font-color,
+        danger: $ax5select-danger-font-color
+);
+
+
+@include keyframes(ax-select-option-group) {
+    from {
+        @include transform(translateY(-10%) scaleY(0.0));
+        opacity: 0;
+    }
+    to {
+        @include transform(translateY(0%) scaleY(1.0));
+        opacity: 1;
+    }
+}
+
+@include keyframes(ax-select-option-group-destroy) {
+    from {
+        @include transform(translateY(0%) scaleY(1.0));
+        opacity: 1;
+    }
+    to {
+        @include transform(translateY(-10%) scaleY(0.0));
+        opacity: 0;
+    }
+}
+
+
 /// select-display
 .ax5-ui-select-display {
     position: relative;
@@ -144,40 +205,49 @@
         }
     }
 
-    // themes
-    $border-colors: (
-            default: $ax5select-default-border-color,
-            primary: $ax5select-primary-border-color,
-            success: $ax5select-success-border-color,
-            info: $ax5select-info-border-color,
-            warning: $ax5select-warning-border-color,
-            danger: $ax5select-danger-border-color
-    );
-    $font-colors: (
-            default: $ax5select-default-font-color,
-            primary: $ax5select-primary-font-color,
-            success: $ax5select-success-font-color,
-            info: $ax5select-info-font-color,
-            warning: $ax5select-warning-font-color,
-            danger: $ax5select-danger-font-color
-    );
 
     @each $theme in $border-colors {
         &.#{nth($theme, 1)} {
             @include ax5-ui-select-display-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
         }
     }
-
 }
 
 /// select-option-group
 .ax5-ui-select-option-group {
+    box-sizing: border-box;
+    z-index: $ax5select-option-group-z-index;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: $ax5select-option-group-border-radius;
+    box-shadow: $ax5select-option-group-box-shadow;
+    border: $ax5select-option-group-inner-border;
+    @include ax-background($ax5select-option-group-bg);
+    @include animation(ax-select-option-group $ax5select-option-group-easing-time-open ease-out);
+    @include transform(translateZ(0));
+    @include transform-origin(center top);
+
+    &.destroy {
+        @include animation(ax-select-option-group-destroy $ax5select-option-group-easing-time-close $ease-in-back forwards);
+    }
+    &.direction-top {
+        @include transform-origin(center top);
+    }
+    &.direction-bottom {
+        @include transform-origin(center bottom);
+    }
+
     .ax-select-body {
+        padding: $ax5select-option-group-body-padding;
         .ax-select-option-group-content {
 
         }
     }
-    .ax-select-arrow {
 
+    @each $theme in $border-colors {
+        &.#{nth($theme, 1)} {
+            @include ax5-ui-select-option-group-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
+        }
     }
 }
