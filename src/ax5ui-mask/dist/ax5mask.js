@@ -5,7 +5,7 @@
     /**
      * @class ax5.ui.mask
      * @classdesc
-     * @version 0.6.5
+     * @version 0.6.6
      * @author tom@axisj.com
      * @example
      * ```
@@ -127,6 +127,7 @@
                 }
                 $target.addClass("ax-masking");
             }
+
             this.$mask = $mask = jQuery("#" + maskId);
 
             this.$target = $target;
@@ -173,13 +174,15 @@
          * ```
          */
         this.close = function () {
-            this.$mask.remove();
-            this.$target.removeClass("ax-masking");
+            if (this.$mask) {
+                this.$mask.remove();
+                this.$target.removeClass("ax-masking");
 
-            onStateChanged.call(this, null, {
-                self: this,
-                state: "close"
-            });
+                onStateChanged.call(this, null, {
+                    self: this,
+                    state: "close"
+                });
+            }
             return this;
         };
         //== class body end
