@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.menu
      * @classdesc
-     * @version 0.4.8
+     * @version 0.5.0
      * @author tom@axisj.com
      * @example
      * ```
@@ -82,7 +82,7 @@
             },
             getTmpl = function () {
                 return `
-                <div class="ax5-ui-menu {{theme}}">
+                <div class="ax5-ui-menu {{theme}}" {{#width}}style="width:{{width}}px;"{{/width}}>
                     <div class="ax-menu-body">
                         {{#items}}
                             {{^@isMenu}}

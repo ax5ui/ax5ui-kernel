@@ -12,13 +12,14 @@ Using the `new` you can pass when you initialize the UI.
 var menu = new ax5.ui.menu();
 menu.setConfig({
   theme: 'default',
+  //width: 200,
   offset: {left: 0, top: 0},
   position: "absolute",
   icons: {
       'arrow': '<i class="fa fa-caret-right"></i>'
   },
   items: [
-    {label:"label"}
+    {label:"label"},
     {divide: true},
     {label:"label", items: [
       {label:"label"}
@@ -30,12 +31,13 @@ menu.setConfig({
 ```js
 var menu = new ax5.ui.menu({
   theme: 'default',
+  //width: 200,
   position: "absolute",
   icons: {
       'arrow': '<i class="fa fa-caret-right"></i>'
   },
   items: [
-    {label:"label"}
+    {label:"label"},
     {divide: true},
     {label:"label", items: [
       {label:"label"}
@@ -54,6 +56,7 @@ abslute, fixed
 
 ### width
 Type: `Number`
+
 
 ### iconWidth
 Type: `Number`
@@ -84,6 +87,7 @@ Type: `Array`
 
 ### onStateChanged
 Type: `Function`
+
 ```js
 var menu = new ax5.ui.menu({
   items: [
