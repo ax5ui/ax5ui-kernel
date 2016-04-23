@@ -1,0 +1,26 @@
+{
+	"name": "ax5ui-media-viewer",
+	"version": "0.0.1",
+	"description": "A mediaViewer plugin that works with Bootstrap & jQuery",
+	"authors": [
+		"ThomasJ <tom@axisj.com>"
+	],
+	"main": "dist/ax5media-viewer.js",
+	"keywords": [
+		"bootstrap",
+		"jquery",
+		"ax5ui",
+		"plugin",
+		"bootstrap jQuery plugins",
+		"slider", "gallery",
+		"ax5ui-media-viewer",
+		"javascript ui"
+	],
+	"dependencies": {
+		"jquery": "^1.11.0",
+		"ax5core": "",
+		"bootstrap": "^3.3.6"
+	},
+	"license": "http://www.apache.org/licenses/LICENSE-2.0",
+	"homepage": "ax5.io"
+}
