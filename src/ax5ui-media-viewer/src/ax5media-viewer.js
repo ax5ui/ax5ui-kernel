@@ -57,12 +57,17 @@
                 }
                 return true;
             },
-            getTmpl = function () {
+            getFrameTmpl = function () {
                 return `
 
                 `;
             },
-            onBodyClick = function (e, target) {
+            getThumbnailTmpl = function () {
+                return `
+
+                `;
+            },
+            onClick = function (e, target) {
                 target = U.findParentNode(e.target, function (target) {
                     if (target.getAttribute("data-picker-els")) {
                         return true;
@@ -72,15 +77,9 @@
                     }
                 });
                 if (!target) {
-                    
                     return this;
                 }
                 return this;
-            },
-            onBodyKeyup = function (e) {
-                if (e.keyCode == ax5.info.eventKeys.ESC) {
-                    this.close();
-                }
             };
         /// private end
 
@@ -95,6 +94,10 @@
          */
         this.init = function () {
             this.onStateChanged = cfg.onStateChanged;
+            this.onClick = cfg.onClick;
+
+
+
             jQuery(window).bind("resize.ax5media-viewer", (function () {
                 
             }).bind(this));

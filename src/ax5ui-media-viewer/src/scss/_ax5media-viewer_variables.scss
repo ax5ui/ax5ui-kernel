@@ -1,40 +1,26 @@
-$ax5select-label-padding: 0px 7px;
-$ax5select-addon-icon-height: 4.5px;
-$ax5select-addon-icon-color: #444;
-$ax5select-addon-icon-padding-right: 7px;
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
 
-///== option group
-$ax5select-option-group-z-index: 2000 !default;
-$ax5select-option-group-box-model: border-box !default;
-$ax5select-option-group-bg: lighten(#eee, 5%) !default;
-$ax5select-option-group-inner-border: 1px solid !default;
-$ax5select-option-group-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.175) !default;
-$ax5select-option-group-border-radius: 5px !default;
-$ax5select-option-group-body-padding: 5px !default;
-$ax5select-option-group-heading-padding: $panel-heading-padding !default;
-$ax5select-option-group-buttons-padding: 10px 0px 5px 0px !default;
-
-$ax5select-option-group-easing-time-open: 0.1s !default;
-$ax5select-option-group-easing-time-close: 0.1s !default;
-$ax5select-option-group-arrow-size: 10px !default;
-$ax5select-option-group-arrow-border-width: 1px !default;
 
 
 ///~~ theme
-$ax5select-default-border-color: #ccc;
-$ax5select-default-font-color: $gray;
+$ax5media-viewer-default-border-color: #ccc;
+$ax5media-viewer-default-font-color: $gray;
 
-$ax5select-primary-border-color: $brand-primary;
-$ax5select-primary-font-color: $brand-primary;
+$ax5media-viewer-primary-border-color: $brand-primary;
+$ax5media-viewer-primary-font-color: $brand-primary;
 
-$ax5select-success-border-color: $brand-success;
-$ax5select-success-font-color: $brand-success;
+$ax5media-viewer-success-border-color: $brand-success;
+$ax5media-viewer-success-font-color: $brand-success;
 
-$ax5select-info-border-color: $brand-info;
-$ax5select-info-font-color: $brand-info;
+$ax5media-viewer-info-border-color: $brand-info;
+$ax5media-viewer-info-font-color: $brand-info;
 
-$ax5select-warning-border-color: $brand-warning;
-$ax5select-warning-font-color: $brand-warning;
+$ax5media-viewer-warning-border-color: $brand-warning;
+$ax5media-viewer-warning-font-color: $brand-warning;
 
-$ax5select-danger-border-color: $brand-danger;
-$ax5select-danger-font-color: $brand-danger;
+$ax5media-viewer-danger-border-color: $brand-danger;
+$ax5media-viewer-danger-font-color: $brand-danger;

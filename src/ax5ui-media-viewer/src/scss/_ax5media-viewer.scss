@@ -1,114 +1,30 @@
-/// override bootstrap.form-control
-@mixin input-size($parent, $input-height) {
-    [data-ax5select] select[multiple]#{$parent} {
-        height: $input-height;
-    }
-}
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
 
-[data-ax5select] select[multiple].form-control {
-    height: $input-height-base;
-}
-
-@include input-size('.input-sm', $input-height-small);
-@include input-size('.input-lg', $input-height-large);
-
-.form-group-sm {
-    [data-ax5select] select[multiple].form-control {
-        height: $input-height-small;
-    }
-}
-
-.form-group-lg {
-    [data-ax5select] select[multiple].form-control {
-        height: $input-height-large;
-    }
-}
-
-.form-inline {
-    @media (min-width: $screen-sm-min) {
-        // Inline-block all the things for "inline"
-        [data-ax5select] {
-            display: inline-block;
-        }
-    }
-}
-
-// select group
-[data-ax5select] {
-    position: relative;
-    overflow: visible;
-    select {
-        z-index: 1;
-        position: absolute;
-        opacity: 0;
-    }
-}
-
-@mixin ax5-ui-select-display-theme($border-color, $font-color) {
-    &:hover, &:active, &:focus {
-        border-color: $border-color;
-        color: $font-color;
-        text-decoration: none;
-
-        .ax5-ui-select-display-table {
-            [data-ax5-select-display="label"] {
-
-            }
-            [data-ax5-select-display="addon"] {
-                .addon-icon-closed {
-                    .addon-icon-arrow {
-                        border-top-color: $font-color;
-                    }
-                }
-                .addon-icon-opened {
-                    .addon-icon-arrow {
-                        border-bottom-color: $font-color;
-                    }
-                }
-            }
-        }
-    }
-}
-
-@mixin ax5-ui-select-option-group-theme($border-color, $font-color) {
-    border-color: $border-color;
-    color: $font-color;
-
-
-    &.direction-top {
-
-    }
-    &.direction-right {
-
-    }
-    &.direction-bottom {
-
-    }
-    &.direction-left {
-
-    }
-}
 
 // themes
 $border-colors: (
-        default: $ax5select-default-border-color,
-        primary: $ax5select-primary-border-color,
-        success: $ax5select-success-border-color,
-        info: $ax5select-info-border-color,
-        warning: $ax5select-warning-border-color,
-        danger: $ax5select-danger-border-color
+        default: $ax5media-viewer-default-border-color,
+        primary: $ax5media-viewer-primary-border-color,
+        success: $ax5media-viewer-success-border-color,
+        info: $ax5media-viewer-info-border-color,
+        warning: $ax5media-viewer-warning-border-color,
+        danger: $ax5media-viewer-danger-border-color
 );
 $font-colors: (
-        default: $ax5select-default-font-color,
-        primary: $ax5select-primary-font-color,
-        success: $ax5select-success-font-color,
-        info: $ax5select-info-font-color,
-        warning: $ax5select-warning-font-color,
-        danger: $ax5select-danger-font-color
+        default: $ax5media-viewer-default-font-color,
+        primary: $ax5media-viewer-primary-font-color,
+        success: $ax5media-viewer-success-font-color,
+        info: $ax5media-viewer-info-font-color,
+        warning: $ax5media-viewer-warning-font-color,
+        danger: $ax5media-viewer-danger-font-color
 );
 
 
-@include keyframes(ax-select-option-group) {
+@include keyframes(ax-media-viewer) {
     from {
         @include transform(translateY(-10%) scaleY(0.0));
         opacity: 0;
@@ -119,7 +35,7 @@ $font-colors: (
     }
 }
 
-@include keyframes(ax-select-option-group-destroy) {
+@include keyframes(ax-media-viewer-option-destroy) {
     from {
         @include transform(translateY(0%) scaleY(1.0));
         opacity: 1;
@@ -130,124 +46,12 @@ $font-colors: (
     }
 }
 
-
-/// select-display
-.ax5-ui-select-display {
-    position: relative;
-    z-index: 2;
-    //position: absolute;
-    //left: 0px;
-    //top: 0px;
-    padding: 0px;
-
-    &:hover {
-        text-decoration: none;
-    }
-
-    .ax5-ui-select-display-table {
-        width: 100%;
-        height: 100%;
-        display: table;
-        //table-layout: fixed;
-        border-collapse: collapse;
-        @include user-select(none);
-
-        [data-ax5-select-display="label"] {
-            display: table-cell;
-            vertical-align: middle;
-            padding: $ax5select-label-padding;
-            white-space: nowrap;
-        }
-        [data-ax5-select-display="addon"] {
-            display: table-cell;
-            vertical-align: middle;
-            width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
-            text-align: center;
-            &[data-ax5-select-opened="false"] {
-                .addon-icon-closed {
-                    display: block;
-                }
-                .addon-icon-opened {
-                    display: none;
-                }
-            }
-            &[data-ax5-select-opened="true"] {
-                .addon-icon-closed {
-                    display: none;
-                }
-                .addon-icon-opened {
-                    display: block;
-                }
-            }
-            .addon-icon-closed {
-                width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
-                text-align: left;
-                line-height: ($ax5select-addon-icon-height * 1.414);
-                .addon-icon-arrow {
-                    content: '';
-                    width: 0px;
-                    height: 0px;
-                    display: inline-block;
-                    border-left: $ax5select-addon-icon-height solid transparent;
-                    border-right: $ax5select-addon-icon-height solid transparent;
-                    border-top: ($ax5select-addon-icon-height * 1.414) solid $ax5select-addon-icon-color;
-                    background: transparent;
-                    opacity: 1;
-                }
-            }
-            .addon-icon-opened {
-                width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
-                text-align: left;
-                .addon-icon-arrow {
-
-                }
-            }
-        }
-    }
-
+/// media-viewer-display
+.ax5-ui-media-viewer {
 
     @each $theme in $border-colors {
         &.#{nth($theme, 1)} {
-            @include ax5-ui-select-display-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
-        }
-    }
-}
-
-/// select-option-group
-.ax5-ui-select-option-group {
-    box-sizing: border-box;
-    z-index: $ax5select-option-group-z-index;
-    position: absolute;
-    left: 0;
-    top: 0;
-    border-radius: $ax5select-option-group-border-radius;
-    box-shadow: $ax5select-option-group-box-shadow;
-    border: $ax5select-option-group-inner-border;
-    @include ax-background($ax5select-option-group-bg);
-    @include animation(ax-select-option-group $ax5select-option-group-easing-time-open ease-out);
-    @include transform(translateZ(0));
-    @include transform-origin(center top);
-
-    &.destroy {
-        @include animation(ax-select-option-group-destroy $ax5select-option-group-easing-time-close $ease-in-back forwards);
-    }
-    &.direction-top {
-        @include transform-origin(center top);
-    }
-    &.direction-bottom {
-        @include transform-origin(center bottom);
-    }
-
-    .ax-select-body {
-        padding: $ax5select-option-group-body-padding;
-        .ax-select-option-group-content {
-
-        }
-    }
-
-    @each $theme in $border-colors {
-        &.#{nth($theme, 1)} {
-            @include ax5-ui-select-option-group-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
+            //@include ax5-ui-media-viewer-display-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
         }
     }
 }

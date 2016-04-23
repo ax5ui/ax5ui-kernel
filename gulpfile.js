@@ -99,6 +99,14 @@ var PATHS = {
         dest: "src/ax5ui-grid/dist",
         scss: "ax5grid.scss",
         js: "ax5grid"
+    },
+    "ax5ui-media-viewer": {
+        isPlugin: true,
+        root: "src/ax5ui-media-viewer",
+        src: "src/ax5ui-media-viewer/src",
+        dest: "src/ax5ui-media-viewer/dist",
+        scss: "ax5media-viewer.scss",
+        js: "ax5media-viewer"
     }
 };
 
