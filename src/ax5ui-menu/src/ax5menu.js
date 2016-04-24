@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.menu
      * @classdesc
-     * @version 0.5.0
+     * @version 0.5.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -38,6 +38,7 @@
         this.closeTimer = null;
         this.queue = [];
         this.menuBar = {};
+        this.state = undefined;
 
         cfg = this.config;
 
@@ -68,6 +69,7 @@
                     this.onStateChanged.call(that, that);
                 }
 
+                self.state = that.state;
                 opts = null;
                 that = null;
                 return true;
