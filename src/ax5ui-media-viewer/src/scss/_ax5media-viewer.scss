@@ -4,7 +4,6 @@
  * - www.axisj.com
  */
 
-
 // themes
 $border-colors: (
         default: $ax5media-viewer-default-border-color,
@@ -22,7 +21,6 @@ $font-colors: (
         warning: $ax5media-viewer-warning-font-color,
         danger: $ax5media-viewer-danger-font-color
 );
-
 
 @include keyframes(ax-media-viewer) {
     from {
@@ -48,7 +46,45 @@ $font-colors: (
 
 /// media-viewer-display
 [data-ax5-ui-media-viewer] {
+    [data-media-viewer-els="viewer"] {
 
+    }
+    [data-media-viewer-els="media-list-holder"] {
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+        [data-media-viewer-els] {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        [data-media-viewer-els="media-list-prev-handle"], [data-media-viewer-els="media-list-next-handle"] {
+            text-align: center;
+            font-size: 20px;
+            cursor: pointer;
+            &:hover{
+                color: $brand-primary;
+            }
+        }
+        [data-media-viewer-els="media-list"] {
+            overflow: hidden;
+            [data-media-viewer-els="media-list-table"] {
+                display: table;
+                border-spacing: 5px 5px;
+                [data-media-viewer-els="media-list-td"] {
+                    display: table-cell;
+                }
+                [data-media-thumbnail] {
+                    overflow: hidden;
+                    border: 2px solid;
+                    border-color: #ccc;
+                    [data-media-thumbnail-image] {
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+            }
+        }
+    }
     @each $theme in $border-colors {
         &.#{nth($theme, 1)} {
             //@include ax5-ui-media-viewer-display-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));

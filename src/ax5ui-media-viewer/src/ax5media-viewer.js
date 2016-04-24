@@ -69,15 +69,28 @@
                 return `
                 <div data-ax5-ui-media-viewer="{{id}}">
                     <div data-media-viewer-els="viewer"></div>
+                    {{#media}}
                     <div data-media-viewer-els="media-list-holder">
-                        <div data-media-viewer-els="media-list-prev-handle"></div>
+                        <div data-media-viewer-els="media-list-prev-handle" style="width:{{width}}px;height:{{height}}px;">{{{prevHandle}}}</div>
                         <div data-media-viewer-els="media-list">
-                        {{#list}}
-                            <div style=""></div>
-                        {{/list}}
+                            <div data-media-viewer-els="media-list-table">
+                            {{#list}}
+                                <div data-media-viewer-els="media-list-table-td">
+                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">
+                                        {{#image}}
+                                        <img src="{{poster}}" data-media-thumbnail-image="{{@i}}" />
+                                        {{/image}}
+                                        {{#video}}
+                                        <img src="{{poster}}" data-media-thumbnail-video="{{@i}}" />
+                                        {{/video}}
+                                    </div>
+                                </div>
+                            {{/list}}
+                            </div>
                         </div>
-                        <div data-media-viewer-els="media-list-next-handle"></div>
+                        <div data-media-viewer-els="media-list-next-handle" style="width:{{width}}px;height:{{height}}px;">{{{nextHandle}}}</div>
                     </div>
+                    {{/media}}
                 </div>
                 `;
             },
