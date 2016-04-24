@@ -20,7 +20,7 @@
     $(document.body).ready(function () {
 
         var myViewer = new ax5.ui.mediaViewer({
-            target: document.getElementById("media-viewer-target"),
+            target: $("#media-viewer-target"),
             viewer: {
                 prevHandle: '',
                 nextHandle: '',
@@ -31,12 +31,39 @@
                 nextHandle: '',
                 width: 36, height: 36,
                 list: [
-                    {url: '', type: 'image'},
-                    {url: '', type: 'video'}
+                    {
+                        image: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                    },
+                    {image: 'https://www.twilio.com/blog/wp-content/uploads/2013/11/Screen-Shot-2013-11-06-at-12.05.36-PM.png'},
+                    {image: 'https://assets.toptal.io/uploads/blog/image/50/toptal-blog-1_B.png'},
+                    {image: 'http://image.slidesharecdn.com/designpatternswebinar-150515162206-lva1-app6891/95/nodejs-frameworks-design-patterns-webinar-30-638.jpg?cb=1431707251'},
+                    {
+                        image: 'https://vimeo.com/117026633',
+                        html: '<iframe src="https://player.vimeo.com/video/121840700?color=fcfcfc&badge=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
+                    },
+                    {
+                        image: 'https://youtu.be/KG1cUHAcTVc',
+                        html: '<iframe src="https://www.youtube.com/embed/y3PAgPC835E" frameborder="0"  webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
+                    }
                 ]
             }
         });
 
+        /*
+         myViewer.attach($("media-viewer-target"), {
+         media: {
+         list: [
+         {url: '', type: 'image'},
+         {url: '', type: 'video'}
+         ]
+         }
+         });
+
+         myViewer.setMediaList([
+         {url: '', type: 'image'},
+         {url: '', type: 'video'}
+         ]);
+         */
 
     });
 </script>

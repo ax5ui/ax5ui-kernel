@@ -125,31 +125,54 @@
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
             this.id = 'ax5-media-viewer-' + ax5.getGuid();
-            if(cfg.target){
-
+            if (cfg.target) {
+                this.attach(cfg.target);
             }
 
         };
 
         /**
-         * @method ax5.ui.attach
+         * @method ax5.ui.mediaViewer.attach
          * @param target
          * @param options
          * @returns {ax5.ui.mediaViewer}
          */
         this.attach = function (target, options) {
-            if (!target) { 
+            if (!target) {
                 console.log(ax5.info.getError("ax5mediaViewer", "401", "setConfig"));
+            }
+            if(typeof options != "undefined"){
+                this.setConfig(options, false);
             }
             this.target = jQuery(target);
             this.target.html(getFrame.call(this));
 
-            jQuery(window).bind("resize.ax5media-viewer", (function () {
+            // 파트수집
+            this.$ = {
+                "root": this.target.find('[data-ax5-ui-media-viewer]'),
+                "viewer": this.target.find('[data-media-viewer-els="viewer"]'),
+                "list-holder": this.target.find('[data-media-viewer-els="media-list-holder"]'),
+                "list-prev-handle": this.target.find('[data-media-viewer-els="media-list-prev-handle"]'),
+                "list": this.target.find('[data-media-viewer-els="media-list"]'),
+                "list-next-handle": this.target.find('[data-media-viewer-els="media-list-next-handle"]')
+            };
 
+            this.align();
+            jQuery(window).bind("resize.ax5media-viewer", (function () {
+                this.align();
             }).bind(this));
             return this;
         };
-        
+
+        /**
+         * @method ax5.ui.mediaViewer.align
+         * @returns {axClass}
+         */
+        this.align = function () {
+
+            return this;
+        };
+
         // 클래스 생성자
         this.main = (function () {
             if (arguments && U.isObject(arguments[0])) {
