@@ -32,11 +32,23 @@
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
-            title: '',
             animateTime: 250,
 
-            lang: {},
-            columnKeys: {}
+            columnKeys: {
+                url: 'url',
+                type: 'type'
+            },
+            viewer: {
+                prevHandle: false,
+                nextHandle: false,
+                ratio: 16 / 9
+            },
+            media: {
+                prevHandle: '<',
+                nextHandle: '>',
+                width: 36, height: 36,
+                list: []
+            }
         };
 
         this.openTimer = null;
@@ -52,11 +64,21 @@
             }
             return true;
         },
-            getFrameTmpl = function getFrameTmpl() {
-            return '\n\n                ';
+            getFrameTmpl = function getFrameTmpl(columnKeys) {
+            return '\n                <div data-ax5-ui-media-viewer="{{id}}">\n                    <div data-media-viewer-els="viewer"></div>\n                    <div data-media-viewer-els="media-list-holder">\n                        <div data-media-viewer-els="media-list-prev-handle"></div>\n                        <div data-media-viewer-els="media-list">\n                        {{#list}}\n                            <div style=""></div>\n                        {{/list}}\n                        </div>\n                        <div data-media-viewer-els="media-list-next-handle"></div>\n                    </div>\n                </div>\n                ';
         },
-            getThumbnailTmpl = function getThumbnailTmpl() {
-            return '\n\n                ';
+            getFrame = function getFrame() {
+            var data = jQuery.extend(true, {}, cfg),
+                tmpl = getFrameTmpl(cfg.columnKeys);
+
+            data.id = this.id;
+
+            try {
+                return ax5.mustache.render(tmpl, data);
+            } finally {
+                data = null;
+                tmpl = null;
+            }
         },
             onClick = function onClick(e, target) {
             target = U.findParentNode(e.target, function (target) {
@@ -85,8 +107,25 @@
         this.init = function () {
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
+            this.id = 'ax5-media-viewer-' + ax5.getGuid();
+            if (cfg.target) {}
+        };
+
+        /**
+         * @method ax5.ui.attach
+         * @param target
+         * @param options
+         * @returns {ax5.ui.mediaViewer}
+         */
+        this.attach = function (target, options) {
+            if (!target) {
+                console.log(ax5.info.getError("ax5mediaViewer", "401", "setConfig"));
+            }
+            this.target = jQuery(target);
+            this.target.html(getFrame.call(this));
 
             jQuery(window).bind("resize.ax5media-viewer", function () {}.bind(this));
+            return this;
         };
 
         // 클래스 생성자

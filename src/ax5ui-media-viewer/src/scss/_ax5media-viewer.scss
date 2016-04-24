@@ -47,7 +47,7 @@ $font-colors: (
 }
 
 /// media-viewer-display
-.ax5-ui-media-viewer {
+[data-ax5-ui-media-viewer] {
 
     @each $theme in $border-colors {
         &.#{nth($theme, 1)} {
