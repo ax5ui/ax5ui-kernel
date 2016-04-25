@@ -240,8 +240,87 @@ $font-colors: (
 
     .ax-select-body {
         padding: $ax5select-option-group-body-padding;
+        $ax5select-option-item-height: $ax5select-option-item-font-size + 5;
         .ax-select-option-group-content {
+            .ax-select-option-item {
+                padding: $ax5select-option-item-padding;
+                text-align: left;
+                //background: $item-bg;
+                //color: $item-color;
+                cursor: pointer;
+                font-size: $ax5select-option-item-font-size;
 
+                display: table;
+                position: relative;
+                border-collapse: separate;
+                box-sizing: border-box;
+                overflow: hidden;
+                //table-layout: fixed;
+                width: 100%;
+                height: $ax5select-option-item-height;
+
+                .ax-select-option-item-cell {
+                    box-sizing: border-box;
+                    display: table-cell;
+                    vertical-align: middle;
+                    white-space: nowrap;
+                    font-size: $ax5select-option-item-font-size;
+                    line-height: $ax5select-option-item-height;
+                    padding: 0px 0px 0px 0px;
+                    @include user-select(none);
+
+                    &.ax-select-option-item-checkbox {
+                        overflow: hidden;
+                        width: $ax5select-option-item-checkbox-width;
+                        text-align: center;
+                        .item-checkbox-wrap {
+                            position: relative;
+                            display: block;
+                            width: $ax5select-option-item-checkbox-width;
+                            height: $ax5select-option-item-height;
+
+                            &.useCheckBox {
+                                &:after {
+                                    content: '';
+                                    width: 10px;
+                                    height: 5px;
+                                    position: absolute;
+                                    top: ($ax5select-option-item-height - 10) / 2;
+                                    left: ($ax5select-option-item-height - 10) / 2;
+                                    border: 2px solid #000;
+                                    border-top: none;
+                                    border-right: none;
+                                    background: transparent;
+                                    opacity: 0.1;
+                                    @include transform(rotate(-50deg));
+                                }
+                                &[data-item-checked="true"] {
+                                    &:after {
+                                        opacity: 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    &.ax-select-option-item-label {
+                        padding-right: 10px;
+                    }
+                }
+
+                &:hover, &.hover {
+                    //background: $item-hover-bg;
+                    //color: $item-hover-color;
+                    .ax-select-option-item-cell {
+                        &.ax-select-option-item-checkbox {
+                            .item-checkbox-wrap {
+                                &:after {
+                                    //border-color: $item-hover-color;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

@@ -68,7 +68,12 @@
                     <div class="ax-select-body">
                         <div class="ax-select-option-group-content" data-select-els="content">
                         {{#options}}
-                            <div>{{${columnKeys.optionValue}}} // {{${columnKeys.optionText}}}// {{${columnKeys.optionSelected}}}</div>
+                            <div class="ax-select-option-item" data-option-value="{{${columnKeys.optionValue}}}" data-selected="{{${columnKeys.optionSelected}}}">
+                                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
+                                    <span class="item-checkbox-wrap useCheckBox" {{#${columnKeys.optionSelected}}}data-item-selected="true"{{/${columnKeys.optionSelected}}}></span>
+                                </span>
+                                <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                            </div>
                         {{/options}}
                         </div>
                     </div>
