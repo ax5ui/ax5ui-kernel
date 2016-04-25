@@ -92,6 +92,30 @@
                 return this;
             }
             return this;
+        },
+            getSelectedIndex = function getSelectedIndex() {
+            if (cfg.media && cfg.media.list && cfg.media.list.length > 0) {
+                var i = cfg.media.list.length,
+                    selecteIndex = 0;
+                while (i--) {
+                    if (cfg.media.list[i].selected) {
+                        selecteIndex = i;
+                        break;
+                    }
+                }
+
+                if (selecteIndex == 0) {
+                    cfg.media.list[0].selected = true;
+                }
+                try {
+                    return selecteIndex;
+                } finally {
+                    i = null;
+                    selecteIndex = null;
+                }
+            } else {
+                return false;
+            }
         };
         /// private end
 
@@ -143,6 +167,8 @@
             jQuery(window).bind("resize.ax5media-viewer", function () {
                 this.align();
             }.bind(this));
+
+            this.select(getSelectedIndex.call(this));
             return this;
         };
 
@@ -152,8 +178,25 @@
          */
         this.align = function () {
 
+            // viewer width, height
+            this.$["viewer"].css({ height: this.$["viewer"].width() / cfg.viewer.ratio });
+
             return this;
         };
+
+        /**
+         * @method ax5.ui.mediaViewer.select
+         * @param index
+         * @returns {axClass}
+         */
+        this.select = function () {
+            var printViewer = function printViewer() {};
+
+            return function (index) {
+
+                return this;
+            };
+        }();
 
         // 클래스 생성자
         this.main = function () {
