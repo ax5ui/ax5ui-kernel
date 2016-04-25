@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5media-viewer.css"/>
@@ -12,23 +14,22 @@
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="../dist/ax5media-viewer.js"></script>
 </head>
-<body style="padding: 10px;">
+<body style="padding: 50px;">
 
-<div id="media-viewer-target"></div>
+<div id="media-viewer-target-0"></div>
+
+<div id="media-viewer-target-1"></div>
+
+<div id="media-viewer-target-2"></div>
 
 <script>
     $(document.body).ready(function () {
 
-        var myViewer = new ax5.ui.mediaViewer({
-            target: $("#media-viewer-target"),
+        var myViewer_0 = new ax5.ui.mediaViewer({
+            target: $("#media-viewer-target-0"),
             loading: {
-                icon: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom" aria-hidden="true"></i>',
+                icon: '<i class="fa fa-spinner fa-pulse fa-2x fa-fw margin-bottom" aria-hidden="true"></i>',
                 text: '<div>Now Loading</div>'
-            },
-            viewer: {
-                prevHandle: '',
-                nextHandle: '',
-                ratio: 16 / 9
             },
             media: {
                 prevHandle: '<i class="fa fa-chevron-left"></i>',
@@ -36,6 +37,48 @@
                 width: 36, height: 36,
                 poster: '<i class="fa fa-youtube-play" style="line-height: 32px;font-size: 20px;"></i>',
                 list: [
+                    {
+                        video: {
+                            html: '<iframe src="https://player.vimeo.com/video/121840700?color=fcfcfc&badge=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
+                            poster: ''
+                        }
+                    },
+                    {
+                        video: {
+                            html: '<iframe width="560" height="315" src="https://www.youtube.com/embed/w9Uh2oP88JI" frameborder="0" allowfullscreen></iframe>',
+                            poster: ''
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
                     {
                         image: {
                             src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
@@ -47,7 +90,31 @@
                             src: 'https://www.twilio.com/blog/wp-content/uploads/2013/11/Screen-Shot-2013-11-06-at-12.05.36-PM.png',
                             poster: 'https://www.twilio.com/blog/wp-content/uploads/2013/11/Screen-Shot-2013-11-06-at-12.05.36-PM.png'
                         }
-                    },
+                    }
+                ]
+            },
+            onClick: function () {
+                console.log(this);
+            }
+        });
+
+        var myViewer_1 = new ax5.ui.mediaViewer({
+            target: $("#media-viewer-target-1"),
+            loading: {
+                icon: '<i class="fa fa-spinner fa-pulse fa-2x fa-fw margin-bottom" aria-hidden="true"></i>',
+                text: '<div>Now Loading</div>'
+            },
+            viewer: {
+                ratio: 4 / 3
+            },
+            media: {
+                prevHandle: '<i class="fa fa-chevron-left"></i>',
+                nextHandle: '<i class="fa fa-chevron-right"></i>',
+                width: 36, height: 36,
+                poster: '<i class="fa fa-youtube-play" style="line-height: 32px;font-size: 20px;"></i>'
+            }
+        })
+        myViewer_1.setMediaList([
                     {
                         video: {
                             html: '<iframe src="https://player.vimeo.com/video/121840700?color=fcfcfc&badge=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
@@ -56,30 +123,56 @@
                     },
                     {
                         video: {
-                            html: '<iframe src="https://www.youtube.com/embed/y3PAgPC835E" frameborder="0"  webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
+                            html: '<iframe width="560" height="315" src="https://www.youtube.com/embed/w9Uh2oP88JI" frameborder="0" allowfullscreen></iframe>',
                             poster: ''
                         }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                            poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                        }
+                    },
+                    {
+                        image: {
+                            src: 'https://www.twilio.com/blog/wp-content/uploads/2013/11/Screen-Shot-2013-11-06-at-12.05.36-PM.png',
+                            poster: 'https://www.twilio.com/blog/wp-content/uploads/2013/11/Screen-Shot-2013-11-06-at-12.05.36-PM.png'
+                        }
                     }
-                ]
-            }
-        });
-
-        /*
-         myViewer.attach($("media-viewer-target"), {
-         media: {
-         list: [
-         {url: '', type: 'image'},
-         {url: '', type: 'video'}
-         ]
-         }
-         });
-
-         myViewer.setMediaList([
-         {url: '', type: 'image'},
-         {url: '', type: 'video'}
-         ]);
-         */
-
+                ])
+        myViewer_1.onClick = function () {
+            console.log(this);
+        };
     });
 </script>
 

@@ -49,16 +49,25 @@ $font-colors: (
     position: relative;
     [data-media-viewer-els="viewer"] {
         overflow: hidden;
+        text-align: center;
         img {
+            position: absolute;
+            left: 0;
+            top: 0;
             border: 0;
         }
     }
     [data-media-viewer-els="viewer-loading"] {
+        display: none;
         position: absolute;
         width: 100%;
         height: 100%;
         left: 0px;
         top: 0px;
+        box-sizing: border-box;
+        background: #eee;
+        border: 1px solid;
+        border-color: #ccc;
         .ax5-ui-media-viewer-loading-holder {
             display: table;
             width: 100%;
@@ -72,9 +81,11 @@ $font-colors: (
         }
     }
     [data-media-viewer-els="media-list-holder"] {
+        margin: 10px 0px;
         display: table;
         table-layout: fixed;
         width: 100%;
+        border-collapse: collapse;
         [data-media-viewer-els] {
             display: table-cell;
             vertical-align: middle;
@@ -89,20 +100,26 @@ $font-colors: (
         }
         [data-media-viewer-els="media-list"] {
             overflow: hidden;
+            position: relative;
             [data-media-viewer-els="media-list-table"] {
+                position: absolute;
+                left: 0px;
+                top: 0px;
                 display: table;
-                border-spacing: 5px 5px;
-                [data-media-viewer-els="media-list-td"] {
+                border-collapse: collapse;
+                [data-media-viewer-els="media-list-table-td"] {
                     display: table-cell;
                     vertical-align: middle;
+                    padding: 0px 1px;
                 }
                 [data-media-thumbnail] {
                     overflow: hidden;
-                    border: 2px solid;
-                    border-color: #ccc;
                     cursor: pointer;
-                    &:hover {
-                        border-color: $brand-primary;
+                    &:hover, &.selected {
+                        [data-media-thumbnail-image], [data-media-thumbnail-video] {
+                            border: 2px solid;
+                            border-color: $brand-primary;
+                        }
                     }
                     [data-media-thumbnail-image] {
                         width: 100%;
@@ -112,6 +129,9 @@ $font-colors: (
                         text-align: center;
                         display: block;
                         vertical-align: middle;
+                        border: 2px solid;
+                        border-color: #eee;
+                        background: #eee;
                     }
                 }
             }

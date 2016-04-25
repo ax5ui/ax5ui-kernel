@@ -57,6 +57,7 @@
 
         this.openTimer = null;
         this.closeTimer = null;
+        this.selectedIndex = 0;
 
         cfg = this.config;
 
@@ -126,15 +127,59 @@
                 }
             },
             onClick = function (e, target) {
+                var
+                    result,
+                    elementType = "",
+                    processor = {
+                        'thumbnail': function (target) {
+                            this.select(target.getAttribute("data-media-thumbnail"));
+                        },
+                        'prev': function (target) {
+                            if (this.selectedIndex > 0) {
+                                this.select(this.selectedIndex - 1);
+                            }
+                        },
+                        'next': function (target) {
+                            if (this.selectedIndex < cfg.media.list.length - 1) {
+                                this.select(this.selectedIndex + 1);
+                            }
+                        },
+                        'viewer': function (target) {
+                            if (self.onClick) {
+                                self.onClick.call({
+                                    media: cfg.media.list[this.selectedIndex]
+                                });
+                            }
+                        }
+                    };
+
                 target = U.findParentNode(e.target, function (target) {
-                    if (target.getAttribute("data-picker-els")) {
+                    if (target.getAttribute("data-media-thumbnail")) {
+                        elementType = "thumbnail";
                         return true;
                     }
-                    else if (opts.$target.get(0) == target) {
+                    else if (target.getAttribute("data-media-viewer-els") == "media-list-prev-handle") {
+                        elementType = "prev";
+                        return true;
+                    }
+                    else if (target.getAttribute("data-media-viewer-els") == "media-list-next-handle") {
+                        elementType = "next";
+                        return true;
+                    }
+                    else if (target.getAttribute("data-media-viewer-els") == "viewer") {
+                        elementType = "viewer";
+                        return true;
+                    }
+                    else if (self.target.get(0) == target) {
                         return true;
                     }
                 });
-                if (!target) {
+
+                if (target) {
+                    for (var key in processor) {
+                        result = processor[elementType].call(this, target);
+                        break;
+                    }
                     return this;
                 }
                 return this;
@@ -160,7 +205,7 @@
                     }
                 }
                 else {
-                    return false;
+                    return;
                 }
             };
         /// private end
@@ -178,10 +223,9 @@
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
             this.id = 'ax5-media-viewer-' + ax5.getGuid();
-            if (cfg.target) {
+            if (cfg.target && (cfg.media && cfg.media.list && cfg.media.list.length > 0)) {
                 this.attach(cfg.target);
             }
-
         };
 
         /**
@@ -204,15 +248,23 @@
             this.$ = {
                 "root": this.target.find('[data-ax5-ui-media-viewer]'),
                 "viewer": this.target.find('[data-media-viewer-els="viewer"]'),
+                "viewer-loading": this.target.find('[data-media-viewer-els="viewer-loading"]'),
                 "list-holder": this.target.find('[data-media-viewer-els="media-list-holder"]'),
                 "list-prev-handle": this.target.find('[data-media-viewer-els="media-list-prev-handle"]'),
                 "list": this.target.find('[data-media-viewer-els="media-list"]'),
+                "list-table": this.target.find('[data-media-viewer-els="media-list-table"]'),
                 "list-next-handle": this.target.find('[data-media-viewer-els="media-list-next-handle"]')
             };
 
             this.align();
-            jQuery(window).bind("resize.ax5media-viewer", (function () {
+            jQuery(window).unbind("resize.ax5media-viewer-" + this.id).bind("resize.ax5media-viewer-" + this.id, (function () {
                 this.align();
+            }).bind(this));
+
+            this.target.unbind("click").bind("click", (function (e) {
+                e = e || window.event;
+                onClick.call(this, e);
+                U.stopEvent(e);
             }).bind(this));
 
             this.select(getSelectedIndex.call(this));
@@ -224,10 +276,20 @@
          * @returns {axClass}
          */
         this.align = function () {
-
             // viewer width, height
             this.$["viewer"].css({height: this.$["viewer"].width() / cfg.viewer.ratio});
+            if (this.$["viewer"].data("media-type") == "image") {
+                var $img = this.$["viewer"].find("img");
+                $img.css({
+                    left: (this.$["viewer"].width() - $img.width()) / 2,
+                    width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height()
+                });
+            }
+            else if (this.$["viewer"].data("media-type") == "video") {
+                this.$["viewer"].find("iframe").css({width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height()});
+            }
 
+            this.$["viewer-loading"].css({height: this.$["viewer"].height()});
             return this;
         };
 
@@ -239,47 +301,91 @@
         this.select = (function () {
             var mediaView = {
                 image: function (obj, callBack) {
-
-
-
+                    self.$["viewer-loading"].show();
                     var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
                     var img = new Image();
                     img.src = obj.image[cfg.columnKeys.src];
                     img.onload = function () {
-                        callBack(img.width, img.height);
+                        self.$["viewer-loading"].fadeOut();
+                        var h = dim[1];
+                        var w = h * img.width / img.height;
+                        callBack(img, Math.floor(w), h);
                     };
                     return img;
                 },
                 video: function (obj, callBack) {
-
+                    self.$["viewer-loading"].show();
+                    var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
+                    var html = jQuery(obj.video[cfg.columnKeys.html]);
+                    callBack(html, dim[0], dim[1]);
+                    self.$["viewer-loading"].fadeOut();
                 }
             };
-
             var onLoad = {
-                image: function () {
+                image: function (img, w, h) {
+                    img.width = w;
+                    img.height = h;
 
+                    var $img = $(img);
+                    this.$["viewer"].html($img);
+                    $img.css({left: (this.$["viewer"].width() - w) / 2});
+
+                    this.$["viewer"].data("media-type", "image");
+                    this.$["viewer"].data("img-ratio", w / h);
                 },
-                video: function () {
-
+                video: function (html, w, h) {
+                    html.css({width: w, height: h});
+                    this.$["viewer"].html(html);
+                    this.$["viewer"].data("media-type", "video");
+                    this.$["viewer"].data("img-ratio", w / h);
                 }
+            };
+            var select = function (index) {
+                this.$["list"].find('[data-media-thumbnail]').removeClass("selected");
+                var thumbnail = this.$["list"].find('[data-media-thumbnail=' + index + ']').addClass("selected"),
+                    pos = thumbnail.position(), thumbnailWidth = thumbnail.width(),
+                    containerWidth = this.$["list"].width(),
+                    parentLeft = this.$["list-table"].position().left,
+                    newLeft = 0;
+
+                if (pos.left > parentLeft + containerWidth) {
+                    newLeft = containerWidth - (pos.left + thumbnailWidth);
+                }
+                if (parentLeft != newLeft) this.$["list-table"].css({left: newLeft});
+
+                thumbnail = null;
+                pos = null;
+                thumbnailWidth = null;
+                containerWidth = null;
+                parentLeft = null;
+                newLeft = null;
             };
 
             return function (index) {
-                var media = cfg.media.list[index], mediaElement;
+                if (typeof index === "undefined") return this;
+                this.selectedIndex = Number(index);
+                var media = cfg.media.list[index];
+                select.call(this, index);
                 for (var key in mediaView) {
                     if (media[key]) {
                         mediaView[key].call(this, media, onLoad[key].bind(this));
                         break;
                     }
                 }
-
-                if (mediaElement) {
-                    this.$["viewer"].append(mediaElement);
-                }
-
                 return this;
             };
         })();
+
+        /**
+         * @method ax5.ui.mediaViewer.setMediaList
+         * @param list
+         * @returns {axClass}
+         */
+        this.setMediaList = function (list) {
+            cfg.media.list = [].concat(list);
+            this.attach(cfg.target);
+            return this;
+        };
 
         // 클래스 생성자
         this.main = (function () {
