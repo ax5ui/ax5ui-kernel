@@ -1,8 +1,8 @@
 {
 	"name": "ax5ui-media-viewer",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "A mediaViewer plugin that works with Bootstrap & jQuery",
-	"license": "http://www.apache.org/licenses/LICENSE-2.0",
+	"license": "LGPLv3",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ax5ui/ax5ui-media-viewer"

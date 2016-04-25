@@ -2,7 +2,7 @@
 	"name": "ax5ui-dialog",
 	"version": "0.6.6",
 	"description": "A dialog plugin that works with Bootstrap & jQuery",
-	"license": "apache 2.0",
+	"license": "LGPLv3",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ax5ui/ax5ui-dialog"

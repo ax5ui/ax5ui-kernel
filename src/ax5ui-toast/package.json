@@ -2,7 +2,7 @@
 	"name": "ax5ui-toast",
 	"version": "0.2.4",
 	"description": "A toast plugin that works with Bootstrap & jQuery",
-	"license": "MIT",
+	"license": "LGPLv3",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ax5ui/ax5ui-toast"

@@ -10,11 +10,11 @@
     /**
      * @class ax5.ui.mediaViewer
      * @classdesc
-     * @version 0.0.1
+     * @version 0.1.1
      * @author tom@axisj.com
      * @example
      * ```
-     * var mymediaViewer = new ax5.ui.mediaViewer();
+     * var myViewer = new ax5.ui.mediaViewer();
      * ```
      */
     var U = ax5.util;
@@ -73,7 +73,7 @@
             },
             getFrameTmpl = function (columnKeys) {
                 return `
-                <div data-ax5-ui-media-viewer="{{id}}">
+                <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">
                     <div data-media-viewer-els="viewer"></div>
                     <div data-media-viewer-els="viewer-loading">
                         <div class="ax5-ui-media-viewer-loading-holder">
@@ -177,8 +177,10 @@
 
                 if (target) {
                     for (var key in processor) {
-                        result = processor[elementType].call(this, target);
-                        break;
+                        if (key == elementType) {
+                            result = processor[key].call(this, target);
+                            break;
+                        }
                     }
                     return this;
                 }
@@ -315,9 +317,11 @@
             if (this.$["viewer"].data("media-type") == "image") {
                 var $img = this.$["viewer"].find("img");
                 $img.css({
-                    left: (this.$["viewer"].width() - $img.width()) / 2,
                     width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height()
                 });
+                setTimeout((function(_img){
+                    _img.css({left: (this.$["viewer"].width() - _img.width()) / 2});
+                }).bind(this, $img), 1);
             }
             else if (this.$["viewer"].data("media-type") == "video") {
                 this.$["viewer"].find("iframe").css({width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height()});

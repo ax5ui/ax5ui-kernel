@@ -23,6 +23,6 @@
 		"ax5ui-formatter": "",
 		"bootstrap": "^3.3.6"
 	},
-	"license": "MIT",
+	"license": "LGPLv3",
 	"homepage": "ax5.io"
 }

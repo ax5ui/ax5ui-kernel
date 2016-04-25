@@ -44,6 +44,39 @@ $font-colors: (
     }
 }
 
+@mixin ax5-ui-media-viewer-theme($border-color, $font-color){
+    [data-media-viewer-els="viewer-loading"] {
+        background: #eee;
+        border-color: $border-color;
+    }
+    [data-media-viewer-els="media-list-holder"] {
+        [data-media-viewer-els] {
+        }
+        [data-media-viewer-els="media-list-prev-handle"], [data-media-viewer-els="media-list-next-handle"] {
+            &:hover {
+                color: $font-color;
+            }
+        }
+        [data-media-viewer-els="media-list"] {
+            [data-media-viewer-els="media-list-table"] {
+                [data-media-viewer-els="media-list-table-td"] {
+                }
+                [data-media-thumbnail] {
+                    &:hover, &.selected {
+                        [data-media-thumbnail-image], [data-media-thumbnail-video] {
+                            border-color: $border-color;
+                        }
+                    }
+                    [data-media-thumbnail-image] {
+                    }
+                    [data-media-thumbnail-video] {
+                    }
+                }
+            }
+        }
+    }
+}
+
 /// media-viewer-display
 [data-ax5-ui-media-viewer] {
     position: relative;
@@ -139,7 +172,7 @@ $font-colors: (
     }
     @each $theme in $border-colors {
         &.#{nth($theme, 1)} {
-            //@include ax5-ui-media-viewer-display-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
+            @include ax5-ui-media-viewer-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
         }
     }
 }

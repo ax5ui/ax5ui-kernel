@@ -12,11 +12,11 @@
     /**
      * @class ax5.ui.mediaViewer
      * @classdesc
-     * @version 0.0.1
+     * @version 0.1.1
      * @author tom@axisj.com
      * @example
      * ```
-     * var mymediaViewer = new ax5.ui.mediaViewer();
+     * var myViewer = new ax5.ui.mediaViewer();
      * ```
      */
     var U = ax5.util;
@@ -71,7 +71,7 @@
             return true;
         },
             getFrameTmpl = function getFrameTmpl(columnKeys) {
-            return '\n                <div data-ax5-ui-media-viewer="{{id}}">\n                    <div data-media-viewer-els="viewer"></div>\n                    <div data-media-viewer-els="viewer-loading">\n                        <div class="ax5-ui-media-viewer-loading-holder">\n                            <div class="ax5-ui-media-viewer-loading-cell">\n                                {{{loading.icon}}}\n                                {{{loading.text}}}\n                            </div>\n                        </div>\n                    </div>\n                    {{#media}}\n                    <div data-media-viewer-els="media-list-holder">\n                        <div data-media-viewer-els="media-list-prev-handle" style="width:{{width}}px;height:{{height}}px;">{{{prevHandle}}}</div>\n                        <div data-media-viewer-els="media-list">\n                            <div data-media-viewer-els="media-list-table">\n                            {{#list}}\n                                <div data-media-viewer-els="media-list-table-td">\n                                    {{#image}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                                    </div>\n                                    {{/image}}\n                                    {{#video}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        {{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}\n                                        {{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}" style="height:{{height}}px;">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}\n                                    </div>\n                                    {{/video}}\n                                </div>\n                            {{/list}}\n                            </div>\n                        </div>\n                        <div data-media-viewer-els="media-list-next-handle" style="width:{{width}}px;height:{{height}}px;">{{{nextHandle}}}</div>\n                    </div>\n                    {{/media}}\n                </div>\n                ';
+            return '\n                <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">\n                    <div data-media-viewer-els="viewer"></div>\n                    <div data-media-viewer-els="viewer-loading">\n                        <div class="ax5-ui-media-viewer-loading-holder">\n                            <div class="ax5-ui-media-viewer-loading-cell">\n                                {{{loading.icon}}}\n                                {{{loading.text}}}\n                            </div>\n                        </div>\n                    </div>\n                    {{#media}}\n                    <div data-media-viewer-els="media-list-holder">\n                        <div data-media-viewer-els="media-list-prev-handle" style="width:{{width}}px;height:{{height}}px;">{{{prevHandle}}}</div>\n                        <div data-media-viewer-els="media-list">\n                            <div data-media-viewer-els="media-list-table">\n                            {{#list}}\n                                <div data-media-viewer-els="media-list-table-td">\n                                    {{#image}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                                    </div>\n                                    {{/image}}\n                                    {{#video}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        {{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}\n                                        {{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}" style="height:{{height}}px;">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}\n                                    </div>\n                                    {{/video}}\n                                </div>\n                            {{/list}}\n                            </div>\n                        </div>\n                        <div data-media-viewer-els="media-list-next-handle" style="width:{{width}}px;height:{{height}}px;">{{{nextHandle}}}</div>\n                    </div>\n                    {{/media}}\n                </div>\n                ';
         },
             getFrame = function getFrame() {
             var data = jQuery.extend(true, {}, cfg),
@@ -132,8 +132,10 @@
 
             if (target) {
                 for (var key in processor) {
-                    result = processor[elementType].call(this, target);
-                    break;
+                    if (key == elementType) {
+                        result = processor[key].call(this, target);
+                        break;
+                    }
                 }
                 return this;
             }
@@ -270,9 +272,11 @@
             if (this.$["viewer"].data("media-type") == "image") {
                 var $img = this.$["viewer"].find("img");
                 $img.css({
-                    left: (this.$["viewer"].width() - $img.width()) / 2,
                     width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height()
                 });
+                setTimeout(function (_img) {
+                    _img.css({ left: (this.$["viewer"].width() - _img.width()) / 2 });
+                }.bind(this, $img), 1);
             } else if (this.$["viewer"].data("media-type") == "video") {
                 this.$["viewer"].find("iframe").css({ width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height() });
             }

@@ -2,7 +2,7 @@
 	"name": "ax5ui-mask",
 	"version": "0.6.6",
 	"description": "A mask plugin that works with Bootstrap & jQuery",
-	"license": "MIT",
+	"license": "LGPLv3",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ax5ui/ax5ui-mask"

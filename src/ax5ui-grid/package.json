@@ -2,7 +2,7 @@
 	"name": "ax5ui-grid",
 	"version": "0.0.1",
 	"description": "A grid plugin that works with Bootstrap & jQuery",
-	"license": "http://www.apache.org/licenses/LICENSE-2.0",
+	"license": "LGPLv3",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ax5ui/ax5ui-grid"

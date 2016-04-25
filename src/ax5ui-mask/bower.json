@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-mask",
-	"version": "0.6.6,
+	"version": "0.6.6",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
 	],
@@ -19,6 +19,6 @@
 		"jquery": "^1.11.0",
 		"ax5core": ""
 	},
-	"license": "MIT",
+	"license": "LGPLv3",
 	"homepage": "ax5.io"
 }

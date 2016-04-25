@@ -2,7 +2,7 @@
 	"name": "ax5ui-menu",
 	"version": "0.5.1",
 	"description": "A menu plugin that works with Bootstrap & jQuery",
-	"license": "MIT",
+	"license": "LGPLv3",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ax5ui/ax5ui-menu"

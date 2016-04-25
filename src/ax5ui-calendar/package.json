@@ -2,7 +2,7 @@
 	"name": "ax5ui-calendar",
 	"version": "0.7.8",
 	"description": "A calendar plugin that works with Bootstrap & jQuery",
-	"license": "MIT",
+	"license": "LGPLv3",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ax5ui/ax5ui-calendar"
