@@ -24,6 +24,13 @@ If you've never used a bower is, you will be able to be used for [http://bower.i
 - [ax5ui-media-viewer Github releases](https://github.com/ax5ui/ax5ui-media-viewer/releases)
 
 
+### USE CDN
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-media-viewer/master/dist/ax5media-viewer.css
+https://cdn.rawgit.com/ax5ui/ax5ui-media-viewer/master/dist/ax5media-viewer.js
+https://cdn.rawgit.com/ax5ui/ax5ui-media-viewer/master/dist/ax5media-viewer.min.js
+```
+
 ### Insert the "ax5media-viewer" in the HTML HEAD.
 
 Location of the folder can be determined freely in your project. But be careful not to accidentally caused
@@ -38,21 +45,43 @@ exactly the path.
         <script type="text/javascript" src="bower_components/ax5ui-media-viewer/dist/ax5media-viewer.min.js"></script>
     </head>
 <body>
-
+    <div id="media-viewer-target-0"></div>
 </body>
 </html>
 ```
 
-### USE CDN
-```
-https://cdn.rawgit.com/ax5ui/ax5ui-media-viewer/master/dist/ax5media-viewer.css
-https://cdn.rawgit.com/ax5ui/ax5ui-media-viewer/master/dist/ax5media-viewer.js
-https://cdn.rawgit.com/ax5ui/ax5ui-media-viewer/master/dist/ax5media-viewer.min.js
-```
 
 ### Basic Usages
 ```js
-
+$(document.body).ready(function () {
+    var myViewer_0 = new ax5.ui.mediaViewer({
+        target: $("#media-viewer-target-0"),
+        loading: {
+            icon: '<i class="fa fa-spinner fa-pulse fa-2x fa-fw margin-bottom" aria-hidden="true"></i>',
+            text: '<div>Now Loading</div>'
+        },
+        media: {
+            prevHandle: '<i class="fa fa-chevron-left"></i>',
+            nextHandle: '<i class="fa fa-chevron-right"></i>',
+            width: 36, height: 36,
+            poster: '<i class="fa fa-youtube-play" style="line-height: 32px;font-size: 20px;"></i>',
+            list: [
+                {
+                    video: {
+                        html: '<iframe src="https://player.vimeo.com/video/121840700?color=fcfcfc&badge=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
+                        poster: ''
+                    }
+                },
+                {
+                    image: {
+                        src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+                        poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+                    }
+                }
+            ]
+        }
+    });
+});
 ```
 
 ***
