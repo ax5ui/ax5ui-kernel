@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.mediaViewer
      * @classdesc
-     * @version 0.1.1
+     * @version 0.2.0
      * @author tom@axisj.com
      * @example
      * ```
@@ -71,7 +71,7 @@
             return true;
         },
             getFrameTmpl = function getFrameTmpl(columnKeys) {
-            return '\n                <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">\n                    <div data-media-viewer-els="viewer"></div>\n                    <div data-media-viewer-els="viewer-loading">\n                        <div class="ax5-ui-media-viewer-loading-holder">\n                            <div class="ax5-ui-media-viewer-loading-cell">\n                                {{{loading.icon}}}\n                                {{{loading.text}}}\n                            </div>\n                        </div>\n                    </div>\n                    {{#media}}\n                    <div data-media-viewer-els="media-list-holder">\n                        <div data-media-viewer-els="media-list-prev-handle" style="width:{{width}}px;height:{{height}}px;">{{{prevHandle}}}</div>\n                        <div data-media-viewer-els="media-list">\n                            <div data-media-viewer-els="media-list-table">\n                            {{#list}}\n                                <div data-media-viewer-els="media-list-table-td">\n                                    {{#image}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                                    </div>\n                                    {{/image}}\n                                    {{#video}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        {{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}\n                                        {{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}" style="height:{{height}}px;">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}\n                                    </div>\n                                    {{/video}}\n                                </div>\n                            {{/list}}\n                            </div>\n                        </div>\n                        <div data-media-viewer-els="media-list-next-handle" style="width:{{width}}px;height:{{height}}px;">{{{nextHandle}}}</div>\n                    </div>\n                    {{/media}}\n                </div>\n                ';
+            return '\n                <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">\n                    <div data-media-viewer-els="viewer"></div>\n                    <div data-media-viewer-els="viewer-loading">\n                        <div class="ax5-ui-media-viewer-loading-holder">\n                            <div class="ax5-ui-media-viewer-loading-cell">\n                                {{{loading.icon}}}\n                                {{{loading.text}}}\n                            </div>\n                        </div>\n                    </div>\n                    {{#media}}\n                    <div data-media-viewer-els="media-list-holder">\n                        <div data-media-viewer-els="media-list-prev-handle">{{{prevHandle}}}</div>\n                        <div data-media-viewer-els="media-list">\n                            <div data-media-viewer-els="media-list-table">\n                            {{#list}}\n                                <div data-media-viewer-els="media-list-table-td">\n                                    {{#image}}\n                                    <div data-media-thumbnail="{{@i}}">\n                                        <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                                    </div>\n                                    {{/image}}\n                                    {{#video}}\n                                    <div data-media-thumbnail="{{@i}}">{{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}{{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}</div>\n                                    {{/video}}\n                                </div>\n                            {{/list}}\n                            </div>\n                        </div>\n                        <div data-media-viewer-els="media-list-next-handle">{{{nextHandle}}}</div>\n                    </div>\n                    {{/media}}\n                </div>\n                ';
         },
             getFrame = function getFrame() {
             var data = jQuery.extend(true, {}, cfg),
@@ -281,6 +281,19 @@
                 this.$["viewer"].find("iframe").css({ width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height() });
             }
             this.$["viewer-loading"].css({ height: this.$["viewer"].height() });
+
+            var mediaThumbnailWidth = U.right(cfg.media.width, 1) == '%' ? U.number(cfg.media.width) / 100 * this.$["viewer"].width() : U.number(cfg.media.width),
+                mediaThumbnailHeight = U.right(cfg.media.height, 1) == '%' ? U.number(cfg.media.height) / 100 * this.$["viewer"].width() : U.number(cfg.media.height);
+
+            mediaThumbnailWidth = Math.floor(mediaThumbnailWidth);
+            mediaThumbnailHeight = Math.floor(mediaThumbnailHeight);
+
+            this.$["list-prev-handle"].css({ width: mediaThumbnailWidth * 1.5 });
+            this.$["list-next-handle"].css({ width: mediaThumbnailWidth * 1.5 });
+            this.$["list"].css({ height: mediaThumbnailHeight });
+            this.$["list-table"].find('[data-media-thumbnail]').css({ width: mediaThumbnailWidth, height: mediaThumbnailHeight });
+            this.$["list-table"].find('[data-media-thumbnail-video]').css({ width: mediaThumbnailWidth, height: mediaThumbnailHeight });
+
             return this;
         };
 

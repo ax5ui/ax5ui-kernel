@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.mediaViewer
      * @classdesc
-     * @version 0.1.1
+     * @version 0.2.0
      * @author tom@axisj.com
      * @example
      * ```
@@ -85,27 +85,24 @@
                     </div>
                     {{#media}}
                     <div data-media-viewer-els="media-list-holder">
-                        <div data-media-viewer-els="media-list-prev-handle" style="width:{{width}}px;height:{{height}}px;">{{{prevHandle}}}</div>
+                        <div data-media-viewer-els="media-list-prev-handle">{{{prevHandle}}}</div>
                         <div data-media-viewer-els="media-list">
                             <div data-media-viewer-els="media-list-table">
                             {{#list}}
                                 <div data-media-viewer-els="media-list-table-td">
                                     {{#image}}
-                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">
+                                    <div data-media-thumbnail="{{@i}}">
                                         <img src="{{${columnKeys.poster}}}" data-media-thumbnail-image="{{@i}}" />
                                     </div>
                                     {{/image}}
                                     {{#video}}
-                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">
-                                        {{#${columnKeys.poster}}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/${columnKeys.poster}}}
-                                        {{^${columnKeys.poster}}}<a data-media-thumbnail-video="{{@i}}" style="height:{{height}}px;">{{{media.${columnKeys.poster}}}}</a>{{/${columnKeys.poster}}}
-                                    </div>
+                                    <div data-media-thumbnail="{{@i}}">{{#${columnKeys.poster}}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/${columnKeys.poster}}}{{^${columnKeys.poster}}}<a data-media-thumbnail-video="{{@i}}">{{{media.${columnKeys.poster}}}}</a>{{/${columnKeys.poster}}}</div>
                                     {{/video}}
                                 </div>
                             {{/list}}
                             </div>
                         </div>
-                        <div data-media-viewer-els="media-list-next-handle" style="width:{{width}}px;height:{{height}}px;">{{{nextHandle}}}</div>
+                        <div data-media-viewer-els="media-list-next-handle">{{{nextHandle}}}</div>
                     </div>
                     {{/media}}
                 </div>
@@ -228,8 +225,8 @@
                     if (parentLeft != newLeft) this.$["list-table"].css({left: parentLeft = newLeft});
                 }
 
-                if (parentLeft != newLeft){
-                    if(parentLeft + parentWidth < containerWidth){
+                if (parentLeft != newLeft) {
+                    if (parentLeft + parentWidth < containerWidth) {
                         newLeft = containerWidth - parentWidth;
                         if (newLeft > 0) newLeft = 0;
                         this.$["list-table"].css({left: newLeft});
@@ -319,7 +316,7 @@
                 $img.css({
                     width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height()
                 });
-                setTimeout((function(_img){
+                setTimeout((function (_img) {
                     _img.css({left: (this.$["viewer"].width() - _img.width()) / 2});
                 }).bind(this, $img), 1);
             }
@@ -327,6 +324,20 @@
                 this.$["viewer"].find("iframe").css({width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height()});
             }
             this.$["viewer-loading"].css({height: this.$["viewer"].height()});
+
+            var mediaThumbnailWidth = (U.right(cfg.media.width, 1) == '%') ? U.number(cfg.media.width) / 100 * this.$["viewer"].width() : U.number(cfg.media.width),
+                mediaThumbnailHeight = (U.right(cfg.media.height, 1) == '%') ? U.number(cfg.media.height) / 100 * this.$["viewer"].width() : U.number(cfg.media.height);
+
+            mediaThumbnailWidth = Math.floor(mediaThumbnailWidth);
+            mediaThumbnailHeight = Math.floor(mediaThumbnailHeight);
+
+            this.$["list-prev-handle"].css({width: mediaThumbnailWidth * 1.5});
+            this.$["list-next-handle"].css({width: mediaThumbnailWidth * 1.5});
+            this.$["list"].css({height: mediaThumbnailHeight});
+            this.$["list-table"].find('[data-media-thumbnail]').css({width: mediaThumbnailWidth, height: mediaThumbnailHeight});
+            this.$["list-table"].find('[data-media-thumbnail-video]').css({width: mediaThumbnailWidth, height: mediaThumbnailHeight});
+
+
             return this;
         };
 
