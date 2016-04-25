@@ -162,6 +162,39 @@
             } else {
                 return;
             }
+        },
+            alignMediaList = function alignMediaList() {
+            var thumbnail = this.$["list"].find('[data-media-thumbnail=' + this.selectedIndex + ']'),
+                pos = thumbnail.position(),
+                thumbnailWidth = thumbnail.width(),
+                containerWidth = this.$["list"].width(),
+                parentLeft = this.$["list-table"].position().left,
+                parentWidth = this.$["list-table"].width(),
+                newLeft = 0;
+
+            if (pos.left + thumbnailWidth + parentLeft > containerWidth) {
+                newLeft = containerWidth - (pos.left + thumbnailWidth);
+                if (parentLeft != newLeft) this.$["list-table"].css({ left: parentLeft = newLeft });
+            } else if (pos.left + parentLeft < 0) {
+                newLeft = pos.left;
+                if (newLeft > 0) newLeft = 0;
+                if (parentLeft != newLeft) this.$["list-table"].css({ left: parentLeft = newLeft });
+            }
+
+            if (parentLeft != newLeft) {
+                if (parentLeft + parentWidth < containerWidth) {
+                    newLeft = containerWidth - parentWidth;
+                    if (newLeft > 0) newLeft = 0;
+                    this.$["list-table"].css({ left: newLeft });
+                }
+            }
+
+            thumbnail = null;
+            pos = null;
+            thumbnailWidth = null;
+            containerWidth = null;
+            parentLeft = null;
+            newLeft = null;
         };
         /// private end
 
@@ -214,6 +247,7 @@
             this.align();
             jQuery(window).unbind("resize.ax5media-viewer-" + this.id).bind("resize.ax5media-viewer-" + this.id, function () {
                 this.align();
+                alignMediaList.call(this);
             }.bind(this));
 
             this.target.unbind("click").bind("click", function (e) {
@@ -242,7 +276,6 @@
             } else if (this.$["viewer"].data("media-type") == "video") {
                 this.$["viewer"].find("iframe").css({ width: this.$["viewer"].height() * this.$["viewer"].data("img-ratio"), height: this.$["viewer"].height() });
             }
-
             this.$["viewer-loading"].css({ height: this.$["viewer"].height() });
             return this;
         };
@@ -296,24 +329,8 @@
             };
             var select = function select(index) {
                 this.$["list"].find('[data-media-thumbnail]').removeClass("selected");
-                var thumbnail = this.$["list"].find('[data-media-thumbnail=' + index + ']').addClass("selected"),
-                    pos = thumbnail.position(),
-                    thumbnailWidth = thumbnail.width(),
-                    containerWidth = this.$["list"].width(),
-                    parentLeft = this.$["list-table"].position().left,
-                    newLeft = 0;
-
-                if (pos.left > parentLeft + containerWidth) {
-                    newLeft = containerWidth - (pos.left + thumbnailWidth);
-                }
-                if (parentLeft != newLeft) this.$["list-table"].css({ left: newLeft });
-
-                thumbnail = null;
-                pos = null;
-                thumbnailWidth = null;
-                containerWidth = null;
-                parentLeft = null;
-                newLeft = null;
+                this.$["list"].find('[data-media-thumbnail=' + index + ']').addClass("selected");
+                alignMediaList.call(this);
             };
 
             return function (index) {
