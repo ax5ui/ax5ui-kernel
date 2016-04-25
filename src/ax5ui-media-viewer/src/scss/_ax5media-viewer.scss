@@ -46,8 +46,30 @@ $font-colors: (
 
 /// media-viewer-display
 [data-ax5-ui-media-viewer] {
+    position: relative;
     [data-media-viewer-els="viewer"] {
-
+        overflow: hidden;
+        img {
+            border: 0;
+        }
+    }
+    [data-media-viewer-els="viewer-loading"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0px;
+        top: 0px;
+        .ax5-ui-media-viewer-loading-holder {
+            display: table;
+            width: 100%;
+            height: 100%;
+            .ax5-ui-media-viewer-loading-cell {
+                display: table-cell;
+                text-align: center;
+                vertical-align: middle;
+                height: 100%;
+            }
+        }
     }
     [data-media-viewer-els="media-list-holder"] {
         display: table;
@@ -79,7 +101,7 @@ $font-colors: (
                     border: 2px solid;
                     border-color: #ccc;
                     cursor: pointer;
-                    &:hover{
+                    &:hover {
                         border-color: $brand-primary;
                     }
                     [data-media-thumbnail-image] {

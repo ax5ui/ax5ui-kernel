@@ -35,8 +35,13 @@
             animateTime: 250,
 
             columnKeys: {
-                url: 'url',
-                type: 'type'
+                src: 'src',
+                poster: 'poster',
+                html: 'html'
+            },
+            loading: {
+                icon: '',
+                text: 'Now Loading'
             },
             viewer: {
                 prevHandle: false,
@@ -65,7 +70,7 @@
             return true;
         },
             getFrameTmpl = function getFrameTmpl(columnKeys) {
-            return '\n                <div data-ax5-ui-media-viewer="{{id}}">\n                    <div data-media-viewer-els="viewer"></div>\n                    {{#media}}\n                    <div data-media-viewer-els="media-list-holder">\n                        <div data-media-viewer-els="media-list-prev-handle" style="width:{{width}}px;height:{{height}}px;">{{{prevHandle}}}</div>\n                        <div data-media-viewer-els="media-list">\n                            <div data-media-viewer-els="media-list-table">\n                            {{#list}}\n                                <div data-media-viewer-els="media-list-table-td">\n                                    {{#image}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        <img src="{{poster}}" data-media-thumbnail-image="{{@i}}" />\n                                    </div>\n                                    {{/image}}\n                                    {{#video}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        {{#poster}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/poster}}\n                                        {{^poster}}<a data-media-thumbnail-video="{{@i}}" style="height:{{height}}px;">{{{media.poster}}}</a>{{/poster}}\n                                    </div>\n                                    {{/video}}\n                                </div>\n                            {{/list}}\n                            </div>\n                        </div>\n                        <div data-media-viewer-els="media-list-next-handle" style="width:{{width}}px;height:{{height}}px;">{{{nextHandle}}}</div>\n                    </div>\n                    {{/media}}\n                </div>\n                ';
+            return '\n                <div data-ax5-ui-media-viewer="{{id}}">\n                    <div data-media-viewer-els="viewer"></div>\n                    <div data-media-viewer-els="viewer-loading">\n                        <div class="ax5-ui-media-viewer-loading-holder">\n                            <div class="ax5-ui-media-viewer-loading-cell">\n                                {{{loading.icon}}}\n                                {{{loading.text}}}\n                            </div>\n                        </div>\n                    </div>\n                    {{#media}}\n                    <div data-media-viewer-els="media-list-holder">\n                        <div data-media-viewer-els="media-list-prev-handle" style="width:{{width}}px;height:{{height}}px;">{{{prevHandle}}}</div>\n                        <div data-media-viewer-els="media-list">\n                            <div data-media-viewer-els="media-list-table">\n                            {{#list}}\n                                <div data-media-viewer-els="media-list-table-td">\n                                    {{#image}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                                    </div>\n                                    {{/image}}\n                                    {{#video}}\n                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">\n                                        {{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}\n                                        {{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}" style="height:{{height}}px;">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}\n                                    </div>\n                                    {{/video}}\n                                </div>\n                            {{/list}}\n                            </div>\n                        </div>\n                        <div data-media-viewer-els="media-list-next-handle" style="width:{{width}}px;height:{{height}}px;">{{{nextHandle}}}</div>\n                    </div>\n                    {{/media}}\n                </div>\n                ';
         },
             getFrame = function getFrame() {
             var data = jQuery.extend(true, {}, cfg),
@@ -190,9 +195,38 @@
          * @returns {axClass}
          */
         this.select = function () {
-            var printViewer = function printViewer() {};
+            var mediaView = {
+                image: function image(obj, callBack) {
+
+                    var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
+                    var img = new Image();
+                    img.src = obj.image[cfg.columnKeys.src];
+                    img.onload = function () {
+                        callBack(img.width, img.height);
+                    };
+                    return img;
+                },
+                video: function video(obj, callBack) {}
+            };
+
+            var onLoad = {
+                image: function image() {},
+                video: function video() {}
+            };
 
             return function (index) {
+                var media = cfg.media.list[index],
+                    mediaElement;
+                for (var key in mediaView) {
+                    if (media[key]) {
+                        mediaView[key].call(this, media, onLoad[key].bind(this));
+                        break;
+                    }
+                }
+
+                if (mediaElement) {
+                    this.$["viewer"].append(mediaElement);
+                }
 
                 return this;
             };

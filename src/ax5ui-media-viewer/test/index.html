@@ -21,6 +21,10 @@
 
         var myViewer = new ax5.ui.mediaViewer({
             target: $("#media-viewer-target"),
+            loading: {
+                icon: '<i class="fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom" aria-hidden="true"></i>',
+                text: '<div>Now Loading</div>'
+            },
             viewer: {
                 prevHandle: '',
                 nextHandle: '',

@@ -34,8 +34,13 @@
             animateTime: 250,
 
             columnKeys: {
-                url: 'url',
-                type: 'type'
+                src: 'src',
+                poster: 'poster',
+                html: 'html'
+            },
+            loading: {
+                icon: '',
+                text: 'Now Loading'
             },
             viewer: {
                 prevHandle: false,
@@ -69,6 +74,14 @@
                 return `
                 <div data-ax5-ui-media-viewer="{{id}}">
                     <div data-media-viewer-els="viewer"></div>
+                    <div data-media-viewer-els="viewer-loading">
+                        <div class="ax5-ui-media-viewer-loading-holder">
+                            <div class="ax5-ui-media-viewer-loading-cell">
+                                {{{loading.icon}}}
+                                {{{loading.text}}}
+                            </div>
+                        </div>
+                    </div>
                     {{#media}}
                     <div data-media-viewer-els="media-list-holder">
                         <div data-media-viewer-els="media-list-prev-handle" style="width:{{width}}px;height:{{height}}px;">{{{prevHandle}}}</div>
@@ -78,13 +91,13 @@
                                 <div data-media-viewer-els="media-list-table-td">
                                     {{#image}}
                                     <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">
-                                        <img src="{{poster}}" data-media-thumbnail-image="{{@i}}" />
+                                        <img src="{{${columnKeys.poster}}}" data-media-thumbnail-image="{{@i}}" />
                                     </div>
                                     {{/image}}
                                     {{#video}}
                                     <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">
-                                        {{#poster}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/poster}}
-                                        {{^poster}}<a data-media-thumbnail-video="{{@i}}" style="height:{{height}}px;">{{{media.poster}}}</a>{{/poster}}
+                                        {{#${columnKeys.poster}}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/${columnKeys.poster}}}
+                                        {{^${columnKeys.poster}}}<a data-media-thumbnail-video="{{@i}}" style="height:{{height}}px;">{{{media.${columnKeys.poster}}}}</a>{{/${columnKeys.poster}}}
                                     </div>
                                     {{/video}}
                                 </div>
@@ -223,13 +236,46 @@
          * @param index
          * @returns {axClass}
          */
-        this.select = (function(){
-            var printViewer = function(){
+        this.select = (function () {
+            var mediaView = {
+                image: function (obj, callBack) {
 
+
+
+                    var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
+                    var img = new Image();
+                    img.src = obj.image[cfg.columnKeys.src];
+                    img.onload = function () {
+                        callBack(img.width, img.height);
+                    };
+                    return img;
+                },
+                video: function (obj, callBack) {
+
+                }
+            };
+
+            var onLoad = {
+                image: function () {
+
+                },
+                video: function () {
+
+                }
             };
 
             return function (index) {
+                var media = cfg.media.list[index], mediaElement;
+                for (var key in mediaView) {
+                    if (media[key]) {
+                        mediaView[key].call(this, media, onLoad[key].bind(this));
+                        break;
+                    }
+                }
 
+                if (mediaElement) {
+                    this.$["viewer"].append(mediaElement);
+                }
 
                 return this;
             };
