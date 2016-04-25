@@ -76,14 +76,17 @@
                             <div data-media-viewer-els="media-list-table">
                             {{#list}}
                                 <div data-media-viewer-els="media-list-table-td">
+                                    {{#image}}
                                     <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">
-                                        {{#image}}
                                         <img src="{{poster}}" data-media-thumbnail-image="{{@i}}" />
-                                        {{/image}}
-                                        {{#video}}
-                                        <img src="{{poster}}" data-media-thumbnail-video="{{@i}}" />
-                                        {{/video}}
                                     </div>
+                                    {{/image}}
+                                    {{#video}}
+                                    <div data-media-thumbnail="{{@i}}" style="width:{{width}}px;height:{{height}}px;">
+                                        {{#poster}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/poster}}
+                                        {{^poster}}<a data-media-thumbnail-video="{{@i}}" style="height:{{height}}px;">{{{media.poster}}}</a>{{/poster}}
+                                    </div>
+                                    {{/video}}
                                 </div>
                             {{/list}}
                             </div>
