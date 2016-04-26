@@ -47,7 +47,7 @@ $font-colors: (
 @mixin ax5-ui-media-viewer-theme($border-color, $font-color){
     [data-media-viewer-els="viewer-loading"] {
         background: #eee;
-        border-color: $border-color;
+        //border-color: $border-color;
     }
     [data-media-viewer-els="media-list-holder"] {
         [data-media-viewer-els] {
@@ -100,8 +100,8 @@ $font-colors: (
         top: 0px;
         box-sizing: border-box;
         background: #eee;
-        border: 1px solid;
-        border-color: #ccc;
+        //border: 1px solid;
+        //border-color: #ccc;
         .ax5-ui-media-viewer-loading-holder {
             display: table;
             width: 100%;
