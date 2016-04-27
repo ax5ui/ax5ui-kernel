@@ -26,20 +26,32 @@ $ax5select-option-item-checkbox-width: 18px;
 $ax5select-option-item-handle-width: 14px;
 
 ///~~ theme
+$ax5select-default-fore-color: $gray;
+$ax5select-default-back-color: #fff;
 $ax5select-default-border-color: #ccc;
-$ax5select-default-font-color: $gray;
+$ax5select-default-hover-type: darken, 10;
 
-$ax5select-primary-border-color: $brand-primary;
-$ax5select-primary-font-color: $brand-primary;
+$ax5select-primary-fore-color: $brand-primary;
+$ax5select-primary-back-color: $ax5select-option-group-bg;
+$ax5select-primary-border-color: $gray;
+$ax5select-primary-hover-type: darken, 10;
 
-$ax5select-success-border-color: $brand-success;
-$ax5select-success-font-color: $brand-success;
+$ax5select-success-fore-color: $brand-success;
+$ax5select-success-back-color: $ax5select-option-group-bg;
+$ax5select-success-border-color: $gray;
+$ax5select-success-hover-type: darken, 10;
 
-$ax5select-info-border-color: $brand-info;
-$ax5select-info-font-color: $brand-info;
+$ax5select-info-fore-color: $brand-info;
+$ax5select-info-back-color: $ax5select-option-group-bg;
+$ax5select-info-border-color: $gray;
+$ax5select-info-hover-type: darken, 10;
 
-$ax5select-warning-border-color: $brand-warning;
-$ax5select-warning-font-color: $brand-warning;
+$ax5select-warning-fore-color: $brand-warning;
+$ax5select-warning-back-color: $ax5select-option-group-bg;
+$ax5select-warning-border-color: $gray;
+$ax5select-warning-hover-type: darken, 10;
 
-$ax5select-danger-border-color: $brand-danger;
-$ax5select-danger-font-color: $brand-danger;
+$ax5select-danger-fore-color: $brand-danger;
+$ax5select-danger-back-color: $ax5select-option-group-bg;
+$ax5select-danger-border-color: $gray;
+$ax5select-danger-hover-type: darken, 10;

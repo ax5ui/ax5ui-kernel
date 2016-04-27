@@ -44,10 +44,11 @@
     }
 }
 
-@mixin ax5-ui-select-display-theme($border-color, $font-color) {
+@mixin ax5-ui-select-display-theme($fore-color, $back-color, $border-color) {
     &:hover, &:active, &:focus {
         border-color: $border-color;
-        color: $font-color;
+        color: $fore-color;
+        background: $back-color;
         text-decoration: none;
 
         .ax5-ui-select-display-table {
@@ -57,12 +58,12 @@
             [data-ax5-select-display="addon"] {
                 .addon-icon-closed {
                     .addon-icon-arrow {
-                        border-top-color: $font-color;
+                        border-top-color: $fore-color;
                     }
                 }
                 .addon-icon-opened {
                     .addon-icon-arrow {
-                        border-bottom-color: $font-color;
+                        border-bottom-color: $fore-color;
                     }
                 }
             }
@@ -70,26 +71,67 @@
     }
 }
 
-@mixin ax5-ui-select-option-group-theme($border-color, $font-color) {
+@mixin ax5-ui-select-option-group-theme($fore-color, $back-color, $border-color, $hover-type) {
     border-color: $border-color;
-    color: $font-color;
+    color: $fore-color;
 
 
-    &.direction-top {
+    .ax-select-body {
 
+        .ax-select-option-group-content {
+            .ax-select-option-item {
+
+                .ax-select-option-item-cell {
+
+                    &.ax-select-option-item-checkbox {
+                        .item-checkbox-wrap {
+                            &.useCheckBox {
+                                &:after {
+                                    border-color: #000;
+                                }
+                            }
+                        }
+                    }
+                    &.ax-select-option-item-label {
+                    }
+                }
+
+                &:hover, &.hover {
+                    @if nth($hover-type, 1) == "darken"{
+                        background: darken($back-color, nth($hover-type, 2));
+                        color: darken($fore-color, nth($hover-type, 2));
+                    }
+                    @else if nth($hover-type, 1) == "lighten"{
+                        background: lighten($back-color, nth($hover-type, 2));
+                        color: darken($fore-color, nth($hover-type, 2));
+                    }
+                }
+            }
+        }
     }
-    &.direction-right {
 
-    }
-    &.direction-bottom {
-
-    }
-    &.direction-left {
+    &:hover{
 
     }
 }
 
 // themes
+$fore-colors: (
+        default: $ax5select-default-fore-color,
+        primary: $ax5select-primary-fore-color,
+        success: $ax5select-success-fore-color,
+        info: $ax5select-info-fore-color,
+        warning: $ax5select-warning-fore-color,
+        danger: $ax5select-danger-fore-color
+);
+$back-colors: (
+        default: $ax5select-default-back-color,
+        primary: $ax5select-primary-back-color,
+        success: $ax5select-success-back-color,
+        info: $ax5select-info-back-color,
+        warning: $ax5select-warning-back-color,
+        danger: $ax5select-danger-back-color
+);
 $border-colors: (
         default: $ax5select-default-border-color,
         primary: $ax5select-primary-border-color,
@@ -98,15 +140,14 @@ $border-colors: (
         warning: $ax5select-warning-border-color,
         danger: $ax5select-danger-border-color
 );
-$font-colors: (
-        default: $ax5select-default-font-color,
-        primary: $ax5select-primary-font-color,
-        success: $ax5select-success-font-color,
-        info: $ax5select-info-font-color,
-        warning: $ax5select-warning-font-color,
-        danger: $ax5select-danger-font-color
+$hover-types: (
+        default: $ax5select-default-hover-type,
+        primary: $ax5select-primary-hover-type,
+        success: $ax5select-success-hover-type,
+        info: $ax5select-info-hover-type,
+        warning: $ax5select-warning-hover-type,
+        danger: $ax5select-danger-hover-type
 );
-
 
 @include keyframes(ax-select-option-group) {
     from {
@@ -135,9 +176,6 @@ $font-colors: (
 .ax5-ui-select-display {
     position: relative;
     z-index: 2;
-    //position: absolute;
-    //left: 0px;
-    //top: 0px;
     padding: 0px;
 
     &:hover {
@@ -205,10 +243,9 @@ $font-colors: (
         }
     }
 
-
-    @each $theme in $border-colors {
+    @each $theme in $fore-colors {
         &.#{nth($theme, 1)} {
-            @include ax5-ui-select-display-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
+            @include ax5-ui-select-display-theme(map_get($fore-colors, nth($theme, 1)), map_get($back-colors, nth($theme, 1)), map_get($border-colors, nth($theme, 1)));
         }
     }
 }
@@ -245,8 +282,6 @@ $font-colors: (
             .ax-select-option-item {
                 padding: $ax5select-option-item-padding;
                 text-align: left;
-                //background: $item-bg;
-                //color: $item-color;
                 cursor: pointer;
                 font-size: $ax5select-option-item-font-size;
 
@@ -308,8 +343,6 @@ $font-colors: (
                 }
 
                 &:hover, &.hover {
-                    //background: $item-hover-bg;
-                    //color: $item-hover-color;
                     .ax-select-option-item-cell {
                         &.ax-select-option-item-checkbox {
                             .item-checkbox-wrap {
@@ -324,9 +357,9 @@ $font-colors: (
         }
     }
 
-    @each $theme in $border-colors {
+    @each $theme in $fore-colors {
         &.#{nth($theme, 1)} {
-            @include ax5-ui-select-option-group-theme(map_get($border-colors, nth($theme, 1)), map_get($font-colors, nth($theme, 1)));
+            @include ax5-ui-select-option-group-theme(map_get($fore-colors, nth($theme, 1)), map_get($back-colors, nth($theme, 1)), map_get($border-colors, nth($theme, 1)), map_get($hover-types, nth($theme, 1)));
         }
     }
 }
