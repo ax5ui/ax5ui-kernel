@@ -878,6 +878,8 @@
                 if (isPrint !== false) applySelectionMap.call(this);
 
                 result = null;
+
+                return this;
             };
         })();
 
@@ -962,6 +964,8 @@
                 this.selectableMap = result;
                 // 변경내용 적용하여 출력
                 if (isPrint !== false) this.changeMode();
+
+                return this;
             };
         })();
 
