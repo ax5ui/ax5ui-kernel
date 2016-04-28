@@ -68,7 +68,7 @@
                     <div class="ax-select-body">
                         <div class="ax-select-option-group-content" data-select-els="content">
                         {{#options}}
-                            <div class="ax-select-option-item" data-option-value="{{${columnKeys.optionValue}}}" data-selected="{{${columnKeys.optionSelected}}}">
+                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" data-selected="{{${columnKeys.optionSelected}}}">
                                 <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
                                     <span class="item-checkbox-wrap useCheckBox" {{#${columnKeys.optionSelected}}}data-item-selected="true"{{/${columnKeys.optionSelected}}}></span>
                                 </span>
@@ -105,7 +105,7 @@
                 while (i--) {
                     if (this.queue[i].$display) {
 
-                        this.queue[i].$display.css({width:"auto"});
+                        this.queue[i].$display.css({width: "auto"});
                         w = Math.max(this.queue[i].select.outerWidth(), this.queue[i].$display.find('[data-select-els="display-table"]').outerWidth());
                         this.queue[i].$display.css({
                             width: w,
@@ -164,23 +164,29 @@
                 if (!this.activeSelectOptionGroup) return this;
 
                 var
-                    opts = this.queue[this.activeSelectQueueIndex]
+                    opts = this.queue[this.activeSelectQueueIndex],
+                    clickEl = "display"
                     ;
 
                 target = U.findParentNode(e.target, function (target) {
-                    if (target.getAttribute("data-picker-els")) {
+                    if (target.getAttribute("data-option-value")) {
+                        clickEl = "optionItem";
                         return true;
                     }
                     else if (opts.$target.get(0) == target) {
+                        clickEl = "display";
                         return true;
                     }
                 });
                 if (!target) {
-                    //console.log("i'm not picker");
                     this.close();
                     return this;
+                }else if(clickEl != "display"){
+                    console.log(target);
+                    this.val(opts.id, {index:target.getAttribute("data-option-index")});
+                    this.close();
                 }
-                //console.log("i'm picker");
+
                 return this;
             },
             onBodyKeyup = function (e) {
@@ -188,38 +194,37 @@
                     this.close();
                 }
             },
+            getLabel = function (opts, optIdx) {
+                var labels = [];
+                if (U.isArray(opts.selected) && opts.selected.length > 0) {
+                    opts.selected.forEach(function (n) {
+                        if (n.selected) labels.push(n[cfg.columnKeys.optionText]);
+                    });
+                }
+                else {
+                    if (opts.options[0]) labels[0] = opts.options[0][cfg.columnKeys.optionText];
+                    else labels[0] = "";
+                }
+
+                return (function () {
+                    if (opts.multiple && labels.length > 1) {
+                        var data = {
+                            label: labels[0],
+                            length: labels.length - 1
+                        };
+                        return ax5.mustache.render(cfg.lang.multipleLabel, data);
+                    }
+                    else {
+                        return labels[0];
+                    }
+                })();
+            },
             bindSelectTarget = (function () {
                 var selectEvent = {
                     'click': function (opts, optIdx, e) {
                         self.open(opts, optIdx);
                     }
                 };
-                var getLabel = function (opts, optIdx) {
-                    var labels = [];
-                    if (U.isArray(opts.selected) && opts.selected.length > 0) {
-                        opts.selected.forEach(function (n) {
-                            if (n.selected) labels.push(n[cfg.columnKeys.optionText]);
-                        });
-                    }
-                    else {
-                        if (opts.options[0]) labels[0] = opts.options[0][cfg.columnKeys.optionText];
-                        else labels[0] = "";
-                    }
-
-                    return (function () {
-                        if (opts.multiple && labels.length > 1) {
-                            var data = {
-                                label: labels[0],
-                                length: labels.length - 1
-                            };
-                            return ax5.mustache.render(cfg.lang.multipleLabel, data);
-                        }
-                        else {
-                            return labels[0];
-                        }
-                    })();
-                };
-
                 return function (opts, optIdx) {
                     var data = {};
 
@@ -253,7 +258,7 @@
                         opts.selected = [];
                     }
                     else {
-                        if(opts.multiple) opts.selected.push(jQuery.extend({}, O));
+                        if (opts.multiple) opts.selected.push(jQuery.extend({}, O));
                         else opts.selected[0] = jQuery.extend({}, O);
                     }
                 };
@@ -460,6 +465,77 @@
 
             return this;
         };
+
+        /**
+         * @method ax5.ui.select.setValue
+         * @param value
+         * @returns {axClass}
+         */
+        this.val = (function () {
+
+            // todo : val 함수 리팩토링 필요
+
+            var processor = {
+                'index': function (opts, optIdx, value) {
+                    //console.log(opts, value);
+
+                    // 옵션선택 초기화
+                    opts.options.forEach(function(n){
+                        n.selected = false;
+                    });
+
+                    if(U.isArray(value.index)){
+                        value.index.forEach(function(n){
+                            opts.options[n].selected = true;
+                        });
+                    }
+                    else{
+                        console.log(opts.options, value.index);
+                        opts.options[value.index].selected = true;
+                    }
+                    syncSelectOptions.call(this, opts, optIdx, opts.options);
+                    opts.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, opts, optIdx));
+                },
+                'text': function (opts, optIdx, value) {
+
+                },
+                'arr': function (opts, optIdx, value) {
+
+                },
+                'value': function (opts, optIdx, value) {
+                    console.log(opts, value);
+                }
+            };
+
+            return function (boundID, value) {
+                var optIdx = ax5.util.search(this.queue, function () {
+                    return this.id == boundID;
+                });
+                var opts = this.queue[optIdx];
+                
+                if (typeof value == "undefined") {
+                    return opts.selected;
+                }
+                else if (U.isArray(value)) {
+                    processor.arr(opts, optIdx, value);
+                }
+                else if (U.isString(value) || U.isNumber(value)) {
+                    processor.value(opts, optIdx, value);
+                }
+                else {
+                    for (var key in processor) {
+                        if (value[key]) {
+                            processor[key](opts, optIdx, value);
+                            break;
+                        }
+                    }
+                }
+
+                opts = null;
+                boundID = null;
+                return this;
+            };
+        })();
 
         /**
          * @method ax5.ui.select.close

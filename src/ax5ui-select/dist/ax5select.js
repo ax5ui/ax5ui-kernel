@@ -62,7 +62,7 @@
             return true;
         },
             getOptionGroupTmpl = function getOptionGroupTmpl(columnKeys) {
-            return '\n                <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div class="ax-select-option-item" data-option-value="{{' + columnKeys.optionValue + '}}" data-selected="{{' + columnKeys.optionSelected + '}}">\n                                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                    <span class="item-checkbox-wrap useCheckBox" {{#' + columnKeys.optionSelected + '}}data-item-selected="true"{{/' + columnKeys.optionSelected + '}}></span>\n                                </span>\n                                <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                            </div>\n                        {{/options}}\n                        </div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
+            return '\n                <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{' + columnKeys.optionValue + '}}" data-selected="{{' + columnKeys.optionSelected + '}}">\n                                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                    <span class="item-checkbox-wrap useCheckBox" {{#' + columnKeys.optionSelected + '}}data-item-selected="true"{{/' + columnKeys.optionSelected + '}}></span>\n                                </span>\n                                <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                            </div>\n                        {{/options}}\n                        </div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
             return '\n                <a class="form-control {{formSize}} ax5-ui-select-display {{theme}}" data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
@@ -126,21 +126,27 @@
             onBodyClick = function onBodyClick(e, target) {
             if (!this.activeSelectOptionGroup) return this;
 
-            var opts = this.queue[this.activeSelectQueueIndex];
+            var opts = this.queue[this.activeSelectQueueIndex],
+                clickEl = "display";
 
             target = U.findParentNode(e.target, function (target) {
-                if (target.getAttribute("data-picker-els")) {
+                if (target.getAttribute("data-option-value")) {
+                    clickEl = "optionItem";
                     return true;
                 } else if (opts.$target.get(0) == target) {
+                    clickEl = "display";
                     return true;
                 }
             });
             if (!target) {
-                //console.log("i'm not picker");
                 this.close();
                 return this;
+            } else if (clickEl != "display") {
+                console.log(target);
+                this.val(opts.id, { index: target.getAttribute("data-option-index") });
+                this.close();
             }
-            //console.log("i'm picker");
+
             return this;
         },
             onBodyKeyup = function onBodyKeyup(e) {
@@ -148,35 +154,34 @@
                 this.close();
             }
         },
+            getLabel = function getLabel(opts, optIdx) {
+            var labels = [];
+            if (U.isArray(opts.selected) && opts.selected.length > 0) {
+                opts.selected.forEach(function (n) {
+                    if (n.selected) labels.push(n[cfg.columnKeys.optionText]);
+                });
+            } else {
+                if (opts.options[0]) labels[0] = opts.options[0][cfg.columnKeys.optionText];else labels[0] = "";
+            }
+
+            return function () {
+                if (opts.multiple && labels.length > 1) {
+                    var data = {
+                        label: labels[0],
+                        length: labels.length - 1
+                    };
+                    return ax5.mustache.render(cfg.lang.multipleLabel, data);
+                } else {
+                    return labels[0];
+                }
+            }();
+        },
             bindSelectTarget = function () {
             var selectEvent = {
                 'click': function click(opts, optIdx, e) {
                     self.open(opts, optIdx);
                 }
             };
-            var getLabel = function getLabel(opts, optIdx) {
-                var labels = [];
-                if (U.isArray(opts.selected) && opts.selected.length > 0) {
-                    opts.selected.forEach(function (n) {
-                        if (n.selected) labels.push(n[cfg.columnKeys.optionText]);
-                    });
-                } else {
-                    if (opts.options[0]) labels[0] = opts.options[0][cfg.columnKeys.optionText];else labels[0] = "";
-                }
-
-                return function () {
-                    if (opts.multiple && labels.length > 1) {
-                        var data = {
-                            label: labels[0],
-                            length: labels.length - 1
-                        };
-                        return ax5.mustache.render(cfg.lang.multipleLabel, data);
-                    } else {
-                        return labels[0];
-                    }
-                }();
-            };
-
             return function (opts, optIdx) {
                 var data = {};
 
@@ -410,6 +415,69 @@
 
             return this;
         };
+
+        /**
+         * @method ax5.ui.select.setValue
+         * @param value
+         * @returns {axClass}
+         */
+        this.val = function () {
+
+            // todo : val 함수 리팩토링 필요
+
+            var processor = {
+                'index': function index(opts, optIdx, value) {
+                    //console.log(opts, value);
+
+                    // 옵션선택 초기화
+                    opts.options.forEach(function (n) {
+                        n.selected = false;
+                    });
+
+                    if (U.isArray(value.index)) {
+                        value.index.forEach(function (n) {
+                            opts.options[n].selected = true;
+                        });
+                    } else {
+                        console.log(opts.options, value.index);
+                        opts.options[value.index].selected = true;
+                    }
+                    syncSelectOptions.call(this, opts, optIdx, opts.options);
+                    opts.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, opts, optIdx));
+                },
+                'text': function text(opts, optIdx, value) {},
+                'arr': function arr(opts, optIdx, value) {},
+                'value': function value(opts, optIdx, _value) {
+                    console.log(opts, _value);
+                }
+            };
+
+            return function (boundID, value) {
+                var optIdx = ax5.util.search(this.queue, function () {
+                    return this.id == boundID;
+                });
+                var opts = this.queue[optIdx];
+
+                if (typeof value == "undefined") {
+                    return opts.selected;
+                } else if (U.isArray(value)) {
+                    processor.arr(opts, optIdx, value);
+                } else if (U.isString(value) || U.isNumber(value)) {
+                    processor.value(opts, optIdx, value);
+                } else {
+                    for (var key in processor) {
+                        if (value[key]) {
+                            processor[key](opts, optIdx, value);
+                            break;
+                        }
+                    }
+                }
+
+                opts = null;
+                boundID = null;
+                return this;
+            };
+        }();
 
         /**
          * @method ax5.ui.select.close
