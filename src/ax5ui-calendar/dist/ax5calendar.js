@@ -479,7 +479,7 @@
 
                         if (self.onClick) {
                             self.onClick.call({
-                                date: value, target: this.target, dateElement: target
+                                self: this, date: value, target: this.target, dateElement: target
                             });
                         }
                     }
@@ -498,7 +498,7 @@
 
                             if (self.onClick) {
                                 self.onClick.call({
-                                    date: value, target: this.target, dateElement: target
+                                    self: this, date: value, target: this.target, dateElement: target
                                 });
                             }
                         }
@@ -520,7 +520,7 @@
 
                             if (self.onClick) {
                                 self.onClick.call({
-                                    date: value, target: this.target, dateElement: target
+                                    self: this, date: value, target: this.target, dateElement: target
                                 });
                             }
                         }
