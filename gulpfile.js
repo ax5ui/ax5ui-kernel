@@ -107,6 +107,14 @@ var PATHS = {
         dest: "src/ax5ui-media-viewer/dist",
         scss: "ax5media-viewer.scss",
         js: "ax5media-viewer"
+    },
+    "ax5ui-uploader": {
+        isPlugin: true,
+        root: "src/ax5ui-uploader",
+        src: "src/ax5ui-uploader/src",
+        dest: "src/ax5ui-uploader/dist",
+        scss: "ax5uploader.scss",
+        js: "ax5uploader"
     }
 };
 
