@@ -1,19 +1,19 @@
 {
-	"name": "ax5ui-select",
+	"name": "ax5ui-uploader",
 	"version": "0.0.1",
-	"description": "A select plugin that works with Bootstrap & jQuery",
+	"description": "A uploader plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
 	],
-	"main": "dist/ax5select.js",
+	"main": "dist/ax5uploader.js",
 	"keywords": [
 		"bootstrap",
 		"jquery",
 		"ax5ui",
 		"plugin",
 		"bootstrap jQuery plugins",
-		"select",
-		"ax5ui-select",
+		"uploader",
+		"ax5ui-uploader",
 		"javascript ui"
 	],
 	"dependencies": {
