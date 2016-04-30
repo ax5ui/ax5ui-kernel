@@ -64,7 +64,7 @@
             },
             getOptionGroupTmpl = function (columnKeys) {
                 return `
-                <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">
+                <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">
                     <div class="ax-select-body">
                         <div class="ax-select-option-group-content" data-select-els="content">
                         {{#options}}
@@ -345,6 +345,7 @@
             }
             opts.select = opts.$target.find('select');
             opts.multiple = opts.select.attr("multiple");
+            opts.size = opts.select.attr("data-size");
 
             // target attribute data
             (function (data) {
@@ -417,6 +418,7 @@
 
                 data.id = opts.id;
                 data.theme = opts.theme;
+                data.size = "ax5-ui-select-option-group-" + opts.size;
                 data.options = opts.options;
 
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, cfg.columnKeys), data));

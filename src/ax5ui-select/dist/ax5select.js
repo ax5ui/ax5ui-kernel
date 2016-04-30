@@ -62,7 +62,7 @@
             return true;
         },
             getOptionGroupTmpl = function getOptionGroupTmpl(columnKeys) {
-            return '\n                <div class="ax5-ui-select-option-group {{theme}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{' + columnKeys.optionValue + '}}" data-selected="{{' + columnKeys.optionSelected + '}}">\n                                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                    <span class="item-checkbox-wrap useCheckBox" {{#' + columnKeys.optionSelected + '}}data-item-selected="true"{{/' + columnKeys.optionSelected + '}}></span>\n                                </span>\n                                <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                            </div>\n                        {{/options}}\n                        </div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
+            return '\n                <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{' + columnKeys.optionValue + '}}" data-selected="{{' + columnKeys.optionSelected + '}}">\n                                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                    <span class="item-checkbox-wrap useCheckBox" {{#' + columnKeys.optionSelected + '}}data-item-selected="true"{{/' + columnKeys.optionSelected + '}}></span>\n                                </span>\n                                <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                            </div>\n                        {{/options}}\n                        </div>\n                    </div>\n                    <div class="ax-select-arrow"></div>\n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
             return '\n                <a class="form-control {{formSize}} ax5-ui-select-display {{theme}}" data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
@@ -296,6 +296,7 @@
             }
             opts.select = opts.$target.find('select');
             opts.multiple = opts.select.attr("multiple");
+            opts.size = opts.select.attr("data-size");
 
             // target attribute data
             (function (data) {
@@ -367,6 +368,7 @@
 
                 data.id = opts.id;
                 data.theme = opts.theme;
+                data.size = "ax5-ui-select-option-group-" + opts.size;
                 data.options = opts.options;
 
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, cfg.columnKeys), data));
