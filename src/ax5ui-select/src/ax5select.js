@@ -69,15 +69,22 @@
                         <div class="ax-select-option-group-content" data-select-els="content">
                         {{#options}}
                             <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" data-selected="{{${columnKeys.optionSelected}}}">
-                                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
-                                    <span class="item-checkbox-wrap useCheckBox" {{#${columnKeys.optionSelected}}}data-item-selected="true"{{/${columnKeys.optionSelected}}}></span>
-                                </span>
-                                <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                                <div class="ax-select-option-item-holder">
+                                    {{#multiple}}
+                                    <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
+                                        <span class="item-checkbox-wrap useCheckBox" {{#${columnKeys.optionSelected}}}data-item-selected="true"{{/${columnKeys.optionSelected}}}></span>
+                                    </span>
+                                    {{/multiple}}
+                                    {{^multiple}}
+                                    
+                                    {{/multiple}}
+                                    <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                                </div>
                             </div>
                         {{/options}}
                         </div>
                     </div>
-                    <div class="ax-select-arrow"></div>
+                    <div class="ax-select-arrow"></div> 
                 </div>
                 `;
             },
@@ -419,6 +426,7 @@
                 data.id = opts.id;
                 data.theme = opts.theme;
                 data.size = "ax5-ui-select-option-group-" + opts.size;
+                data.multiple = opts.multiple;
                 data.options = opts.options;
 
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, cfg.columnKeys), data));

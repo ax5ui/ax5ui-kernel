@@ -80,28 +80,27 @@
 
         .ax-select-option-group-content {
             .ax-select-option-item {
+                .ax-select-option-item-holder {
+                    .ax-select-option-item-cell {
 
-                .ax-select-option-item-cell {
-
-                    &.ax-select-option-item-checkbox {
-                        .item-checkbox-wrap {
-                            &.useCheckBox {
-                                &:after {
-                                    border-color: #000;
+                        &.ax-select-option-item-checkbox {
+                            .item-checkbox-wrap {
+                                &.useCheckBox {
+                                    &:after {
+                                        border-color: #000;
+                                    }
                                 }
                             }
                         }
-                    }
-                    &.ax-select-option-item-label {
+                        &.ax-select-option-item-label {
+                        }
                     }
                 }
-
                 &:hover, &.hover {
-                    @if nth($hover-type, 1) == "darken"{
+                    @if nth($hover-type, 1) == "darken" {
                         background: darken($back-color, nth($hover-type, 2));
                         color: darken($fore-color, nth($hover-type, 2));
-                    }
-                    @else if nth($hover-type, 1) == "lighten"{
+                    } @else if nth($hover-type, 1) == "lighten" {
                         background: lighten($back-color, nth($hover-type, 2));
                         color: darken($fore-color, nth($hover-type, 2));
                     }
@@ -115,38 +114,91 @@
     }
 }
 
-@mixin ax5-ui-select-option-group-size($padding, $font-size, $checkbox-width){
+@mixin ax5-ui-select-option-group-size($padding, $font-size){
     .ax-select-body {
+        padding: $ax5select-option-group-body-padding;
         $ax5select-option-item-height: $font-size + 5;
-        $ax5select-option-item-checkbox-size: $checkbox-width - 8;
+        $ax5select-option-item-checkbox-size: $font-size - 4;
         .ax-select-option-group-content {
             .ax-select-option-item {
                 padding: $padding;
+                text-align: left;
+                cursor: pointer;
                 font-size: $font-size;
-                height: $ax5select-option-item-height;
+                position: relative;
+                box-sizing: border-box;
+                overflow: hidden;
+                //table-layout: fixed;
 
-                .ax-select-option-item-cell {
-                    font-size: $font-size;
-                    line-height: $ax5select-option-item-height;
+                .ax-select-option-item-holder{
+                    display: table;
+                    position: relative;
+                    border-collapse: separate;
+                    overflow: hidden;
+                    //table-layout: fixed;
+                    width: 100%;
+                    height: $ax5select-option-item-height;
 
-                    &.ax-select-option-item-checkbox {
-                        width: $checkbox-width;
-                        .item-checkbox-wrap {
-                            width: $checkbox-width;
-                            height: $ax5select-option-item-height;
+                    .ax-select-option-item-cell {
+                        box-sizing: border-box;
+                        display: table-cell;
+                        vertical-align: middle;
+                        white-space: nowrap;
+                        font-size: $font-size;
+                        line-height: $ax5select-option-item-height;
+                        padding: 0px 0px 0px 0px;
+                        @include user-select(none);
 
-                            &.useCheckBox {
-                                &:after {
-                                    width: $ax5select-option-item-checkbox-size;
-                                    height: $ax5select-option-item-checkbox-size/2;
-                                    top: ($ax5select-option-item-height - 10) / 2;
-                                    left: ($ax5select-option-item-height - 10) / 2;
+                        &.ax-select-option-item-checkbox {
+                            overflow: hidden;
+                            width: $font-size;
+                            text-align: center;
+                            .item-checkbox-wrap {
+                                position: relative;
+                                display: block;
+                                width: $font-size;
+                                height: $ax5select-option-item-height;
+
+                                &.useCheckBox {
+                                    &:after {
+                                        content: '';
+                                        width: $ax5select-option-item-checkbox-size;
+                                        height: $ax5select-option-item-checkbox-size / 2;
+                                        position: absolute;
+                                        top: ($ax5select-option-item-height - 10) / 2;
+                                        right: 0px;
+                                        border: 2px solid #000;
+                                        border-top: none;
+                                        border-right: none;
+                                        background: transparent;
+                                        opacity: 0.1;
+                                        @include transform(rotate(-50deg));
+                                    }
+                                    &[data-item-checked="true"] {
+                                        &:after {
+                                            opacity: 1;
+                                        }
+                                    }
                                 }
                             }
                         }
+                        &.ax-select-option-item-label {
+                            padding: $ax5select-label-padding;
+                            padding-right: $ax5select-option-item-checkbox-size;
+
+                        }
                     }
-                    &.ax-select-option-item-label {
-                        padding-right: $ax5select-option-item-checkbox-size;
+
+                    &:hover, &.hover {
+                        .ax-select-option-item-cell {
+                            &.ax-select-option-item-checkbox {
+                                .item-checkbox-wrap {
+                                    &:after {
+                                        //border-color: $item-hover-color;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -315,88 +367,6 @@ $hover-types: (
         @include transform-origin(center bottom);
     }
 
-    .ax-select-body {
-        padding: $ax5select-option-group-body-padding;
-        $ax5select-option-item-height: $ax5select-option-item-font-size + 5;
-        $ax5select-option-item-checkbox-size: $ax5select-option-item-checkbox-width - 8;
-        .ax-select-option-group-content {
-            .ax-select-option-item {
-                padding: $ax5select-option-item-padding;
-                text-align: left;
-                cursor: pointer;
-                font-size: $ax5select-option-item-font-size;
-
-                display: table;
-                position: relative;
-                border-collapse: separate;
-                box-sizing: border-box;
-                overflow: hidden;
-                //table-layout: fixed;
-                width: 100%;
-                height: $ax5select-option-item-height;
-
-                .ax-select-option-item-cell {
-                    box-sizing: border-box;
-                    display: table-cell;
-                    vertical-align: middle;
-                    white-space: nowrap;
-                    font-size: $ax5select-option-item-font-size;
-                    line-height: $ax5select-option-item-height;
-                    padding: 0px 0px 0px 0px;
-                    @include user-select(none);
-
-                    &.ax-select-option-item-checkbox {
-                        overflow: hidden;
-                        width: $ax5select-option-item-checkbox-width;
-                        text-align: center;
-                        .item-checkbox-wrap {
-                            position: relative;
-                            display: block;
-                            width: $ax5select-option-item-checkbox-width;
-                            height: $ax5select-option-item-height;
-
-                            &.useCheckBox {
-                                &:after {
-                                    content: '';
-                                    width: $ax5select-option-item-checkbox-size;
-                                    height: $ax5select-option-item-checkbox-size / 2;
-                                    position: absolute;
-                                    top: ($ax5select-option-item-height - 10) / 2;
-                                    left: ($ax5select-option-item-height - 10) / 2;
-                                    border: 2px solid #000;
-                                    border-top: none;
-                                    border-right: none;
-                                    background: transparent;
-                                    opacity: 0.1;
-                                    @include transform(rotate(-50deg));
-                                }
-                                &[data-item-checked="true"] {
-                                    &:after {
-                                        opacity: 1;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    &.ax-select-option-item-label {
-                        padding-right: $ax5select-option-item-checkbox-size;
-                    }
-                }
-
-                &:hover, &.hover {
-                    .ax-select-option-item-cell {
-                        &.ax-select-option-item-checkbox {
-                            .item-checkbox-wrap {
-                                &:after {
-                                    //border-color: $item-hover-color;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     @each $theme in $fore-colors {
         &.#{nth($theme, 1)} {
@@ -404,13 +374,14 @@ $hover-types: (
         }
     }
 
+    @include ax5-ui-select-option-group-size($ax5select-option-item-padding, $ax5select-option-item-font-size);
     &.ax5-ui-select-option-group-lg{
-        @include ax5-ui-select-option-group-size($ax5select-option-item-padding-lg, $ax5select-option-item-font-size-lg, $ax5select-option-item-checkbox-width-lg);
+        @include ax5-ui-select-option-group-size($ax5select-option-item-padding-lg, $ax5select-option-item-font-size-lg);
     }
     &.ax5-ui-select-option-group-sm{
-        @include ax5-ui-select-option-group-size($ax5select-option-item-padding-sm, $ax5select-option-item-font-size-sm, $ax5select-option-item-checkbox-width-sm);
+        @include ax5-ui-select-option-group-size($ax5select-option-item-padding-sm, $ax5select-option-item-font-size-sm);
     }
     &.ax5-ui-select-option-group-xs{
-        @include ax5-ui-select-option-group-size($ax5select-option-item-padding-xs, $ax5select-option-item-font-size-xs, $ax5select-option-item-checkbox-width-xs);
+        @include ax5-ui-select-option-group-size($ax5select-option-item-padding-xs, $ax5select-option-item-font-size-xs);
     }
 }
