@@ -1309,10 +1309,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     mm = parseFloat(aDate[1]);
                     dd = parseFloat(aDate[2]);
                     aTime = aDateTime[1] || "09:00";
-                    aTimes = aTime.left(5).split(":");
+                    aTimes = aTime.substring(0, 5).split(":");
                     hh = parseFloat(aTimes[0]);
                     mi = parseFloat(aTimes[1]);
-                    if (aTime.right(2) === "AM" || aTime.right(2) === "PM") hh += 12;
+                    if (right(aTime, 2) === "AM" || right(aTime, 2) === "PM") hh += 12;
                     d = localDate(yy, mm - 1, dd, hh, mi);
                 } else if (d.length == 14) {
                     va = d.replace(/\D/g, "");
