@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.dialog
      * @classdesc
-     * @version 0.6.6
+     * @version 0.6.7
      * @author tom@axisj.com
      * @example
      * ```
@@ -62,7 +62,7 @@
                             {{#@each}}
                             <div class="form-group">
                             {{#@value.label}}
-                            <label>{{#_crlf}}{{.}}{{/_crlf}}</label>
+                            <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>
                             {{/@value.label}}
                             <input type="{{@value.type}}" placeholder="{{@value.placeholder}}" class="form-control {{@value.theme}}" data-dialog-prompt="{{@key}}" style="width:100%;" value="{{@value.value}}" />
                             {{#@value.help}}

@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-dialog",
-	"version": "0.6.6",
+	"version": "0.6.7",
 	"description": "A dialog plugin that works with Bootstrap & jQuery",
 	"license": "LGPLv3",
 	"repository": {
