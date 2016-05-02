@@ -217,7 +217,7 @@
                     });
                 }
                 else {
-                    if (opts.options[0]) labels[0] = opts.options[0][cfg.columnKeys.optionText];
+                    if (!opts.multiple && opts.options[0]) labels[0] = opts.options[0][cfg.columnKeys.optionText];
                     else labels[0] = "";
                 }
 
@@ -504,17 +504,22 @@
                         });
                     }
 
+                    var getSelected = function (o) {
+                        return (opts.multiple) ? !o : true;
+                    };
+
                     if(U.isArray(value.index)){
                         value.index.forEach(function(n){
-                            opts.options[n].selected = !opts.options[n].selected;
+                            opts.options[n].selected = getSelected(opts.options[n].selected);
                         });
                     }
                     else{
-                        console.log(opts.options, value.index);
-                        opts.options[value.index].selected = !opts.options[value.index].selected;
+                        opts.options[value.index].selected = getSelected(opts.options[value.index].selected);
                     }
                     syncSelectOptions.call(this, opts, optIdx, opts.options);
                     opts.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, opts, optIdx));
+                    alignSelectDisplay.call(this);
+                    alignSelectOptionGroup.call(this);
                 },
                 'text': function (opts, optIdx, value) {
 
@@ -537,15 +542,15 @@
                     return opts.selected;
                 }
                 else if (U.isArray(value)) {
-                    processor.arr(opts, optIdx, value);
+                    processor.arr.call(this, opts, optIdx, value);
                 }
                 else if (U.isString(value) || U.isNumber(value)) {
-                    processor.value(opts, optIdx, value);
+                    processor.value.call(this, opts, optIdx, value);
                 }
                 else {
                     for (var key in processor) {
                         if (value[key]) {
-                            processor[key](opts, optIdx, value);
+                            processor[key].call(this, opts, optIdx, value);
                             break;
                         }
                     }
