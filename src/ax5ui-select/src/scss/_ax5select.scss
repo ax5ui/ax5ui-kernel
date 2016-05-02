@@ -120,6 +120,8 @@
         $ax5select-option-item-height: $font-size + 5;
         $ax5select-option-item-checkbox-size: $font-size - 4;
         .ax-select-option-group-content {
+            max-height: $ax5select-option-item-height * 10;
+            overflow-y: scroll;
             .ax-select-option-item {
                 padding: $padding;
                 text-align: left;
