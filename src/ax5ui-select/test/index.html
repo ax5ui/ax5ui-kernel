@@ -29,7 +29,8 @@
     </div>
 
     <div class="form-group">
-        <div data-ax5select='{"options": [{value:"optionValue1", text:"optionText1"},{value:"optionValue2", text:"optionText2", selected:true}]}'>
+        <div
+                data-ax5select='true'>
             <select class="form-control input-sm" name="select1" multiple="multiple">
                 <option value="1">value 1 ~!@#!@#@</option>
             </select>
@@ -37,7 +38,7 @@
     </div>
 
     <div class="form-group">
-        <div data-ax5select='{"options": [{value:"optionValue1", text:"optionText1"},{value:"optionValue2", text:"optionText2", selected:true}]}'>
+        <div data-ax5select='true'>
             <select class="form-control input-lg" name="select1" multiple="multiple" data-size="lg">
                 <option value="1">value 1 ~!@#!@#@</option>
             </select>
@@ -49,14 +50,23 @@
     var select = new ax5.ui.select();
     $(document.body).ready(function () {
 
+        var options = [];
+        for(var i=0;i<100;i++){
+            options.push({value: "optionValue" + i, text: "optionText" + i});
+        }
+
         $('[data-ax5select]').each(function () {
             select.bind({
                 target: this,
-                theme: "danger"
+                theme: "danger",
+                options: options
             });
         });
 
     });
+
+    // todo : option group 스크롤적용
+
 </script>
 
 </body>

@@ -174,7 +174,7 @@
                                         opacity: 0.1;
                                         @include transform(rotate(-50deg));
                                     }
-                                    &[data-item-checked="true"] {
+                                    &[data-item-selected="true"] {
                                         &:after {
                                             opacity: 1;
                                         }

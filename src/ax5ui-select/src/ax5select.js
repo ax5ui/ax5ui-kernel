@@ -42,7 +42,8 @@
                 optionValue: 'value',
                 optionText: 'text',
                 optionSelected: 'selected'
-            }
+            },
+            displayMargin: 14
         };
 
         this.activeSelectOptionGroup = null;
@@ -72,7 +73,7 @@
                                 <div class="ax-select-option-item-holder">
                                     {{#multiple}}
                                     <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
-                                        <span class="item-checkbox-wrap useCheckBox" {{#${columnKeys.optionSelected}}}data-item-selected="true"{{/${columnKeys.optionSelected}}}></span>
+                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}" {{#${columnKeys.optionSelected}}}data-item-selected="true"{{/${columnKeys.optionSelected}}}></span>
                                     </span>
                                     {{/multiple}}
                                     {{^multiple}}
@@ -124,7 +125,7 @@
                         this.queue[i].$display.css({width: "auto"});
                         w = Math.max(this.queue[i].select.outerWidth(), this.queue[i].$display.find('[data-select-els="display-table"]').outerWidth());
                         this.queue[i].$display.css({
-                            width: w,
+                            width: w + cfg.displayMargin,
                             height: this.queue[i].select.outerHeight()
                         });
 
@@ -284,11 +285,14 @@
 
                     if (options) {
                         opts.options = [].concat(options);
+
                         // select options 태그 생성
                         po = [];
                         opts.options.forEach(function (O, OIndex) {
                             po.push('<option value="' + O[cfg.columnKeys.optionValue] + '" ' + (O[cfg.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[cfg.columnKeys.optionText] + '</option>');
-                            if (O[cfg.columnKeys.optionSelected]) setSelected(opts, optIdx, O);
+                            if (O[cfg.columnKeys.optionSelected]){
+                                setSelected(opts, optIdx, O);
+                            }
                         });
                         opts.select.html(po.join(''));
                     }
@@ -511,13 +515,22 @@
                     if(U.isArray(value.index)){
                         value.index.forEach(function(n){
                             opts.options[n].selected = getSelected(opts.options[n].selected);
+                            this.activeSelectOptionGroup
+                                .find('[data-option-checkbox-index="'+ n +'"]')
+                                .attr("data-item-selected", opts.options[n].selected.toString());
                         });
                     }
                     else{
                         opts.options[value.index].selected = getSelected(opts.options[value.index].selected);
+                        this.activeSelectOptionGroup
+                            .find('[data-option-checkbox-index="'+ value.index +'"]')
+                            .attr("data-item-selected", opts.options[value.index].selected.toString());
                     }
                     syncSelectOptions.call(this, opts, optIdx, opts.options);
-                    opts.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, opts, optIdx));
+                    opts.$display
+                        .find('[data-ax5-select-display="label"]')
+                        .html(getLabel.call(this, opts, optIdx));
+
                     alignSelectDisplay.call(this);
                     alignSelectOptionGroup.call(this);
                 },
