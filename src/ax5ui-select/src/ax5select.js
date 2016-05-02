@@ -83,6 +83,15 @@
                             </div>
                         {{/options}}
                         </div>
+                        {{#btns}}
+                            <div class="ax-select-option-buttons">
+                            {{#btns}}
+                                {{#@each}}
+                                <button data-select-option-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
+                                {{/@each}}
+                            {{/btns}}
+                            </div>
+                        {{/btns}}
                     </div>
                     <div class="ax-select-arrow"></div> 
                 </div>
@@ -189,9 +198,8 @@
                     this.close();
                     return this;
                 }else if(clickEl != "display"){
-                    console.log(target);
                     this.val(opts.id, {index:target.getAttribute("data-option-index")});
-                    this.close();
+                    if(!opts.multiple) this.close();
                 }
 
                 return this;
@@ -490,18 +498,20 @@
                     //console.log(opts, value);
 
                     // 옵션선택 초기화
-                    opts.options.forEach(function(n){
-                        n.selected = false;
-                    });
+                    if(!opts.multiple) {
+                        opts.options.forEach(function (n) {
+                            n.selected = false;
+                        });
+                    }
 
                     if(U.isArray(value.index)){
                         value.index.forEach(function(n){
-                            opts.options[n].selected = true;
+                            opts.options[n].selected = !opts.options[n].selected;
                         });
                     }
                     else{
                         console.log(opts.options, value.index);
-                        opts.options[value.index].selected = true;
+                        opts.options[value.index].selected = !opts.options[value.index].selected;
                     }
                     syncSelectOptions.call(this, opts, optIdx, opts.options);
                     opts.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, opts, optIdx));
