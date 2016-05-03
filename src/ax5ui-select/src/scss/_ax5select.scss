@@ -96,7 +96,7 @@
                         }
                     }
                 }
-                &:hover, &.hover {
+                &:hover, &.hover, &[data-option-selected="true"] {
                     @if nth($hover-type, 1) == "darken" {
                         background: darken($back-color, nth($hover-type, 2));
                         color: darken($fore-color, nth($hover-type, 2));
@@ -178,7 +178,7 @@
                                         opacity: 0.1;
                                         @include transform(rotate(-50deg));
                                     }
-                                    &[data-item-selected="true"] {
+                                    &[data-option-checkbox-selected="true"] {
                                         &:after {
                                             opacity: 1;
                                         }
@@ -193,7 +193,7 @@
                         }
                     }
 
-                    &:hover, &.hover {
+                    &:hover, &.hover, &[data-option-selected="true"] {
                         .ax-select-option-item-cell {
                             &.ax-select-option-item-checkbox {
                                 .item-checkbox-wrap {

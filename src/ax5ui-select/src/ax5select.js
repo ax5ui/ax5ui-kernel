@@ -69,11 +69,11 @@
                     <div class="ax-select-body">
                         <div class="ax-select-option-group-content" data-select-els="content">
                         {{#options}}
-                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" data-selected="{{${columnKeys.optionSelected}}}">
+                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
                                 <div class="ax-select-option-item-holder">
                                     {{#multiple}}
                                     <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
-                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}" {{#${columnKeys.optionSelected}}}data-item-selected="true"{{/${columnKeys.optionSelected}}}></span>
+                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}" {{#${columnKeys.optionSelected}}}data-option-checkbox-selected="true"{{/${columnKeys.optionSelected}}}></span>
                                     </span>
                                     {{/multiple}}
                                     {{^multiple}}
@@ -121,16 +121,18 @@
                 var i = this.queue.length, w;
                 while (i--) {
                     if (this.queue[i].$display) {
-
-                        this.queue[i].$display.css({width: "auto"});
-                        w = Math.max(this.queue[i].select.outerWidth(), this.queue[i].$display.find('[data-select-els="display-table"]').outerWidth());
+                        w = this.queue[i].select.outerWidth();
+                        if(this.queue[i].select.css("display") != "block"){
+                            w = w + cfg.displayMargin
+                        }
                         this.queue[i].$display.css({
-                            width: w + cfg.displayMargin,
-                            height: this.queue[i].select.outerHeight()
+                            "min-width": w
                         });
-
                     }
                 }
+
+                i = null;
+                w = null;
                 return this;
             },
             alignSelectOptionGroup = function (append) {
@@ -511,8 +513,6 @@
 
             var processor = {
                 'index': function (opts, optIdx, value) {
-                    //console.log(opts, value);
-
                     // 옵션선택 초기화
                     if (!opts.multiple) {
                         opts.options.forEach(function (n) {
@@ -543,7 +543,6 @@
                         .find('[data-ax5-select-display="label"]')
                         .html(getLabel.call(this, opts, optIdx));
 
-                    alignSelectDisplay.call(this);
                     alignSelectOptionGroup.call(this);
                 },
                 'text': function (opts, optIdx, value) {
