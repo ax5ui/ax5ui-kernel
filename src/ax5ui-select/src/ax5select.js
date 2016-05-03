@@ -198,9 +198,9 @@
                 if (!target) {
                     this.close();
                     return this;
-                }else if(clickEl != "display"){
-                    this.val(opts.id, {index:target.getAttribute("data-option-index")});
-                    if(!opts.multiple) this.close();
+                } else if (clickEl != "display") {
+                    this.val(opts.id, {index: target.getAttribute("data-option-index")});
+                    if (!opts.multiple) this.close();
                 }
 
                 return this;
@@ -297,8 +297,7 @@
                         });
                         opts.select.html(po.join(''));
                     }
-                    else
-                    {
+                    else {
                         elementOptions = U.toArray(opts.select.get(0).options);
                         // select option 스크립트 생성
                         newOptions = [];
@@ -404,7 +403,7 @@
         this.open = (function () {
 
             return function (opts, optIdx, tryCount) {
-                var data = {};
+                var data = {}, focusTop, selectedOptionEl;
 
                 /**
                  * open select from the outside
@@ -451,11 +450,15 @@
                     alignSelectOptionGroup.call(this);
                 }).bind(this));
 
-                // todo : select 아이템 포커스
+                if (opts.selected && opts.selected.length > 0) {
+                    selectedOptionEl = this.activeSelectOptionGroup.find('[data-option-index="' + opts.selected[0]["@i"] + '"]');
+                    if (selectedOptionEl.get(0)) {
+                        focusTop = selectedOptionEl.position().top - this.activeSelectOptionGroup.height() / 3;
+                        this.activeSelectOptionGroup.find('[data-select-els="content"]')
+                            .stop().animate({scrollTop: focusTop}, cfg.animateTime, 'swing', function () {});
+                    }
+                }
 
-                console.log(opts.selected);
-                //this.activeSelectOptionGroup.find('[data-select-els="content"]').scrollTop(100);
-                
                 // bind key event
                 jQuery(window).bind("keyup.ax5select", (function (e) {
                     e = e || window.event;
@@ -476,6 +479,8 @@
                 });
 
                 data = null;
+                focusTop = null;
+                selectedOptionEl = null;
                 return this;
             }
         })();
@@ -509,7 +514,7 @@
                     //console.log(opts, value);
 
                     // 옵션선택 초기화
-                    if(!opts.multiple) {
+                    if (!opts.multiple) {
                         opts.options.forEach(function (n) {
                             n.selected = false;
                         });
@@ -519,18 +524,18 @@
                         return (opts.multiple) ? !o : true;
                     };
 
-                    if(U.isArray(value.index)){
-                        value.index.forEach(function(n){
+                    if (U.isArray(value.index)) {
+                        value.index.forEach(function (n) {
                             opts.options[n].selected = getSelected(opts.options[n].selected);
                             this.activeSelectOptionGroup
-                                .find('[data-option-checkbox-index="'+ n +'"]')
+                                .find('[data-option-checkbox-index="' + n + '"]')
                                 .attr("data-item-selected", opts.options[n].selected.toString());
                         });
                     }
-                    else{
+                    else {
                         opts.options[value.index].selected = getSelected(opts.options[value.index].selected);
                         this.activeSelectOptionGroup
-                            .find('[data-option-checkbox-index="'+ value.index +'"]')
+                            .find('[data-option-checkbox-index="' + value.index + '"]')
                             .attr("data-item-selected", opts.options[value.index].selected.toString());
                     }
                     syncSelectOptions.call(this, opts, optIdx, opts.options);
@@ -557,7 +562,7 @@
                     return this.id == boundID;
                 });
                 var opts = this.queue[optIdx];
-                
+
                 if (typeof value == "undefined") {
                     return opts.selected;
                 }

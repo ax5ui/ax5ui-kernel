@@ -337,7 +337,9 @@
         this.open = function () {
 
             return function (opts, optIdx, tryCount) {
-                var data = {};
+                var data = {},
+                    focusTop,
+                    selectedOptionEl;
 
                 /**
                  * open select from the outside
@@ -384,10 +386,13 @@
                     alignSelectOptionGroup.call(this);
                 }.bind(this));
 
-                // todo : select 아이템 포커스
-
-                console.log(opts.selected);
-                //this.activeSelectOptionGroup.find('[data-select-els="content"]').scrollTop(100);
+                if (opts.selected && opts.selected.length > 0) {
+                    selectedOptionEl = this.activeSelectOptionGroup.find('[data-option-index="' + opts.selected[0]["@i"] + '"]');
+                    if (selectedOptionEl.get(0)) {
+                        focusTop = selectedOptionEl.position().top - this.activeSelectOptionGroup.height() / 3;
+                        this.activeSelectOptionGroup.find('[data-select-els="content"]').stop().animate({ scrollTop: focusTop }, cfg.animateTime, 'swing', function () {});
+                    }
+                }
 
                 // bind key event
                 jQuery(window).bind("keyup.ax5select", function (e) {
@@ -409,6 +414,8 @@
                 });
 
                 data = null;
+                focusTop = null;
+                selectedOptionEl = null;
                 return this;
             };
         }();
