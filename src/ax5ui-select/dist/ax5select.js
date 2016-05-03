@@ -226,6 +226,7 @@
                     // select options 태그 생성
                     po = [];
                     opts.options.forEach(function (O, OIndex) {
+                        O['@index'] = OIndex;
                         po.push('<option value="' + O[cfg.columnKeys.optionValue] + '" ' + (O[cfg.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[cfg.columnKeys.optionText] + '</option>');
                         if (O[cfg.columnKeys.optionSelected]) {
                             setSelected(opts, optIdx, O);
@@ -382,6 +383,11 @@
                 jQuery(window).bind("resize.ax5select", function () {
                     alignSelectOptionGroup.call(this);
                 }.bind(this));
+
+                // todo : select 아이템 포커스
+
+                console.log(opts.selected);
+                //this.activeSelectOptionGroup.find('[data-select-els="content"]').scrollTop(100);
 
                 // bind key event
                 jQuery(window).bind("keyup.ax5select", function (e) {

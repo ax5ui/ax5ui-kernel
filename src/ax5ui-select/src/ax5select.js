@@ -289,14 +289,16 @@
                         // select options 태그 생성
                         po = [];
                         opts.options.forEach(function (O, OIndex) {
+                            O['@index'] = OIndex;
                             po.push('<option value="' + O[cfg.columnKeys.optionValue] + '" ' + (O[cfg.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[cfg.columnKeys.optionText] + '</option>');
-                            if (O[cfg.columnKeys.optionSelected]){
+                            if (O[cfg.columnKeys.optionSelected]) {
                                 setSelected(opts, optIdx, O);
                             }
                         });
                         opts.select.html(po.join(''));
                     }
-                    else {
+                    else
+                    {
                         elementOptions = U.toArray(opts.select.get(0).options);
                         // select option 스크립트 생성
                         newOptions = [];
@@ -449,6 +451,11 @@
                     alignSelectOptionGroup.call(this);
                 }).bind(this));
 
+                // todo : select 아이템 포커스
+
+                console.log(opts.selected);
+                //this.activeSelectOptionGroup.find('[data-select-els="content"]').scrollTop(100);
+                
                 // bind key event
                 jQuery(window).bind("keyup.ax5select", (function (e) {
                     e = e || window.event;
