@@ -44,6 +44,32 @@
     }
 }
 
+@include keyframes(ax-select-option-group) {
+    0% {
+        @include transform(translateY(-10%) scaleY(1.0));
+        opacity: 0;
+    }
+    0.1% {
+        @include transform(translateY(-10%) scaleY(0.0));
+        opacity: 0;
+    }
+    100% {
+        @include transform(translateY(0%) scaleY(1.0));
+        opacity: 1;
+    }
+}
+
+@include keyframes(ax-select-option-group-destroy) {
+    from {
+        @include transform(translateY(0%) scaleY(1.0));
+        opacity: 1;
+    }
+    to {
+        @include transform(translateY(-10%) scaleY(0.0));
+        opacity: 0;
+    }
+}
+
 @mixin ax5-ui-select-display-theme($fore-color, $back-color, $border-color) {
     &:hover, &:active, &:focus {
         border-color: $border-color;
@@ -74,7 +100,6 @@
 @mixin ax5-ui-select-option-group-theme($fore-color, $back-color, $border-color, $hover-type) {
     border-color: $border-color;
     color: $fore-color;
-
 
     .ax-select-body {
 
@@ -107,14 +132,19 @@
                 }
             }
         }
+
+        .ax-select-option-group-buttons {
+            border-top: 1px solid;
+            border-color: $border-color;
+        }
     }
 
-    &:hover{
+    &:hover {
 
     }
 }
 
-@mixin ax5-ui-select-option-group-size($padding, $font-size){
+@mixin ax5-ui-select-option-group-size($padding, $font-size) {
     .ax-select-body {
         padding: $ax5select-option-group-body-padding;
         $ax5select-option-item-height: $font-size + 5;
@@ -134,7 +164,7 @@
                 overflow: hidden;
                 //table-layout: fixed;
 
-                .ax-select-option-item-holder{
+                .ax-select-option-item-holder {
                     display: table;
                     position: relative;
                     border-collapse: separate;
@@ -178,11 +208,6 @@
                                         opacity: 0.1;
                                         @include transform(rotate(-50deg));
                                     }
-                                    &[data-option-checkbox-selected="true"] {
-                                        &:after {
-                                            opacity: 1;
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -192,20 +217,20 @@
 
                         }
                     }
+                }
 
-                    &:hover, &.hover, &[data-option-selected="true"] {
-                        .ax-select-option-item-cell {
-                            &.ax-select-option-item-checkbox {
-                                .item-checkbox-wrap {
-                                    &:after {
-                                        //border-color: $item-hover-color;
-                                    }
-                                }
-                            }
+                &[data-option-selected="true"] {
+                    .ax-select-option-item-holder .ax-select-option-item-cell.ax-select-option-item-checkbox .item-checkbox-wrap.useCheckBox {
+                        &:after {
+                            opacity: 1;
                         }
                     }
                 }
             }
+        }
+        .ax-select-option-group-buttons {
+            text-align: center;
+            padding: $padding;
         }
     }
 }
@@ -243,33 +268,6 @@ $hover-types: (
         warning: $ax5select-warning-hover-type,
         danger: $ax5select-danger-hover-type
 );
-
-@include keyframes(ax-select-option-group) {
-    0% {
-        @include transform(translateY(-10%) scaleY(1.0));
-        opacity: 0;
-    }
-    0.1% {
-        @include transform(translateY(-10%) scaleY(0.0));
-        opacity: 0;
-    }
-    100% {
-        @include transform(translateY(0%) scaleY(1.0));
-        opacity: 1;
-    }
-}
-
-@include keyframes(ax-select-option-group-destroy) {
-    from {
-        @include transform(translateY(0%) scaleY(1.0));
-        opacity: 1;
-    }
-    to {
-        @include transform(translateY(-10%) scaleY(0.0));
-        opacity: 0;
-    }
-}
-
 
 /// select-display
 .ax5-ui-select-display {
@@ -375,7 +373,6 @@ $hover-types: (
         @include transform-origin(center bottom);
     }
 
-
     @each $theme in $fore-colors {
         &.#{nth($theme, 1)} {
             @include ax5-ui-select-option-group-theme(map_get($fore-colors, nth($theme, 1)), map_get($back-colors, nth($theme, 1)), map_get($border-colors, nth($theme, 1)), map_get($hover-types, nth($theme, 1)));
@@ -383,13 +380,13 @@ $hover-types: (
     }
 
     @include ax5-ui-select-option-group-size($ax5select-option-item-padding, $ax5select-option-item-font-size);
-    &.ax5-ui-select-option-group-lg{
+    &.ax5-ui-select-option-group-lg {
         @include ax5-ui-select-option-group-size($ax5select-option-item-padding-lg, $ax5select-option-item-font-size-lg);
     }
-    &.ax5-ui-select-option-group-sm{
+    &.ax5-ui-select-option-group-sm {
         @include ax5-ui-select-option-group-size($ax5select-option-item-padding-sm, $ax5select-option-item-font-size-sm);
     }
-    &.ax5-ui-select-option-group-xs{
+    &.ax5-ui-select-option-group-xs {
         @include ax5-ui-select-option-group-size($ax5select-option-item-padding-xs, $ax5select-option-item-font-size-xs);
     }
 }

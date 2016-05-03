@@ -32,7 +32,7 @@
     <div class="form-group">
         <div
                 data-ax5select='true'>
-            <select class="form-control input-sm" name="select1" multiple="multiple">
+            <select class="form-control input-sm" name="select1" multiple="multiple" data-size="sm">
                 <option value="1">value 1 ~!@#!@#@</option>
             </select>
         </div>
@@ -60,7 +60,7 @@
         $('[data-ax5select]').each(function () {
             select.bind({
                 target: this,
-                theme: "danger",
+                theme: "primary",
                 options: options
             });
         });

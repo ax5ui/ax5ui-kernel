@@ -35,6 +35,7 @@
             animateTime: 250,
 
             lang: {
+                ok: "OK",
                 emptyOfSelected: '',
                 multipleLabel: '"{{label}}"외 {{length}}건'
             },
@@ -73,7 +74,7 @@
                                 <div class="ax-select-option-item-holder">
                                     {{#multiple}}
                                     <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
-                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}" {{#${columnKeys.optionSelected}}}data-option-checkbox-selected="true"{{/${columnKeys.optionSelected}}}></span>
+                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
                                     </span>
                                     {{/multiple}}
                                     {{^multiple}}
@@ -85,7 +86,7 @@
                         {{/options}}
                         </div>
                         {{#btns}}
-                            <div class="ax-select-option-buttons">
+                            <div class="ax-select-option-group-buttons">
                             {{#btns}}
                                 {{#@each}}
                                 <button data-select-option-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
@@ -122,7 +123,7 @@
                 while (i--) {
                     if (this.queue[i].$display) {
                         w = this.queue[i].select.outerWidth();
-                        if(this.queue[i].select.css("display") != "block"){
+                        if (this.queue[i].select.css("display") != "block") {
                             w = w + cfg.displayMargin
                         }
                         this.queue[i].$display.css({
@@ -441,9 +442,14 @@
                 data.id = opts.id;
                 data.theme = opts.theme;
                 data.size = "ax5-ui-select-option-group-" + opts.size;
+
                 data.multiple = opts.multiple;
                 data.options = opts.options;
-
+                if (data.multiple) {
+                    data.btns = {
+                        ok: {label: cfg.lang["ok"], theme: cfg.theme + " " + (opts.size ? "btn-" + opts.size : "")}
+                    };
+                }
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, cfg.columnKeys), data));
                 this.activeSelectQueueIndex = optIdx;
 
@@ -457,7 +463,8 @@
                     if (selectedOptionEl.get(0)) {
                         focusTop = selectedOptionEl.position().top - this.activeSelectOptionGroup.height() / 3;
                         this.activeSelectOptionGroup.find('[data-select-els="content"]')
-                            .stop().animate({scrollTop: focusTop}, cfg.animateTime, 'swing', function () {});
+                            .stop().animate({scrollTop: focusTop}, cfg.animateTime, 'swing', function () {
+                        });
                     }
                 }
 
@@ -528,15 +535,15 @@
                         value.index.forEach(function (n) {
                             opts.options[n].selected = getSelected(opts.options[n].selected);
                             this.activeSelectOptionGroup
-                                .find('[data-option-checkbox-index="' + n + '"]')
-                                .attr("data-item-selected", opts.options[n].selected.toString());
+                                .find('[data-option-index="' + n + '"]')
+                                .attr("data-option-selected", opts.options[n].selected.toString());
                         });
                     }
                     else {
                         opts.options[value.index].selected = getSelected(opts.options[value.index].selected);
                         this.activeSelectOptionGroup
-                            .find('[data-option-checkbox-index="' + value.index + '"]')
-                            .attr("data-item-selected", opts.options[value.index].selected.toString());
+                            .find('[data-option-index="' + value.index + '"]')
+                            .attr("data-option-selected", opts.options[value.index].selected.toString());
                     }
                     syncSelectOptions.call(this, opts, optIdx, opts.options);
                     opts.$display

@@ -36,6 +36,7 @@
             animateTime: 250,
 
             lang: {
+                ok: "OK",
                 emptyOfSelected: '',
                 multipleLabel: '"{{label}}"외 {{length}}건'
             },
@@ -63,7 +64,7 @@
             return true;
         },
             getOptionGroupTmpl = function getOptionGroupTmpl(columnKeys) {
-            return '\n                <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                <div class="ax-select-option-item-holder">\n                                    {{#multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}" {{#' + columnKeys.optionSelected + '}}data-option-checkbox-selected="true"{{/' + columnKeys.optionSelected + '}}></span>\n                                    </span>\n                                    {{/multiple}}\n                                    {{^multiple}}\n                                    \n                                    {{/multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                </div>\n                            </div>\n                        {{/options}}\n                        </div>\n                        {{#btns}}\n                            <div class="ax-select-option-buttons">\n                            {{#btns}}\n                                {{#@each}}\n                                <button data-select-option-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    <div class="ax-select-arrow"></div> \n                </div>\n                ';
+            return '\n                <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                <div class="ax-select-option-item-holder">\n                                    {{#multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                    </span>\n                                    {{/multiple}}\n                                    {{^multiple}}\n                                    \n                                    {{/multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                </div>\n                            </div>\n                        {{/options}}\n                        </div>\n                        {{#btns}}\n                            <div class="ax-select-option-group-buttons">\n                            {{#btns}}\n                                {{#@each}}\n                                <button data-select-option-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    <div class="ax-select-arrow"></div> \n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
             return '\n                <a class="form-control {{formSize}} ax5-ui-select-display {{theme}}" data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
@@ -378,9 +379,14 @@
                 data.id = opts.id;
                 data.theme = opts.theme;
                 data.size = "ax5-ui-select-option-group-" + opts.size;
+
                 data.multiple = opts.multiple;
                 data.options = opts.options;
-
+                if (data.multiple) {
+                    data.btns = {
+                        ok: { label: cfg.lang["ok"], theme: cfg.theme + " " + (opts.size ? "btn-" + opts.size : "") }
+                    };
+                }
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, cfg.columnKeys), data));
                 this.activeSelectQueueIndex = optIdx;
 
@@ -463,11 +469,11 @@
                     if (U.isArray(value.index)) {
                         value.index.forEach(function (n) {
                             opts.options[n].selected = getSelected(opts.options[n].selected);
-                            this.activeSelectOptionGroup.find('[data-option-checkbox-index="' + n + '"]').attr("data-item-selected", opts.options[n].selected.toString());
+                            this.activeSelectOptionGroup.find('[data-option-index="' + n + '"]').attr("data-option-selected", opts.options[n].selected.toString());
                         });
                     } else {
                         opts.options[value.index].selected = getSelected(opts.options[value.index].selected);
-                        this.activeSelectOptionGroup.find('[data-option-checkbox-index="' + value.index + '"]').attr("data-item-selected", opts.options[value.index].selected.toString());
+                        this.activeSelectOptionGroup.find('[data-option-index="' + value.index + '"]').attr("data-option-selected", opts.options[value.index].selected.toString());
                     }
                     syncSelectOptions.call(this, opts, optIdx, opts.options);
                     opts.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, opts, optIdx));

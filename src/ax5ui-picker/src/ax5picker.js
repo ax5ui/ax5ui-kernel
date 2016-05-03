@@ -136,7 +136,7 @@
                         }
                     }
 
-                    _input = (opts.target.get(0).tagName.toUpperCase() == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
+                    _input = (opts.$target.get(0).tagName.toUpperCase() == "INPUT") ? opts.$target : opts.$target.find('input[type="text"]');
                     _input
                         .unbind('focus.ax5picker')
                         .unbind('click.ax5picker')
