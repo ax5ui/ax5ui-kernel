@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version 0.5.1
+     * @version 0.5.2
      * @author tom@axisj.com
      * @example
      * ```
