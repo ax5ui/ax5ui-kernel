@@ -240,9 +240,13 @@
                         }
                         U.stopEvent(e);
                     },
-                    'selectFocus': function (opts, optIdx, e) {
-                        //opts.$display.focus();
-                        //U.stopEvent(e);
+                    'keyUp': function (opts, optIdx, e) {
+                        if(e.which == ax5.info.eventKeys.SPACE){
+                            selectEvent.click.call(this, opts, optIdx, e);
+                        }
+                        else if(e.which == ax5.info.eventKeys.DOWN){
+                            // todo focus move
+                        }
                     }
                 };
                 return function (opts, optIdx) {
@@ -262,13 +266,11 @@
                         opts.$target.append(opts.$display);
                         alignSelectDisplay.call(this);
 
-                        opts.select
-                            .unbind('focus.ax5select')
-                            .bind('focus.ax5select', selectEvent.selectFocus.bind(this, this.queue[optIdx], optIdx));
-
                         opts.$display
                             .unbind('click.ax5select')
-                            .bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
+                            .bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx))
+                            .unbind('keyup.ax5select')
+                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, this.queue[optIdx], optIdx));
                     }
                     else {
                         opts.options = syncSelectOptions.call(this, opts, optIdx, opts.options);
@@ -276,14 +278,12 @@
                             .find('[data-ax5-select-display="label"]')
                             .html(getLabel.call(this, opts, optIdx));
                         alignSelectDisplay.call(this);
-
-                        opts.select
-                            .unbind('focus.ax5select')
-                            .bind('focus.ax5select', selectEvent.selectFocus.bind(this, this.queue[optIdx], optIdx));
-
+                        
                         opts.$display
                             .unbind('click.ax5select')
-                            .bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
+                            .bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx))
+                            .unbind('keyup.ax5select')
+                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, this.queue[optIdx], optIdx));
                     }
 
                     data = null;
