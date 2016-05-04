@@ -35,7 +35,6 @@
             animateTime: 250,
 
             lang: {
-                ok: "OK",
                 emptyOfSelected: '',
                 multipleLabel: '"{{label}}"외 {{length}}건'
             },
@@ -85,15 +84,6 @@
                             </div>
                         {{/options}}
                         </div>
-                        {{#btns}}
-                            <div class="ax-select-option-group-buttons">
-                            {{#btns}}
-                                {{#@each}}
-                                <button data-select-option-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
-                                {{/@each}}
-                            {{/btns}}
-                            </div>
-                        {{/btns}}
                     </div>
                     <div class="ax-select-arrow"></div> 
                 </div>
@@ -241,7 +231,12 @@
             bindSelectTarget = (function () {
                 var selectEvent = {
                     'click': function (opts, optIdx, e) {
-                        self.open(opts, optIdx);
+                        if (self.activeSelectOptionGroup) {
+                            self.close();
+                        } else {
+                            self.open(opts, optIdx);
+                        }
+                        U.stopEvent(e);
                     }
                 };
                 return function (opts, optIdx) {
@@ -442,11 +437,9 @@
 
                 data.multiple = opts.multiple;
                 data.options = opts.options;
-                if (data.multiple) {
-                    data.btns = {
-                        ok: {label: cfg.lang["ok"], theme: cfg.theme + " " + (opts.size ? "btn-" + opts.size : "")}
-                    };
-                }
+
+                opts.$display.attr("data-select-option-group-opened", "true");
+
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, cfg.columnKeys), data));
                 this.activeSelectQueueIndex = optIdx;
 
@@ -599,8 +592,9 @@
             if (!this.activeSelectOptionGroup) return this;
 
             opts = this.queue[this.activeSelectQueueIndex];
-
+            opts.$display.removeAttr("data-select-option-group-opened");
             this.activeSelectOptionGroup.addClass("destroy");
+
             jQuery(window).unbind("resize.ax5select");
             jQuery(window).unbind("click.ax5select");
             jQuery(window).unbind("keyup.ax5select");

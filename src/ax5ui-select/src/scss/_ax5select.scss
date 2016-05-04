@@ -107,7 +107,6 @@
             .ax-select-option-item {
                 .ax-select-option-item-holder {
                     .ax-select-option-item-cell {
-
                         &.ax-select-option-item-checkbox {
                             .item-checkbox-wrap {
                                 &.useCheckBox {
@@ -278,7 +277,6 @@ $hover-types: (
     &:hover {
         text-decoration: none;
     }
-
     .ax5-ui-select-display-table {
         width: 100%;
         height: 100%;
@@ -298,22 +296,13 @@ $hover-types: (
             vertical-align: middle;
             width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
             text-align: center;
-            &[data-ax5-select-opened="false"] {
+
                 .addon-icon-closed {
                     display: block;
                 }
                 .addon-icon-opened {
                     display: none;
                 }
-            }
-            &[data-ax5-select-opened="true"] {
-                .addon-icon-closed {
-                    display: none;
-                }
-                .addon-icon-opened {
-                    display: block;
-                }
-            }
             .addon-icon-closed {
                 width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
                 text-align: left;
@@ -333,9 +322,30 @@ $hover-types: (
             .addon-icon-opened {
                 width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
                 text-align: left;
+                line-height: ($ax5select-addon-icon-height * 1.414);
                 .addon-icon-arrow {
-
+                    content: '';
+                    width: 0px;
+                    height: 0px;
+                    display: inline-block;
+                    border-left: $ax5select-addon-icon-height solid transparent;
+                    border-right: $ax5select-addon-icon-height solid transparent;
+                    border-bottom: ($ax5select-addon-icon-height * 1.414) solid $ax5select-addon-icon-color;
+                    background: transparent;
+                    opacity: 1;
                 }
+            }
+        }
+    }
+
+
+    &[data-select-option-group-opened] {
+        .ax5-ui-select-display-table [data-ax5-select-display="addon"]{
+            .addon-icon-closed {
+                display: none;
+            }
+            .addon-icon-opened {
+                display: block;
             }
         }
     }
