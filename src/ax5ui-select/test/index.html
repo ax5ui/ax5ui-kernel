@@ -18,7 +18,7 @@
     <h1>form-group</h1>
 
     <div class="form-group">
-        <div data-ax5select="true">
+        <div data-ax5select="true" id="select-target">
             <select class="form-control" name="select1">
                 <option value="1" selected="selected">value 1 ~!@#!@#@</option>
                 <option value="2" selected="selected">value 2</option>
@@ -31,7 +31,7 @@
 
     <div class="form-group">
         <div
-                data-ax5select='true'>
+                data-ax5select='true' id="select-target-1">
             <select class="form-control input-sm" name="select1" multiple="multiple" data-size="sm">
                 <option value="1">value 1 ~!@#!@#@</option>
             </select>
@@ -56,6 +56,25 @@
         for(var i=0;i<100;i++){
             options.push({value: "optionValue" + i, text: "optionText" + i});
         }
+        var options2 = [];
+        for(var i=0;i<2;i++){
+            options2.push({value: "optionValue--" + i, text: "optionText--" + i});
+        }
+
+        /*
+        select.bind({
+            target: $("#select-target"),
+            theme: "primary",
+            options: options
+        });
+
+        // 바인드된 아이템에 다시 바인드하는 경우 아이템 체인지 체크
+        select.bind({
+            target: $("#select-target"),
+            theme: "primary",
+            options: options2
+        });
+        */
 
         $('[data-ax5select]').each(function () {
             select.bind({
@@ -65,9 +84,15 @@
             });
         });
 
+        // 선택된 값 가져오기
+        console.log( select.val($("#select-target")) );
+        console.log( select.val($("#select-target-1")) );
+
     });
 
-    // todo : option group 스크롤적용
+    // todo : tab focus -- 완료
+    // todo : 스페이스 바 처리
+    // todo : 오픈스타일
 
 </script>
 

@@ -91,7 +91,8 @@
             },
             getTmpl = function () {
                 return `
-                <a class="form-control {{formSize}} ax5-ui-select-display {{theme}}" data-ax5-select-display="{{id}}">
+                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" 
+                data-ax5-select-display="{{id}}">
                     <div class="ax5-ui-select-display-table" data-select-els="display-table">
                         <div data-ax5-select-display="label">{{label}}</div>
                         <div data-ax5-select-display="addon" data-ax5-select-opened="false">
@@ -188,6 +189,7 @@
                         return true;
                     }
                 });
+
                 if (!target) {
                     this.close();
                     return this;
@@ -231,20 +233,25 @@
             bindSelectTarget = (function () {
                 var selectEvent = {
                     'click': function (opts, optIdx, e) {
-                        if (self.activeSelectOptionGroup) {
+                        if (self.activeSelectQueueIndex == optIdx) {
                             self.close();
                         } else {
                             self.open(opts, optIdx);
                         }
                         U.stopEvent(e);
+                    },
+                    'selectFocus': function (opts, optIdx, e) {
+                        //opts.$display.focus();
+                        //U.stopEvent(e);
                     }
                 };
                 return function (opts, optIdx) {
                     var data = {};
 
                     if (!opts.$display) {
-                        syncSelectOptions.call(this, opts, optIdx, opts.options);
+                        opts.options = syncSelectOptions.call(this, opts, optIdx, opts.options);
                         data.id = opts.id;
+                        data.tabIndex = opts.tabIndex;
                         data.label = getLabel.call(this, opts, optIdx);
                         data.formSize = (function () {
                             if (opts.select.hasClass("input-lg")) return "input-lg";
@@ -254,6 +261,25 @@
                         opts.$display = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), data));
                         opts.$target.append(opts.$display);
                         alignSelectDisplay.call(this);
+
+                        opts.select
+                            .unbind('focus.ax5select')
+                            .bind('focus.ax5select', selectEvent.selectFocus.bind(this, this.queue[optIdx], optIdx));
+
+                        opts.$display
+                            .unbind('click.ax5select')
+                            .bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx));
+                    }
+                    else {
+                        opts.options = syncSelectOptions.call(this, opts, optIdx, opts.options);
+                        opts.$display
+                            .find('[data-ax5-select-display="label"]')
+                            .html(getLabel.call(this, opts, optIdx));
+                        alignSelectDisplay.call(this);
+
+                        opts.select
+                            .unbind('focus.ax5select')
+                            .bind('focus.ax5select', selectEvent.selectFocus.bind(this, this.queue[optIdx], optIdx));
 
                         opts.$display
                             .unbind('click.ax5select')
@@ -312,6 +338,10 @@
                         opts.options = newOptions;
                     }
 
+                    if(!opts.multiple && opts.selected.length == 0){
+                        opts.selected = jQuery.extend({}, opts.options[0]);
+                    }
+
                     po = null;
                     elementOptions = null;
                     newOptions = null;
@@ -350,7 +380,7 @@
                 selectConfig = {},
                 optIdx;
 
-            opts = jQuery.extend(true, selectConfig, cfg, opts);
+            opts = jQuery.extend(selectConfig, cfg, opts);
             if (!opts.target) {
                 console.log(ax5.info.getError("ax5select", "401", "bind"));
                 return this;
@@ -362,6 +392,8 @@
                 opts.$target.data("ax5-select", opts.id);
             }
             opts.select = opts.$target.find('select');
+            opts.tabIndex = opts.select.attr("tabindex");
+            opts.select.attr("tabindex", "-1");
             opts.multiple = opts.select.attr("multiple");
             opts.size = opts.select.attr("data-size");
 
@@ -381,7 +413,7 @@
                 bindSelectTarget.call(this, opts, this.queue.length - 1);
             }
             else {
-                jQuery.extend(true, this.queue[optIdx], opts);
+                this.queue[optIdx] = jQuery.extend({}, this.queue[optIdx], opts);
                 bindSelectTarget.call(this, this.queue[optIdx], optIdx);
             }
 
@@ -489,13 +521,8 @@
          * @param {(Object|String)} opts
          * @returns {ax5.ui.select}
          */
-        this.update = function () {
-            // multiple
-            // options
-            // width, height
-            // label
-            // selected
-
+        this.update = function (opts) {
+            this.bind(opts);
             return this;
         };
 
@@ -554,6 +581,11 @@
             };
 
             return function (boundID, value) {
+                if (!U.isString(boundID)) boundID = jQuery(boundID).data("ax5-select");
+                if (!U.isString(boundID)) {
+                    console.log(ax5.info.getError("ax5select", "402", "val"));
+                    return;
+                }
                 var optIdx = ax5.util.search(this.queue, function () {
                     return this.id == boundID;
                 });

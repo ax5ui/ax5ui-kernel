@@ -6,7 +6,7 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version 0.5.2
+     * @version 0.5.3
      * @author tom@axisj.com
      * @example
      * ```
@@ -291,7 +291,7 @@
                 this.queue.push(opts);
                 bindPickerTarget.call(this, opts, this.queue.length - 1);
             } else {
-                jQuery.extend(true, this.queue[optIdx], opts);
+                jQuery.extend({}, this.queue[optIdx], opts);
                 bindPickerTarget.call(this, this.queue[optIdx], optIdx);
             }
 
