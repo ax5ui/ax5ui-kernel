@@ -46,6 +46,7 @@
         </div>
     </div>
 
+    <button class="btn">setValue</button>
 </form>
 
 <script>
@@ -76,7 +77,6 @@
         var themes = ['warning', 'danger', 'success'];
 
         $('[data-ax5select]').each(function (nidx, n) {
-            console.log(nidx);
             select.bind({
                 target: this,
                 theme: themes[nidx],
@@ -85,9 +85,11 @@
         });
 
         // 선택된 값 가져오기
-        //console.log( select.val($("#select-target")) );
+        select.val($("#select-target"), "optionValue1");
+        //select.disable($("#select-target"));
         //console.log( select.val($("#select-target-1")) );
 
+        // todo : 외부에서 값 주기/받기
     });
 
 </script>
