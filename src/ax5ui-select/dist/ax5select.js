@@ -70,15 +70,15 @@
             getTmpl = function getTmpl() {
             return '\n                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" \n                data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
         },
+            getSelectTmpl = function getSelectTmpl() {
+            return '\n                <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n                ';
+        },
             alignSelectDisplay = function alignSelectDisplay() {
             var i = this.queue.length,
                 w;
             while (i--) {
                 if (this.queue[i].$display) {
-                    w = this.queue[i].select.outerWidth();
-                    if (this.queue[i].select.css("display") != "block") {
-                        w = w + cfg.displayMargin;
-                    }
+                    w = Math.max(this.queue[i].$select.outerWidth(), U.number(this.queue[i].minWidth));
                     this.queue[i].$display.css({
                         "min-width": w
                     });
@@ -206,30 +206,37 @@
                 var data = {};
 
                 if (!item.$display) {
-                    item.options = syncSelectOptions.call(this, queIdx, item.options);
-
                     /// 템플릿에 전달할 오브젝트 선언
                     data.id = item.id;
+                    data.name = item.name;
                     data.theme = item.theme;
                     data.tabIndex = item.tabIndex;
+                    data.multiple = item.multiple;
+
                     data.label = getLabel.call(this, queIdx);
                     data.formSize = function () {
-                        if (item.select.hasClass("input-lg")) return "input-lg";
-                        if (item.select.hasClass("input-sm")) return "input-sm";
+                        return item.size ? "input-" + item.size : "";
                     }();
 
                     item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
-                    item.$target.append(item.$display);
-                    alignSelectDisplay.call(this);
-
-                    item.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, queIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
-                } else {
+                    item.$select = jQuery(ax5.mustache.render(getSelectTmpl.call(this, queIdx), data));
+                    item.$target.append(item.$select).append(item.$display);
                     item.options = syncSelectOptions.call(this, queIdx, item.options);
-                    item.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
-                    alignSelectDisplay.call(this);
 
                     item.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, queIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
-                }
+
+                    //setTimeout((function(){
+                    alignSelectDisplay.call(this);
+                    //}).bind(this), 100);
+                } else {
+
+                        item.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
+                        item.options = syncSelectOptions.call(this, queIdx, item.options);
+
+                        item.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, queIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
+
+                        alignSelectDisplay.call(this);
+                    }
 
                 data = null;
                 item = null;
@@ -263,9 +270,9 @@
                             setSelected.call(self, queIdx, O);
                         }
                     });
-                    item.select.html(po.join(''));
+                    item.$select.html(po.join(''));
                 } else {
-                    elementOptions = U.toArray(item.select.get(0).options);
+                    elementOptions = U.toArray(item.$select.get(0).options);
                     // select option 스크립트 생성
                     newOptions = [];
                     elementOptions.forEach(function (O, OIndex) {
@@ -343,10 +350,7 @@
                 item.id = 'ax5-select-' + ax5.getGuid();
                 item.$target.data("ax5-select", item.id);
             }
-            item.select = item.$target.find('select');
-            item.tabIndex = item.select.attr("tabindex");
-            item.select.attr("tabindex", "-1");
-            item.multiple = item.select.attr("multiple");
+            item.name = item.$target.attr("data-ax5select");
             if (item.options) {
                 item.options = JSON.parse(JSON.stringify(item.options));
             }
@@ -582,14 +586,14 @@
         this.enable = function (boundID) {
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.removeAttr("disabled");
-            this.queue[queIdx].select.removeAttr("disabled");
+            this.queue[queIdx].$select.removeAttr("disabled");
             return this;
         };
 
         this.disable = function (boundID) {
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.attr("disabled", "disabled");
-            this.queue[queIdx].select.attr("disabled", "disabled");
+            this.queue[queIdx].$select.attr("disabled", "disabled");
             return this;
         };
 
@@ -613,14 +617,33 @@
 ax5.ui.select_instance = new ax5.ui.select();
 jQuery.fn.ax5select = function () {
     return function (config) {
-        if (typeof config == "undefined") config = {};
-        jQuery.each(this, function () {
-            var defaultConfig = {
-                target: this
-            };
-            config = jQuery.extend({}, config, defaultConfig);
-            ax5.ui.select_instance.bind(config);
-        });
+        if (ax5.util.isString(arguments[0])) {
+            var methodName = arguments[0],
+                arg = arguments[1];
+
+            switch (methodName) {
+                case "setValue":
+                    ax5.ui.select_instance.val(this, arg);
+                    break;
+                case "getValue":
+                    return ax5.ui.select_instance.val(this);
+                    break;
+
+                default:
+                    //
+                    console.log("hh??");
+                    return this;
+            }
+        } else {
+            if (typeof config == "undefined") config = {};
+            jQuery.each(this, function () {
+                var defaultConfig = {
+                    target: this
+                };
+                config = jQuery.extend({}, config, defaultConfig);
+                ax5.ui.select_instance.bind(config);
+            });
+        }
         return this;
     };
 }();

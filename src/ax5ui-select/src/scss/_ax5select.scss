@@ -37,6 +37,7 @@
 [data-ax5select] {
     position: relative;
     overflow: visible;
+    display: block;
     select {
         z-index: 1;
         position: absolute;

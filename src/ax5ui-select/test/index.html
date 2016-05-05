@@ -18,68 +18,58 @@
     <h1>form-group</h1>
 
     <div class="form-group">
-        <div data-ax5select data-ax5select-config='{size:"sm"}' id="select-target">
-            <select class="form-control input-sm" name="select1"></select>
-        </div>
+        <span data-ax5select="select1" data-ax5select-config='{
+            size:"sm",
+            theme: "primary",
+            minWidth: "150",
+            multiple: false
+        }'></span>
     </div>
 
     <div class="form-group">
-        <div data-ax5select id="select-target-1">
-            <select class="form-control" name="select2" multiple="multiple"></select>
-        </div>
+        <span data-ax5select="select2" data-ax5select-config='{
+            size:"",
+            minWidth: "150",
+            multiple: true
+        }'></span>
     </div>
 
     <div class="form-group">
-        <div data-ax5select data-ax5select-config='{size:"lg"}'>
-            <select class="form-control input-lg" name="select3" multiple="multiple"></select>
-        </div>
+        <div data-ax5select="select3" data-ax5select-config='{
+            "size":"lg"
+        }'></div>
     </div>
 
-    <button type="button" class="btn">setValue</button>
+    <button type="button" class="btn" data-btn="setValue">setValue</button>
+    <button type="button" class="btn" data-btn="getValue">getValue</button>
 </form>
 
 <script>
-    var select = new ax5.ui.select();
     var options = [];
-    for(var i=0;i<100;i++){
+    for (var i = 0; i < 100; i++) {
         options.push({value: "optionValue" + i, text: "optionText" + i});
     }
 
     $(document.body).ready(function () {
 
-/*
-        select.bind({
-            target: $("#select-target"),
-            theme: "primary",
+        $('[data-btn]').click(function () {
+            var act = this.getAttribute("data-btn");
+            switch (act) {
+                case "setValue":
+                    console.log($(document.forms).serialize());
+                    break;
+                case "getValue":
+                    console.log($('[data-ax5select]').ax5select("getValue"));
+                    break;
+            }
+        });
+
+
+        $('[data-ax5select]').ax5select({
             options: options
         });
-
-        // 바인드된 아이템에 다시 바인드하는 경우 아이템 체인지 체크
-        select.bind({
-            target: $("#select-target-1"),
-            theme: "primary",
-            options: options
-        });
-*/
-
-
-        var themes = ['warning', 'danger', 'success'];
-
-        $('[data-ax5select]').each(function (nidx, n) {
-            select.bind({
-                target: this,
-                theme: themes[nidx],
-                options: options
-            });
-        });
-
-        // 선택된 값 가져오기
-        select.val($("#select-target"), "optionValue1");
-        //select.disable($("#select-target"));
-        //console.log( select.val($("#select-target-1")) );
 
         // todo : 외부에서 값 주기/받기
-
     });
 
 </script>
