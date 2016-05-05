@@ -347,7 +347,6 @@
             item.tabIndex = item.select.attr("tabindex");
             item.select.attr("tabindex", "-1");
             item.multiple = item.select.attr("multiple");
-            item.size = item.select.attr("data-size");
             if (item.options) {
                 item.options = JSON.parse(JSON.stringify(item.options));
             }
@@ -357,7 +356,7 @@
                 if (U.isObject(data) && !data.error) {
                     item = jQuery.extend(true, item, data);
                 }
-            })(U.parseJson(item.$target.attr("data-ax5select"), true));
+            })(U.parseJson(item.$target.attr("data-ax5select-config"), true));
 
             queIdx = U.search(this.queue, function () {
                 return this.id == item.id;

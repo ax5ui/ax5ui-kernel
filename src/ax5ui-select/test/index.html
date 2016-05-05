@@ -18,35 +18,24 @@
     <h1>form-group</h1>
 
     <div class="form-group">
-        <div data-ax5select="true" id="select-target">
-            <select class="form-control" name="select1">
-                <option value="1" selected="selected">value 1 ~!@#!@#@</option>
-                <option value="2" selected="selected">value 2</option>
-                <option value="3">value 3</option>
-                <option value="4">value 4</option>
-                <option value="5">value 5</option>
-            </select>
+        <div data-ax5select data-ax5select-config='{size:"sm"}' id="select-target">
+            <select class="form-control input-sm" name="select1"></select>
         </div>
     </div>
 
     <div class="form-group">
-        <div
-                data-ax5select='true' id="select-target-1">
-            <select class="form-control input-sm" name="select1" multiple="multiple" data-size="sm">
-                <option value="1">value 1 ~!@#!@#@</option>
-            </select>
+        <div data-ax5select id="select-target-1">
+            <select class="form-control" name="select2" multiple="multiple"></select>
         </div>
     </div>
 
     <div class="form-group">
-        <div data-ax5select='true'>
-            <select class="form-control input-lg" name="select1" multiple="multiple" data-size="lg">
-                <option value="1">value 1 ~!@#!@#@</option>
-            </select>
+        <div data-ax5select data-ax5select-config='{size:"lg"}'>
+            <select class="form-control input-lg" name="select3" multiple="multiple"></select>
         </div>
     </div>
 
-    <button class="btn">setValue</button>
+    <button type="button" class="btn">setValue</button>
 </form>
 
 <script>
@@ -90,6 +79,7 @@
         //console.log( select.val($("#select-target-1")) );
 
         // todo : 외부에서 값 주기/받기
+
     });
 
 </script>
