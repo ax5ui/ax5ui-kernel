@@ -35,27 +35,27 @@ $ax5select-default-back-color: #fff;
 $ax5select-default-border-color: #ccc;
 $ax5select-default-hover-type: darken, 10;
 
-$ax5select-primary-fore-color: $brand-primary;
+$ax5select-primary-fore-color: $gray;
 $ax5select-primary-back-color: $ax5select-option-group-bg;
-$ax5select-primary-border-color: #ccc;
+$ax5select-primary-border-color: $brand-primary;
 $ax5select-primary-hover-type: darken, 10;
 
-$ax5select-success-fore-color: $brand-success;
+$ax5select-success-fore-color: $gray;
 $ax5select-success-back-color: $ax5select-option-group-bg;
-$ax5select-success-border-color: #ccc;
+$ax5select-success-border-color: $brand-success;
 $ax5select-success-hover-type: darken, 10;
 
-$ax5select-info-fore-color: $brand-info;
+$ax5select-info-fore-color: $gray;
 $ax5select-info-back-color: $ax5select-option-group-bg;
-$ax5select-info-border-color: #ccc;
+$ax5select-info-border-color: $brand-info;
 $ax5select-info-hover-type: darken, 10;
 
-$ax5select-warning-fore-color: $brand-warning;
+$ax5select-warning-fore-color: $gray;
 $ax5select-warning-back-color: $ax5select-option-group-bg;
-$ax5select-warning-border-color: #ccc;
+$ax5select-warning-border-color: $brand-warning;
 $ax5select-warning-hover-type: darken, 10;
 
-$ax5select-danger-fore-color: $brand-danger;
+$ax5select-danger-fore-color: $gray;
 $ax5select-danger-back-color: $ax5select-option-group-bg;
-$ax5select-danger-border-color: #ccc;
+$ax5select-danger-border-color: $brand-danger;
 $ax5select-danger-hover-type: darken, 10;

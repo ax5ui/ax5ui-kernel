@@ -50,18 +50,14 @@
 
 <script>
     var select = new ax5.ui.select();
+    var options = [];
+    for(var i=0;i<100;i++){
+        options.push({value: "optionValue" + i, text: "optionText" + i});
+    }
+
     $(document.body).ready(function () {
 
-        var options = [];
-        for(var i=0;i<100;i++){
-            options.push({value: "optionValue" + i, text: "optionText" + i});
-        }
-        var options2 = [];
-        for(var i=0;i<2;i++){
-            options2.push({value: "optionValue--" + i, text: "optionText--" + i});
-        }
-
-        /*
+/*
         select.bind({
             target: $("#select-target"),
             theme: "primary",
@@ -70,11 +66,11 @@
 
         // 바인드된 아이템에 다시 바인드하는 경우 아이템 체인지 체크
         select.bind({
-            target: $("#select-target"),
+            target: $("#select-target-1"),
             theme: "primary",
-            options: options2
+            options: options
         });
-        */
+*/
 
         $('[data-ax5select]').each(function () {
             select.bind({
@@ -85,14 +81,10 @@
         });
 
         // 선택된 값 가져오기
-        console.log( select.val($("#select-target")) );
-        console.log( select.val($("#select-target-1")) );
+        //console.log( select.val($("#select-target")) );
+        //console.log( select.val($("#select-target-1")) );
 
     });
-
-    // todo : tab focus -- 완료
-    // todo : 스페이스 바 처리 -- 완료
-    // todo : 오픈스타일 -- 완료
 
 </script>
 

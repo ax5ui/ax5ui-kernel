@@ -60,6 +60,8 @@
             } else if (this.onStateChanged) {
                 this.onStateChanged.call(that, that);
             }
+            opts = null;
+            that = null;
             return true;
         },
             getOptionGroupTmpl = function getOptionGroupTmpl(columnKeys) {
@@ -158,7 +160,8 @@
                 this.close();
             }
         },
-            getLabel = function getLabel(opts, optIdx) {
+            getLabel = function getLabel(optIdx) {
+            var opts = this.queue[optIdx];
             var labels = [];
             if (U.isArray(opts.selected) && opts.selected.length > 0) {
                 opts.selected.forEach(function (n) {
@@ -182,30 +185,33 @@
         },
             bindSelectTarget = function () {
             var selectEvent = {
-                'click': function click(opts, optIdx, e) {
+                'click': function click(optIdx, e) {
                     if (self.activeSelectQueueIndex == optIdx) {
                         self.close();
                     } else {
-                        self.open(opts, optIdx);
+                        self.open(optIdx);
                     }
                     U.stopEvent(e);
                 },
-                'keyUp': function keyUp(opts, optIdx, e) {
+                'keyUp': function keyUp(optIdx, e) {
                     if (e.which == ax5.info.eventKeys.SPACE) {
-                        selectEvent.click.call(this, opts, optIdx, e);
+                        selectEvent.click.call(this, optIdx, e);
                     } else if (e.which == ax5.info.eventKeys.DOWN) {
                         // todo focus move
                     }
                 }
             };
-            return function (opts, optIdx) {
+            return function (optIdx) {
+                var opts = this.queue[optIdx];
                 var data = {};
 
                 if (!opts.$display) {
-                    opts.options = syncSelectOptions.call(this, opts, optIdx, opts.options);
+                    opts.options = syncSelectOptions.call(this, optIdx, opts.options);
+
+                    /// 템플릿에 전달할 오브젝트 선언
                     data.id = opts.id;
                     data.tabIndex = opts.tabIndex;
-                    data.label = getLabel.call(this, opts, optIdx);
+                    data.label = getLabel.call(this, optIdx);
                     data.formSize = function () {
                         if (opts.select.hasClass("input-lg")) return "input-lg";
                         if (opts.select.hasClass("input-sm")) return "input-sm";
@@ -215,13 +221,13 @@
                     opts.$target.append(opts.$display);
                     alignSelectDisplay.call(this);
 
-                    opts.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, this.queue[optIdx], optIdx));
+                    opts.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, optIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, optIdx));
                 } else {
-                    opts.options = syncSelectOptions.call(this, opts, optIdx, opts.options);
-                    opts.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, opts, optIdx));
+                    opts.options = syncSelectOptions.call(this, optIdx, opts.options);
+                    opts.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, optIdx));
                     alignSelectDisplay.call(this);
 
-                    opts.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, this.queue[optIdx], optIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, this.queue[optIdx], optIdx));
+                    opts.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, optIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, optIdx));
                 }
 
                 data = null;
@@ -231,20 +237,21 @@
             };
         }(),
             syncSelectOptions = function () {
-            var setSelected = function setSelected(opts, optIdx, O) {
+            var setSelected = function setSelected(optIdx, O) {
                 if (!O) {
-                    opts.selected = [];
+                    this.queue[optIdx].selected = [];
                 } else {
-                    if (opts.multiple) opts.selected.push(jQuery.extend({}, O));else opts.selected[0] = jQuery.extend({}, O);
+                    if (this.queue[optIdx].multiple) this.queue[optIdx].selected.push(jQuery.extend({}, O));else this.queue[optIdx].selected[0] = jQuery.extend({}, O);
                 }
             };
 
-            return function (opts, optIdx, options) {
+            return function (optIdx, options) {
+                var opts = this.queue[optIdx];
                 var po, elementOptions, newOptions;
-                setSelected(opts, optIdx, false); // opts.selected 초기화
+                setSelected.call(this, optIdx, false); // opts.selected 초기화
 
                 if (options) {
-                    opts.options = [].concat(options);
+                    opts.options = options;
 
                     // select options 태그 생성
                     po = [];
@@ -252,7 +259,7 @@
                         O['@index'] = OIndex;
                         po.push('<option value="' + O[cfg.columnKeys.optionValue] + '" ' + (O[cfg.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[cfg.columnKeys.optionText] + '</option>');
                         if (O[cfg.columnKeys.optionSelected]) {
-                            setSelected(opts, optIdx, O);
+                            setSelected.call(self, optIdx, O);
                         }
                     });
                     opts.select.html(po.join(''));
@@ -266,7 +273,7 @@
                         option[cfg.columnKeys.optionText] = O.text;
                         option[cfg.columnKeys.optionSelected] = O.selected;
                         option['@index'] = OIndex;
-                        if (O.selected) setSelected(opts, optIdx, option);
+                        if (O.selected) setSelected.call(self, optIdx, option);
                         newOptions.push(option);
                         option = null;
                     });
@@ -330,6 +337,9 @@
             opts.select.attr("tabindex", "-1");
             opts.multiple = opts.select.attr("multiple");
             opts.size = opts.select.attr("data-size");
+            if (opts.options) {
+                opts.options = JSON.parse(JSON.stringify(opts.options));
+            }
 
             // target attribute data
             (function (data) {
@@ -344,10 +354,10 @@
 
             if (optIdx === -1) {
                 this.queue.push(opts);
-                bindSelectTarget.call(this, opts, this.queue.length - 1);
+                bindSelectTarget.call(this, this.queue.length - 1);
             } else {
                 this.queue[optIdx] = jQuery.extend({}, this.queue[optIdx], opts);
-                bindSelectTarget.call(this, this.queue[optIdx], optIdx);
+                bindSelectTarget.call(this, optIdx);
             }
 
             selectConfig = null;
@@ -358,32 +368,31 @@
         /**
          * open the optionBox of select
          * @method ax5.ui.select.open
-         * @param {(Object|String)} opts
          * @param {Number} [optIdx]
          * @param {Number} [tryCount]
          * @returns {ax5.ui.select}
          */
         this.open = function () {
 
-            return function (opts, optIdx, tryCount) {
-                var data = {},
-                    focusTop,
-                    selectedOptionEl;
-
+            return function (optIdx, tryCount) {
                 /**
                  * open select from the outside
                  */
-                if (U.isString(opts) && typeof optIdx == "undefined") {
+                if (optIdx instanceof jQuery || U.isElement(optIdx)) {
+                    var select_id = jQuery(optIdx).data("ax5-select");
                     optIdx = ax5.util.search(this.queue, function () {
-                        return this.id == opts;
+                        return this.id == select_id;
                     });
-                    opts = this.queue[optIdx];
                     if (optIdx == -1) {
                         console.log(ax5.info.getError("ax5select", "402", "open"));
                         return this;
                     }
                 }
 
+                var opts = this.queue[optIdx];
+                var data = {},
+                    focusTop,
+                    selectedOptionEl;
                 if (this.openTimer) clearTimeout(this.openTimer);
                 if (this.activeSelectOptionGroup) {
                     if (this.activeSelectQueueIndex == optIdx) {
@@ -393,18 +402,17 @@
                     if (tryCount > 2) return this;
                     this.close();
                     this.openTimer = setTimeout(function () {
-                        this.open(opts, optIdx, (tryCount || 0) + 1);
+                        this.open(optIdx, (tryCount || 0) + 1);
                     }.bind(this), cfg.animateTime);
                     return this;
                 }
 
+                /// 템플릿에 전달할 오브젝트 선언
                 data.id = opts.id;
                 data.theme = opts.theme;
                 data.size = "ax5-ui-select-option-group-" + opts.size;
-
                 data.multiple = opts.multiple;
                 data.options = opts.options;
-
                 opts.$display.attr("data-select-option-group-opened", "true");
 
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, cfg.columnKeys), data));
@@ -454,8 +462,8 @@
          * @param {(Object|String)} opts
          * @returns {ax5.ui.select}
          */
-        this.update = function (opts) {
-            this.bind(opts);
+        this.update = function (_opts) {
+            this.bind(_opts);
             return this;
         };
 
@@ -469,40 +477,43 @@
             // todo : val 함수 리팩토링 필요
 
             var processor = {
-                'index': function index(opts, optIdx, value) {
+                'index': function index(optIdx, value) {
                     // 옵션선택 초기화
-                    if (!opts.multiple) {
-                        opts.options.forEach(function (n) {
+                    if (!this.queue[optIdx].multiple) {
+                        this.queue[optIdx].options.forEach(function (n) {
                             n.selected = false;
                         });
                     }
 
-                    var getSelected = function getSelected(o) {
-                        return opts.multiple ? !o : true;
+                    var getSelected = function getSelected(_opts, o) {
+                        return _opts.multiple ? !o : true;
                     };
 
                     if (U.isArray(value.index)) {
                         value.index.forEach(function (n) {
-                            opts.options[n].selected = getSelected(opts.options[n].selected);
-                            this.activeSelectOptionGroup.find('[data-option-index="' + n + '"]').attr("data-option-selected", opts.options[n].selected.toString());
+                            self.queue[optIdx].options[n].selected = getSelected(self.queue[optIdx], self.queue[optIdx].options[n].selected);
+                            self.activeSelectOptionGroup.find('[data-option-index="' + n + '"]').attr("data-option-selected", self.queue[optIdx].options[n].selected.toString());
                         });
                     } else {
-                        opts.options[value.index].selected = getSelected(opts.options[value.index].selected);
-                        this.activeSelectOptionGroup.find('[data-option-index="' + value.index + '"]').attr("data-option-selected", opts.options[value.index].selected.toString());
+                        self.queue[optIdx].options[value.index].selected = getSelected(self.queue[optIdx], self.queue[optIdx].options[value.index].selected);
+                        self.activeSelectOptionGroup.find('[data-option-index="' + value.index + '"]').attr("data-option-selected", self.queue[optIdx].options[value.index].selected.toString());
                     }
-                    syncSelectOptions.call(this, opts, optIdx, opts.options);
-                    opts.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, opts, optIdx));
+
+                    syncSelectOptions.call(this, optIdx, this.queue[optIdx].options);
+                    this.queue[optIdx].$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, optIdx));
 
                     alignSelectOptionGroup.call(this);
                 },
-                'text': function text(opts, optIdx, value) {},
-                'arr': function arr(opts, optIdx, value) {},
-                'value': function value(opts, optIdx, _value) {
+                'text': function text(optIdx, value) {},
+                'arr': function arr(optIdx, value) {},
+                'value': function value(optIdx, _value) {
                     console.log(opts, _value);
                 }
             };
 
             return function (boundID, value) {
+                //console.log(boundID, value);
+
                 if (!U.isString(boundID)) boundID = jQuery(boundID).data("ax5-select");
                 if (!U.isString(boundID)) {
                     console.log(ax5.info.getError("ax5select", "402", "val"));
@@ -511,24 +522,22 @@
                 var optIdx = ax5.util.search(this.queue, function () {
                     return this.id == boundID;
                 });
-                var opts = this.queue[optIdx];
 
                 if (typeof value == "undefined") {
-                    return opts.selected;
+                    return this.queue[optIdx].selected;
                 } else if (U.isArray(value)) {
-                    processor.arr.call(this, opts, optIdx, value);
+                    processor.arr.call(this, optIdx, value);
                 } else if (U.isString(value) || U.isNumber(value)) {
-                    processor.value.call(this, opts, optIdx, value);
+                    processor.value.call(this, optIdx, value);
                 } else {
                     for (var key in processor) {
                         if (value[key]) {
-                            processor[key].call(this, opts, optIdx, value);
+                            processor[key].call(this, optIdx, value);
                             break;
                         }
                     }
                 }
 
-                opts = null;
                 boundID = null;
                 return this;
             };
@@ -582,15 +591,14 @@
 })(ax5.ui, ax5.ui.root);
 
 ax5.ui.select_instance = new ax5.ui.select();
-
-$.fn.ax5select = function () {
+jQuery.fn.ax5select = function () {
     return function (config) {
         if (typeof config == "undefined") config = {};
-        $.each(this, function () {
+        jQuery.each(this, function () {
             var defaultConfig = {
                 target: this
             };
-            config = $.extend(true, config, defaultConfig);
+            config = jQuery.extend({}, config, defaultConfig);
             ax5.ui.select_instance.bind(config);
         });
         return this;
