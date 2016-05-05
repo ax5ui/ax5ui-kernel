@@ -72,10 +72,14 @@
         });
 */
 
-        $('[data-ax5select]').each(function () {
+
+        var themes = ['warning', 'danger', 'success'];
+
+        $('[data-ax5select]').each(function (nidx, n) {
+            console.log(nidx);
             select.bind({
                 target: this,
-                theme: "primary",
+                theme: themes[nidx],
                 options: options
             });
         });

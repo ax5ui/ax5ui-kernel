@@ -71,10 +71,10 @@
     }
 }
 
-@mixin ax5-ui-select-display-theme($fore-color, $back-color, $border-color) {
-    &:hover, &:active, &:focus {
-        border-color: $border-color;
-        color: $fore-color;
+@mixin ax5-ui-select-display-theme($base-color, $back-color, $theme-color) {
+    &:hover, &:active, &:focus, &[data-select-option-group-opened] {
+        border-color: $theme-color;
+        color: $base-color;
         background: $back-color;
         text-decoration: none;
 
@@ -85,12 +85,12 @@
             [data-ax5-select-display="addon"] {
                 .addon-icon-closed {
                     .addon-icon-arrow {
-                        border-top-color: $fore-color;
+                        border-top-color: $base-color;
                     }
                 }
                 .addon-icon-opened {
                     .addon-icon-arrow {
-                        border-bottom-color: $fore-color;
+                        border-bottom-color: $base-color;
                     }
                 }
             }
@@ -98,36 +98,41 @@
     }
 }
 
-@mixin ax5-ui-select-option-group-theme($fore-color, $back-color, $border-color, $hover-type) {
-    border-color: $border-color;
-    color: $fore-color;
+@mixin ax5-ui-select-option-group-theme($base-color, $back-color, $theme-color, $hover-type) {
+    border-color: $theme-color;
+    color: $base-color;
 
     .ax-select-body {
 
         .ax-select-option-group-content {
             .ax-select-option-item {
-                .ax-select-option-item-holder {
-                    .ax-select-option-item-cell {
-                        &.ax-select-option-item-checkbox {
-                            .item-checkbox-wrap {
-                                &.useCheckBox {
-                                    &:after {
-                                        border-color: #000;
+                &:hover, &.hover, &[data-option-selected="true"] {
+                    @if nth($hover-type, 1) == "lighten" {
+                        background: $theme-color;
+                        color: lighten($base-color, nth($hover-type, 2));
+                    } @else if nth($hover-type, 1) == "darken" {
+                        background: $theme-color;
+                        color: darken($base-color, nth($hover-type, 2));
+                    }
+
+                    .ax-select-option-item-holder {
+                        .ax-select-option-item-cell {
+                            &.ax-select-option-item-checkbox {
+                                .item-checkbox-wrap {
+                                    &.useCheckBox {
+                                        &:after {
+                                            @if nth($hover-type, 1) == "lighten" {
+                                                border-color: lighten($base-color, nth($hover-type, 2)) !important;
+                                            } @else if nth($hover-type, 1) == "darken" {
+                                                border-color: darken($base-color, nth($hover-type, 2)) !important;
+                                            }
+                                        }
                                     }
                                 }
                             }
+                            &.ax-select-option-item-label {
+                            }
                         }
-                        &.ax-select-option-item-label {
-                        }
-                    }
-                }
-                &:hover, &.hover, &[data-option-selected="true"] {
-                    @if nth($hover-type, 1) == "darken" {
-                        background: darken($back-color, nth($hover-type, 2));
-                        color: darken($fore-color, nth($hover-type, 2));
-                    } @else if nth($hover-type, 1) == "lighten" {
-                        background: lighten($back-color, nth($hover-type, 2));
-                        color: darken($fore-color, nth($hover-type, 2));
                     }
                 }
             }
@@ -135,7 +140,7 @@
 
         .ax-select-option-group-buttons {
             border-top: 1px solid;
-            border-color: $border-color;
+            border-color: $theme-color;
         }
     }
 
@@ -199,7 +204,7 @@
                                         width: $ax5select-option-item-checkbox-size;
                                         height: $ax5select-option-item-checkbox-size / 2;
                                         position: absolute;
-                                        top: ($ax5select-option-item-height - 10) / 2;
+                                        top: ($ax5select-option-item-height) / 4;
                                         right: 0px;
                                         border: 2px solid #000;
                                         border-top: none;
@@ -236,29 +241,21 @@
 }
 
 // themes
-$fore-colors: (
-        default: $ax5select-default-fore-color,
-        primary: $ax5select-primary-fore-color,
-        success: $ax5select-success-fore-color,
-        info: $ax5select-info-fore-color,
-        warning: $ax5select-warning-fore-color,
-        danger: $ax5select-danger-fore-color
+$base-colors: (
+        default: $ax5select-default-base-color,
+        primary: $ax5select-primary-base-color,
+        success: $ax5select-success-base-color,
+        info: $ax5select-info-base-color,
+        warning: $ax5select-warning-base-color,
+        danger: $ax5select-danger-base-color
 );
-$back-colors: (
-        default: $ax5select-default-back-color,
-        primary: $ax5select-primary-back-color,
-        success: $ax5select-success-back-color,
-        info: $ax5select-info-back-color,
-        warning: $ax5select-warning-back-color,
-        danger: $ax5select-danger-back-color
-);
-$border-colors: (
-        default: $ax5select-default-border-color,
-        primary: $ax5select-primary-border-color,
-        success: $ax5select-success-border-color,
-        info: $ax5select-info-border-color,
-        warning: $ax5select-warning-border-color,
-        danger: $ax5select-danger-border-color
+$theme-colors: (
+        default: $ax5select-default-theme-color,
+        primary: $ax5select-primary-theme-color,
+        success: $ax5select-success-theme-color,
+        info: $ax5select-info-theme-color,
+        warning: $ax5select-warning-theme-color,
+        danger: $ax5select-danger-theme-color
 );
 $hover-types: (
         default: $ax5select-default-hover-type,
@@ -353,9 +350,9 @@ $hover-types: (
         }
     }
 
-    @each $theme in $fore-colors {
+    @each $theme in $base-colors {
         &.#{nth($theme, 1)} {
-            @include ax5-ui-select-display-theme(map_get($fore-colors, nth($theme, 1)), map_get($back-colors, nth($theme, 1)), map_get($border-colors, nth($theme, 1)));
+            @include ax5-ui-select-display-theme(map_get($base-colors, nth($theme, 1)), $ax5select-option-group-bg, map_get($theme-colors, nth($theme, 1)));
         }
     }
 }
@@ -386,9 +383,9 @@ $hover-types: (
         @include transform-origin(center bottom);
     }
 
-    @each $theme in $fore-colors {
+    @each $theme in $base-colors {
         &.#{nth($theme, 1)} {
-            @include ax5-ui-select-option-group-theme(map_get($fore-colors, nth($theme, 1)), map_get($back-colors, nth($theme, 1)), map_get($border-colors, nth($theme, 1)), map_get($hover-types, nth($theme, 1)));
+            @include ax5-ui-select-option-group-theme(map_get($base-colors, nth($theme, 1)), $ax5select-option-group-bg, map_get($theme-colors, nth($theme, 1)), map_get($hover-types, nth($theme, 1)));
         }
     }
 

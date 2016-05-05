@@ -261,6 +261,7 @@
 
                         /// 템플릿에 전달할 오브젝트 선언
                         data.id = opts.id;
+                        data.theme = opts.theme;
                         data.tabIndex = opts.tabIndex;
                         data.label = getLabel.call(this, optIdx);
                         data.formSize = (function () {
