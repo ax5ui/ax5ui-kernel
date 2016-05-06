@@ -37,6 +37,7 @@
 [data-ax5select] {
     position: relative;
     overflow: visible;
+    display: block;
     select {
         z-index: 1;
         position: absolute;
@@ -73,28 +74,33 @@
 
 @mixin ax5-ui-select-display-theme($base-color, $back-color, $theme-color) {
     &:hover, &:active, &:focus, &[data-select-option-group-opened] {
-        border-color: $theme-color;
-        color: $base-color;
-        background: $back-color;
-        text-decoration: none;
+        &:not([disabled]){
+            border-color: $theme-color;
+            color: $base-color;
+            background: $back-color;
+            text-decoration: none;
 
-        .ax5-ui-select-display-table {
-            [data-ax5-select-display="label"] {
+            .ax5-ui-select-display-table {
+                [data-ax5-select-display="label"] {
 
-            }
-            [data-ax5-select-display="addon"] {
-                .addon-icon-closed {
-                    .addon-icon-arrow {
-                        border-top-color: $base-color;
-                    }
                 }
-                .addon-icon-opened {
-                    .addon-icon-arrow {
-                        border-bottom-color: $base-color;
+                [data-ax5-select-display="addon"] {
+                    .addon-icon-closed {
+                        .addon-icon-arrow {
+                            border-top-color: $base-color;
+                        }
+                    }
+                    .addon-icon-opened {
+                        .addon-icon-arrow {
+                            border-bottom-color: $base-color;
+                        }
                     }
                 }
             }
         }
+    }
+    [disabled]{
+        @include user-select(none);
     }
 }
 

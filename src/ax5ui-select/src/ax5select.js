@@ -54,14 +54,14 @@
         cfg = this.config;
 
         var
-            onStateChanged = function (opts, that) {
-                if (opts && opts.onStateChanged) {
-                    opts.onStateChanged.call(that, that);
+            onStateChanged = function (item, that) {
+                if (item && item.onStateChanged) {
+                    item.onStateChanged.call(that, that);
                 }
                 else if (this.onStateChanged) {
                     this.onStateChanged.call(that, that);
                 }
-                opts = null;
+                item = null;
                 that = null;
                 return true;
             },
@@ -111,14 +111,16 @@
                 </a>
                 `;
             },
+            getSelectTmpl = function () {
+                return `
+                <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>
+                `;
+            },
             alignSelectDisplay = function () {
                 var i = this.queue.length, w;
                 while (i--) {
                     if (this.queue[i].$display) {
-                        w = this.queue[i].select.outerWidth();
-                        if (this.queue[i].select.css("display") != "block") {
-                            w = w + cfg.displayMargin
-                        }
+                        w = Math.max(this.queue[i].$select.outerWidth(), U.number(this.queue[i].minWidth));
                         this.queue[i].$display.css({
                             "min-width": w
                         });
@@ -133,38 +135,38 @@
                 if (!this.activeSelectOptionGroup) return this;
 
                 var
-                    opts = this.queue[this.activeSelectQueueIndex],
+                    item = this.queue[this.activeSelectQueueIndex],
                     pos = {},
                     dim = {};
 
                 if (append) jQuery(document.body).append(this.activeSelectOptionGroup);
 
-                pos = opts.$target.offset();
+                pos = item.$target.offset();
                 dim = {
-                    width: opts.$target.outerWidth(),
-                    height: opts.$target.outerHeight()
+                    width: item.$target.outerWidth(),
+                    height: item.$target.outerHeight()
                 };
 
                 // picker css(width, left, top) & direction 결정
-                if (!opts.direction || opts.direction === "" || opts.direction === "auto") {
+                if (!item.direction || item.direction === "" || item.direction === "auto") {
                     // set direction
-                    opts.direction = "top";
+                    item.direction = "top";
                 }
 
                 if (append) {
                     this.activeSelectOptionGroup
-                        .addClass("direction-" + opts.direction);
+                        .addClass("direction-" + item.direction);
                 }
                 this.activeSelectOptionGroup
                     .css((function () {
-                        if (opts.direction == "top") {
+                        if (item.direction == "top") {
                             return {
                                 left: pos.left,
                                 top: pos.top + dim.height + 1,
                                 width: dim.width
                             }
                         }
-                        else if (opts.direction == "bottom") {
+                        else if (item.direction == "bottom") {
                             return {
                                 left: pos.left,
                                 top: pos.top - this.activeSelectOptionGroup.outerHeight() - 1,
@@ -177,7 +179,7 @@
                 if (!this.activeSelectOptionGroup) return this;
 
                 var
-                    opts = this.queue[this.activeSelectQueueIndex],
+                    item = this.queue[this.activeSelectQueueIndex],
                     clickEl = "display"
                     ;
 
@@ -186,7 +188,7 @@
                         clickEl = "optionItem";
                         return true;
                     }
-                    else if (opts.$target.get(0) == target) {
+                    else if (item.$target.get(0) == target) {
                         clickEl = "display";
                         return true;
                     }
@@ -196,8 +198,8 @@
                     this.close();
                     return this;
                 } else if (clickEl != "display") {
-                    this.val(opts.id, {index: target.getAttribute("data-option-index")});
-                    if (!opts.multiple) this.close();
+                    this.val(item.id, {index: target.getAttribute("data-option-index")});
+                    if (!item.multiple) this.close();
                 }
 
                 return this;
@@ -207,21 +209,21 @@
                     this.close();
                 }
             },
-            getLabel = function (optIdx) {
-                var opts = this.queue[optIdx];
+            getLabel = function (queIdx) {
+                var item = this.queue[queIdx];
                 var labels = [];
-                if (U.isArray(opts.selected) && opts.selected.length > 0) {
-                    opts.selected.forEach(function (n) {
+                if (U.isArray(item.selected) && item.selected.length > 0) {
+                    item.selected.forEach(function (n) {
                         if (n.selected) labels.push(n[cfg.columnKeys.optionText]);
                     });
                 }
                 else {
-                    if (!opts.multiple && opts.options[0]) labels[0] = opts.options[0][cfg.columnKeys.optionText];
+                    if (!item.multiple && item.options[0]) labels[0] = item.options[0][cfg.columnKeys.optionText];
                     else labels[0] = "";
                 }
 
                 return (function () {
-                    if (opts.multiple && labels.length > 1) {
+                    if (item.multiple && labels.length > 1) {
                         var data = {
                             label: labels[0],
                             length: labels.length - 1
@@ -235,102 +237,111 @@
             },
             bindSelectTarget = (function () {
                 var selectEvent = {
-                    'click': function (optIdx, e) {
-                        if (self.activeSelectQueueIndex == optIdx) {
+                    'click': function (queIdx, e) {
+                        if (self.activeSelectQueueIndex == queIdx) {
                             self.close();
                         } else {
-                            self.open(optIdx);
+                            self.open(queIdx);
                         }
                         U.stopEvent(e);
                     },
-                    'keyUp': function (optIdx, e) {
+                    'keyUp': function (queIdx, e) {
                         if (e.which == ax5.info.eventKeys.SPACE) {
-                            selectEvent.click.call(this, optIdx, e);
+                            selectEvent.click.call(this, queIdx, e);
                         }
                         else if (e.which == ax5.info.eventKeys.DOWN) {
                             // todo focus move
                         }
                     }
                 };
-                return function (optIdx) {
-                    var opts = this.queue[optIdx];
+                return function (queIdx) {
+                    var item = this.queue[queIdx];
                     var data = {};
 
-                    if (!opts.$display) {
-                        opts.options = syncSelectOptions.call(this, optIdx, opts.options);
-
+                    if (!item.$display) {
                         /// 템플릿에 전달할 오브젝트 선언
-                        data.id = opts.id;
-                        data.theme = opts.theme;
-                        data.tabIndex = opts.tabIndex;
-                        data.label = getLabel.call(this, optIdx);
+                        data.id = item.id;
+                        data.name = item.name;
+                        data.theme = item.theme;
+                        data.tabIndex = item.tabIndex;
+                        data.multiple = item.multiple;
+                        
+                        data.label = getLabel.call(this, queIdx);
                         data.formSize = (function () {
-                            if (opts.select.hasClass("input-lg")) return "input-lg";
-                            if (opts.select.hasClass("input-sm")) return "input-sm";
+                            return (item.size) ? "input-" + item.size : "";
                         })();
 
-                        opts.$display = jQuery(ax5.mustache.render(getTmpl.call(this, opts, optIdx), data));
-                        opts.$target.append(opts.$display);
-                        alignSelectDisplay.call(this);
 
-                        opts.$display
+                        item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
+                        item.$select = jQuery(ax5.mustache.render(getSelectTmpl.call(this, queIdx), data));
+                        item.$target.append(item.$select).append(item.$display);
+                        item.options = syncSelectOptions.call(this, queIdx, item.options);
+
+                        item.$display
                             .unbind('click.ax5select')
-                            .bind('click.ax5select', selectEvent.click.bind(this, optIdx))
+                            .bind('click.ax5select', selectEvent.click.bind(this, queIdx))
                             .unbind('keyup.ax5select')
-                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, optIdx));
+                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
+
+                        //setTimeout((function(){
+                            alignSelectDisplay.call(this);
+                        //}).bind(this), 100);
+
                     }
                     else {
-                        opts.options = syncSelectOptions.call(this, optIdx, opts.options);
-                        opts.$display
-                            .find('[data-ax5-select-display="label"]')
-                            .html(getLabel.call(this, optIdx));
-                        alignSelectDisplay.call(this);
 
-                        opts.$display
+                        item.$display
+                            .find('[data-ax5-select-display="label"]')
+                            .html(getLabel.call(this, queIdx));
+                        item.options = syncSelectOptions.call(this, queIdx, item.options);
+
+                        item.$display
                             .unbind('click.ax5select')
-                            .bind('click.ax5select', selectEvent.click.bind(this, optIdx))
+                            .bind('click.ax5select', selectEvent.click.bind(this, queIdx))
                             .unbind('keyup.ax5select')
-                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, optIdx));
+                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
+
+                        alignSelectDisplay.call(this);
                     }
 
                     data = null;
-                    opts = null;
-                    optIdx = null;
+                    item = null;
+                    queIdx = null;
                     return this;
                 };
             })(),
             syncSelectOptions = (function () {
-                var setSelected = function (optIdx, O) {
+                var setSelected = function (queIdx, O) {
                     if (!O) {
-                        this.queue[optIdx].selected = [];
+                        this.queue[queIdx].selected = [];
                     }
                     else {
-                        if (this.queue[optIdx].multiple) this.queue[optIdx].selected.push(jQuery.extend({}, O));
-                        else this.queue[optIdx].selected[0] = jQuery.extend({}, O);
+                        if (this.queue[queIdx].multiple) this.queue[queIdx].selected.push(jQuery.extend({}, O));
+                        else this.queue[queIdx].selected[0] = jQuery.extend({}, O);
                     }
                 };
 
-                return function (optIdx, options) {
-                    var opts = this.queue[optIdx];
+                return function (queIdx, options) {
+                    var item = this.queue[queIdx];
                     var po, elementOptions, newOptions;
-                    setSelected.call(this, optIdx, false); // opts.selected 초기화
+                    setSelected.call(this, queIdx, false); // item.selected 초기화
 
                     if (options) {
-                        opts.options = options;
+                        item.options = options;
 
                         // select options 태그 생성
                         po = [];
-                        opts.options.forEach(function (O, OIndex) {
+                        item.options.forEach(function (O, OIndex) {
                             O['@index'] = OIndex;
                             po.push('<option value="' + O[cfg.columnKeys.optionValue] + '" ' + (O[cfg.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[cfg.columnKeys.optionText] + '</option>');
                             if (O[cfg.columnKeys.optionSelected]) {
-                                setSelected.call(self, optIdx, O);
+                                setSelected.call(self, queIdx, O);
                             }
                         });
-                        opts.select.html(po.join(''));
+                        item.$select.html(po.join(''));
                     }
                     else {
-                        elementOptions = U.toArray(opts.select.get(0).options);
+                        elementOptions = U.toArray(item.$select.get(0).options);
                         // select option 스크립트 생성
                         newOptions = [];
                         elementOptions.forEach(function (O, OIndex) {
@@ -339,23 +350,33 @@
                             option[cfg.columnKeys.optionText] = O.text;
                             option[cfg.columnKeys.optionSelected] = O.selected;
                             option['@index'] = OIndex;
-                            if (O.selected) setSelected.call(self, optIdx, option);
+                            if (O.selected) setSelected.call(self, queIdx, option);
                             newOptions.push(option);
                             option = null;
                         });
-                        opts.options = newOptions;
+                        item.options = newOptions;
                     }
 
-                    if (!opts.multiple && opts.selected.length == 0) {
-                        opts.selected = jQuery.extend({}, opts.options[0]);
+                    if (!item.multiple && item.selected.length == 0) {
+                        item.selected = jQuery.extend({}, item.options[0]);
                     }
 
                     po = null;
                     elementOptions = null;
                     newOptions = null;
-                    return opts.options;
+                    return item.options;
                 }
-            })();
+            })(),
+            getQueIdx = function(boundID){
+                if (!U.isString(boundID)) boundID = jQuery(boundID).data("ax5-select");
+                if (!U.isString(boundID)) {
+                    console.log(ax5.info.getError("ax5select", "402", "val"));
+                    return;
+                }
+                return U.search(this.queue, function () {
+                    return this.id == boundID;
+                });
+            };
         /// private end
 
         /**
@@ -377,120 +398,120 @@
         /**
          * bind select
          * @method ax5.ui.select.bind
-         * @param {Object} opts
-         * @param {String} [opts.id]
-         * @param {Element} opts.target
-         * @param {Object[]} opts.options
+         * @param {Object} item
+         * @param {String} [item.id]
+         * @param {Element} item.target
+         * @param {Object[]} item.options
          * @returns {ax5.ui.select}
          */
-        this.bind = function (opts) {
+        this.bind = function (item) {
             var
                 selectConfig = {},
-                optIdx;
+                queIdx;
 
-            opts = jQuery.extend(selectConfig, cfg, opts);
-            if (!opts.target) {
+            item = jQuery.extend(selectConfig, cfg, item);
+            if (!item.target) {
                 console.log(ax5.info.getError("ax5select", "401", "bind"));
                 return this;
             }
-            opts.$target = jQuery(opts.target);
-            if (!opts.id) opts.id = opts.$target.data("ax5-select");
-            if (!opts.id) {
-                opts.id = 'ax5-select-' + ax5.getGuid();
-                opts.$target.data("ax5-select", opts.id);
+            item.$target = jQuery(item.target);
+            if (!item.id) item.id = item.$target.data("ax5-select");
+            if (!item.id) {
+                item.id = 'ax5-select-' + ax5.getGuid();
+                item.$target.data("ax5-select", item.id);
             }
-            opts.select = opts.$target.find('select');
-            opts.tabIndex = opts.select.attr("tabindex");
-            opts.select.attr("tabindex", "-1");
-            opts.multiple = opts.select.attr("multiple");
-            opts.size = opts.select.attr("data-size");
-            if (opts.options) {
-                opts.options = JSON.parse(JSON.stringify(opts.options));
+            item.name = item.$target.attr("data-ax5select");
+            if (item.options) {
+                item.options = JSON.parse(JSON.stringify(item.options));
             }
 
             // target attribute data
             (function (data) {
                 if (U.isObject(data) && !data.error) {
-                    opts = jQuery.extend(true, opts, data);
+                    item = jQuery.extend(true, item, data);
                 }
-            })(U.parseJson(opts.$target.attr("data-ax5select"), true));
+            })(U.parseJson(item.$target.attr("data-ax5select-config"), true));
 
-            optIdx = U.search(this.queue, function () {
-                return this.id == opts.id;
+            queIdx = U.search(this.queue, function () {
+                return this.id == item.id;
             });
 
-            if (optIdx === -1) {
-                this.queue.push(opts);
+            if (queIdx === -1) {
+                this.queue.push(item);
                 bindSelectTarget.call(this, this.queue.length - 1);
             }
             else {
-                this.queue[optIdx] = jQuery.extend({}, this.queue[optIdx], opts);
-                bindSelectTarget.call(this, optIdx);
+                this.queue[queIdx] = jQuery.extend({}, this.queue[queIdx], item);
+                bindSelectTarget.call(this, queIdx);
             }
 
             selectConfig = null;
-            optIdx = null;
+            queIdx = null;
             return this;
         };
 
         /**
          * open the optionBox of select
          * @method ax5.ui.select.open
-         * @param {Number} [optIdx]
+         * @param {Number} [queIdx]
          * @param {Number} [tryCount]
          * @returns {ax5.ui.select}
          */
         this.open = (function () {
 
-            return function (optIdx, tryCount) {
+            return function (queIdx, tryCount) {
                 /**
                  * open select from the outside
                  */
-                if (optIdx instanceof jQuery || U.isElement(optIdx)) {
-                    var select_id = jQuery(optIdx).data("ax5-select");
-                    optIdx = ax5.util.search(this.queue, function () {
+                if (queIdx instanceof jQuery || U.isElement(queIdx)) {
+                    var select_id = jQuery(queIdx).data("ax5-select");
+                    queIdx = ax5.util.search(this.queue, function () {
                         return this.id == select_id;
                     });
-                    if (optIdx == -1) {
+                    if (queIdx == -1) {
                         console.log(ax5.info.getError("ax5select", "402", "open"));
                         return this;
                     }
                 }
 
-                var opts = this.queue[optIdx];
+                var item = this.queue[queIdx];
                 var data = {}, focusTop, selectedOptionEl;
+
+                if(item.$display.attr("disabled")) return this;
+
                 if (this.openTimer) clearTimeout(this.openTimer);
                 if (this.activeSelectOptionGroup) {
-                    if (this.activeSelectQueueIndex == optIdx) {
+                    if (this.activeSelectQueueIndex == queIdx) {
                         return this;
                     }
 
                     if (tryCount > 2) return this;
                     this.close();
                     this.openTimer = setTimeout((function () {
-                        this.open(optIdx, (tryCount || 0) + 1);
+                        this.open(queIdx, (tryCount || 0) + 1);
                     }).bind(this), cfg.animateTime);
+
                     return this;
                 }
 
                 /// 템플릿에 전달할 오브젝트 선언
-                data.id = opts.id;
-                data.theme = opts.theme;
-                data.size = "ax5-ui-select-option-group-" + opts.size;
-                data.multiple = opts.multiple;
-                data.options = opts.options;
-                opts.$display.attr("data-select-option-group-opened", "true");
+                data.id = item.id;
+                data.theme = item.theme;
+                data.size = "ax5-ui-select-option-group-" + item.size;
+                data.multiple = item.multiple;
+                data.options = item.options;
+                item.$display.attr("data-select-option-group-opened", "true");
 
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, cfg.columnKeys), data));
-                this.activeSelectQueueIndex = optIdx;
+                this.activeSelectQueueIndex = queIdx;
 
                 alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append
                 jQuery(window).bind("resize.ax5select", (function () {
                     alignSelectOptionGroup.call(this);
                 }).bind(this));
 
-                if (opts.selected && opts.selected.length > 0) {
-                    selectedOptionEl = this.activeSelectOptionGroup.find('[data-option-index="' + opts.selected[0]["@i"] + '"]');
+                if (item.selected && item.selected.length > 0) {
+                    selectedOptionEl = this.activeSelectOptionGroup.find('[data-option-index="' + item.selected[0]["@i"] + '"]');
                     if (selectedOptionEl.get(0)) {
                         focusTop = selectedOptionEl.position().top - this.activeSelectOptionGroup.height() / 3;
                         this.activeSelectOptionGroup.find('[data-select-els="content"]')
@@ -512,10 +533,10 @@
                     U.stopEvent(e);
                 }).bind(this));
 
-                onStateChanged.call(this, opts, {
+                onStateChanged.call(this, item, {
                     self: this,
                     state: "open",
-                    boundObject: opts
+                    boundObject: item
                 });
 
                 data = null;
@@ -527,11 +548,11 @@
 
         /**
          * @method ax5.ui.select.update
-         * @param {(Object|String)} opts
+         * @param {(Object|String)} item
          * @returns {ax5.ui.select}
          */
-        this.update = function (_opts) {
-            this.bind(_opts);
+        this.update = function (_item) {
+            this.bind(_item);
             return this;
         };
 
@@ -545,76 +566,68 @@
             // todo : val 함수 리팩토링 필요
 
             var processor = {
-                'index': function (optIdx, value) {
+                'index': function (queIdx, value) {
                     // 옵션선택 초기화
-                    if (!this.queue[optIdx].multiple) {
-                        this.queue[optIdx].options.forEach(function (n) {
+                    if (!this.queue[queIdx].multiple) {
+                        this.queue[queIdx].options.forEach(function (n) {
                             n.selected = false;
                         });
                     }
 
-                    var getSelected = function (_opts, o) {
-                        return (_opts.multiple) ? !o : true;
+                    var getSelected = function (_item, o) {
+                        return (_item.multiple) ? !o : true;
                     };
 
                     if (U.isArray(value.index)) {
                         value.index.forEach(function (n) {
-                            self.queue[optIdx].options[n].selected = getSelected(self.queue[optIdx], self.queue[optIdx].options[n].selected);
+                            self.queue[queIdx].options[n].selected = getSelected(self.queue[queIdx], self.queue[queIdx].options[n].selected);
                             self.activeSelectOptionGroup
                                 .find('[data-option-index="' + n + '"]')
-                                .attr("data-option-selected", self.queue[optIdx].options[n].selected.toString());
+                                .attr("data-option-selected", self.queue[queIdx].options[n].selected.toString());
                         });
                     }
                     else {
-                        self.queue[optIdx].options[value.index].selected = getSelected(self.queue[optIdx], self.queue[optIdx].options[value.index].selected);
+                        self.queue[queIdx].options[value.index].selected = getSelected(self.queue[queIdx], self.queue[queIdx].options[value.index].selected);
                         self.activeSelectOptionGroup
                             .find('[data-option-index="' + value.index + '"]')
-                            .attr("data-option-selected", self.queue[optIdx].options[value.index].selected.toString());
+                            .attr("data-option-selected", self.queue[queIdx].options[value.index].selected.toString());
                     }
 
-                    syncSelectOptions.call(this, optIdx, this.queue[optIdx].options);
-                    this.queue[optIdx].$display
+                    syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
+                    this.queue[queIdx].$display
                         .find('[data-ax5-select-display="label"]')
-                        .html(getLabel.call(this, optIdx));
+                        .html(getLabel.call(this, queIdx));
 
                     alignSelectOptionGroup.call(this);
                 },
-                'text': function (optIdx, value) {
+                'text': function (queIdx, value) {
 
                 },
-                'arr': function (optIdx, value) {
+                'arr': function (queIdx, value) {
 
                 },
-                'value': function (optIdx, value) {
-                    console.log(opts, value);
+                'value': function (queIdx, value) {
+                    console.log(queIdx, value);
+                    // todo ~~~
                 }
             };
 
             return function (boundID, value) {
-                //console.log(boundID, value);
-
-                if (!U.isString(boundID)) boundID = jQuery(boundID).data("ax5-select");
-                if (!U.isString(boundID)) {
-                    console.log(ax5.info.getError("ax5select", "402", "val"));
-                    return;
-                }
-                var optIdx = ax5.util.search(this.queue, function () {
-                    return this.id == boundID;
-                });
+                var queIdx = getQueIdx.call(this, boundID);
 
                 if (typeof value == "undefined") {
-                    return this.queue[optIdx].selected;
+                    return this.queue[queIdx].selected;
                 }
                 else if (U.isArray(value)) {
-                    processor.arr.call(this, optIdx, value);
+                    processor.arr.call(this, queIdx, value);
                 }
                 else if (U.isString(value) || U.isNumber(value)) {
-                    processor.value.call(this, optIdx, value);
+                    processor.value.call(this, queIdx, value);
                 }
                 else {
                     for (var key in processor) {
                         if (value[key]) {
-                            processor[key].call(this, optIdx, value);
+                            processor[key].call(this, queIdx, value);
                             break;
                         }
                     }
@@ -629,12 +642,12 @@
          * @method ax5.ui.select.close
          * @returns {ax5.ui.select}
          */
-        this.close = function (opts) {
+        this.close = function (boundID, item) {
             if (this.closeTimer) clearTimeout(this.closeTimer);
             if (!this.activeSelectOptionGroup) return this;
 
-            opts = this.queue[this.activeSelectQueueIndex];
-            opts.$display.removeAttr("data-select-option-group-opened");
+            item = this.queue[this.activeSelectQueueIndex];
+            item.$display.removeAttr("data-select-option-group-opened");
             this.activeSelectOptionGroup.addClass("destroy");
 
             jQuery(window).unbind("resize.ax5select");
@@ -646,13 +659,27 @@
                 this.activeSelectOptionGroup = null;
                 this.activeSelectQueueIndex = -1;
 
-                onStateChanged.call(this, opts, {
+                onStateChanged.call(this, item, {
                     self: this,
                     state: "close"
                 });
 
             }).bind(this), cfg.animateTime);
 
+            return this;
+        };
+
+        this.enable = function(boundID){
+            var queIdx = getQueIdx.call(this, boundID);
+            this.queue[queIdx].$display.removeAttr("disabled");
+            this.queue[queIdx].$select.removeAttr("disabled");
+            return this;
+        };
+
+        this.disable = function(boundID){
+            var queIdx = getQueIdx.call(this, boundID);
+            this.queue[queIdx].$display.attr("disabled", "disabled");
+            this.queue[queIdx].$select.attr("disabled", "disabled");
             return this;
         };
 
@@ -678,14 +705,34 @@
 ax5.ui.select_instance = new ax5.ui.select();
 jQuery.fn.ax5select = (function () {
     return function (config) {
-        if (typeof config == "undefined") config = {};
-        jQuery.each(this, function () {
-            var defaultConfig = {
-                target: this
-            };
-            config = jQuery.extend({}, config, defaultConfig);
-            ax5.ui.select_instance.bind(config);
-        });
+        if(ax5.util.isString(arguments[0])){
+            var methodName = arguments[0],
+                arg = arguments[1];
+
+            switch (methodName){
+                case "setValue":
+                    ax5.ui.select_instance.val(this, arg);
+                    break;
+                case "getValue":
+                    return ax5.ui.select_instance.val(this);
+                    break;
+
+                default:
+                    //
+                    console.log("hh??");
+                    return this;
+            }
+        }
+        else{
+            if (typeof config == "undefined") config = {};
+            jQuery.each(this, function () {
+                var defaultConfig = {
+                    target: this
+                };
+                config = jQuery.extend({}, config, defaultConfig);
+                ax5.ui.select_instance.bind(config);
+            });
+        }
         return this;
     }
 })();
