@@ -31,18 +31,24 @@
             size:"",
             minWidth: "150",
             multiple: true
-        }'></span>
+        }'>
+            <select data-ax-path="select2"></select>
+        </span>
     </div>
 
     <div class="form-group">
         <div data-ax5select="select3" data-ax5select-config='{
             "size":"lg"
-        }'></div>
+        }'>
+            <select data-ax-path="select3"></select>
+        </div>
     </div>
 
-    <button type="button" class="btn" data-btn="setValue">setValue</button>
-    <button type="button" class="btn" data-btn="getValue">getValue</button>
 </form>
+
+<button type="button" class="btn" data-btn="setValue">setValue</button>
+<button type="button" class="btn" data-btn="getValue">getValue</button>
+<button type="button" class="btn" data-btn="setValueSelect">setValue to select</button>
 
 <script>
     var options = [];
@@ -61,6 +67,10 @@
                 case "getValue":
                     console.log($('[data-ax5select="select1"]').ax5select("getValue"));
                     console.log($(document.forms).serialize());
+                    break;
+                case "setValueSelect":
+                    $('[data-ax-path="select3"]').val("optionValue7").trigger("change");
+                    $('[data-ax-path="select2"]').val(["optionValue7","optionValue9"]).trigger("change");
                     break;
             }
         });

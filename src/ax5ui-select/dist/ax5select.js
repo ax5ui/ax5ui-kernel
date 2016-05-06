@@ -202,6 +202,9 @@
                     } else if (e.which == ax5.info.eventKeys.DOWN) {
                         // todo focus move
                     }
+                },
+                'selectChange': function selectChange(queIdx, e) {
+                    this.val(queIdx, this.queue[queIdx].$select.val(), true);
                 }
             };
             return function (queIdx) {
@@ -222,24 +225,44 @@
                     }();
 
                     item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
-                    item.$select = jQuery(ax5.mustache.render(getSelectTmpl.call(this, queIdx), data));
-                    item.$target.append(item.$select).append(item.$display);
+
+                    if (item.$target.find("select").get(0)) {
+                        item.$select = item.$target.find("select");
+                        // select 속성만 변경
+                        item.$select.attr("tabindex", "-1").attr("class", "form-control " + data.formSize);
+                        if (data.name) {
+                            item.$select.attr("name", "name");
+                        }
+                        if (data.multiple) {
+                            item.$select.attr("multiple", "multiple");
+                        }
+                    } else {
+                        item.$select = jQuery(ax5.mustache.render(getSelectTmpl.call(this, queIdx), data));
+                        item.$target.append(item.$select);
+                        // select append
+                    }
+
+                    item.$target.append(item.$display);
                     item.options = syncSelectOptions.call(this, queIdx, item.options);
 
                     item.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, queIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
 
-                    //setTimeout((function(){
+                    // select 태그에 대한 change 이벤트 감시
+                    item.$select.unbind('change.ax5select').bind('change.ax5select', selectEvent.selectChange.bind(this, queIdx));
+
                     alignSelectDisplay.call(this);
-                    //}).bind(this), 100);
                 } else {
 
-                        item.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
-                        item.options = syncSelectOptions.call(this, queIdx, item.options);
+                    item.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
+                    item.options = syncSelectOptions.call(this, queIdx, item.options);
 
-                        item.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, queIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
+                    item.$display.unbind('click.ax5select').bind('click.ax5select', selectEvent.click.bind(this, queIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
 
-                        alignSelectDisplay.call(this);
-                    }
+                    // select 태그에 대한 change 이벤트 감시
+                    item.$select.unbind('change.ax5select').bind('change.ax5select', selectEvent.selectChange.bind(this, queIdx));
+
+                    alignSelectDisplay.call(this);
+                }
 
                 data = null;
                 item = null;
@@ -482,13 +505,18 @@
          * @method ax5.ui.select.val
          * @param {(String|Number|Element)} boundID
          * @param {(String|Object|Array)} [value]
+         * @param {Boolean}} [selected]
          * @returns {ax5.ui.select}
          */
         this.val = function () {
 
             // todo : val 함수 리팩토링 필요
-            var getSelected = function getSelected(_item, o) {
-                return _item.multiple ? !o : true;
+            var getSelected = function getSelected(_item, o, selected) {
+                if (typeof selected === "undefined") {
+                    return _item.multiple ? !o : true;
+                } else {
+                    return selected;
+                }
             };
             var clearSelected = function clearSelected(queIdx) {
                 this.queue[queIdx].options.forEach(function (n) {
@@ -497,15 +525,15 @@
             };
 
             var processor = {
-                'index': function index(queIdx, value) {
+                'index': function index(queIdx, value, selected) {
                     // 클래스 내부에서 호출된 형태, 그런 이유로 옵션그룹에 대한 상태를 변경 하고 있다.
                     if (U.isArray(value.index)) {
                         value.index.forEach(function (n) {
-                            self.queue[queIdx].options[n][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], self.queue[queIdx].options[n][cfg.columnKeys.optionSelected]);
+                            self.queue[queIdx].options[n][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], self.queue[queIdx].options[n][cfg.columnKeys.optionSelected], selected);
                             self.activeSelectOptionGroup.find('[data-option-index="' + n + '"]').attr("data-option-selected", self.queue[queIdx].options[n][cfg.columnKeys.optionSelected].toString());
                         });
                     } else {
-                        self.queue[queIdx].options[value.index][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], self.queue[queIdx].options[value.index][cfg.columnKeys.optionSelected]);
+                        self.queue[queIdx].options[value.index][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], self.queue[queIdx].options[value.index][cfg.columnKeys.optionSelected], selected);
                         self.activeSelectOptionGroup.find('[data-option-index="' + value.index + '"]').attr("data-option-selected", self.queue[queIdx].options[value.index][cfg.columnKeys.optionSelected].toString());
                     }
 
@@ -513,13 +541,26 @@
                     syncLabel.call(this, queIdx);
                     alignSelectOptionGroup.call(this);
                 },
-                'arr': function arr(queIdx, value) {},
-                'value': function value(queIdx, _value) {
+                'arr': function arr(queIdx, values, selected) {
+                    values.forEach(function (value) {
+                        if (U.isString(value)) {
+                            processor.value.call(self, queIdx, value, selected);
+                        } else {
+                            for (var key in processor) {
+                                if (value[key]) {
+                                    processor[key].call(self, queIdx, value, selected);
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                },
+                'value': function value(queIdx, _value, selected) {
                     var optionIndex = U.search(this.queue[queIdx].options, function () {
                         return this[cfg.columnKeys.optionValue] == _value;
                     });
                     if (optionIndex > 0) {
-                        this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected]);
+                        this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected], selected);
                     } else {
                         console.log(ax5.info.getError("ax5select", "501", "val"));
                         return;
@@ -528,12 +569,12 @@
                     syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
                     syncLabel.call(this, queIdx);
                 },
-                'text': function text(queIdx, value) {
+                'text': function text(queIdx, value, selected) {
                     var optionIndex = U.search(this.queue[queIdx].options, function () {
                         return this[cfg.columnKeys.optionText] == value;
                     });
                     if (optionIndex > 0) {
-                        this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected]);
+                        this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected], selected);
                     } else {
                         console.log(ax5.info.getError("ax5select", "501", "val"));
                         return;
@@ -544,8 +585,8 @@
                 }
             };
 
-            return function (boundID, value) {
-                var queIdx = getQueIdx.call(this, boundID);
+            return function (boundID, value, selected) {
+                var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
                 // setValue 이면 현재 선택값 초기화
                 if (typeof value !== "undefined" && !this.queue[queIdx].multiple) {
                     clearSelected.call(this, queIdx);
@@ -554,13 +595,13 @@
                 if (typeof value == "undefined") {
                     return this.queue[queIdx].selected;
                 } else if (U.isArray(value)) {
-                    processor.arr.call(this, queIdx, value);
+                    processor.arr.call(this, queIdx, value, selected);
                 } else if (U.isString(value) || U.isNumber(value)) {
-                    processor.value.call(this, queIdx, value);
+                    processor.value.call(this, queIdx, value, selected);
                 } else {
                     for (var key in processor) {
                         if (value[key]) {
-                            processor[key].call(this, queIdx, value);
+                            processor[key].call(this, queIdx, value, selected);
                             break;
                         }
                     }
