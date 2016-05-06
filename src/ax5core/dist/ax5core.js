@@ -1801,7 +1801,7 @@ ax5.info.errorMsg["ax5menu"] = {
 ax5.info.errorMsg["ax5select"] = {
     "401": "Can not find target element",
     "402": "Can not find boundID",
-    "501": "Can not find content key"
+    "501": "Can not find option"
 };
 // 필수 Ployfill 확장 구문
 (function () {

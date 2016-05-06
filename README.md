@@ -1,4 +1,4 @@
-# How to run
+# How to Play
 
 터미널에서 ax5ui-kernel 폴더로 이동하신 후
 ```
@@ -6,7 +6,7 @@ npm install
 ```
 > node_modules에 빌드를 위해 필요한 플러그인을 다운로드 됩니다. npm에 대해서는 인터넷에 많은 자료가 있으니 참고 하시기 바람니다.
 
-걸프를 실행하십시요. (걸프가 실행되지 않는다면 node가 설치되어 있지 않다거나. npm install이 되지 않아서 입니다)
+걸프를 실행하십시요. (걸프가 실행되지 않는다면 node가 설치되어 있지 않다거나. 권한이 없어서 입니다)
 터미널에서 ax5ui-kernel 폴더로 이동하신 후
 `gulp` 또는 `gulp default`
 
@@ -19,7 +19,7 @@ toms-mac:ax5ui-kernel tom$ gulp default
 
 위와 같은 결과를 보신다면 성공.
 
-## plugin 수정
+## plugin 개발
 
 많은 플러그인들 중에 샘플로 `bootstrap-ax5dialog`로 코드를 수정해 보겠습니다.
 
@@ -62,4 +62,6 @@ ax5ui-kernel/
     package.json
 ```
 
-## gulpfile.js
+## 코딩가이드
+
+

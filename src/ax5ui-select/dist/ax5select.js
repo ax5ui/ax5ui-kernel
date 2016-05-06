@@ -183,6 +183,9 @@
                 }
             }();
         },
+            syncLabel = function syncLabel(queIdx) {
+            this.queue[queIdx].$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
+        },
             bindSelectTarget = function () {
             var selectEvent = {
                 'click': function click(queIdx, e) {
@@ -301,7 +304,7 @@
             getQueIdx = function getQueIdx(boundID) {
             if (!U.isString(boundID)) boundID = jQuery(boundID).data("ax5-select");
             if (!U.isString(boundID)) {
-                console.log(ax5.info.getError("ax5select", "402", "val"));
+                console.log(ax5.info.getError("ax5select", "402", "getQueIdx"));
                 return;
             }
             return U.search(this.queue, function () {
@@ -382,27 +385,17 @@
         /**
          * open the optionBox of select
          * @method ax5.ui.select.open
-         * @param {Number} [queIdx]
+         * @param {(String|Number|Element)} boundID
          * @param {Number} [tryCount]
          * @returns {ax5.ui.select}
          */
         this.open = function () {
 
-            return function (queIdx, tryCount) {
+            return function (boundID, tryCount) {
                 /**
                  * open select from the outside
                  */
-                if (queIdx instanceof jQuery || U.isElement(queIdx)) {
-                    var select_id = jQuery(queIdx).data("ax5-select");
-                    queIdx = ax5.util.search(this.queue, function () {
-                        return this.id == select_id;
-                    });
-                    if (queIdx == -1) {
-                        console.log(ax5.info.getError("ax5select", "402", "open"));
-                        return this;
-                    }
-                }
-
+                var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
                 var item = this.queue[queIdx];
                 var data = {},
                     focusTop,
@@ -442,7 +435,7 @@
                 }.bind(this));
 
                 if (item.selected && item.selected.length > 0) {
-                    selectedOptionEl = this.activeSelectOptionGroup.find('[data-option-index="' + item.selected[0]["@i"] + '"]');
+                    selectedOptionEl = this.activeSelectOptionGroup.find('[data-option-index="' + item.selected[0]["@index"] + '"]');
                     if (selectedOptionEl.get(0)) {
                         focusTop = selectedOptionEl.position().top - this.activeSelectOptionGroup.height() / 3;
                         this.activeSelectOptionGroup.find('[data-select-els="content"]').stop().animate({ scrollTop: focusTop }, cfg.animateTime, 'swing', function () {});
@@ -486,52 +479,77 @@
         };
 
         /**
-         * @method ax5.ui.select.setValue
-         * @param value
-         * @returns {axClass}
+         * @method ax5.ui.select.val
+         * @param {(String|Number|Element)} boundID
+         * @param {(String|Object|Array)} [value]
+         * @returns {ax5.ui.select}
          */
         this.val = function () {
 
             // todo : val 함수 리팩토링 필요
+            var getSelected = function getSelected(_item, o) {
+                return _item.multiple ? !o : true;
+            };
+            var clearSelected = function clearSelected(queIdx) {
+                this.queue[queIdx].options.forEach(function (n) {
+                    n.selected = false;
+                });
+            };
 
             var processor = {
                 'index': function index(queIdx, value) {
-                    // 옵션선택 초기화
-                    if (!this.queue[queIdx].multiple) {
-                        this.queue[queIdx].options.forEach(function (n) {
-                            n.selected = false;
-                        });
-                    }
-
-                    var getSelected = function getSelected(_item, o) {
-                        return _item.multiple ? !o : true;
-                    };
-
+                    // 클래스 내부에서 호출된 형태, 그런 이유로 옵션그룹에 대한 상태를 변경 하고 있다.
                     if (U.isArray(value.index)) {
                         value.index.forEach(function (n) {
-                            self.queue[queIdx].options[n].selected = getSelected(self.queue[queIdx], self.queue[queIdx].options[n].selected);
-                            self.activeSelectOptionGroup.find('[data-option-index="' + n + '"]').attr("data-option-selected", self.queue[queIdx].options[n].selected.toString());
+                            self.queue[queIdx].options[n][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], self.queue[queIdx].options[n][cfg.columnKeys.optionSelected]);
+                            self.activeSelectOptionGroup.find('[data-option-index="' + n + '"]').attr("data-option-selected", self.queue[queIdx].options[n][cfg.columnKeys.optionSelected].toString());
                         });
                     } else {
-                        self.queue[queIdx].options[value.index].selected = getSelected(self.queue[queIdx], self.queue[queIdx].options[value.index].selected);
-                        self.activeSelectOptionGroup.find('[data-option-index="' + value.index + '"]').attr("data-option-selected", self.queue[queIdx].options[value.index].selected.toString());
+                        self.queue[queIdx].options[value.index][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], self.queue[queIdx].options[value.index][cfg.columnKeys.optionSelected]);
+                        self.activeSelectOptionGroup.find('[data-option-index="' + value.index + '"]').attr("data-option-selected", self.queue[queIdx].options[value.index][cfg.columnKeys.optionSelected].toString());
                     }
 
                     syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
-                    this.queue[queIdx].$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
-
+                    syncLabel.call(this, queIdx);
                     alignSelectOptionGroup.call(this);
                 },
-                'text': function text(queIdx, value) {},
                 'arr': function arr(queIdx, value) {},
                 'value': function value(queIdx, _value) {
-                    console.log(queIdx, _value);
-                    // todo ~~~
+                    var optionIndex = U.search(this.queue[queIdx].options, function () {
+                        return this[cfg.columnKeys.optionValue] == _value;
+                    });
+                    if (optionIndex > 0) {
+                        this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected]);
+                    } else {
+                        console.log(ax5.info.getError("ax5select", "501", "val"));
+                        return;
+                    }
+
+                    syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
+                    syncLabel.call(this, queIdx);
+                },
+                'text': function text(queIdx, value) {
+                    var optionIndex = U.search(this.queue[queIdx].options, function () {
+                        return this[cfg.columnKeys.optionText] == value;
+                    });
+                    if (optionIndex > 0) {
+                        this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected] = getSelected(self.queue[queIdx], this.queue[queIdx].options[optionIndex][cfg.columnKeys.optionSelected]);
+                    } else {
+                        console.log(ax5.info.getError("ax5select", "501", "val"));
+                        return;
+                    }
+
+                    syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
+                    syncLabel.call(this, queIdx);
                 }
             };
 
             return function (boundID, value) {
                 var queIdx = getQueIdx.call(this, boundID);
+                // setValue 이면 현재 선택값 초기화
+                if (typeof value !== "undefined" && !this.queue[queIdx].multiple) {
+                    clearSelected.call(this, queIdx);
+                }
 
                 if (typeof value == "undefined") {
                     return this.queue[queIdx].selected;
@@ -557,7 +575,7 @@
          * @method ax5.ui.select.close
          * @returns {ax5.ui.select}
          */
-        this.close = function (boundID, item) {
+        this.close = function (item) {
             if (this.closeTimer) clearTimeout(this.closeTimer);
             if (!this.activeSelectOptionGroup) return this;
 
@@ -622,16 +640,26 @@ jQuery.fn.ax5select = function () {
                 arg = arguments[1];
 
             switch (methodName) {
+                case "open":
+                    return ax5.ui.select_instance.open(this);
+                    break;
+                case "close":
+                    return ax5.ui.select_instance.close(this);
+                    break;
                 case "setValue":
-                    ax5.ui.select_instance.val(this, arg);
+                    return ax5.ui.select_instance.val(this, arg);
                     break;
                 case "getValue":
                     return ax5.ui.select_instance.val(this);
                     break;
+                case "enable":
+                    return ax5.ui.select_instance.enable(this);
+                    break;
+                case "disable":
+                    return ax5.ui.select_instance.disable(this);
+                    break;
 
                 default:
-                    //
-                    console.log("hh??");
                     return this;
             }
         } else {

@@ -56,10 +56,11 @@
             var act = this.getAttribute("data-btn");
             switch (act) {
                 case "setValue":
-                    console.log($(document.forms).serialize());
+                    $('[data-ax5select="select1"]').ax5select("setValue", "optionValue"+ 12);
                     break;
                 case "getValue":
-                    console.log($('[data-ax5select]').ax5select("getValue"));
+                    console.log($('[data-ax5select="select1"]').ax5select("getValue"));
+                    console.log($(document.forms).serialize());
                     break;
             }
         });
@@ -68,8 +69,6 @@
         $('[data-ax5select]').ax5select({
             options: options
         });
-
-        // todo : 외부에서 값 주기/받기
     });
 
 </script>
