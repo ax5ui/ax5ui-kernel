@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.1.0
+     * @version 0.1.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -30,11 +30,8 @@
 
         this.queue = [];
         this.config = {
-            clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
-            title: '',
             animateTime: 250,
-
             lang: {
                 emptyOfSelected: '',
                 multipleLabel: '"{{label}}"외 {{length}}건'
@@ -43,8 +40,7 @@
                 optionValue: 'value',
                 optionText: 'text',
                 optionSelected: 'selected'
-            },
-            displayMargin: 14
+            }
         };
 
         this.activeSelectOptionGroup = null;
@@ -325,7 +321,9 @@
             };
         }(),
             getQueIdx = function getQueIdx(boundID) {
-            if (!U.isString(boundID)) boundID = jQuery(boundID).data("ax5-select");
+            if (!U.isString(boundID)) {
+                boundID = jQuery(boundID).data("data-ax5select-id");
+            }
             if (!U.isString(boundID)) {
                 console.log(ax5.info.getError("ax5select", "402", "getQueIdx"));
                 return;
@@ -357,6 +355,8 @@
          * @method ax5.ui.select.bind
          * @param {Object} item
          * @param {String} [item.id]
+         * @param {String} [item.theme]
+         * @param {Boolean} [item.multiple]
          * @param {Element} item.target
          * @param {Object[]} item.options
          * @returns {ax5.ui.select}
@@ -371,10 +371,11 @@
                 return this;
             }
             item.$target = jQuery(item.target);
-            if (!item.id) item.id = item.$target.data("ax5-select");
+
+            if (!item.id) item.id = item.$target.data("data-ax5select-id");
             if (!item.id) {
                 item.id = 'ax5-select-' + ax5.getGuid();
-                item.$target.data("ax5-select", item.id);
+                item.$target.data("data-ax5select-id", item.id);
             }
             item.name = item.$target.attr("data-ax5select");
             if (item.options) {
@@ -505,7 +506,7 @@
          * @method ax5.ui.select.val
          * @param {(String|Number|Element)} boundID
          * @param {(String|Object|Array)} [value]
-         * @param {Boolean}} [selected]
+         * @param {Boolean} [selected]
          * @returns {ax5.ui.select}
          */
         this.val = function () {
@@ -587,6 +588,11 @@
 
             return function (boundID, value, selected) {
                 var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
+                if (queIdx === -1) {
+                    console.log(ax5.info.getError("ax5select", "402", "val"));
+                    return;
+                }
+
                 // setValue 이면 현재 선택값 초기화
                 if (typeof value !== "undefined" && !this.queue[queIdx].multiple) {
                     clearSelected.call(this, queIdx);
@@ -605,6 +611,13 @@
                             break;
                         }
                     }
+                }
+
+                if (typeof value !== "undefined") {
+                    onStateChanged.call(this, this.queue[queIdx], {
+                        self: this,
+                        state: "setValue"
+                    });
                 }
 
                 boundID = null;
@@ -646,6 +659,12 @@
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.removeAttr("disabled");
             this.queue[queIdx].$select.removeAttr("disabled");
+
+            onStateChanged.call(this, this.queue[queIdx], {
+                self: this,
+                state: "enable"
+            });
+
             return this;
         };
 
@@ -653,6 +672,12 @@
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.attr("disabled", "disabled");
             this.queue[queIdx].$select.attr("disabled", "disabled");
+
+            onStateChanged.call(this, this.queue[queIdx], {
+                self: this,
+                state: "disable"
+            });
+
             return this;
         };
 

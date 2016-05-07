@@ -55,6 +55,9 @@
     for (var i = 0; i < 100; i++) {
         options.push({value: "optionValue" + i, text: "optionText" + i});
     }
+    var mySelect = new ax5.ui.select({
+        theme: "danger"
+    });
 
     $(document.body).ready(function () {
 
@@ -62,10 +65,12 @@
             var act = this.getAttribute("data-btn");
             switch (act) {
                 case "setValue":
-                    $('[data-ax5select="select1"]').ax5select("setValue", "optionValue" + 12);
+                    //$('[data-ax5select="select1"]').ax5select("setValue", "optionValue" + 12);
+                    mySelect.val($('[data-ax5select="select1"]'), "optionValue" + 12);
                     break;
                 case "getValue":
-                    console.log($('[data-ax5select="select1"]').ax5select("getValue"));
+                    console.log($('[data-ax5select="select2"]').ax5select("getValue"));
+                    console.log(mySelect.val($('[data-ax5select="select1"]')));
                     console.log($(document.forms).serialize());
                     break;
                 case "setValueSelect":
@@ -75,12 +80,38 @@
             }
         });
 
+        // jquery extend
+        /*
+         $('[data-ax5select]').ax5select({
+         options: options
+         });
+         */
 
-        $('[data-ax5select]').ax5select({
+        $('[data-ax5select="select2"]').ax5select({
             options: options
         });
+        $('[data-ax5select="select3"]').ax5select({
+            options: options
+        });
+
+        mySelect.bind({
+            //theme: "primary",
+            target: $('[data-ax5select="select1"]'),
+            options: options,
+            onStateChanged: function () {
+                console.log(this);
+            }
+        });
+
+        mySelect.update({
+            target: $('[data-ax5select="select1"]'),
+            options: [options[0]]
+        });
+
     });
 
+
+    // todo : onStateChanged
 </script>
 
 </body>
