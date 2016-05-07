@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.4.5
+     * @version 0.1.0
      * @author tom@axisj.com
      * @example
      * ```
