@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.1.1
+     * @version 0.1.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -629,7 +629,7 @@
                 },
                 'arr': function (queIdx, values, selected) {
                     values.forEach(function (value) {
-                        if (U.isString(value)) {
+                        if (U.isString(value) || U.isNumber(value)) {
                             processor.value.call(self, queIdx, value, selected);
                         }
                         else {

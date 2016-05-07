@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-select",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "A select plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
