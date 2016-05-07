@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.1.4
+     * @version 0.1.5
      * @author tom@axisj.com
      * @example
      * ```
@@ -27,6 +27,7 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
+        this.instanceId = ax5.getGuid();
         this.queue = [];
         this.config = {
             theme: 'default',
@@ -90,7 +91,7 @@
             getTmpl = function () {
                 return `
                 <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" 
-                data-ax5-select-display="{{id}}">
+                data-ax5-select-display="{{id}}" data-ax5-select-instance="{{instanceId}}">
                     <div class="ax5-ui-select-display-table" data-select-els="display-table">
                         <div data-ax5-select-display="label">{{label}}</div>
                         <div data-ax5-select-display="addon">
@@ -205,6 +206,10 @@
                     this.val(item.id, {index: target.getAttribute("data-option-index")});
                     if (!item.multiple) this.close();
                 }
+                else{
+                    //open and display click
+                    //console.log(this.instanceId);
+                }
 
                 return this;
             },
@@ -216,6 +221,7 @@
             getLabel = function (queIdx) {
                 var item = this.queue[queIdx];
                 var labels = [];
+                
                 if (U.isArray(item.selected) && item.selected.length > 0) {
                     item.selected.forEach(function (n) {
                         if (n.selected) labels.push(n[cfg.columnKeys.optionText]);
@@ -249,7 +255,6 @@
             bindSelectTarget = (function () {
                 var selectEvent = {
                     'click': function (queIdx, e) {
-
                         var target = U.findParentNode(e.target, function (target) {
                             if (target.getAttribute("data-selected-clear")) {
                                 //clickEl = "clear";
@@ -269,7 +274,7 @@
                             }
                         }
 
-                        U.stopEvent(e);
+                        //U.stopEvent(e);
                     },
                     'keyUp': function (queIdx, e) {
                         if (e.which == ax5.info.eventKeys.SPACE) {
@@ -286,9 +291,11 @@
                 return function (queIdx) {
                     var item = this.queue[queIdx];
                     var data = {};
+                    item.selected = [];
 
                     if (!item.$display) {
                         /// 템플릿에 전달할 오브젝트 선언
+                        data.instanceId = this.instanceId;
                         data.id = item.id;
                         data.name = item.name;
                         data.theme = item.theme;
@@ -339,7 +346,6 @@
                         alignSelectDisplay.call(this);
                     }
                     else {
-
                         item.$display
                             .find('[data-ax5-select-display="label"]')
                             .html(getLabel.call(this, queIdx));
@@ -447,7 +453,7 @@
          */
         this.init = function () {
             this.onStateChanged = cfg.onStateChanged;
-            jQuery(window).bind("resize.ax5select-display", (function () {
+            jQuery(window).bind("resize.ax5select-display-" + this.instanceId, (function () {
                 alignSelectDisplay.call(this);
             }).bind(this));
         };
@@ -556,7 +562,7 @@
                 this.activeSelectQueueIndex = queIdx;
 
                 alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append
-                jQuery(window).bind("resize.ax5select", (function () {
+                jQuery(window).bind("resize.ax5select-" + this.instanceId, (function () {
                     alignSelectOptionGroup.call(this);
                 }).bind(this));
 
@@ -571,13 +577,13 @@
                 }
 
                 // bind key event
-                jQuery(window).bind("keyup.ax5select", (function (e) {
+                jQuery(window).bind("keyup.ax5select-" + this.instanceId, (function (e) {
                     e = e || window.event;
                     onBodyKeyup.call(this, e);
                     U.stopEvent(e);
                 }).bind(this));
 
-                jQuery(window).bind("click.ax5select", (function (e) {
+                jQuery(window).bind("click.ax5select-" + this.instanceId, (function (e) {
                     e = e || window.event;
                     onBodyClick.call(this, e);
                     U.stopEvent(e);
@@ -762,9 +768,9 @@
             item.$display.removeAttr("data-select-option-group-opened");
             this.activeSelectOptionGroup.addClass("destroy");
 
-            jQuery(window).unbind("resize.ax5select");
-            jQuery(window).unbind("click.ax5select");
-            jQuery(window).unbind("keyup.ax5select");
+            jQuery(window).unbind("resize.ax5select-" + this.instanceId);
+            jQuery(window).unbind("click.ax5select-" + this.instanceId);
+            jQuery(window).unbind("keyup.ax5select-" + this.instanceId);
 
             this.closeTimer = setTimeout((function () {
                 if (this.activeSelectOptionGroup) this.activeSelectOptionGroup.remove();
@@ -851,7 +857,6 @@ jQuery.fn.ax5select = (function () {
                 case "disable":
                     return ax5.ui.select_instance.disable(this);
                     break;
-
                 default:
                     return this;
             }

@@ -27,7 +27,7 @@
                 }'></div>
             </div>
         </div>
-        <!--
+
         <div class="col-md-6">
             <div class="form-group">
                 <div data-ax5select="select2" data-ax5select-config='{
@@ -39,10 +39,10 @@
                 </div>
             </div>
         </div>
-        -->
+
     </div>
 
-    <!--
+
     <div class="form-group">
         <div data-ax5select="select3" data-ax5select-config='{
             "size":"lg"
@@ -50,16 +50,16 @@
             <select data-ax-path="select3"></select>
         </div>
     </div>
-    -->
+
 </form>
 
 <button type="button" class="btn" data-btn="setValue">setValue</button>
 <button type="button" class="btn" data-btn="getValue">getValue</button>
 <button type="button" class="btn" data-btn="setValueSelect">setValue to select</button>
-
+<button type="button" class="btn" data-btn="update">update options</button>
 <script>
     var options = [];
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 20; i++) {
         options.push({value: i, text: "optionText" + i});
     }
     var mySelect = new ax5.ui.select({
@@ -83,6 +83,17 @@
                     $('[data-ax-path="select3"]').val("optionValue7").trigger("change");
                     $('[data-ax-path="select2"]').val(["optionValue7", "optionValue9"]).trigger("change");
                     break;
+                case "update":
+                    mySelect.update({
+                        target: $('[data-ax5select="select1"]'),
+                        options: [
+                            {value: 99, text: "optionText"}
+                        ]
+                    });
+                    $('[data-ax5select="select2"]').ax5select({
+                        options: options
+                    });
+                    break;
             }
         });
 
@@ -93,14 +104,13 @@
          });
          */
 
-        /*
+
         $('[data-ax5select="select2"]').ax5select({
             options: options
         });
         $('[data-ax5select="select3"]').ax5select({
             options: options
         });
-        */
 
         mySelect.bind({
             //theme: "primary",

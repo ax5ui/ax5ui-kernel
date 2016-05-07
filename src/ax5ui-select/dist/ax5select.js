@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.1.4
+     * @version 0.1.5
      * @author tom@axisj.com
      * @example
      * ```
@@ -28,6 +28,7 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
+        this.instanceId = ax5.getGuid();
         this.queue = [];
         this.config = {
             theme: 'default',
@@ -64,7 +65,7 @@
             return '\n                <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                <div class="ax-select-option-item-holder">\n                                    {{#multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                    </span>\n                                    {{/multiple}}\n                                    {{^multiple}}\n                                    \n                                    {{/multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                </div>\n                            </div>\n                        {{/options}}\n                        </div>\n                    </div>\n                    <div class="ax-select-arrow"></div> \n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
-            return '\n                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" \n                data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon">\n                            {{#reset}}\n                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                            {{/reset}}\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
+            return '\n                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" \n                data-ax5-select-display="{{id}}" data-ax5-select-instance="{{instanceId}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon">\n                            {{#reset}}\n                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                            {{/reset}}\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
         },
             getSelectTmpl = function getSelectTmpl() {
             return '\n                <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n                ';
@@ -152,6 +153,9 @@
             } else if (clickEl === "optionItem") {
                 this.val(item.id, { index: target.getAttribute("data-option-index") });
                 if (!item.multiple) this.close();
+            } else {
+                //open and display click
+                //console.log(this.instanceId);
             }
 
             return this;
@@ -164,6 +168,7 @@
             getLabel = function getLabel(queIdx) {
             var item = this.queue[queIdx];
             var labels = [];
+
             if (U.isArray(item.selected) && item.selected.length > 0) {
                 item.selected.forEach(function (n) {
                     if (n.selected) labels.push(n[cfg.columnKeys.optionText]);
@@ -190,7 +195,6 @@
             bindSelectTarget = function () {
             var selectEvent = {
                 'click': function click(queIdx, e) {
-
                     var target = U.findParentNode(e.target, function (target) {
                         if (target.getAttribute("data-selected-clear")) {
                             //clickEl = "clear";
@@ -209,7 +213,7 @@
                         }
                     }
 
-                    U.stopEvent(e);
+                    //U.stopEvent(e);
                 },
                 'keyUp': function keyUp(queIdx, e) {
                     if (e.which == ax5.info.eventKeys.SPACE) {
@@ -225,9 +229,11 @@
             return function (queIdx) {
                 var item = this.queue[queIdx];
                 var data = {};
+                item.selected = [];
 
                 if (!item.$display) {
                     /// 템플릿에 전달할 오브젝트 선언
+                    data.instanceId = this.instanceId;
                     data.id = item.id;
                     data.name = item.name;
                     data.theme = item.theme;
@@ -268,7 +274,6 @@
 
                     alignSelectDisplay.call(this);
                 } else {
-
                     item.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
                     item.options = syncSelectOptions.call(this, queIdx, item.options);
 
@@ -365,7 +370,7 @@
          */
         this.init = function () {
             this.onStateChanged = cfg.onStateChanged;
-            jQuery(window).bind("resize.ax5select-display", function () {
+            jQuery(window).bind("resize.ax5select-display-" + this.instanceId, function () {
                 alignSelectDisplay.call(this);
             }.bind(this));
         };
@@ -474,7 +479,7 @@
                 this.activeSelectQueueIndex = queIdx;
 
                 alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append
-                jQuery(window).bind("resize.ax5select", function () {
+                jQuery(window).bind("resize.ax5select-" + this.instanceId, function () {
                     alignSelectOptionGroup.call(this);
                 }.bind(this));
 
@@ -487,13 +492,13 @@
                 }
 
                 // bind key event
-                jQuery(window).bind("keyup.ax5select", function (e) {
+                jQuery(window).bind("keyup.ax5select-" + this.instanceId, function (e) {
                     e = e || window.event;
                     onBodyKeyup.call(this, e);
                     U.stopEvent(e);
                 }.bind(this));
 
-                jQuery(window).bind("click.ax5select", function (e) {
+                jQuery(window).bind("click.ax5select-" + this.instanceId, function (e) {
                     e = e || window.event;
                     onBodyClick.call(this, e);
                     U.stopEvent(e);
@@ -665,9 +670,9 @@
             item.$display.removeAttr("data-select-option-group-opened");
             this.activeSelectOptionGroup.addClass("destroy");
 
-            jQuery(window).unbind("resize.ax5select");
-            jQuery(window).unbind("click.ax5select");
-            jQuery(window).unbind("keyup.ax5select");
+            jQuery(window).unbind("resize.ax5select-" + this.instanceId);
+            jQuery(window).unbind("click.ax5select-" + this.instanceId);
+            jQuery(window).unbind("keyup.ax5select-" + this.instanceId);
 
             this.closeTimer = setTimeout(function () {
                 if (this.activeSelectOptionGroup) this.activeSelectOptionGroup.remove();
@@ -751,7 +756,6 @@ jQuery.fn.ax5select = function () {
                 case "disable":
                     return ax5.ui.select_instance.disable(this);
                     break;
-
                 default:
                     return this;
             }
