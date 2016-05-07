@@ -84,7 +84,7 @@ select.bind({
     {value: "optionValue1", text: "optionText1"},
     {value: "optionValue2", text: "optionText2"}
   ]
-);
+});
 ```
 
 ### id
@@ -128,6 +128,23 @@ var select = new ax5.ui.select({
 select.onStateChanged = function(){
     console.log(this);
 }
+```
+
+### reset
+
+Type: `String`
+
+multiple selected clear icon
+
+```js
+select.bind({
+  target: $('[data-ax5select="select1"]'),
+  reset:"<i class=\"fa fa-trash\"></i>",
+  options: [
+    {value: "optionValue1", text: "optionText1"},
+    {value: "optionValue2", text: "optionText2"}
+  ]
+});
 ```
 
 ## open()
