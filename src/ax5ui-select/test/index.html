@@ -20,9 +20,14 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
-                <div data-ax5select="select1" data-ax5select-config='{multiple: true}'></div>
+                <div data-ax5select="select1" data-ax5select-config='{
+                    size: "lg",
+                    multiple: true,
+                    reset:"<i class=\"fa fa-trash\"></i>"
+                }'></div>
             </div>
         </div>
+        <!--
         <div class="col-md-6">
             <div class="form-group">
                 <div data-ax5select="select2" data-ax5select-config='{
@@ -34,8 +39,10 @@
                 </div>
             </div>
         </div>
+        -->
     </div>
 
+    <!--
     <div class="form-group">
         <div data-ax5select="select3" data-ax5select-config='{
             "size":"lg"
@@ -43,7 +50,7 @@
             <select data-ax-path="select3"></select>
         </div>
     </div>
-
+    -->
 </form>
 
 <button type="button" class="btn" data-btn="setValue">setValue</button>
@@ -52,7 +59,7 @@
 
 <script>
     var options = [];
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 2; i++) {
         options.push({value: i, text: "optionText" + i});
     }
     var mySelect = new ax5.ui.select({
@@ -86,12 +93,14 @@
          });
          */
 
+        /*
         $('[data-ax5select="select2"]').ax5select({
             options: options
         });
         $('[data-ax5select="select3"]').ax5select({
             options: options
         });
+        */
 
         mySelect.bind({
             //theme: "primary",

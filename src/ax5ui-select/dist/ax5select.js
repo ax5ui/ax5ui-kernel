@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.1.2
+     * @version 0.1.4
      * @author tom@axisj.com
      * @example
      * ```
@@ -64,7 +64,7 @@
             return '\n                <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content">\n                        {{#options}}\n                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                <div class="ax-select-option-item-holder">\n                                    {{#multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                    </span>\n                                    {{/multiple}}\n                                    {{^multiple}}\n                                    \n                                    {{/multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                </div>\n                            </div>\n                        {{/options}}\n                        </div>\n                    </div>\n                    <div class="ax-select-arrow"></div> \n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
-            return '\n                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" \n                data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon" data-ax5-select-opened="false">\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
+            return '\n                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" \n                data-ax5-select-display="{{id}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon">\n                            {{#reset}}\n                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                            {{/reset}}\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
         },
             getSelectTmpl = function getSelectTmpl() {
             return '\n                <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n                ';
@@ -78,6 +78,11 @@
                     this.queue[i].$display.css({
                         "min-width": w
                     });
+                    if (this.queue[i].reset) {
+                        this.queue[i].$display.find(".addon-icon-reset").css({
+                            "line-height": this.queue[i].$display.height() + "px"
+                        });
+                    }
                 }
             }
 
@@ -144,7 +149,7 @@
             if (!target) {
                 this.close();
                 return this;
-            } else if (clickEl != "display") {
+            } else if (clickEl === "optionItem") {
                 this.val(item.id, { index: target.getAttribute("data-option-index") });
                 if (!item.multiple) this.close();
             }
@@ -185,11 +190,25 @@
             bindSelectTarget = function () {
             var selectEvent = {
                 'click': function click(queIdx, e) {
-                    if (self.activeSelectQueueIndex == queIdx) {
-                        self.close();
+
+                    var target = U.findParentNode(e.target, function (target) {
+                        if (target.getAttribute("data-selected-clear")) {
+                            //clickEl = "clear";
+                            return true;
+                        }
+                    });
+
+                    if (target) {
+                        // selected clear
+                        this.val(queIdx, { clear: true });
                     } else {
-                        self.open(queIdx);
+                        if (self.activeSelectQueueIndex == queIdx) {
+                            self.close();
+                        } else {
+                            self.open(queIdx);
+                        }
                     }
+
                     U.stopEvent(e);
                 },
                 'keyUp': function keyUp(queIdx, e) {
@@ -214,6 +233,7 @@
                     data.theme = item.theme;
                     data.tabIndex = item.tabIndex;
                     data.multiple = item.multiple;
+                    data.reset = item.reset;
 
                     data.label = getLabel.call(this, queIdx);
                     data.formSize = function () {
@@ -583,6 +603,14 @@
 
                     syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
                     syncLabel.call(this, queIdx);
+                },
+                'clear': function clear(queIdx, value, selected) {
+
+                    clearSelected.call(this, queIdx);
+                    syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
+                    syncLabel.call(this, queIdx);
+
+                    self.activeSelectOptionGroup.find('[data-option-index]').attr("data-option-selected", "false");
                 }
             };
 
@@ -702,8 +730,7 @@ ax5.ui.select_instance = new ax5.ui.select();
 jQuery.fn.ax5select = function () {
     return function (config) {
         if (ax5.util.isString(arguments[0])) {
-            var methodName = arguments[0],
-                arg = arguments[1];
+            var methodName = arguments[0];
 
             switch (methodName) {
                 case "open":
@@ -713,7 +740,7 @@ jQuery.fn.ax5select = function () {
                     return ax5.ui.select_instance.close(this);
                     break;
                 case "setValue":
-                    return ax5.ui.select_instance.val(this, arg);
+                    return ax5.ui.select_instance.val(this, arguments[1], arguments[2]);
                     break;
                 case "getValue":
                     return ax5.ui.select_instance.val(this);

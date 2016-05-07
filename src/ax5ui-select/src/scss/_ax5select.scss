@@ -74,7 +74,7 @@
 
 @mixin ax5-ui-select-display-theme($base-color, $back-color, $theme-color) {
     &:hover, &:active, &:focus, &[data-select-option-group-opened] {
-        &:not([disabled]){
+        &:not([disabled]) {
             border-color: $theme-color;
             color: $base-color;
             background: $back-color;
@@ -99,7 +99,7 @@
             }
         }
     }
-    [disabled]{
+    [disabled] {
         @include user-select(none);
     }
 }
@@ -302,12 +302,15 @@ $hover-types: (
             width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
             text-align: center;
 
-                .addon-icon-closed {
-                    display: block;
-                }
-                .addon-icon-opened {
-                    display: none;
-                }
+            .addon-icon-reset {
+                display: none;
+            }
+            .addon-icon-closed {
+                display: block;
+            }
+            .addon-icon-opened {
+                display: none;
+            }
             .addon-icon-closed {
                 width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
                 text-align: left;
@@ -343,10 +346,16 @@ $hover-types: (
         }
     }
 
-
     &[data-select-option-group-opened] {
-        @include box-shadow(inset 1px 1px 3px rgba(0,0,0,0.2));
-        .ax5-ui-select-display-table [data-ax5-select-display="addon"]{
+        @include box-shadow(inset 1px 1px 3px rgba(0, 0, 0, 0.2));
+        .ax5-ui-select-display-table [data-ax5-select-display="addon"] {
+            .addon-icon-reset {
+                display: block;
+                position: absolute;
+                right: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right * 2;
+                top: 0px;
+                height: 100%;
+            }
             .addon-icon-closed {
                 display: none;
             }
@@ -360,6 +369,17 @@ $hover-types: (
         &.#{nth($theme, 1)} {
             @include ax5-ui-select-display-theme(map_get($base-colors, nth($theme, 1)), $ax5select-option-group-bg, map_get($theme-colors, nth($theme, 1)));
         }
+    }
+
+
+    &.input-xs{
+
+    }
+    &.input-sm{
+
+    }
+    &.input-lg{
+
     }
 }
 
