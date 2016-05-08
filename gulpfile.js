@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs')
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var concat = require('gulp-concat');
@@ -8,8 +9,6 @@ var changed = require('gulp-changed');
 var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
 var babel = require('gulp-babel');
-
-var Git = require("nodegit");
 var clean = require('gulp-clean');
 
 var PATHS = {
@@ -214,5 +213,11 @@ gulp.task('dist-all-in-one', function () {
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(concat('ax5ui.all.css'))
         .pipe(gulp.dest('dist/'));
+});
 
+var jsdoc = require('gulp-jsdoc3');
+
+gulp.task('doc', function (cb) {
+    gulp.src(['src/ax5ui-select/src/ax5select.js'], {read: false})
+        .pipe(jsdoc(cb));
 });
