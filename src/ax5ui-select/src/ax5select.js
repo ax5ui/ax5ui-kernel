@@ -4,16 +4,13 @@
  * - www.axisj.com
  */
 
-// todo : update config
-// todo : onExpand callback
-
 // ax5.ui.select
 (function (root, _SUPER_) {
 
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.1.6
+     * @version 0.2.0
      * @author tom@axisj.com
      * @example
      * ```
@@ -38,6 +35,7 @@
             lang: {
                 noSelected: '',
                 noOptions: 'no options',
+                loading: 'now loading..',
                 multipleLabel: '"{{label}}"외 {{length}}건'
             },
             columnKeys: {
@@ -51,6 +49,7 @@
         this.activeSelectQueueIndex = -1;
         this.openTimer = null;
         this.closeTimer = null;
+        this.waitOptionsCallback = null;
 
         cfg = this.config;
 
@@ -71,25 +70,38 @@
                 <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">
                     <div class="ax-select-body">
                         <div class="ax-select-option-group-content" data-select-els="content">
-                        {{#options}}
-                            <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
-                                <div class="ax-select-option-item-holder">
-                                    {{#multiple}}
-                                    <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
-                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
-                                    </span>
-                                    {{/multiple}}
-                                    <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
-                                </div>
-                            </div>
-                        {{/options}}
-                        {{^options}}
+                        {{#waitOptions}}
                             <div class="ax-select-option-item">
-                                <div class="ax-select-option-item-holder">
-                                    <span class="ax-select-option-item-cell ax-select-option-item-label">no items</span>
+                                    <div class="ax-select-option-item-holder">
+                                        <span class="ax-select-option-item-cell ax-select-option-item-label">
+                                            {{{lang.loading}}}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        {{/options}}
+                        {{/waitOptions}}
+                        {{^waitOptions}}
+                            {{#options}}
+                                <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
+                                    <div class="ax-select-option-item-holder">
+                                        {{#multiple}}
+                                        <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
+                                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
+                                        </span>
+                                        {{/multiple}}
+                                        <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                                    </div>
+                                </div>
+                            {{/options}}
+                            {{^options}}
+                                <div class="ax-select-option-item">
+                                    <div class="ax-select-option-item-holder">
+                                        <span class="ax-select-option-item-cell ax-select-option-item-label">
+                                            {{{lang.noOptions}}}
+                                        </span>
+                                    </div>
+                                </div>
+                            {{/options}}
+                        {{/waitOptions}}
                         </div>
                     </div>
                     <div class="ax-select-arrow"></div> 
@@ -122,6 +134,22 @@
             getSelectTmpl = function () {
                 return `
                 <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>
+                `;
+            },
+            getOptionsTmpl = function (columnKeys) {
+                return `
+                {{#options}}
+                    <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
+                        <div class="ax-select-option-item-holder">
+                            {{#multiple}}
+                            <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
+                                <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
+                            </span>
+                            {{/multiple}}
+                            <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                        </div>
+                    </div>
+                {{/options}}
                 `;
             },
             alignSelectDisplay = function () {
@@ -485,7 +513,7 @@
                 selectConfig = {},
                 queIdx;
 
-            item = jQuery.extend(selectConfig, cfg, item);
+            item = jQuery.extend(true, selectConfig, cfg, item);
             if (!item.target) {
                 console.log(ax5.info.getError("ax5select", "401", "bind"));
                 return this;
@@ -519,7 +547,7 @@
                 bindSelectTarget.call(this, this.queue.length - 1);
             }
             else {
-                this.queue[queIdx] = jQuery.extend({}, this.queue[queIdx], item);
+                this.queue[queIdx] = jQuery.extend(true, {}, this.queue[queIdx], item);
                 bindSelectTarget.call(this, queIdx);
             }
 
@@ -537,6 +565,8 @@
          */
         this.open = (function () {
             return function (boundID, tryCount) {
+                this.waitOptionsCallback = null;
+
                 /**
                  * open select from the outside
                  */
@@ -567,15 +597,16 @@
                 data.size = "ax5-ui-select-option-group-" + item.size;
                 data.multiple = item.multiple;
 
-                if (item.onExpand) {
-// onExpand 인 경우 UI 대기모드 추가
-                }
-                else {
-                    data.options = item.options;
-                }
-
+                data.lang = item.lang;
                 item.$display.attr("data-select-option-group-opened", "true");
+                //console.log(data.lang);
 
+                if (item.onExpand) {
+                    // onExpand 인 경우 UI 대기모드 추가
+                    data.waitOptions = true;
+                }
+
+                data.options = item.options;
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
                 this.activeSelectQueueIndex = queIdx;
 
@@ -586,8 +617,10 @@
 
                 if (item.selected && item.selected.length > 0) {
                     selectedOptionEl = this.activeSelectOptionGroup.find('[data-option-index="' + item.selected[0]["@index"] + '"]');
+
                     if (selectedOptionEl.get(0)) {
                         focusTop = selectedOptionEl.position().top - this.activeSelectOptionGroup.height() / 3;
+                        console.log(focusTop);
                         this.activeSelectOptionGroup.find('[data-select-els="content"]')
                             .stop().animate({scrollTop: focusTop}, item.animateTime, 'swing', function () {
                         });
@@ -612,6 +645,52 @@
                     state: "open",
                     boundObject: item
                 });
+
+                // waitOption timer
+                if (item.onExpand) {
+                    this.waitOptionsCallback = true;
+                    item.onExpand.call({
+                        self: this,
+                        item: item
+                    }, (function (O) {
+                        if (this.waitOptionsCallback) {
+                            var data = {};
+                            var item = this.queue[this.activeSelectQueueIndex];
+
+                            /// 현재 selected 검증후 처리
+                            (function(item, O){
+                                var optionsMap = {};
+                                O.options.forEach(function(_O, _OIndex){
+                                    _O["@index"] = _OIndex;
+                                    optionsMap[_O[item.columnKeys.optionValue]] = _O;
+                                });
+                                item.selected.forEach(function(_O){
+                                    if(optionsMap[_O[item.columnKeys.optionValue]]){
+                                        O.options[optionsMap[_O[item.columnKeys.optionValue]]["@index"]][item.columnKeys.optionSelected] = true;
+                                    }
+                                });
+                            })(item, O);
+
+
+
+                            item.$display
+                                .find('[data-ax5-select-display="label"]')
+                                .html(getLabel.call(this, this.activeSelectQueueIndex));
+                            item.options = syncSelectOptions.call(this, this.activeSelectQueueIndex, O.options);
+
+                            alignSelectDisplay.call(this);
+
+                            /// 템플릿에 전달할 오브젝트 선언
+                            data.id = item.id;
+                            data.theme = item.theme;
+                            data.size = "ax5-ui-select-option-group-" + item.size;
+                            data.multiple = item.multiple;
+                            data.lang = item.lang;
+                            data.options = item.options;
+                            this.activeSelectOptionGroup.find('[data-select-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                        }
+                    }).bind(this));
+                }
 
                 data = null;
                 focusTop = null;
@@ -810,7 +889,7 @@
                 });
 
             }).bind(this), cfg.animateTime);
-
+            this.waitOptionsCallback = null;
             return this;
         };
 

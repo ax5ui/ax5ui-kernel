@@ -27,7 +27,9 @@ select.setConfig({
   theme: 'default',
   animateTime: 250,
   lang: {
-      emptyOfSelected: '',
+      noSelected: '',
+      noOptions: 'no options',
+      loading: 'now loading..',
       multipleLabel: '"{{label}}"외 {{length}}건'
   },
   columnKeys: {
@@ -147,6 +149,31 @@ select.bind({
 });
 ```
 
+### onExpand
+
+Type: `Function`
+
+```js
+select.bind({
+  target: $('[data-ax5select="select1"]'),
+  lang: {
+      loading: '<i class="fa fa-spinner fa-pulse"></i>'
+  },
+  onExpand: function (callBack) {
+      setTimeout(function () {
+        callBack({
+            options: [
+                {value: "V0", text: "callBack Text 0"},
+                {value: "V1", text: "callBack Text 1"},
+                {value: "V2", text: "callBack Text 2"},
+                {value: "V3", text: "callBack Text 3"}
+            ]
+        });
+      }, 300);
+  }
+});
+```
+
 ## open()
 `open(boundID)`
 
@@ -240,3 +267,4 @@ $('[data-ax5select]').ax5select("enable");
 ```js
 $('[data-ax5select]').ax5select("disable");
 ```
+
