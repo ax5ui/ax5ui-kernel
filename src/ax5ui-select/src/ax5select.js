@@ -264,7 +264,7 @@
                     });
                 }
                 else {
-                    if (!item.multiple && item.options[0]) labels[0] = item.options[0][item.columnKeys.optionText];
+                    if (!item.multiple && item.options && item.options[0]) labels[0] = item.options[0][item.columnKeys.optionText];
                     else labels[0] = item.lang.noSelected;
                 }
 
@@ -564,6 +564,52 @@
          * @returns {ax5.ui.select}
          */
         this.open = (function () {
+
+            var onExpand = function (item) {
+                item.onExpand.call({
+                    self: this,
+                    item: item
+                }, (function (O) {
+                    if (this.waitOptionsCallback) {
+                        var data = {};
+                        var item = this.queue[this.activeSelectQueueIndex];
+
+                        /// 현재 selected 검증후 처리
+                        (function (item, O) {
+                            var optionsMap = {};
+                            O.options.forEach(function (_O, _OIndex) {
+                                _O["@index"] = _OIndex;
+                                optionsMap[_O[item.columnKeys.optionValue]] = _O;
+                            });
+                            if(U.isArray(item.selected)) {
+                                item.selected.forEach(function (_O) {
+                                    if (optionsMap[_O[item.columnKeys.optionValue]]) {
+                                        O.options[optionsMap[_O[item.columnKeys.optionValue]]["@index"]][item.columnKeys.optionSelected] = true;
+                                    }
+                                });
+                            }
+                        })(item, O);
+
+
+                        item.$display
+                            .find('[data-ax5-select-display="label"]')
+                            .html(getLabel.call(this, this.activeSelectQueueIndex));
+                        item.options = syncSelectOptions.call(this, this.activeSelectQueueIndex, O.options);
+
+                        alignSelectDisplay.call(this);
+
+                        /// 템플릿에 전달할 오브젝트 선언
+                        data.id = item.id;
+                        data.theme = item.theme;
+                        data.size = "ax5-ui-select-option-group-" + item.size;
+                        data.multiple = item.multiple;
+                        data.lang = item.lang;
+                        data.options = item.options;
+                        this.activeSelectOptionGroup.find('[data-select-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                    }
+                }).bind(this));
+            };
+
             return function (boundID, tryCount) {
                 this.waitOptionsCallback = null;
 
@@ -649,47 +695,7 @@
                 // waitOption timer
                 if (item.onExpand) {
                     this.waitOptionsCallback = true;
-                    item.onExpand.call({
-                        self: this,
-                        item: item
-                    }, (function (O) {
-                        if (this.waitOptionsCallback) {
-                            var data = {};
-                            var item = this.queue[this.activeSelectQueueIndex];
-
-                            /// 현재 selected 검증후 처리
-                            (function(item, O){
-                                var optionsMap = {};
-                                O.options.forEach(function(_O, _OIndex){
-                                    _O["@index"] = _OIndex;
-                                    optionsMap[_O[item.columnKeys.optionValue]] = _O;
-                                });
-                                item.selected.forEach(function(_O){
-                                    if(optionsMap[_O[item.columnKeys.optionValue]]){
-                                        O.options[optionsMap[_O[item.columnKeys.optionValue]]["@index"]][item.columnKeys.optionSelected] = true;
-                                    }
-                                });
-                            })(item, O);
-
-
-
-                            item.$display
-                                .find('[data-ax5-select-display="label"]')
-                                .html(getLabel.call(this, this.activeSelectQueueIndex));
-                            item.options = syncSelectOptions.call(this, this.activeSelectQueueIndex, O.options);
-
-                            alignSelectDisplay.call(this);
-
-                            /// 템플릿에 전달할 오브젝트 선언
-                            data.id = item.id;
-                            data.theme = item.theme;
-                            data.size = "ax5-ui-select-option-group-" + item.size;
-                            data.multiple = item.multiple;
-                            data.lang = item.lang;
-                            data.options = item.options;
-                            this.activeSelectOptionGroup.find('[data-select-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
-                        }
-                    }).bind(this));
+                    onExpand.call(this, item);
                 }
 
                 data = null;
