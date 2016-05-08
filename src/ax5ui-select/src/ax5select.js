@@ -61,6 +61,16 @@
                 else if (this.onStateChanged) {
                     this.onStateChanged.call(that, that);
                 }
+
+                if(that.state == "changeValue"){
+                    if (item && item.onChange) {
+                        item.onChange.call(that, that);
+                    }
+                    else if (this.onChange) {
+                        this.onChange.call(that, that);
+                    }
+                }
+
                 item = null;
                 that = null;
                 return true;
@@ -238,8 +248,10 @@
                 if (!target) {
                     this.close();
                     return this;
-                } else if (clickEl === "optionItem") {
-                    this.val(item.id, {index: target.getAttribute("data-option-index")});
+                }
+                else if (clickEl === "optionItem") {
+                    this.val(item.id, {index: target.getAttribute("data-option-index")}, undefined, "internal");
+
                     if (!item.multiple) this.close();
                 }
                 else {
@@ -456,8 +468,8 @@
                         item.options = newOptions;
                     }
 
-                    if (!item.multiple && item.selected.length == 0) {
-                        item.selected = jQuery.extend({}, item.options[0]);
+                    if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
+                        item.selected.push(jQuery.extend({}, item.options[0]));
                     }
 
                     po = null;
@@ -492,6 +504,7 @@
          */
         this.init = function () {
             this.onStateChanged = cfg.onStateChanged;
+            this.onChange = cfg.onChange;
             jQuery(window).bind("resize.ax5select-display-" + this.instanceId, (function () {
                 alignSelectDisplay.call(this);
             }).bind(this));
@@ -666,7 +679,6 @@
 
                     if (selectedOptionEl.get(0)) {
                         focusTop = selectedOptionEl.position().top - this.activeSelectOptionGroup.height() / 3;
-                        console.log(focusTop);
                         this.activeSelectOptionGroup.find('[data-select-els="content"]')
                             .stop().animate({scrollTop: focusTop}, item.animateTime, 'swing', function () {
                         });
@@ -781,7 +793,7 @@
                     var optionIndex = U.search(item.options, function () {
                         return this[item.columnKeys.optionValue] == value;
                     });
-                    if (optionIndex > 0) {
+                    if (optionIndex > -1) {
                         item.options[optionIndex][item.columnKeys.optionSelected] = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
                     }
                     else {
@@ -797,7 +809,7 @@
                     var optionIndex = U.search(item.options, function () {
                         return this[item.columnKeys.optionText] == value;
                     });
-                    if (optionIndex > 0) {
+                    if (optionIndex > -1) {
                         item.options[optionIndex][item.columnKeys.optionSelected] = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
                     }
                     else {
@@ -821,7 +833,7 @@
                 }
             };
 
-            return function (boundID, value, selected) {
+            return function (boundID, value, selected, internal) {
                 var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                 if (queIdx === -1) {
                     console.log(ax5.info.getError("ax5select", "402", "val"));
@@ -859,7 +871,10 @@
                 if (typeof value !== "undefined") {
                     onStateChanged.call(this, this.queue[queIdx], {
                         self: this,
-                        state: "setValue"
+                        item: this.queue[queIdx],
+                        state: (internal) ? "changeValue" : "setValue",
+                        value: this.queue[queIdx].selected,
+                        internal: internal
                     });
                 }
 

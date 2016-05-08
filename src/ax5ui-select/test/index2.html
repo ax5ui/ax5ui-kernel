@@ -92,10 +92,13 @@
             lang: {
                 loading: '<i class="fa fa-spinner fa-pulse"></i>'
             },
+            onChange: function () {
+                console.log(this);
+            },
             onExpand: function (callBack) {
 
                 setTimeout(function () {
-                    if(callBackCount == 0) {
+                    if (callBackCount == 0) {
                         callBack({
                             options: [
                                 {value: "V0", text: "callBack Text 0"},
@@ -104,7 +107,7 @@
                                 {value: "V3", text: "callBack Text 3"}
                             ]
                         });
-                    }else{
+                    } else {
                         callBack({
                             options: [
                                 {value: "V0", text: "callBack Text 0"},
