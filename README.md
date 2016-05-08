@@ -1,3 +1,10 @@
+**CDN urls**
+```
+https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.css
+https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.js
+https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.min.js
+```
+
 # How to Play
 
 터미널에서 ax5ui-kernel 폴더로 이동하신 후
