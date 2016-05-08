@@ -182,3 +182,37 @@ gulp.task('default', function () {
     }
 
 });
+
+/**
+ * concant all src for dist
+ */
+gulp.task('dist-all-in-one', function () {
+
+    var jsSrcs   = [];
+    var scssSrcs = [];
+    for (var k in PATHS) {
+        var __p = PATHS[k];
+        if (__p.isPlugin) {
+            if (__p.js)   jsSrcs.push(PATHS[k].src + '/*.js');
+            if (__p.scss) scssSrcs.push(PATHS[k].src + '/' + __p.scss);
+        }
+    }
+
+    gulp.src(jsSrcs)
+        .pipe(plumber({errorHandler: errorAlert}))
+        .pipe(concat('ax5ui.all.js'))
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(gulp.dest('dist/'))
+        .pipe(concat('ax5ui.all.min.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('dist/'));
+
+    gulp.src(scssSrcs)
+        .pipe(plumber({errorHandler: errorAlert}))
+        .pipe(sass({outputStyle: 'compressed'}))
+        .pipe(concat('ax5ui.all.css'))
+        .pipe(gulp.dest('dist/'));
+
+});
