@@ -138,6 +138,15 @@
                     }
                 }
             }
+            .ax-select-option-group{
+
+                .ax-select-option-item-holder{
+
+                    .ax-select-option-group-label {
+                        background: #eee;
+                    }
+                }
+            }
         }
 
         .ax-select-option-group-buttons {
@@ -221,7 +230,6 @@
                         &.ax-select-option-item-label {
                             padding: $ax5select-label-padding;
                             padding-right: $ax5select-option-item-checkbox-size;
-
                         }
                     }
                 }
@@ -231,6 +239,30 @@
                         &:after {
                             opacity: 1;
                         }
+                    }
+                }
+            }
+            .ax-select-option-group{
+
+                .ax-select-option-item-holder{
+                    display: table;
+                    position: relative;
+                    border-collapse: separate;
+                    overflow: hidden;
+                    //table-layout: fixed;
+                    width: 100%;
+                    height: $ax5select-option-item-height;
+
+                    .ax-select-option-group-label {
+                        box-sizing: border-box;
+                        display: table-cell;
+                        vertical-align: middle;
+                        white-space: nowrap;
+                        font-size: $font-size;
+                        line-height: $ax5select-option-item-height;
+
+                        padding: 5px 10px; // todo : theme 정리 나중에
+                        @include user-select(none);
                     }
                 }
             }

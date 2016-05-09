@@ -39,10 +39,25 @@
 <button type="button" class="btn" data-btn="getValue">getValue</button>
 
 <script>
-    var options = [];
-    for (var i = 0; i < 20; i++) {
-        options.push({value: i, text: "optionText" + i});
-    }
+    var options = [
+        {
+            optgroup: "group label1",
+            options: [
+                {value: 1, text: 1},
+                {value: 1, text: 1},
+                {value: 1, text: 1}
+            ]
+        },
+        {
+            optgroup: "group label2",
+            options: [
+                {value: 1, text: 1},
+                {value: 1, text: 1},
+                {value: 1, text: 1}
+            ]
+        }
+    ];
+
 
     $(document.body).ready(function () {
 

@@ -126,6 +126,28 @@
                 {{/waitOptions}}
                 {{^waitOptions}}
                     {{#options}}
+                        {{#optgroup}}
+                            <div class="ax-select-option-group" data-option-group-index="{{@i}}">
+                                <div class="ax-select-option-item-holder">
+                                    <span class="ax-select-option-group-label">
+                                        {{{.}}}
+                                    </span>
+                                </div>
+                                {{#options}}
+                                <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
+                                    <div class="ax-select-option-item-holder">
+                                        {{#multiple}}
+                                        <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
+                                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
+                                        </span>
+                                        {{/multiple}}
+                                        <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                                    </div>
+                                </div>
+                                {{/options}}
+                            </div>                            
+                        {{/optgroup}}
+                        {{^optgroup}}
                         <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
                             <div class="ax-select-option-item-holder">
                                 {{#multiple}}
@@ -136,6 +158,7 @@
                                 <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
                             </div>
                         </div>
+                        {{/optgroup}}
                     {{/options}}
                     {{^options}}
                         <div class="ax-select-option-item">
@@ -428,12 +451,17 @@
                         // select options 태그 생성
                         po = [];
                         item.options.forEach(function (O, OIndex) {
-                            O['@index'] = OIndex;
-                            po.push('<option value="' + O[item.columnKeys.optionValue] + '" '
-                                + (O[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>'
-                                + O[item.columnKeys.optionText] + '</option>');
-                            if (O[item.columnKeys.optionSelected]) {
-                                setSelected.call(self, queIdx, O);
+                            if(O.optgroup){
+                                // todo
+                            }
+                            else{
+                                O['@index'] = OIndex;
+                                po.push('<option value="' + O[item.columnKeys.optionValue] + '" '
+                                    + (O[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>'
+                                    + O[item.columnKeys.optionText] + '</option>');
+                                if (O[item.columnKeys.optionSelected]) {
+                                    setSelected.call(self, queIdx, O);
+                                }
                             }
                         });
                         item.$select.html(po.join(''));
