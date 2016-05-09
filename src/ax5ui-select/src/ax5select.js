@@ -79,40 +79,7 @@
                 return `
                 <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">
                     <div class="ax-select-body">
-                        <div class="ax-select-option-group-content" data-select-els="content">
-                        {{#waitOptions}}
-                            <div class="ax-select-option-item">
-                                    <div class="ax-select-option-item-holder">
-                                        <span class="ax-select-option-item-cell ax-select-option-item-label">
-                                            {{{lang.loading}}}
-                                        </span>
-                                    </div>
-                                </div>
-                        {{/waitOptions}}
-                        {{^waitOptions}}
-                            {{#options}}
-                                <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
-                                    <div class="ax-select-option-item-holder">
-                                        {{#multiple}}
-                                        <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
-                                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
-                                        </span>
-                                        {{/multiple}}
-                                        <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
-                                    </div>
-                                </div>
-                            {{/options}}
-                            {{^options}}
-                                <div class="ax-select-option-item">
-                                    <div class="ax-select-option-item-holder">
-                                        <span class="ax-select-option-item-cell ax-select-option-item-label">
-                                            {{{lang.noOptions}}}
-                                        </span>
-                                    </div>
-                                </div>
-                            {{/options}}
-                        {{/waitOptions}}
-                        </div>
+                        <div class="ax-select-option-group-content" data-select-els="content"></div>
                     </div>
                     <div class="ax-select-arrow"></div> 
                 </div>
@@ -124,10 +91,10 @@
                 data-ax5-select-display="{{id}}" data-ax5-select-instance="{{instanceId}}">
                     <div class="ax5-ui-select-display-table" data-select-els="display-table">
                         <div data-ax5-select-display="label">{{label}}</div>
-                        <div data-ax5-select-display="addon">
-                            {{#reset}}
+                        <div data-ax5-select-display="addon"> 
+                            {{#multiple}}{{#reset}}
                             <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
-                            {{/reset}}
+                            {{/reset}}{{/multiple}}
                             {{#icons}}
                             <span class="addon-icon-closed">{{clesed}}</span>
                             <span class="addon-icon-opened">{{opened}}</span>
@@ -148,18 +115,38 @@
             },
             getOptionsTmpl = function (columnKeys) {
                 return `
-                {{#options}}
-                    <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
-                        <div class="ax-select-option-item-holder">
-                            {{#multiple}}
-                            <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
-                                <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
-                            </span>
-                            {{/multiple}}
-                            <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                {{#waitOptions}}
+                    <div class="ax-select-option-item">
+                            <div class="ax-select-option-item-holder">
+                                <span class="ax-select-option-item-cell ax-select-option-item-label">
+                                    {{{lang.loading}}}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                {{/options}}
+                {{/waitOptions}}
+                {{^waitOptions}}
+                    {{#options}}
+                        <div class="ax-select-option-item" data-option-index="{{@i}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
+                            <div class="ax-select-option-item-holder">
+                                {{#multiple}}
+                                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
+                                    <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
+                                </span>
+                                {{/multiple}}
+                                <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                            </div>
+                        </div>
+                    {{/options}}
+                    {{^options}}
+                        <div class="ax-select-option-item">
+                            <div class="ax-select-option-item-holder">
+                                <span class="ax-select-option-item-cell ax-select-option-item-label">
+                                    {{{lang.noOptions}}}
+                                </span>
+                            </div>
+                        </div>
+                    {{/options}}
+                {{/waitOptions}}
                 `;
             },
             alignSelectDisplay = function () {
@@ -667,6 +654,7 @@
 
                 data.options = item.options;
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
+                this.activeSelectOptionGroup.find('[data-select-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
                 this.activeSelectQueueIndex = queIdx;
 
                 alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append

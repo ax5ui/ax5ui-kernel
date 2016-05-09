@@ -158,7 +158,7 @@
         $ax5select-option-item-checkbox-size: $font-size - 4;
         .ax-select-option-group-content {
             max-height: $ax5select-option-item-height * 10;
-            overflow-y: scroll;
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             position: relative;
             .ax-select-option-item {
