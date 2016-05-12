@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.3.0
+     * @version 0.3.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -746,7 +746,7 @@
                 onStateChanged.call(this, item, {
                     self: this,
                     state: "open",
-                    boundObject: item
+                    item: item
                 });
 
                 // waitOption timer
