@@ -597,7 +597,7 @@
                 jQuery(window).bind("keyup.ax5picker", (function (e) {
                     e = e || window.event;
                     onBodyKeyup.call(this, e);
-                    U.stopEvent(e);
+                    U.stopEvent(e); 
                 }).bind(this));
 
                 jQuery(window).bind("click.ax5picker", (function (e) {
