@@ -231,6 +231,7 @@
                         }
                     },
                     onStateChanged: function(){
+                        console.log(this);
                         if(this.value && this.value.length > 3){
                             picker.close();
                         }

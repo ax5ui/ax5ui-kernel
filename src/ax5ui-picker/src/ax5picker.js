@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version 0.6.0
+     * @version 0.6.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -294,7 +294,7 @@
                             key: k,
                             value: item.btns[k],
                             self: this,
-                            boundObject: item
+                            item: item
                         };
                         item.btns[k].onClick.call(that, k);
                     }
@@ -391,7 +391,7 @@
                 onStateChanged.call(this, item, {
                     self: self,
                     state: "changeValue",
-                    boundObject: item,
+                    item: item,
                     value: val
                 });
 
@@ -534,7 +534,7 @@
                             onStateChanged.call(this, item, {
                                 self: self,
                                 state: "changeValue",
-                                boundObject: item,
+                                item: item,
                                 value: _input.val()
                             });
                         });
@@ -609,7 +609,7 @@
                 onStateChanged.call(this, item, {
                     self: this,
                     state: "open",
-                    boundObject: item
+                    item: item
                 });
 
                 return this;
