@@ -664,16 +664,35 @@
 
 ax5.ui.picker_instance = new ax5.ui.picker();
 
-$.fn.ax5picker = (function () {
+jQuery.fn.ax5picker = (function () {
     return function (config) {
-        if (typeof config == "undefined") config = {};
-        $.each(this, function () {
-            var defaultConfig = {
-                target: this
-            };
-            config = $.extend(true, config, defaultConfig);
-            ax5.ui.picker_instance.bind(config);
-        });
+        if (ax5.util.isString(arguments[0])) {
+            var methodName = arguments[0];
+
+            switch (methodName) {
+                case "open":
+                    return ax5.ui.select_instance.open(this);
+                    break;
+                case "close":
+                    return ax5.ui.select_instance.close(this);
+                    break;
+                case "setValue":
+                    return ax5.ui.select_instance.setContentValue(this, arguments[1], arguments[2]);
+                    break;
+                default:
+                    return this;
+            }
+        }
+        else{
+            if (typeof config == "undefined") config = {};
+            jQuery.each(this, function () {
+                var defaultConfig = {
+                    target: this
+                };
+                config = jQuery.extend(true, config, defaultConfig);
+                ax5.ui.picker_instance.bind(config);
+            });
+        }
         return this;
     }
 })();

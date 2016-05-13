@@ -86,11 +86,53 @@ function (callBack) {
 - **margin** `Number`
 - **type** `String`
   - date
-  - autocomplete
-  - ...
+  - secure-num
+
 - **config** `Object`
 - **formatter** `Object`
 
+#### contentType : 'date'
+```js
+{
+    width: 270,
+    margin: 10,
+    type: 'date',
+    config: {
+        control: {
+            left: '<i class="fa fa-chevron-left"></i>',
+            yearTmpl: '%s',
+            monthTmpl: '%s',
+            right: '<i class="fa fa-chevron-right"></i>'
+        },
+        lang: {
+            yearTmpl: "%s년",
+            months: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+            dayTmpl: "%s"
+        }
+    },
+    formatter: {
+        pattern: 'date'
+    }
+}
+```
+
+#### contentType : 'secure-num'
+```js
+{
+    width: 200,
+    margin: 10,
+    type: 'secure-num',
+    config: {
+        btnWrapStyle: "padding:3px;width:25%;",
+        btnStyle: "width:100%",
+        btnTheme: "info btn-sm",
+        specialBtnTheme: " btn-sm"
+    },
+    formatter: {
+        pattern: 'number'
+    }
+}
+```
 
 ### contentWidth
 
@@ -166,8 +208,9 @@ picker unique id
 ***
 
 # jQuery extends
+
 ## ax5picker
-`$(query).ax5picker({bindConfigs})`
+`ax5picker({bindConfigs})`
 ```js
 $('[data-ax5picker="date"]').ax5picker({
     direction: "top",
@@ -178,3 +221,22 @@ $('[data-ax5picker="date"]').ax5picker({
     }
 });
 ```
+
+### open
+`ax5picker("open")`
+```js
+$('[data-ax5picker]').ax5picker("open");
+```
+
+### close
+`ax5picker("close")`
+```js
+$('[data-ax5picker]').ax5picker("close");
+```
+
+### setValue
+`ax5select("setValue", inputSeq, value)`
+```js
+$('[data-ax5picker]').ax5picker("setValue", 0, "optionValue2");
+```
+
