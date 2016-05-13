@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.3.1
+     * @version 0.3.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -134,7 +134,8 @@
                                     </span>
                                 </div>
                                 {{#options}}
-                                <div class="ax-select-option-item" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" 
+                                <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" 
+                                data-option-value="{{${columnKeys.optionValue}}}" 
                                 {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
                                     <div class="ax-select-option-item-holder">
                                         {{#multiple}}
@@ -149,7 +150,7 @@
                             </div>                            
                         {{/optgroup}}
                         {{^optgroup}}
-                        <div class="ax-select-option-item" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
+                        <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
                             <div class="ax-select-option-item-holder">
                                 {{#multiple}}
                                 <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
@@ -267,6 +268,7 @@
                             index: target.getAttribute("data-option-index")
                         }
                     }, undefined, "internal");
+                    item.$display.focus();
                     if (!item.multiple) this.close();
                 }
                 else {
@@ -279,6 +281,28 @@
             onBodyKeyup = function (e) {
                 if (e.keyCode == ax5.info.eventKeys.ESC) {
                     this.close();
+                }
+                else if (e.which == ax5.info.eventKeys.RETURN) {
+                    if (this.queue[this.activeSelectQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
+                        var $option = this.activeSelectOptionGroup.find('[data-option-focus-index="' + this.queue[this.activeSelectQueueIndex].optionFocusIndex + '"]');
+                        this.val(this.queue[this.activeSelectQueueIndex].id, {
+                            index: {
+                                gindex: $option.attr("data-option-group-index"),
+                                index: $option.attr("data-option-index")
+                            }
+                        }, undefined, "internal");
+
+                        if (!this.queue[this.activeSelectQueueIndex].multiple) this.close();
+                    }
+                }
+
+            },
+            onBodyKeyDown = function (e) {
+                if (e.which == ax5.info.eventKeys.DOWN) {
+                    focusMove.call(this, this.activeSelectQueueIndex, 1);
+                }
+                else if (e.which == ax5.info.eventKeys.UP) {
+                    focusMove.call(this, this.activeSelectQueueIndex, -1);
                 }
             },
             getLabel = function (queIdx) {
@@ -322,6 +346,47 @@
                     .find('[data-ax5-select-display="label"]')
                     .html(getLabel.call(this, queIdx));
             },
+            focusMove = function (queIdx, direction) {
+                var _focusIndex,
+                    _prevFocusIndex,
+                    focusOptionEl,
+                    optionGroupScrollContainer;
+                if (this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
+                    _prevFocusIndex = (this.queue[queIdx].optionFocusIndex == -1) ? this.queue[queIdx].optionSelectedIndex || -1 : this.queue[queIdx].optionFocusIndex;
+                    if (_prevFocusIndex == -1) {
+                        _focusIndex = (direction > 0) ? 0 : this.queue[queIdx].options.length - 1;
+                    }
+                    else {
+                        _focusIndex = _prevFocusIndex + direction;
+                        if (_focusIndex < 0) _focusIndex = 0;
+                        else if (_focusIndex > this.queue[queIdx].options.length - 1) _focusIndex = this.queue[queIdx].options.length - 1;
+                    }
+                    this.queue[queIdx].optionFocusIndex = _focusIndex;
+
+                    this.activeSelectOptionGroup
+                        .find('[data-option-focus-index]')
+                        .removeClass("hover");
+
+                    focusOptionEl = this.activeSelectOptionGroup
+                        .find('[data-option-focus-index="' + _focusIndex + '"]')
+                        .addClass("hover");
+
+                    optionGroupScrollContainer = this.activeSelectOptionGroup.find('[data-select-els="content"]');
+
+                    let focusOptionElHeight = focusOptionEl.outerHeight(),
+                        optionGroupScrollContainerHeight = optionGroupScrollContainer.innerHeight(),
+                        optionGroupScrollContainerScrollTop = optionGroupScrollContainer.scrollTop(),
+                        focusOptionElTop = focusOptionEl.position().top + optionGroupScrollContainer.scrollTop();
+
+                    if (optionGroupScrollContainerHeight + optionGroupScrollContainerScrollTop < focusOptionElTop + focusOptionElHeight) {
+                        optionGroupScrollContainer.scrollTop(focusOptionElTop + focusOptionElHeight - optionGroupScrollContainerHeight);
+                    }
+                    else if (optionGroupScrollContainerScrollTop > focusOptionElTop) {
+                        optionGroupScrollContainer.scrollTop(focusOptionElTop);
+                    }
+                    // optionGroup scroll check
+                }
+            },
             bindSelectTarget = (function () {
                 var selectEvent = {
                     'click': function (queIdx, e) {
@@ -338,20 +403,19 @@
                         }
                         else {
                             if (self.activeSelectQueueIndex == queIdx) {
-                                self.close();
-                            } else {
+                                if (this.queue[queIdx].optionFocusIndex == -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
+                                    self.close();
+                                }
+                            }
+                            else {
                                 self.open(queIdx);
                             }
                         }
-
                         //U.stopEvent(e);
                     },
                     'keyUp': function (queIdx, e) {
                         if (e.which == ax5.info.eventKeys.SPACE) {
                             selectEvent.click.call(this, queIdx, e);
-                        }
-                        else if (e.which == ax5.info.eventKeys.DOWN) {
-                            // todo focus move
                         }
                     },
                     'selectChange': function (queIdx, e) {
@@ -405,6 +469,8 @@
                         item.$display
                             .unbind('click.ax5select')
                             .bind('click.ax5select', selectEvent.click.bind(this, queIdx))
+                            //.unbind('keydown.ax5select')
+                            //.bind('keydown.ax5select', selectEvent.keyDown.bind(this, queIdx))
                             .unbind('keyup.ax5select')
                             .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
 
@@ -424,6 +490,8 @@
                         item.$display
                             .unbind('click.ax5select')
                             .bind('click.ax5select', selectEvent.click.bind(this, queIdx))
+                            //.unbind('keydown.ax5select')
+                            //.bind('keydown.ax5select', selectEvent.keyDown.bind(this, queIdx))
                             .unbind('keyup.ax5select')
                             .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
 
@@ -454,7 +522,7 @@
 
                 return function (queIdx, options) {
                     var item = this.queue[queIdx];
-                    var po, elementOptions, newOptions;
+                    var po, elementOptions, newOptions, focusIndex = 0;
                     setSelected.call(this, queIdx, false); // item.selected 초기화
 
                     if (options) {
@@ -462,11 +530,11 @@
 
                         // select options 태그 생성
                         po = [];
-                        //var OOIndex = 0;
                         item.options.forEach(function (O, OIndex) {
                             if (O.optgroup) {
                                 // todo
                                 O['@gindex'] = OIndex;
+                                O['@findex'] = focusIndex;
                                 O.options.forEach(function (OO, OOIndex) {
                                     OO['@index'] = OOIndex;
                                     po.push('<option value="' + OO[item.columnKeys.optionValue] + '" '
@@ -475,17 +543,19 @@
                                     if (OO[item.columnKeys.optionSelected]) {
                                         setSelected.call(self, queIdx, OO);
                                     }
-                                    //OOIndex++;
+                                    focusIndex++;
                                 });
                             }
                             else {
                                 O['@index'] = OIndex;
+                                O['@findex'] = focusIndex;
                                 po.push('<option value="' + O[item.columnKeys.optionValue] + '" '
                                     + (O[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>'
                                     + O[item.columnKeys.optionText] + '</option>');
                                 if (O[item.columnKeys.optionSelected]) {
                                     setSelected.call(self, queIdx, O);
                                 }
+                                focusIndex++;
                             }
                         });
                         item.$select.html(po.join(''));
@@ -509,9 +579,11 @@
 
                     if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
                         if (item.options[0].optgroup) {
+                            item.options[0].options[0][item.columnKeys.optionSelected] = true;
                             item.selected.push(jQuery.extend({}, item.options[0].options[0]));
                         }
                         else {
+                            item.options[0][item.columnKeys.optionSelected] = true;
                             item.selected.push(jQuery.extend({}, item.options[0]));
                         }
                     }
@@ -519,7 +591,6 @@
                     po = null;
                     elementOptions = null;
                     newOptions = null;
-                    return item.options;
                     return item.options;
                 }
             })(),
@@ -694,6 +765,11 @@
                     return this;
                 }
 
+                item.optionFocusIndex = -1; // optionGroup이 열리면 포커스 인덱스 초기화 -1로
+                if (item.selected && item.selected.length > 0) {
+                    item.optionSelectedIndex = item.selected[0]["@findex"];
+                }
+
                 /// 템플릿에 전달할 오브젝트 선언
                 data.id = item.id;
                 data.theme = item.theme;
@@ -735,6 +811,12 @@
                     e = e || window.event;
                     onBodyKeyup.call(this, e);
                     U.stopEvent(e);
+                }).bind(this));
+
+                jQuery(window).bind("keydown.ax5select-" + this.instanceId, (function (e) {
+                    e = e || window.event;
+                    onBodyKeyDown.call(this, e);
+                    //U.stopEvent(e);
                 }).bind(this));
 
                 jQuery(window).bind("click.ax5select-" + this.instanceId, (function (e) {
@@ -956,12 +1038,15 @@
             if (!this.activeSelectOptionGroup) return this;
 
             item = this.queue[this.activeSelectQueueIndex];
+            item.optionFocusIndex = -1;
             item.$display.removeAttr("data-select-option-group-opened");
             this.activeSelectOptionGroup.addClass("destroy");
 
-            jQuery(window).unbind("resize.ax5select-" + this.instanceId);
-            jQuery(window).unbind("click.ax5select-" + this.instanceId);
-            jQuery(window).unbind("keyup.ax5select-" + this.instanceId);
+            jQuery(window)
+                .unbind("resize.ax5select-" + this.instanceId)
+                .unbind("click.ax5select-" + this.instanceId)
+                .unbind("keyup.ax5select-" + this.instanceId)
+                .unbind("keydown.ax5select-" + this.instanceId);
 
             this.closeTimer = setTimeout((function () {
                 if (this.activeSelectOptionGroup) this.activeSelectOptionGroup.remove();

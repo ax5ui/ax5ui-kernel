@@ -108,7 +108,36 @@
 
         .ax-select-option-group-content {
             .ax-select-option-item {
-                &:hover, &.hover, &[data-option-selected="true"] {
+                &:hover, &.hover {
+                    @if nth($hover-type, 1) == "lighten" {
+                        background: lighten($theme-color, 15%) !important;
+                        color: lighten($base-color, nth($hover-type, 2));
+                    } @else if nth($hover-type, 1) == "darken" {
+                        background: darken($theme-color, 15%) !important;
+                        color: darken($base-color, nth($hover-type, 2));
+                    }
+
+                    .ax-select-option-item-holder {
+                        .ax-select-option-item-cell {
+                            &.ax-select-option-item-checkbox {
+                                .item-checkbox-wrap {
+                                    &.useCheckBox {
+                                        &:after {
+                                            @if nth($hover-type, 1) == "lighten" {
+                                                border-color: lighten($base-color, nth($hover-type, 2)) !important;
+                                            } @else if nth($hover-type, 1) == "darken" {
+                                                border-color: darken($base-color, nth($hover-type, 2)) !important;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            &.ax-select-option-item-label {
+                            }
+                        }
+                    }
+                }
+                &[data-option-selected="true"] {
                     @if nth($hover-type, 1) == "lighten" {
                         background: $theme-color;
                         color: lighten($base-color, nth($hover-type, 2));
