@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.3.2
+     * @version 0.3.3
      * @author tom@axisj.com
      * @example
      * ```
@@ -244,12 +244,13 @@
             focusMove = function focusMove(queIdx, direction) {
             var _focusIndex, _prevFocusIndex, focusOptionEl, optionGroupScrollContainer;
             if (this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
+
                 _prevFocusIndex = this.queue[queIdx].optionFocusIndex == -1 ? this.queue[queIdx].optionSelectedIndex || -1 : this.queue[queIdx].optionFocusIndex;
                 if (_prevFocusIndex == -1) {
-                    _focusIndex = direction > 0 ? 0 : this.queue[queIdx].options.length - 1;
+                    _focusIndex = direction > 0 ? 0 : this.queue[queIdx].optionItemLength - 1;
                 } else {
                     _focusIndex = _prevFocusIndex + direction;
-                    if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > this.queue[queIdx].options.length - 1) _focusIndex = this.queue[queIdx].options.length - 1;
+                    if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > this.queue[queIdx].optionItemLength - 1) _focusIndex = this.queue[queIdx].optionItemLength - 1;
                 }
                 this.queue[queIdx].optionFocusIndex = _focusIndex;
 
@@ -403,9 +404,9 @@
                         if (O.optgroup) {
                             // todo
                             O['@gindex'] = OIndex;
-                            O['@findex'] = focusIndex;
                             O.options.forEach(function (OO, OOIndex) {
                                 OO['@index'] = OOIndex;
+                                OO['@findex'] = focusIndex;
                                 po.push('<option value="' + OO[item.columnKeys.optionValue] + '" ' + (OO[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + OO[item.columnKeys.optionText] + '</option>');
                                 if (OO[item.columnKeys.optionSelected]) {
                                     setSelected.call(self, queIdx, OO);
@@ -422,8 +423,11 @@
                             focusIndex++;
                         }
                     });
+                    item.optionItemLength = focusIndex;
                     item.$select.html(po.join(''));
                 } else {
+                    /// 현재 사용되지 않는 옵션
+                    /// select > options 태그로 스크립트 options를 만들어주는 역할
                     elementOptions = U.toArray(item.$select.get(0).options);
                     // select option 스크립트 생성
                     newOptions = [];
