@@ -19,48 +19,49 @@
     <script src="../dist/ax5select.js"></script>
 </head>
 <body style="padding: 10px;">
+<div class="container">
+    <form name="forms">
+        <h1>form-group</h1>
 
-<form name="forms">
-    <h1>form-group</h1>
-
-    <div class="row">
-        <div class="col-sm-4">
-            <div class="form-group">
-                <div data-ax5select="select1" data-ax5select-config='{
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div data-ax5select="select1" data-ax5select-config='{
                     size: "",
                     multiple: false,
                     reset:"<i class=\"fa fa-trash\"></i>"
                 }'></div>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                <div data-ax5select="select2" data-ax5select-config='{
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div data-ax5select="select2" data-ax5select-config='{
                     size: "",
                     multiple: true,
                     reset:"<i class=\"fa fa-trash\"></i>"
                 }'></div>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                <div data-ax5select="select3" data-ax5select-config='{
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div data-ax5select="select3" data-ax5select-config='{
                     size: "",
                     multiple: true,
                     reset:"<i class=\"fa fa-trash\"></i>"
                 }'></div>
+                </div>
             </div>
+
         </div>
 
-    </div>
 
+    </form>
 
-</form>
-
-<button type="button" class="btn" data-btn="setValue">setValue</button>
-<button type="button" class="btn" data-btn="getValue">getValue</button>
-<button type="button" class="btn" data-btn="setValueSelect">setValue to select</button>
-<button type="button" class="btn" data-btn="update">update options</button>
+    <button type="button" class="btn" data-btn="setValue">setValue</button>
+    <button type="button" class="btn" data-btn="getValue">getValue</button>
+    <button type="button" class="btn" data-btn="setValueSelect">setValue to select</button>
+    <button type="button" class="btn" data-btn="update">update options</button>
+</div>
 <script>
     var options = [];
     for (var i = 0; i < 20; i++) {

@@ -54,6 +54,37 @@
         cfg = this.config;
 
         var
+            ctrlKeys = {
+                "18": "KEY_ALT",
+                "8": "KEY_BACKSPACE",
+                "17": "KEY_CONTROL",
+                "46": "KEY_DELETE",
+                "40": "KEY_DOWN",
+                "35": "KEY_END",
+                "187": "KEY_EQUAL",
+                "27": "KEY_ESC",
+                "36": "KEY_HOME",
+                "45": "KEY_INSERT",
+                "37": "KEY_LEFT",
+                "189": "KEY_MINUS",
+                "34": "KEY_PAGEDOWN",
+                "33": "KEY_PAGEUP",
+                // "190": "KEY_PERIOD",
+                "13": "KEY_RETURN",
+                "39": "KEY_RIGHT",
+                "16": "KEY_SHIFT",
+                // "32": "KEY_SPACE",
+                "9": "KEY_TAB",
+                "38": "KEY_UP",
+                "91": "KEY_WINDOW"
+                //"107" : "NUMPAD_ADD",
+                //"194" : "NUMPAD_COMMA",
+                //"110" : "NUMPAD_DECIMAL",
+                //"111" : "NUMPAD_DIVIDE",
+                //"12" : "NUMPAD_EQUAL",
+                //"106" : "NUMPAD_MULTIPLY",
+                //"109" : "NUMPAD_SUBTRACT"
+            },
             onStateChanged = function (item, that) {
                 if (item && item.onStateChanged) {
                     item.onStateChanged.call(that, that);
@@ -105,6 +136,7 @@
                             {{/icons}}
                         </div>
                     </div>
+                    <input type="text" tabindex="-1" data-ax5-select-display="input" style="position:absolute;left:0px;top:0px;font-size:10px;opacity: 0;border: 0px none;" />
                 </a>
                 `;
             },
@@ -295,17 +327,6 @@
                         if (!this.queue[this.activeSelectQueueIndex].multiple) this.close();
                     }
                 }
-
-            },
-            onBodyKeyDown = function (e) {
-                if (e.which == ax5.info.eventKeys.DOWN) {
-                    focusMove.call(this, this.activeSelectQueueIndex, 1);
-                    U.stopEvent(e);
-                }
-                else if (e.which == ax5.info.eventKeys.UP) {
-                    focusMove.call(this, this.activeSelectQueueIndex, -1);
-                    U.stopEvent(e);
-                }
             },
             getLabel = function (queIdx) {
                 var item = this.queue[queIdx];
@@ -420,6 +441,23 @@
                         if (e.which == ax5.info.eventKeys.SPACE) {
                             selectEvent.click.call(this, queIdx, e);
                         }
+                        else if(!ctrlKeys[e.which]){
+                            //console.log(this.queue[queIdx].$displayInput.val());
+                            // 사용자 입력이 뜸해지면 찾고 검색 값 제거...
+                        }
+                    },
+                    'keyDown': function (queIdx, e) {
+                        if (e.which == ax5.info.eventKeys.DOWN) {
+                            focusMove.call(this, queIdx, 1);
+                            U.stopEvent(e);
+                        }
+                        else if (e.which == ax5.info.eventKeys.UP) {
+                            focusMove.call(this, queIdx, -1);
+                            U.stopEvent(e);
+                        }
+                    },
+                    'blur': function (queIdx, e) {
+
                     },
                     'selectChange': function (queIdx, e) {
                         this.val(queIdx, this.queue[queIdx].$select.val(), true);
@@ -467,22 +505,25 @@
                         }
 
                         item.$target.append(item.$display);
+                        item.$displayInput = item.$display.find('[data-ax5-select-display="input"]'); // 사용자 입력값을 받기위한 숨음 입력필드
                         item.options = syncSelectOptions.call(this, queIdx, item.options);
 
-                        item.$display
-                            .unbind('click.ax5select')
-                            .bind('click.ax5select', selectEvent.click.bind(this, queIdx))
-                            //.unbind('keydown.ax5select')
-                            //.bind('keydown.ax5select', selectEvent.keyDown.bind(this, queIdx))
-                            .unbind('keyup.ax5select')
-                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
-
-                        // select 태그에 대한 change 이벤트 감시
-                        item.$select
-                            .unbind('change.ax5select')
-                            .bind('change.ax5select', selectEvent.selectChange.bind(this, queIdx));
-
                         alignSelectDisplay.call(this);
+
+                        /*
+                        item.$displayInput.bind("keydown.ax5select", (function (e) {
+                            e = e || window.event;
+                            onBodyKeyDown.call(this, e);
+                            //U.stopEvent(e);
+                        }).bind(this));
+                        */
+                        item.$displayInput
+                            .unbind("blur.ax5select")
+                            .bind("blur.ax5select", selectEvent.blur.bind(this, queIdx))
+                            .unbind('keyup.ax5select')
+                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx))
+                            .unbind("keydown.ax5select")
+                            .bind("keydown.ax5select", selectEvent.keyDown.bind(this, queIdx));
                     }
                     else {
                         item.$display
@@ -490,21 +531,19 @@
                             .html(getLabel.call(this, queIdx));
                         item.options = syncSelectOptions.call(this, queIdx, item.options);
 
-                        item.$display
-                            .unbind('click.ax5select')
-                            .bind('click.ax5select', selectEvent.click.bind(this, queIdx))
-                            //.unbind('keydown.ax5select')
-                            //.bind('keydown.ax5select', selectEvent.keyDown.bind(this, queIdx))
-                            .unbind('keyup.ax5select')
-                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
-
-                        // select 태그에 대한 change 이벤트 감시
-                        item.$select
-                            .unbind('change.ax5select')
-                            .bind('change.ax5select', selectEvent.selectChange.bind(this, queIdx));
-
                         alignSelectDisplay.call(this);
                     }
+
+                    item.$display
+                        .unbind('click.ax5select')
+                        .bind('click.ax5select', selectEvent.click.bind(this, queIdx))
+                        .unbind('keyup.ax5select')
+                        .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
+
+                    // select 태그에 대한 change 이벤트 감시
+                    item.$select
+                        .unbind('change.ax5select')
+                        .bind('change.ax5select', selectEvent.selectChange.bind(this, queIdx));
 
                     data = null;
                     item = null;
@@ -812,17 +851,16 @@
                     }
                 }
 
-                // bind key event
+
+                /// 사용자 입력으로 옵션을 검색하기 위한 시나리오
+                // 옵션그룹이 활성화 되면 사용자 입력을 받기위한 input .... 탭이 무너질수 있음. 탭 기능 체크 먼저
+                item.$displayInput.val('').trigger("focus");
+                //item.$display.find('[data-ax5-select-display="input"]')
+
                 jQuery(window).bind("keyup.ax5select-" + this.instanceId, (function (e) {
                     e = e || window.event;
                     onBodyKeyup.call(this, e);
                     U.stopEvent(e);
-                }).bind(this));
-
-                jQuery(window).bind("keydown.ax5select-" + this.instanceId, (function (e) {
-                    e = e || window.event;
-                    onBodyKeyDown.call(this, e);
-                    //U.stopEvent(e);
                 }).bind(this));
 
                 jQuery(window).bind("click.ax5select-" + this.instanceId, (function (e) {
@@ -1045,14 +1083,16 @@
 
             item = this.queue[this.activeSelectQueueIndex];
             item.optionFocusIndex = -1;
-            item.$display.removeAttr("data-select-option-group-opened");
+
+            item.$displayInput.val('').trigger("blur");
+            item.$display.removeAttr("data-select-option-group-opened").trigger("focus");
+
             this.activeSelectOptionGroup.addClass("destroy");
 
             jQuery(window)
                 .unbind("resize.ax5select-" + this.instanceId)
                 .unbind("click.ax5select-" + this.instanceId)
-                .unbind("keyup.ax5select-" + this.instanceId)
-                .unbind("keydown.ax5select-" + this.instanceId);
+                .unbind("keyup.ax5select-" + this.instanceId);
 
             this.closeTimer = setTimeout((function () {
                 if (this.activeSelectOptionGroup) this.activeSelectOptionGroup.remove();
