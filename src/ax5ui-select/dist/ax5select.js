@@ -202,8 +202,10 @@
             onBodyKeyDown = function onBodyKeyDown(e) {
             if (e.which == ax5.info.eventKeys.DOWN) {
                 focusMove.call(this, this.activeSelectQueueIndex, 1);
+                U.stopEvent(e);
             } else if (e.which == ax5.info.eventKeys.UP) {
                 focusMove.call(this, this.activeSelectQueueIndex, -1);
+                U.stopEvent(e);
             }
         },
             getLabel = function getLabel(queIdx) {
