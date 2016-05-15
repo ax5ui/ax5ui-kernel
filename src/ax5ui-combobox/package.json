@@ -1,11 +1,11 @@
 {
-	"name": "ax5ui-mask",
-	"version": "0.6.7",
-	"description": "A mask plugin that works with Bootstrap & jQuery",
+	"name": "ax5ui-combobox",
+	"version": "0.0.1",
+	"description": "A combobox plugin that works with Bootstrap & jQuery",
 	"license": "LGPLv3",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/ax5ui/ax5ui-mask"
+		"url": "git+https://github.com/ax5ui/ax5ui-combobox"
 	},
 	"author": {
 		"name": "Thomas Jang",
@@ -18,10 +18,11 @@
 		"ax5ui",
 		"plugin",
 		"bootstrap jQuery plugins",
-		"mask",
-		"ax5ui-mask"
+		"combobox",
+		"ax5ui-combobox",
+		"javascript ui"
 	],
 	"dependencies": {
-		"ax5core": ">=0.4.0"
+
 	}
 }
