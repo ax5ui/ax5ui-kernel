@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.3.3
+     * @version 0.3.4
      * @author tom@axisj.com
      * @example
      * ```
@@ -109,7 +109,7 @@
             return '\n                <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">\n                    <div class="ax-select-body">\n                        <div class="ax-select-option-group-content" data-select-els="content"></div>\n                    </div>\n                    <div class="ax-select-arrow"></div> \n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
-            return '\n                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" \n                data-ax5-select-display="{{id}}" data-ax5-select-instance="{{instanceId}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon"> \n                            {{#multiple}}{{#reset}}\n                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                            {{/reset}}{{/multiple}}\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                    <input type="text" tabindex="-1" data-ax5-select-display="input" style="position:absolute;left:0px;top:0px;font-size:10px;opacity: 0;border: 0px none;" />\n                </a>\n                ';
+            return '\n                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" \n                data-ax5-select-display="{{id}}" data-ax5-select-instance="{{instanceId}}">\n                    <div class="ax5-ui-select-display-table" data-select-els="display-table">\n                        <div data-ax5-select-display="label">{{label}}</div>\n                        <div data-ax5-select-display="addon"> \n                            {{#multiple}}{{#reset}}\n                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                            {{/reset}}{{/multiple}}\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                    <input type="text" tabindex="-1" data-ax5-select-display="input" \n                    style="position:absolute;z-index:0;left:0px;top:0px;font-size:1px;opacity: 0;border: 0px none;color : transparent;text-indent: -9999em;" />\n                </a>\n                ';
         },
             getSelectTmpl = function getSelectTmpl() {
             return '\n                <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n                ';
@@ -268,22 +268,21 @@
         },
             focusWord = function focusWord(queIdx, searchWord) {
             var options = [],
-                i = this.queue[queIdx].indexedOptions.length,
+                i = 0,
+                l = this.queue[queIdx].indexedOptions.length,
                 n;
-            while (i--) {
+            while (l - i++) {
                 n = this.queue[queIdx].indexedOptions[i];
-                if (n.value.toLocaleLowerCase() == searchWord.toLocaleLowerCase()) {
+                if (('' + n.value).toLowerCase() == searchWord.toLowerCase()) {
                     options = [{ '@findex': n['@findex'], optionsSort: 0 }];
                     break;
                 } else {
-                    var sort = n.value.toLocaleLowerCase().search(searchWord.toLocaleLowerCase());
+                    var sort = ('' + n.value).toLowerCase().search(searchWord.toLowerCase());
                     if (sort > -1) {
-                        options.push({
-                            '@findex': n['@findex'],
-                            optionsSort: sort
-                        });
+                        options.push({ '@findex': n['@findex'], optionsSort: sort });
                         if (options.length > 2) break;
                     }
+                    sort = null;
                 }
             }
             options.sort(function (a, b) {
@@ -292,11 +291,19 @@
             if (options && options.length > 0) {
                 focusMove.call(this, queIdx, undefined, options[0]['@findex']);
             }
-            return options;
+
+            try {
+                return options;
+            } finally {
+                options = null;
+                i = null;
+                l = null;
+                n = null;
+            }
         },
             focusMove = function focusMove(queIdx, direction, findex) {
             var _focusIndex, _prevFocusIndex, focusOptionEl, optionGroupScrollContainer;
-            if (this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
+            if (this.activeSelectOptionGroup && this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
 
                 if (typeof findex !== "undefined") {
                     _focusIndex = findex;

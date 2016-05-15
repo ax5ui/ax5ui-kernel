@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.3.3
+     * @version 0.3.4
      * @author tom@axisj.com
      * @example
      * ```
@@ -137,7 +137,8 @@
                             {{/icons}}
                         </div>
                     </div>
-                    <input type="text" tabindex="-1" data-ax5-select-display="input" style="position:absolute;left:0px;top:0px;font-size:10px;opacity: 0;border: 0px none;" />
+                    <input type="text" tabindex="-1" data-ax5-select-display="input" 
+                    style="position:absolute;z-index:0;left:0px;top:0px;font-size:1px;opacity: 0;border: 0px none;color : transparent;text-indent: -9999em;" />
                 </a>
                 `;
             },
@@ -371,21 +372,19 @@
                     .html(getLabel.call(this, queIdx));
             },
             focusWord = function (queIdx, searchWord) {
-                var options = [], i = this.queue[queIdx].indexedOptions.length, n;
-                while (i--) {
+                var options = [], i = 0, l = this.queue[queIdx].indexedOptions.length, n;
+                while (l - i++) {
                     n = this.queue[queIdx].indexedOptions[i];
-                    if (n.value.toLocaleLowerCase() == searchWord.toLocaleLowerCase()) {
+                    if (('' + n.value).toLowerCase() == searchWord.toLowerCase()) {
                         options = [{'@findex': n['@findex'], optionsSort: 0}];
                         break;
                     } else {
-                        var sort = n.value.toLocaleLowerCase().search(searchWord.toLocaleLowerCase());
+                        var sort = ('' + n.value).toLowerCase().search(searchWord.toLowerCase());
                         if (sort > -1) {
-                            options.push({
-                                '@findex': n['@findex'],
-                                optionsSort: sort
-                            });
+                            options.push({'@findex': n['@findex'], optionsSort: sort});
                             if (options.length > 2) break;
                         }
+                        sort = null;
                     }
                 }
                 options.sort(function (a, b) {
@@ -394,14 +393,22 @@
                 if (options && options.length > 0) {
                     focusMove.call(this, queIdx, undefined, options[0]['@findex']);
                 }
-                return options;
+
+                try {
+                    return options;
+                } finally {
+                    options = null;
+                    i = null;
+                    l = null;
+                    n = null;
+                }
             },
             focusMove = function (queIdx, direction, findex) {
                 var _focusIndex,
                     _prevFocusIndex,
                     focusOptionEl,
                     optionGroupScrollContainer;
-                if (this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
+                if (this.activeSelectOptionGroup && this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
 
                     if (typeof findex !== "undefined") {
                         _focusIndex = findex
