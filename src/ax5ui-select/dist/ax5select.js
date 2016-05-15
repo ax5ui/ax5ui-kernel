@@ -51,6 +51,7 @@
         this.openTimer = null;
         this.closeTimer = null;
         this.waitOptionsCallback = null;
+        this.keyUpTimer = null;
 
         cfg = this.config;
 
@@ -265,17 +266,50 @@
             syncLabel = function syncLabel(queIdx) {
             this.queue[queIdx].$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
         },
-            focusMove = function focusMove(queIdx, direction) {
+            focusWord = function focusWord(queIdx, searchWord) {
+            var options = [],
+                i = this.queue[queIdx].indexedOptions.length,
+                n;
+            while (i--) {
+                n = this.queue[queIdx].indexedOptions[i];
+                if (n.value.toLocaleLowerCase() == searchWord.toLocaleLowerCase()) {
+                    options = [{ '@findex': n['@findex'], optionsSort: 0 }];
+                    break;
+                } else {
+                    var sort = n.value.toLocaleLowerCase().search(searchWord.toLocaleLowerCase());
+                    if (sort > -1) {
+                        options.push({
+                            '@findex': n['@findex'],
+                            optionsSort: sort
+                        });
+                        if (options.length > 2) break;
+                    }
+                }
+            }
+            options.sort(function (a, b) {
+                return a.optionsSort - b.optionsSort;
+            });
+            if (options && options.length > 0) {
+                focusMove.call(this, queIdx, undefined, options[0]['@findex']);
+            }
+            return options;
+        },
+            focusMove = function focusMove(queIdx, direction, findex) {
             var _focusIndex, _prevFocusIndex, focusOptionEl, optionGroupScrollContainer;
             if (this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
 
-                _prevFocusIndex = this.queue[queIdx].optionFocusIndex == -1 ? this.queue[queIdx].optionSelectedIndex || -1 : this.queue[queIdx].optionFocusIndex;
-                if (_prevFocusIndex == -1) {
-                    _focusIndex = direction > 0 ? 0 : this.queue[queIdx].optionItemLength - 1;
+                if (typeof findex !== "undefined") {
+                    _focusIndex = findex;
                 } else {
-                    _focusIndex = _prevFocusIndex + direction;
-                    if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > this.queue[queIdx].optionItemLength - 1) _focusIndex = this.queue[queIdx].optionItemLength - 1;
+                    _prevFocusIndex = this.queue[queIdx].optionFocusIndex == -1 ? this.queue[queIdx].optionSelectedIndex || -1 : this.queue[queIdx].optionFocusIndex;
+                    if (_prevFocusIndex == -1) {
+                        _focusIndex = direction > 0 ? 0 : this.queue[queIdx].optionItemLength - 1;
+                    } else {
+                        _focusIndex = _prevFocusIndex + direction;
+                        if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > this.queue[queIdx].optionItemLength - 1) _focusIndex = this.queue[queIdx].optionItemLength - 1;
+                    }
                 }
+
                 this.queue[queIdx].optionFocusIndex = _focusIndex;
 
                 this.activeSelectOptionGroup.find('[data-option-focus-index]').removeClass("hover");
@@ -326,8 +360,13 @@
                     if (e.which == ax5.info.eventKeys.SPACE) {
                         selectEvent.click.call(this, queIdx, e);
                     } else if (!ctrlKeys[e.which]) {
-                        //console.log(this.queue[queIdx].$displayInput.val());
                         // 사용자 입력이 뜸해지면 찾고 검색 값 제거...
+                        if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
+                        this.keyUpTimer = setTimeout(function () {
+                            var searchWord = this.queue[queIdx].$displayInput.val();
+                            focusWord.call(this, queIdx, searchWord);
+                            this.queue[queIdx].$displayInput.val('');
+                        }.bind(this), 500);
                     }
                 },
                 'keyDown': function keyDown(queIdx, e) {
@@ -388,13 +427,6 @@
 
                     alignSelectDisplay.call(this);
 
-                    /*
-                    item.$displayInput.bind("keydown.ax5select", (function (e) {
-                        e = e || window.event;
-                        onBodyKeyDown.call(this, e);
-                        //U.stopEvent(e);
-                    }).bind(this));
-                    */
                     item.$displayInput.unbind("blur.ax5select").bind("blur.ax5select", selectEvent.blur.bind(this, queIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5select").bind("keydown.ax5select", selectEvent.keyDown.bind(this, queIdx));
                 } else {
                     item.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
@@ -433,6 +465,7 @@
 
                 if (options) {
                     item.options = options;
+                    item.indexedOptions = [];
 
                     // select options 태그 생성
                     po = [];
@@ -447,6 +480,10 @@
                                 if (OO[item.columnKeys.optionSelected]) {
                                     setSelected.call(self, queIdx, OO);
                                 }
+
+                                item.indexedOptions.push({
+                                    '@findex': focusIndex, value: OO[item.columnKeys.optionValue], text: OO[item.columnKeys.optionText]
+                                });
                                 focusIndex++;
                             });
                         } else {
@@ -456,6 +493,10 @@
                             if (O[item.columnKeys.optionSelected]) {
                                 setSelected.call(self, queIdx, O);
                             }
+
+                            item.indexedOptions.push({
+                                '@findex': focusIndex, value: O[item.columnKeys.optionValue], text: O[item.columnKeys.optionText]
+                            });
                             focusIndex++;
                         }
                     });
@@ -478,6 +519,7 @@
                         option = null;
                     });
                     item.options = newOptions;
+                    item.indexedOptions = newOptions;
                 }
 
                 if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
@@ -704,8 +746,13 @@
                 }
 
                 /// 사용자 입력으로 옵션을 검색하기 위한 시나리오
-                // 옵션그룹이 활성화 되면 사용자 입력을 받기위한 input .... 탭이 무너질수 있음. 탭 기능 체크 먼저
-                item.$displayInput.val('').trigger("focus");
+                // 옵션그룹이 활성화 되면 사용자 입력을 받기위한 input 값 초기화 및 포커스 다른 select가 닫히면서 display focus 이벤트와 충돌하는 문제가 있으므로
+                // 1밀리세컨 지연후 포커스 처리. input에 포커스가 되므로 input value로 options를 검색 할 수 있게 됩니다.
+                item.$displayInput.val('');
+                setTimeout(function () {
+                    item.$displayInput.trigger("focus");
+                }, 1);
+
                 //item.$display.find('[data-ax5-select-display="input"]')
 
                 jQuery(window).bind("keyup.ax5select-" + this.instanceId, function (e) {
