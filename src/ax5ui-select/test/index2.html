@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2016. tom@axisj.com
+  ~ - github.com/thomasjang
+  ~ - www.axisj.com
+  -->
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,38 +24,36 @@
         <h1>form-group</h1>
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-sm-4">
                 <div class="form-group">
                     <div data-ax5select="select1" data-ax5select-config='{
-                    size: "lg",
+                    size: "",
+                    multiple: false,
+                    reset:"<i class=\"fa fa-trash\"></i>"
+                }'></div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div data-ax5select="select2" data-ax5select-config='{
+                    size: "",
+                    multiple: true,
+                    reset:"<i class=\"fa fa-trash\"></i>"
+                }'></div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div data-ax5select="select3" data-ax5select-config='{
+                    size: "",
                     multiple: true,
                     reset:"<i class=\"fa fa-trash\"></i>"
                 }'></div>
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="form-group">
-                    <div data-ax5select="select2" data-ax5select-config='{
-                        size:"",
-                        minWidth: "150",
-                        multiple: true
-                    }'>
-                        <select data-ax-path="select2"></select>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-
-        <div class="form-group">
-            <div data-ax5select="select3" data-ax5select-config='{
-            "size":"lg"
-        }'>
-                <select data-ax-path="select3"></select>
-            </div>
-        </div>
 
     </form>
 
@@ -63,9 +67,6 @@
     for (var i = 0; i < 20; i++) {
         options.push({value: i, text: "optionText" + i});
     }
-    var mySelect = new ax5.ui.select({
-        theme: "danger"
-    });
 
     $(document.body).ready(function () {
 
@@ -73,53 +74,60 @@
             var act = this.getAttribute("data-btn");
             switch (act) {
                 case "setValue":
-                    mySelect.val($('[data-ax5select="select1"]'), [11, 12]);
+
                     break;
                 case "getValue":
-                    console.log($('[data-ax5select="select2"]').ax5select("getValue"));
-                    console.log(mySelect.val($('[data-ax5select="select1"]')));
-                    console.log($(document.forms).serialize());
+                    console.log($('[data-ax5select="select1"]').ax5select("getValue"));
                     break;
                 case "setValueSelect":
-                    $('[data-ax-path="select3"]').val("7").trigger("change");
-                    //$('[data-ax-path="select2"]').val(["optionValue7", "optionValue9"]).trigger("change");
+
                     break;
                 case "update":
-                    mySelect.update({
-                        target: $('[data-ax5select="select1"]'),
-                        options: [
-                            {value: 99, text: "optionText"}
-                        ]
-                    });
-                    $('[data-ax5select="select2"]').ax5select({
-                        options: options
-                    });
+
                     break;
             }
         });
 
-        // jquery extend
-        /*
-         $('[data-ax5select]').ax5select({
-         options: options
-         });
-         */
+        var callBackCount = 0;
+        $('[data-ax5select="select1"]').ax5select({
+            lang: {
+                loading: '<i class="fa fa-spinner fa-pulse"></i>'
+            },
+            onChange: function () {
+                console.log(this);
+            },
+            onExpand: function (callBack) {
 
+                setTimeout(function () {
+                    if (callBackCount == 0) {
+                        callBack({
+                            options: [
+                                {value: "V0", text: "callBack Text 0"},
+                                {value: "V1", text: "callBack Text 1"},
+                                {value: "V2", text: "callBack Text 2"},
+                                {value: "V3", text: "callBack Text 3"}
+                            ]
+                        });
+                    } else {
+                        callBack({
+                            options: [
+                                {value: "V0", text: "callBack Text 0"},
+                                {value: "V11", text: "callBack Text 11"},
+                                {value: "V12", text: "callBack Text 12"},
+                                {value: "V13", text: "callBack Text 13"}
+                            ]
+                        });
+                    }
+                    callBackCount++;
+                }, 300);
 
+            }
+        });
         $('[data-ax5select="select2"]').ax5select({
             options: options
         });
         $('[data-ax5select="select3"]').ax5select({
             options: options
-        });
-
-        mySelect.bind({
-            //theme: "primary",
-            target: $('[data-ax5select="select1"]'),
-            options: options,
-            onStateChanged: function () {
-                //console.log(this);
-            }
         });
 
     });

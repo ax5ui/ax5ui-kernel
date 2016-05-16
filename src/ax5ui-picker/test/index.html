@@ -41,6 +41,12 @@
     </div>
 </div>
 
+
+<h1>Secure-num</h1>
+<div class="form-group">
+    <input type="password" data-ax5picker="secure-num" class="form-control" maxlength="4" placeholder="" readonly="readonly" />
+</div>
+
 <h1>Custom</h1>
 <div class="form-group">
     <input type="text" data-ax5picker="custom" class="form-control" placeholder=""/>
@@ -206,19 +212,29 @@
                     }
                 });
             }
-            else if (this.getAttribute("data-ax5picker") == "autocomplete") {
+            else if (this.getAttribute("data-ax5picker") == "secure-num") {
                 picker.bind({
                     target: this,
                     direction: "top",
-                    contentWidth: 200,
-                    content: function (callBack) {
-                        var html = ''
-                                        + '가나다라마바사'
-                                        + '<div style="padding: 10px;">'
-                                        + '<button class="btn btn-default">기능 1</button>'
-                                        + '</div>'
-                                ;
-                        callBack(html);
+                    content: {
+                        width: 200,
+                        margin: 10,
+                        type: 'secure-num',
+                        config: {
+                            btnWrapStyle: "padding:3px;width:25%;",
+                            btnStyle: "width:100%",
+                            btnTheme: "info btn-sm",
+                            specialBtnTheme: " btn-sm"
+                        },
+                        formatter: {
+                            pattern: 'number'
+                        }
+                    },
+                    onStateChanged: function(){
+                        console.log(this);
+                        if(this.value && this.value.length > 3){
+                            picker.close();
+                        }
                     }
                 });
             }

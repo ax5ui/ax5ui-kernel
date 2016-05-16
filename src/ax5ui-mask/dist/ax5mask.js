@@ -5,7 +5,7 @@
     /**
      * @class ax5.ui.mask
      * @classdesc
-     * @version 0.6.6
+     * @version 0.6.7
      * @author tom@axisj.com
      * @example
      * ```

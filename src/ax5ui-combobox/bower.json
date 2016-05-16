@@ -1,19 +1,19 @@
 {
-	"name": "ax5ui-select",
-	"version": "0.3.4",
-	"description": "A select plugin that works with Bootstrap & jQuery",
+	"name": "ax5ui-combobox",
+	"version": "0.0.1",
+	"description": "A combobox plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
 	],
-	"main": "dist/ax5select.js",
+	"main": "dist/ax5combobox.js",
 	"keywords": [
 		"bootstrap",
 		"jquery",
 		"ax5ui",
 		"plugin",
 		"bootstrap jQuery plugins",
-		"select",
-		"ax5ui-select",
+		"combobox",
+		"ax5ui-combobox",
 		"javascript ui"
 	],
 	"dependencies": {

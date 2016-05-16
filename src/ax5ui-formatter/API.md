@@ -10,14 +10,14 @@ var formatter = new ax5.ui.formatter();
 formatter.bind({
     target: $("#input"),
     pattern: "date"
-);
+});
 
 formatter.bind({
     target: $("#input"),
     pattern: "custom",
     getEnterableKeyCodes: function(){},
     getPatternValue: function(){}
-);
+});
 ```
 
 ### id
@@ -34,7 +34,7 @@ Type: `Dom Element | jQuery Object`
 
 ### pattern
 
-Type: `String` "money|money(int)|date|date(time)|time|bizno|phone|custom"
+Type: `String` "money | money(int) | number | date | date(time) | time | bizno | phone | custom"
 
 ### getEnterableKeyCodes
 
