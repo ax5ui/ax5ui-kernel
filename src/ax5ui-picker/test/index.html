@@ -84,12 +84,12 @@
             btns: {
                 today: {
                     label: "오늘", onClick: function () {
-                        if (this.boundObject.inputLength == 1) {
-                            this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                        if (this.item.inputLength == 1) {
+                            this.self.setContentValue(this.item.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
                         }
                         else {
-                            this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
-                            this.self.setContentValue(this.boundObject.id, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                            this.self.setContentValue(this.item.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                            this.self.setContentValue(this.item.id, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
                             this.self.close();
                         }
                     }
@@ -97,12 +97,12 @@
                 thisMonth: {
                     label: "이번달 1일", onClick: function () {
                         var today = new Date();
-                        if (this.boundObject.inputLength == 1) {
-                            this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(today, {"return": "yyyy-mm-01"}));
+                        if (this.item.inputLength == 1) {
+                            this.self.setContentValue(this.item.id, 0, ax5.util.date(today, {"return": "yyyy-mm-01"}));
                         }
                         else {
-                            this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(today, {"return": "yyyy-mm-01"}));
-                            this.self.setContentValue(this.boundObject.id, 1, ax5.util.date(today, {"return": "yyyy-mm"}) + '-' + ax5.util.daysOfMonth(today.getFullYear(), today.getMonth()));
+                            this.self.setContentValue(this.item.id, 0, ax5.util.date(today, {"return": "yyyy-mm-01"}));
+                            this.self.setContentValue(this.item.id, 1, ax5.util.date(today, {"return": "yyyy-mm"}) + '-' + ax5.util.daysOfMonth(today.getFullYear(), today.getMonth()));
                             this.self.close();
                         }
                     }
@@ -169,12 +169,12 @@
                     btns: {
                         today: {
                             label: "오늘", onClick: function () {
-                                if (this.boundObject.inputLength == 1) {
-                                    this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                                if (this.item.inputLength == 1) {
+                                    this.self.setContentValue(this.item.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
                                 }
                                 else {
-                                    this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
-                                    this.self.setContentValue(this.boundObject.id, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                                    this.self.setContentValue(this.item.id, 0, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
+                                    this.self.setContentValue(this.item.id, 1, ax5.util.date(new Date(), {"return": "yyyy-mm-dd"}));
                                     this.self.close();
                                 }
                             }
@@ -182,12 +182,12 @@
                         thisMonth: {
                             label: "이번달 1일", onClick: function () {
                                 var today = new Date();
-                                if (this.boundObject.inputLength == 1) {
-                                    this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(today, {"return": "yyyy-mm-01"}));
+                                if (this.item.inputLength == 1) {
+                                    this.self.setContentValue(this.item.id, 0, ax5.util.date(today, {"return": "yyyy-mm-01"}));
                                 }
                                 else {
-                                    this.self.setContentValue(this.boundObject.id, 0, ax5.util.date(today, {"return": "yyyy-mm-01"}));
-                                    this.self.setContentValue(this.boundObject.id, 1, ax5.util.date(today, {"return": "yyyy-mm"}) + '-' + ax5.util.daysOfMonth(today.getFullYear(), today.getMonth()));
+                                    this.self.setContentValue(this.item.id, 0, ax5.util.date(today, {"return": "yyyy-mm-01"}));
+                                    this.self.setContentValue(this.item.id, 1, ax5.util.date(today, {"return": "yyyy-mm"}) + '-' + ax5.util.daysOfMonth(today.getFullYear(), today.getMonth()));
                                     this.self.close();
                                 }
                             }
