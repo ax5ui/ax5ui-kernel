@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.uploader
      * @classdesc
-     * @version 0.4.5
+     * @version 0.4.6
      * @author tom@axisj.com
      * @example
      * ```
@@ -43,7 +43,7 @@
         this.init = function () {
 
             console.log(cfg.target);
-            
+
             this.target = $(cfg.target);
             this.target.html(this.__get_layout());
 
@@ -265,7 +265,7 @@
         };
 
         this.upload = function() {
-
+            var _this = this;
             if (!this.selected_file) {
                 if (cfg.on_event) {
                     var that = {
@@ -300,7 +300,7 @@
             this.xhr.onload = function(e) {
                 var res = e.target.response;
                 try {
-                    if (typeof res == "string") res = U.parse_json(res);
+                    if (typeof res == "string") res = U.parseJson(res);
                 } catch (e) {
                     console.log(e);
                     return false;

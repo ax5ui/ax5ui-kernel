@@ -260,7 +260,7 @@
         };
 
         this.upload = function () {
-
+            var _this = this;
             if (!this.selected_file) {
                 if (cfg.on_event) {
                     var that = {
@@ -294,7 +294,7 @@
             this.xhr.onload = function (e) {
                 var res = e.target.response;
                 try {
-                    if (typeof res == "string") res = U.parse_json(res);
+                    if (typeof res == "string") res = U.parseJson(res);
                 } catch (e) {
                     console.log(e);
                     return false;
