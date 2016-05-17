@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.uploader
      * @classdesc
-     * @version 0.4.5
+     * @version 0.4.6
      * @author tom@axisj.com
      * @example
      * ```
