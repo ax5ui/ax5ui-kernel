@@ -1,7 +1,12 @@
 /// override bootstrap.form-control
 @mixin input-size($parent, $input-height) {
-    [data-ax5select] select[multiple]#{$parent} {
-        height: $input-height;
+    [data-ax5select] {
+        .ax5-ui-select-display#{$parent} {
+            height: $input-height;
+        }
+        select[multiple]#{$parent} {
+            height: $input-height;
+        }
     }
 }
 
@@ -13,14 +18,19 @@
 @include input-size('.input-lg', $input-height-large);
 
 .form-group-sm {
-    [data-ax5select] select[multiple].form-control {
-        height: $input-height-small;
+    [data-ax5select]{
+        select[multiple].form-control {
+            height: $input-height-small;
+        }
     }
+
 }
 
 .form-group-lg {
-    [data-ax5select] select[multiple].form-control {
-        height: $input-height-large;
+    [data-ax5select] {
+        select[multiple].form-control {
+            height: $input-height-large;
+        }
     }
 }
 
@@ -38,6 +48,12 @@
     position: relative;
     overflow: visible;
     display: block;
+    box-sizing: border-box;
+    * {
+        box-sizing: border-box;
+    }
+    margin: 0px;
+
     select {
         z-index: 1;
         position: absolute;
@@ -167,9 +183,9 @@
                     }
                 }
             }
-            .ax-select-option-group{
+            .ax-select-option-group {
 
-                .ax-select-option-item-holder{
+                .ax-select-option-item-holder {
 
                     .ax-select-option-group-label {
                         background: #eee;
@@ -271,9 +287,9 @@
                     }
                 }
             }
-            .ax-select-option-group{
+            .ax-select-option-group {
 
-                .ax-select-option-item-holder{
+                .ax-select-option-item-holder {
                     display: table;
                     position: relative;
                     border-collapse: separate;
@@ -334,6 +350,16 @@ $hover-types: (
     position: relative;
     z-index: 2;
     padding: 0px;
+
+    display: block;
+    height: $input-height-base; // Make inputs at least the height of their button counterpart (base line-height + padding + border)
+    font-size: $font-size-base;
+    color: $input-color;
+    background-color: $input-bg;
+    background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+    border: 1px solid $input-border;
+    border-radius: $input-border-radius; // Note: This has no effect on <select>s in some browsers, due to the limited stylability of <select>s in CSS.
+    text-decoration: none;
 
     &:hover, &:focus {
         text-decoration: none;
@@ -428,14 +454,13 @@ $hover-types: (
         }
     }
 
-
-    &.input-xs{
-
-    }
-    &.input-sm{
+    &.input-xs {
 
     }
-    &.input-lg{
+    &.input-sm {
+
+    }
+    &.input-lg {
 
     }
 }

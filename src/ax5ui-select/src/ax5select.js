@@ -138,7 +138,7 @@
                         </div>
                     </div>
                     <input type="text" tabindex="-1" data-ax5-select-display="input" 
-                    style="position:absolute;z-index:0;left:0px;top:0px;font-size:1px;opacity: 0;border: 0px none;color : transparent;text-indent: -9999em;" />
+                    style="position:absolute;z-index:0;left:0px;top:0px;font-size:1px;opacity: 0;width:1px;border: 0px none;color : transparent;text-indent: -9999em;" />
                 </a>
                 `;
             },
