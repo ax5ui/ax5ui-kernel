@@ -114,6 +114,14 @@ var PATHS = {
         dest: "src/ax5ui-uploader/dist",
         scss: "ax5uploader.scss",
         js: "ax5uploader"
+    },
+    "ax5ui-combobox": {
+        isPlugin: true,
+        root: "src/ax5ui-combobox",
+        src: "src/ax5ui-combobox/src",
+        dest: "src/ax5ui-combobox/dist",
+        scss: "ax5combobox.scss",
+        js: "ax5combobox"
     }
 };
 

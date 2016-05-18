@@ -6,11 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../dist/ax5select.css"/>
+    <link rel="stylesheet" type="text/css" href="../dist/ax5combobox.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
-    <script src="../dist/ax5select.js"></script>
+    <script src="../dist/ax5combobox.js"></script>
 </head>
 <body style="padding: 10px;">
 <div class="container">
@@ -20,34 +20,21 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    <div data-ax5select="select1" data-ax5select-config='{
+                    <div data-ax5combobox="combo1" data-ax5combobox-config='{
                     size: "lg",
                     multiple: true,
                     reset:"<i class=\"fa fa-trash\"></i>"
                 }'></div>
                 </div>
             </div>
-
-            <div class="col-md-6">
-                <div class="form-group">
-                    <div data-ax5select="select2" data-ax5select-config='{
-                        size:"",
-                        minWidth: "150",
-                        multiple: true
-                    }'>
-                        <select data-ax-path="select2"></select>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
 
         <div class="form-group">
-            <div data-ax5select="select3" data-ax5select-config='{
+            <div data-ax5combobox="combo3" data-ax5combobox-config='{
             "size":"lg"
         }'>
-                <select data-ax-path="select3"></select>
+                <input type="text" data-ax-path="combobox3" />
             </div>
         </div>
 
@@ -63,7 +50,7 @@
     for (var i = 0; i < 20; i++) {
         options.push({value: i, text: "optionText" + i});
     }
-    var mySelect = new ax5.ui.select({
+    var myCombo = new ax5.ui.combobox({
         theme: "danger"
     });
 
@@ -99,23 +86,9 @@
         });
 
         // jquery extend
-        /*
-         $('[data-ax5select]').ax5select({
-         options: options
-         });
-         */
-
-
-        $('[data-ax5select="select2"]').ax5select({
-            options: options
-        });
-        $('[data-ax5select="select3"]').ax5select({
-            options: options
-        });
-
-        mySelect.bind({
+        myCombo.bind({
             //theme: "primary",
-            target: $('[data-ax5select="select1"]'),
+            target: $('[data-ax5combobox="ax5combobox1"]'),
             options: options,
             onStateChanged: function () {
                 //console.log(this);

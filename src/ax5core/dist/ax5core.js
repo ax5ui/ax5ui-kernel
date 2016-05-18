@@ -1803,6 +1803,12 @@ ax5.info.errorMsg["ax5select"] = {
     "402": "Can not find boundID",
     "501": "Can not find option"
 };
+
+ax5.info.errorMsg["ax5combobox"] = {
+    "401": "Can not find target element",
+    "402": "Can not find boundID",
+    "501": "Can not find option"
+};
 // 필수 Ployfill 확장 구문
 (function () {
     'use strict';
