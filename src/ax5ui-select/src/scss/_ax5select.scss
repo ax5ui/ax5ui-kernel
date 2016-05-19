@@ -360,6 +360,7 @@ $hover-types: (
     border: 1px solid $input-border;
     border-radius: $input-border-radius; // Note: This has no effect on <select>s in some browsers, due to the limited stylability of <select>s in CSS.
     text-decoration: none;
+    @include box-shadow(inset 0px -2px 5px rgba(0,0,0,.075));
 
     &:hover, &:focus {
         text-decoration: none;
