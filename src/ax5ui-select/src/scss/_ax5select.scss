@@ -89,7 +89,7 @@
         &:not([disabled]) {
             border-color: $theme-color;
             color: $base-color;
-            background: $back-color;
+            background-color: transparent;
             text-decoration: none;
 
             .ax5-ui-select-display-table {
@@ -355,7 +355,7 @@ $hover-types: (
     height: $input-height-base; // Make inputs at least the height of their button counterpart (base line-height + padding + border)
     font-size: $font-size-base;
     color: $input-color;
-    background-color: $input-bg;
+    background-color: transparent;
     background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
     border: 1px solid $input-border;
     border-radius: $input-border-radius; // Note: This has no effect on <select>s in some browsers, due to the limited stylability of <select>s in CSS.

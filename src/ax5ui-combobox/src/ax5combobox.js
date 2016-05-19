@@ -337,19 +337,6 @@
                         if (n.selected) labels.push(n[item.columnKeys.optionText]);
                     });
                 }
-                else {
-                    if (!item.multiple && item.options && item.options[0]) {
-                        if (item.options[0].optgroup) {
-                            labels[0] = item.options[0].options[0][item.columnKeys.optionText];
-                        }
-                        else {
-                            labels[0] = item.options[0][item.columnKeys.optionText];
-                        }
-                    }
-                    else {
-                        labels[0] = item.lang.noSelected;
-                    }
-                }
 
                 return (function () {
                     if (item.multiple && labels.length > 1) {
@@ -543,7 +530,7 @@
                             item.$target.append(item.$input);
                             // combobox append
                         }
-                        
+
                         item.$target.append(item.$display);
                         item.options = syncComboboxOptions.call(this, queIdx, item.options);
 
@@ -564,7 +551,7 @@
                         item.$display
                             .find('[data-ax5-combobox-display="label"]')
                             .html(getLabel.call(this, queIdx));
-                        item.options = synccomboboxOptions.call(this, queIdx, item.options);
+                        item.options = syncComboboxOptions.call(this, queIdx, item.options);
 
                         alignComboboxDisplay.call(this);
                     }
@@ -632,18 +619,7 @@
                             }
                         });
                         item.optionItemLength = focusIndex;
-                    }
-
-                    if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
-                        if (item.options[0].optgroup) {
-                            item.options[0].options[0][item.columnKeys.optionSelected] = true;
-                            item.selected.push(jQuery.extend({}, item.options[0].options[0]));
-                        }
-                        else {
-                            item.options[0][item.columnKeys.optionSelected] = true;
-                            item.selected.push(jQuery.extend({}, item.options[0]));
-                        }
-                    }
+                    } 
 
                     newOptions = null;
                     return item.options;
@@ -833,7 +809,6 @@
 
                 data.lang = item.lang;
                 item.$display.attr("data-combobox-option-group-opened", "true");
-                //console.log(data.lang);
 
                 if (item.onExpand) {
                     // onExpand 인 경우 UI 대기모드 추가
@@ -841,8 +816,8 @@
                 }
 
                 data.options = item.options;
-                this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
-                this.activecomboboxOptionGroup.find('[data-combobox-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                this.activecomboboxOptionGroup = jQuery( ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data) );
+                this.activecomboboxOptionGroup.find('[data-combobox-els="content"]').html( jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)) );
                 this.activecomboboxQueueIndex = queIdx;
 
                 alignComboboxOptionGroup.call(this, "append"); // alignComboboxOptionGroup 에서 body append
@@ -852,8 +827,7 @@
 
                 if (item.selected && item.selected.length > 0) {
                     selectedOptionEl = this.activecomboboxOptionGroup.find('[data-option-index="' + item.selected[0]["@index"] + '"]');
-
-                    if (SelectedOptionEl.get(0)) {
+                    if (selectedOptionEl.get(0)) {
                         focusTop = selectedOptionEl.position().top - this.activecomboboxOptionGroup.height() / 3;
                         this.activecomboboxOptionGroup.find('[data-combobox-els="content"]')
                             .stop().animate({scrollTop: focusTop}, item.animateTime, 'swing', function () {
@@ -861,16 +835,9 @@
                     }
                 }
 
-
-                /// 사용자 입력으로 옵션을 검색하기 위한 시나리오
-                // 옵션그룹이 활성화 되면 사용자 입력을 받기위한 input 값 초기화 및 포커스 다른 combobox가 닫히면서 display focus 이벤트와 충돌하는 문제가 있으므로
-                // 1밀리세컨 지연후 포커스 처리. input에 포커스가 되므로 input value로 options를 검색 할 수 있게 됩니다.
-                item.$displayInput.val('');
                 setTimeout(function () {
-                    item.$displayInput.trigger("focus");
+                    item.$input.trigger("focus");
                 }, 1);
-
-                //item.$display.find('[data-ax5-combobox-display="input"]')
 
                 jQuery(window).bind("keyup.ax5combobox-" + this.instanceId, (function (e) {
                     e = e || window.event;
@@ -974,7 +941,7 @@
 
                     }
 
-                    synCcomboboxOptions.call(this, queIdx, item.options);
+                    syncComboboxOptions.call(this, queIdx, item.options);
                     syncLabel.call(this, queIdx);
                     alignComboboxOptionGroup.call(this);
                 },
@@ -1098,8 +1065,6 @@
 
             item = this.queue[this.activecomboboxQueueIndex];
             item.optionFocusIndex = -1;
-
-            item.$displayInput.val('').trigger("blur");
             item.$display.removeAttr("data-combobox-option-group-opened").trigger("focus");
 
             this.activecomboboxOptionGroup.addClass("destroy");
