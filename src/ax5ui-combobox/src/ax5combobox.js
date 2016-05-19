@@ -137,8 +137,6 @@
                             {{/icons}}
                         </div>
                     </div>
-                    <input type="text" tabindex="-1" data-ax5-combobox-display="input" 
-                    style="position:absolute;z-index:0;left:0px;top:0px;font-size:1px;opacity: 0;border: 0px none;color : transparent;text-indent: -9999em;" />
                 </a>
                 `;
             },
@@ -212,7 +210,7 @@
                 var i = this.queue.length, w;
                 while (i--) {
                     if (this.queue[i].$display) {
-                        w = Math.max(this.queue[i].$combobox.outerWidth(), U.number(this.queue[i].minWidth));
+                        w = Math.max(this.queue[i].$input.outerWidth(), U.number(this.queue[i].minWidth));
                         this.queue[i].$display.css({
                             "min-width": w
                         });
@@ -505,7 +503,7 @@
 
                     },
                     'comboboxChange': function (queIdx, e) {
-                        this.val(queIdx, this.queue[queIdx].$combobox.val(), true);
+                        this.val(queIdx, this.queue[queIdx].$input.val(), true);
                     }
                 };
                 return function (queIdx) {
@@ -530,31 +528,29 @@
 
                         item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
 
-                        if (item.$target.find("combobox").get(0)) {
-                            item.$combobox = item.$target.find("combobox");
-                            // combobox 속성만 변경
-                            item.$combobox
+                        if (item.$target.find("input").get(0)) {
+                            item.$input = item.$target.find("input");
+                            // input 속성만 변경
+                            item.$input
                                 .attr("tabindex", "-1")
                                 .attr("class", "form-control " + data.formSize);
                             if (data.name) {
-                                item.$combobox.attr("name", "name");
-                            }
-                            if (data.multiple) {
-                                item.$combobox.attr("multiple", "multiple");
+                                item.$input.attr("name", "name");
                             }
                         }
                         else {
-                            item.$combobox = jQuery(ax5.mustache.render(getcomboboxTmpl.call(this, queIdx), data));
-                            item.$target.append(item.$combobox);
+                            item.$input = jQuery(ax5.mustache.render(getInputTmpl.call(this, queIdx), data));
+                            item.$target.append(item.$input);
                             // combobox append
                         }
-
+                        
                         item.$target.append(item.$display);
-                        item.$displayInput = item.$display.find('[data-ax5-combobox-display="input"]'); // 사용자 입력값을 받기위한 숨음 입력필드
-                        item.options = synccomboboxOptions.call(this, queIdx, item.options);
+                        item.options = syncComboboxOptions.call(this, queIdx, item.options);
 
                         alignComboboxDisplay.call(this);
-// todo : 여기부터 다시
+                        // todo : 여기부터 다시
+
+                        /*
                         item.$displayInput
                             .unbind("blur.ax5combobox")
                             .bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx))
@@ -562,6 +558,7 @@
                             .bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx))
                             .unbind("keydown.ax5combobox")
                             .bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
+                            */
                     }
                     else {
                         item.$display
@@ -579,7 +576,7 @@
                         .bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx));
 
                     // combobox 태그에 대한 change 이벤트 감시
-                    item.$combobox
+                    item.$input
                         .unbind('change.ax5combobox')
                         .bind('change.ax5combobox', comboboxEvent.comboboxChange.bind(this, queIdx));
 
@@ -589,7 +586,7 @@
                     return this;
                 };
             })(),
-            synCcomboboxOptions = (function () {
+            syncComboboxOptions = (function () {
                 var setSelected = function (queIdx, O) {
                     if (!O) {
                         this.queue[queIdx].selected = [];
@@ -602,7 +599,7 @@
 
                 return function (queIdx, options) {
                     var item = this.queue[queIdx];
-                    var po, elementOptions, newOptions, focusIndex = 0;
+                    var newOptions, focusIndex = 0;
                     setSelected.call(this, queIdx, false); // item.selected 초기화
 
                     if (options) {
@@ -610,7 +607,6 @@
                         item.indexedOptions = [];
 
                         // combobox options 태그 생성
-                        po = [];
                         item.options.forEach(function (O, OIndex) {
                             if (O.optgroup) {
                                 // todo
@@ -618,12 +614,6 @@
                                 O.options.forEach(function (OO, OOIndex) {
                                     OO['@index'] = OOIndex;
                                     OO['@findex'] = focusIndex;
-                                    po.push('<option value="' + OO[item.columnKeys.optionValue] + '" '
-                                        + (OO[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>'
-                                        + OO[item.columnKeys.optionText] + '</option>');
-                                    if (OO[item.columnKeys.optionSelected]) {
-                                        setSelected.call(self, queIdx, OO);
-                                    }
 
                                     item.indexedOptions.push({
                                         '@findex': focusIndex, value: OO[item.columnKeys.optionValue], text: OO[item.columnKeys.optionText]
@@ -634,12 +624,6 @@
                             else {
                                 O['@index'] = OIndex;
                                 O['@findex'] = focusIndex;
-                                po.push('<option value="' + O[item.columnKeys.optionValue] + '" '
-                                    + (O[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>'
-                                    + O[item.columnKeys.optionText] + '</option>');
-                                if (O[item.columnKeys.optionSelected]) {
-                                    setSelected.call(self, queIdx, O);
-                                }
 
                                 item.indexedOptions.push({
                                     '@findex': focusIndex, value: O[item.columnKeys.optionValue], text: O[item.columnKeys.optionText]
@@ -648,26 +632,6 @@
                             }
                         });
                         item.optionItemLength = focusIndex;
-                        item.$combobox.html(po.join(''));
-                    }
-                    else {
-                        /// 현재 사용되지 않는 옵션
-                        /// combobox > options 태그로 스크립트 options를 만들어주는 역할
-                        elementOptions = U.toArray(item.$combobox.get(0).options);
-                        // combobox option 스크립트 생성
-                        newOptions = [];
-                        elementOptions.forEach(function (O, OIndex) {
-                            var option = {};
-                            option[item.columnKeys.optionValue] = O.value;
-                            option[item.columnKeys.optionText] = O.text;
-                            option[item.columnKeys.optionSelected] = O.selected;
-                            option['@index'] = OIndex;
-                            if (O.selected) setSelected.call(self, queIdx, option);
-                            newOptions.push(option);
-                            option = null;
-                        });
-                        item.options = newOptions;
-                        item.indexedOptions = newOptions;
                     }
 
                     if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
@@ -681,8 +645,6 @@
                         }
                     }
 
-                    po = null;
-                    elementOptions = null;
                     newOptions = null;
                     return item.options;
                 }
@@ -1165,7 +1127,7 @@
         this.enable = function (boundID) {
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.removeAttr("disabled");
-            this.queue[queIdx].$combobox.removeAttr("disabled");
+            this.queue[queIdx].$input.removeAttr("disabled");
 
             onStateChanged.call(this, this.queue[queIdx], {
                 self: this,
@@ -1178,7 +1140,7 @@
         this.disable = function (boundID) {
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.attr("disabled", "disabled");
-            this.queue[queIdx].$combobox.attr("disabled", "disabled");
+            this.queue[queIdx].$input.attr("disabled", "disabled");
 
             onStateChanged.call(this, this.queue[queIdx], {
                 self: this,
