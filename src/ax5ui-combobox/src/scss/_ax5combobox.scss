@@ -351,6 +351,10 @@ $hover-types: (
             &:focus{
                 outline: none;
             }
+            text-decoration: none;
+            &:hover{
+                text-decoration: none;
+            }
         }
         [data-ax5-combobox-display="addon"] {
             display: table-cell;

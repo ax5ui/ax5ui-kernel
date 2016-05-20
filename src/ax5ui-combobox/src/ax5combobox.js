@@ -119,10 +119,11 @@
             },
             getTmpl = function () {
                 return `
-                <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-combobox-display {{theme}}" 
+                <div class="form-control {{formSize}} ax5-ui-combobox-display {{theme}}" 
                 data-ax5-combobox-display="{{id}}" data-ax5-combobox-instance="{{instanceId}}">
                     <div class="ax5-ui-combobox-display-table" data-combobox-els="display-table">
-                        <div data-ax5-combobox-display="label" contenteditable="true">{{label}}</div>
+                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}} data-ax5-combobox-display="label" 
+                        contenteditable="true">{{label}}</a>
                         <div data-ax5-combobox-display="addon"> 
                             {{#multiple}}{{#reset}}
                             <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
@@ -465,24 +466,30 @@
                     },
                     'keyUp': function (queIdx, e) {
 
-                        this.queue[queIdx].$displayLabel.html(e.target.value);
-
+                        // console.log(this.queue[queIdx].$displayLabel.text());
+                        /*
                         if (e.which == ax5.info.eventKeys.SPACE) {
                             comboboxEvent.click.call(this, queIdx, e);
                         }
-                        else if (!ctrlKeys[e.which]) {
-                            //console.log(e.target.value);
+                        else
+                        */
+
+                        if (!ctrlKeys[e.which]) {
+
+                            this.queue[queIdx].$input.val( this.queue[queIdx].$displayLabel.text() );
+
                             // 사용자 입력이 뜸해지면 찾고 검색 값 제거...
                             if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
                             this.keyUpTimer = setTimeout((function () {
                                 var searchWord = this.queue[queIdx].$input.val();
+                                console.log(searchWord);
                                 focusWord.call(this, queIdx, searchWord);
-                                //this.queue[queIdx].$input.val('');
                             }).bind(this), 500);
                         }
                     },
                     'keyDown': function (queIdx, e) {
                         if (e.which == ax5.info.eventKeys.RETURN) {
+                            console.log("return");
                             U.stopEvent(e);
                         }
                         if (e.which == ax5.info.eventKeys.DOWN) {
@@ -494,8 +501,11 @@
                             U.stopEvent(e);
                         }
                     },
+                    'focus': function (queIdx, e) {
+                        //console.log(e);
+                    },
                     'blur': function (queIdx, e) {
-                        console.log(e);
+                        //console.log(e);
                     }
                 };
                 return function (queIdx) {
@@ -554,12 +564,12 @@
 
                     item.$display
                         .unbind('click.ax5combobox')
-                        .bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx))
-                        .unbind('keyup.ax5combobox')
-                        .bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx));
+                        .bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
 
                     // combobox 태그에 대한 이벤트 감시
                     item.$displayLabel
+                        .unbind("focus.ax5combobox")
+                        .bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx))
                         .unbind("blur.ax5combobox")
                         .bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx))
                         .unbind('keyup.ax5combobox')
