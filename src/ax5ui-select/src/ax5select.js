@@ -372,7 +372,7 @@
                     .html(getLabel.call(this, queIdx));
             },
             focusWord = function (queIdx, searchWord) {
-                var options = [], i = 0, l = this.queue[queIdx].indexedOptions.length, n;
+                var options = [], i = 0, l = this.queue[queIdx].indexedOptions.length - 1, n;
                 while (l - i++) {
                     n = this.queue[queIdx].indexedOptions[i];
                     if (('' + n.value).toLowerCase() == searchWord.toLowerCase()) {

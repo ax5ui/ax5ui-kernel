@@ -122,7 +122,7 @@
                 <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-combobox-display {{theme}}" 
                 data-ax5-combobox-display="{{id}}" data-ax5-combobox-instance="{{instanceId}}">
                     <div class="ax5-ui-combobox-display-table" data-combobox-els="display-table">
-                        <div data-ax5-combobox-display="label">{{label}}</div>
+                        <div data-ax5-combobox-display="label" contenteditable="true">{{label}}</div>
                         <div data-ax5-combobox-display="addon"> 
                             {{#multiple}}{{#reset}}
                             <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
@@ -357,9 +357,10 @@
                     .html(getLabel.call(this, queIdx));
             },
             focusWord = function (queIdx, searchWord) {
-                var options = [], i = 0, l = this.queue[queIdx].indexedOptions.length, n;
+                var options = [], i = 0, l = this.queue[queIdx].indexedOptions.length - 1, n;
                 while (l - i++) {
                     n = this.queue[queIdx].indexedOptions[i];
+
                     if (('' + n.value).toLowerCase() == searchWord.toLowerCase()) {
                         options = [{'@findex': n['@findex'], optionsSort: 0}];
                         break;
@@ -463,20 +464,27 @@
                         //U.stopEvent(e);
                     },
                     'keyUp': function (queIdx, e) {
+
+                        this.queue[queIdx].$displayLabel.html(e.target.value);
+
                         if (e.which == ax5.info.eventKeys.SPACE) {
                             comboboxEvent.click.call(this, queIdx, e);
                         }
                         else if (!ctrlKeys[e.which]) {
+                            //console.log(e.target.value);
                             // 사용자 입력이 뜸해지면 찾고 검색 값 제거...
                             if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
                             this.keyUpTimer = setTimeout((function () {
-                                var searchWord = this.queue[queIdx].$displayInput.val();
+                                var searchWord = this.queue[queIdx].$input.val();
                                 focusWord.call(this, queIdx, searchWord);
-                                this.queue[queIdx].$displayInput.val('');
+                                //this.queue[queIdx].$input.val('');
                             }).bind(this), 500);
                         }
                     },
                     'keyDown': function (queIdx, e) {
+                        if (e.which == ax5.info.eventKeys.RETURN) {
+                            U.stopEvent(e);
+                        }
                         if (e.which == ax5.info.eventKeys.DOWN) {
                             focusMove.call(this, queIdx, 1);
                             U.stopEvent(e);
@@ -487,10 +495,7 @@
                         }
                     },
                     'blur': function (queIdx, e) {
-
-                    },
-                    'comboboxChange': function (queIdx, e) {
-                        this.val(queIdx, this.queue[queIdx].$input.val(), true);
+                        console.log(e);
                     }
                 };
                 return function (queIdx) {
@@ -514,6 +519,7 @@
                         })();
 
                         item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
+                        item.$displayLabel = item.$display.find('[data-ax5-combobox-display="label"]');
 
                         if (item.$target.find("input").get(0)) {
                             item.$input = item.$target.find("input");
@@ -536,16 +542,6 @@
 
                         alignComboboxDisplay.call(this);
                         // todo : 여기부터 다시
-
-                        /*
-                        item.$displayInput
-                            .unbind("blur.ax5combobox")
-                            .bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx))
-                            .unbind('keyup.ax5combobox')
-                            .bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx))
-                            .unbind("keydown.ax5combobox")
-                            .bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
-                            */
                     }
                     else {
                         item.$display
@@ -562,10 +558,14 @@
                         .unbind('keyup.ax5combobox')
                         .bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx));
 
-                    // combobox 태그에 대한 change 이벤트 감시
-                    item.$input
-                        .unbind('change.ax5combobox')
-                        .bind('change.ax5combobox', comboboxEvent.comboboxChange.bind(this, queIdx));
+                    // combobox 태그에 대한 이벤트 감시
+                    item.$displayLabel
+                        .unbind("blur.ax5combobox")
+                        .bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx))
+                        .unbind('keyup.ax5combobox')
+                        .bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx))
+                        .unbind("keydown.ax5combobox")
+                        .bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
 
                     data = null;
                     item = null;
@@ -835,9 +835,12 @@
                     }
                 }
 
+                //item.$displayLabel.val('');
                 setTimeout(function () {
-                    item.$input.trigger("focus");
+                    item.$displayLabel.trigger("focus");
                 }, 1);
+
+
 
                 jQuery(window).bind("keyup.ax5combobox-" + this.instanceId, (function (e) {
                     e = e || window.event;

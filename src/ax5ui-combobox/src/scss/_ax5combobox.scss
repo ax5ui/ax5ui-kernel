@@ -347,6 +347,10 @@ $hover-types: (
             vertical-align: middle;
             padding: $ax5select-label-padding;
             white-space: nowrap;
+            overflow: hidden;
+            &:focus{
+                outline: none;
+            }
         }
         [data-ax5-combobox-display="addon"] {
             display: table-cell;
