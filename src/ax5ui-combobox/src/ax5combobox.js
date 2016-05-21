@@ -141,9 +141,9 @@
                 </a>
                 `;
             },
-            getInputTmpl = function () {
+            getSelectTmpl = function () {
                 return `
-                <input tabindex="-1" class="form-control {{formSize}}" name="{{name}}" />
+                <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>
                 `;
             },
             getOptionsTmpl = function (columnKeys) {
@@ -211,7 +211,7 @@
                 var i = this.queue.length, w;
                 while (i--) {
                     if (this.queue[i].$display) {
-                        w = Math.max(this.queue[i].$input.outerWidth(), U.number(this.queue[i].minWidth));
+                        w = Math.max(this.queue[i].$select.outerWidth(), U.number(this.queue[i].minWidth));
                         this.queue[i].$display.css({
                             "min-width": w
                         });
@@ -531,31 +531,33 @@
                         item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
                         item.$displayLabel = item.$display.find('[data-ax5-combobox-display="label"]');
 
-                        if (item.$target.find("input").get(0)) {
-                            item.$input = item.$target.find("input");
+                        if (item.$target.find("select").get(0)) {
+                            item.$select = item.$target.find("select");
                             // input 속성만 변경
-                            item.$input
+                            item.$select
                                 .attr("tabindex", "-1")
                                 .attr("class", "form-control " + data.formSize);
                             if (data.name) {
-                                item.$input.attr("name", "name");
+                                item.$select.attr("name", "name");
+                            }
+                            if (data.multiple) {
+                                item.$select.attr("multiple", "multiple");
                             }
                         }
                         else {
-                            item.$input = jQuery(ax5.mustache.render(getInputTmpl.call(this, queIdx), data));
-                            item.$target.append(item.$input);
+                            item.$select = jQuery(ax5.mustache.render(getSelectTmpl.call(this, queIdx), data));
+                            item.$target.append(item.$select);
                             // combobox append
                         }
 
                         item.$target.append(item.$display);
+                        // 라벨에 사용자 입력 필드가 있으므로 displayInput은 필요 없음.
                         item.options = syncComboboxOptions.call(this, queIdx, item.options);
 
                         alignComboboxDisplay.call(this);
-                        // todo : 여기부터 다시
                     }
                     else {
-                        item.$display
-                            .find('[data-ax5-combobox-display="label"]')
+                        item.$displayLabel
                             .html(getLabel.call(this, queIdx));
                         item.options = syncComboboxOptions.call(this, queIdx, item.options);
 
@@ -596,7 +598,7 @@
 
                 return function (queIdx, options) {
                     var item = this.queue[queIdx];
-                    var newOptions, focusIndex = 0;
+                    var po, elementOptions, newOptions, focusIndex = 0;
                     setSelected.call(this, queIdx, false); // item.selected 초기화
 
                     if (options) {
@@ -604,6 +606,7 @@
                         item.indexedOptions = [];
 
                         // combobox options 태그 생성
+                        po = [];
                         item.options.forEach(function (O, OIndex) {
                             if (O.optgroup) {
                                 // todo
@@ -611,7 +614,13 @@
                                 O.options.forEach(function (OO, OOIndex) {
                                     OO['@index'] = OOIndex;
                                     OO['@findex'] = focusIndex;
-
+                                    po.push('<option value="' + OO[item.columnKeys.optionValue] + '" '
+                                        + (OO[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>'
+                                        + OO[item.columnKeys.optionText] + '</option>');
+                                    if (OO[item.columnKeys.optionSelected]) {
+                                        setSelected.call(self, queIdx, OO);
+                                    }
+                                    
                                     item.indexedOptions.push({
                                         '@findex': focusIndex, value: OO[item.columnKeys.optionValue], text: OO[item.columnKeys.optionText]
                                     });
@@ -621,7 +630,13 @@
                             else {
                                 O['@index'] = OIndex;
                                 O['@findex'] = focusIndex;
-
+                                po.push('<option value="' + O[item.columnKeys.optionValue] + '" '
+                                    + (O[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>'
+                                    + O[item.columnKeys.optionText] + '</option>');
+                                if (O[item.columnKeys.optionSelected]) {
+                                    setSelected.call(self, queIdx, O);
+                                }
+                                
                                 item.indexedOptions.push({
                                     '@findex': focusIndex, value: O[item.columnKeys.optionValue], text: O[item.columnKeys.optionText]
                                 });
@@ -629,8 +644,41 @@
                             }
                         });
                         item.optionItemLength = focusIndex;
-                    } 
+                        item.$select.html(po.join(''));
+                    }
+                    else {
+                        /// 현재 사용되지 않는 구문
+                        /// select > options 태그로 스크립트 options를 만들어주는 역할
+                        elementOptions = U.toArray(item.$select.get(0).options);
+                        // select option 스크립트 생성
+                        newOptions = [];
+                        elementOptions.forEach(function (O, OIndex) {
+                            var option = {};
+                            option[item.columnKeys.optionValue] = O.value;
+                            option[item.columnKeys.optionText] = O.text;
+                            option[item.columnKeys.optionSelected] = O.selected;
+                            option['@index'] = OIndex;
+                            if (O.selected) setSelected.call(self, queIdx, option);
+                            newOptions.push(option);
+                            option = null;
+                        });
+                        item.options = newOptions;
+                        item.indexedOptions = newOptions;
+                    }
 
+                    if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
+                        if (item.options[0].optgroup) {
+                            item.options[0].options[0][item.columnKeys.optionSelected] = true;
+                            item.selected.push(jQuery.extend({}, item.options[0].options[0]));
+                        }
+                        else {
+                            item.options[0][item.columnKeys.optionSelected] = true;
+                            item.selected.push(jQuery.extend({}, item.options[0]));
+                        }
+                    }
+
+                    po = null;
+                    elementOptions = null;
                     newOptions = null;
                     return item.options;
                 }

@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.3.6
+     * @version 0.3.7
      * @author tom@axisj.com
      * @example
      * ```
@@ -264,7 +264,7 @@
             }();
         },
             syncLabel = function syncLabel(queIdx) {
-            this.queue[queIdx].$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
+            this.queue[queIdx].$displayLabel.html(getLabel.call(this, queIdx));
         },
             focusWord = function focusWord(queIdx, searchWord) {
             var options = [],
@@ -411,6 +411,7 @@
                     }();
 
                     item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
+                    item.$displayLabel = item.$display.find('[data-ax5-select-display="label"]');
 
                     if (item.$target.find("select").get(0)) {
                         item.$select = item.$target.find("select");
@@ -436,7 +437,7 @@
 
                     item.$displayInput.unbind("blur.ax5select").bind("blur.ax5select", selectEvent.blur.bind(this, queIdx)).unbind('keyup.ax5select').bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5select").bind("keydown.ax5select", selectEvent.keyDown.bind(this, queIdx));
                 } else {
-                    item.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, queIdx));
+                    item.$displayLabel.html(getLabel.call(this, queIdx));
                     item.options = syncSelectOptions.call(this, queIdx, item.options);
 
                     alignSelectDisplay.call(this);
@@ -510,7 +511,7 @@
                     item.optionItemLength = focusIndex;
                     item.$select.html(po.join(''));
                 } else {
-                    /// 현재 사용되지 않는 옵션
+                    /// 현재 사용되지 않는 구문
                     /// select > options 태그로 스크립트 options를 만들어주는 역할
                     elementOptions = U.toArray(item.$select.get(0).options);
                     // select option 스크립트 생성
@@ -521,6 +522,7 @@
                         option[item.columnKeys.optionText] = O.text;
                         option[item.columnKeys.optionSelected] = O.selected;
                         option['@index'] = OIndex;
+                        option['@findex'] = OIndex;
                         if (O.selected) setSelected.call(self, queIdx, option);
                         newOptions.push(option);
                         option = null;
@@ -667,7 +669,7 @@
                             }
                         })(item, O);
 
-                        item.$display.find('[data-ax5-select-display="label"]').html(getLabel.call(this, this.activeSelectQueueIndex));
+                        item.$displayLabel.html(getLabel.call(this, this.activeSelectQueueIndex));
                         item.options = syncSelectOptions.call(this, this.activeSelectQueueIndex, O.options);
 
                         alignSelectDisplay.call(this);
@@ -759,8 +761,6 @@
                 setTimeout(function () {
                     item.$displayInput.trigger("focus");
                 }, 1);
-
-                //item.$display.find('[data-ax5-select-display="input"]')
 
                 jQuery(window).bind("keyup.ax5select-" + this.instanceId, function (e) {
                     e = e || window.event;
