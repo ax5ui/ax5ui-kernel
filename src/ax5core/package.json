@@ -1,6 +1,6 @@
 {
 	"name": "ax5core",
-	"version": "0.9.9",
+	"version": "1.0.0",
 	"description": "`ax5core` is a collection of utility functions that have been designed for use in ax5ui",
 	"license": "LGPLv3",
 	"repository": {

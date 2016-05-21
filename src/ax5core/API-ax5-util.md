@@ -453,3 +453,20 @@ console.log(ax5.util.css('width:100px;padding: 50px; background: #ccc'));
 ```js
 ax5.util.stopEvent(e);
 ```
+
+## ax5.util.selectRange
+```html
+<div id="select-test-0" contentEditable="true">SELECT TEST</div>
+<div id="select-test-1" contentEditable="true">SELECT TEST</div>
+<div id="select-test-2" contentEditable="true">SELECT TEST</div>
+
+<script>
+    $(document.body).ready(function () {
+        ax5.util.selectRange($("#select-test-0"), "end"); // focus on end
+        ax5.util.selectRange($("#select-test-1").get(0), [1, 5]); // select 1~5
+        //ax5.util.selectRange($("#select-test-2"), "start"); // focus on start
+        //ax5.util.selectRange($("#select-test-2")); // selectAll
+        //ax5.util.selectRange($("#select-test-2"), "selectAll"); // selectAll
+    });
+</script>
+```

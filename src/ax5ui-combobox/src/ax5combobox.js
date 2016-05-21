@@ -123,7 +123,7 @@
                 data-ax5-combobox-display="{{id}}" data-ax5-combobox-instance="{{instanceId}}">
                     <div class="ax5-ui-combobox-display-table" data-combobox-els="display-table">
                         <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}} data-ax5-combobox-display="label" 
-                        contenteditable="true">{{label}}</a>
+                        contenteditable="true" spellcheck="false">{{label}}</a>
                         <div data-ax5-combobox-display="addon"> 
                             {{#multiple}}{{#reset}}
                             <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
@@ -476,12 +476,10 @@
 
                         if (!ctrlKeys[e.which]) {
 
-                            this.queue[queIdx].$input.val( this.queue[queIdx].$displayLabel.text() );
-
                             // 사용자 입력이 뜸해지면 찾고 검색 값 제거...
                             if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
                             this.keyUpTimer = setTimeout((function () {
-                                var searchWord = this.queue[queIdx].$input.val();
+                                var searchWord = this.queue[queIdx].$displayLabel.text();
                                 console.log(searchWord);
                                 focusWord.call(this, queIdx, searchWord);
                             }).bind(this), 500);
@@ -895,7 +893,7 @@
 
                 //item.$displayLabel.val('');
                 setTimeout(function () {
-                    item.$displayLabel.trigger("focus");
+                    item.$displayLabel.trigger("focus").select();
                 }, 1);
 
 
