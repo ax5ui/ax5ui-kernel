@@ -35,8 +35,7 @@
             lang: {
                 noSelected: '',
                 noOptions: 'no options',
-                loading: 'now loading..',
-                multipleLabel: '"{{label}}"외 {{length}}건'
+                loading: 'now loading..'
             },
             columnKeys: {
                 optionValue: 'value',
@@ -103,7 +102,7 @@
                     }
                 }
 
-                item = null; 
+                item = null;
                 that = null;
                 return true;
             },
@@ -339,18 +338,8 @@
                     });
                 }
 
-                return (function () {
-                    if (item.multiple && labels.length > 1) {
-                        var data = {
-                            label: labels[0],
-                            length: labels.length - 1
-                        };
-                        return ax5.mustache.render(item.lang.multipleLabel, data);
-                    }
-                    else {
-                        return labels[0];
-                    }
-                })();
+                return labels.join(',');
+
             },
             syncLabel = function (queIdx) {
                 this.queue[queIdx].$display
@@ -438,6 +427,15 @@
                     // optionGroup scroll check
                 }
             },
+            setComboValue = function (queIdx, value) {
+                if(this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1){// 포커스된 옵션이 있는 경우
+
+                }
+                else{
+                    // 포커스된 옵션이 없는경우,  사용자 입력값으로 새옵션을 만들고 종료
+                    if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
+                }
+            },
             bindComboboxTarget = (function () {
                 var comboboxEvent = {
                     'click': function (queIdx, e) {
@@ -468,26 +466,28 @@
 
                         // console.log(this.queue[queIdx].$displayLabel.text());
                         /*
-                        if (e.which == ax5.info.eventKeys.SPACE) {
-                            comboboxEvent.click.call(this, queIdx, e);
-                        }
-                        else
-                        */
+                         if (e.which == ax5.info.eventKeys.SPACE) {
+                         comboboxEvent.click.call(this, queIdx, e);
+                         }
+                         else
+                         */
 
                         if (!ctrlKeys[e.which]) {
-
-                            // 사용자 입력이 뜸해지면 찾고 검색 값 제거...
+                            // 사용자 입력이 뜸해지면 찾고 ...
                             if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
                             this.keyUpTimer = setTimeout((function () {
                                 var searchWord = this.queue[queIdx].$displayLabel.text();
-                                console.log(searchWord);
+                                // console.log(searchWord);
                                 focusWord.call(this, queIdx, searchWord);
                             }).bind(this), 500);
                         }
                     },
                     'keyDown': function (queIdx, e) {
                         if (e.which == ax5.info.eventKeys.RETURN) {
-                            console.log("return");
+                            var inputValue = this.queue[queIdx].$displayLabel.text();
+                            if (this.keyUpTimer) clearTimeout(this.keyUpTimer); // 리턴키를 처리하고 포커스워드는 제거
+                            console.log(inputValue);
+                            setComboValue.call(this, queIdx, inputValue);
                             U.stopEvent(e);
                         }
                         if (e.which == ax5.info.eventKeys.DOWN) {
@@ -618,7 +618,7 @@
                                     if (OO[item.columnKeys.optionSelected]) {
                                         setSelected.call(self, queIdx, OO);
                                     }
-                                    
+
                                     item.indexedOptions.push({
                                         '@findex': focusIndex, value: OO[item.columnKeys.optionValue], text: OO[item.columnKeys.optionText]
                                     });
@@ -634,7 +634,7 @@
                                 if (O[item.columnKeys.optionSelected]) {
                                     setSelected.call(self, queIdx, O);
                                 }
-                                
+
                                 item.indexedOptions.push({
                                     '@findex': focusIndex, value: O[item.columnKeys.optionValue], text: O[item.columnKeys.optionText]
                                 });
@@ -664,16 +664,18 @@
                         item.indexedOptions = newOptions;
                     }
 
-                    if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
-                        if (item.options[0].optgroup) {
-                            item.options[0].options[0][item.columnKeys.optionSelected] = true;
-                            item.selected.push(jQuery.extend({}, item.options[0].options[0]));
-                        }
-                        else {
-                            item.options[0][item.columnKeys.optionSelected] = true;
-                            item.selected.push(jQuery.extend({}, item.options[0]));
-                        }
-                    }
+                    /*
+                     if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
+                     if (item.options[0].optgroup) {
+                     item.options[0].options[0][item.columnKeys.optionSelected] = true;
+                     item.selected.push(jQuery.extend({}, item.options[0].options[0]));
+                     }
+                     else {
+                     item.options[0][item.columnKeys.optionSelected] = true;
+                     item.selected.push(jQuery.extend({}, item.options[0]));
+                     }
+                     }
+                     */
 
                     po = null;
                     elementOptions = null;
@@ -872,8 +874,9 @@
                 }
 
                 data.options = item.options;
-                this.activecomboboxOptionGroup = jQuery( ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data) );
-                this.activecomboboxOptionGroup.find('[data-combobox-els="content"]').html( jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)) );
+
+                this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
+                this.activecomboboxOptionGroup.find('[data-combobox-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
                 this.activecomboboxQueueIndex = queIdx;
 
                 alignComboboxOptionGroup.call(this, "append"); // alignComboboxOptionGroup 에서 body append
@@ -893,9 +896,9 @@
 
                 //item.$displayLabel.val('');
                 setTimeout(function () {
-                    item.$displayLabel.trigger("focus").select();
+                    item.$displayLabel.trigger("focus");
+                    U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
                 }, 1);
-
 
 
                 jQuery(window).bind("keyup.ax5combobox-" + this.instanceId, (function (e) {
