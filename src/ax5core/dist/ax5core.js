@@ -1648,7 +1648,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         range.collapse(true);
                     },
                     'end': function end(el, range, offset) {
-                        console.log("end");
                         range.selectNodeContents(el);
                         range.collapse(false);
                     }

@@ -268,26 +268,28 @@
         },
             focusWord = function focusWord(queIdx, searchWord) {
             var options = [],
-                i = 0,
+                i = -1,
                 l = this.queue[queIdx].indexedOptions.length - 1,
                 n;
-            while (l - i++) {
-                n = this.queue[queIdx].indexedOptions[i];
-                if (('' + n.value).toLowerCase() == searchWord.toLowerCase()) {
-                    options = [{ '@findex': n['@findex'], optionsSort: 0 }];
-                    break;
-                } else {
-                    var sort = ('' + n.value).toLowerCase().search(searchWord.toLowerCase());
-                    if (sort > -1) {
-                        options.push({ '@findex': n['@findex'], optionsSort: sort });
-                        if (options.length > 2) break;
+            if (searchWord) {
+                while (l - i++) {
+                    n = this.queue[queIdx].indexedOptions[i];
+                    if (('' + n.value).toLowerCase() == searchWord.toLowerCase()) {
+                        options = [{ '@findex': n['@findex'], optionsSort: 0 }];
+                        break;
+                    } else {
+                        var sort = ('' + n.value).toLowerCase().search(searchWord.toLowerCase());
+                        if (sort > -1) {
+                            options.push({ '@findex': n['@findex'], optionsSort: sort });
+                            if (options.length > 2) break;
+                        }
+                        sort = null;
                     }
-                    sort = null;
                 }
+                options.sort(function (a, b) {
+                    return a.optionsSort - b.optionsSort;
+                });
             }
-            options.sort(function (a, b) {
-                return a.optionsSort - b.optionsSort;
-            });
             if (options && options.length > 0) {
                 focusMove.call(this, queIdx, undefined, options[0]['@findex']);
             }

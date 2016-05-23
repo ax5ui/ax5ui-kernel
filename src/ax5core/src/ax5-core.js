@@ -1706,7 +1706,6 @@
                         range.collapse(true);
                     },
                     'end': function (el, range, offset) {
-                        console.log("end");
                         range.selectNodeContents(el);
                         range.collapse(false);
                     }

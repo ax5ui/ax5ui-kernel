@@ -44,9 +44,17 @@
 </div>
 <script>
     var options = [];
-    for (var i = 0; i < 20; i++) {
-        options.push({value: i, text: "optionText" + i});
-    }
+        options.push({value: "string", text: "string"});
+        options.push({value: "number", text: "number"});
+        options.push({value: "substr", text: "substr"});
+        options.push({value: "substring", text: "substring"});
+        options.push({value: "search", text: "search"});
+        options.push({value: "parseInt", text: "parseInt"});
+        options.push({value: "toFixed", text: "toFixed"});
+        options.push({value: "min", text: "min"});
+        options.push({value: "max", text: "max"});
+
+
     var myCombo = new ax5.ui.combobox({
         theme: "danger"
     });
