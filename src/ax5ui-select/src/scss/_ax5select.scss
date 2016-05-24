@@ -1,7 +1,7 @@
 /// override bootstrap.form-control
 @mixin input-size($parent, $input-height) {
     [data-ax5select] {
-        .ax5-ui-select-display#{$parent} {
+        .ax5select-display#{$parent} {
             height: $input-height;
         }
         select[multiple]#{$parent} {
@@ -84,7 +84,7 @@
     }
 }
 
-@mixin ax5-ui-select-display-theme($base-color, $back-color, $theme-color) {
+@mixin ax5select-display-theme($base-color, $back-color, $theme-color) {
     &:hover, &:active, &:focus, &[data-select-option-group-opened] {
         &:not([disabled]) {
             border-color: $theme-color;
@@ -92,11 +92,11 @@
             background-color: transparent;
             text-decoration: none;
 
-            .ax5-ui-select-display-table {
-                [data-ax5-select-display="label"] {
+            .ax5select-display-table {
+                [data-ax5select-display="label"] {
 
                 }
-                [data-ax5-select-display="addon"] {
+                [data-ax5select-display="addon"] {
                     .addon-icon-closed {
                         .addon-icon-arrow {
                             border-top-color: $base-color;
@@ -116,7 +116,7 @@
     }
 }
 
-@mixin ax5-ui-select-option-group-theme($base-color, $back-color, $theme-color, $hover-type) {
+@mixin ax5select-option-group-theme($base-color, $back-color, $theme-color, $hover-type) {
     border-color: $theme-color;
     color: $base-color;
 
@@ -205,7 +205,7 @@
     }
 }
 
-@mixin ax5-ui-select-option-group-size($padding, $font-size) {
+@mixin ax5select-option-group-size($padding, $font-size) {
     .ax-select-body {
         padding: $ax5select-option-group-body-padding;
         $ax5select-option-item-height: $font-size + 5;
@@ -346,7 +346,7 @@ $hover-types: (
 );
 
 /// select-display
-.ax5-ui-select-display {
+.ax5select-display {
     position: relative;
     z-index: 2;
     padding: 0px;
@@ -366,7 +366,7 @@ $hover-types: (
         text-decoration: none;
     }
 
-    .ax5-ui-select-display-table {
+    .ax5select-display-table {
         width: 100%;
         height: 100%;
         display: table;
@@ -374,13 +374,13 @@ $hover-types: (
         border-collapse: collapse;
         @include user-select(none);
 
-        [data-ax5-select-display="label"] {
+        [data-ax5select-display="label"] {
             display: table-cell;
             vertical-align: middle;
             padding: $ax5select-label-padding;
             white-space: nowrap;
         }
-        [data-ax5-select-display="addon"] {
+        [data-ax5select-display="addon"] {
             display: table-cell;
             vertical-align: middle;
             width: $ax5select-addon-icon-height * 2 + $ax5select-addon-icon-padding-right;
@@ -432,7 +432,7 @@ $hover-types: (
 
     &[data-select-option-group-opened] {
         @include box-shadow(inset 1px 1px 3px rgba(0, 0, 0, 0.2));
-        .ax5-ui-select-display-table [data-ax5-select-display="addon"] {
+        .ax5select-display-table [data-ax5select-display="addon"] {
             .addon-icon-reset {
                 display: block;
                 position: absolute;
@@ -451,7 +451,7 @@ $hover-types: (
 
     @each $theme in $base-colors {
         &.#{nth($theme, 1)} {
-            @include ax5-ui-select-display-theme(map_get($base-colors, nth($theme, 1)), $ax5select-option-group-bg, map_get($theme-colors, nth($theme, 1)));
+            @include ax5select-display-theme(map_get($base-colors, nth($theme, 1)), $ax5select-option-group-bg, map_get($theme-colors, nth($theme, 1)));
         }
     }
 
@@ -467,7 +467,7 @@ $hover-types: (
 }
 
 /// select-option-group
-.ax5-ui-select-option-group {
+.ax5select-option-group {
     box-sizing: border-box;
     z-index: $ax5select-option-group-z-index;
     position: absolute;
@@ -494,18 +494,18 @@ $hover-types: (
 
     @each $theme in $base-colors {
         &.#{nth($theme, 1)} {
-            @include ax5-ui-select-option-group-theme(map_get($base-colors, nth($theme, 1)), $ax5select-option-group-bg, map_get($theme-colors, nth($theme, 1)), map_get($hover-types, nth($theme, 1)));
+            @include ax5select-option-group-theme(map_get($base-colors, nth($theme, 1)), $ax5select-option-group-bg, map_get($theme-colors, nth($theme, 1)), map_get($hover-types, nth($theme, 1)));
         }
     }
 
-    @include ax5-ui-select-option-group-size($ax5select-option-item-padding, $ax5select-option-item-font-size);
-    &.ax5-ui-select-option-group-lg {
-        @include ax5-ui-select-option-group-size($ax5select-option-item-padding-lg, $ax5select-option-item-font-size-lg);
+    @include ax5select-option-group-size($ax5select-option-item-padding, $ax5select-option-item-font-size);
+    &.ax5select-option-group-lg {
+        @include ax5select-option-group-size($ax5select-option-item-padding-lg, $ax5select-option-item-font-size-lg);
     }
-    &.ax5-ui-select-option-group-sm {
-        @include ax5-ui-select-option-group-size($ax5select-option-item-padding-sm, $ax5select-option-item-font-size-sm);
+    &.ax5select-option-group-sm {
+        @include ax5select-option-group-size($ax5select-option-item-padding-sm, $ax5select-option-item-font-size-sm);
     }
-    &.ax5-ui-select-option-group-xs {
-        @include ax5-ui-select-option-group-size($ax5select-option-item-padding-xs, $ax5select-option-item-font-size-xs);
+    &.ax5select-option-group-xs {
+        @include ax5select-option-group-size($ax5select-option-item-padding-xs, $ax5select-option-item-font-size-xs);
     }
 }

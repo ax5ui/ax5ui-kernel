@@ -109,7 +109,7 @@
             },
             getOptionGroupTmpl = function (columnKeys) {
                 return `
-                <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">
+                <div class="ax5select-option-group {{theme}} {{size}}" data-ax5select-option-group="{{id}}">
                     <div class="ax-select-body">
                         <div class="ax-select-option-group-content" data-select-els="content"></div>
                     </div>
@@ -119,11 +119,11 @@
             },
             getTmpl = function () {
                 return `
-                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" 
-                data-ax5-select-display="{{id}}" data-ax5-select-instance="{{instanceId}}">
-                    <div class="ax5-ui-select-display-table" data-select-els="display-table">
-                        <div data-ax5-select-display="label">{{label}}</div>
-                        <div data-ax5-select-display="addon"> 
+                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5select-display {{theme}}" 
+                data-ax5select-display="{{id}}" data-ax5select-instance="{{instanceId}}">
+                    <div class="ax5select-display-table" data-select-els="display-table">
+                        <div data-ax5select-display="label">{{label}}</div>
+                        <div data-ax5select-display="addon"> 
                             {{#multiple}}{{#reset}}
                             <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
                             {{/reset}}{{/multiple}}
@@ -137,7 +137,7 @@
                             {{/icons}}
                         </div>
                     </div>
-                    <input type="text" tabindex="-1" data-ax5-select-display="input" 
+                    <input type="text" tabindex="-1" data-ax5select-display="input" 
                     style="position:absolute;z-index:0;left:0px;top:0px;font-size:1px;opacity: 0;width:1px;border: 0px none;color : transparent;text-indent: -9999em;" />
                 </a>
                 `;
@@ -530,7 +530,7 @@
                         })();
 
                         item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
-                        item.$displayLabel = item.$display.find('[data-ax5-select-display="label"]');
+                        item.$displayLabel = item.$display.find('[data-ax5select-display="label"]');
                         
                         if (item.$target.find("select").get(0)) {
                             item.$select = item.$target.find("select");
@@ -552,7 +552,7 @@
                         }
 
                         item.$target.append(item.$display);
-                        item.$displayInput = item.$display.find('[data-ax5-select-display="input"]'); // 사용자 입력값을 받기위한 숨음 입력필드
+                        item.$displayInput = item.$display.find('[data-ax5select-display="input"]'); // 사용자 입력값을 받기위한 숨음 입력필드
                         item.options = syncSelectOptions.call(this, queIdx, item.options);
 
                         alignSelectDisplay.call(this);
@@ -746,7 +746,7 @@
 
             if (!item.id) item.id = item.$target.data("data-ax5select-id");
             if (!item.id) {
-                item.id = 'ax5-select-' + ax5.getGuid();
+                item.id = 'ax5select-' + ax5.getGuid();
                 item.$target.data("data-ax5select-id", item.id);
             }
             item.name = item.$target.attr("data-ax5select");
@@ -823,7 +823,7 @@
                         /// 템플릿에 전달할 오브젝트 선언
                         data.id = item.id;
                         data.theme = item.theme;
-                        data.size = "ax5-ui-select-option-group-" + item.size;
+                        data.size = "ax5select-option-group-" + item.size;
                         data.multiple = item.multiple;
                         data.lang = item.lang;
                         data.options = item.options;
@@ -867,7 +867,7 @@
                 /// 템플릿에 전달할 오브젝트 선언
                 data.id = item.id;
                 data.theme = item.theme;
-                data.size = "ax5-ui-select-option-group-" + item.size;
+                data.size = "ax5select-option-group-" + item.size;
                 data.multiple = item.multiple;
 
                 data.lang = item.lang;
