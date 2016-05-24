@@ -1,0 +1,56 @@
+/*!
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+// themes
+$border-colors: (
+        default: $ax5layout-default-border-color,
+        primary: $ax5layout-primary-border-color,
+        success: $ax5layout-success-border-color,
+        info: $ax5layout-info-border-color,
+        warning: $ax5layout-warning-border-color,
+        danger: $ax5layout-danger-border-color
+);
+$font-colors: (
+        default: $ax5layout-default-font-color,
+        primary: $ax5layout-primary-font-color,
+        success: $ax5layout-success-font-color,
+        info: $ax5layout-info-font-color,
+        warning: $ax5layout-warning-font-color,
+        danger: $ax5layout-danger-font-color
+);
+
+@include keyframes(ax-layout) {
+    from {
+        @include transform(translateY(-10%) scaleY(0.0));
+        opacity: 0;
+    }
+    to {
+        @include transform(translateY(0%) scaleY(1.0));
+        opacity: 1;
+    }
+}
+
+@include keyframes(ax-layout-option-destroy) {
+    from {
+        @include transform(translateY(0%) scaleY(1.0));
+        opacity: 1;
+    }
+    to {
+        @include transform(translateY(-10%) scaleY(0.0));
+        opacity: 0;
+    }
+}
+
+@mixin ax5-ui-layout-theme($border-color, $font-color){
+
+}
+
+/// layout-display
+[data-ax5-ui-layout] {
+    position: relative;
+    overflow: hidden;
+
+}

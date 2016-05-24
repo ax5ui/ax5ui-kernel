@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../dist/ax5layout.css"/>
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/ax5core/dist/ax5core.js"></script>
+    <script src="../dist/ax5layout.js"></script>
+</head>
+<body style="padding: 50px;">
+
+<div data-ax5layout="ax1" data-config='{control:"dockPanel"}' style="width: 600px;height: 600px;">
+    <div data-config='{dock:"top", split:"true", height: 100}'></div>
+    <div data-config='{dock:"left", split:true, width: 100}'></div>
+    <div data-config='{dock:"center"}'></div>
+</div>
+
+<script>
+    jQuery(document.body).ready(function () {
+        jQuery('[data-ax5layout-dock]').ax5layout();
+    });
+</script>
+
+</body>
+</html>
