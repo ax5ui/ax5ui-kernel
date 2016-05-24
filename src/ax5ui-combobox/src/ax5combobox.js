@@ -110,7 +110,7 @@
                 return `
                 <div class="ax5combobox-option-group {{theme}} {{size}}" data-ax5combobox-option-group="{{id}}">
                     <div class="ax-combobox-body">
-                        <div class="ax-combobox-option-group-content" data-combobox-els="content"></div>
+                        <div class="ax-combobox-option-group-content" data-els="content"></div>
                     </div>
                     <div class="ax-combobox-arrow"></div> 
                 </div>
@@ -120,7 +120,7 @@
                 return `
                 <div class="form-control {{formSize}} ax5combobox-display {{theme}}" 
                 data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
-                    <div class="ax5combobox-display-table" data-combobox-els="display-table">
+                    <div class="ax5combobox-display-table" data-els="display-table">
                         <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}} data-ax5combobox-display="label" 
                         contenteditable="true" spellcheck="false">{{label}}</a>
                         <div data-ax5combobox-display="addon"> 
@@ -425,7 +425,7 @@
                         .find('[data-option-focus-index="' + _focusIndex + '"]')
                         .addClass("hover");
 
-                    optionGroupScrollContainer = this.activecomboboxOptionGroup.find('[data-combobox-els="content"]');
+                    optionGroupScrollContainer = this.activecomboboxOptionGroup.find('[data-els="content"]');
 
                     let focusOptionElHeight = focusOptionEl.outerHeight(),
                         optionGroupScrollContainerHeight = optionGroupScrollContainer.innerHeight(),
@@ -868,7 +868,7 @@
                         data.multiple = item.multiple;
                         data.lang = item.lang;
                         data.options = item.options;
-                        this.activecomboboxOptionGroup.find('[data-combobox-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                        this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
                     }
                 }).bind(this));
             };
@@ -922,7 +922,7 @@
                 data.options = item.options;
 
                 this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
-                this.activecomboboxOptionGroup.find('[data-combobox-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
                 this.activecomboboxQueueIndex = queIdx;
 
                 alignComboboxOptionGroup.call(this, "append"); // alignComboboxOptionGroup 에서 body append
@@ -934,7 +934,7 @@
                     selectedOptionEl = this.activecomboboxOptionGroup.find('[data-option-index="' + item.selected[0]["@index"] + '"]');
                     if (selectedOptionEl.get(0)) {
                         focusTop = selectedOptionEl.position().top - this.activecomboboxOptionGroup.height() / 3;
-                        this.activecomboboxOptionGroup.find('[data-combobox-els="content"]')
+                        this.activecomboboxOptionGroup.find('[data-els="content"]')
                             .stop().animate({scrollTop: focusTop}, item.animateTime, 'swing', function () {
                         });
                     }

@@ -111,7 +111,7 @@
                 return `
                 <div class="ax5select-option-group {{theme}} {{size}}" data-ax5select-option-group="{{id}}">
                     <div class="ax-select-body">
-                        <div class="ax-select-option-group-content" data-select-els="content"></div>
+                        <div class="ax-select-option-group-content" data-els="content"></div>
                     </div>
                     <div class="ax-select-arrow"></div> 
                 </div>
@@ -121,7 +121,7 @@
                 return `
                 <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5select-display {{theme}}" 
                 data-ax5select-display="{{id}}" data-ax5select-instance="{{instanceId}}">
-                    <div class="ax5select-display-table" data-select-els="display-table">
+                    <div class="ax5select-display-table" data-els="display-table">
                         <div data-ax5select-display="label">{{label}}</div>
                         <div data-ax5select-display="addon"> 
                             {{#multiple}}{{#reset}}
@@ -436,7 +436,7 @@
                         .find('[data-option-focus-index="' + _focusIndex + '"]')
                         .addClass("hover");
 
-                    optionGroupScrollContainer = this.activeSelectOptionGroup.find('[data-select-els="content"]');
+                    optionGroupScrollContainer = this.activeSelectOptionGroup.find('[data-els="content"]');
 
                     let focusOptionElHeight = focusOptionEl.outerHeight(),
                         optionGroupScrollContainerHeight = optionGroupScrollContainer.innerHeight(),
@@ -827,7 +827,7 @@
                         data.multiple = item.multiple;
                         data.lang = item.lang;
                         data.options = item.options;
-                        this.activeSelectOptionGroup.find('[data-select-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                        this.activeSelectOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
                     }
                 }).bind(this));
             };
@@ -881,7 +881,7 @@
 
                 data.options = item.options;
                 this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
-                this.activeSelectOptionGroup.find('[data-select-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                this.activeSelectOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
                 this.activeSelectQueueIndex = queIdx;
 
                 alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append
@@ -894,7 +894,7 @@
 
                     if (selectedOptionEl.get(0)) {
                         focusTop = selectedOptionEl.position().top - this.activeSelectOptionGroup.height() / 3;
-                        this.activeSelectOptionGroup.find('[data-select-els="content"]')
+                        this.activeSelectOptionGroup.find('[data-els="content"]')
                             .stop().animate({scrollTop: focusTop}, item.animateTime, 'swing', function () {
                         });
                     }
