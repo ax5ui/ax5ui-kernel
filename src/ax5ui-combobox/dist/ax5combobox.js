@@ -105,10 +105,10 @@
             return true;
         },
             getOptionGroupTmpl = function getOptionGroupTmpl(columnKeys) {
-            return '\n                <div class="ax5-ui-combobox-option-group {{theme}} {{size}}" data-ax5-combobox-option-group="{{id}}">\n                    <div class="ax-combobox-body">\n                        <div class="ax-combobox-option-group-content" data-combobox-els="content"></div>\n                    </div>\n                    <div class="ax-combobox-arrow"></div> \n                </div>\n                ';
+            return '\n                <div class="ax5combobox-option-group {{theme}} {{size}}" data-ax5combobox-option-group="{{id}}">\n                    <div class="ax-combobox-body">\n                        <div class="ax-combobox-option-group-content" data-combobox-els="content"></div>\n                    </div>\n                    <div class="ax-combobox-arrow"></div> \n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
-            return '\n                <div class="form-control {{formSize}} ax5-ui-combobox-display {{theme}}" \n                data-ax5-combobox-display="{{id}}" data-ax5-combobox-instance="{{instanceId}}">\n                    <div class="ax5-ui-combobox-display-table" data-combobox-els="display-table">\n                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}} data-ax5-combobox-display="label" \n                        contenteditable="true" spellcheck="false">{{label}}</a>\n                        <div data-ax5-combobox-display="addon"> \n                            {{#multiple}}{{#reset}}\n                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                            {{/reset}}{{/multiple}}\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
+            return '\n                <div class="form-control {{formSize}} ax5combobox-display {{theme}}" \n                data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">\n                    <div class="ax5combobox-display-table" data-combobox-els="display-table">\n                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}} data-ax5combobox-display="label" \n                        contenteditable="true" spellcheck="false">{{label}}</a>\n                        <div data-ax5combobox-display="addon"> \n                            {{#multiple}}{{#reset}}\n                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                            {{/reset}}{{/multiple}}\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
         },
             getSelectTmpl = function getSelectTmpl() {
             return '\n                <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n                ';
@@ -437,7 +437,7 @@
                     }();
 
                     item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
-                    item.$displayLabel = item.$display.find('[data-ax5-combobox-display="label"]');
+                    item.$displayLabel = item.$display.find('[data-ax5combobox-display="label"]');
 
                     if (item.$target.find("select").get(0)) {
                         item.$select = item.$target.find("select");
@@ -649,7 +649,7 @@
 
             if (!item.id) item.id = item.$target.data("data-ax5combobox-id");
             if (!item.id) {
-                item.id = 'ax5-combobox-' + ax5.getGuid();
+                item.id = 'ax5combobox-' + ax5.getGuid();
                 item.$target.data("data-ax5combobox-id", item.id);
             }
             item.name = item.$target.attr("data-ax5combobox");
@@ -715,7 +715,7 @@
                             }
                         })(item, O);
 
-                        item.$display.find('[data-ax5-combobox-display="label"]').html(getLabel.call(this, this.activecomboboxQueueIndex));
+                        item.$display.find('[data-ax5combobox-display="label"]').html(getLabel.call(this, this.activecomboboxQueueIndex));
                         item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
 
                         alignComboboxDisplay.call(this);
@@ -723,7 +723,7 @@
                         /// 템플릿에 전달할 오브젝트 선언
                         data.id = item.id;
                         data.theme = item.theme;
-                        data.size = "ax5-ui-combobox-option-group-" + item.size;
+                        data.size = "ax5combobox-option-group-" + item.size;
                         data.multiple = item.multiple;
                         data.lang = item.lang;
                         data.options = item.options;
@@ -769,7 +769,7 @@
                 /// 템플릿에 전달할 오브젝트 선언
                 data.id = item.id;
                 data.theme = item.theme;
-                data.size = "ax5-ui-combobox-option-group-" + item.size;
+                data.size = "ax5combobox-option-group-" + item.size;
                 data.multiple = item.multiple;
 
                 data.lang = item.lang;

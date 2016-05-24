@@ -122,6 +122,14 @@ var PATHS = {
         dest: "src/ax5ui-combobox/dist",
         scss: "ax5combobox.scss",
         js: "ax5combobox"
+    },
+    "ax5ui-layout": {
+        isPlugin: true,
+        root: "src/ax5ui-layout",
+        src: "src/ax5ui-layout/src",
+        dest: "src/ax5ui-layout/dist",
+        scss: "ax5layout.scss",
+        js: "ax5layout"
     }
 };
 

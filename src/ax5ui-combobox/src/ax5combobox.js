@@ -108,7 +108,7 @@
             },
             getOptionGroupTmpl = function (columnKeys) {
                 return `
-                <div class="ax5-ui-combobox-option-group {{theme}} {{size}}" data-ax5-combobox-option-group="{{id}}">
+                <div class="ax5combobox-option-group {{theme}} {{size}}" data-ax5combobox-option-group="{{id}}">
                     <div class="ax-combobox-body">
                         <div class="ax-combobox-option-group-content" data-combobox-els="content"></div>
                     </div>
@@ -118,12 +118,12 @@
             },
             getTmpl = function () {
                 return `
-                <div class="form-control {{formSize}} ax5-ui-combobox-display {{theme}}" 
-                data-ax5-combobox-display="{{id}}" data-ax5-combobox-instance="{{instanceId}}">
-                    <div class="ax5-ui-combobox-display-table" data-combobox-els="display-table">
-                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}} data-ax5-combobox-display="label" 
+                <div class="form-control {{formSize}} ax5combobox-display {{theme}}" 
+                data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
+                    <div class="ax5combobox-display-table" data-combobox-els="display-table">
+                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}} data-ax5combobox-display="label" 
                         contenteditable="true" spellcheck="false">{{label}}</a>
-                        <div data-ax5-combobox-display="addon"> 
+                        <div data-ax5combobox-display="addon"> 
                             {{#multiple}}{{#reset}}
                             <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
                             {{/reset}}{{/multiple}}
@@ -552,7 +552,7 @@
                         })();
 
                         item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
-                        item.$displayLabel = item.$display.find('[data-ax5-combobox-display="label"]');
+                        item.$displayLabel = item.$display.find('[data-ax5combobox-display="label"]');
 
                         if (item.$target.find("select").get(0)) {
                             item.$select = item.$target.find("select");
@@ -786,7 +786,7 @@
 
             if (!item.id) item.id = item.$target.data("data-ax5combobox-id");
             if (!item.id) {
-                item.id = 'ax5-combobox-' + ax5.getGuid();
+                item.id = 'ax5combobox-' + ax5.getGuid();
                 item.$target.data("data-ax5combobox-id", item.id);
             }
             item.name = item.$target.attr("data-ax5combobox");
@@ -855,7 +855,7 @@
 
 
                         item.$display
-                            .find('[data-ax5-combobox-display="label"]')
+                            .find('[data-ax5combobox-display="label"]')
                             .html(getLabel.call(this, this.activecomboboxQueueIndex));
                         item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
 
@@ -864,7 +864,7 @@
                         /// 템플릿에 전달할 오브젝트 선언
                         data.id = item.id;
                         data.theme = item.theme;
-                        data.size = "ax5-ui-combobox-option-group-" + item.size;
+                        data.size = "ax5combobox-option-group-" + item.size;
                         data.multiple = item.multiple;
                         data.lang = item.lang;
                         data.options = item.options;
@@ -908,7 +908,7 @@
                 /// 템플릿에 전달할 오브젝트 선언
                 data.id = item.id;
                 data.theme = item.theme;
-                data.size = "ax5-ui-combobox-option-group-" + item.size;
+                data.size = "ax5combobox-option-group-" + item.size;
                 data.multiple = item.multiple;
 
                 data.lang = item.lang;
