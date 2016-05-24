@@ -49,8 +49,8 @@ $font-colors: (
 }
 
 /// layout-display
-[data-ax5-ui-layout] {
+[data-ax5layout] {
     position: relative;
-    overflow: hidden;
+    background: #eee;
 
 }

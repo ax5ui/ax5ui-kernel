@@ -49,7 +49,45 @@
                     this.onStateChanged.call(that, that);
                 }
                 return true;
-            };
+            },
+            bindLayoutTarget = (function () {
+
+                var collectChild = {
+                    'dock-panel': function (queIdx) {
+                        var item = this.queue[queIdx];
+                        item.dockPanel = {};
+                        item.$target.find('[data-dock-panel]').each(function () {
+                            // console.log( this.getAttribute("data-dock-panel") );
+                            var panelInfo = {};
+                            (function (data) {
+                                if (U.isObject(data) && !data.error) {
+                                    panelInfo = jQuery.extend(true, panelInfo, data);
+                                }
+                            })(U.parseJson(this.getAttribute("data-dock-panel"), true));
+                            
+
+                            if('dock' in panelInfo){
+                                panelInfo.$target = jQuery(this);
+                                item.dockPanel[panelInfo.dock] = panelInfo;
+                            }
+                        });
+
+                        console.log(item.dockPanel);
+                    }
+                };
+
+                return function (queIdx) {
+                    var item = this.queue[queIdx];
+                    var data = {};
+
+                    if (item.control in collectChild) {
+                        collectChild[item.control].call(this, queIdx);
+                    }
+
+                    //item.$target.find()
+
+                }
+            })();
         /// private end
 
         /**
@@ -80,10 +118,10 @@
          */
         this.bind = function (item) {
             var
-                selectConfig = {},
+                UIConfig = {},
                 queIdx;
 
-            item = jQuery.extend(true, selectConfig, cfg, item);
+            item = jQuery.extend(true, UIConfig, cfg, item);
             if (!item.target) {
                 console.log(ax5.info.getError("ax5layout", "401", "bind"));
                 return this;
@@ -106,7 +144,7 @@
                 if (U.isObject(data) && !data.error) {
                     item = jQuery.extend(true, item, data);
                 }
-            })(U.parseJson(item.$target.attr("data-ax5layout-config"), true));
+            })(U.parseJson(item.$target.attr("data-config"), true));
 
             queIdx = U.search(this.queue, function () {
                 return this.id == item.id;
@@ -114,14 +152,14 @@
 
             if (queIdx === -1) {
                 this.queue.push(item);
-                bindSelectTarget.call(this, this.queue.length - 1);
+                bindLayoutTarget.call(this, this.queue.length - 1);
             }
             else {
                 this.queue[queIdx] = jQuery.extend(true, {}, this.queue[queIdx], item);
-                bindSelectTarget.call(this, queIdx);
+                bindLayoutTarget.call(this, queIdx);
             }
 
-            selectConfig = null;
+            UIConfig = null;
             queIdx = null;
             return this;
         };

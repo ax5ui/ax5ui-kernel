@@ -16,15 +16,15 @@
 </head>
 <body style="padding: 50px;">
 
-<div data-ax5layout="ax1" data-config='{control:"dockPanel"}' style="width: 600px;height: 600px;">
-    <div data-config='{dock:"top", split:"true", height: 100}'></div>
-    <div data-config='{dock:"left", split:true, width: 100}'></div>
-    <div data-config='{dock:"center"}'></div>
+<div data-ax5layout="ax1" data-config='{control:"dock-panel"}' style="width: 600px;height: 600px;">
+    <div data-dock-panel='{dock:"top", split:"true", height: 100}'></div>
+    <div data-dock-panel='{dock:"left", split:true, width: 100}'></div>
+    <div data-dock-panel='{dock:"center"}'></div>
 </div>
 
 <script>
     jQuery(document.body).ready(function () {
-        jQuery('[data-ax5layout-dock]').ax5layout();
+        jQuery('[data-ax5layout]').ax5layout();
     });
 </script>
 
