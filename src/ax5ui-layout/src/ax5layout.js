@@ -50,13 +50,36 @@
                 }
                 return true;
             },
+            alignLayout = function (queIdx) {
+                var item = this.queue[queIdx];
+                var targetHeight = item.$target.innerHeight();
+                var targetWidth = item.$target.innerWidth();
+
+                if (item.dockPanel.center) {
+                    item.dockPanel.center.height = (function () {
+                        return targetHeight
+                            - ((item.dockPanel.top) ? (item.dockPanel.top.height || 0) : 0)
+                            - ((item.dockPanel.bottom) ? (item.dockPanel.bottom.height || 0) : 0)
+                    })();
+                    item.dockPanel.center.width = (function () {
+                        return targetHeight
+                            - ((item.dockPanel.left) ? (item.dockPanel.left.width || 0) : 0)
+                            - ((item.dockPanel.right) ? (item.dockPanel.right.width || 0) : 0)
+                    })();
+                }
+                console.log(item.dockPanel);
+
+
+                //console.log(item.$target.height());
+
+            },
             bindLayoutTarget = (function () {
 
                 var collectChild = {
                     'dock-panel': function (queIdx) {
                         var item = this.queue[queIdx];
                         item.dockPanel = {};
-                        item.$target.find('[data-dock-panel]').each(function () {
+                        item.$target.find('>[data-dock-panel]').each(function () {
                             // console.log( this.getAttribute("data-dock-panel") );
                             var panelInfo = {};
                             (function (data) {
@@ -64,15 +87,14 @@
                                     panelInfo = jQuery.extend(true, panelInfo, data);
                                 }
                             })(U.parseJson(this.getAttribute("data-dock-panel"), true));
-                            
 
-                            if('dock' in panelInfo){
+                            if ('dock' in panelInfo) {
                                 panelInfo.$target = jQuery(this);
                                 item.dockPanel[panelInfo.dock] = panelInfo;
                             }
                         });
 
-                        console.log(item.dockPanel);
+                        alignLayout.call(this, queIdx);
                     }
                 };
 
