@@ -50,29 +50,58 @@
                 }
                 return true;
             },
-            alignLayout = function (queIdx) {
-                var item = this.queue[queIdx];
-                var targetHeight = item.$target.innerHeight();
-                var targetWidth = item.$target.innerWidth();
+            alignLayout = (function () {
 
-                if (item.dockPanel.center) {
-                    item.dockPanel.center.height = (function () {
-                        return targetHeight
-                            - ((item.dockPanel.top) ? (item.dockPanel.top.height || 0) : 0)
-                            - ((item.dockPanel.bottom) ? (item.dockPanel.bottom.height || 0) : 0)
-                    })();
-                    item.dockPanel.center.width = (function () {
-                        return targetHeight
-                            - ((item.dockPanel.left) ? (item.dockPanel.left.width || 0) : 0)
-                            - ((item.dockPanel.right) ? (item.dockPanel.right.width || 0) : 0)
-                    })();
+                var setCSS = {
+                    'top': function (panel) {
+                        //console.log(panel);
+                        panel.$target.css({height: panel.height});
+                    },
+                    'bottom': function (panel) {
+                        panel.$target.css({height: panel.height});
+                    },
+                    'left': function (panel) {
+                        panel.$target.css({width: panel.width});
+                    },
+                    'right': function (panel) {
+                        panel.$target.css({width: panel.width});
+                    },
+                    'center': function (panel) {
+                        //panel.css({width: panel.width});
+                    }
+                };
+
+                return function (queIdx) {
+                    var item = this.queue[queIdx];
+                    var targetHeight = item.$target.innerHeight();
+                    var targetWidth = item.$target.innerWidth();
+
+                    if (item.dockPanel.center) {
+                        item.dockPanel.center.height = (function () {
+                            return targetHeight
+                                - ((item.dockPanel.top) ? (item.dockPanel.top.height || 0) : 0)
+                                - ((item.dockPanel.bottom) ? (item.dockPanel.bottom.height || 0) : 0)
+                        })();
+                        item.dockPanel.center.width = (function () {
+                            return targetHeight
+                                - ((item.dockPanel.left) ? (item.dockPanel.left.width || 0) : 0)
+                                - ((item.dockPanel.right) ? (item.dockPanel.right.width || 0) : 0)
+                        })();
+                    }
+                    //console.log(item.dockPanel);
+
+                    for (var panel in item.dockPanel) {
+                        if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
+                            //item.dockPanel[panel].$target.css()
+                            //console.log(panel);
+                            if (panel in setCSS) {
+                                setCSS[panel].call(this, item.dockPanel[panel]);
+                            }
+                        }
+                    }
+                    //console.log(item.$target.height());
                 }
-                console.log(item.dockPanel);
-
-
-                //console.log(item.$target.height());
-
-            },
+            })(),
             bindLayoutTarget = (function () {
 
                 var collectChild = {
