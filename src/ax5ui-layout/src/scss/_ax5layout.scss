@@ -52,34 +52,40 @@ $font-colors: (
 [data-ax5layout] {
     position: relative;
     background: #eee;
+    border: 1px solid #ccc;
     [data-dock-panel] {
         position: absolute;
-        border: 1px solid #ccc;
+
         &.dock-panel-top {
             left: 0px;
             top: 0px;
             width: 100%;
+            border-bottom: 1px solid #ccc;
         }
         &.dock-panel-bottom {
             left: 0px;
             bottom: 0px;
             width: 100%;
+            border-top: 1px solid #ccc;
         }
         &.dock-panel-left {
             left: 0px;
             top: 0px;
             height: 100%;
+            border-right: 1px solid #ccc;
         }
         &.dock-panel-right {
             right: 0px;
             top: 0px;
             height: 100%;
+            border-left: 1px solid #ccc;
         }
-        &.dock-panel-content {
+        &.dock-panel-center {
             left: 0px;
             top: 0px;
             width: 100%;
             height: 100%;
+            background: #fff;
         }
     }
 }

@@ -50,76 +50,94 @@
                 }
                 return true;
             },
+            alignLayoutAll = function(){
+                var i = this.queue.length;
+                while(i--){
+                    alignLayout.call(this, i);
+                }
+            },
             alignLayout = (function () {
 
                 var setCSS = {
                     'top': function (item, panel) {
-                        panel.$target.css({height: panel.height});
+                        panel.$target.css({height: panel.height || 0});
                     },
                     'bottom': function (item, panel) {
-                        panel.$target.css({height: panel.height});
+                        panel.$target.css({height: panel.height || 0});
                     },
                     'left': function (item, panel) {
                         var css = {
                             width: panel.width,
-                            height: 100
+                            height: item.targetDimension.height
                         };
 
                         if (item.dockPanel.top) {
-
+                            css.height -= item.dockPanel.top.height;
+                            css.top = item.dockPanel.top.height;
                         }
                         if (item.dockPanel.bottom) {
-
+                            css.height -= item.dockPanel.bottom.height;
                         }
 
                         panel.$target.css(css);
                     },
                     'right': function (item, panel) {
-                        panel.$target.css({width: panel.width});
+                        var css = {
+                            width: panel.width,
+                            height: item.targetDimension.height
+                        };
+
+                        if (item.dockPanel.top) {
+                            css.height -= item.dockPanel.top.height;
+                            css.top = item.dockPanel.top.height;
+                        }
+                        if (item.dockPanel.bottom) {
+                            css.height -= item.dockPanel.bottom.height;
+                        }
+
+                        panel.$target.css(css);
                     },
                     'center': function (item, panel) {
+                        var css = {
+                            width: item.targetDimension.width,
+                            height: item.targetDimension.height
+                        };
 
-                        //panel.css({width: panel.width});
+                        if (item.dockPanel.top) {
+                            css.height -= item.dockPanel.top.height || 0;
+                            css.top = item.dockPanel.top.height || 0;
+                        }
+                        if (item.dockPanel.bottom) {
+                            css.height -= item.dockPanel.bottom.height || 0;
+                        }
+                        if (item.dockPanel.left) {
+                            css.width -= item.dockPanel.left.width || 0;
+                            css.left = item.dockPanel.left.width || 0;
+                        }
+                        if (item.dockPanel.right) {
+                            css.width -= item.dockPanel.right.width || 0;
+                        }
+
+                        panel.$target.css(css);
                     }
                 };
 
                 return function (queIdx) {
                     var item = this.queue[queIdx];
-                    //var targetHeight = item.$target.innerHeight();
-                    //var targetWidth = item.$target.innerWidth();
-                    /*
-                    if (item.dockPanel.center) {
-                        item.dockPanel.center.height = (function () {
-                            return targetHeight
-                                - ((item.dockPanel.top) ? (item.dockPanel.top.height || 0) : 0)
-                                - ((item.dockPanel.bottom) ? (item.dockPanel.bottom.height || 0) : 0)
-                        })();
-                        item.dockPanel.center.width = (function () {
-                            return targetHeight
-                                - ((item.dockPanel.left) ? (item.dockPanel.left.width || 0) : 0)
-                                - ((item.dockPanel.right) ? (item.dockPanel.right.width || 0) : 0)
-                        })();
-                    }
-                    */
 
-                    // 레이아웃 타겟의 CSS속성을 미리 저장해 둡니다.
+                    // 레이아웃 타겟의 CSS속성을 미리 저장해 둡니다. 왜? 패널별로 크기 계산 할 때 쓰려고
                     item.targetDimension = {
                         height: item.$target.innerHeight(),
                         width: item.$target.innerWidth()
                     };
 
-                    //console.log(item.dockPanel);
-
                     for (var panel in item.dockPanel) {
                         if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
-                            //item.dockPanel[panel].$target.css()
-                            //console.log(panel);
                             if (panel in setCSS) {
                                 setCSS[panel].call(this, item, item.dockPanel[panel]);
                             }
                         }
                     }
-                    //console.log(item.$target.height());
                 }
             })(),
             bindLayoutTarget = (function () {
@@ -175,7 +193,7 @@
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
             jQuery(window).bind("resize.ax5layout-" + this.instanceId, (function () {
-                //alignLayout.call(this);
+                alignLayoutAll.call(this);
             }).bind(this));
         };
 
