@@ -53,29 +53,41 @@
             alignLayout = (function () {
 
                 var setCSS = {
-                    'top': function (panel) {
-                        //console.log(panel);
+                    'top': function (item, panel) {
                         panel.$target.css({height: panel.height});
                     },
-                    'bottom': function (panel) {
+                    'bottom': function (item, panel) {
                         panel.$target.css({height: panel.height});
                     },
-                    'left': function (panel) {
+                    'left': function (item, panel) {
+                        var css = {
+                            width: panel.width,
+                            height: 100
+                        };
+
+                        if (item.dockPanel.top) {
+
+                        }
+                        if (item.dockPanel.bottom) {
+
+                        }
+
+                        panel.$target.css(css);
+                    },
+                    'right': function (item, panel) {
                         panel.$target.css({width: panel.width});
                     },
-                    'right': function (panel) {
-                        panel.$target.css({width: panel.width});
-                    },
-                    'center': function (panel) {
+                    'center': function (item, panel) {
+
                         //panel.css({width: panel.width});
                     }
                 };
 
                 return function (queIdx) {
                     var item = this.queue[queIdx];
-                    var targetHeight = item.$target.innerHeight();
-                    var targetWidth = item.$target.innerWidth();
-
+                    //var targetHeight = item.$target.innerHeight();
+                    //var targetWidth = item.$target.innerWidth();
+                    /*
                     if (item.dockPanel.center) {
                         item.dockPanel.center.height = (function () {
                             return targetHeight
@@ -88,6 +100,14 @@
                                 - ((item.dockPanel.right) ? (item.dockPanel.right.width || 0) : 0)
                         })();
                     }
+                    */
+
+                    // 레이아웃 타겟의 CSS속성을 미리 저장해 둡니다.
+                    item.targetDimension = {
+                        height: item.$target.innerHeight(),
+                        width: item.$target.innerWidth()
+                    };
+
                     //console.log(item.dockPanel);
 
                     for (var panel in item.dockPanel) {
@@ -95,7 +115,7 @@
                             //item.dockPanel[panel].$target.css()
                             //console.log(panel);
                             if (panel in setCSS) {
-                                setCSS[panel].call(this, item.dockPanel[panel]);
+                                setCSS[panel].call(this, item, item.dockPanel[panel]);
                             }
                         }
                     }
@@ -119,6 +139,7 @@
 
                             if ('dock' in panelInfo) {
                                 panelInfo.$target = jQuery(this);
+                                panelInfo.$target.addClass("dock-panel-" + panelInfo.dock);
                                 item.dockPanel[panelInfo.dock] = panelInfo;
                             }
                         });
