@@ -14,10 +14,10 @@
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="../dist/ax5layout.js"></script>
     <style>
-     html, body{
-         padding: 0;
-         height: 100%;
-     }
+        html, body {
+            padding: 0;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -48,22 +48,20 @@
 <script>
     jQuery(document.body).ready(function () {
         jQuery('[data-ax5layout="ax1"]').ax5layout({
-            onResize: function(){
+            onResize: function () {
                 //console.log(this.$target);
                 //console.log(this);
             }
         });
         jQuery('[data-ax5layout="ax2"]').ax5layout({
-            onResize: function(){
+            onResize: function () {
                 //console.log(this.$target);
                 //console.log(this);
             }
         });
-        jQuery('[data-ax5layout="ax3"]').ax5layout({
-            onResize: function(){
-                console.log(this.$target);
-                //console.log(this);
-            }
+        jQuery('[data-ax5layout="ax3"]').ax5layout();
+        jQuery('[data-ax5layout="ax3"]').ax5layout("onResize", function () {
+            console.log(this.$target);
         });
 
 

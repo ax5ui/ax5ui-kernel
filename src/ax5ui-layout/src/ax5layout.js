@@ -327,14 +327,35 @@
             return this;
         };
 
+        /**
+         * ax5.ui.layout.resize
+         * @param boundID
+         * @returns {ax5.ui.layout}
+         */
         this.resize = function (boundID){
             var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
             if (queIdx === -1) {
                 console.log(ax5.info.getError("ax5layout", "402", "resize"));
                 return;
             }
-
             alignLayout.call(this, queIdx);
+            return this;
+        };
+
+        /**
+         * ax5.ui.layout.onResize
+         * @param boundID
+         * @param fn
+         * @returns {ax5.ui.layout}
+         */
+        this.onResize = function (boundID, fn){
+            var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
+            if (queIdx === -1) {
+                console.log(ax5.info.getError("ax5layout", "402", "onResize"));
+                return;
+            }
+            this.queue[queIdx].onResize = fn;
+            return this;
         };
 
         // 클래스 생성자
@@ -365,6 +386,9 @@ jQuery.fn.ax5layout = (function () {
             switch (methodName) {
                 case "resize":
                     return ax5.ui.layout_instance.resize(this);
+                    break;
+                case "onResize":
+                    return ax5.ui.layout_instance.onResize(this, arguments[1]);
                     break;
 
                 default:
