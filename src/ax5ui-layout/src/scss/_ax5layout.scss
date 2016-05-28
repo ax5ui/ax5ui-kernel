@@ -55,30 +55,57 @@ $font-colors: (
     border: 1px solid #ccc;
     [data-dock-panel] {
         position: absolute;
-
+        .dock-panel-splitter{
+            position: absolute;
+            background: #ccc;
+        }
         &.dock-panel-top {
             left: 0px;
             top: 0px;
             width: 100%;
             border-bottom: 1px solid #ccc;
+            .dock-panel-splitter{
+                bottom: 0px;
+                left: 0px;
+                width: 100%;
+                cursor: ns-resize;
+            }
         }
         &.dock-panel-bottom {
             left: 0px;
             bottom: 0px;
             width: 100%;
             border-top: 1px solid #ccc;
+            .dock-panel-splitter{
+                top: 0px;
+                left: 0px;
+                width: 100%;
+                cursor: ns-resize;
+            }
         }
         &.dock-panel-left {
             left: 0px;
             top: 0px;
             height: 100%;
             border-right: 1px solid #ccc;
+            .dock-panel-splitter{
+                top: 0px;
+                right: 0px;
+                height: 100%;
+                cursor: ew-resize;
+            }
         }
         &.dock-panel-right {
             right: 0px;
             top: 0px;
             height: 100%;
             border-left: 1px solid #ccc;
+            .dock-panel-splitter{
+                top: 0px;
+                left: 0px;
+                height: 100%;
+                cursor: ew-resize;
+            }
         }
         &.dock-panel-center {
             left: 0px;

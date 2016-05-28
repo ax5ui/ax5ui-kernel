@@ -31,7 +31,10 @@
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
-            animateTime: 250
+            animateTime: 250,
+            splitter:{
+                size: 5
+            }
         };
 
         this.openTimer = null;
@@ -60,42 +63,56 @@
 
                 var setCSS = {
                     'top': function (item, panel) {
-                        panel.$target.css({height: panel.height || 0});
+                        panel.$target.css({height: panel.outerHeight || 0});
+                        if(panel.split && panel.split.toString() == "true"){
+                            panel.$splitter.css({height: cfg.splitter.size});
+                        }
                     },
                     'bottom': function (item, panel) {
-                        panel.$target.css({height: panel.height || 0});
+                        panel.$target.css({height: panel.outerHeight || 0});
+                        if(panel.split && panel.split.toString() == "true"){
+                            panel.$splitter.css({height: cfg.splitter.size});
+                        }
                     },
                     'left': function (item, panel) {
                         var css = {
-                            width: panel.width,
+                            width: panel.outerWidth,
                             height: item.targetDimension.height
                         };
 
                         if (item.dockPanel.top) {
-                            css.height -= item.dockPanel.top.height;
-                            css.top = item.dockPanel.top.height;
+                            css.height -= item.dockPanel.top.outerHeight;
+                            css.top = item.dockPanel.top.outerHeight;
                         }
                         if (item.dockPanel.bottom) {
-                            css.height -= item.dockPanel.bottom.height;
+                            css.height -= item.dockPanel.bottom.outerHeight;
                         }
 
                         panel.$target.css(css);
+
+                        if(panel.split && panel.split.toString() == "true"){
+                            panel.$splitter.css({width: cfg.splitter.size});
+                        }
                     },
                     'right': function (item, panel) {
                         var css = {
-                            width: panel.width,
+                            width: panel.outerWidth,
                             height: item.targetDimension.height
                         };
 
                         if (item.dockPanel.top) {
-                            css.height -= item.dockPanel.top.height;
-                            css.top = item.dockPanel.top.height;
+                            css.height -= item.dockPanel.top.outerHeight;
+                            css.top = item.dockPanel.top.outerHeight;
                         }
                         if (item.dockPanel.bottom) {
-                            css.height -= item.dockPanel.bottom.height;
+                            css.height -= item.dockPanel.bottom.outerHeight;
                         }
 
                         panel.$target.css(css);
+
+                        if(panel.split && panel.split.toString() == "true"){
+                            panel.$splitter.css({width: cfg.splitter.size});
+                        }
                     },
                     'center': function (item, panel) {
                         var css = {
@@ -104,18 +121,18 @@
                         };
 
                         if (item.dockPanel.top) {
-                            css.height -= item.dockPanel.top.height || 0;
-                            css.top = item.dockPanel.top.height || 0;
+                            css.height -= item.dockPanel.top.outerHeight || 0;
+                            css.top = item.dockPanel.top.outerHeight || 0;
                         }
                         if (item.dockPanel.bottom) {
-                            css.height -= item.dockPanel.bottom.height || 0;
+                            css.height -= item.dockPanel.bottom.outerHeight || 0;
                         }
                         if (item.dockPanel.left) {
-                            css.width -= item.dockPanel.left.width || 0;
-                            css.left = item.dockPanel.left.width || 0;
+                            css.width -= item.dockPanel.left.outerWidth || 0;
+                            css.left = item.dockPanel.left.outerWidth || 0;
                         }
                         if (item.dockPanel.right) {
-                            css.width -= item.dockPanel.right.width || 0;
+                            css.width -= item.dockPanel.right.outerWidth || 0;
                         }
 
                         panel.$target.css(css);
@@ -144,10 +161,10 @@
 
                 var collectChild = {
                     'dock-panel': function (queIdx) {
-                        var item = this.queue[queIdx];
+                        var item = this.queue[queIdx], outerSize = 0;
                         item.dockPanel = {};
                         item.$target.find('>[data-dock-panel]').each(function () {
-                            // console.log( this.getAttribute("data-dock-panel") );
+
                             var panelInfo = {};
                             (function (data) {
                                 if (U.isObject(data) && !data.error) {
@@ -158,6 +175,20 @@
                             if ('dock' in panelInfo) {
                                 panelInfo.$target = jQuery(this);
                                 panelInfo.$target.addClass("dock-panel-" + panelInfo.dock);
+
+                                if(panelInfo.split && panelInfo.split.toString() == "true") {
+                                    panelInfo.$splitter = jQuery('<div class="dock-panel-splitter"></div>');
+                                    panelInfo.$target.append(panelInfo.$splitter);
+                                    outerSize = cfg.splitter.size;
+                                }
+
+                                if(panelInfo.dock == "top" || panelInfo.dock == "bottom"){
+                                    panelInfo.outerHeight = panelInfo.height + outerSize;
+                                }
+                                else{
+                                    panelInfo.outerWidth = panelInfo.width + outerSize;
+                                }
+
                                 item.dockPanel[panelInfo.dock] = panelInfo;
                             }
                         });
