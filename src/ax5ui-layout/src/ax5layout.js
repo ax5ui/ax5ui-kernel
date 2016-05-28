@@ -201,6 +201,14 @@
                     var item = this.queue[queIdx];
                     var data = {};
 
+                    // 부모 컨테이너가 ax5layout인지 판단 필요.
+                    if(item.$target.parents("[data-ax5layout]").get(0)){
+                        this.onResizeLayout(
+                            item.$target.parents("[data-ax5layout]").get(0),
+                            queIdx
+                        );
+                    }
+
                     if (item.control in collectChild) {
                         collectChild[item.control].call(this, queIdx);
                     }
@@ -208,7 +216,19 @@
                     //item.$target.find()
 
                 }
-            })();
+            })(),
+            getQueIdx = function (boundID) {
+                if (!U.isString(boundID)) {
+                    boundID = jQuery(boundID).data("data-ax5layout-id");
+                }
+                if (!U.isString(boundID)) {
+                    console.log(ax5.info.getError("ax5layout", "402", "getQueIdx"));
+                    return;
+                }
+                return U.search(this.queue, function () {
+                    return this.id == boundID;
+                });
+            };
         /// private end
 
         /**
@@ -283,6 +303,16 @@
             UIConfig = null;
             queIdx = null;
             return this;
+        };
+
+        this.onResizeLayout = function(boundID, childQueIdx){
+            var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
+            if (queIdx === -1) {
+                console.log(ax5.info.getError("ax5layout", "402", "bindLayoutResize"));
+                return;
+            }
+            
+            console.log(this.queue[queIdx], childQueIdx);
         };
 
         // 클래스 생성자

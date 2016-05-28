@@ -13,15 +13,36 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="../dist/ax5layout.js"></script>
+    <style>
+     html, body{
+         padding: 0;
+         height: 100%;
+     }
+    </style>
 </head>
-<body style="padding: 50px;">
+<body>
 
-<div data-ax5layout="ax1" data-config='{control:"dock-panel"}' style="height: 600px;">
+<div data-ax5layout="ax1" data-config='{control:"dock-panel"}' style="height: 100%;">
     <div data-dock-panel='{dock:"top", split:false, height: 100}'></div>
     <div data-dock-panel='{dock:"bottom", split:"false", height: 100}'></div>
     <div data-dock-panel='{dock:"left", split:"true", width: 200}'></div>
     <div data-dock-panel='{dock:"right", split:true, width: 200}'></div>
-    <div data-dock-panel='{dock:"center"}'></div>
+    <div data-dock-panel='{dock:"center"}' style="padding: 5px;">
+
+        <div data-ax5layout="ax2" data-config='{control:"dock-panel"}' style="height: 100%;">
+            <div data-dock-panel='{dock:"top", split:false, height: 100}'></div>
+            <div data-dock-panel='{dock:"left", split:"true", width: 200}'></div>
+            <div data-dock-panel='{dock:"center"}' style="padding: 5px;">
+
+                <div data-ax5layout="ax3" data-config='{control:"dock-panel"}' style="height: 100%;">
+                    <div data-dock-panel='{dock:"left", split:"true", width: 200}'></div>
+                    <div data-dock-panel='{dock:"center"}'></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
