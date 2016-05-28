@@ -29,7 +29,6 @@
 
         this.queue = [];
         this.config = {
-            clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
             animateTime: 250,
             splitter:{
@@ -56,7 +55,7 @@
             alignLayoutAll = function(){
                 var i = this.queue.length;
                 while(i--){
-                    alignLayout.call(this, i);
+                    if(typeof this.queue[i].parentQueIdx === "undefined") alignLayout.call(this, i);
                 }
             },
             alignLayout = (function () {
@@ -138,8 +137,16 @@
                         panel.$target.css(css);
                     }
                 };
+                var childResize = function(item){
+                    var queIdx;
+                    var i = item.childQueIdxs.length;
+                    while(i--){
+                        alignLayout.call(this, item.childQueIdxs[i]);
+                    }
+                };
 
                 return function (queIdx) {
+
                     var item = this.queue[queIdx];
 
                     // 레이아웃 타겟의 CSS속성을 미리 저장해 둡니다. 왜? 패널별로 크기 계산 할 때 쓰려고
@@ -155,11 +162,15 @@
                             }
                         }
                     }
+                    if(item.childQueIdxs) childResize.call(this, item);
+                    if(item.onResize){
+                        item.onResize.call(item, item);
+                    }
                 }
             })(),
             bindLayoutTarget = (function () {
 
-                var collectChild = {
+                var collectLayout = {
                     'dock-panel': function (queIdx) {
                         var item = this.queue[queIdx], outerSize = 0;
                         item.dockPanel = {};
@@ -203,18 +214,18 @@
 
                     // 부모 컨테이너가 ax5layout인지 판단 필요.
                     if(item.$target.parents("[data-ax5layout]").get(0)){
-                        this.onResizeLayout(
+                        hooksResizeLayout.call(
+                            this,
                             item.$target.parents("[data-ax5layout]").get(0),
                             queIdx
                         );
                     }
 
-                    if (item.control in collectChild) {
-                        collectChild[item.control].call(this, queIdx);
+                    if (item.control in collectLayout) {
+                        collectLayout[item.control].call(this, queIdx);
                     }
 
                     //item.$target.find()
-
                 }
             })(),
             getQueIdx = function (boundID) {
@@ -228,6 +239,12 @@
                 return U.search(this.queue, function () {
                     return this.id == boundID;
                 });
+            },
+            hooksResizeLayout = function(boundID, childQueIdx){
+                var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
+                if(!this.queue[queIdx].childQueIdxs) this.queue[queIdx].childQueIdxs = [];
+                this.queue[queIdx].childQueIdxs.push(childQueIdx);
+                this.queue[childQueIdx].parentQueIdx = queIdx;
             };
         /// private end
 
@@ -245,6 +262,11 @@
             this.onClick = cfg.onClick;
             jQuery(window).bind("resize.ax5layout-" + this.instanceId, (function () {
                 alignLayoutAll.call(this);
+                /*
+                setTimeout((function(){
+                    alignLayoutAll.call(this);
+                }).bind(this), 100);
+                */
             }).bind(this));
         };
 
@@ -305,14 +327,14 @@
             return this;
         };
 
-        this.onResizeLayout = function(boundID, childQueIdx){
+        this.resize = function (boundID){
             var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
             if (queIdx === -1) {
-                console.log(ax5.info.getError("ax5layout", "402", "bindLayoutResize"));
+                console.log(ax5.info.getError("ax5layout", "402", "resize"));
                 return;
             }
-            
-            console.log(this.queue[queIdx], childQueIdx);
+
+            alignLayout.call(this, queIdx);
         };
 
         // 클래스 생성자
@@ -341,8 +363,8 @@ jQuery.fn.ax5layout = (function () {
             var methodName = arguments[0];
 
             switch (methodName) {
-                case "...":
-                    return ax5.ui.layout_instance.open(this);
+                case "resize":
+                    return ax5.ui.layout_instance.resize(this);
                     break;
 
                 default:

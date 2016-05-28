@@ -47,7 +47,27 @@
 
 <script>
     jQuery(document.body).ready(function () {
-        jQuery('[data-ax5layout]').ax5layout();
+        jQuery('[data-ax5layout="ax1"]').ax5layout({
+            onResize: function(){
+                //console.log(this.$target);
+                //console.log(this);
+            }
+        });
+        jQuery('[data-ax5layout="ax2"]').ax5layout({
+            onResize: function(){
+                //console.log(this.$target);
+                //console.log(this);
+            }
+        });
+        jQuery('[data-ax5layout="ax3"]').ax5layout({
+            onResize: function(){
+                console.log(this.$target);
+                //console.log(this);
+            }
+        });
+
+
+        // 특정 레이아웃 리사이즈 이벤트 호출 : jQuery('[data-ax5layout="ax1"]').ax5layout("resize");
     });
 </script>
 
