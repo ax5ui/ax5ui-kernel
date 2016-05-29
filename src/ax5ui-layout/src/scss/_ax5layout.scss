@@ -116,3 +116,22 @@ $font-colors: (
         }
     }
 }
+.ax5layout-resizer{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background: #ee868b;
+
+    &.panel-top {
+        cursor: ns-resize;
+    }
+    &.panel-bottom {
+        cursor: ns-resize;
+    }
+    &.panel-left {
+        cursor: ew-resize;
+    }
+    &.panel-right {
+        cursor: ew-resize;
+    }
+}

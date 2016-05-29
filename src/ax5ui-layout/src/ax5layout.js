@@ -28,6 +28,16 @@
                 "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
                 "mousemove": (ax5.info.supportTouch) ? "touchmove" : "mousemove",
                 "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
+            },
+            getMousePosition = function (e) {
+                var mouseObj = e;
+                if ('changedTouches' in e) {
+                    mouseObj = e.changedTouches[0];
+                }
+                return {
+                    clientX: mouseObj.clientX,
+                    clientY: mouseObj.clientY
+                }
             };
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -44,7 +54,7 @@
 
         this.openTimer = null;
         this.closeTimer = null;
-        this.selectedIndex = 0;
+        this.resizer = null;
 
         cfg = this.config;
 
@@ -68,29 +78,29 @@
 
                 var setCSS = {
                     'top': function (item, panel) {
-                        panel.$target.css({height: panel.outerHeight || 0});
+                        panel.$target.css({height: panel.__height || 0});
                         if (panel.split && panel.split.toString() == "true") {
                             panel.$splitter.css({height: cfg.splitter.size});
                         }
                     },
                     'bottom': function (item, panel) {
-                        panel.$target.css({height: panel.outerHeight || 0});
+                        panel.$target.css({height: panel.__height || 0});
                         if (panel.split && panel.split.toString() == "true") {
                             panel.$splitter.css({height: cfg.splitter.size});
                         }
                     },
                     'left': function (item, panel) {
                         var css = {
-                            width: panel.outerWidth,
+                            width: panel.__width,
                             height: item.targetDimension.height
                         };
 
                         if (item.dockPanel.top) {
-                            css.height -= item.dockPanel.top.outerHeight;
-                            css.top = item.dockPanel.top.outerHeight;
+                            css.height -= item.dockPanel.top.__height;
+                            css.top = item.dockPanel.top.__height;
                         }
                         if (item.dockPanel.bottom) {
-                            css.height -= item.dockPanel.bottom.outerHeight;
+                            css.height -= item.dockPanel.bottom.__height;
                         }
 
                         panel.$target.css(css);
@@ -101,16 +111,16 @@
                     },
                     'right': function (item, panel) {
                         var css = {
-                            width: panel.outerWidth,
+                            width: panel.__width,
                             height: item.targetDimension.height
                         };
 
                         if (item.dockPanel.top) {
-                            css.height -= item.dockPanel.top.outerHeight;
-                            css.top = item.dockPanel.top.outerHeight;
+                            css.height -= item.dockPanel.top.__height;
+                            css.top = item.dockPanel.top.__height;
                         }
                         if (item.dockPanel.bottom) {
-                            css.height -= item.dockPanel.bottom.outerHeight;
+                            css.height -= item.dockPanel.bottom.__height;
                         }
 
                         panel.$target.css(css);
@@ -126,18 +136,18 @@
                         };
 
                         if (item.dockPanel.top) {
-                            css.height -= item.dockPanel.top.outerHeight || 0;
-                            css.top = item.dockPanel.top.outerHeight || 0;
+                            css.height -= item.dockPanel.top.__height || 0;
+                            css.top = item.dockPanel.top.__height || 0;
                         }
                         if (item.dockPanel.bottom) {
-                            css.height -= item.dockPanel.bottom.outerHeight || 0;
+                            css.height -= item.dockPanel.bottom.__height || 0;
                         }
                         if (item.dockPanel.left) {
-                            css.width -= item.dockPanel.left.outerWidth || 0;
-                            css.left = item.dockPanel.left.outerWidth || 0;
+                            css.width -= item.dockPanel.left.__width || 0;
+                            css.left = item.dockPanel.left.__width || 0;
                         }
                         if (item.dockPanel.right) {
-                            css.width -= item.dockPanel.right.outerWidth || 0;
+                            css.width -= item.dockPanel.right.__width || 0;
                         }
 
                         panel.$target.css(css);
@@ -173,7 +183,10 @@
 
                     if (item.childQueIdxs) childResize.call(this, item);
                     if (item.onResize) {
-                        item.onResize.call(item, item);
+                        setTimeout((function () {
+                            this.onResize.call(this, this);
+                        }).bind(item), 1)
+
                     }
                     if (callBack) {
                         callBack.call(item, item);
@@ -184,11 +197,31 @@
 
                 var resizeSplitter = {
                     on: function (queIdx, panel) {
-                        //console.log(this.queue);
+
+                        var splitterOffset = panel.$splitter.offset();
+                        var splitterBox = {
+                            width: panel.$splitter.width(), height: panel.$splitter.height()
+                        };
+                        var getResizerPosition = {
+                            'left': function (e) {
+                                return {left: panel.$splitter.offset().left + e.clientX - panel.mousePosition.clientX};
+                            }
+                        };
 
                         jQuery(document.body)
                             .bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
-                                console.log(e.clientX);
+                                // console.log(e.clientX - panel.mousePosition.clientX);
+                                if (!self.resizer) {
+                                    self.resizer = jQuery('<div class="ax5layout-resizer panel-' + panel.dock + '"></div>');
+                                    self.resizer.css({
+                                        left: splitterOffset.left,
+                                        top: splitterOffset.top,
+                                        width: splitterBox.width,
+                                        height: splitterBox.height
+                                    });
+                                    jQuery(document.body).append(self.resizer);
+                                }
+                                self.resizer.css(getResizerPosition[panel.dock](e));
                             })
                             .bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
                                 resizeSplitter.off.call(self);
@@ -198,6 +231,8 @@
                             });
                     },
                     off: function () {
+                        self.resizer.remove();
+                        self.resizer = null;
                         jQuery(document.body)
                             .unbind(ENM["mousemove"] + ".ax5layout-" + this.instanceId)
                             .unbind(ENM["mouseup"] + ".ax5layout-" + this.instanceId)
@@ -226,6 +261,8 @@
                                     panelInfo.$splitter = jQuery('<div class="dock-panel-splitter"></div>');
                                     panelInfo.$splitter
                                         .bind(ENM["mousedown"], function (e) {
+                                            // console.log(e.clientX);
+                                            panelInfo.mousePosition = getMousePosition(e);
                                             resizeSplitter.on.call(self, queIdx, panelInfo);
                                         })
                                         .bind("dragstart", function (e) {
@@ -237,10 +274,10 @@
                                 }
 
                                 if (panelInfo.dock == "top" || panelInfo.dock == "bottom") {
-                                    panelInfo.outerHeight = panelInfo.height + outerSize;
+                                    panelInfo.__height = panelInfo.height + outerSize;
                                 }
                                 else {
-                                    panelInfo.outerWidth = panelInfo.width + outerSize;
+                                    panelInfo.__width = panelInfo.width + outerSize;
                                 }
 
                                 item.dockPanel[panelInfo.dock] = panelInfo;
