@@ -72,3 +72,9 @@ console.log(ax5.info.weekNames);
 ]
 */
 ```
+---
+## ax5.info.supportTouch
+```js
+console.log(ax5.info.supportTouch);
+// false
+```
