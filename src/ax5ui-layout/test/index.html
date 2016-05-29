@@ -23,22 +23,22 @@
 <body>
 
 <div data-ax5layout="ax1" data-config='{control:"dock-panel"}' style="height: 100%;">
-    <div data-dock-panel='{dock:"top", split:false, height: 100}'></div>
+    <!--div data-dock-panel='{dock:"top", split:false, height: 100}'></div-->
     <div data-dock-panel='{dock:"bottom", split:"false", height: 100}'></div>
-    <div data-dock-panel='{dock:"left", split:"true", width: 200}'></div>
-    <div data-dock-panel='{dock:"right", split:true, width: 200}'></div>
+    <div data-dock-panel='{dock:"left", split:true, width: 100}'></div>
+    <!--div data-dock-panel='{dock:"right", split:true, width: 200}'></div-->
     <div data-dock-panel='{dock:"center"}' style="padding: 5px;">
 
         <div data-ax5layout="ax2" data-config='{control:"dock-panel"}' style="height: 100%;">
             <div data-dock-panel='{dock:"top", split:false, height: 100}'></div>
-            <div data-dock-panel='{dock:"left", split:"true", width: 200}'></div>
+            <div data-dock-panel='{dock:"left", split:"true", width: 100}'></div>
             <div data-dock-panel='{dock:"center"}' style="padding: 5px;">
-
+<!--
                 <div data-ax5layout="ax3" data-config='{control:"dock-panel"}' style="height: 100%;">
                     <div data-dock-panel='{dock:"left", split:"true", width: 200}'></div>
                     <div data-dock-panel='{dock:"center"}'></div>
                 </div>
-
+-->
             </div>
         </div>
 
@@ -59,11 +59,13 @@
                 //console.log(this);
             }
         });
+
+        /*
         jQuery('[data-ax5layout="ax3"]').ax5layout();
         jQuery('[data-ax5layout="ax3"]').ax5layout("onResize", function () {
             console.log(this.$target);
         });
-
+        */
 
         // 특정 레이아웃 리사이즈 이벤트 호출 : jQuery('[data-ax5layout="ax1"]').ax5layout("resize");
     });

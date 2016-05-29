@@ -23,7 +23,12 @@
     var axClass = function () {
         var
             self = this,
-            cfg;
+            cfg,
+            ENM = {
+                "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
+                "mousemove": (ax5.info.supportTouch) ? "touchmove" : "mousemove",
+                "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
+            };
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
@@ -31,10 +36,11 @@
         this.config = {
             theme: 'default',
             animateTime: 250,
-            splitter:{
+            splitter: {
                 size: 5
             }
         };
+
 
         this.openTimer = null;
         this.closeTimer = null;
@@ -52,10 +58,10 @@
                 }
                 return true;
             },
-            alignLayoutAll = function(){
+            alignLayoutAll = function () {
                 var i = this.queue.length;
-                while(i--){
-                    if(typeof this.queue[i].parentQueIdx === "undefined") alignLayout.call(this, i);
+                while (i--) {
+                    if (typeof this.queue[i].parentQueIdx === "undefined") alignLayout.call(this, i);
                 }
             },
             alignLayout = (function () {
@@ -63,13 +69,13 @@
                 var setCSS = {
                     'top': function (item, panel) {
                         panel.$target.css({height: panel.outerHeight || 0});
-                        if(panel.split && panel.split.toString() == "true"){
+                        if (panel.split && panel.split.toString() == "true") {
                             panel.$splitter.css({height: cfg.splitter.size});
                         }
                     },
                     'bottom': function (item, panel) {
                         panel.$target.css({height: panel.outerHeight || 0});
-                        if(panel.split && panel.split.toString() == "true"){
+                        if (panel.split && panel.split.toString() == "true") {
                             panel.$splitter.css({height: cfg.splitter.size});
                         }
                     },
@@ -89,7 +95,7 @@
 
                         panel.$target.css(css);
 
-                        if(panel.split && panel.split.toString() == "true"){
+                        if (panel.split && panel.split.toString() == "true") {
                             panel.$splitter.css({width: cfg.splitter.size});
                         }
                     },
@@ -109,7 +115,7 @@
 
                         panel.$target.css(css);
 
-                        if(panel.split && panel.split.toString() == "true"){
+                        if (panel.split && panel.split.toString() == "true") {
                             panel.$splitter.css({width: cfg.splitter.size});
                         }
                     },
@@ -137,15 +143,14 @@
                         panel.$target.css(css);
                     }
                 };
-                var childResize = function(item){
-                    var queIdx;
+                var childResize = function (item) {
                     var i = item.childQueIdxs.length;
-                    while(i--){
+                    while (i--) {
                         alignLayout.call(this, item.childQueIdxs[i]);
                     }
                 };
 
-                return function (queIdx) {
+                return function (queIdx, callBack) {
 
                     var item = this.queue[queIdx];
 
@@ -155,22 +160,52 @@
                         width: item.$target.innerWidth()
                     };
 
-                    for (var panel in item.dockPanel) {
-                        if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
-                            if (panel in setCSS) {
-                                setCSS[panel].call(this, item, item.dockPanel[panel]);
+                    // dockPanel
+                    if (item.control == "dock-panel") {
+                        for (var panel in item.dockPanel) {
+                            if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
+                                if (panel in setCSS) {
+                                    setCSS[panel].call(this, item, item.dockPanel[panel]);
+                                }
                             }
                         }
                     }
-                    if(item.childQueIdxs) childResize.call(this, item);
-                    if(item.onResize){
+
+                    if (item.childQueIdxs) childResize.call(this, item);
+                    if (item.onResize) {
                         item.onResize.call(item, item);
+                    }
+                    if (callBack) {
+                        callBack.call(item, item);
                     }
                 }
             })(),
             bindLayoutTarget = (function () {
 
-                var collectLayout = {
+                var resizeSplitter = {
+                    on: function (queIdx, panel) {
+                        //console.log(this.queue);
+
+                        jQuery(document.body)
+                            .bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
+                                console.log(e.clientX);
+                            })
+                            .bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
+                                resizeSplitter.off.call(self);
+                            })
+                            .bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
+                                resizeSplitter.off.call(self);
+                            });
+                    },
+                    off: function () {
+                        jQuery(document.body)
+                            .unbind(ENM["mousemove"] + ".ax5layout-" + this.instanceId)
+                            .unbind(ENM["mouseup"] + ".ax5layout-" + this.instanceId)
+                            .unbind("mouseleave.ax5layout-" + this.instanceId);
+                    }
+                };
+
+                var applyLayout = {
                     'dock-panel': function (queIdx) {
                         var item = this.queue[queIdx], outerSize = 0;
                         item.dockPanel = {};
@@ -187,16 +222,24 @@
                                 panelInfo.$target = jQuery(this);
                                 panelInfo.$target.addClass("dock-panel-" + panelInfo.dock);
 
-                                if(panelInfo.split && panelInfo.split.toString() == "true") {
+                                if (panelInfo.split && panelInfo.split.toString() == "true") {
                                     panelInfo.$splitter = jQuery('<div class="dock-panel-splitter"></div>');
+                                    panelInfo.$splitter
+                                        .bind(ENM["mousedown"], function (e) {
+                                            resizeSplitter.on.call(self, queIdx, panelInfo);
+                                        })
+                                        .bind("dragstart", function (e) {
+                                            U.stopEvent(e);
+                                            return false;
+                                        });
                                     panelInfo.$target.append(panelInfo.$splitter);
                                     outerSize = cfg.splitter.size;
                                 }
 
-                                if(panelInfo.dock == "top" || panelInfo.dock == "bottom"){
+                                if (panelInfo.dock == "top" || panelInfo.dock == "bottom") {
                                     panelInfo.outerHeight = panelInfo.height + outerSize;
                                 }
-                                else{
+                                else {
                                     panelInfo.outerWidth = panelInfo.width + outerSize;
                                 }
 
@@ -204,7 +247,6 @@
                             }
                         });
 
-                        alignLayout.call(this, queIdx);
                     }
                 };
 
@@ -213,7 +255,7 @@
                     var data = {};
 
                     // 부모 컨테이너가 ax5layout인지 판단 필요.
-                    if(item.$target.parents("[data-ax5layout]").get(0)){
+                    if (item.$target.parents("[data-ax5layout]").get(0)) {
                         hooksResizeLayout.call(
                             this,
                             item.$target.parents("[data-ax5layout]").get(0),
@@ -221,11 +263,11 @@
                         );
                     }
 
-                    if (item.control in collectLayout) {
-                        collectLayout[item.control].call(this, queIdx);
+                    if (item.control in applyLayout) {
+                        applyLayout[item.control].call(this, queIdx);
                     }
-
-                    //item.$target.find()
+                    alignLayout.call(this, queIdx);
+                    //item.$target.find();
                 }
             })(),
             getQueIdx = function (boundID) {
@@ -240,9 +282,9 @@
                     return this.id == boundID;
                 });
             },
-            hooksResizeLayout = function(boundID, childQueIdx){
+            hooksResizeLayout = function (boundID, childQueIdx) {
                 var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
-                if(!this.queue[queIdx].childQueIdxs) this.queue[queIdx].childQueIdxs = [];
+                if (!this.queue[queIdx].childQueIdxs) this.queue[queIdx].childQueIdxs = [];
                 this.queue[queIdx].childQueIdxs.push(childQueIdx);
                 this.queue[childQueIdx].parentQueIdx = queIdx;
             };
@@ -263,10 +305,10 @@
             jQuery(window).bind("resize.ax5layout-" + this.instanceId, (function () {
                 alignLayoutAll.call(this);
                 /*
-                setTimeout((function(){
-                    alignLayoutAll.call(this);
-                }).bind(this), 100);
-                */
+                 setTimeout((function(){
+                 alignLayoutAll.call(this);
+                 }).bind(this), 100);
+                 */
             }).bind(this));
         };
 
@@ -330,15 +372,16 @@
         /**
          * ax5.ui.layout.resize
          * @param boundID
+         * @param {Function} [callBack]
          * @returns {ax5.ui.layout}
          */
-        this.resize = function (boundID){
+        this.resize = function (boundID, callBack) {
             var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
             if (queIdx === -1) {
                 console.log(ax5.info.getError("ax5layout", "402", "resize"));
                 return;
             }
-            alignLayout.call(this, queIdx);
+            alignLayout.call(this, queIdx, callBack);
             return this;
         };
 
@@ -348,7 +391,7 @@
          * @param fn
          * @returns {ax5.ui.layout}
          */
-        this.onResize = function (boundID, fn){
+        this.onResize = function (boundID, fn) {
             var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
             if (queIdx === -1) {
                 console.log(ax5.info.getError("ax5layout", "402", "onResize"));
