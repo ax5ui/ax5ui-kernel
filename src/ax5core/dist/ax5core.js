@@ -217,6 +217,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
 
+        var supportTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+
         return {
             errorMsg: errorMsg,
             version: version,
@@ -226,6 +228,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             weekNames: weekNames,
             browser: browser,
             isBrowser: isBrowser,
+            supportTouch: supportTouch,
             wheelEnm: wheelEnm,
             urlUtil: urlUtil,
             getError: getError

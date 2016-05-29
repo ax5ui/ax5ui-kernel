@@ -217,6 +217,8 @@
             }
         }
 
+        var supportTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+
         return {
             errorMsg: errorMsg,
             version: version,
@@ -226,6 +228,7 @@
             weekNames: weekNames,
             browser: browser,
             isBrowser: isBrowser,
+            supportTouch: supportTouch,
             wheelEnm: wheelEnm,
             urlUtil: urlUtil,
             getError: getError
@@ -1692,11 +1695,11 @@
                         range.selectNodeContents(el);
                     },
                     'arr': function (el, range, offset) {
-                        if(isObject(offset[0])){
+                        if (isObject(offset[0])) {
                             range.setStart(offset[0].node, offset[0].offset);
                             range.setEnd(offset[1].node, offset[1].offset);
                         }
-                        else{
+                        else {
                             range.setStart(el.firstChild, offset[0]);
                             range.setEnd(el.firstChild, offset[1]);
                         }
