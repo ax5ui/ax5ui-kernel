@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.modal
      * @classdesc
-     * @version 0.5.4
+     * @version 0.5.6
      * @author tom@axisj.com
      * @example
      * ```
@@ -109,7 +109,7 @@
                 }
 
                 //- position 정렬
-                align.call(this);
+                this.align();
 
                 that = {
                     self: this,
@@ -149,62 +149,6 @@
                 jQuery(window).bind("resize.ax-modal", (function (e) {
                     align.call(this, null, e || window.event);
                 }).bind(this));
-            },
-            align = function (position, e) {
-                if (!this.activeModal) return this;
-                var opts = self.modalConfig,
-                    box = {
-                        width: opts.width,
-                        height: opts.height
-                    };
-
-                if (opts.fullScreen) {
-                    box.width = jQuery(window).width();
-                    box.height = jQuery(window).height();
-                    box.left = 0;
-                    box.top = 0;
-
-                    if (opts.iframe) {
-                        this.$["iframe-wrap"].css({height: box.height});
-                        this.$["iframe"].css({height: box.height});
-                    }
-                }
-                else {
-                    if (position) {
-                        jQuery.extend(true, opts.position, position);
-                    }
-
-                    //- position 정렬
-                    if (opts.position.left == "left") {
-                        box.left = (opts.position.margin || 0);
-                    }
-                    else if (opts.position.left == "right") {
-                        // window.innerWidth;
-                        box.left = jQuery(window).width() - box.width - (opts.position.margin || 0);
-                    }
-                    else if (opts.position.left == "center") {
-                        box.left = jQuery(window).width() / 2 - box.width / 2;
-                    }
-                    else {
-                        box.left = opts.position.left || 0;
-                    }
-
-                    if (opts.position.top == "top") {
-                        box.top = (opts.position.margin || 0);
-                    }
-                    else if (opts.position.top == "bottom") {
-                        box.top = jQuery(window).height() - box.height - (opts.position.margin || 0);
-                    }
-                    else if (opts.position.top == "middle") {
-                        box.top = jQuery(window).height() / 2 - box.height / 2;
-                    }
-                    else {
-                        box.top = opts.position.top || 0;
-                    }
-                }
-
-                this.activeModal.css(box);
-                return this;
             },
             onkeyup = function (e) {
                 if (e.keyCode == ax5.info.eventKeys.ESC) {
@@ -308,6 +252,73 @@
             }
             return this;
         };
+
+        /**
+         * @mothod ax5.ui.modal.align
+         * @param position
+         * @param e
+         * @returns {ax5.ui.modal}
+         */
+        this.align = (function () {
+
+            return function(position, e){
+                if (!this.activeModal) return this;
+
+                var opts = self.modalConfig,
+                    box = {
+                        width: opts.width,
+                        height: opts.height
+                    };
+
+                if (opts.fullScreen) {
+                    box.width = jQuery(window).width();
+                    box.height = jQuery(window).height();
+                    box.left = 0;
+                    box.top = 0;
+
+                    if (opts.iframe) {
+                        this.$["iframe-wrap"].css({height: box.height});
+                        this.$["iframe"].css({height: box.height});
+                    }
+                }
+                else {
+                    if (position) {
+                        jQuery.extend(true, opts.position, position);
+                    }
+
+                    //- position 정렬
+                    if (opts.position.left == "left") {
+                        box.left = (opts.position.margin || 0);
+                    }
+                    else if (opts.position.left == "right") {
+                        // window.innerWidth;
+                        box.left = jQuery(window).width() - box.width - (opts.position.margin || 0);
+                    }
+                    else if (opts.position.left == "center") {
+                        box.left = jQuery(window).width() / 2 - box.width / 2;
+                    }
+                    else {
+                        box.left = opts.position.left || 0;
+                    }
+
+                    if (opts.position.top == "top") {
+                        box.top = (opts.position.margin || 0);
+                    }
+                    else if (opts.position.top == "bottom") {
+                        box.top = jQuery(window).height() - box.height - (opts.position.margin || 0);
+                    }
+                    else if (opts.position.top == "middle") {
+                        box.top = jQuery(window).height() / 2 - box.height / 2;
+                    }
+                    else {
+                        box.top = opts.position.top || 0;
+                    }
+                }
+
+                this.activeModal.css(box);
+                return this;
+            };
+        })();
 
         // 클래스 생성자
         this.main = (function () {
