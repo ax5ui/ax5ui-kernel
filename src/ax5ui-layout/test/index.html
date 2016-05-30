@@ -23,14 +23,14 @@
 </head>
 <body>
 
-<div data-ax5layout="ax1" data-config='{control:"dock-panel"}' style="height: 100%;">
-    <!--div data-dock-panel='{dock:"top", split:false, height: 100}'></div-->
-    <div data-dock-panel='{dock:"bottom", split:"false", height: 100}'></div>
+<div data-ax5layout="ax1" data-config='{layout:"dock-panel"}' style="height: 100%;">
+    <div data-dock-panel='{dock:"top", split:true, height: 100}'></div>
+    <div data-dock-panel='{dock:"bottom", split:"true", height: 100}'></div>
     <div data-dock-panel='{dock:"left", split:true, width: 100}'></div>
-    <!--div data-dock-panel='{dock:"right", split:true, width: 200}'></div-->
+    <div data-dock-panel='{dock:"right", split:true, width: 200}'></div>
     <div data-dock-panel='{dock:"center"}' style="padding: 5px;">
 
-        <div data-ax5layout="ax2" data-config='{control:"dock-panel"}' style="height: 100%;">
+        <div data-ax5layout="ax2" data-config='{layout:"dock-panel"}' style="height: 100%;">
             <div data-dock-panel='{dock:"top", split:false, height: 100}'></div>
             <div data-dock-panel='{dock:"left", split:"true", width: 100}'></div>
             <div data-dock-panel='{dock:"center"}' style="padding: 5px;">
@@ -47,6 +47,7 @@
 </div>
 
 <script>
+    // todo : limit resize
     jQuery(document.body).ready(function () {
         jQuery('[data-ax5layout="ax1"]').ax5layout({
             onResize: function () {

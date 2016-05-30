@@ -77,19 +77,19 @@
             alignLayout = (function () {
 
                 var setCSS = {
-                    'top': function (item, panel) {
+                    "top": function (item, panel) {
                         panel.$target.css({height: panel.__height || 0});
                         if (panel.split && panel.split.toString() == "true") {
                             panel.$splitter.css({height: cfg.splitter.size});
                         }
                     },
-                    'bottom': function (item, panel) {
+                    "bottom": function (item, panel) {
                         panel.$target.css({height: panel.__height || 0});
                         if (panel.split && panel.split.toString() == "true") {
                             panel.$splitter.css({height: cfg.splitter.size});
                         }
                     },
-                    'left': function (item, panel) {
+                    "left": function (item, panel) {
                         var css = {
                             width: panel.__width,
                             height: item.targetDimension.height
@@ -109,7 +109,7 @@
                             panel.$splitter.css({width: cfg.splitter.size});
                         }
                     },
-                    'right': function (item, panel) {
+                    "right": function (item, panel) {
                         var css = {
                             width: panel.__width,
                             height: item.targetDimension.height
@@ -129,7 +129,7 @@
                             panel.$splitter.css({width: cfg.splitter.size});
                         }
                     },
-                    'center': function (item, panel) {
+                    "center": function (item, panel) {
                         var css = {
                             width: item.targetDimension.width,
                             height: item.targetDimension.height
@@ -171,7 +171,7 @@
                     };
 
                     // dockPanel
-                    if (item.control == "dock-panel") {
+                    if (item.layout == "dock-panel") {
                         for (var panel in item.dockPanel) {
                             if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
                                 if (panel in setCSS) {
@@ -193,60 +193,94 @@
                     }
                 }
             })(),
-            bindLayoutTarget = (function () {
+            resizeSplitter = {
+                on: function (queIdx, panel) {
 
-                var resizeSplitter = {
-                    on: function (queIdx, panel) {
-
-                        var splitterOffset = panel.$splitter.offset();
-                        var splitterBox = {
-                            width: panel.$splitter.width(), height: panel.$splitter.height()
-                        };
-                        var getResizerPosition = {
-                            'left': function (e) {
-                                panel.__da = e.clientX - panel.mousePosition.clientX;
-                                return {left: panel.$splitter.offset().left + e.clientX - panel.mousePosition.clientX};
-                            }
-                        };
-                        panel.__da = 0; // 패널의 변화량
-
-                        jQuery(document.body)
-                            .bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
-                                // console.log(e.clientX - panel.mousePosition.clientX);
-                                if (!self.resizer) {
-                                    self.resizer = jQuery('<div class="ax5layout-resizer panel-' + panel.dock + '"></div>');
-                                    self.resizer.css({
-                                        left: splitterOffset.left,
-                                        top: splitterOffset.top,
-                                        width: splitterBox.width,
-                                        height: splitterBox.height
-                                    });
-                                    jQuery(document.body).append(self.resizer);
-                                }
-                                self.resizer.css(getResizerPosition[panel.dock](e));
-                            })
-                            .bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
-                                resizeSplitter.off.call(self, queIdx, panel);
-                            })
-                            .bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
-                                resizeSplitter.off.call(self, queIdx, panel);
-                            });
-
-                    },
-                    off: function (queIdx, panel) {
-
-                        if(self.resizer) {
-                            self.resizer.remove();
-                            self.resizer = null;
+                    var splitterOffset = panel.$splitter.offset();
+                    var splitterBox = {
+                        width: panel.$splitter.width(), height: panel.$splitter.height()
+                    };
+                    var getResizerPosition = {
+                        "left": function (e) {
+                            panel.__da = e.clientX - panel.mousePosition.clientX;
+                            return {left: panel.$splitter.offset().left + e.clientX - panel.mousePosition.clientX};
+                        },
+                        "right": function (e) {
+                            panel.__da = e.clientX - panel.mousePosition.clientX;
+                            return {left: panel.$splitter.offset().left + e.clientX - panel.mousePosition.clientX};
+                        },
+                        "top": function (e) {
+                            panel.__da = e.clientY - panel.mousePosition.clientY;
+                            return {top: panel.$splitter.offset().top + e.clientY - panel.mousePosition.clientY};
+                        },
+                        "bottom": function (e) {
+                            panel.__da = e.clientY - panel.mousePosition.clientY;
+                            return {top: panel.$splitter.offset().top + e.clientY - panel.mousePosition.clientY};
                         }
+                    };
+                    panel.__da = 0; // 패널의 변화량
 
-                        jQuery(document.body)
-                            .unbind(ENM["mousemove"] + ".ax5layout-" + this.instanceId)
-                            .unbind(ENM["mouseup"] + ".ax5layout-" + this.instanceId)
-                            .unbind("mouseleave.ax5layout-" + this.instanceId);
+                    jQuery(document.body)
+                        .bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
+                            // console.log(e.clientX - panel.mousePosition.clientX);
+                            if (!self.resizer) {
+                                self.resizer = jQuery('<div class="ax5layout-resizer panel-' + panel.dock + '"></div>');
+                                self.resizer.css({
+                                    left: splitterOffset.left,
+                                    top: splitterOffset.top,
+                                    width: splitterBox.width,
+                                    height: splitterBox.height
+                                });
+                                jQuery(document.body).append(self.resizer);
+                            }
+                            self.resizer.css(getResizerPosition[panel.dock](e));
+                        })
+                        .bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
+                            resizeSplitter.off.call(self, queIdx, panel);
+                        })
+                        .bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
+                            resizeSplitter.off.call(self, queIdx, panel);
+                        });
+
+                },
+                off: function (queIdx, panel) {
+
+                    var setPanelSize = {
+                        'dock-panel': {
+                            "left": function(queIdx, panel){
+                                panel.__width += panel.__da;
+                            },
+                            "right": function(){
+                                panel.__width -= panel.__da;
+                            },
+                            "top": function(){
+                                panel.__height += panel.__da;
+                            },
+                            "bottom": function(){
+                                panel.__height -= panel.__da;
+                            }
+                        },
+                        'stack-panel': {
+
+                        }
+                    };
+
+                    if (self.resizer) {
+                        self.resizer.remove();
+                        self.resizer = null;
+                        setPanelSize[this.queue[queIdx].layout][panel.dock].call(this, queIdx, panel);
+                        alignLayout.call(this, queIdx);
 
                     }
-                };
+
+                    jQuery(document.body)
+                        .unbind(ENM["mousemove"] + ".ax5layout-" + this.instanceId)
+                        .unbind(ENM["mouseup"] + ".ax5layout-" + this.instanceId)
+                        .unbind("mouseleave.ax5layout-" + this.instanceId);
+
+                }
+            },
+            bindLayoutTarget = (function () {
 
                 var applyLayout = {
                     'dock-panel': function (queIdx) {
@@ -308,8 +342,8 @@
                         );
                     }
 
-                    if (item.control in applyLayout) {
-                        applyLayout[item.control].call(this, queIdx);
+                    if (item.layout in applyLayout) {
+                        applyLayout[item.layout].call(this, queIdx);
                     }
                     alignLayout.call(this, queIdx);
                     //item.$target.find();
@@ -360,7 +394,7 @@
         /**
          * ax5.ui.layout.bind
          * @param {Object} item
-         * @param {String} [item.control]
+         * @param {String} [item.layout]
          * @param {String} [item.theme]
          * @param {Element} item.target
          * @param {Object[]} item.options
