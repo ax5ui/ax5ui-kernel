@@ -204,9 +204,11 @@
                         };
                         var getResizerPosition = {
                             'left': function (e) {
+                                panel.__da = e.clientX - panel.mousePosition.clientX;
                                 return {left: panel.$splitter.offset().left + e.clientX - panel.mousePosition.clientX};
                             }
                         };
+                        panel.__da = 0; // 패널의 변화량
 
                         jQuery(document.body)
                             .bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
@@ -224,19 +226,25 @@
                                 self.resizer.css(getResizerPosition[panel.dock](e));
                             })
                             .bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
-                                resizeSplitter.off.call(self);
+                                resizeSplitter.off.call(self, queIdx, panel);
                             })
                             .bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
-                                resizeSplitter.off.call(self);
+                                resizeSplitter.off.call(self, queIdx, panel);
                             });
+
                     },
-                    off: function () {
-                        self.resizer.remove();
-                        self.resizer = null;
+                    off: function (queIdx, panel) {
+
+                        if(self.resizer) {
+                            self.resizer.remove();
+                            self.resizer = null;
+                        }
+
                         jQuery(document.body)
                             .unbind(ENM["mousemove"] + ".ax5layout-" + this.instanceId)
                             .unbind(ENM["mouseup"] + ".ax5layout-" + this.instanceId)
                             .unbind("mouseleave.ax5layout-" + this.instanceId);
+
                     }
                 };
 
