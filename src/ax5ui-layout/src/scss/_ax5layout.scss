@@ -48,64 +48,36 @@ $font-colors: (
 
 }
 
+$dock-panel-splitter-background: #ccc;
+
 /// layout-display
 [data-ax5layout] {
     position: relative;
-    background: #eee;
-    border: 1px solid #ccc;
-    [data-dock-panel] {
+    border: 0px none;
+    > [data-dock-panel] {
         position: absolute;
-        .dock-panel-splitter{
-            position: absolute;
-            background: #ccc;
-        }
+        border: 0px none;
+        z-index: 2;
+        overflow: auto;
         &.dock-panel-top {
             left: 0px;
             top: 0px;
             width: 100%;
-            border-bottom: 1px solid #ccc;
-            .dock-panel-splitter{
-                bottom: 0px;
-                left: 0px;
-                width: 100%;
-                cursor: ns-resize;
-            }
         }
         &.dock-panel-bottom {
             left: 0px;
             bottom: 0px;
             width: 100%;
-            border-top: 1px solid #ccc;
-            .dock-panel-splitter{
-                top: 0px;
-                left: 0px;
-                width: 100%;
-                cursor: ns-resize;
-            }
         }
         &.dock-panel-left {
             left: 0px;
             top: 0px;
             height: 100%;
-            border-right: 1px solid #ccc;
-            .dock-panel-splitter{
-                top: 0px;
-                right: 0px;
-                height: 100%;
-                cursor: ew-resize;
-            }
         }
         &.dock-panel-right {
             right: 0px;
             top: 0px;
             height: 100%;
-            border-left: 1px solid #ccc;
-            .dock-panel-splitter{
-                top: 0px;
-                left: 0px;
-                height: 100%;
-                cursor: ew-resize;
-            }
         }
         &.dock-panel-center {
             left: 0px;
@@ -113,6 +85,34 @@ $font-colors: (
             width: 100%;
             height: 100%;
             background: #fff;
+            z-index: 1;
+        }
+    }
+    > .dock-panel-splitter{
+        // @include transition(all 0.3s, $ease-in-out-cubic);
+        position: absolute;
+        background: $dock-panel-splitter-background;
+        z-index: 3;
+
+        &.dock-panel-top{
+            top:0px;
+            width: 100%;
+            cursor: ns-resize;
+        }
+        &.dock-panel-bottom{
+            bottom: 0px;
+            width: 100%;
+            cursor: ns-resize;
+        }
+        &.dock-panel-left {
+            left:0px;
+            height: 100%;
+            cursor: ew-resize;
+        }
+        &.dock-panel-right{
+            right:0px;
+            height: 100%;
+            cursor: ew-resize;
         }
     }
 }
@@ -121,6 +121,7 @@ $font-colors: (
     left: 0px;
     top: 0px;
     background: #ee868b;
+    z-index: 10;
 
     &.panel-top {
         cursor: ns-resize;

@@ -79,54 +79,68 @@
                 var setCSS = {
                     "top": function (item, panel) {
                         panel.$target.css({height: panel.__height || 0});
-                        if (panel.split && panel.split.toString() == "true") {
-                            panel.$splitter.css({height: cfg.splitter.size});
+                        if (panel.split) {
+                            panel.$splitter.css({height: cfg.splitter.size, top: (panel.__height || 0)});
                         }
                     },
                     "bottom": function (item, panel) {
                         panel.$target.css({height: panel.__height || 0});
-                        if (panel.split && panel.split.toString() == "true") {
-                            panel.$splitter.css({height: cfg.splitter.size});
+                        if (panel.split) {
+                            panel.$splitter.css({height: cfg.splitter.size, bottom: (panel.__height || 0)});
                         }
                     },
                     "left": function (item, panel) {
                         var css = {
-                            width: panel.__width,
+                            width: panel.__width || 0,
                             height: item.targetDimension.height
                         };
 
                         if (item.dockPanel.top) {
                             css.height -= item.dockPanel.top.__height;
                             css.top = item.dockPanel.top.__height;
+                            if (item.dockPanel.top.split) {
+                                css.height -= cfg.splitter.size;
+                                css.top += cfg.splitter.size;
+                            }
                         }
                         if (item.dockPanel.bottom) {
                             css.height -= item.dockPanel.bottom.__height;
+                            if (item.dockPanel.bottom.split) {
+                                css.height -= cfg.splitter.size;
+                            }
                         }
 
                         panel.$target.css(css);
 
-                        if (panel.split && panel.split.toString() == "true") {
-                            panel.$splitter.css({width: cfg.splitter.size});
+                        if (panel.split) {
+                            panel.$splitter.css({width: cfg.splitter.size, height: css.height, top: css.top, left: css.width});
                         }
                     },
                     "right": function (item, panel) {
                         var css = {
-                            width: panel.__width,
+                            width: panel.__width || 0,
                             height: item.targetDimension.height
                         };
 
                         if (item.dockPanel.top) {
                             css.height -= item.dockPanel.top.__height;
                             css.top = item.dockPanel.top.__height;
+                            if (item.dockPanel.top.split) {
+                                css.height -= cfg.splitter.size;
+                                css.top += cfg.splitter.size;
+                            }
                         }
                         if (item.dockPanel.bottom) {
                             css.height -= item.dockPanel.bottom.__height;
+                            if (item.dockPanel.bottom.split) {
+                                css.height -= cfg.splitter.size;
+                            }
                         }
 
                         panel.$target.css(css);
 
-                        if (panel.split && panel.split.toString() == "true") {
-                            panel.$splitter.css({width: cfg.splitter.size});
+                        if (panel.split) {
+                            panel.$splitter.css({width: cfg.splitter.size, height: css.height, top: css.top, right: css.width});
                         }
                     },
                     "center": function (item, panel) {
@@ -138,16 +152,30 @@
                         if (item.dockPanel.top) {
                             css.height -= item.dockPanel.top.__height || 0;
                             css.top = item.dockPanel.top.__height || 0;
+                            if (item.dockPanel.top.split) {
+                                css.height -= cfg.splitter.size;
+                                css.top += cfg.splitter.size;
+                            }
                         }
                         if (item.dockPanel.bottom) {
                             css.height -= item.dockPanel.bottom.__height || 0;
+                            if (item.dockPanel.bottom.split) {
+                                css.height -= cfg.splitter.size;
+                            }
                         }
                         if (item.dockPanel.left) {
                             css.width -= item.dockPanel.left.__width || 0;
                             css.left = item.dockPanel.left.__width || 0;
+                            if (item.dockPanel.left.split) {
+                                css.width -= cfg.splitter.size;
+                                css.left += cfg.splitter.size;
+                            }
                         }
                         if (item.dockPanel.right) {
                             css.width -= item.dockPanel.right.__width || 0;
+                            if (item.dockPanel.right.split) {
+                                css.width -= cfg.splitter.size;
+                            }
                         }
 
                         panel.$target.css(css);
@@ -175,6 +203,7 @@
                         for (var panel in item.dockPanel) {
                             if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
                                 if (panel in setCSS) {
+                                    item.dockPanel[panel].split = (item.dockPanel[panel].split && item.dockPanel[panel].split.toString() == "true");
                                     setCSS[panel].call(this, item, item.dockPanel[panel]);
                                 }
                             }
@@ -195,7 +224,7 @@
             })(),
             resizeSplitter = {
                 on: function (queIdx, panel) {
-
+                    var item = this.queue[queIdx];
                     var splitterOffset = panel.$splitter.offset();
                     var splitterBox = {
                         width: panel.$splitter.width(), height: panel.$splitter.height()
@@ -203,19 +232,65 @@
                     var getResizerPosition = {
                         "left": function (e) {
                             panel.__da = e.clientX - panel.mousePosition.clientX;
-                            return {left: panel.$splitter.offset().left + e.clientX - panel.mousePosition.clientX};
+                            if (panel.__width + panel.__da < 0) {
+                                panel.__da = -panel.__width;
+                            }
+                            else {
+                                var avalWidth = item.targetDimension.width
+                                    - (item.dockPanel.left ? item.dockPanel.left.__width + ((item.dockPanel.left.split) ? cfg.splitter.size : 0) : 0)
+                                    - (item.dockPanel.right ? item.dockPanel.right.__width + ((item.dockPanel.right.split) ? cfg.splitter.size : 0) : 0);
+
+                                if (avalWidth < panel.__da) {
+                                    panel.__da = avalWidth;
+                                }
+                            }
+                            return {left: panel.$splitter.offset().left + panel.__da};
                         },
                         "right": function (e) {
                             panel.__da = e.clientX - panel.mousePosition.clientX;
-                            return {left: panel.$splitter.offset().left + e.clientX - panel.mousePosition.clientX};
+                            if (panel.__width - panel.__da < 0) {
+                                panel.__da =  panel.__width;
+                            }
+                            else {
+                                var avalWidth = -item.targetDimension.width
+                                    + (item.dockPanel.left ? item.dockPanel.left.__width + ((item.dockPanel.left.split) ? cfg.splitter.size : 0) : 0)
+                                    + (item.dockPanel.right ? item.dockPanel.right.__width + ((item.dockPanel.right.split) ? cfg.splitter.size : 0) : 0);
+                                if (avalWidth > panel.__da) {
+                                    panel.__da = avalWidth;
+                                }
+                            }
+                            return {left: panel.$splitter.offset().left + panel.__da};
                         },
                         "top": function (e) {
                             panel.__da = e.clientY - panel.mousePosition.clientY;
-                            return {top: panel.$splitter.offset().top + e.clientY - panel.mousePosition.clientY};
+                            if (panel.__height + panel.__da < 0) {
+                                panel.__da = -panel.__height;
+                            }
+                            else {
+                                var avalHeight = item.targetDimension.height
+                                    - (item.dockPanel.top ? item.dockPanel.top.__height + ((item.dockPanel.top.split) ? cfg.splitter.size : 0) : 0)
+                                    - (item.dockPanel.bottom ? item.dockPanel.bottom.__height + ((item.dockPanel.bottom.split) ? cfg.splitter.size : 0) : 0);
+
+                                if (avalHeight < panel.__da) {
+                                    panel.__da = avalHeight;
+                                }
+                            }
+                            return {top: panel.$splitter.offset().top + panel.__da};
                         },
                         "bottom": function (e) {
                             panel.__da = e.clientY - panel.mousePosition.clientY;
-                            return {top: panel.$splitter.offset().top + e.clientY - panel.mousePosition.clientY};
+                            if (panel.__height - panel.__da < 0) {
+                                panel.__da =  panel.__height;
+                            }
+                            else {
+                                var avalHeight = -item.targetDimension.height
+                                    + (item.dockPanel.top ? item.dockPanel.top.__height + ((item.dockPanel.top.split) ? cfg.splitter.size : 0) : 0)
+                                    + (item.dockPanel.bottom ? item.dockPanel.bottom.__height + ((item.dockPanel.bottom.split) ? cfg.splitter.size : 0) : 0);
+                                if (avalHeight > panel.__da) {
+                                    panel.__da = avalHeight;
+                                }
+                            }
+                            return {top: panel.$splitter.offset().top + panel.__da};
                         }
                     };
                     panel.__da = 0; // 패널의 변화량
@@ -224,14 +299,14 @@
                         .bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
                             // console.log(e.clientX - panel.mousePosition.clientX);
                             if (!self.resizer) {
-                                self.resizer = jQuery('<div class="ax5layout-resizer panel-' + panel.dock + '"></div>');
+                                self.resizer = jQuery('<div class="ax5layout-resizer panel-' + panel.dock + '" ondragstart="return false;"></div>');
                                 self.resizer.css({
                                     left: splitterOffset.left,
                                     top: splitterOffset.top,
                                     width: splitterBox.width,
                                     height: splitterBox.height
                                 });
-                                jQuery(document.body).append(self.resizer);
+                                item.$target.append(self.resizer);
                             }
                             self.resizer.css(getResizerPosition[panel.dock](e));
                         })
@@ -246,23 +321,22 @@
                 off: function (queIdx, panel) {
 
                     var setPanelSize = {
-                        'dock-panel': {
-                            "left": function(queIdx, panel){
+                        "dock-panel": {
+                            "left": function (queIdx, panel) {
                                 panel.__width += panel.__da;
                             },
-                            "right": function(){
+                            "right": function () {
                                 panel.__width -= panel.__da;
                             },
-                            "top": function(){
+                            "top": function () {
                                 panel.__height += panel.__da;
                             },
-                            "bottom": function(){
+                            "bottom": function () {
                                 panel.__height -= panel.__da;
                             }
                         },
-                        'stack-panel': {
-
-                        }
+                        "split-panel": {},
+                        "tab-panel": {}
                     };
 
                     if (self.resizer) {
@@ -300,7 +374,7 @@
                                 panelInfo.$target.addClass("dock-panel-" + panelInfo.dock);
 
                                 if (panelInfo.split && panelInfo.split.toString() == "true") {
-                                    panelInfo.$splitter = jQuery('<div class="dock-panel-splitter"></div>');
+                                    panelInfo.$splitter = jQuery('<div class="dock-panel-splitter dock-panel-' + panelInfo.dock + '"></div>');
                                     panelInfo.$splitter
                                         .bind(ENM["mousedown"], function (e) {
                                             // console.log(e.clientX);
@@ -311,8 +385,8 @@
                                             U.stopEvent(e);
                                             return false;
                                         });
-                                    panelInfo.$target.append(panelInfo.$splitter);
-                                    outerSize = cfg.splitter.size;
+                                    item.$target.append(panelInfo.$splitter);
+                                    outerSize = 0;
                                 }
 
                                 if (panelInfo.dock == "top" || panelInfo.dock == "bottom") {
