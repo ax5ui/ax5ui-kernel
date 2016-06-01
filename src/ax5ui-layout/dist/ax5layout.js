@@ -488,15 +488,15 @@
         };
 
         /**
-         * ax5.ui.layout.resize
+         * ax5.ui.layout.align
          * @param boundID
          * @param {Function} [callBack]
          * @returns {ax5.ui.layout}
          */
-        this.resize = function (boundID, callBack) {
+        this.align = function (boundID, callBack) {
             var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
             if (queIdx === -1) {
-                console.log(ax5.info.getError("ax5layout", "402", "resize"));
+                console.log(ax5.info.getError("ax5layout", "402", "align"));
                 return;
             }
             alignLayout.call(this, queIdx, callBack);
@@ -518,6 +518,75 @@
             this.queue[queIdx].onResize = fn;
             return this;
         };
+
+        /**
+         * ax5.ui.layout.resize
+         * @param boundID
+         * @param {Object} resizeOption
+         * @param {Function} [callBack]
+         * @returns {ax5.ui.layout}
+         */
+        this.resize = function () {
+
+            var resizeLayoutPanel = {
+                "dock-panel": function dockPanel(item, resizeOption) {
+                    ["top", "bottom", "left", "right"].forEach(function (dock) {
+                        if (resizeOption[dock] && item.dockPanel[dock]) {
+                            if (dock == "top" || dock == "bottom") {
+                                item.dockPanel[dock].__height = U.isObject(resizeOption[dock]) ? resizeOption[dock].height : resizeOption[dock];
+                            } else if (dock == "left" || dock == "right") {
+                                item.dockPanel[dock].__width = U.isObject(resizeOption[dock]) ? resizeOption[dock].width : resizeOption[dock];
+                            }
+                        }
+                    });
+                },
+                "split-panel": function splitPanel() {},
+                "tab-panel": function tabPanel() {}
+            };
+
+            return function (boundID, resizeOption, callBack) {
+                var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
+                if (queIdx === -1) {
+                    console.log(ax5.info.getError("ax5layout", "402", "resize"));
+                    return;
+                }
+
+                resizeLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx], resizeOption);
+                alignLayout.call(this, queIdx, callBack);
+                return this;
+            };
+        }();
+
+        this.reset = function () {
+
+            var resetLayoutPanel = {
+                "dock-panel": function dockPanel(item) {
+                    ["top", "bottom", "left", "right"].forEach(function (dock) {
+                        if (item.dockPanel[dock]) {
+                            if (dock == "top" || dock == "bottom") {
+                                item.dockPanel[dock].__height = item.dockPanel[dock].height;
+                            } else if (dock == "left" || dock == "right") {
+                                item.dockPanel[dock].__width = item.dockPanel[dock].width;
+                            }
+                        }
+                    });
+                },
+                "split-panel": function splitPanel() {},
+                "tab-panel": function tabPanel() {}
+            };
+
+            return function (boundID, callBack) {
+                var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
+                if (queIdx === -1) {
+                    console.log(ax5.info.getError("ax5layout", "402", "reset"));
+                    return;
+                }
+
+                resetLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx]);
+                alignLayout.call(this, queIdx, callBack);
+                return this;
+            };
+        }();
 
         // 클래스 생성자
         this.main = function () {
@@ -543,8 +612,14 @@ jQuery.fn.ax5layout = function () {
             var methodName = arguments[0];
 
             switch (methodName) {
+                case "align":
+                    return ax5.ui.layout_instance.align(this, arguments[1]);
+                    break;
                 case "resize":
-                    return ax5.ui.layout_instance.resize(this);
+                    return ax5.ui.layout_instance.resize(this, arguments[1], arguments[2]);
+                    break;
+                case "reset":
+                    return ax5.ui.layout_instance.reset(this, arguments[1]);
                     break;
                 case "onResize":
                     return ax5.ui.layout_instance.onResize(this, arguments[1]);
