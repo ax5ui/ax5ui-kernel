@@ -47,7 +47,7 @@
             theme: 'default',
             animateTime: 250,
             splitter: {
-                size: 5
+                size: 4
             }
         };
 
@@ -232,63 +232,69 @@
                     var getResizerPosition = {
                         "left": function (e) {
                             panel.__da = e.clientX - panel.mousePosition.clientX;
-                            if (panel.__width + panel.__da < 0) {
-                                panel.__da = -panel.__width;
-                            }
-                            else {
-                                var avalWidth = item.targetDimension.width
+                            var minWidth = panel.minWidth || 0;
+                            var maxWidth = panel.maxWidth || (
+                                    item.targetDimension.width
                                     - (item.dockPanel.left ? item.dockPanel.left.__width + ((item.dockPanel.left.split) ? cfg.splitter.size : 0) : 0)
-                                    - (item.dockPanel.right ? item.dockPanel.right.__width + ((item.dockPanel.right.split) ? cfg.splitter.size : 0) : 0);
+                                    - (item.dockPanel.right ? item.dockPanel.right.__width + ((item.dockPanel.right.split) ? cfg.splitter.size : 0) : 0)
+                                );
 
-                                if (avalWidth < panel.__da) {
-                                    panel.__da = avalWidth;
-                                }
+                            if (panel.__width + panel.__da < minWidth) {
+                                panel.__da = -panel.__width + minWidth;
+                            }
+                            else if (maxWidth < panel.__width + panel.__da) {
+                                panel.__da = maxWidth - panel.__width;
                             }
                             return {left: panel.$splitter.offset().left + panel.__da};
                         },
                         "right": function (e) {
                             panel.__da = e.clientX - panel.mousePosition.clientX;
-                            if (panel.__width - panel.__da < 0) {
-                                panel.__da =  panel.__width;
+                            var minWidth = panel.minWidth || 0;
+                            var maxWidth = panel.maxWidth || (
+                                    item.targetDimension.width
+                                    - (item.dockPanel.left ? item.dockPanel.left.__width + ((item.dockPanel.left.split) ? cfg.splitter.size : 0) : 0)
+                                    - (item.dockPanel.right ? item.dockPanel.right.__width + ((item.dockPanel.right.split) ? cfg.splitter.size : 0) : 0)
+                                );
+
+                            if (panel.__width - panel.__da < minWidth) {
+                                panel.__da = panel.__width - minWidth;
                             }
-                            else {
-                                var avalWidth = -item.targetDimension.width
-                                    + (item.dockPanel.left ? item.dockPanel.left.__width + ((item.dockPanel.left.split) ? cfg.splitter.size : 0) : 0)
-                                    + (item.dockPanel.right ? item.dockPanel.right.__width + ((item.dockPanel.right.split) ? cfg.splitter.size : 0) : 0);
-                                if (avalWidth > panel.__da) {
-                                    panel.__da = avalWidth;
-                                }
+                            else if (maxWidth < panel.__width - panel.__da) {
+                                panel.__da = -maxWidth + panel.__width;
                             }
                             return {left: panel.$splitter.offset().left + panel.__da};
                         },
                         "top": function (e) {
                             panel.__da = e.clientY - panel.mousePosition.clientY;
-                            if (panel.__height + panel.__da < 0) {
-                                panel.__da = -panel.__height;
-                            }
-                            else {
-                                var avalHeight = item.targetDimension.height
+                            var minHeight = panel.minHeight || 0;
+                            var maxHeight = panel.maxHeight || (
+                                    item.targetDimension.height
                                     - (item.dockPanel.top ? item.dockPanel.top.__height + ((item.dockPanel.top.split) ? cfg.splitter.size : 0) : 0)
-                                    - (item.dockPanel.bottom ? item.dockPanel.bottom.__height + ((item.dockPanel.bottom.split) ? cfg.splitter.size : 0) : 0);
+                                    - (item.dockPanel.bottom ? item.dockPanel.bottom.__height + ((item.dockPanel.bottom.split) ? cfg.splitter.size : 0) : 0)
+                                );
 
-                                if (avalHeight < panel.__da) {
-                                    panel.__da = avalHeight;
-                                }
+                            if (panel.__height + panel.__da < minHeight) {
+                                panel.__da = -panel.__height + minHeight;
+                            }
+                            else if (maxHeight < panel.__height + panel.__da) {
+                                panel.__da = maxHeight - panel.__height;
                             }
                             return {top: panel.$splitter.offset().top + panel.__da};
                         },
                         "bottom": function (e) {
                             panel.__da = e.clientY - panel.mousePosition.clientY;
-                            if (panel.__height - panel.__da < 0) {
-                                panel.__da =  panel.__height;
+                            var minHeight = panel.minHeight || 0;
+                            var maxHeight = panel.maxHeight || (
+                                    item.targetDimension.height
+                                    - (item.dockPanel.top ? item.dockPanel.top.__height + ((item.dockPanel.top.split) ? cfg.splitter.size : 0) : 0)
+                                    - (item.dockPanel.bottom ? item.dockPanel.bottom.__height + ((item.dockPanel.bottom.split) ? cfg.splitter.size : 0) : 0)
+                                );
+
+                            if (panel.__height - panel.__da < minHeight) {
+                                panel.__da = panel.__height - minHeight;
                             }
-                            else {
-                                var avalHeight = -item.targetDimension.height
-                                    + (item.dockPanel.top ? item.dockPanel.top.__height + ((item.dockPanel.top.split) ? cfg.splitter.size : 0) : 0)
-                                    + (item.dockPanel.bottom ? item.dockPanel.bottom.__height + ((item.dockPanel.bottom.split) ? cfg.splitter.size : 0) : 0);
-                                if (avalHeight > panel.__da) {
-                                    panel.__da = avalHeight;
-                                }
+                            else if (maxHeight < panel.__height - panel.__da) {
+                                panel.__da = -maxHeight + panel.__height;
                             }
                             return {top: panel.$splitter.offset().top + panel.__da};
                         }
