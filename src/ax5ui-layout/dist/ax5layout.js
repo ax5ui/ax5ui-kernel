@@ -198,8 +198,42 @@
                     }
 
                     panel.$target.css(css);
+                },
+                "split": {
+                    "vertical": function vertical(item, panel, panelIndex) {
+                        var css = {};
+                        if (panel.splitter) {
+                            if (item.oriental == "vertical") {
+                                css.height = cfg.splitter.size;
+                            } else {
+                                css.width = cfg.splitter.size;
+                            }
+
+                            panel.$target.css(css);
+                        } else {}
+                    },
+                    "horizontal": function horizontal(item, panel, panelIndex) {}
                 }
             };
+
+            var layoutProcessor = {
+                "dock-panel": function dockPanel(item) {
+                    for (var panel in item.dockPanel) {
+                        if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
+                            if (panel in setCSS) {
+                                setCSS[panel].call(this, item, item.dockPanel[panel]);
+                            }
+                        }
+                    }
+                },
+                "split-panel": function splitPanel(item) {
+                    //console.log(item.splitPanel);
+                    item.splitPanel.forEach(function (panel, panelIndex) {
+                        setCSS["split"][item.oriental].call(this, item, panel, panelIndex);
+                    });
+                }
+            };
+
             var childResize = function childResize(item) {
                 var i = item.childQueIdxs.length;
                 while (i--) {
@@ -217,15 +251,8 @@
                     width: item.$target.innerWidth()
                 };
 
-                // dockPanel
-                if (item.layout == "dock-panel") {
-                    for (var panel in item.dockPanel) {
-                        if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
-                            if (panel in setCSS) {
-                                setCSS[panel].call(this, item, item.dockPanel[panel]);
-                            }
-                        }
-                    }
+                if (item.layout in layoutProcessor) {
+                    layoutProcessor[item.layout].call(this, item);
                 }
 
                 if (item.childQueIdxs) childResize.call(this, item);
@@ -392,7 +419,7 @@
                 },
                 "split-panel": function splitPanel(queIdx) {
                     var item = this.queue[queIdx];
-                    item.splitPanel = {};
+                    item.splitPanel = [];
                     item.$target.find('>[data-split-panel], >[data-splitter]').each(function () {
                         var panelInfo = {};
                         (function (data) {
@@ -405,13 +432,23 @@
 
                         if (this.getAttribute("data-splitter")) {
                             panelInfo.splitter = true;
+                            panelInfo.$target.bind(ENM["mousedown"], function (e) {
+                                panelInfo.mousePosition = getMousePosition(e);
+                                resizeSplitter.on.call(self, queIdx, panelInfo);
+                            }).bind("dragstart", function (e) {
+                                U.stopEvent(e);
+                                return false;
+                            });
                         } else {
                             if (item.oriental == "vertical") {
                                 panelInfo.__height = panelInfo.height || 0;
                             } else {
+                                item.oriental = "horizontal";
                                 panelInfo.__width = panelInfo.width || 0;
                             }
                         }
+
+                        item.splitPanel.push(panelInfo);
                     });
                 }
             };
