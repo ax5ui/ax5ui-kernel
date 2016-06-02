@@ -222,7 +222,6 @@
                     for (var panel in item.dockPanel) {
                         if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
                             if (panel in setCSS) {
-                                item.dockPanel[panel].split = item.dockPanel[panel].split && item.dockPanel[panel].split.toString() == "true";
                                 setCSS[panel].call(this, item, item.dockPanel[panel]);
                             }
                         }
@@ -352,9 +351,8 @@
             bindLayoutTarget = function () {
 
             var applyLayout = {
-                'dock-panel': function dockPanel(queIdx) {
-                    var item = this.queue[queIdx],
-                        outerSize = 0;
+                "dock-panel": function dockPanel(queIdx) {
+                    var item = this.queue[queIdx];
                     item.dockPanel = {};
                     item.$target.find('>[data-dock-panel]').each(function () {
 
@@ -369,8 +367,8 @@
                             panelInfo.$target = jQuery(this);
                             panelInfo.$target.addClass("dock-panel-" + panelInfo.dock);
 
-                            if (panelInfo.split && panelInfo.split.toString() == "true") {
-                                panelInfo.$splitter = jQuery('<div class="dock-panel-splitter dock-panel-' + panelInfo.dock + '"></div>');
+                            if (panelInfo.split = panelInfo.split && panelInfo.split.toString() == "true") {
+                                panelInfo.$splitter = jQuery('<div data-splitter="" class="dock-panel-' + panelInfo.dock + '"></div>');
                                 panelInfo.$splitter.bind(ENM["mousedown"], function (e) {
                                     // console.log(e.clientX);
                                     panelInfo.mousePosition = getMousePosition(e);
@@ -380,16 +378,39 @@
                                     return false;
                                 });
                                 item.$target.append(panelInfo.$splitter);
-                                outerSize = 0;
                             }
 
                             if (panelInfo.dock == "top" || panelInfo.dock == "bottom") {
-                                panelInfo.__height = panelInfo.height + outerSize;
+                                panelInfo.__height = panelInfo.height;
                             } else {
-                                panelInfo.__width = panelInfo.width + outerSize;
+                                panelInfo.__width = panelInfo.width;
                             }
 
                             item.dockPanel[panelInfo.dock] = panelInfo;
+                        }
+                    });
+                },
+                "split-panel": function splitPanel(queIdx) {
+                    var item = this.queue[queIdx];
+                    item.splitPanel = {};
+                    item.$target.find('>[data-split-panel], >[data-splitter]').each(function () {
+                        var panelInfo = {};
+                        (function (data) {
+                            if (U.isObject(data) && !data.error) {
+                                panelInfo = jQuery.extend(true, panelInfo, data);
+                            }
+                        })(U.parseJson(this.getAttribute("data-split-panel") || this.getAttribute("data-splitter"), true));
+
+                        panelInfo.$target = jQuery(this);
+
+                        if (this.getAttribute("data-splitter")) {
+                            panelInfo.splitter = true;
+                        } else {
+                            if (item.oriental == "vertical") {
+                                panelInfo.__height = panelInfo.height || 0;
+                            } else {
+                                panelInfo.__width = panelInfo.width || 0;
+                            }
                         }
                     });
                 }
@@ -408,7 +429,6 @@
                     applyLayout[item.layout].call(this, queIdx);
                 }
                 alignLayout.call(this, queIdx);
-                //item.$target.find();
             };
         }(),
             getQueIdx = function getQueIdx(boundID) {

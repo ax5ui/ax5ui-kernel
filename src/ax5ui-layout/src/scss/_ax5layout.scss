@@ -88,7 +88,8 @@ $dock-panel-splitter-background: #ccc;
             z-index: 1;
         }
     }
-    > .dock-panel-splitter{
+    > [data-split-panel] { }
+    > [data-splitter]{
         // @include transition(all 0.3s, $ease-in-out-cubic);
         position: absolute;
         background: $dock-panel-splitter-background;

@@ -23,35 +23,12 @@
 </head>
 <body>
 
-<div data-ax5layout="ax1" data-config='{layout:"dock-panel"}' style="height: 100%;border:1px solid #ccc;">
-    <div data-dock-panel='{dock:"top", split:true, height: 100}'>
-        <div style="height:100%;border-bottom:1px solid #000;"></div>
-    </div>
-    <div data-dock-panel='{dock:"bottom", split:"true", height: 100}'></div>
-    <div data-dock-panel='{dock:"left", split:true, width: 100}'></div>
-    <div data-dock-panel='{dock:"right", split:true, width: 200}' style="padding: 5px;">
-
-        <div data-ax5layout="ax3" data-config='{layout:"dock-panel"}' style="height: 100%;border:1px solid #ccc;">
-            <div data-dock-panel='{dock:"top", split:"true", height: 200}' style="padding: 5px;">
-                <div style="height:100%;border:1px solid #000;"></div>
-            </div>
-            <div data-dock-panel='{dock:"center"}'></div>
-        </div>
-
-    </div>
-    <div data-dock-panel='{dock:"center"}' style="padding: 5px;">
-
-        <div data-ax5layout="ax2" data-config='{layout:"dock-panel"}' style="height: 100%;border:1px solid #ccc;">
-            <div data-dock-panel='{dock:"top", split:false, height: 100}'>
-                <div style="height:100%;border-bottom:1px solid #ccc;"></div>
-            </div>
-            <div data-dock-panel='{dock:"left", split:"true", width: 100}'></div>
-            <div data-dock-panel='{dock:"center"}' style="padding: 5px;">
-
-            </div>
-        </div>
-
-    </div>
+<div data-ax5layout="ax1" data-config='{layout:"split-panel", oriental: "vertical"}' style="height: 100%;border:1px solid #ccc;">
+    <div data-split-panel='{height: "10%"}'></div>
+    <div data-splitter='{}'></div>
+    <div data-split-panel='{height: 100}'></div>
+    <div data-splitter='{}'></div>
+    <div data-split-panel='{height: 200}'></div>
 </div>
 
 <script>
@@ -63,19 +40,6 @@
                 //console.log(this);
             }
         });
-        jQuery('[data-ax5layout="ax2"]').ax5layout({
-            onResize: function () {
-                //console.log(this.$target);
-                //console.log(this);
-            }
-        });
-
-        jQuery('[data-ax5layout="ax3"]').ax5layout();
-        jQuery('[data-ax5layout="ax3"]').ax5layout("onResize", function () {
-            console.log(this.$target);
-        });
-
-        // 특정 레이아웃 리사이즈 이벤트 호출 : jQuery('[data-ax5layout="ax1"]').ax5layout("resize");
     });
 </script>
 
