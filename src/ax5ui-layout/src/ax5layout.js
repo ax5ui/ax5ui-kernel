@@ -362,6 +362,11 @@
                                 resizeSplitter.off.call(self, queIdx, panel);
                             });
 
+                        jQuery(document.body)
+                            .attr('unselectable', 'on')
+                            .css('user-select', 'none')
+                            .on('selectstart', false);
+
                     },
                     off: function (queIdx, panel) {
 
@@ -396,6 +401,11 @@
                             .unbind(ENM["mousemove"] + ".ax5layout-" + this.instanceId)
                             .unbind(ENM["mouseup"] + ".ax5layout-" + this.instanceId)
                             .unbind("mouseleave.ax5layout-" + this.instanceId);
+
+                        jQuery(document.body)
+                            .removeAttr('unselectable')
+                            .css('user-select', 'auto')
+                            .off('selectstart');
 
                     }
                 },
