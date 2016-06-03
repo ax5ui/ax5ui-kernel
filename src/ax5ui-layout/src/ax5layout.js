@@ -206,21 +206,21 @@
                             "vertical": function (item, panel, panelIndex) {
                                 var css = {};
                                 if (panel.splitter) {
-                                    if (item.oriental == "vertical") {
-                                        css.height = cfg.splitter.size;
-                                    }
-                                    else {
-                                        css.width = cfg.splitter.size;
-                                    }
-
-                                    panel.$target.css(css);
+                                    css.height = cfg.splitter.size;
                                 }
                                 else {
-
+                                    css.height = panel.__height || 0;
                                 }
+                                panel.$target.css(css);
                             },
                             "horizontal": function (item, panel, panelIndex) {
-
+                                if (panel.splitter) {
+                                    css.width = cfg.splitter.size;
+                                }
+                                else {
+                                    css.width = panel.__width || 0;
+                                }
+                                panel.$target.css(css);
                             }
                         }
                     };
@@ -394,7 +394,6 @@
                             self.resizer = null;
                             setPanelSize[this.queue[queIdx].layout][panel.dock].call(this, queIdx, panel);
                             alignLayout.call(this, queIdx);
-
                         }
 
                         jQuery(document.body)

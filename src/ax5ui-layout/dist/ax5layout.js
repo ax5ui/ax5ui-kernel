@@ -203,16 +203,20 @@
                     "vertical": function vertical(item, panel, panelIndex) {
                         var css = {};
                         if (panel.splitter) {
-                            if (item.oriental == "vertical") {
-                                css.height = cfg.splitter.size;
-                            } else {
-                                css.width = cfg.splitter.size;
-                            }
-
-                            panel.$target.css(css);
-                        } else {}
+                            css.height = cfg.splitter.size;
+                        } else {
+                            css.height = panel.__height || 0;
+                        }
+                        panel.$target.css(css);
                     },
-                    "horizontal": function horizontal(item, panel, panelIndex) {}
+                    "horizontal": function horizontal(item, panel, panelIndex) {
+                        if (panel.splitter) {
+                            css.width = cfg.splitter.size;
+                        } else {
+                            css.width = panel.__width || 0;
+                        }
+                        panel.$target.css(css);
+                    }
                 }
             };
 
