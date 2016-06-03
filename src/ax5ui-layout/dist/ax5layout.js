@@ -81,7 +81,13 @@
             }
         },
             alignLayout = function () {
-
+            var getPixel = function getPixel(size, parentSize) {
+                if (U.right(size, 1) == "%") {
+                    return parentSize * U.number(size) / 100;
+                } else {
+                    return size;
+                }
+            };
             var setCSS = {
                 "top": function top(item, panel) {
                     panel.$target.css({ height: panel.__height || 0 });
@@ -202,10 +208,11 @@
                 "split": {
                     "vertical": function vertical(item, panel, panelIndex) {
                         var css = {};
+
                         if (panel.splitter) {
                             css.height = cfg.splitter.size;
                         } else {
-                            css.height = panel.__height || 0;
+                            css.height = getPixel(panel.__height, item.targetDimension.height) || 0;
                         }
                         panel.$target.css(css);
                     },
@@ -213,7 +220,7 @@
                         if (panel.splitter) {
                             css.width = cfg.splitter.size;
                         } else {
-                            css.width = panel.__width || 0;
+                            css.width = getPixel(panel.__width, item.targetDimension.width) || 0;
                         }
                         panel.$target.css(css);
                     }
