@@ -81,13 +81,6 @@
             }
         },
             alignLayout = function () {
-            var getPixel = function getPixel(size, parentSize) {
-                if (U.right(size, 1) == "%") {
-                    return parentSize * U.number(size) / 100;
-                } else {
-                    return size;
-                }
-            };
             var setCSS = {
                 "top": function top(item, panel) {
                     panel.$target.css({ height: panel.__height || 0 });
@@ -212,7 +205,7 @@
                         if (panel.splitter) {
                             css.height = cfg.splitter.size;
                         } else {
-                            css.height = getPixel(panel.__height, item.targetDimension.height) || 0;
+                            css.height = panel.__height || 0;
                         }
                         panel.$target.css(css);
                     },
@@ -220,7 +213,7 @@
                         if (panel.splitter) {
                             css.width = cfg.splitter.size;
                         } else {
-                            css.width = getPixel(panel.__width, item.targetDimension.width) || 0;
+                            css.width = panel.__width || 0;
                         }
                         panel.$target.css(css);
                     }
@@ -391,7 +384,13 @@
             }
         },
             bindLayoutTarget = function () {
-
+            var getPixel = function getPixel(size, parentSize) {
+                if (U.right(size, 1) == "%") {
+                    return parentSize * U.number(size) / 100;
+                } else {
+                    return size;
+                }
+            };
             var applyLayout = {
                 "dock-panel": function dockPanel(queIdx) {
                     var item = this.queue[queIdx];
@@ -423,9 +422,9 @@
                             }
 
                             if (panelInfo.dock == "top" || panelInfo.dock == "bottom") {
-                                panelInfo.__height = panelInfo.height;
+                                panelInfo.__height = getPixel(panelInfo.height, item.targetDimension.height);
                             } else {
-                                panelInfo.__width = panelInfo.width;
+                                panelInfo.__width = getPixel(panelInfo.width, item.targetDimension.width);
                             }
 
                             item.dockPanel[panelInfo.dock] = panelInfo;
@@ -456,10 +455,10 @@
                             });
                         } else {
                             if (item.oriental == "vertical") {
-                                panelInfo.__height = panelInfo.height || 0;
+                                panelInfo.__height = getPixel(panelInfo.height, item.targetDimension.height) || 0;
                             } else {
                                 item.oriental = "horizontal";
-                                panelInfo.__width = panelInfo.width || 0;
+                                panelInfo.__width = getPixel(panelInfo.width, item.targetDimension.width) || 0;
                             }
                         }
 
@@ -471,6 +470,12 @@
             return function (queIdx) {
                 var item = this.queue[queIdx];
                 var data = {};
+
+                // 레이아웃 타겟의 CSS속성을 미리 저장해 둡니다. 왜? 패널별로 크기 계산 할 때 쓰려고
+                item.targetDimension = {
+                    height: item.$target.innerHeight(),
+                    width: item.$target.innerWidth()
+                };
 
                 // 부모 컨테이너가 ax5layout인지 판단 필요.
                 if (item.$target.parents("[data-ax5layout]").get(0)) {
