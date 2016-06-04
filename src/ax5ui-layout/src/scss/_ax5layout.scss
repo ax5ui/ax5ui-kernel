@@ -93,7 +93,12 @@ $dock-panel-splitter-background: #ccc;
         border: 0px none;
         z-index: 2;
         overflow: auto;
-
+        &.split-panel-vertical{
+            width: 100%;
+        }
+        &.split-panel-horizontal{
+            height: 100%;
+        }
     }
     > [data-splitter]{
         // @include transition(all 0.3s, $ease-in-out-cubic);

@@ -204,12 +204,19 @@
                         "split": {
                             "vertical": function (item, panel, panelIndex, prevPosition) {
                                 var css = {};
-                                prevPosition = (panelIndex) ? item.splitPanel[panelIndex-1].offsetEnd : 0;
+                                prevPosition = (panelIndex) ? item.splitPanel[panelIndex - 1].offsetEnd : 0;
                                 if (panel.splitter) {
                                     css.height = cfg.splitter.size;
                                 }
                                 else {
-                                    css.height = panel.__height || 0;
+                                    if (panelIndex == item.splitPanel.length - 1) {
+                                        // 마지막 패널.. 남은 전체 공간을 사용
+                                        css.height = item.targetDimension.height - prevPosition;
+                                    }
+                                    else{
+                                        css.height = panel.__height || 0;
+                                    }
+
                                 }
                                 css.top = prevPosition;
                                 panel.offsetStart = prevPosition;
@@ -218,13 +225,19 @@
                             },
                             "horizontal": function (item, panel, panelIndex, prevPosition) {
                                 var css = {};
-                                prevPosition = (panelIndex) ? item.splitPanel[panelIndex-1].offsetEnd : 0;
+                                prevPosition = (panelIndex) ? item.splitPanel[panelIndex - 1].offsetEnd : 0;
 
                                 if (panel.splitter) {
                                     css.width = cfg.splitter.size;
                                 }
                                 else {
-                                    css.width = panel.__width || 0;
+                                    if (panelIndex == item.splitPanel.length - 1) {
+                                        // 마지막 패널.. 남은 전체 공간을 사용
+                                        css.width = item.targetDimension.width - prevPosition;
+                                    }
+                                    else{
+                                        css.width = panel.__width || 0;
+                                    }
                                 }
                                 css.left = prevPosition;
                                 panel.offsetStart = prevPosition;
@@ -287,11 +300,12 @@
                 })(),
 
                 resizeSplitter = {
-                    on: function (queIdx, panel) {
+                    on: function (queIdx, panel, $splitter) {
                         var item = this.queue[queIdx];
-                        var splitterOffset = panel.$splitter.offset();
+                        //console.log(item.layout, panel);
+                        var splitterOffset = $splitter.offset();
                         var splitterBox = {
-                            width: panel.$splitter.width(), height: panel.$splitter.height()
+                            width: $splitter.width(), height: $splitter.height()
                         };
                         var getResizerPosition = {
                             "left": function (e) {
@@ -345,15 +359,20 @@
                                     panel.__da = -maxHeight + panel.__height;
                                 }
                                 return {top: panel.$splitter.offset().top + panel.__da};
+                            },
+                            "split": function(e){
+                                panel.__da = e.clientY - panel.mousePosition.clientY;
+
+                                return {top: panel.$target.offset().top + panel.__da};
                             }
                         };
                         panel.__da = 0; // 패널의 변화량
 
+                        
                         jQuery(document.body)
                             .bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
-                                // console.log(e.clientX - panel.mousePosition.clientX);
                                 if (!self.resizer) {
-                                    self.resizer = jQuery('<div class="ax5layout-resizer panel-' + panel.dock + '" ondragstart="return false;"></div>');
+                                    self.resizer = jQuery('<div class="ax5layout-resizer panel-' + (panel.resizerType) + '" ondragstart="return false;"></div>');
                                     self.resizer.css({
                                         left: splitterOffset.left,
                                         top: splitterOffset.top,
@@ -362,7 +381,7 @@
                                     });
                                     item.$target.append(self.resizer);
                                 }
-                                self.resizer.css(getResizerPosition[panel.dock](e));
+                                self.resizer.css(getResizerPosition[panel.resizerType](e));
                             })
                             .bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
                                 resizeSplitter.off.call(self, queIdx, panel);
@@ -418,11 +437,11 @@
                     }
                 },
                 bindLayoutTarget = (function () {
-                    var getPixel = function(size, parentSize){
-                        if(U.right(size, 1) == "%"){
+                    var getPixel = function (size, parentSize) {
+                        if (U.right(size, 1) == "%") {
                             return parentSize * U.number(size) / 100;
                         }
-                        else{
+                        else {
                             return size;
                         }
                     };
@@ -449,7 +468,7 @@
                                             .bind(ENM["mousedown"], function (e) {
                                                 // console.log(e.clientX);
                                                 panelInfo.mousePosition = getMousePosition(e);
-                                                resizeSplitter.on.call(self, queIdx, panelInfo);
+                                                resizeSplitter.on.call(self, queIdx, panelInfo, panelInfo.$splitter);
                                             })
                                             .bind("dragstart", function (e) {
                                                 U.stopEvent(e);
@@ -464,7 +483,7 @@
                                     else {
                                         panelInfo.__width = getPixel(panelInfo.width, item.targetDimension.width);
                                     }
-
+                                    panelInfo.resizerType = panelInfo.dock;
                                     item.dockPanel[panelInfo.dock] = panelInfo;
                                 }
                             });
@@ -490,12 +509,13 @@
                                     panelInfo.$target
                                         .bind(ENM["mousedown"], function (e) {
                                             panelInfo.mousePosition = getMousePosition(e);
-                                            resizeSplitter.on.call(self, queIdx, panelInfo);
+                                            resizeSplitter.on.call(self, queIdx, panelInfo, panelInfo.$target);
                                         })
                                         .bind("dragstart", function (e) {
                                             U.stopEvent(e);
                                             return false;
                                         });
+                                    panelInfo.resizerType = "split";
                                 } else {
                                     if (item.oriental == "vertical") {
                                         panelInfo.__height = getPixel(panelInfo.height, item.targetDimension.height) || 0;
