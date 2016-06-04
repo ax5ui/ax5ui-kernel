@@ -292,7 +292,7 @@
             resizeSplitter = {
             on: function on(queIdx, panel, $splitter) {
                 var item = this.queue[queIdx];
-                var splitterOffset = $splitter.offset();
+                var splitterOffset = $splitter.position();
                 var splitterBox = {
                     width: $splitter.width(), height: $splitter.height()
                 };
@@ -397,13 +397,10 @@
                     "split-panel": {
                         "split": function split() {
                             if (item.oriental == "vertical") {
-
-                                console.log(panel.panelIndex);
                                 // 앞과 뒤의 높이 조절
                                 item.splitPanel[panel.panelIndex - 1].__height += panel.__da;
                                 item.splitPanel[panel.panelIndex + 1].__height -= panel.__da;
                             } else {
-                                //panel.__width += panel.__da;
                                 item.splitPanel[panel.panelIndex - 1].__width += panel.__da;
                                 item.splitPanel[panel.panelIndex + 1].__width -= panel.__da;
                             }
@@ -490,8 +487,10 @@
                         if (this.getAttribute("data-splitter")) {
                             panelInfo.splitter = true;
                             panelInfo.$target.bind(ENM["mousedown"], function (e) {
-                                panelInfo.mousePosition = getMousePosition(e);
-                                resizeSplitter.on.call(self, queIdx, panelInfo, panelInfo.$target);
+                                if (panelInfo.panelIndex > 0 && panelInfo.panelIndex < item.splitPanel.length - 1) {
+                                    panelInfo.mousePosition = getMousePosition(e);
+                                    resizeSplitter.on.call(self, queIdx, panelInfo, panelInfo.$target);
+                                }
                             }).bind("dragstart", function (e) {
                                 U.stopEvent(e);
                                 return false;

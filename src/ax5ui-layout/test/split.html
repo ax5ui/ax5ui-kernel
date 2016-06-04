@@ -23,18 +23,34 @@
 </head>
 <body>
 
-<div data-ax5layout="ax1" data-config='{layout:"split-panel", oriental: "vertical"}' style="height: 100%;border:1px solid #ccc;">
-    <div data-split-panel='{height: "30%"}'></div>
+<div data-ax5layout="ax1" data-config='{layout:"split-panel", oriental: "horizontal"}' style="height: 100%;border:1px solid #ccc;">
+    <div data-split-panel='{width: "30%"}'></div>
     <div data-splitter='{}'></div>
-    <div data-split-panel='{height: 200}'></div>
+    <div data-split-panel='{width: 200}'></div>
     <div data-splitter='{}'></div>
-    <div data-split-panel='{height: 200}'></div>
+    <div data-split-panel='{width: 200}'>
+
+        <div data-ax5layout="ax2" data-config='{layout:"split-panel", oriental: "vertical"}' style="height: 100%;border:1px solid #ccc;">
+            <div data-split-panel='{height: "30%"}'></div>
+            <div data-splitter='{}'></div>
+            <div data-split-panel='{height: 200}'></div>
+            <div data-splitter='{}'></div>
+            <div data-split-panel='{height: 200}'></div>
+        </div>
+
+    </div>
 </div>
 
 <script>
     // todo : limit resize
     jQuery(document.body).ready(function () {
         jQuery('[data-ax5layout="ax1"]').ax5layout({
+            onResize: function () {
+                //console.log(this.$target);
+                //console.log(this);
+            }
+        });
+        jQuery('[data-ax5layout="ax2"]').ax5layout({
             onResize: function () {
                 //console.log(this.$target);
                 //console.log(this);
