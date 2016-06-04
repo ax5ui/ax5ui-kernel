@@ -88,7 +88,13 @@ $dock-panel-splitter-background: #ccc;
             z-index: 1;
         }
     }
-    > [data-split-panel] { }
+    > [data-split-panel] {
+        position: absolute;
+        border: 0px none;
+        z-index: 2;
+        overflow: auto;
+
+    }
     > [data-splitter]{
         // @include transition(all 0.3s, $ease-in-out-cubic);
         position: absolute;
@@ -112,6 +118,14 @@ $dock-panel-splitter-background: #ccc;
         }
         &.dock-panel-right{
             right:0px;
+            height: 100%;
+            cursor: ew-resize;
+        }
+        &.split-panel-vertical{
+            width: 100%;
+            cursor: ns-resize;
+        }
+        &.split-panel-horizontal{
             height: 100%;
             cursor: ew-resize;
         }

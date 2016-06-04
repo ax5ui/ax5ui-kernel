@@ -199,22 +199,31 @@
                     panel.$target.css(css);
                 },
                 "split": {
-                    "vertical": function vertical(item, panel, panelIndex) {
+                    "vertical": function vertical(item, panel, panelIndex, prevPosition) {
                         var css = {};
-
+                        prevPosition = panelIndex ? item.splitPanel[panelIndex - 1].offsetEnd : 0;
                         if (panel.splitter) {
                             css.height = cfg.splitter.size;
                         } else {
                             css.height = panel.__height || 0;
                         }
+                        css.top = prevPosition;
+                        panel.offsetStart = prevPosition;
+                        panel.offsetEnd = prevPosition + css.height;
                         panel.$target.css(css);
                     },
-                    "horizontal": function horizontal(item, panel, panelIndex) {
+                    "horizontal": function horizontal(item, panel, panelIndex, prevPosition) {
+                        var css = {};
+                        prevPosition = panelIndex ? item.splitPanel[panelIndex - 1].offsetEnd : 0;
+
                         if (panel.splitter) {
                             css.width = cfg.splitter.size;
                         } else {
                             css.width = panel.__width || 0;
                         }
+                        css.left = prevPosition;
+                        panel.offsetStart = prevPosition;
+                        panel.offsetEnd = prevPosition + css.width;
                         panel.$target.css(css);
                     }
                 }
@@ -443,6 +452,7 @@
                         })(U.parseJson(this.getAttribute("data-split-panel") || this.getAttribute("data-splitter"), true));
 
                         panelInfo.$target = jQuery(this);
+                        panelInfo.$target.addClass("split-panel-" + item.oriental);
 
                         if (this.getAttribute("data-splitter")) {
                             panelInfo.splitter = true;
