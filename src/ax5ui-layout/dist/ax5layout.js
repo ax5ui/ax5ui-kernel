@@ -292,7 +292,6 @@
             resizeSplitter = {
             on: function on(queIdx, panel, $splitter) {
                 var item = this.queue[queIdx];
-                //console.log(item.layout, panel);
                 var splitterOffset = $splitter.offset();
                 var splitterBox = {
                     width: $splitter.width(), height: $splitter.height()
@@ -347,9 +346,13 @@
                         return { top: panel.$splitter.offset().top + panel.__da };
                     },
                     "split": function split(e) {
-                        panel.__da = e.clientY - panel.mousePosition.clientY;
-
-                        return { top: panel.$target.offset().top + panel.__da };
+                        if (item.oriental == "vertical") {
+                            panel.__da = e.clientY - panel.mousePosition.clientY;
+                            return { top: panel.$target.offset().top + panel.__da };
+                        } else {
+                            panel.__da = e.clientX - panel.mousePosition.clientX;
+                            return { left: panel.$target.offset().left + panel.__da };
+                        }
                     }
                 };
                 panel.__da = 0; // 패널의 변화량
@@ -367,15 +370,15 @@
                     }
                     self.resizer.css(getResizerPosition[panel.resizerType](e));
                 }).bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
-                    resizeSplitter.off.call(self, queIdx, panel);
+                    resizeSplitter.off.call(self, queIdx, panel, $splitter);
                 }).bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
-                    resizeSplitter.off.call(self, queIdx, panel);
+                    resizeSplitter.off.call(self, queIdx, panel, $splitter);
                 });
 
                 jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
             },
-            off: function off(queIdx, panel) {
-
+            off: function off(queIdx, panel, $splitter) {
+                var item = this.queue[queIdx];
                 var setPanelSize = {
                     "dock-panel": {
                         "left": function left(queIdx, panel) {
@@ -391,14 +394,28 @@
                             panel.__height -= panel.__da;
                         }
                     },
-                    "split-panel": {},
+                    "split-panel": {
+                        "split": function split() {
+                            if (item.oriental == "vertical") {
+
+                                console.log(panel.panelIndex);
+                                // 앞과 뒤의 높이 조절
+                                item.splitPanel[panel.panelIndex - 1].__height += panel.__da;
+                                item.splitPanel[panel.panelIndex + 1].__height -= panel.__da;
+                            } else {
+                                //panel.__width += panel.__da;
+                                item.splitPanel[panel.panelIndex - 1].__width += panel.__da;
+                                item.splitPanel[panel.panelIndex + 1].__width -= panel.__da;
+                            }
+                        }
+                    },
                     "tab-panel": {}
                 };
 
                 if (self.resizer) {
                     self.resizer.remove();
                     self.resizer = null;
-                    setPanelSize[this.queue[queIdx].layout][panel.dock].call(this, queIdx, panel);
+                    setPanelSize[this.queue[queIdx].layout][panel.resizerType].call(this, queIdx, panel);
                     alignLayout.call(this, queIdx);
                 }
 
@@ -458,7 +475,7 @@
                 "split-panel": function splitPanel(queIdx) {
                     var item = this.queue[queIdx];
                     item.splitPanel = [];
-                    item.$target.find('>[data-split-panel], >[data-splitter]').each(function () {
+                    item.$target.find('>[data-split-panel], >[data-splitter]').each(function (ELIndex) {
                         var panelInfo = {};
                         (function (data) {
                             if (U.isObject(data) && !data.error) {
@@ -468,6 +485,7 @@
 
                         panelInfo.$target = jQuery(this);
                         panelInfo.$target.addClass("split-panel-" + item.oriental);
+                        panelInfo.panelIndex = ELIndex;
 
                         if (this.getAttribute("data-splitter")) {
                             panelInfo.splitter = true;
