@@ -395,6 +395,123 @@
         }
 
         /**
+         * @method ax5.util.sum
+         * @param {Array|Object} O
+         * @param {Number} [defaultValue]
+         * @param {Function} _fn
+         * @returns {Number}
+         * @example
+         * ```js
+         * var arr = [
+         *  {name: "122", value: 9},
+         *  {name: "122", value: 10},
+         *  {name: "123", value: 11}
+         * ];
+         *
+         * var rs = ax5.util.sum(arr, function () {
+         *  if(this.name == "122") {
+         *      return this.value;
+         *  }
+         * });
+         * console.log(rs); // 19
+         *
+         * console.log(ax5.util.sum(arr, 10, function () {
+         *   return this.value;
+         * }));
+         * // 40
+         * ```
+         */
+        function sum(O, defaultValue, _fn) {
+            var i, l, tokenValue;
+            if (isFunction(defaultValue) && typeof _fn === "undefined") {
+                _fn = defaultValue;
+                defaultValue = 0;
+            }
+            if (typeof defaultValue === "undefined") defaultValue = 0;
+
+            if (isArray(O)) {
+                i = 0;
+                l = O.length;
+                for (; i < l; i++) {
+                    if (typeof O[i] !== "undefined") {
+                        if (( tokenValue = _fn.call(O[i], O[i]) ) === false) break;
+                        else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                    }
+                }
+                return defaultValue;
+            }
+            else if (isObject(O)) {
+                for (i in O) {
+                    if (typeof O[i] != "undefined") {
+                        if (( tokenValue = _fn.call(O[i], O[i]) ) === false) break;
+                        else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                    }
+                }
+                return defaultValue;
+            }
+            else {
+                console.error("argument error : ax5.util.sum - use Array or Object");
+                return defaultValue;
+            }
+        }
+
+
+        /**
+         * @method ax5.util.avg
+         * @param {Array|Object} O
+         * @param {Number} [defaultValue]
+         * @param {Function} _fn
+         * @returns {Number}
+         * @example
+         * ```js
+         * var arr = [
+         *  {name: "122", value: 9},
+         *  {name: "122", value: 10},
+         *  {name: "123", value: 11}
+         * ];
+         *
+         * var rs = ax5.util.avg(arr, function () {
+         *      return this.value;
+         * });
+         *
+         * console.log(rs); // 10
+         * ```
+         */
+        function avg(O, defaultValue, _fn) {
+            var i, l, tokenValue;
+            if (isFunction(defaultValue) && typeof _fn === "undefined") {
+                _fn = defaultValue;
+                defaultValue = 0;
+            }
+            if (typeof defaultValue === "undefined") defaultValue = 0;
+
+            if (isArray(O)) {
+                i = 0;
+                l = O.length;
+                for (; i < l; i++) {
+                    if (typeof O[i] !== "undefined") {
+                        if (( tokenValue = _fn.call(O[i], O[i]) ) === false) break;
+                        else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                    }
+                }
+                return defaultValue / l;
+            }
+            else if (isObject(O)) {
+                for (i in O) {
+                    if (typeof O[i] != "undefined") {
+                        if (( tokenValue = _fn.call(O[i], O[i]) ) === false) break;
+                        else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                    }
+                }
+                return defaultValue / l;
+            }
+            else {
+                console.error("argument error : ax5.util.sum - use Array or Object");
+                return defaultValue;
+            }
+        }
+
+        /**
          * 배열의 왼쪽에서 오른쪽으로 연산을 진행하는데 수행한 결과가 왼쪽 값으로 반영되어 최종 왼쪽 값을 반환합니다.
          * @method ax5.util.reduce
          * @param {Array|Object} O
@@ -1773,6 +1890,8 @@
             reduce: reduce,
             reduceRight: reduceRight,
             filter: filter,
+            sum: sum,
+            avg: avg,
             toJson: toJson,
             parseJson: parseJson,
             first: first,

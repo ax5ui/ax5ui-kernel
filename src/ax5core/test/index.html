@@ -18,6 +18,23 @@
         ax5.util.selectRange($("#select-test-1").get(0), [1, 5]);
         //ax5.util.selectRange($("#select-test-2"), "end");
     });
+
+    var arr = [
+        {name: "122", value: 9},
+        {name: "122", value: 10},
+        {name: "222", value: 11}
+    ];
+
+    var rs = ax5.util.avg(arr, function () {
+        return this.value;
+    });
+
+    console.log(rs);
+    
+    console.log(ax5.util.sum(arr, 10, function () {
+        return this.value;
+    }));
+
 </script>
 
 </body>

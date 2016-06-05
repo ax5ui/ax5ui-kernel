@@ -182,6 +182,47 @@ console.log(ax5.util.reduceRight(aarray, function (p, n) {
 ```
 ---
 
+## ax5.util.sum
+It returns the sum. The sum of all the values returned by the function.
+```js
+var arr = [
+    {name: "122", value: 9},
+    {name: "122", value: 10},
+    {name: "123", value: 11}
+];
+
+var rs = ax5.util.sum(arr, function () {
+    if(this.name == "122") {
+        return this.value;
+    }
+});
+console.log(rs); // 19
+
+console.log(ax5.util.sum(arr, 10, function () {
+    return this.value;
+}));
+// 40
+```
+---
+
+## ax5.util.avg
+It returns the average. The average of all the values returned by the function.
+```js
+var arr = [
+    {name: "122", value: 9},
+    {name: "122", value: 10},
+    {name: "123", value: 11}
+];
+
+var rs = ax5.util.avg(arr, function () {
+    return this.value;
+});
+
+console.log(rs); // 10
+```
+---
+
+
 ## ax5.util.first
 It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array [0]" rather than using the "first" method.
 ```js
