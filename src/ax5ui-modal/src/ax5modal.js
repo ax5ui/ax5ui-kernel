@@ -4,7 +4,7 @@
     /**
      * @class ax5modal
      * @alias ax5.ui.modal
-     * @version 0.5.6
+     * @version 0.6.0
      * @author tom@axisj.com
      * @example
      * ```
@@ -281,8 +281,8 @@
                         }
 
                         return {
-                            left: modalOffset.left + self.__dx,
-                            top: modalOffset.top + self.__dy
+                            left: modalOffset.left + self.__dx + $(document).scrollLeft(),
+                            top: modalOffset.top + self.__dy + $(document).scrollTop()
                         };
                     };
 
@@ -324,8 +324,8 @@
                     var setModalPosition = function () {
                         //console.log(this.activeModal.offset(), this.__dx);
                         var box = this.activeModal.offset();
-                        box.left += this.__dx;
-                        box.top += this.__dy;
+                        box.left += this.__dx - $(document).scrollLeft();
+                        box.top += this.__dy - $(document).scrollTop();
                         this.activeModal.css(box);
                     };
 
