@@ -347,7 +347,7 @@
             };
         }(),
             resizeSplitter = {
-            on: function on(queIdx, panel, $splitter) {
+            "on": function on(queIdx, panel, $splitter) {
                 var item = this.queue[queIdx];
                 var splitterOffset = $splitter.position();
                 var splitterBox = {
@@ -453,7 +453,7 @@
 
                 jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
             },
-            off: function off(queIdx, panel, $splitter) {
+            "off": function off(queIdx, panel, $splitter) {
                 var item = this.queue[queIdx];
                 var setPanelSize = {
                     "dock-panel": {
