@@ -21,9 +21,32 @@
 
 <script>
     // todo : move handle 구현, minimize 구현
-    var modal = new ax5.ui.modal({});
+    // 1. title 속성 추가 하자
+    var modal = new ax5.ui.modal({
+        header:{
+            title:"MODAL TITLE",
+            btns: {
+                minimize: {
+                    label: '<i class="fa fa-minus-circle" aria-hidden="true"></i>', onClick: function(){
+                        modal.minimize();
+                    }
+                },
+                maximize: {
+                    label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function(){
+                        //console.log("maximize", this);
+                        modal.maximize();
+                    }
+                },
+                close: {
+                    label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function(){
+                        modal.close();
+                    }
+                }
+            }
+        }
+    });
     modal.onStateChanged = function(){
-        console.log(this);
+        //console.log(this);
     };
 
     function modalCallBack(){
@@ -35,7 +58,7 @@
             modal.open({
                 iframe: {
                     method: "get",
-                    url: "/ax5docs/ax5ui-modal/demo/modal-iframe-content.html",
+                    url: "modal-content.html",
                     param: "callBack=modalCallBack"
                 }
             });

@@ -27,7 +27,17 @@ myModal.set_config({
     onStateChanged: "Function",
     animateTime: "Number",
     zIndex: "Number",
-    fullScreen: "Boolean"
+    fullScreen: "Boolean",
+    header: {
+        title: "",
+        btns: {
+            close: {
+                label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function(){
+                    myModal.close();
+                }
+            }
+        }
+    }
 });
 ```
 
@@ -97,6 +107,33 @@ Type: `Boolean`
 fullScreen : true
 ```
 
+### header
+
+Type: `Object'
+
+```json
+{
+    title:"MODAL TITLE",
+    btns: {
+        minimize: {
+            label: '<i class="fa fa-minus-circle" aria-hidden="true"></i>', onClick: function(){
+                modal.minimize();
+            }
+        },
+        maximize: {
+            label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function(){
+                modal.maximize();
+            }
+        },
+        close: {
+            label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function(){
+                modal.close();
+            }
+        }
+    }
+}
+```
+
 - - -
 
 ## open()
@@ -141,6 +178,18 @@ modal.align({left:"left", top:"top", margin: 20});
 
 ## close()
 `close()`
+
+
+- - -
+
+## minimize()
+`minimize()`
+
+
+- - -
+
+## maximize()
+`maximize()`
 
 - - -
 
