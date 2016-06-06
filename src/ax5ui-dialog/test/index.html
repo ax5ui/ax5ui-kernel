@@ -90,19 +90,19 @@
                 msg: theme + ' color',
                 btns: {
                     del: {
-                        label: 'Delete', theme: 'warning', onclick: function (key) {
+                        label: 'Delete', theme: 'warning', onClick: function (key) {
                             console.log(key, this);
                             dialog.close();
                         }
                     },
                     cancel: {
-                        label: 'Cancel', theme: 'danger', onclick: function (key) {
+                        label: 'Cancel', theme: 'danger', onClick: function (key) {
                             console.log(key, this);
                             dialog.close();
                         }
                     },
                     other: {
-                        label: 'Other', onclick: function (key) {
+                        label: 'Other', onClick: function (key) {
                             console.log(key, this);
                             //my_dialog.close(); // 닫기를 안할 수도 있겠어요.
                         }
