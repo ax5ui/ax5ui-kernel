@@ -405,11 +405,28 @@
                     "split": function split(e) {
                         if (item.oriental == "vertical") {
                             panel.__da = e.clientY - panel.mousePosition.clientY;
+
+                            var prevPanel = item.splitPanel[panel.panelIndex - 1];
+                            var nextPanel = item.splitPanel[panel.panelIndex + 1];
+                            if (panel.offsetStart + panel.__da < prevPanel.offsetStart) {
+                                panel.__da = prevPanel.offsetStart - panel.offsetStart;
+                            } else if (panel.offsetStart + panel.__da > nextPanel.offsetEnd) {
+                                panel.__da = nextPanel.offsetEnd - panel.offsetEnd;
+                            }
+
                             return { top: panel.$target.offset().top + panel.__da };
                         } else {
-                            // console.log(panel.panelIndex);
                             /// todo : min & max 범위 정하기
                             panel.__da = e.clientX - panel.mousePosition.clientX;
+
+                            var prevPanel = item.splitPanel[panel.panelIndex - 1];
+                            var nextPanel = item.splitPanel[panel.panelIndex + 1];
+                            if (panel.offsetStart + panel.__da < prevPanel.offsetStart) {
+                                panel.__da = prevPanel.offsetStart - panel.offsetStart;
+                            } else if (panel.offsetStart + panel.__da > nextPanel.offsetEnd) {
+                                panel.__da = nextPanel.offsetEnd - panel.offsetEnd;
+                            }
+
                             return { left: panel.$target.offset().left + panel.__da };
                         }
                     }
