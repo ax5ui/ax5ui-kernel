@@ -1,10 +1,3 @@
-'use strict';
-
-var fs = require('fs')
-var gulp = require('gulp');
-var sass = require('gulp-sass');
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
 var changed = require('gulp-changed');
 var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
