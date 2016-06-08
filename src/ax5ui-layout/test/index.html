@@ -43,6 +43,7 @@
 
         <button class="btn btn-default" data-btn="resize">크기변경</button>
         <button class="btn btn-default" data-btn="reset">Reset</button>
+        <button class="btn btn-default" data-btn="left-hide">Toggle left</button>
 
         <!--
                 <div data-ax5layout="ax2" data-config='{layout:"dock-panel"}' style="height: 100%;border:1px solid #ccc;">
@@ -79,6 +80,9 @@
         });
         $('[data-btn="reset"]').click(function () {
             jQuery('[data-ax5layout="ax1"]').ax5layout("reset");
+        });
+        $('[data-btn="left-hide"]').click(function () {
+            jQuery('[data-ax5layout="ax1"]').ax5layout("hide", "left");
         });
 
 

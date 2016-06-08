@@ -95,7 +95,7 @@
                                         if (item.splitPanel.asteriskLength == 0) {
                                             item.splitPanel.asteriskLength++;
                                         }
-                                        else{
+                                        else {
                                             if (panel.height == "*") {
                                                 item.splitPanel.asteriskLength++;
                                             }
@@ -116,7 +116,7 @@
                                     if (panelIndex == item.splitPanel.length - 1) {
                                         if (item.splitPanel.asteriskLength == 0) {
                                             item.splitPanel.asteriskLength++;
-                                        }else{
+                                        } else {
                                             if (panel.width == "*") {
                                                 item.splitPanel.asteriskLength++;
                                             }
@@ -424,13 +424,17 @@
                                 if (item.oriental == "vertical") {
                                     panel.__da = e.clientY - panel.mousePosition.clientY;
 
-                                    var prevPanel = item.splitPanel[panel.panelIndex-1];
-                                    var nextPanel = item.splitPanel[panel.panelIndex+1];
-                                    if (panel.offsetStart + panel.__da < prevPanel.offsetStart) {
-                                        panel.__da = prevPanel.offsetStart - panel.offsetStart;
+                                    var prevPanel = item.splitPanel[panel.panelIndex - 1];
+                                    var nextPanel = item.splitPanel[panel.panelIndex + 1];
+
+                                    var prePanelMinHeight = prevPanel.minHeight || 0;
+                                    var nextPanelMinHeight = nextPanel.minHeight || 0;
+
+                                    if (panel.offsetStart + panel.__da < prevPanel.offsetStart + prePanelMinHeight) {
+                                        panel.__da = prevPanel.offsetStart - panel.offsetStart + prePanelMinHeight;
                                     }
-                                    else if(panel.offsetStart + panel.__da > nextPanel.offsetEnd){
-                                        panel.__da = nextPanel.offsetEnd - panel.offsetEnd;
+                                    else if (panel.offsetStart + panel.__da > nextPanel.offsetEnd - nextPanelMinHeight) {
+                                        panel.__da = nextPanel.offsetEnd - panel.offsetEnd - nextPanelMinHeight;
                                     }
 
                                     return {top: panel.$target.offset().top + panel.__da};
@@ -439,13 +443,16 @@
                                     /// todo : min & max 범위 정하기
                                     panel.__da = e.clientX - panel.mousePosition.clientX;
 
-                                    var prevPanel = item.splitPanel[panel.panelIndex-1];
-                                    var nextPanel = item.splitPanel[panel.panelIndex+1];
-                                    if (panel.offsetStart + panel.__da < prevPanel.offsetStart) {
-                                        panel.__da = prevPanel.offsetStart - panel.offsetStart;
+                                    var prevPanel = item.splitPanel[panel.panelIndex - 1];
+                                    var nextPanel = item.splitPanel[panel.panelIndex + 1];
+                                    var prePanelMinWidth = prevPanel.minWidth || 0;
+                                    var nextPanelMinWidth = nextPanel.minWidth || 0;
+
+                                    if (panel.offsetStart + panel.__da < prevPanel.offsetStart + prePanelMinWidth) {
+                                        panel.__da = prevPanel.offsetStart - panel.offsetStart + prePanelMinWidth;
                                     }
-                                    else if(panel.offsetStart + panel.__da > nextPanel.offsetEnd){
-                                        panel.__da = nextPanel.offsetEnd - panel.offsetEnd;
+                                    else if (panel.offsetStart + panel.__da > nextPanel.offsetEnd - nextPanelMinWidth) {
+                                        panel.__da = nextPanel.offsetEnd - panel.offsetEnd - nextPanelMinWidth;
                                     }
 
                                     return {left: panel.$target.offset().left + panel.__da};
@@ -867,6 +874,10 @@
 
             })();
 
+            this.hide = function () {
+
+            };
+
 
 // 클래스 생성자
             this.main = (function () {
@@ -904,6 +915,9 @@ jQuery.fn.ax5layout = (function () {
                     break;
                 case "reset":
                     return ax5.ui.layout_instance.reset(this, arguments[1]);
+                    break;
+                case "hide":
+                    return ax5.ui.layout_instance.hide(this, arguments[1]);
                     break;
                 case "onResize":
                     return ax5.ui.layout_instance.onResize(this, arguments[1]);
