@@ -18,31 +18,25 @@ npm install
 > Installing npm(Node Package Modules) to manage the node.js modules. please refer to an Internet
 
 
-6. Type this instruction : gulp default
-    * or Type this instruction : gulp
-    * current Location : ax5ui-kernel
+1. Type this instruction : gulp default
+    * cf1> or Type this instruction : gulp
+    * cf2> current Location : ax5ui-kernel
 
  
-
-
-
-
 ```js
 toms-mac:ax5ui-kernel tom$ gulp default
 [13:25:56] Using gulpfile ~/Works-OSS/ax5ui/ax5ui-kernel/gulpfile.js
 [13:25:56] Starting 'default'...
 [13:25:57] Finished 'default' after 227 msa
 ```
->gulp or gulp default
-
-
-You can see this screen, if you success.
-    > if you fail to run gulp, the reason is 'you don't have permission' or 'npm is not installed'
-    > please refer to an Internet
-    > this keyword will help you : npm init
-    > or this keyword : npm install -g gulp
-    > or this keyword : npm install --global gulp-cli
-    > or this keyword : sudo npm install --global gulp-cli
+>* if you success, you can see this screen.
+    2. if you fail to run gulp, the reason is 'you don't have permission' or 'npm is not installed'
+    3. please refer to an Internet
+    4. this keyword will help you : 
+      1. npm init
+      2. npm install -g gulp
+      3. npm install --global gulp-cli
+      4. sudo npm install --global gulp-cli
 
 ## plugin 개발
 
