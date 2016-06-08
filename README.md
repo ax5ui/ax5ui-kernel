@@ -38,31 +38,6 @@ toms-mac:ax5ui-kernel tom$ gulp default
       3. npm install --global gulp-cli
       4. sudo npm install --global gulp-cli
 
-## plugin 개발
-
-많은 플러그인들 중에 샘플로 `bootstrap-ax5dialog`로 코드를 수정해 보겠습니다.
-
-```
-ax5ui-kernel/
-    build/
-    src/
-        ax5core/   
-        ax5ui-dialog/ [이 폴더를 열어주세요]
-            dist/
-            src/
-            test/
-            API.md
-            bower.json
-            ...
-            ..
-            .
-```
-
-`src` 폴더안에 `ax5dialog.js`를 수정하면, `gulp`가 `dist`폴에 빌드된 js파일을 만들거나 업데이트 합니다. 
-변경된 소스는 `test/index.html`에서 확인 할 수 있습니다.
-
-
-- - - 
 
 
 ## Structure
@@ -80,8 +55,6 @@ ax5ui-kernel/
     gulpfile.js
     package.json
 ```
-
-## 코딩가이드
 
 
 
