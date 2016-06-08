@@ -20,15 +20,13 @@ npm install
 4. Type this instruction : gulp default
     > or Type this instruction : gulp
     > current Location : ax5ui-kernel
-걸프를 실행하십시요. (걸프가 실행되지 않는다면 node가 설치되어 있지 않다거나. 권한이 없어서 입니다)
-터미널에서 ax5ui-kernel 폴더로 이동하신 후
-`gulp` or `gulp default`
+ `gulp` or `gulp default`
 
 ```js
 toms-mac:ax5ui-kernel tom$ gulp default
 [13:25:56] Using gulpfile ~/Works-OSS/ax5ui/ax5ui-kernel/gulpfile.js
 [13:25:56] Starting 'default'...
-[13:25:57] Finished 'default' after 227 ms
+[13:25:57] Finished 'default' after 227 msac
 ```
 
 You can see this screen, if you success.
