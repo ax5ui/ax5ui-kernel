@@ -6,25 +6,43 @@ https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.min.js
 ```
 
 # How to Play
+1. Fork this Origninal repository to your repository.
+2. Clone your repository to your desktop.
+3. Open Terminal
+4. Move to git Location : ax5ui-kernel
+5. Type this instruction : npm install
 
-터미널에서 ax5ui-kernel 폴더로 이동하신 후
 ```
 npm install
 ```
-> node_modules에 빌드를 위해 필요한 플러그인을 다운로드 됩니다. npm에 대해서는 인터넷에 많은 자료가 있으니 참고 하시기 바람니다.
+> Installing npm(Node Package Modules) to manage the node.js modules. please refer to an Internet
 
-걸프를 실행하십시요. (걸프가 실행되지 않는다면 node가 설치되어 있지 않다거나. 권한이 없어서 입니다)
-터미널에서 ax5ui-kernel 폴더로 이동하신 후
-`gulp` 또는 `gulp default`
+
+6. Type this instruction : gulp default
+    * or Type this instruction : gulp
+    * current Location : ax5ui-kernel
+
+ 
+
+
+
 
 ```js
 toms-mac:ax5ui-kernel tom$ gulp default
 [13:25:56] Using gulpfile ~/Works-OSS/ax5ui/ax5ui-kernel/gulpfile.js
 [13:25:56] Starting 'default'...
-[13:25:57] Finished 'default' after 227 ms
+[13:25:57] Finished 'default' after 227 msa
 ```
+>gulp or gulp default
 
-위와 같은 결과를 보신다면 성공.
+
+You can see this screen, if you success.
+    > if you fail to run gulp, the reason is 'you don't have permission' or 'npm is not installed'
+    > please refer to an Internet
+    > this keyword will help you : npm init
+    > or this keyword : npm install -g gulp
+    > or this keyword : npm install --global gulp-cli
+    > or this keyword : sudo npm install --global gulp-cli
 
 ## plugin 개발
 
@@ -70,5 +88,6 @@ ax5ui-kernel/
 ```
 
 ## 코딩가이드
+
 
 
