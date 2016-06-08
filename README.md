@@ -6,28 +6,35 @@ https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.min.js
 ```
 
 # How to Play
-0-1. Fork this Origninal repository to your repository.
-0-2. Clone your repository to your desktop.
-1. Open Terminal
-2. Move to git Location : ax5ui-kernel
-3. Type this instruction : npm install
+1. Fork this Origninal repository to your repository.
+2. Clone your repository to your desktop.
+3. Open Terminal
+4. Move to git Location : ax5ui-kernel
+5. Type this instruction : npm install
 
 ```
 npm install
 ```
 > Installing npm(Node Package Modules) to manage the node.js modules. please refer to an Internet
 
-4. Type this instruction : gulp default
-    > or Type this instruction : gulp
-    > current Location : ax5ui-kernel
- `gulp` or `gulp default`
+
+6. Type this instruction : gulp default
+    * or Type this instruction : gulp
+    * current Location : ax5ui-kernel
+
+ 
+
+
+
 
 ```js
 toms-mac:ax5ui-kernel tom$ gulp default
 [13:25:56] Using gulpfile ~/Works-OSS/ax5ui/ax5ui-kernel/gulpfile.js
 [13:25:56] Starting 'default'...
-[13:25:57] Finished 'default' after 227 msac
+[13:25:57] Finished 'default' after 227 msa
 ```
+>gulp or gulp default
+
 
 You can see this screen, if you success.
     > if you fail to run gulp, the reason is 'you don't have permission' or 'npm is not installed'
@@ -81,5 +88,6 @@ ax5ui-kernel/
 ```
 
 ## 코딩가이드
+
 
 
