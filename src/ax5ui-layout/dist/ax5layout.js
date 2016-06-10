@@ -90,6 +90,8 @@
                         } else {
                             if (panelIndex == item.splitPanel.length - 1) {
                                 if (item.splitPanel.asteriskLength == 0) {
+                                    panel.height = "*";
+                                    panel.__height = undefined;
                                     item.splitPanel.asteriskLength++;
                                 } else {
                                     if (panel.height == "*") {
@@ -109,6 +111,8 @@
                         } else {
                             if (panelIndex == item.splitPanel.length - 1) {
                                 if (item.splitPanel.asteriskLength == 0) {
+                                    panel.width = "*";
+                                    panel.__width = undefined;
                                     item.splitPanel.asteriskLength++;
                                 } else {
                                     if (panel.width == "*") {
@@ -418,7 +422,7 @@
                                 panel.__da = nextPanel.offsetEnd - panel.offsetEnd - nextPanelMinHeight;
                             }
 
-                            return { top: panel.$target.offset().top + panel.__da };
+                            return { top: panel.$target.position().top + panel.__da };
                         } else {
                             /// todo : min & max 범위 정하기
                             panel.__da = e.clientX - panel.mousePosition.clientX;
@@ -434,7 +438,7 @@
                                 panel.__da = nextPanel.offsetEnd - panel.offsetEnd - nextPanelMinWidth;
                             }
 
-                            return { left: panel.$target.offset().left + panel.__da };
+                            return { left: panel.$target.position().left + panel.__da };
                         }
                     }
                 };
@@ -442,6 +446,7 @@
 
                 jQuery(document.body).bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
                     if (!self.resizer) {
+
                         self.resizer = jQuery('<div class="ax5layout-resizer panel-' + panel.resizerType + '" ondragstart="return false;"></div>');
                         self.resizer.css({
                             left: splitterOffset.left,
