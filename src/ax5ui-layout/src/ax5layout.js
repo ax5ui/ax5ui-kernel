@@ -256,7 +256,7 @@
                                     css.height = cfg.splitter.size;
                                 }
                                 else {
-                                    if (panel.__height == "*" && (typeof panel.__height === "undefined" || windowResize)) {
+                                    if (panel.height == "*" && (typeof panel.__height === "undefined" || windowResize)) {
                                         // 남은 전체 공간을 사용
                                         css.height = panel.__height = (item.targetDimension.height - withoutAsteriskSize) / item.splitPanel.asteriskLength;
                                     }
@@ -360,7 +360,7 @@
                         }
                     }
                 })(),
-                resizeSplitter = {
+                resizeSplitter = { 
                     "on": function (queIdx, panel, $splitter) {
                         var item = this.queue[queIdx];
                         var splitterOffset = $splitter.position();
