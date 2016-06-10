@@ -49,7 +49,8 @@
                 animateTime: 250,
                 splitter: {
                     size: 4
-                }
+                },
+                autoResize: true
             };
 
 
@@ -72,7 +73,9 @@
                 alignLayoutAll = function () {
                     var i = this.queue.length;
                     while (i--) {
-                        if (typeof this.queue[i].parentQueIdx === "undefined") alignLayout.call(this, i, null, "windowResize");
+                        if (typeof this.queue[i].parentQueIdx === "undefined" && this.queue[i].autoResize) {
+                            alignLayout.call(this, i, null, "windowResize");
+                        }
                     }
                 },
                 getDockPanelOuterSize = {
@@ -255,7 +258,7 @@
                         "split": {
                             "vertical": function (item, panel, panelIndex, withoutAsteriskSize, windowResize) {
                                 var css = {};
-                                var prevPosition = (panelIndex) ? item.splitPanel[panelIndex - 1].offsetEnd : 0;
+                                var prevPosition = (panelIndex) ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
                                 if (panel.splitter) {
                                     css.height = cfg.splitter.size;
                                 }
@@ -270,12 +273,12 @@
                                 }
                                 css.top = prevPosition;
                                 panel.offsetStart = prevPosition;
-                                panel.offsetEnd = prevPosition + css.height;
+                                panel.offsetEnd = Number(prevPosition) + Number(css.height);
                                 panel.$target.css(css);
                             },
                             "horizontal": function (item, panel, panelIndex, withoutAsteriskSize, windowResize) {
                                 var css = {};
-                                var prevPosition = (panelIndex) ? item.splitPanel[panelIndex - 1].offsetEnd : 0;
+                                var prevPosition = (panelIndex) ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
 
                                 if (panel.splitter) {
                                     css.width = cfg.splitter.size;
@@ -291,7 +294,8 @@
                                 }
                                 css.left = prevPosition;
                                 panel.offsetStart = prevPosition;
-                                panel.offsetEnd = prevPosition + css.width;
+                                panel.offsetEnd = Number(prevPosition) + Number(css.width);
+                                
                                 panel.$target.css(css);
                             }
                         }
@@ -363,7 +367,7 @@
                         }
                     }
                 })(),
-                resizeSplitter = { 
+                resizeSplitter = {
                     "on": function (queIdx, panel, $splitter) {
                         var item = this.queue[queIdx];
                         var splitterOffset = $splitter.position();
@@ -457,8 +461,7 @@
                                     else if (panel.offsetStart + panel.__da > nextPanel.offsetEnd - nextPanelMinWidth) {
                                         panel.__da = nextPanel.offsetEnd - panel.offsetEnd - nextPanelMinWidth;
                                     }
-
-                                    return {left: panel.$target.position().left + panel.__da};
+                                    return {left: Number(panel.$target.position().left) + Number(panel.__da)};
                                 }
                             }
                         };
@@ -467,7 +470,7 @@
                         jQuery(document.body)
                             .bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
                                 if (!self.resizer) {
-                                    
+
                                     self.resizer = jQuery('<div class="ax5layout-resizer panel-' + (panel.resizerType) + '" ondragstart="return false;"></div>');
                                     self.resizer.css({
                                         left: splitterOffset.left,
@@ -518,6 +521,7 @@
                                     }
                                     else {
                                         // 앞과 뒤의 높이 조절
+
                                         item.splitPanel[panel.panelIndex - 1].__width += panel.__da;
                                         item.splitPanel[panel.panelIndex + 1].__width -= panel.__da;
                                     }
@@ -554,7 +558,7 @@
                             return parentSize * U.number(size) / 100;
                         }
                         else {
-                            return size;
+                            return Number(size);
                         }
                     };
                     var applyLayout = {
@@ -769,15 +773,17 @@
              * @method ax5layout.align
              * @param boundID
              * @param {Function} [callBack]
+             * @param {String} [windowResize]
              * @returns {ax5layout}
              */
-            this.align = function (boundID, callBack) {
+            this.align = function (boundID, windowResize) {
                 var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                 if (queIdx === -1) {
                     console.log(ax5.info.getError("ax5layout", "402", "align"));
                     return;
                 }
-                alignLayout.call(this, queIdx, callBack);
+
+                alignLayout.call(this, queIdx, null, windowResize);
                 return this;
             };
 
@@ -912,7 +918,7 @@ jQuery.fn.ax5layout = (function () {
 
             switch (methodName) {
                 case "align":
-                    return ax5.ui.layout_instance.align(this, arguments[1]);
+                    return ax5.ui.layout_instance.align(this, arguments[1], arguments[2]);
                     break;
                 case "resize":
                     return ax5.ui.layout_instance.resize(this, arguments[1], arguments[2]);

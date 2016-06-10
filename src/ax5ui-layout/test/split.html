@@ -24,17 +24,10 @@
 <body>
 
 <div data-ax5layout="ax1" data-config='{layout:"split-panel", oriental: "horizontal"}' style="height: 100%;">
-    <div data-split-panel='{width: "30%", minWidth:50}'></div>
+    <div data-split-panel='{width: "300", minWidth:50}'></div>
     <div data-splitter='{}'></div>
     <div data-split-panel='{width: "*"}'>
 
-        <div data-ax5layout="ax2" data-config='{layout:"split-panel", oriental: "vertical"}' style="height: 100%;">
-            <div data-split-panel='{height: "30%", minHeight: 50}'></div>
-            <div data-splitter='{}'></div>
-            <div data-split-panel='{height: 200, minHeight: 50}'></div>
-            <div data-splitter='{}'></div>
-            <div data-split-panel='{height: 200}'></div>
-        </div>
 
     </div>
     <div data-splitter='{}'></div>
@@ -45,6 +38,7 @@
     // todo : panel show & hide
     jQuery(document.body).ready(function () {
         jQuery('[data-ax5layout="ax1"]').ax5layout({
+            autoResize: false,
             onResize: function () {
                 //console.log(this.$target);
                 //console.log(this);
@@ -57,6 +51,10 @@
             }
         });
     });
+
+    jQuery(window).resize(function () {
+        jQuery('[data-ax5layout="ax1"]').ax5layout("align", "windowResize");
+    })
 </script>
 
 </body>
