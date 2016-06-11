@@ -58,12 +58,22 @@ https://cdn.rawgit.com/ax5ui/ax5ui-layout/master/dist/ax5layout.min.js
 
 ### Basic Usages
 ```html
-<div id="layout-target-0"></div>
+<div data-ax5layout="ax1" data-config='{layout:"dock-panel"}' style="height: 100%;border:1px solid #ccc;">
+    <div data-dock-panel='{dock:"top", split:true, height: 200, maxHeight: 300}'></div>
+    <div data-dock-panel='{dock:"bottom", split:"true", height: 200, minHeight: 50, maxHeight: 300}'></div>
+    <div data-dock-panel='{dock:"left", split:true, width: 200, minWidth: 50, maxWidth: 300}'></div>
+    <div data-dock-panel='{dock:"right", split:true, width: "10%", minWidth: 50, maxWidth: 300}'>
+
+    </div>
+    <div data-dock-panel='{dock:"center"}' style="padding: 5px;">
+
+    </div>
+</div>
 ```
 
 ```js
 $(document.body).ready(function () {
-
+    jQuery('[data-ax5layout="ax1"]').ax5layout();
 });
 ```
 
