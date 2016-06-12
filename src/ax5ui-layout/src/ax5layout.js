@@ -10,7 +10,6 @@
     /**
      * @class ax5layout
      * @alias ax5.ui.layout
-     * @desc
      * @version 0.1.0
      * @author tom@axisj.com
      * @example
@@ -52,7 +51,6 @@
                 },
                 autoResize: true
             };
-
 
             this.openTimer = null;
             this.closeTimer = null;
@@ -889,7 +887,7 @@
             };
 
 
-// 클래스 생성자
+            /// 클래스 생성자
             this.main = (function () {
                 if (arguments && U.isObject(arguments[0])) {
                     this.setConfig(arguments[0]);
@@ -911,6 +909,17 @@
 (ax5.ui, ax5.ui.root);
 
 ax5.ui.layout_instance = new ax5.ui.layout();
+
+/**
+ * ax5layout jquery extends
+ * @namespace jQueryExtends
+ */
+
+/**
+ * @method jQueryExtends.ax5layout
+ * @param {String} methodName
+ */
+
 jQuery.fn.ax5layout = (function () {
     return function (config) {
         if (ax5.util.isString(arguments[0])) {
