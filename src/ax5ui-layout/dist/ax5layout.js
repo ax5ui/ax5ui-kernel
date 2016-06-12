@@ -12,8 +12,7 @@
     /**
      * @class ax5layout
      * @alias ax5.ui.layout
-     * @desc
-     * @version 0.1.0
+     * @version 0.1.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -372,7 +371,7 @@
                         } else if (maxWidth < panel.__width + panel.__da) {
                             panel.__da = maxWidth - panel.__width;
                         }
-                        return { left: panel.$splitter.offset().left + panel.__da };
+                        return { left: panel.$splitter.position().left + panel.__da };
                     },
                     "right": function right(e) {
                         panel.__da = e.clientX - panel.mousePosition.clientX;
@@ -384,7 +383,7 @@
                         } else if (maxWidth < panel.__width - panel.__da) {
                             panel.__da = -maxWidth + panel.__width;
                         }
-                        return { left: panel.$splitter.offset().left + panel.__da };
+                        return { left: panel.$splitter.position().left + panel.__da };
                     },
                     "top": function top(e) {
                         panel.__da = e.clientY - panel.mousePosition.clientY;
@@ -396,7 +395,7 @@
                         } else if (maxHeight < panel.__height + panel.__da) {
                             panel.__da = maxHeight - panel.__height;
                         }
-                        return { top: panel.$splitter.offset().top + panel.__da };
+                        return { top: panel.$splitter.position().top + panel.__da };
                     },
                     "bottom": function bottom(e) {
                         panel.__da = e.clientY - panel.mousePosition.clientY;
@@ -408,7 +407,7 @@
                         } else if (maxHeight < panel.__height - panel.__da) {
                             panel.__da = -maxHeight + panel.__height;
                         }
-                        return { top: panel.$splitter.offset().top + panel.__da };
+                        return { top: panel.$splitter.position().top + panel.__da };
                     },
                     "split": function split(e) {
                         if (item.oriental == "vertical") {
@@ -823,7 +822,7 @@
 
         this.hide = function () {};
 
-        // 클래스 생성자
+        /// 클래스 생성자
         this.main = function () {
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
@@ -841,6 +840,21 @@
 })(ax5.ui, ax5.ui.root);
 
 ax5.ui.layout_instance = new ax5.ui.layout();
+
+/**
+ * ax5layout jquery extends
+ * @namespace jQueryExtends
+ */
+
+/**
+ * @method jQueryExtends.ax5layout
+ * @param {String} methodName
+ * @example
+ * ```js
+ * jQuery('[data-ax5layout="ax1"]').ax5layout();
+ * ```
+ */
+
 jQuery.fn.ax5layout = function () {
     return function (config) {
         if (ax5.util.isString(arguments[0])) {

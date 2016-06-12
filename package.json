@@ -1,6 +1,6 @@
 {
   "name": "ax5ui-kernel",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -9,42 +9,31 @@
     "build": "babel src -d lib"
   },
   "devDependencies": {
-    "node-sass": "^3.3.0",
-    "marko": "^2.8.4",
-    "htmlparser": "^1.7.7",
-    "markdown-it": "~5.0.2",
-    "strip-indent": "^1.0.1",
+    "ax5core": "",
+    "babel-cli": "^6.0.0",
+    "babel-preset-es2015": "",
     "bootstrap-sass": "^3.0.0",
     "bourbon": "^4.2.6",
     "fs-finder": "^1.8.1",
     "gulp": "*",
-    "gulp-changed": "*",
-    "gulp-concat": "*",
-    "gulp-sass": "^2.1.1",
-    "gulp-uglify": "^1.5.1",
-    "gulp-marko-ax5": "",
-    "js-beautify": "^1.5.10",
-    "gulp-plumber": "",
-    "gulp-notify": "",
-    "ax5core": "",
-    "babel-cli": "^6.0.0",
     "gulp-babel": "^6.1.2",
-    "babel-preset-es2015": "",
-    "gulp-sourcemaps": "",
-    "gulp-util": "*",
+    "gulp-changed": "*",
     "gulp-clean": "",
-    "gulp-jsdoc3": ""
-  },
-  "description": "**CDN urls** ``` https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.css https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.js https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.min.js ```",
-  "main": "gulpfile.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/90MaJH/ax5ui-kernel.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/90MaJH/ax5ui-kernel/issues"
-  },
-  "homepage": "https://github.com/90MaJH/ax5ui-kernel#readme"
+    "gulp-concat": "*",
+    "gulp-jsdoc-to-markdown": "",
+    "gulp-jsdoc3": "^0.3.0",
+    "gulp-marko-ax5": "",
+    "gulp-notify": "",
+    "gulp-plumber": "",
+    "gulp-sass": "^2.1.1",
+    "gulp-sourcemaps": "",
+    "gulp-uglify": "^1.5.1",
+    "gulp-util": "*",
+    "htmlparser": "^1.7.7",
+    "js-beautify": "^1.5.10",
+    "markdown-it": "~5.0.2",
+    "marko": "^2.8.4",
+    "node-sass": "^3.3.0",
+    "strip-indent": "^1.0.1"
+  }
 }

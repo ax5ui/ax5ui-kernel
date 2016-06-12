@@ -10,7 +10,7 @@
     /**
      * @class ax5layout
      * @alias ax5.ui.layout
-     * @version 0.1.0
+     * @version 0.1.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -384,7 +384,7 @@
                                 else if (maxWidth < panel.__width + panel.__da) {
                                     panel.__da = maxWidth - panel.__width;
                                 }
-                                return {left: panel.$splitter.offset().left + panel.__da};
+                                return {left: panel.$splitter.position().left + panel.__da};
                             },
                             "right": function (e) {
                                 panel.__da = e.clientX - panel.mousePosition.clientX;
@@ -397,7 +397,7 @@
                                 else if (maxWidth < panel.__width - panel.__da) {
                                     panel.__da = -maxWidth + panel.__width;
                                 }
-                                return {left: panel.$splitter.offset().left + panel.__da};
+                                return {left: panel.$splitter.position().left + panel.__da};
                             },
                             "top": function (e) {
                                 panel.__da = e.clientY - panel.mousePosition.clientY;
@@ -410,7 +410,7 @@
                                 else if (maxHeight < panel.__height + panel.__da) {
                                     panel.__da = maxHeight - panel.__height;
                                 }
-                                return {top: panel.$splitter.offset().top + panel.__da};
+                                return {top: panel.$splitter.position().top + panel.__da};
                             },
                             "bottom": function (e) {
                                 panel.__da = e.clientY - panel.mousePosition.clientY;
@@ -423,7 +423,7 @@
                                 else if (maxHeight < panel.__height - panel.__da) {
                                     panel.__da = -maxHeight + panel.__height;
                                 }
-                                return {top: panel.$splitter.offset().top + panel.__da};
+                                return {top: panel.$splitter.position().top + panel.__da};
                             },
                             "split": function (e) {
                                 if (item.oriental == "vertical") {
@@ -918,6 +918,10 @@ ax5.ui.layout_instance = new ax5.ui.layout();
 /**
  * @method jQueryExtends.ax5layout
  * @param {String} methodName
+ * @example
+ * ```js
+ * jQuery('[data-ax5layout="ax1"]').ax5layout();
+ * ```
  */
 
 jQuery.fn.ax5layout = (function () {

@@ -101,3 +101,7 @@ ax5layout jquery extends
 | --- | --- |
 | methodName | <code>String</code> | 
 
+**Example**  
+```js
+jQuery('[data-ax5layout="ax1"]').ax5layout();
+```

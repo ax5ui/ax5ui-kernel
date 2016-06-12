@@ -10,6 +10,9 @@ var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
 var babel = require('gulp-babel');
 var clean = require('gulp-clean');
+var gulpJsdoc2md = require('gulp-jsdoc-to-markdown');
+var rename = require('gulp-rename');
+var gutil = require('gulp-util');
 
 var PATHS = {
     "ax5core": {
@@ -203,7 +206,7 @@ gulp.task('default', function () {
  */
 gulp.task('dist-all-in-one', function () {
 
-    var jsSrcs   = [];
+    var jsSrcs = [];
     var scssSrcs = [];
     for (var k in PATHS) {
         var __p = PATHS[k];
@@ -229,11 +232,4 @@ gulp.task('dist-all-in-one', function () {
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(concat('ax5ui.all.css'))
         .pipe(gulp.dest('dist/'));
-});
-
-var jsdoc = require('gulp-jsdoc3');
-
-gulp.task('doc', function (cb) {
-    gulp.src(['src/ax5ui-select/src/ax5select.js'], {read: false})
-        .pipe(jsdoc(cb));
 });
