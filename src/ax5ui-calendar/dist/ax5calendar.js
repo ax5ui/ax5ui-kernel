@@ -5,7 +5,7 @@
     /**
      * @class ax5.ui.calendar
      * @classdesc
-     * @version 0.7.7
+     * @version 0.8.0
      * @author tom@axisj.com
      * @logs
      * 2014-06-21 tom : 시작
@@ -36,7 +36,7 @@
             clickEventName: "click",
             theme: 'default',
             mode: 'day', // day|month|year,
-            dateFormat: 'yyyy-mm-dd',
+            dateFormat: 'yyyy-MM-dd',
             displayDate: new Date(),
             animateTime: 250,
             dimensions: {
@@ -212,7 +212,7 @@
                                     return "disable";
                                 }
                             } else {
-                                return loopDate.getMonth() == thisMonth ? thisDate == U.date(_today, { "return": "yyyymmdd" }) ? "focus" : "live" : "";
+                                return loopDate.getMonth() == thisMonth ? thisDate == U.date(_today, { "return": "yyyyMMdd" }) ? "focus" : "live" : "";
                             }
                         }() + ' ' + function () {
                             return self.markerMap[thisDate] ? self.markerMap[thisDate].theme || cfg.defaultMarkerTheme : '';
@@ -489,7 +489,7 @@
                             if (self.selection.length >= selectableCount) {
                                 removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
                                 removed.forEach(function (d) {
-                                    self.$["body"].find('[data-calendar-item-month="' + U.date(d, { "return": 'yyyy-mm-dd' }) + '"]').removeClass("selected-month");
+                                    self.$["body"].find('[data-calendar-item-month="' + U.date(d, { "return": 'yyyy-MM-dd' }) + '"]').removeClass("selected-month");
                                 });
                             }
 
@@ -511,7 +511,7 @@
                             if (self.selection.length >= selectableCount) {
                                 removed = self.selection.splice(0, self.selection.length - (selectableCount - 1));
                                 removed.forEach(function (d) {
-                                    self.$["body"].find('[data-calendar-item-year="' + U.date(d, { "return": 'yyyy-mm-dd' }) + '"]').removeClass("selected-year");
+                                    self.$["body"].find('[data-calendar-item-year="' + U.date(d, { "return": 'yyyy-MM-dd' }) + '"]').removeClass("selected-year");
                                 });
                             }
 
@@ -724,6 +724,8 @@
                 if (isPrint !== false) applySelectionMap.call(this);
 
                 result = null;
+
+                return this;
             };
         }();
 
@@ -803,6 +805,8 @@
                 this.selectableMap = result;
                 // 변경내용 적용하여 출력
                 if (isPrint !== false) this.changeMode();
+
+                return this;
             };
         }();
 

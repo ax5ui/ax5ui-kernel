@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-calendar",
-	"version": "0.7.9",
+	"version": "0.8.0",
 	"description": "A calendar plugin that works with Bootstrap & jQuery",
 	"license": "LGPLv3",
 	"repository": {
@@ -23,6 +23,6 @@
 		"javascript ui"
 	],
 	"dependencies": {
-		"ax5core": ">=0.4.0"
+
 	}
 }
