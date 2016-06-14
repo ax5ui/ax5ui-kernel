@@ -1,6 +1,6 @@
 'use strict';
 
-var fs = require('fs')
+var fs = require('fs');
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var concat = require('gulp-concat');
@@ -171,7 +171,8 @@ for (var k in PATHS) {
                     .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(concat(__p.js + '.js'))
                     .pipe(babel({
-                        presets: ['es2015']
+                        presets: ['es2015'],
+                        compact: false
                     }))
                     .pipe(gulp.dest(PATHS[k].dest))
                     .pipe(concat(__p.js + '.min.js'))
@@ -220,7 +221,8 @@ gulp.task('dist-all-in-one', function () {
         .pipe(plumber({errorHandler: errorAlert}))
         .pipe(concat('ax5ui.all.js'))
         .pipe(babel({
-            presets: ['es2015']
+            presets: ['es2015'],
+            compact: false
         }))
         .pipe(gulp.dest('dist/'))
         .pipe(concat('ax5ui.all.min.js'))
