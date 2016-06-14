@@ -216,20 +216,23 @@
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
             } else if (e.which == ax5.info.eventKeys.RETURN) {
+                var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
                 if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) {
                     // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
                     var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[this.activecomboboxQueueIndex].optionFocusIndex + '"]');
-                    this.val(this.queue[this.activecomboboxQueueIndex].id, {
-                        index: {
-                            gindex: $option.attr("data-option-group-index"),
-                            index: $option.attr("data-option-index")
-                        }
-                    }, undefined, "internal");
-
+                    if ($option.attr("data-option-value") == inputValue) {
+                        this.val(this.queue[this.activecomboboxQueueIndex].id, {
+                            index: {
+                                gindex: $option.attr("data-option-group-index"),
+                                index: $option.attr("data-option-index")
+                            }
+                        }, undefined, "internal");
+                    } else {
+                        console.log("new string ~", inputValue);
+                    }
                     if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
                 } else {
-                    var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
-                    console.log("here ~", inputValue);
+                    console.log("new string ~~", inputValue);
                 }
             }
         },
@@ -289,7 +292,9 @@
             }
         },
             focusClear = function focusClear(queIdx) {
-            this.activecomboboxOptionGroup.find('[data-option-focus-index]').removeClass("hover").removeAttr("data-option-selected");
+            if (this.activecomboboxOptionGroup) {
+                this.activecomboboxOptionGroup.find('[data-option-focus-index]').removeClass("hover").removeAttr("data-option-selected");
+            }
         },
             focusMove = function focusMove(queIdx, direction, findex) {
             var _focusIndex, _prevFocusIndex, focusOptionEl, optionGroupScrollContainer;
@@ -367,18 +372,13 @@
                             self.open(queIdx);
                         }
                     }
-                    //U.stopEvent(e);
                 },
                 'keyUp': function keyUp(queIdx, e) {
-
-                    // console.log(this.queue[queIdx].$displayLabel.text());
-                    /*
-                     if (e.which == ax5.info.eventKeys.SPACE) {
-                     comboboxEvent.click.call(this, queIdx, e);
-                     }
-                     else
-                     */
-
+                    if (e.which == ax5.info.eventKeys.ESC && self.activecomboboxQueueIndex === -1) {
+                        // ESC키를 누르고 옵션그룹이 열려있지 않은 경우
+                        U.stopEvent(e);
+                        return this;
+                    }
                     if (self.activecomboboxQueueIndex != queIdx) {
                         self.open(queIdx);
                     }
@@ -386,19 +386,15 @@
                     if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
                     this.keyUpTimer = setTimeout(function () {
                         var searchWord = this.queue[queIdx].$displayLabel.text();
-                        //console.log(searchWord);
                         focusWord.call(this, queIdx, searchWord);
                     }.bind(this), 500);
                 },
                 'keyDown': function keyDown(queIdx, e) {
+                    if (e.which == ax5.info.eventKeys.ESC) {
+                        U.stopEvent(e);
+                    }
                     if (e.which == ax5.info.eventKeys.RETURN) {
                         // display label에서 줄넘김막기위한 구문
-                        /*
-                         var inputValue = this.queue[queIdx].$displayLabel.text();
-                         if (this.keyUpTimer) clearTimeout(this.keyUpTimer); // 리턴키를 처리하고 포커스워드는 제거
-                         console.log(inputValue);
-                         setComboValue.call(this, queIdx, inputValue);
-                         */
                         U.stopEvent(e);
                     }
                     if (e.which == ax5.info.eventKeys.DOWN) {
