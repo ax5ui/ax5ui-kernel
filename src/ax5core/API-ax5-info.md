@@ -7,7 +7,7 @@ console.log(ax5.info.version);
 ```
 ---
 ## ax5.info.eventKeys
-Key map _ eventKeys object.
+**Key map _ eventKeys object.**
 ```js   
 console.log(ax5.info.eventKeys);
 /*
