@@ -1338,8 +1338,8 @@
          * @example
          * ```js
          * ax5.util.date('2013-01-01'); // Tue Jan 01 2013 23:59:00 GMT+0900 (KST)
-         * ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/mm/dd'}); // "2015/07/01"
-         * ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/mm/dd'}); // "1919/03/11"
+         * ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/MM/dd'}); // "2015/07/01"
+         * ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/MM/dd hh:mm:ss'}); // "1919/03/11 23:59:00"
          * ```
          */
         function date(d, cond) {
@@ -1433,7 +1433,7 @@
                         var yre = /[^y]*(yyyy)[^y]*/gi;
                         yre.exec(fStr);
                         var regY = RegExp.$1;
-                        var mre = /[^m]*(mm)[^m]*/gi;
+                        var mre = /[^m]*(MM)[^m]*/g;
                         mre.exec(fStr);
                         var regM = RegExp.$1;
                         var dre = /[^d]*(dd)[^d]*/gi;
@@ -1442,7 +1442,7 @@
                         var hre = /[^h]*(hh)[^h]*/gi;
                         hre.exec(fStr);
                         var regH = RegExp.$1;
-                        var mire = /[^m]*(mi)[^i]*/gi;
+                        var mire = /[^m]*(mm)[^i]*/g;
                         mire.exec(fStr);
                         var regMI = RegExp.$1;
                         var sre = /[^s]*(ss)[^s]*/gi;
@@ -1455,7 +1455,7 @@
                         if (regY === "yyyy") {
                             fStr = fStr.replace(regY, right(nY, regY.length));
                         }
-                        if (regM === "mm") {
+                        if (regM === "MM") {
                             if (regM.length == 1) nM = (d.getMonth() + 1);
                             fStr = fStr.replace(regM, nM);
                         }
@@ -1466,7 +1466,7 @@
                         if (regH === "hh") {
                             fStr = fStr.replace(regH, nH);
                         }
-                        if (regMI === "mi") {
+                        if (regMI === "mm") {
                             fStr = fStr.replace(regMI, nMM);
                         }
                         if (regS === "ss") {

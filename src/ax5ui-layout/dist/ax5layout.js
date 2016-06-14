@@ -12,8 +12,7 @@
     /**
      * @class ax5layout
      * @alias ax5.ui.layout
-     * @desc
-     * @version 0.1.0
+     * @version 0.1.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -50,7 +49,8 @@
             animateTime: 250,
             splitter: {
                 size: 4
-            }
+            },
+            autoResize: true
         };
 
         this.openTimer = null;
@@ -70,7 +70,9 @@
             alignLayoutAll = function alignLayoutAll() {
             var i = this.queue.length;
             while (i--) {
-                if (typeof this.queue[i].parentQueIdx === "undefined") alignLayout.call(this, i, null, "windowResize");
+                if (typeof this.queue[i].parentQueIdx === "undefined" && this.queue[i].autoResize) {
+                    alignLayout.call(this, i, null, "windowResize");
+                }
             }
         },
             getDockPanelOuterSize = {
@@ -90,6 +92,8 @@
                         } else {
                             if (panelIndex == item.splitPanel.length - 1) {
                                 if (item.splitPanel.asteriskLength == 0) {
+                                    panel.height = "*";
+                                    panel.__height = undefined;
                                     item.splitPanel.asteriskLength++;
                                 } else {
                                     if (panel.height == "*") {
@@ -109,6 +113,8 @@
                         } else {
                             if (panelIndex == item.splitPanel.length - 1) {
                                 if (item.splitPanel.asteriskLength == 0) {
+                                    panel.width = "*";
+                                    panel.__width = undefined;
                                     item.splitPanel.asteriskLength++;
                                 } else {
                                     if (panel.width == "*") {
@@ -244,11 +250,11 @@
                 "split": {
                     "vertical": function vertical(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
                         var css = {};
-                        var prevPosition = panelIndex ? item.splitPanel[panelIndex - 1].offsetEnd : 0;
+                        var prevPosition = panelIndex ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
                         if (panel.splitter) {
                             css.height = cfg.splitter.size;
                         } else {
-                            if (panel.__height == "*" && (typeof panel.__height === "undefined" || windowResize)) {
+                            if (panel.height == "*" && (typeof panel.__height === "undefined" || windowResize)) {
                                 // 남은 전체 공간을 사용
                                 css.height = panel.__height = (item.targetDimension.height - withoutAsteriskSize) / item.splitPanel.asteriskLength;
                             } else {
@@ -257,12 +263,12 @@
                         }
                         css.top = prevPosition;
                         panel.offsetStart = prevPosition;
-                        panel.offsetEnd = prevPosition + css.height;
+                        panel.offsetEnd = Number(prevPosition) + Number(css.height);
                         panel.$target.css(css);
                     },
                     "horizontal": function horizontal(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
                         var css = {};
-                        var prevPosition = panelIndex ? item.splitPanel[panelIndex - 1].offsetEnd : 0;
+                        var prevPosition = panelIndex ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
 
                         if (panel.splitter) {
                             css.width = cfg.splitter.size;
@@ -276,7 +282,8 @@
                         }
                         css.left = prevPosition;
                         panel.offsetStart = prevPosition;
-                        panel.offsetEnd = prevPosition + css.width;
+                        panel.offsetEnd = Number(prevPosition) + Number(css.width);
+
                         panel.$target.css(css);
                     }
                 }
@@ -364,7 +371,7 @@
                         } else if (maxWidth < panel.__width + panel.__da) {
                             panel.__da = maxWidth - panel.__width;
                         }
-                        return { left: panel.$splitter.offset().left + panel.__da };
+                        return { left: panel.$splitter.position().left + panel.__da };
                     },
                     "right": function right(e) {
                         panel.__da = e.clientX - panel.mousePosition.clientX;
@@ -376,7 +383,7 @@
                         } else if (maxWidth < panel.__width - panel.__da) {
                             panel.__da = -maxWidth + panel.__width;
                         }
-                        return { left: panel.$splitter.offset().left + panel.__da };
+                        return { left: panel.$splitter.position().left + panel.__da };
                     },
                     "top": function top(e) {
                         panel.__da = e.clientY - panel.mousePosition.clientY;
@@ -388,7 +395,7 @@
                         } else if (maxHeight < panel.__height + panel.__da) {
                             panel.__da = maxHeight - panel.__height;
                         }
-                        return { top: panel.$splitter.offset().top + panel.__da };
+                        return { top: panel.$splitter.position().top + panel.__da };
                     },
                     "bottom": function bottom(e) {
                         panel.__da = e.clientY - panel.mousePosition.clientY;
@@ -400,7 +407,7 @@
                         } else if (maxHeight < panel.__height - panel.__da) {
                             panel.__da = -maxHeight + panel.__height;
                         }
-                        return { top: panel.$splitter.offset().top + panel.__da };
+                        return { top: panel.$splitter.position().top + panel.__da };
                     },
                     "split": function split(e) {
                         if (item.oriental == "vertical") {
@@ -408,26 +415,32 @@
 
                             var prevPanel = item.splitPanel[panel.panelIndex - 1];
                             var nextPanel = item.splitPanel[panel.panelIndex + 1];
-                            if (panel.offsetStart + panel.__da < prevPanel.offsetStart) {
-                                panel.__da = prevPanel.offsetStart - panel.offsetStart;
-                            } else if (panel.offsetStart + panel.__da > nextPanel.offsetEnd) {
-                                panel.__da = nextPanel.offsetEnd - panel.offsetEnd;
+
+                            var prePanelMinHeight = prevPanel.minHeight || 0;
+                            var nextPanelMinHeight = nextPanel.minHeight || 0;
+
+                            if (panel.offsetStart + panel.__da < prevPanel.offsetStart + prePanelMinHeight) {
+                                panel.__da = prevPanel.offsetStart - panel.offsetStart + prePanelMinHeight;
+                            } else if (panel.offsetStart + panel.__da > nextPanel.offsetEnd - nextPanelMinHeight) {
+                                panel.__da = nextPanel.offsetEnd - panel.offsetEnd - nextPanelMinHeight;
                             }
 
-                            return { top: panel.$target.offset().top + panel.__da };
+                            return { top: panel.$target.position().top + panel.__da };
                         } else {
                             /// todo : min & max 범위 정하기
                             panel.__da = e.clientX - panel.mousePosition.clientX;
 
                             var prevPanel = item.splitPanel[panel.panelIndex - 1];
                             var nextPanel = item.splitPanel[panel.panelIndex + 1];
-                            if (panel.offsetStart + panel.__da < prevPanel.offsetStart) {
-                                panel.__da = prevPanel.offsetStart - panel.offsetStart;
-                            } else if (panel.offsetStart + panel.__da > nextPanel.offsetEnd) {
-                                panel.__da = nextPanel.offsetEnd - panel.offsetEnd;
-                            }
+                            var prePanelMinWidth = prevPanel.minWidth || 0;
+                            var nextPanelMinWidth = nextPanel.minWidth || 0;
 
-                            return { left: panel.$target.offset().left + panel.__da };
+                            if (panel.offsetStart + panel.__da < prevPanel.offsetStart + prePanelMinWidth) {
+                                panel.__da = prevPanel.offsetStart - panel.offsetStart + prePanelMinWidth;
+                            } else if (panel.offsetStart + panel.__da > nextPanel.offsetEnd - nextPanelMinWidth) {
+                                panel.__da = nextPanel.offsetEnd - panel.offsetEnd - nextPanelMinWidth;
+                            }
+                            return { left: Number(panel.$target.position().left) + Number(panel.__da) };
                         }
                     }
                 };
@@ -435,6 +448,7 @@
 
                 jQuery(document.body).bind(ENM["mousemove"] + ".ax5layout-" + this.instanceId, function (e) {
                     if (!self.resizer) {
+
                         self.resizer = jQuery('<div class="ax5layout-resizer panel-' + panel.resizerType + '" ondragstart="return false;"></div>');
                         self.resizer.css({
                             left: splitterOffset.left,
@@ -478,6 +492,7 @@
                                 item.splitPanel[panel.panelIndex + 1].__height -= panel.__da;
                             } else {
                                 // 앞과 뒤의 높이 조절
+
                                 item.splitPanel[panel.panelIndex - 1].__width += panel.__da;
                                 item.splitPanel[panel.panelIndex + 1].__width -= panel.__da;
                             }
@@ -505,7 +520,7 @@
                 } else if (U.right(size, 1) == "%") {
                     return parentSize * U.number(size) / 100;
                 } else {
-                    return size;
+                    return Number(size);
                 }
             };
             var applyLayout = {
@@ -706,15 +721,17 @@
          * @method ax5layout.align
          * @param boundID
          * @param {Function} [callBack]
+         * @param {String} [windowResize]
          * @returns {ax5layout}
          */
-        this.align = function (boundID, callBack) {
+        this.align = function (boundID, windowResize) {
             var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
             if (queIdx === -1) {
                 console.log(ax5.info.getError("ax5layout", "402", "align"));
                 return;
             }
-            alignLayout.call(this, queIdx, callBack);
+
+            alignLayout.call(this, queIdx, null, windowResize);
             return this;
         };
 
@@ -803,7 +820,9 @@
             };
         }();
 
-        // 클래스 생성자
+        this.hide = function () {};
+
+        /// 클래스 생성자
         this.main = function () {
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
@@ -821,6 +840,21 @@
 })(ax5.ui, ax5.ui.root);
 
 ax5.ui.layout_instance = new ax5.ui.layout();
+
+/**
+ * ax5layout jquery extends
+ * @namespace jQueryExtends
+ */
+
+/**
+ * @method jQueryExtends.ax5layout
+ * @param {String} methodName
+ * @example
+ * ```js
+ * jQuery('[data-ax5layout="ax1"]').ax5layout();
+ * ```
+ */
+
 jQuery.fn.ax5layout = function () {
     return function (config) {
         if (ax5.util.isString(arguments[0])) {
@@ -828,13 +862,16 @@ jQuery.fn.ax5layout = function () {
 
             switch (methodName) {
                 case "align":
-                    return ax5.ui.layout_instance.align(this, arguments[1]);
+                    return ax5.ui.layout_instance.align(this, arguments[1], arguments[2]);
                     break;
                 case "resize":
                     return ax5.ui.layout_instance.resize(this, arguments[1], arguments[2]);
                     break;
                 case "reset":
                     return ax5.ui.layout_instance.reset(this, arguments[1]);
+                    break;
+                case "hide":
+                    return ax5.ui.layout_instance.hide(this, arguments[1]);
                     break;
                 case "onResize":
                     return ax5.ui.layout_instance.onResize(this, arguments[1]);
