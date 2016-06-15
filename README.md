@@ -30,7 +30,7 @@ toms-mac:ax5ui-kernel tom$ gulp default
 [13:25:57] Finished 'default' after 227 msa
 ```
 >* if you success, you can see this screen.
-    2. if you fail to run gulp, the reason is "you don't have permission' or 'npm is not installed'"
+    2. if you fail to run gulp, the reason is ['you don't have permission' or 'npm is not installed']
     3. please refer to an Internet
     4. this keyword will help you : 
       1. npm init
