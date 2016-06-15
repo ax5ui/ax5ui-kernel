@@ -9,7 +9,7 @@ https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.min.js
 1. Fork this Origninal repository to your repository.
 2. Clone your repository to your desktop.
 3. Open Terminal
-4. Move to git Location : ax5ui-kernel
+4. Move to git folder (Folder Name : ax5ui-kernel)
 5. Type this instruction : npm install
 
 ```
