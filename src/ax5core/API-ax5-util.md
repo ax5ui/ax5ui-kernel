@@ -182,6 +182,47 @@ console.log(ax5.util.reduceRight(aarray, function (p, n) {
 ```
 ---
 
+## ax5.util.sum
+It returns the sum. The sum of all the values returned by the function.
+```js
+var arr = [
+    {name: "122", value: 9},
+    {name: "122", value: 10},
+    {name: "123", value: 11}
+];
+
+var rs = ax5.util.sum(arr, function () {
+    if(this.name == "122") {
+        return this.value;
+    }
+});
+console.log(rs); // 19
+
+console.log(ax5.util.sum(arr, 10, function () {
+    return this.value;
+}));
+// 40
+```
+---
+
+## ax5.util.avg
+It returns the average. The average of all the values returned by the function.
+```js
+var arr = [
+    {name: "122", value: 9},
+    {name: "122", value: 10},
+    {name: "123", value: 11}
+];
+
+var rs = ax5.util.avg(arr, function () {
+    return this.value;
+});
+
+console.log(rs); // 10
+```
+---
+
+
 ## ax5.util.first
 It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array [0]" rather than using the "first" method.
 ```js
@@ -288,8 +329,8 @@ console.log('abs() round(2) money() : '
 `ax5.util.date(date[, cond])`
 ```js
 ax5.util.date('2013-01-01'); // Tue Jan 01 2013 23:59:00 GMT+0900 (KST)
-ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/mm/dd'}); // "2015/07/01"
-ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/mm/dd'}); // "1919/03/11"
+ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/MM/dd'}); // "2015/07/01"
+ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/MM/dd hh:mm:ss'}); // "1919/03/11 23:59:00"
 ```
 
 ## dday
@@ -452,4 +493,21 @@ console.log(ax5.util.css('width:100px;padding: 50px; background: #ccc'));
 ## ax5.util.stopEvent
 ```js
 ax5.util.stopEvent(e);
+```
+
+## ax5.util.selectRange
+```html
+<div id="select-test-0" contentEditable="true">SELECT TEST</div>
+<div id="select-test-1" contentEditable="true">SELECT TEST</div>
+<div id="select-test-2" contentEditable="true">SELECT TEST</div>
+
+<script>
+    $(document.body).ready(function () {
+        ax5.util.selectRange($("#select-test-0"), "end"); // focus on end
+        ax5.util.selectRange($("#select-test-1").get(0), [1, 5]); // select 1~5
+        //ax5.util.selectRange($("#select-test-2"), "start"); // focus on start
+        //ax5.util.selectRange($("#select-test-2")); // selectAll
+        //ax5.util.selectRange($("#select-test-2"), "selectAll"); // selectAll
+    });
+</script>
 ```

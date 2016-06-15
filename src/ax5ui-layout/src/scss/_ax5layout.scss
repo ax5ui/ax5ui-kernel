@@ -1,0 +1,159 @@
+/*!
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+// themes
+$border-colors: (
+        default: $ax5layout-default-border-color,
+        primary: $ax5layout-primary-border-color,
+        success: $ax5layout-success-border-color,
+        info: $ax5layout-info-border-color,
+        warning: $ax5layout-warning-border-color,
+        danger: $ax5layout-danger-border-color
+);
+$font-colors: (
+        default: $ax5layout-default-font-color,
+        primary: $ax5layout-primary-font-color,
+        success: $ax5layout-success-font-color,
+        info: $ax5layout-info-font-color,
+        warning: $ax5layout-warning-font-color,
+        danger: $ax5layout-danger-font-color
+);
+
+@include keyframes(ax-layout) {
+    from {
+        @include transform(translateY(-10%) scaleY(0.0));
+        opacity: 0;
+    }
+    to {
+        @include transform(translateY(0%) scaleY(1.0));
+        opacity: 1;
+    }
+}
+
+@include keyframes(ax-layout-option-destroy) {
+    from {
+        @include transform(translateY(0%) scaleY(1.0));
+        opacity: 1;
+    }
+    to {
+        @include transform(translateY(-10%) scaleY(0.0));
+        opacity: 0;
+    }
+}
+
+@mixin ax5-ui-layout-theme($border-color, $font-color) {
+
+}
+
+$dock-panel-splitter-background: #ccc;
+
+/// layout-display
+[data-ax5layout] {
+    position: relative;
+    border: 0px none;
+    > [data-dock-panel] {
+        position: absolute;
+        border: 0px none;
+        z-index: 2;
+        overflow: auto;
+        &.dock-panel-top {
+            left: 0px;
+            top: 0px;
+            width: 100%;
+        }
+        &.dock-panel-bottom {
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+        }
+        &.dock-panel-left {
+            left: 0px;
+            top: 0px;
+            height: 100%;
+        }
+        &.dock-panel-right {
+            right: 0px;
+            top: 0px;
+            height: 100%;
+        }
+        &.dock-panel-center {
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            z-index: 1;
+        }
+    }
+    > [data-split-panel] {
+        position: absolute;
+        border: 0px none;
+        z-index: 2;
+        overflow: auto;
+        //background: #eee;
+        &.split-panel-vertical{
+            width: 100%;
+        }
+        &.split-panel-horizontal{
+            height: 100%;
+        }
+    }
+    > [data-splitter]{
+        // @include transition(all 0.3s, $ease-in-out-cubic);
+        position: absolute;
+        background: $dock-panel-splitter-background;
+        z-index: 3;
+
+        &.dock-panel-top{
+            top:0px;
+            width: 100%;
+            cursor: ns-resize;
+        }
+        &.dock-panel-bottom{
+            bottom: 0px;
+            width: 100%;
+            cursor: ns-resize;
+        }
+        &.dock-panel-left {
+            left:0px;
+            height: 100%;
+            cursor: ew-resize;
+        }
+        &.dock-panel-right{
+            right:0px;
+            height: 100%;
+            cursor: ew-resize;
+        }
+        &.split-panel-vertical{
+            width: 100%;
+            cursor: ns-resize;
+        }
+        &.split-panel-horizontal{
+            height: 100%;
+            cursor: ew-resize;
+        }
+    }
+}
+.ax5layout-resizer{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background: #ee868b;
+    z-index: 10;
+
+    &.panel-top {
+        cursor: ns-resize;
+    }
+    &.panel-bottom {
+        cursor: ns-resize;
+    }
+    &.panel-left {
+        cursor: ew-resize;
+    }
+    &.panel-right {
+        cursor: ew-resize;
+    }
+}

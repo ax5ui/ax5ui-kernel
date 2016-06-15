@@ -42,8 +42,6 @@
 
         this.init = function () {
 
-            console.log(cfg.target);
-
             this.target = $(cfg.target);
             this.target.html(this.__get_layout());
 
@@ -56,22 +54,21 @@
                 "progress-bar": this.target.find('[data-ui-els="progress-bar"]')
             };
 
-            this.els["preview"].bind("click", (function() {
+            this.els["preview"].bind("click", (function () {
                 this.__request_select_file();
             }).bind(this));
 
-            this.els["input-file"].bind("change", (function(e) {
+            this.els["input-file"].bind("change", (function (e) {
                 this.__on_select_file(e || window.event);
             }).bind(this));
 
-            (function() {
+            (function () {
 
                 var dragZone = this.els["container"],
                     preview_img = this.els["preview-img"],
                     _this = this, timer;
 
-                console.log(dragZone.get(0));
-                dragZone.get(0).addEventListener('dragover', function(e) {
+                dragZone.get(0).addEventListener('dragover', function (e) {
                     e.stopPropagation();
                     e.preventDefault();
 
@@ -80,19 +77,19 @@
 
                     dragZone.addClass("dragover");
                 }, false);
-                dragZone.get(0).addEventListener('dragleave', function(e) {
+                dragZone.get(0).addEventListener('dragleave', function (e) {
                     e.stopPropagation();
                     e.preventDefault();
 
                     if (timer) clearTimeout(timer);
-                    timer = setTimeout(function() {
+                    timer = setTimeout(function () {
                         preview_img.show();
                     }, 100);
 
                     dragZone.removeClass("dragover");
                 }, false);
 
-                dragZone.get(0).addEventListener('drop', function(e) {
+                dragZone.get(0).addEventListener('drop', function (e) {
                     e.stopPropagation();
                     e.preventDefault();
 
@@ -102,14 +99,14 @@
 
             }).call(this);
 
-            setTimeout((function() {
+            setTimeout((function () {
                 this.__set_size_layout();
             }).bind(this), 1);
 
 
         };
 
-        this.__get_layout = function() {
+        this.__get_layout = function () {
             var po = [],
                 inputFileMultiple = "", // inputFileMultiple = 'multiple="multiple"',  support multifile
                 inputFileAccept = cfg.file_types;
@@ -128,13 +125,13 @@
             return po.join('');
         };
 
-        this.__set_size_layout = this.align = function() {
+        this.__set_size_layout = this.align = function () {
             var progress_margin = 20,
                 progress_height = this.els["progress"].height(),
                 ct_width = this.els["container"].width(),
                 ct_height = this.els["container"].height();
 
-            if(ct_width != 0 && ct_height != 0) {
+            if (ct_width != 0 && ct_height != 0) {
                 this.els["progress"].css({
                     left: progress_margin,
                     top: ct_height / 2 - progress_height / 2,
@@ -144,16 +141,16 @@
             //this.els["preview-img"].css({width: ct_width, height: ct_height});
         };
 
-        this.__request_select_file = function() {
+        this.__request_select_file = function () {
             if (cfg.before_select_file) {
                 if (!cfg.before_select_file.call()) {
                     return false; // 중지
                 }
             }
 
-            if(window.imagePicker){
+            if (window.imagePicker) {
                 window.imagePicker.getPictures(
-                    function(results) {
+                    function (results) {
                         for (var i = 0; i < results.length; i++) {
                             console.log('Image URI: ' + results[i]);
                         }
@@ -162,25 +159,23 @@
                         console.log('Error: ' + error);
                     }
                 );
-            }else{
+            } else {
                 this.els["input-file"].trigger("click");
             }
         };
 
-        this.__on_select_file = function(evt) {
+        this.__on_select_file = function (evt) {
             var file,
                 target_id = this.target.id,
                 preview = this.els["preview-img"].get(0);
 
-            console.log(evt);
-
             if ('dataTransfer' in evt) {
                 file = evt.dataTransfer.files[0];
             }
-            else if('target' in evt){
+            else if ('target' in evt) {
                 file = evt.target.files[0];
             }
-            else if(evt){
+            else if (evt) {
                 file = evt[0];
             }
 
@@ -189,15 +184,15 @@
 
             this.selected_file = file;
             // 선택된 이미지 프리뷰 기능
-            (function(root) {
+            (function (root) {
                 root.els["preview-img"].css({display: "block"});
 
-                function setcss_preview(img, box_width, box_height){
+                function setcss_preview(img, box_width, box_height) {
                     var css = {};
 
                     var image = new Image();
                     image.src = img.src;
-                    image.onload = function() {
+                    image.onload = function () {
                         // access image size here
                         //console.log(this.width, this.height);
                         if (this.width > this.height) { // 가로형
@@ -233,12 +228,12 @@
                     };
                 }
 
-                if(window.imagePicker) {
+                if (window.imagePicker) {
                     preview.src = file;
                     setcss_preview(preview, root.els["container"].width(), root.els["container"].height());
-                }else {
+                } else {
                     var reader = new FileReader(target_id);
-                    reader.onloadend = function() {
+                    reader.onloadend = function () {
                         try {
                             preview.src = reader.result;
                             setcss_preview(preview, root.els["container"].width(), root.els["container"].height());
@@ -264,7 +259,7 @@
             // if(file) this.upload(file);
         };
 
-        this.upload = function() {
+        this.upload = function () {
             var _this = this;
             if (!this.selected_file) {
                 if (cfg.on_event) {
@@ -283,11 +278,11 @@
             this.els["progress"].css({display: "block"});
             progress_bar.css({width: '0%'});
 
-            if(window.imagePicker) {
+            if (window.imagePicker) {
                 formData.append(cfg.upload_http.filename_param_key, this.selected_file);
                 // 다른 처리 방법 적용 필요
             }
-            else{
+            else {
                 formData.append(cfg.upload_http.filename_param_key, this.selected_file);
             }
 
@@ -297,7 +292,7 @@
 
             this.xhr = new XMLHttpRequest();
             this.xhr.open(cfg.upload_http.method, cfg.upload_http.url, true);
-            this.xhr.onload = function(e) {
+            this.xhr.onload = function (e) {
                 var res = e.target.response;
                 try {
                     if (typeof res == "string") res = U.parseJson(res);
@@ -311,12 +306,12 @@
                 }
                 _this.upload_complete(res);
             };
-            this.xhr.upload.onprogress = function(e) {
+            this.xhr.upload.onprogress = function (e) {
                 progress_bar.css({width: U.number((e.loaded / e.total) * 100, {round: 2}) + '%'});
                 if (e.lengthComputable) {
                     if (e.loaded >= e.total) {
                         //_this.upload_complete();
-                        setTimeout(function() {
+                        setTimeout(function () {
                             _this.els["progress"].css({display: "none"});
                         }, 300);
                     }
@@ -325,7 +320,7 @@
             this.xhr.send(formData);  // multipart/form-data
         };
 
-        this.upload_complete = function(res) {
+        this.upload_complete = function (res) {
             this.selected_file = null;
             this.uploaded_file = res;
             this.els["container"].addClass("uploaded");
@@ -339,7 +334,7 @@
             }
         };
 
-        this.set_uploaded_file = function(file) {
+        this.set_uploaded_file = function (file) {
             this.uploaded_file = file;
             if (this.uploaded_file) {
                 this.els["container"].addClass("uploaded");
@@ -349,12 +344,12 @@
             }
         };
 
-        this.set_preview_img = function(src) {
+        this.set_preview_img = function (src) {
             if (src) {
-                this.els["preview-img"].attr({"src": src});
+                this.els["preview-img"].attr({"src": src}).show();
             }
             else {
-                this.els["preview-img"].attr({"src": null});
+                this.els["preview-img"].attr({"src": null}).hide();
             }
         };
 

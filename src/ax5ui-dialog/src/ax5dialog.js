@@ -51,7 +51,7 @@
             getContentTmpl = function () {
                 return `
                 <div id="{{dialogId}}" data-ax5-ui="dialog" class="ax5-ui-dialog {{theme}}">
-                    <div class="ax-dialog-heading">
+                    <div class="ax-dialog-header">
                         {{{title}}}
                     </div>
                     <div class="ax-dialog-body">

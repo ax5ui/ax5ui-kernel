@@ -28,7 +28,9 @@
      * @method ax5.getGuid
      * @returns {Number} guid
      */
-    ax5.getGuid = function () {return ax5.guid++;};
+    ax5.getGuid = function () {
+        return ax5.guid++;
+    };
 
     /**
      * 상수모음
@@ -215,6 +217,8 @@
             }
         }
 
+        var supportTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+
         return {
             errorMsg: errorMsg,
             version: version,
@@ -224,6 +228,7 @@
             weekNames: weekNames,
             browser: browser,
             isBrowser: isBrowser,
+            supportTouch: supportTouch,
             wheelEnm: wheelEnm,
             urlUtil: urlUtil,
             getError: getError
@@ -387,6 +392,123 @@
                 }
             }
             return -1;
+        }
+
+        /**
+         * @method ax5.util.sum
+         * @param {Array|Object} O
+         * @param {Number} [defaultValue]
+         * @param {Function} _fn
+         * @returns {Number}
+         * @example
+         * ```js
+         * var arr = [
+         *  {name: "122", value: 9},
+         *  {name: "122", value: 10},
+         *  {name: "123", value: 11}
+         * ];
+         *
+         * var rs = ax5.util.sum(arr, function () {
+         *  if(this.name == "122") {
+         *      return this.value;
+         *  }
+         * });
+         * console.log(rs); // 19
+         *
+         * console.log(ax5.util.sum(arr, 10, function () {
+         *   return this.value;
+         * }));
+         * // 40
+         * ```
+         */
+        function sum(O, defaultValue, _fn) {
+            var i, l, tokenValue;
+            if (isFunction(defaultValue) && typeof _fn === "undefined") {
+                _fn = defaultValue;
+                defaultValue = 0;
+            }
+            if (typeof defaultValue === "undefined") defaultValue = 0;
+
+            if (isArray(O)) {
+                i = 0;
+                l = O.length;
+                for (; i < l; i++) {
+                    if (typeof O[i] !== "undefined") {
+                        if (( tokenValue = _fn.call(O[i], O[i]) ) === false) break;
+                        else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                    }
+                }
+                return defaultValue;
+            }
+            else if (isObject(O)) {
+                for (i in O) {
+                    if (typeof O[i] != "undefined") {
+                        if (( tokenValue = _fn.call(O[i], O[i]) ) === false) break;
+                        else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                    }
+                }
+                return defaultValue;
+            }
+            else {
+                console.error("argument error : ax5.util.sum - use Array or Object");
+                return defaultValue;
+            }
+        }
+
+
+        /**
+         * @method ax5.util.avg
+         * @param {Array|Object} O
+         * @param {Number} [defaultValue]
+         * @param {Function} _fn
+         * @returns {Number}
+         * @example
+         * ```js
+         * var arr = [
+         *  {name: "122", value: 9},
+         *  {name: "122", value: 10},
+         *  {name: "123", value: 11}
+         * ];
+         *
+         * var rs = ax5.util.avg(arr, function () {
+         *      return this.value;
+         * });
+         *
+         * console.log(rs); // 10
+         * ```
+         */
+        function avg(O, defaultValue, _fn) {
+            var i, l, tokenValue;
+            if (isFunction(defaultValue) && typeof _fn === "undefined") {
+                _fn = defaultValue;
+                defaultValue = 0;
+            }
+            if (typeof defaultValue === "undefined") defaultValue = 0;
+
+            if (isArray(O)) {
+                i = 0;
+                l = O.length;
+                for (; i < l; i++) {
+                    if (typeof O[i] !== "undefined") {
+                        if (( tokenValue = _fn.call(O[i], O[i]) ) === false) break;
+                        else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                    }
+                }
+                return defaultValue / l;
+            }
+            else if (isObject(O)) {
+                for (i in O) {
+                    if (typeof O[i] != "undefined") {
+                        if (( tokenValue = _fn.call(O[i], O[i]) ) === false) break;
+                        else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                    }
+                }
+                return defaultValue / l;
+            }
+            else {
+                console.error("argument error : ax5.util.sum - use Array or Object");
+                return defaultValue;
+            }
         }
 
         /**
@@ -879,113 +1001,6 @@
         }
 
         /**
-         * ax5 require
-         * @method ax5.util.require
-         * @param {Array} mods - load modules
-         * @param {Function} callBack - 로드 성공시 호출함수
-         * @param {Function} [errorBack] - 로드 실패시 호출함수
-         * @example
-         * ```js
-         * ax5.info.baseUrl = "../src/";
-         * ax5.util.require(["ax5_classSample.js"], function(){
-		 * 	alert("ok");
-		 * });
-         * ```
-         */
-        // RequireJS 2.1.15 소스코드 참고
-        function require(mods, callBack, errorBack) {
-            var
-                head = doc.head || doc.getElementsByTagName("head")[0],
-                readyRegExp = info.isBrowser && navigator.platform === 'PLAYSTATION 3' ? /^complete$/ : /^(complete|loaded)$/,
-                loadCount = mods.length, loadErrors = [], loadedSrc = {}, onloadTimer, onerrorTimer, returned = false,
-                scripts = dom.get("script[src]"), styles = dom.get("style[href]"),
-                onload = function () {
-                    if (loadCount < 1 && loadErrors.length == 0 && !returned) {
-                        if (callBack) callBack({});
-                        returned = true;
-                    }
-                },
-                onerror = function () {
-                    if (loadCount < 1 && loadErrors.length > 0 && !returned) {
-                        console.error(loadErrors);
-                        if (errorBack) errorBack({
-                            type: "loadFail",
-                            list: loadErrors
-                        });
-                        returned = true;
-                    }
-                };
-
-            // 로드해야 할 모듈들을 doc.head에 삽입하고 로드가 성공여부를 리턴합니다.
-            for (var i = 0, l = mods.length; i < l; i++) {
-                var src = mods[i], type = right(src, "."), hasPlugin = false,
-                    plugin, pluginSrc = info.baseUrl + src, attrNm = (type === "js") ? "src" : "href",
-                    plugLoad, plugErr, s = scripts.length;
-
-                while (s--) {
-                    if (scripts[s].getAttribute(attrNm) === pluginSrc) {
-                        hasPlugin = true;
-                        break;
-                    }
-                }
-
-                if (hasPlugin) {
-
-                    loadCount--;
-                    onload();
-
-                }
-                else {
-
-                    plugin = (type === "js") ?
-                        dom.create("script", {type: "text/javascript", src: pluginSrc, "data-src": pluginSrc}) :
-                        dom.create("link", {rel: "stylesheet", type: "text/css", href: pluginSrc});
-
-                    plugLoad = function (e, pluginSrc) {
-                        if (e && ( e.type === 'load' || readyRegExp.test((e.currentTarget || e.srcElement).readyState) )) {
-                            if (!loadedSrc[pluginSrc]) loadCount--;
-                            if (onloadTimer) clearTimeout(onloadTimer);
-                            onloadTimer = setTimeout(onload, 1);
-                        }
-                    },
-                        plugErr = function (e) {
-                            loadCount--;
-                            loadErrors.push({
-                                src: info.baseUrl + src, error: e
-                            });
-                            if (onerrorTimer) clearTimeout(onerrorTimer);
-                            onerrorTimer = setTimeout(onerror, 1);
-                        };
-
-                    ax5.xhr({
-                        url: pluginSrc, contentType: "",
-                        res: function (response, status) {
-                            var timeId, hasPlugin = false, scripts = dom.get("script[src]"), s = scripts.length;
-                            while (s--) {
-                                if (scripts[s].getAttribute(attrNm) === pluginSrc) {
-                                    hasPlugin = true;
-                                    break;
-                                }
-                            }
-
-                            if (!hasPlugin) head.appendChild(plugin);
-                            plugin.onload = function (e) {
-                                plugLoad(e, pluginSrc);
-                                if (timeId) clearTimeout(timeId);
-                            };
-                            timeId = setTimeout(function () {
-                                plugLoad({type: "load"}, pluginSrc);
-                            }, 500);
-                        },
-                        error: function () {
-                            plugErr(this);
-                        }
-                    });
-                }
-            }
-        }
-
-        /**
          * jsonString 으로 alert 합니다.
          * @method ax5.util.alert
          * @param {Object|Array|String|Number} O
@@ -1323,8 +1338,8 @@
          * @example
          * ```js
          * ax5.util.date('2013-01-01'); // Tue Jan 01 2013 23:59:00 GMT+0900 (KST)
-         * ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/mm/dd'}); // "2015/07/01"
-         * ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/mm/dd'}); // "1919/03/11"
+         * ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/MM/dd'}); // "2015/07/01"
+         * ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/MM/dd hh:mm:ss'}); // "1919/03/11 23:59:00"
          * ```
          */
         function date(d, cond) {
@@ -1418,7 +1433,7 @@
                         var yre = /[^y]*(yyyy)[^y]*/gi;
                         yre.exec(fStr);
                         var regY = RegExp.$1;
-                        var mre = /[^m]*(mm)[^m]*/gi;
+                        var mre = /[^m]*(MM)[^m]*/g;
                         mre.exec(fStr);
                         var regM = RegExp.$1;
                         var dre = /[^d]*(dd)[^d]*/gi;
@@ -1427,7 +1442,7 @@
                         var hre = /[^h]*(hh)[^h]*/gi;
                         hre.exec(fStr);
                         var regH = RegExp.$1;
-                        var mire = /[^m]*(mi)[^i]*/gi;
+                        var mire = /[^m]*(mm)[^i]*/g;
                         mire.exec(fStr);
                         var regMI = RegExp.$1;
                         var sre = /[^s]*(ss)[^s]*/gi;
@@ -1440,7 +1455,7 @@
                         if (regY === "yyyy") {
                             fStr = fStr.replace(regY, right(nY, regY.length));
                         }
-                        if (regM === "mm") {
+                        if (regM === "MM") {
                             if (regM.length == 1) nM = (d.getMonth() + 1);
                             fStr = fStr.replace(regM, nM);
                         }
@@ -1451,7 +1466,7 @@
                         if (regH === "hh") {
                             fStr = fStr.replace(regH, nH);
                         }
-                        if (regMI === "mi") {
+                        if (regMI === "mm") {
                             fStr = fStr.replace(regMI, nMM);
                         }
                         if (regS === "ss") {
@@ -1463,7 +1478,7 @@
                         return fStr;
                     })();
                 }
-                else { 
+                else {
                     return d;
                 }
             }
@@ -1578,7 +1593,9 @@
             return times((padder || '0'), (length - s.length)) + s;
         }
 
-        function times(s, count) { return count < 1 ? '' : new Array(count + 1).join(s); }
+        function times(s, count) {
+            return count < 1 ? '' : new Array(count + 1).join(s);
+        }
 
         /**
          * 타겟엘리먼트의 부모 엘리멘트 트리에서 원하는 조건의 엘리먼트를 얻습니다.
@@ -1665,8 +1682,7 @@
                         }
                     }
                     return !result;
-                })())
-                {
+                })()) {
                     if (_target.parentNode && _target.parentNode.parentNode) {
                         _target = _target.parentNode;
                     }
@@ -1758,6 +1774,114 @@
             // 이벤트 중지 구문 끝
         }
 
+        /**
+         * @method ax5.util.selectRange
+         * @param {Element} el
+         * @param {Element} offset
+         * @example
+         * ```
+         * ax5.util.selectRange($("#select-test-0")); // selectAll
+         * ax5.util.selectRange($("#select-test-0"), "selectAll"); //selectAll
+         * ax5.util.selectRange($("#select-test-0"), "start"); // focus on start
+         * ax5.util.selectRange($("#select-test-0"), "end"); // focus on end
+         * ax5.util.selectRange($("#select-test-0"), [1, 5]); // select 1~5
+         * ```
+         */
+        var selectRange = (function () {
+            var processor = {
+                'textRange': {
+                    'selectAll': function (el, range, offset) {
+
+                    },
+                    'arr': function (el, range, offset) {
+                        range.moveStart("character", offset[0]); // todo ie node select 체크필요
+                        range.collapse();
+                        range.moveEnd("character", offset[1]);
+                    },
+                    'start': function (el, range, offset) {
+                        range.moveStart("character", 0);
+                        range.collapse();
+                    },
+                    'end': function (el, range, offset) {
+                        range.moveStart("character", range.text.length);
+                        range.collapse();
+                    }
+                },
+                'range': {
+                    'selectAll': function (el, range, offset) {
+                        range.selectNodeContents(el);
+                    },
+                    'arr': function (el, range, offset) {
+                        if (isObject(offset[0])) {
+                            range.setStart(offset[0].node, offset[0].offset);
+                            range.setEnd(offset[1].node, offset[1].offset);
+                        }
+                        else {
+                            range.setStart(el.firstChild, offset[0]);
+                            range.setEnd(el.firstChild, offset[1]);
+                        }
+                    },
+                    'start': function (el, range, offset) {
+                        range.selectNodeContents(el);
+                        range.collapse(true);
+                    },
+                    'end': function (el, range, offset) {
+                        range.selectNodeContents(el);
+                        range.collapse(false);
+                    }
+                }
+            };
+            return function (el, offset) {
+                var range, rangeType, selection;
+
+                if (el instanceof jQuery) {
+                    el = el.get(0);
+                }
+                if (!el) return;
+
+                // 레인지 타입 선택
+                if (doc.body.createTextRange) {
+                    range = document.body.createTextRange();
+                    range.moveToElementText(el);
+                    rangeType = "textRange";
+                }
+                else if (window.getSelection) {
+                    selection = window.getSelection();
+                    range = document.createRange();
+                    rangeType = "range";
+                }
+
+                // range 적용
+                if (typeof offset == "undefined") {
+                    processor[rangeType].selectAll.call(this, el, range, offset);
+                }
+                else if (isArray(offset)) {
+                    processor[rangeType].arr.call(this, el, range, offset);
+                }
+                else {
+                    for (var key in processor[rangeType]) {
+                        if (offset == key) {
+                            processor[rangeType][key].call(this, el, range, offset);
+                            break;
+                        }
+                    }
+                }
+
+                // 포커스 및 셀렉트
+                if (doc.body.createTextRange) {
+                    range.select();
+                    el.focus();
+                }
+                else if (window.getSelection) {
+                    el.focus();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+
+            }
+        })();
+
+
         return {
             alert: alert,
             each: each,
@@ -1766,6 +1890,8 @@
             reduce: reduce,
             reduceRight: reduceRight,
             filter: filter,
+            sum: sum,
+            avg: avg,
             toJson: toJson,
             parseJson: parseJson,
             first: first,
@@ -1785,7 +1911,6 @@
             isNothing: isNothing,
             setCookie: setCookie,
             getCookie: getCookie,
-            require: require,
             camelCase: camelCase,
             snakeCase: snakeCase,
             number: number,
@@ -1804,7 +1929,8 @@
             css: css,
             isDate: isDate,
             isDateFormat: isDateFormat,
-            stopEvent: stopEvent
+            stopEvent: stopEvent,
+            selectRange: selectRange
         }
     })();
 

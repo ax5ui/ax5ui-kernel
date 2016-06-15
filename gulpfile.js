@@ -1,6 +1,6 @@
 'use strict';
 
-var fs = require('fs')
+var fs = require('fs');
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var concat = require('gulp-concat');
@@ -10,6 +10,9 @@ var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
 var babel = require('gulp-babel');
 var clean = require('gulp-clean');
+var gulpJsdoc2md = require('gulp-jsdoc-to-markdown');
+var rename = require('gulp-rename');
+var gutil = require('gulp-util');
 
 var PATHS = {
     "ax5core": {
@@ -114,6 +117,22 @@ var PATHS = {
         dest: "src/ax5ui-uploader/dist",
         scss: "ax5uploader.scss",
         js: "ax5uploader"
+    },
+    "ax5ui-combobox": {
+        isPlugin: true,
+        root: "src/ax5ui-combobox",
+        src: "src/ax5ui-combobox/src",
+        dest: "src/ax5ui-combobox/dist",
+        scss: "ax5combobox.scss",
+        js: "ax5combobox"
+    },
+    "ax5ui-layout": {
+        isPlugin: true,
+        root: "src/ax5ui-layout",
+        src: "src/ax5ui-layout/src",
+        dest: "src/ax5ui-layout/dist",
+        scss: "ax5layout.scss",
+        js: "ax5layout"
     }
 };
 
@@ -152,7 +171,8 @@ for (var k in PATHS) {
                     .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(concat(__p.js + '.js'))
                     .pipe(babel({
-                        presets: ['es2015']
+                        presets: ['es2015'],
+                        compact: false
                     }))
                     .pipe(gulp.dest(PATHS[k].dest))
                     .pipe(concat(__p.js + '.min.js'))
@@ -187,7 +207,7 @@ gulp.task('default', function () {
  */
 gulp.task('dist-all-in-one', function () {
 
-    var jsSrcs   = [];
+    var jsSrcs = [];
     var scssSrcs = [];
     for (var k in PATHS) {
         var __p = PATHS[k];
@@ -201,7 +221,8 @@ gulp.task('dist-all-in-one', function () {
         .pipe(plumber({errorHandler: errorAlert}))
         .pipe(concat('ax5ui.all.js'))
         .pipe(babel({
-            presets: ['es2015']
+            presets: ['es2015'],
+            compact: false
         }))
         .pipe(gulp.dest('dist/'))
         .pipe(concat('ax5ui.all.min.js'))
@@ -213,11 +234,4 @@ gulp.task('dist-all-in-one', function () {
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(concat('ax5ui.all.css'))
         .pipe(gulp.dest('dist/'));
-});
-
-var jsdoc = require('gulp-jsdoc3');
-
-gulp.task('doc', function (cb) {
-    gulp.src(['src/ax5ui-select/src/ax5select.js'], {read: false})
-        .pipe(jsdoc(cb));
 });

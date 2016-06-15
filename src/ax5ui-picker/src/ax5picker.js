@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version 0.6.1
+     * @version 0.6.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -347,6 +347,12 @@
                 return this;
             }
             item.$target = jQuery(item.target);
+            
+            if(!item.$target.get(0)) {
+                console.log(ax5.info.getError("ax5picker", "401", "bind"));
+                return this;
+            }
+            
             if (!item.id) item.id = item.$target.data("data-axpicker-id");
 
             if (!item.id) {

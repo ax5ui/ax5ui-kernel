@@ -4,17 +4,17 @@
  * - www.axisj.com
  */
 
-// ax5.ui.select
+// ax5.ui.combobox
 (function (root, _SUPER_) {
 
     /**
-     * @class ax5.ui.select
+     * @class ax5.ui.combobox
      * @classdesc
-     * @version 0.3.4
+     * @version 0.0.1
      * @author tom@axisj.com
      * @example
      * ```
-     * var myselect = new ax5.ui.select();
+     * var mycombobox = new ax5.ui.combobox();
      * ```
      */
     var U = ax5.util;
@@ -35,8 +35,7 @@
             lang: {
                 noSelected: '',
                 noOptions: 'no options',
-                loading: 'now loading..',
-                multipleLabel: '"{{label}}"외 {{length}}건'
+                loading: 'now loading..'
             },
             columnKeys: {
                 optionValue: 'value',
@@ -45,8 +44,8 @@
             }
         };
 
-        this.activeSelectOptionGroup = null;
-        this.activeSelectQueueIndex = -1;
+        this.activecomboboxOptionGroup = null;
+        this.activecomboboxQueueIndex = -1;
         this.openTimer = null;
         this.closeTimer = null;
         this.waitOptionsCallback = null;
@@ -109,21 +108,22 @@
             },
             getOptionGroupTmpl = function (columnKeys) {
                 return `
-                <div class="ax5-ui-select-option-group {{theme}} {{size}}" data-ax5-select-option-group="{{id}}">
-                    <div class="ax-select-body">
-                        <div class="ax-select-option-group-content" data-select-els="content"></div>
+                <div class="ax5combobox-option-group {{theme}} {{size}}" data-ax5combobox-option-group="{{id}}">
+                    <div class="ax-combobox-body">
+                        <div class="ax-combobox-option-group-content" data-els="content"></div>
                     </div>
-                    <div class="ax-select-arrow"></div> 
+                    <div class="ax-combobox-arrow"></div> 
                 </div>
                 `;
             },
             getTmpl = function () {
                 return `
-                <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5-ui-select-display {{theme}}" 
-                data-ax5-select-display="{{id}}" data-ax5-select-instance="{{instanceId}}">
-                    <div class="ax5-ui-select-display-table" data-select-els="display-table">
-                        <div data-ax5-select-display="label">{{label}}</div>
-                        <div data-ax5-select-display="addon"> 
+                <div class="form-control {{formSize}} ax5combobox-display {{theme}}" 
+                data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
+                    <div class="ax5combobox-display-table" data-els="display-table">
+                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}} data-ax5combobox-display="label" 
+                        contenteditable="true" spellcheck="false">{{label}}</a>
+                        <div data-ax5combobox-display="addon"> 
                             {{#multiple}}{{#reset}}
                             <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
                             {{/reset}}{{/multiple}}
@@ -137,8 +137,6 @@
                             {{/icons}}
                         </div>
                     </div>
-                    <input type="text" tabindex="-1" data-ax5-select-display="input" 
-                    style="position:absolute;z-index:0;left:0px;top:0px;font-size:1px;opacity: 0;border: 0px none;color : transparent;text-indent: -9999em;" />
                 </a>
                 `;
             },
@@ -150,9 +148,9 @@
             getOptionsTmpl = function (columnKeys) {
                 return `
                 {{#waitOptions}}
-                    <div class="ax-select-option-item">
-                            <div class="ax-select-option-item-holder">
-                                <span class="ax-select-option-item-cell ax-select-option-item-label">
+                    <div class="ax-combobox-option-item">
+                            <div class="ax-combobox-option-item-holder">
+                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">
                                     {{{lang.loading}}}
                                 </span>
                             </div>
@@ -161,45 +159,45 @@
                 {{^waitOptions}}
                     {{#options}}
                         {{#optgroup}}
-                            <div class="ax-select-option-group">
-                                <div class="ax-select-option-item-holder">
-                                    <span class="ax-select-option-group-label">
+                            <div class="ax-combobox-option-group">
+                                <div class="ax-combobox-option-item-holder">
+                                    <span class="ax-combobox-option-group-label">
                                         {{{.}}}
                                     </span>
                                 </div>
                                 {{#options}}
-                                <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" 
+                                <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" 
                                 data-option-value="{{${columnKeys.optionValue}}}" 
                                 {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
-                                    <div class="ax-select-option-item-holder">
+                                    <div class="ax-combobox-option-item-holder">
                                         {{#multiple}}
-                                        <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
+                                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">
                                             <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
                                         </span>
                                         {{/multiple}}
-                                        <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
                                     </div>
                                 </div>
                                 {{/options}}
                             </div>                            
                         {{/optgroup}}
                         {{^optgroup}}
-                        <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
-                            <div class="ax-select-option-item-holder">
+                        <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
+                            <div class="ax-combobox-option-item-holder">
                                 {{#multiple}}
-                                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">
+                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">
                                     <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
                                 </span>
                                 {{/multiple}}
-                                <span class="ax-select-option-item-cell ax-select-option-item-label">{{${columnKeys.optionText}}}</span>
+                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
                             </div>
                         </div>
                         {{/optgroup}}
                     {{/options}}
                     {{^options}}
-                        <div class="ax-select-option-item">
-                            <div class="ax-select-option-item-holder">
-                                <span class="ax-select-option-item-cell ax-select-option-item-label">
+                        <div class="ax-combobox-option-item">
+                            <div class="ax-combobox-option-item-holder">
+                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">
                                     {{{lang.noOptions}}}
                                 </span>
                             </div>
@@ -208,7 +206,7 @@
                 {{/waitOptions}}
                 `;
             },
-            alignSelectDisplay = function () {
+            alignComboboxDisplay = function () {
                 var i = this.queue.length, w;
                 while (i--) {
                     if (this.queue[i].$display) {
@@ -228,15 +226,15 @@
                 w = null;
                 return this;
             },
-            alignSelectOptionGroup = function (append) {
-                if (!this.activeSelectOptionGroup) return this;
+            alignComboboxOptionGroup = function (append) {
+                if (!this.activecomboboxOptionGroup) return this;
 
                 var
-                    item = this.queue[this.activeSelectQueueIndex],
+                    item = this.queue[this.activecomboboxQueueIndex],
                     pos = {},
                     dim = {};
 
-                if (append) jQuery(document.body).append(this.activeSelectOptionGroup);
+                if (append) jQuery(document.body).append(this.activecomboboxOptionGroup);
 
                 pos = item.$target.offset();
                 dim = {
@@ -251,10 +249,10 @@
                 }
 
                 if (append) {
-                    this.activeSelectOptionGroup
+                    this.activecomboboxOptionGroup
                         .addClass("direction-" + item.direction);
                 }
-                this.activeSelectOptionGroup
+                this.activecomboboxOptionGroup
                     .css((function () {
                         if (item.direction == "top") {
                             return {
@@ -266,17 +264,17 @@
                         else if (item.direction == "bottom") {
                             return {
                                 left: pos.left,
-                                top: pos.top - this.activeSelectOptionGroup.outerHeight() - 1,
+                                top: pos.top - this.activecomboboxOptionGroup.outerHeight() - 1,
                                 width: dim.width
                             }
                         }
                     }).call(this));
             },
             onBodyClick = function (e, target) {
-                if (!this.activeSelectOptionGroup) return this;
+                if (!this.activecomboboxOptionGroup) return this;
 
                 var
-                    item = this.queue[this.activeSelectQueueIndex],
+                    item = this.queue[this.activecomboboxQueueIndex],
                     clickEl = "display"
                     ;
 
@@ -317,16 +315,23 @@
                     this.close();
                 }
                 else if (e.which == ax5.info.eventKeys.RETURN) {
-                    if (this.queue[this.activeSelectQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
-                        var $option = this.activeSelectOptionGroup.find('[data-option-focus-index="' + this.queue[this.activeSelectQueueIndex].optionFocusIndex + '"]');
-                        this.val(this.queue[this.activeSelectQueueIndex].id, {
-                            index: {
-                                gindex: $option.attr("data-option-group-index"),
-                                index: $option.attr("data-option-index")
-                            }
-                        }, undefined, "internal");
-
-                        if (!this.queue[this.activeSelectQueueIndex].multiple) this.close();
+                    var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
+                    if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
+                        var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[this.activecomboboxQueueIndex].optionFocusIndex + '"]');
+                        if($option.attr("data-option-value") == inputValue) {
+                            this.val(this.queue[this.activecomboboxQueueIndex].id, {
+                                index: {
+                                    gindex: $option.attr("data-option-group-index"),
+                                    index: $option.attr("data-option-index")
+                                }
+                            }, undefined, "internal");
+                        }else{
+                            console.log("new string ~", inputValue);
+                        }
+                        if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
+                    }
+                    else {
+                        console.log("new string ~~", inputValue);
                     }
                 }
             },
@@ -339,59 +344,40 @@
                         if (n.selected) labels.push(n[item.columnKeys.optionText]);
                     });
                 }
-                else {
-                    if (!item.multiple && item.options && item.options[0]) {
-                        if (item.options[0].optgroup) {
-                            labels[0] = item.options[0].options[0][item.columnKeys.optionText];
-                        }
-                        else {
-                            labels[0] = item.options[0][item.columnKeys.optionText];
-                        }
-                    }
-                    else {
-                        labels[0] = item.lang.noSelected;
-                    }
-                }
 
-                return (function () {
-                    if (item.multiple && labels.length > 1) {
-                        var data = {
-                            label: labels[0],
-                            length: labels.length - 1
-                        };
-                        return ax5.mustache.render(item.lang.multipleLabel, data);
-                    }
-                    else {
-                        return labels[0];
-                    }
-                })();
+                return labels.join(',');
+
             },
             syncLabel = function (queIdx) {
-                this.queue[queIdx].$display
-                    .find('[data-ax5-select-display="label"]')
+                this.queue[queIdx].$displayLabel
                     .html(getLabel.call(this, queIdx));
             },
             focusWord = function (queIdx, searchWord) {
-                var options = [], i = 0, l = this.queue[queIdx].indexedOptions.length, n;
-                while (l - i++) {
-                    n = this.queue[queIdx].indexedOptions[i];
-                    if (('' + n.value).toLowerCase() == searchWord.toLowerCase()) {
-                        options = [{'@findex': n['@findex'], optionsSort: 0}];
-                        break;
-                    } else {
-                        var sort = ('' + n.value).toLowerCase().search(searchWord.toLowerCase());
-                        if (sort > -1) {
-                            options.push({'@findex': n['@findex'], optionsSort: sort});
-                            if (options.length > 2) break;
+                var options = [], i = -1, l = this.queue[queIdx].indexedOptions.length - 1, n;
+                if (searchWord != "") {
+                    while (l - i++) {
+                        n = this.queue[queIdx].indexedOptions[i];
+
+                        if (('' + n.text).toLowerCase() == searchWord.toLowerCase()) {
+                            options = [{'@findex': n['@findex'], optionsSort: 0}];
+                            break;
+                        } else {
+                            var sort = ('' + n.text).toLowerCase().search(searchWord.toLowerCase());
+                            if (sort > -1) {
+                                options.push({'@findex': n['@findex'], optionsSort: sort});
+                                if (options.length > 2) break;
+                            }
+                            sort = null;
                         }
-                        sort = null;
                     }
+                    options.sort(function (a, b) {
+                        return a.optionsSort - b.optionsSort;
+                    });
                 }
-                options.sort(function (a, b) {
-                    return a.optionsSort - b.optionsSort;
-                });
                 if (options && options.length > 0) {
                     focusMove.call(this, queIdx, undefined, options[0]['@findex']);
+                } else {
+                    focusClear.call(this, queIdx);
                 }
 
                 try {
@@ -403,12 +389,21 @@
                     n = null;
                 }
             },
+            focusClear = function (queIdx) {
+                if (this.activecomboboxOptionGroup) {
+                    this.activecomboboxOptionGroup
+                        .find('[data-option-focus-index]')
+                        .removeClass("hover")
+                        .removeAttr("data-option-selected");
+                }
+            },
             focusMove = function (queIdx, direction, findex) {
                 var _focusIndex,
                     _prevFocusIndex,
                     focusOptionEl,
                     optionGroupScrollContainer;
-                if (this.activeSelectOptionGroup && this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
+
+                if (this.activecomboboxOptionGroup && this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
 
                     if (typeof findex !== "undefined") {
                         _focusIndex = findex
@@ -427,15 +422,15 @@
 
                     this.queue[queIdx].optionFocusIndex = _focusIndex;
 
-                    this.activeSelectOptionGroup
+                    this.activecomboboxOptionGroup
                         .find('[data-option-focus-index]')
                         .removeClass("hover");
 
-                    focusOptionEl = this.activeSelectOptionGroup
+                    focusOptionEl = this.activecomboboxOptionGroup
                         .find('[data-option-focus-index="' + _focusIndex + '"]')
                         .addClass("hover");
 
-                    optionGroupScrollContainer = this.activeSelectOptionGroup.find('[data-select-els="content"]');
+                    optionGroupScrollContainer = this.activecomboboxOptionGroup.find('[data-els="content"]');
 
                     let focusOptionElHeight = focusOptionEl.outerHeight(),
                         optionGroupScrollContainerHeight = optionGroupScrollContainer.innerHeight(),
@@ -449,10 +444,26 @@
                         optionGroupScrollContainer.scrollTop(focusOptionElTop);
                     }
                     // optionGroup scroll check
+
+                    if (typeof direction !== "undefined") {
+                        // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
+                        // 방향이 있으면 라벨 값을 수정
+                        this.queue[queIdx].$displayLabel.html(this.queue[queIdx].indexedOptions[_focusIndex].value);
+                        U.selectRange(this.queue[queIdx].$displayLabel, "end");
+                    }
                 }
             },
-            bindSelectTarget = (function () {
-                var selectEvent = {
+            setComboValue = function (queIdx, value) {
+                if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) {// 포커스된 옵션이 있는 경우
+
+                }
+                else {
+                    // 포커스된 옵션이 없는경우,  사용자 입력값으로 새옵션을 만들고 종료
+                    if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
+                }
+            },
+            bindComboboxTarget = (function () {
+                var comboboxEvent = {
                     'click': function (queIdx, e) {
                         var target = U.findParentNode(e.target, function (target) {
                             if (target.getAttribute("data-selected-clear")) {
@@ -466,7 +477,7 @@
                             this.val(queIdx, {clear: true});
                         }
                         else {
-                            if (self.activeSelectQueueIndex == queIdx) {
+                            if (self.activecomboboxQueueIndex == queIdx) {
                                 if (this.queue[queIdx].optionFocusIndex == -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
                                     self.close();
                                 }
@@ -475,23 +486,30 @@
                                 self.open(queIdx);
                             }
                         }
-                        //U.stopEvent(e);
                     },
                     'keyUp': function (queIdx, e) {
-                        if (e.which == ax5.info.eventKeys.SPACE) {
-                            selectEvent.click.call(this, queIdx, e);
+                        if (e.which == ax5.info.eventKeys.ESC && self.activecomboboxQueueIndex === -1) { // ESC키를 누르고 옵션그룹이 열려있지 않은 경우
+                            U.stopEvent(e);
+                            return this;
                         }
-                        else if (!ctrlKeys[e.which]) {
-                            // 사용자 입력이 뜸해지면 찾고 검색 값 제거...
-                            if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
-                            this.keyUpTimer = setTimeout((function () {
-                                var searchWord = this.queue[queIdx].$displayInput.val();
-                                focusWord.call(this, queIdx, searchWord);
-                                this.queue[queIdx].$displayInput.val('');
-                            }).bind(this), 500);
+                        if (self.activecomboboxQueueIndex != queIdx) {
+                            self.open(queIdx);
                         }
+
+                        if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
+                        this.keyUpTimer = setTimeout((function () {
+                            var searchWord = this.queue[queIdx].$displayLabel.text();
+                            focusWord.call(this, queIdx, searchWord);
+                        }).bind(this), 500);
                     },
                     'keyDown': function (queIdx, e) {
+                        if (e.which == ax5.info.eventKeys.ESC) {
+                            U.stopEvent(e);
+                        }
+                        if (e.which == ax5.info.eventKeys.RETURN) {
+                            // display label에서 줄넘김막기위한 구문
+                            U.stopEvent(e);
+                        }
                         if (e.which == ax5.info.eventKeys.DOWN) {
                             focusMove.call(this, queIdx, 1);
                             U.stopEvent(e);
@@ -501,11 +519,11 @@
                             U.stopEvent(e);
                         }
                     },
-                    'blur': function (queIdx, e) {
-
+                    'focus': function (queIdx, e) {
+                        //console.log(e);
                     },
-                    'selectChange': function (queIdx, e) {
-                        this.val(queIdx, this.queue[queIdx].$select.val(), true);
+                    'blur': function (queIdx, e) {
+                        //console.log(e);
                     }
                 };
                 return function (queIdx) {
@@ -529,10 +547,11 @@
                         })();
 
                         item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
+                        item.$displayLabel = item.$display.find('[data-ax5combobox-display="label"]');
 
                         if (item.$target.find("select").get(0)) {
                             item.$select = item.$target.find("select");
-                            // select 속성만 변경
+                            // input 속성만 변경
                             item.$select
                                 .attr("tabindex", "-1")
                                 .attr("class", "form-control " + data.formSize);
@@ -546,42 +565,37 @@
                         else {
                             item.$select = jQuery(ax5.mustache.render(getSelectTmpl.call(this, queIdx), data));
                             item.$target.append(item.$select);
-                            // select append
+                            // combobox append
                         }
 
                         item.$target.append(item.$display);
-                        item.$displayInput = item.$display.find('[data-ax5-select-display="input"]'); // 사용자 입력값을 받기위한 숨음 입력필드
-                        item.options = syncSelectOptions.call(this, queIdx, item.options);
+                        // 라벨에 사용자 입력 필드가 있으므로 displayInput은 필요 없음.
+                        item.options = syncComboboxOptions.call(this, queIdx, item.options);
 
-                        alignSelectDisplay.call(this);
-
-                        item.$displayInput
-                            .unbind("blur.ax5select")
-                            .bind("blur.ax5select", selectEvent.blur.bind(this, queIdx))
-                            .unbind('keyup.ax5select')
-                            .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx))
-                            .unbind("keydown.ax5select")
-                            .bind("keydown.ax5select", selectEvent.keyDown.bind(this, queIdx));
+                        alignComboboxDisplay.call(this);
                     }
                     else {
-                        item.$display
-                            .find('[data-ax5-select-display="label"]')
+                        item.$displayLabel
                             .html(getLabel.call(this, queIdx));
-                        item.options = syncSelectOptions.call(this, queIdx, item.options);
+                        item.options = syncComboboxOptions.call(this, queIdx, item.options);
 
-                        alignSelectDisplay.call(this);
+                        alignComboboxDisplay.call(this);
                     }
 
                     item.$display
-                        .unbind('click.ax5select')
-                        .bind('click.ax5select', selectEvent.click.bind(this, queIdx))
-                        .unbind('keyup.ax5select')
-                        .bind('keyup.ax5select', selectEvent.keyUp.bind(this, queIdx));
+                        .unbind('click.ax5combobox')
+                        .bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
 
-                    // select 태그에 대한 change 이벤트 감시
-                    item.$select
-                        .unbind('change.ax5select')
-                        .bind('change.ax5select', selectEvent.selectChange.bind(this, queIdx));
+                    // combobox 태그에 대한 이벤트 감시
+                    item.$displayLabel
+                        .unbind("focus.ax5combobox")
+                        .bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx))
+                        .unbind("blur.ax5combobox")
+                        .bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx))
+                        .unbind('keyup.ax5combobox')
+                        .bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx))
+                        .unbind("keydown.ax5combobox")
+                        .bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
 
                     data = null;
                     item = null;
@@ -589,7 +603,7 @@
                     return this;
                 };
             })(),
-            syncSelectOptions = (function () {
+            syncComboboxOptions = (function () {
                 var setSelected = function (queIdx, O) {
                     if (!O) {
                         this.queue[queIdx].selected = [];
@@ -609,7 +623,7 @@
                         item.options = options;
                         item.indexedOptions = [];
 
-                        // select options 태그 생성
+                        // combobox options 태그 생성
                         po = [];
                         item.options.forEach(function (O, OIndex) {
                             if (O.optgroup) {
@@ -651,7 +665,7 @@
                         item.$select.html(po.join(''));
                     }
                     else {
-                        /// 현재 사용되지 않는 옵션
+                        /// 현재 사용되지 않는 구문
                         /// select > options 태그로 스크립트 options를 만들어주는 역할
                         elementOptions = U.toArray(item.$select.get(0).options);
                         // select option 스크립트 생성
@@ -670,16 +684,18 @@
                         item.indexedOptions = newOptions;
                     }
 
-                    if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
-                        if (item.options[0].optgroup) {
-                            item.options[0].options[0][item.columnKeys.optionSelected] = true;
-                            item.selected.push(jQuery.extend({}, item.options[0].options[0]));
-                        }
-                        else {
-                            item.options[0][item.columnKeys.optionSelected] = true;
-                            item.selected.push(jQuery.extend({}, item.options[0]));
-                        }
-                    }
+                    /*
+                     if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
+                     if (item.options[0].optgroup) {
+                     item.options[0].options[0][item.columnKeys.optionSelected] = true;
+                     item.selected.push(jQuery.extend({}, item.options[0].options[0]));
+                     }
+                     else {
+                     item.options[0][item.columnKeys.optionSelected] = true;
+                     item.selected.push(jQuery.extend({}, item.options[0]));
+                     }
+                     }
+                     */
 
                     po = null;
                     elementOptions = null;
@@ -689,23 +705,44 @@
             })(),
             getQueIdx = function (boundID) {
                 if (!U.isString(boundID)) {
-                    boundID = jQuery(boundID).data("data-ax5select-id");
+                    boundID = jQuery(boundID).data("data-ax5combobox-id");
                 }
                 if (!U.isString(boundID)) {
-                    console.log(ax5.info.getError("ax5select", "402", "getQueIdx"));
+                    console.log(ax5.info.getError("ax5combobox", "402", "getQueIdx"));
                     return;
                 }
                 return U.search(this.queue, function () {
                     return this.id == boundID;
                 });
             };
+
+        var getSelected = function (_item, o, selected) {
+            if (typeof selected === "undefined") {
+                return (_item.multiple) ? !o : true;
+            } else {
+                return selected;
+            }
+        };
+        var clearSelected = function (queIdx) {
+            this.queue[queIdx].options.forEach(function (n) {
+                if (n.optgroup) {
+                    n.options.forEach(function (nn) {
+                        nn.selected = false;
+                    });
+                }
+                else {
+                    n.selected = false;
+                }
+            });
+        };
+
         /// private end
 
         /**
-         * Preferences of select UI
-         * @method ax5.ui.select.setConfig
+         * Preferences of combobox UI
+         * @method ax5.ui.combobox.setConfig
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.select}
+         * @returns {ax5.ui.combobox}
          * @example
          * ```
          * ```
@@ -713,41 +750,41 @@
         this.init = function () {
             this.onStateChanged = cfg.onStateChanged;
             this.onChange = cfg.onChange;
-            jQuery(window).bind("resize.ax5select-display-" + this.instanceId, (function () {
-                alignSelectDisplay.call(this);
+            jQuery(window).bind("resize.ax5combobox-display-" + this.instanceId, (function () {
+                alignComboboxDisplay.call(this);
             }).bind(this));
         };
 
         /**
-         * bind select
-         * @method ax5.ui.select.bind
+         * bind combobox
+         * @method ax5.ui.combobox.bind
          * @param {Object} item
          * @param {String} [item.id]
          * @param {String} [item.theme]
          * @param {Boolean} [item.multiple]
          * @param {Element} item.target
          * @param {Object[]} item.options
-         * @returns {ax5.ui.select}
+         * @returns {ax5.ui.combobox}
          */
         this.bind = function (item) {
             var
-                selectConfig = {},
+                comboboxConfig = {},
                 queIdx;
 
-            item = jQuery.extend(true, selectConfig, cfg, item);
+            item = jQuery.extend(true, comboboxConfig, cfg, item);
             if (!item.target) {
-                console.log(ax5.info.getError("ax5select", "401", "bind"));
+                console.log(ax5.info.getError("ax5combobox", "401", "bind"));
                 return this;
             }
 
             item.$target = jQuery(item.target);
 
-            if (!item.id) item.id = item.$target.data("data-ax5select-id");
+            if (!item.id) item.id = item.$target.data("data-ax5combobox-id");
             if (!item.id) {
-                item.id = 'ax5-select-' + ax5.getGuid();
-                item.$target.data("data-ax5select-id", item.id);
+                item.id = 'ax5combobox-' + ax5.getGuid();
+                item.$target.data("data-ax5combobox-id", item.id);
             }
-            item.name = item.$target.attr("data-ax5select");
+            item.name = item.$target.attr("data-ax5combobox");
             if (item.options) {
                 item.options = JSON.parse(JSON.stringify(item.options));
             }
@@ -757,7 +794,7 @@
                 if (U.isObject(data) && !data.error) {
                     item = jQuery.extend(true, item, data);
                 }
-            })(U.parseJson(item.$target.attr("data-ax5select-config"), true));
+            })(U.parseJson(item.$target.attr("data-ax5combobox-config"), true));
 
             queIdx = U.search(this.queue, function () {
                 return this.id == item.id;
@@ -765,24 +802,24 @@
 
             if (queIdx === -1) {
                 this.queue.push(item);
-                bindSelectTarget.call(this, this.queue.length - 1);
+                bindComboboxTarget.call(this, this.queue.length - 1);
             }
             else {
                 this.queue[queIdx] = jQuery.extend(true, {}, this.queue[queIdx], item);
-                bindSelectTarget.call(this, queIdx);
+                bindComboboxTarget.call(this, queIdx);
             }
 
-            selectConfig = null;
+            comboboxConfig = null;
             queIdx = null;
             return this;
         };
 
         /**
-         * open the optionBox of select
-         * @method ax5.ui.select.open
+         * open the optionBox of combobox
+         * @method ax5.ui.combobox.open
          * @param {(String|Number|Element)} boundID
          * @param {Number} [tryCount]
-         * @returns {ax5.ui.select}
+         * @returns {ax5.ui.combobox}
          */
         this.open = (function () {
 
@@ -793,7 +830,7 @@
                 }, (function (O) {
                     if (this.waitOptionsCallback) {
                         var data = {};
-                        var item = this.queue[this.activeSelectQueueIndex];
+                        var item = this.queue[this.activecomboboxQueueIndex];
 
                         /// 현재 selected 검증후 처리
                         (function (item, O) {
@@ -813,20 +850,20 @@
 
 
                         item.$display
-                            .find('[data-ax5-select-display="label"]')
-                            .html(getLabel.call(this, this.activeSelectQueueIndex));
-                        item.options = syncSelectOptions.call(this, this.activeSelectQueueIndex, O.options);
+                            .find('[data-ax5combobox-display="label"]')
+                            .html(getLabel.call(this, this.activecomboboxQueueIndex));
+                        item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
 
-                        alignSelectDisplay.call(this);
+                        alignComboboxDisplay.call(this);
 
                         /// 템플릿에 전달할 오브젝트 선언
                         data.id = item.id;
                         data.theme = item.theme;
-                        data.size = "ax5-ui-select-option-group-" + item.size;
+                        data.size = "ax5combobox-option-group-" + item.size;
                         data.multiple = item.multiple;
                         data.lang = item.lang;
                         data.options = item.options;
-                        this.activeSelectOptionGroup.find('[data-select-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                        this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
                     }
                 }).bind(this));
             };
@@ -835,7 +872,7 @@
                 this.waitOptionsCallback = null;
 
                 /**
-                 * open select from the outside
+                 * open combobox from the outside
                  */
                 var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                 var item = this.queue[queIdx];
@@ -844,8 +881,8 @@
                 if (item.$display.attr("disabled")) return this;
 
                 if (this.openTimer) clearTimeout(this.openTimer);
-                if (this.activeSelectOptionGroup) {
-                    if (this.activeSelectQueueIndex == queIdx) {
+                if (this.activecomboboxOptionGroup) {
+                    if (this.activecomboboxQueueIndex == queIdx) {
                         return this;
                     }
 
@@ -866,12 +903,11 @@
                 /// 템플릿에 전달할 오브젝트 선언
                 data.id = item.id;
                 data.theme = item.theme;
-                data.size = "ax5-ui-select-option-group-" + item.size;
+                data.size = "ax5combobox-option-group-" + item.size;
                 data.multiple = item.multiple;
 
                 data.lang = item.lang;
-                item.$display.attr("data-select-option-group-opened", "true");
-                //console.log(data.lang);
+                item.$display.attr("data-combobox-option-group-opened", "true");
 
                 if (item.onExpand) {
                     // onExpand 인 경우 UI 대기모드 추가
@@ -879,44 +915,40 @@
                 }
 
                 data.options = item.options;
-                this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
-                this.activeSelectOptionGroup.find('[data-select-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
-                this.activeSelectQueueIndex = queIdx;
 
-                alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append
-                jQuery(window).bind("resize.ax5select-" + this.instanceId, (function () {
-                    alignSelectOptionGroup.call(this);
+                this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
+                this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                this.activecomboboxQueueIndex = queIdx;
+
+                alignComboboxOptionGroup.call(this, "append"); // alignComboboxOptionGroup 에서 body append
+                jQuery(window).bind("resize.ax5combobox-" + this.instanceId, (function () {
+                    alignComboboxOptionGroup.call(this);
                 }).bind(this));
 
                 if (item.selected && item.selected.length > 0) {
-                    selectedOptionEl = this.activeSelectOptionGroup.find('[data-option-index="' + item.selected[0]["@index"] + '"]');
-
+                    selectedOptionEl = this.activecomboboxOptionGroup.find('[data-option-index="' + item.selected[0]["@index"] + '"]');
                     if (selectedOptionEl.get(0)) {
-                        focusTop = selectedOptionEl.position().top - this.activeSelectOptionGroup.height() / 3;
-                        this.activeSelectOptionGroup.find('[data-select-els="content"]')
+                        focusTop = selectedOptionEl.position().top - this.activecomboboxOptionGroup.height() / 3;
+                        this.activecomboboxOptionGroup.find('[data-els="content"]')
                             .stop().animate({scrollTop: focusTop}, item.animateTime, 'swing', function () {
                         });
                     }
                 }
 
-
-                /// 사용자 입력으로 옵션을 검색하기 위한 시나리오
-                // 옵션그룹이 활성화 되면 사용자 입력을 받기위한 input 값 초기화 및 포커스 다른 select가 닫히면서 display focus 이벤트와 충돌하는 문제가 있으므로
-                // 1밀리세컨 지연후 포커스 처리. input에 포커스가 되므로 input value로 options를 검색 할 수 있게 됩니다.
-                item.$displayInput.val('');
+                //item.$displayLabel.val('');
                 setTimeout(function () {
-                    item.$displayInput.trigger("focus");
+                    item.$displayLabel.trigger("focus");
+                    U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
                 }, 1);
 
-                //item.$display.find('[data-ax5-select-display="input"]')
 
-                jQuery(window).bind("keyup.ax5select-" + this.instanceId, (function (e) {
+                jQuery(window).bind("keyup.ax5combobox-" + this.instanceId, (function (e) {
                     e = e || window.event;
                     onBodyKeyup.call(this, e);
                     U.stopEvent(e);
                 }).bind(this));
 
-                jQuery(window).bind("click.ax5select-" + this.instanceId, (function (e) {
+                jQuery(window).bind("click.ax5combobox-" + this.instanceId, (function (e) {
                     e = e || window.event;
                     onBodyClick.call(this, e);
                     U.stopEvent(e);
@@ -942,9 +974,9 @@
         })();
 
         /**
-         * @method ax5.ui.select.update
+         * @method ax5.ui.combobox.update
          * @param {(Object|String)} item
-         * @returns {ax5.ui.select}
+         * @returns {ax5.ui.combobox}
          */
         this.update = function (_item) {
             this.bind(_item);
@@ -952,35 +984,13 @@
         };
 
         /**
-         * @method ax5.ui.select.val
+         * @method ax5.ui.combobox.val
          * @param {(String|Number|Element)} boundID
          * @param {(String|Object|Array)} [value]
-         * @param {Boolean} [selected]
-         * @returns {ax5.ui.select}
+         * @param {Boolean} [Selected]
+         * @returns {ax5.ui.combobox}
          */
         this.val = (function () {
-
-            // todo : val 함수 리팩토링 필요
-            var getSelected = function (_item, o, selected) {
-                if (typeof selected === "undefined") {
-                    return (_item.multiple) ? !o : true;
-                } else {
-                    return selected;
-                }
-            };
-            var clearSelected = function (queIdx) {
-                this.queue[queIdx].options.forEach(function (n) {
-                    if (n.optgroup) {
-                        n.options.forEach(function (nn) {
-                            nn.selected = false;
-                        });
-                    }
-                    else {
-                        n.selected = false;
-                    }
-                });
-            };
-
             var processor = {
                 'index': function (queIdx, value, selected) {
                     // 클래스 내부에서 호출된 형태, 그런 이유로 옵션그룹에 대한 상태를 변경 하고 있다.
@@ -990,9 +1000,9 @@
                      if (U.isArray(value.index)) {
                      value.index.forEach(function (n) {
                      item.options[n][item.columnKeys.optionSelected] = getSelected(item, item.options[n][item.columnKeys.optionSelected], selected);
-                     self.activeSelectOptionGroup
+                     self.activecomboboxOptionGroup
                      .find('[data-option-index="' + n + '"]')
-                     .attr("data-option-selected", item.options[n][item.columnKeys.optionSelected].toString());
+                     .attr("data-option-Selected", item.options[n][item.columnKeys.optionSelected].toString());
                      });
                      }
                      else {
@@ -1000,21 +1010,22 @@
                      */
                     if (U.isString(value.index.gindex)) {
                         item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected], selected);
-                        self.activeSelectOptionGroup
+                        self.activecomboboxOptionGroup
                             .find('[data-option-group-index="' + value.index.gindex + '"][data-option-index="' + value.index.index + '"]')
-                            .attr("data-option-selected", item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected].toString());
+                            .attr("data-option-Selected", item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected].toString());
                     }
                     else {
                         item.options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.index][item.columnKeys.optionSelected], selected);
-                        self.activeSelectOptionGroup
+                        self.activecomboboxOptionGroup
                             .find('[data-option-index="' + value.index.index + '"]')
-                            .attr("data-option-selected", item.options[value.index.index][item.columnKeys.optionSelected].toString());
+                            .attr("data-option-Selected", item.options[value.index.index][item.columnKeys.optionSelected].toString());
 
                     }
 
-                    syncSelectOptions.call(this, queIdx, item.options);
+                    syncComboboxOptions.call(this, queIdx, item.options);
                     syncLabel.call(this, queIdx);
-                    alignSelectOptionGroup.call(this);
+                    alignComboboxOptionGroup.call(this);
+                    U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
                 },
                 'arr': function (queIdx, values, selected) {
                     values.forEach(function (value) {
@@ -1040,11 +1051,11 @@
                         item.options[optionIndex][item.columnKeys.optionSelected] = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
                     }
                     else {
-                        console.log(ax5.info.getError("ax5select", "501", "val"));
+                        console.log(ax5.info.getError("ax5combobox", "501", "val"));
                         return;
                     }
 
-                    syncSelectOptions.call(this, queIdx, item.options);
+                    syncComboboxOptions.call(this, queIdx, item.options);
                     syncLabel.call(this, queIdx);
                 },
                 'text': function (queIdx, value, selected) {
@@ -1056,22 +1067,22 @@
                         item.options[optionIndex][item.columnKeys.optionSelected] = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
                     }
                     else {
-                        console.log(ax5.info.getError("ax5select", "501", "val"));
+                        console.log(ax5.info.getError("ax5combobox", "501", "val"));
                         return;
                     }
 
-                    syncSelectOptions.call(this, queIdx, item.options);
+                    syncComboboxOptions.call(this, queIdx, item.options);
                     syncLabel.call(this, queIdx);
                 },
                 'clear': function (queIdx) {
                     clearSelected.call(this, queIdx);
-                    syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
+                    syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
                     syncLabel.call(this, queIdx);
 
-                    if (this.activeSelectOptionGroup) {
-                        this.activeSelectOptionGroup
+                    if (this.activecomboboxOptionGroup) {
+                        this.activecomboboxOptionGroup
                             .find('[data-option-index]')
-                            .attr("data-option-selected", "false");
+                            .attr("data-option-Selected", "false");
                     }
                 }
             };
@@ -1079,7 +1090,7 @@
             return function (boundID, value, selected, internal) {
                 var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                 if (queIdx === -1) {
-                    console.log(ax5.info.getError("ax5select", "402", "val"));
+                    console.log(ax5.info.getError("ax5combobox", "402", "val"));
                     return;
                 }
 
@@ -1127,30 +1138,28 @@
         })();
 
         /**
-         * @method ax5.ui.select.close
-         * @returns {ax5.ui.select}
+         * @method ax5.ui.combobox.close
+         * @returns {ax5.ui.combobox}
          */
         this.close = function (item) {
             if (this.closeTimer) clearTimeout(this.closeTimer);
-            if (!this.activeSelectOptionGroup) return this;
+            if (!this.activecomboboxOptionGroup) return this;
 
-            item = this.queue[this.activeSelectQueueIndex];
+            item = this.queue[this.activecomboboxQueueIndex];
             item.optionFocusIndex = -1;
+            item.$display.removeAttr("data-combobox-option-group-opened").trigger("focus");
 
-            item.$displayInput.val('').trigger("blur");
-            item.$display.removeAttr("data-select-option-group-opened").trigger("focus");
-
-            this.activeSelectOptionGroup.addClass("destroy");
+            this.activecomboboxOptionGroup.addClass("destroy");
 
             jQuery(window)
-                .unbind("resize.ax5select-" + this.instanceId)
-                .unbind("click.ax5select-" + this.instanceId)
-                .unbind("keyup.ax5select-" + this.instanceId);
+                .unbind("resize.ax5combobox-" + this.instanceId)
+                .unbind("click.ax5combobox-" + this.instanceId)
+                .unbind("keyup.ax5combobox-" + this.instanceId);
 
             this.closeTimer = setTimeout((function () {
-                if (this.activeSelectOptionGroup) this.activeSelectOptionGroup.remove();
-                this.activeSelectOptionGroup = null;
-                this.activeSelectQueueIndex = -1;
+                if (this.activecomboboxOptionGroup) this.activecomboboxOptionGroup.remove();
+                this.activecomboboxOptionGroup = null;
+                this.activecomboboxQueueIndex = -1;
 
                 onStateChanged.call(this, item, {
                     self: this,
@@ -1165,7 +1174,7 @@
         this.enable = function (boundID) {
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.removeAttr("disabled");
-            this.queue[queIdx].$select.removeAttr("disabled");
+            this.queue[queIdx].$input.removeAttr("disabled");
 
             onStateChanged.call(this, this.queue[queIdx], {
                 self: this,
@@ -1178,7 +1187,7 @@
         this.disable = function (boundID) {
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.attr("disabled", "disabled");
-            this.queue[queIdx].$select.attr("disabled", "disabled");
+            this.queue[queIdx].$input.attr("disabled", "disabled");
 
             onStateChanged.call(this, this.queue[queIdx], {
                 self: this,
@@ -1200,37 +1209,37 @@
     };
     //== UI Class
 
-    root.select = (function () {
+    root.combobox = (function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
     })(); // ax5.ui에 연결
 
 })(ax5.ui, ax5.ui.root);
 
-ax5.ui.select_instance = new ax5.ui.select();
-jQuery.fn.ax5select = (function () {
+ax5.ui.combobox_instance = new ax5.ui.combobox();
+jQuery.fn.ax5combobox = (function () {
     return function (config) {
         if (ax5.util.isString(arguments[0])) {
             var methodName = arguments[0];
 
             switch (methodName) {
                 case "open":
-                    return ax5.ui.select_instance.open(this);
+                    return ax5.ui.combobox_instance.open(this);
                     break;
                 case "close":
-                    return ax5.ui.select_instance.close(this);
+                    return ax5.ui.combobox_instance.close(this);
                     break;
                 case "setValue":
-                    return ax5.ui.select_instance.val(this, arguments[1], arguments[2]);
+                    return ax5.ui.combobox_instance.val(this, arguments[1], arguments[2]);
                     break;
                 case "getValue":
-                    return ax5.ui.select_instance.val(this);
+                    return ax5.ui.combobox_instance.val(this);
                     break;
                 case "enable":
-                    return ax5.ui.select_instance.enable(this);
+                    return ax5.ui.combobox_instance.enable(this);
                     break;
                 case "disable":
-                    return ax5.ui.select_instance.disable(this);
+                    return ax5.ui.combobox_instance.disable(this);
                     break;
                 default:
                     return this;
@@ -1243,7 +1252,7 @@ jQuery.fn.ax5select = (function () {
                     target: this
                 };
                 config = jQuery.extend({}, config, defaultConfig);
-                ax5.ui.select_instance.bind(config);
+                ax5.ui.combobox_instance.bind(config);
             });
         }
         return this;

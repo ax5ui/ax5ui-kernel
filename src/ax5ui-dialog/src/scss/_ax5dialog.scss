@@ -13,14 +13,14 @@
 }
 
 @mixin ax-dialog-section() {
-	.ax-dialog-heading {
+	.ax-dialog-header {
 		//font-size: 1em;
 		font-weight: 600;
-		padding: $ax5dialog-heading-padding;
+		padding: $ax5dialog-header-padding;
 		border-bottom: 1px solid transparent;
 		.badge {
 			font-size: 0.8em;
-			color: $ax5dialog-default-heading-bg;
+			color: $ax5dialog-default-header-bg;
 			background-color: $ax5dialog-default-text;
 		}
 	}
@@ -46,15 +46,15 @@
 	}
 }
 
-@mixin dialog-variant($text-color, $border, $heading-bg-color) {
+@mixin dialog-variant($text-color, $border, $header-bg-color) {
 
 	border: $ax5dialog-inner-border;
 
-	.ax-dialog-heading {
+	.ax-dialog-header {
 		color: $text-color;
-		background: $heading-bg-color;
+		background: $header-bg-color;
 		.badge {
-			color: $heading-bg-color;
+			color: $header-bg-color;
 			background-color: $text-color;
 		}
 	}
@@ -99,22 +99,22 @@
 	@include ax-dialog();
 	@include ax-dialog-section();
 
-	@include dialog-variant($ax5dialog-default-text, $ax5dialog-default-border, $ax5dialog-default-heading-bg);
+	@include dialog-variant($ax5dialog-default-text, $ax5dialog-default-border, $ax5dialog-default-header-bg);
 
 	&.primary {
-		@include dialog-variant($ax5dialog-primary-text, $ax5dialog-primary-border, $ax5dialog-primary-heading-bg);
+		@include dialog-variant($ax5dialog-primary-text, $ax5dialog-primary-border, $ax5dialog-primary-header-bg);
 	}
 	&.success {
-		@include dialog-variant($ax5dialog-success-text, $ax5dialog-success-border, $ax5dialog-success-heading-bg);
+		@include dialog-variant($ax5dialog-success-text, $ax5dialog-success-border, $ax5dialog-success-header-bg);
 	}
 	&.info {
-		@include dialog-variant($ax5dialog-info-text, $ax5dialog-info-border, $ax5dialog-info-heading-bg);
+		@include dialog-variant($ax5dialog-info-text, $ax5dialog-info-border, $ax5dialog-info-header-bg);
 	}
 	&.warning {
-		@include dialog-variant($ax5dialog-warning-text, $ax5dialog-warning-border, $ax5dialog-warning-heading-bg);
+		@include dialog-variant($ax5dialog-warning-text, $ax5dialog-warning-border, $ax5dialog-warning-header-bg);
 	}
 	&.danger {
-		@include dialog-variant($ax5dialog-danger-text, $ax5dialog-danger-border, $ax5dialog-danger-heading-bg);
+		@include dialog-variant($ax5dialog-danger-text, $ax5dialog-danger-border, $ax5dialog-danger-header-bg);
 	}
 
 	&.destroy {
