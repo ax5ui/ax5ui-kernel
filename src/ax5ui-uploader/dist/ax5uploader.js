@@ -43,8 +43,6 @@
 
         this.init = function () {
 
-            console.log(cfg.target);
-
             this.target = $(cfg.target);
             this.target.html(this.__get_layout());
 
@@ -72,7 +70,6 @@
                     _this = this,
                     timer;
 
-                console.log(dragZone.get(0));
                 dragZone.get(0).addEventListener('dragover', function (e) {
                     e.stopPropagation();
                     e.preventDefault();
@@ -169,8 +166,6 @@
             var file,
                 target_id = this.target.id,
                 preview = this.els["preview-img"].get(0);
-
-            console.log(evt);
 
             if ('dataTransfer' in evt) {
                 file = evt.dataTransfer.files[0];
@@ -344,9 +339,9 @@
 
         this.set_preview_img = function (src) {
             if (src) {
-                this.els["preview-img"].attr({ "src": src });
+                this.els["preview-img"].attr({ "src": src }).show();
             } else {
-                this.els["preview-img"].attr({ "src": null });
+                this.els["preview-img"].attr({ "src": null }).hide();
             }
         };
 

@@ -25,6 +25,13 @@
                 }'></div>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div data-ax5combobox="combo2" data-ax5combobox-config='{
+                    size: ""
+                }'></div>
+                </div>
+            </div>
         </div>
 
         <!--div class="form-group">
@@ -94,6 +101,15 @@
         myCombo.bind({
             //theme: "primary",
             target: $('[data-ax5combobox="combo1"]'),
+            options: options,
+            onStateChanged: function () {
+                //console.log(this);
+            }
+        });
+
+        myCombo.bind({
+            //theme: "primary",
+            target: $('[data-ax5combobox="combo2"]'),
             options: options,
             onStateChanged: function () {
                 //console.log(this);
