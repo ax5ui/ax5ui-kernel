@@ -14,6 +14,8 @@
 
 
 <script>
+    /*
+    var templatel = "{{title}} spends {{calc}}";
 
     var view = {
         title: "Joe",
@@ -22,31 +24,49 @@
         }
     };
 
-    var output = ax5.mustache.render("{{title}} spends {{calc}}", view);
+    var output = ax5.mustache.render(template, view);
+    console.log(output);
+    */
+
+     var view = {
+     "beatles": [
+     { "firstName": "John", "lastName": "Lennon" },
+     { "firstName": "Paul", "lastName": "McCartney" },
+     { "firstName": "George", "lastName": "Harrison" },
+     { "firstName": "Ringo", "lastName": "Star" }
+     ]
+     };
+
+     var template =
+     "{{#beatles}} * {{firstName}} {{lastName}} ({{@i}}) ({{@first}}) {{/beatles}}";
+
+     var output = ax5.mustache.render(template, view);
+     console.log(output);
 
 
-    $(document.body).ready(function () {
-        ax5.util.selectRange($("#select-test-0"), "end");
-        ax5.util.selectRange($("#select-test-1").get(0), [1, 5]);
-        //ax5.util.selectRange($("#select-test-2"), "end");
-    });
+    /*
+     $(document.body).ready(function () {
+     ax5.util.selectRange($("#select-test-0"), "end");
+     ax5.util.selectRange($("#select-test-1").get(0), [1, 5]);
+     //ax5.util.selectRange($("#select-test-2"), "end");
+     });
 
-    var arr = [
-        {name: "122", value: 9},
-        {name: "122", value: 10},
-        {name: "222", value: 11}
-    ];
+     var arr = [
+     {name: "122", value: 9},
+     {name: "122", value: 10},
+     {name: "222", value: 11}
+     ];
 
-    var rs = ax5.util.avg(arr, function () {
-        return this.value;
-    });
+     var rs = ax5.util.avg(arr, function () {
+     return this.value;
+     });
 
-    console.log(rs);
+     console.log(rs);
 
-    console.log(ax5.util.sum(arr, 10, function () {
-        return this.value;
-    }));
-
+     console.log(ax5.util.sum(arr, 10, function () {
+     return this.value;
+     }));
+     */
 
 
 </script>
