@@ -61,9 +61,7 @@ var template =
 "
 ```
 > '#' annotation : loop start signal at Array type.
-
 >'/'  annotation : loop end signal at Array type.
-
 >'@' annotation : loop index signal.(It can be used like as '?' with 'first'(@first=?first))
 
 Instance02_ view:
@@ -110,7 +108,7 @@ var template=
 "
 ```
 > ':' annotation : match the key with value.
-'.' annotation : access to child variable.
+> '.' annotation : access to child variable.
 
 
 Instance02_ view
