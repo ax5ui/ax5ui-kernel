@@ -61,8 +61,8 @@ var template =
 "
 ```
 > '#' annotation : loop start signal at Array type.
-># '/'  annotation : loop end signal at Array type.
-># '@' annotation : loop index signal.(It can be used like as '?' with 'first'(@first=?first))
+>##### '/'  annotation : loop end signal at Array type.
+>##### '@' annotation : loop index signal.(It can be used like as '?' with 'first'(@first=?first))
 
 Instance02_ view:
 ```js
