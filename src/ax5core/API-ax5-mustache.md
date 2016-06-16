@@ -6,7 +6,8 @@ in the "https://github.com/janl/mustache.js", some of the syntax.
 
 ## ax5.mustache.render  
 `ax5.mustache.render(template, view)`
->Instance01_template, Instance02_view, Usage, Output 
+###### > *Instance01_template, Instance02_view, Usage, Output *
+
 
 Instance01_ template:
 ```js
@@ -44,7 +45,9 @@ I will introduce the features added in the `ax5.mustache` below.
 
 
 ## Array
-> Instance01_Template, Instance02_View, Usage, Output
+###### > *Instance01_template, Instance02_view, Usage, Output *
+
+
 
 Instnace02_ template:
 ```
@@ -87,7 +90,8 @@ Output:
 ```
 
 ## Object.@each
->Instance01_template, Instance02_view, Usage, Output
+###### > *Instance01_template, Instance02_view, Usage, Output *
+
 
 Instance01_ template:
 ```
