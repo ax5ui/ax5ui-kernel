@@ -14,7 +14,7 @@ Instance01_ template:
 ```js
 var tmpl = "{{title}} spends {{calc}}";
 ```
-> ###### It makes the format.
+>  It makes the format.
 
 Instance02_ view:
 ```js
@@ -25,13 +25,13 @@ var view = {
   }
 };
 ```
-> ###### It will be a data.
+>  It will be a data.
 
 Usage_ ax5.mustache.render(template, view):
 ```
 var output = ax5.mustache.render(template, view);
 ```
-> ######You can use 'view' instance as 'template' format, by "ax5.mustach.render" code
+> You can use 'view' instance as 'template' format, by "ax5.mustach.render" code
 
 Output_ console.log(output):
 ```js
