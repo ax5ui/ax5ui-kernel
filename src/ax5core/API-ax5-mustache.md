@@ -107,8 +107,8 @@ var template=
 {{/beatles}}
 "
 ```
-> ':' annotation : match the key with value.   
-'.' annotation : access to child variable.
+- ':' annotation : match the key with value.   
+- '.' annotation : access to child variable.
 
 
 Instance02_ view
