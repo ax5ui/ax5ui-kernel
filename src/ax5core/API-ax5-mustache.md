@@ -38,11 +38,11 @@ Output_ console.log(output):
 Joe spends 6
 ```
 
-This module is almost like as the basic usage of mustach.
-Please refer to the [Mustache API.](https://github.com/janl/mustache.js/blob/master/README.md)
+>This module is almost like as the basic usage of mustach.
+>Please refer to the [Mustache API.](https://github.com/janl/mustache.js/blob/master/README.md)
 
-You can use all API of `mustache` in the same way.
-I will introduce the features added in the `ax5.mustache` below.
+>You can use all API of `mustache` in the same way.
+>I will introduce the features added in the `ax5.mustache` below.
 
 
 ## Array
