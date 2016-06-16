@@ -6,7 +6,7 @@ in the "https://github.com/janl/mustache.js", some of the syntax.
 
 ## ax5.mustache.render  
 `ax5.mustache.render(template, view)`
-_Instance01_template, Instance02_view, Usage, Output_
+Instance01_template, Instance02_view, Usage, Output
 
 
 Instance01_ template:
