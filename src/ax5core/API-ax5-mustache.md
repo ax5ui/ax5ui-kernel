@@ -14,7 +14,7 @@ Instance01_ template:
 ```js
 var tmpl = "{{title}} spends {{calc}}";
 ```
--  It makes the format.
+> -  It makes the format.
 
 Instance02_ view:
 ```js
@@ -51,7 +51,7 @@ Joe spends 6
 
 
 
-Instnace02_ template:
+Instnace01_ template:
 ```
 var template =
 "
