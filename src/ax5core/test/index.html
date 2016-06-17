@@ -14,7 +14,7 @@
 
 
 <script>
-    console.log(ax5.info.eventKeys);
+    //console.log(ax5.info.eventKeys);
 
     $(document.body).ready(function () {
         ax5.util.selectRange($("#select-test-0"), "end");
@@ -32,13 +32,18 @@
         return this.value;
     });
 
-    console.log(rs);
-    
+    //console.log(rs);
+    /*
     console.log(ax5.util.sum(arr, 10, function () {
         return this.value;
     }));
+    */
 
+    var chk_fn = ax5.util.debounce(function( val ) { console.log(val); }, 300);
 
+    $(document.body).click(function(){
+        chk_fn(new Date());
+    });
 
 </script>
 
