@@ -166,6 +166,7 @@
                                     </span>
                                 </div>
                                 {{#options}}
+                                {{^hide}}
                                 <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" 
                                 data-option-value="{{${columnKeys.optionValue}}}" 
                                 {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
@@ -178,10 +179,12 @@
                                         <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
                                     </div>
                                 </div>
+                                {{/hide}}
                                 {{/options}}
                             </div>                            
                         {{/optgroup}}
                         {{^optgroup}}
+                        {{^hide}}
                         <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
                             <div class="ax-combobox-option-item-holder">
                                 {{#multiple}}
@@ -192,6 +195,7 @@
                                 <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
                             </div>
                         </div>
+                        {{/hide}}
                         {{/optgroup}}
                     {{/options}}
                     {{^options}}
@@ -318,20 +322,22 @@
                     var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
                     if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
                         var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[this.activecomboboxQueueIndex].optionFocusIndex + '"]');
-                        if($option.attr("data-option-value") == inputValue) {
+                        if ($option.attr("data-option-value") == inputValue) {
                             this.val(this.queue[this.activecomboboxQueueIndex].id, {
                                 index: {
                                     gindex: $option.attr("data-option-group-index"),
                                     index: $option.attr("data-option-index")
                                 }
                             }, undefined, "internal");
-                        }else{
-                            console.log("new string ~", inputValue);
+                        } else {
+                            // 이걸 넘겨서 처리 하면 될거야
+                            this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
                         }
                         if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
                     }
                     else {
-                        console.log("new string ~~", inputValue);
+                        this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
+                        if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
                     }
                 }
             },
@@ -420,50 +426,43 @@
                     }
 
                     this.queue[queIdx].optionFocusIndex = _focusIndex;
+                    if(!this.queue[queIdx].options[_focusIndex].hide){ // 옵션이 없는 값이 선택된 경우.
 
-                    this.activecomboboxOptionGroup
-                        .find('[data-option-focus-index]')
-                        .removeClass("hover");
+                        this.activecomboboxOptionGroup
+                            .find('[data-option-focus-index]')
+                            .removeClass("hover");
 
-                    focusOptionEl = this.activecomboboxOptionGroup
-                        .find('[data-option-focus-index="' + _focusIndex + '"]')
-                        .addClass("hover");
+                        focusOptionEl = this.activecomboboxOptionGroup
+                            .find('[data-option-focus-index="' + _focusIndex + '"]')
+                            .addClass("hover");
 
-                    optionGroupScrollContainer = this.activecomboboxOptionGroup.find('[data-els="content"]');
+                        optionGroupScrollContainer = this.activecomboboxOptionGroup.find('[data-els="content"]');
 
-                    let focusOptionElHeight = focusOptionEl.outerHeight(),
-                        optionGroupScrollContainerHeight = optionGroupScrollContainer.innerHeight(),
-                        optionGroupScrollContainerScrollTop = optionGroupScrollContainer.scrollTop(),
-                        focusOptionElTop = focusOptionEl.position().top + optionGroupScrollContainer.scrollTop();
+                        let focusOptionElHeight = focusOptionEl.outerHeight(),
+                            optionGroupScrollContainerHeight = optionGroupScrollContainer.innerHeight(),
+                            optionGroupScrollContainerScrollTop = optionGroupScrollContainer.scrollTop(),
+                            focusOptionElTop = focusOptionEl.position().top + optionGroupScrollContainer.scrollTop();
 
-                    if (optionGroupScrollContainerHeight + optionGroupScrollContainerScrollTop < focusOptionElTop + focusOptionElHeight) {
-                        optionGroupScrollContainer.scrollTop(focusOptionElTop + focusOptionElHeight - optionGroupScrollContainerHeight);
+                        if (optionGroupScrollContainerHeight + optionGroupScrollContainerScrollTop < focusOptionElTop + focusOptionElHeight) {
+                            optionGroupScrollContainer.scrollTop(focusOptionElTop + focusOptionElHeight - optionGroupScrollContainerHeight);
+                        }
+                        else if (optionGroupScrollContainerScrollTop > focusOptionElTop) {
+                            optionGroupScrollContainer.scrollTop(focusOptionElTop);
+                        }
+                        // optionGroup scroll check
                     }
-                    else if (optionGroupScrollContainerScrollTop > focusOptionElTop) {
-                        optionGroupScrollContainer.scrollTop(focusOptionElTop);
-                    }
-                    // optionGroup scroll check
 
                     if (typeof direction !== "undefined") {
                         // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
                         // 방향이 있으면 라벨 값을 수정
-                        this.queue[queIdx].$displayLabel.html(this.queue[queIdx].indexedOptions[_focusIndex].value);
+                        this.queue[queIdx].$displayLabel.html(this.queue[queIdx].indexedOptions[_focusIndex].text);
                         U.selectRange(this.queue[queIdx].$displayLabel, "end");
                     }
                 }
             },
-            addSelected = function (queIdx, value) {
-                if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) {// 포커스된 옵션이 있는 경우
-
-                }
-                else {
-                    // 포커스된 옵션이 없는경우,  사용자 입력값으로 새옵션을 만들고 종료
-                    if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
-                }
-            },
             bindComboboxTarget = (function () {
-                var focusWordCall = U.debounce(function(searchWord, queIdx) {
-                    console.log(searchWord);
+
+                var debouncedFocusWord = U.debounce(function (searchWord, queIdx) {
                     focusWord.call(self, queIdx, searchWord);
                 }, 300);
 
@@ -500,13 +499,7 @@
                             self.open(queIdx);
                         }
 
-                        focusWordCall(this.queue[queIdx].$displayLabel.text(), queIdx);
-                        /*
-                        if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
-                        this.keyUpTimer = setTimeout((function () {
-
-                        }).bind(this), 500);
-                        */
+                        debouncedFocusWord(this.queue[queIdx].$displayLabel.text(), queIdx);
                     },
                     'keyDown': function (queIdx, e) {
                         if (e.which == ax5.info.eventKeys.ESC) {
@@ -535,7 +528,7 @@
                 return function (queIdx) {
                     var item = this.queue[queIdx];
                     var data = {};
-                    // 선택/추가된 값 저장 변수
+                    // 현재 선택된 값을 담아두는 저장소, syncComboboxOptions를 통해 options와 selected값을 동기화 처리 한다.
                     item.selected = [];
 
                     if (!item.$display) {
@@ -691,19 +684,6 @@
                         item.indexedOptions = newOptions;
                     }
 
-                    /*
-                     if (!item.multiple && item.selected.length == 0 && item.options && item.options[0]) {
-                     if (item.options[0].optgroup) {
-                     item.options[0].options[0][item.columnKeys.optionSelected] = true;
-                     item.selected.push(jQuery.extend({}, item.options[0].options[0]));
-                     }
-                     else {
-                     item.options[0][item.columnKeys.optionSelected] = true;
-                     item.selected.push(jQuery.extend({}, item.options[0]));
-                     }
-                     }
-                     */
-
                     po = null;
                     elementOptions = null;
                     newOptions = null;
@@ -730,6 +710,7 @@
                 return selected;
             }
         };
+
         var clearSelected = function (queIdx) {
             this.queue[queIdx].options.forEach(function (n) {
                 if (n.optgroup) {
@@ -1003,18 +984,6 @@
                     // 클래스 내부에서 호출된 형태, 그런 이유로 옵션그룹에 대한 상태를 변경 하고 있다.
                     var item = this.queue[queIdx];
 
-                    /*
-                     if (U.isArray(value.index)) {
-                     value.index.forEach(function (n) {
-                     item.options[n][item.columnKeys.optionSelected] = getSelected(item, item.options[n][item.columnKeys.optionSelected], selected);
-                     self.activecomboboxOptionGroup
-                     .find('[data-option-index="' + n + '"]')
-                     .attr("data-option-Selected", item.options[n][item.columnKeys.optionSelected].toString());
-                     });
-                     }
-                     else {
-                     }
-                     */
                     if (U.isString(value.index.gindex)) {
                         item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected], selected);
                         self.activecomboboxOptionGroup
@@ -1051,18 +1020,33 @@
                 },
                 'value': function (queIdx, value, selected) {
                     var item = this.queue[queIdx];
+                    var addOptions;
                     var optionIndex = U.search(item.options, function () {
                         return this[item.columnKeys.optionValue] == value;
                     });
                     if (optionIndex > -1) {
-                        item.options[optionIndex][item.columnKeys.optionSelected] = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
+                        item.options[optionIndex][item.columnKeys.optionSelected]
+                            = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
                     }
                     else {
-                        console.log(ax5.info.getError("ax5combobox", "501", "val"));
-                        return;
+                        // 새로운 값 추가
+                        optionIndex = item.options.length;
+                        addOptions = {
+                            "@index": optionIndex,
+                            hide: true,
+                            addedOption: true
+                        };
+                        addOptions[item.columnKeys.optionValue] = value;
+                        addOptions[item.columnKeys.optionText] = value;
+                        item.options.push(addOptions);
+                        item.options[optionIndex][item.columnKeys.optionSelected]
+                            = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
                     }
 
                     syncComboboxOptions.call(this, queIdx, item.options);
+                    
+                    console.log(item.selected);
+                    
                     syncLabel.call(this, queIdx);
                 },
                 'text': function (queIdx, value, selected) {
