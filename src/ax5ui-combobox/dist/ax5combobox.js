@@ -341,7 +341,7 @@
                 }
             }
         },
-            setComboValue = function setComboValue(queIdx, value) {
+            addSelected = function addSelected(queIdx, value) {
             if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) {// 포커스된 옵션이 있는 경우
 
             } else {
@@ -350,6 +350,11 @@
                 }
         },
             bindComboboxTarget = function () {
+            var focusWordCall = U.debounce(function (searchWord, queIdx) {
+                console.log(searchWord);
+                focusWord.call(self, queIdx, searchWord);
+            }, 300);
+
             var comboboxEvent = {
                 'click': function click(queIdx, e) {
                     var target = U.findParentNode(e.target, function (target) {
@@ -383,11 +388,12 @@
                         self.open(queIdx);
                     }
 
+                    focusWordCall(this.queue[queIdx].$displayLabel.text(), queIdx);
+                    /*
                     if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
-                    this.keyUpTimer = setTimeout(function () {
-                        var searchWord = this.queue[queIdx].$displayLabel.text();
-                        focusWord.call(this, queIdx, searchWord);
-                    }.bind(this), 500);
+                    this.keyUpTimer = setTimeout((function () {
+                     }).bind(this), 500);
+                    */
                 },
                 'keyDown': function keyDown(queIdx, e) {
                     if (e.which == ax5.info.eventKeys.ESC) {
@@ -415,6 +421,7 @@
             return function (queIdx) {
                 var item = this.queue[queIdx];
                 var data = {};
+                // 선택/추가된 값 저장 변수
                 item.selected = [];
 
                 if (!item.$display) {

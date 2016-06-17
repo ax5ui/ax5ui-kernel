@@ -1757,7 +1757,7 @@
          * ax5.util.stopEvent(e);
          * ```
          */
-        function stopEvent(e) {
+        function stopEvent(e) { 
             // 이벤트 중지 구문
             if (!e) var e = window.event;
 
