@@ -210,6 +210,11 @@
                 {{/waitOptions}}
                 `;
             },
+            getLabelTmpl = function(columnKeys){
+                return `
+                
+                `;
+            },
             alignComboboxDisplay = function () {
                 var i = this.queue.length, w;
                 while (i--) {
@@ -350,7 +355,9 @@
                         if (n.selected) labels.push(n[item.columnKeys.optionText]);
                     });
                 }
-
+                
+                console.log(labels);
+                
                 return labels.join(',');
             },
             syncLabel = function (queIdx) {
@@ -1044,9 +1051,6 @@
                     }
 
                     syncComboboxOptions.call(this, queIdx, item.options);
-                    
-                    console.log(item.selected);
-                    
                     syncLabel.call(this, queIdx);
                 },
                 'text': function (queIdx, value, selected) {
