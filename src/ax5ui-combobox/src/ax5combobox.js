@@ -121,8 +121,10 @@
                 <div class="form-control {{formSize}} ax5combobox-display {{theme}}" 
                 data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
                     <div class="ax5combobox-display-table" data-els="display-table">
-                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}} data-ax5combobox-display="label" 
-                        contenteditable="true" spellcheck="false">{{label}}</a>
+                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
+                        data-ax5combobox-display="label"
+                        contenteditable="true"
+                        spellcheck="false">{{{label}}}</a>
                         <div data-ax5combobox-display="addon"> 
                             {{#multiple}}{{#reset}}
                             <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
@@ -210,9 +212,11 @@
                 {{/waitOptions}}
                 `;
             },
-            getLabelTmpl = function(columnKeys){
+            getLabelTmpl = function (columnKeys) {
                 return `
-                
+                {{#selected}}
+                <span tabindex="-1" data-ax5combobox-selected-label="{{@findex}}" data-ax5combobox-selected-text="{{text}}">{{text}}</span>&nbsp; 
+                {{/selected}}
                 `;
             },
             alignComboboxDisplay = function () {
@@ -324,7 +328,36 @@
                     this.close();
                 }
                 else if (e.which == ax5.info.eventKeys.RETURN) {
+
+
+                    // todo : 패킹된 아이템이 아님 편징중인 텍스트를 구분 지어 가져오기/ 다중 값일 수 있겠다.
+                    var values = [];
+                    var nodeTypeProcessor = {
+                        '1': function(){
+
+                        },
+                        '3': function(){
+
+                        }
+                    };
+
+                    this.queue[this.activecomboboxQueueIndex].$displayLabel.get(0).childNodes.forEach(function(node){
+                        var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
+                        if(text != "") {
+                            //console.log(text, node.nodeType);
+                            // nodeType:1 - span
+                            // nodeType:3 - text
+                        }
+                    });
+
+
+                    return;
                     var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
+
+
+
+
+
                     if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
                         var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[this.activecomboboxQueueIndex].optionFocusIndex + '"]');
                         if ($option.attr("data-option-value") == inputValue) {
@@ -348,19 +381,26 @@
             },
             getLabel = function (queIdx) {
                 var item = this.queue[queIdx];
-                var labels = [];
 
-                if (U.isArray(item.selected) && item.selected.length > 0) {
-                    item.selected.forEach(function (n) {
-                        if (n.selected) labels.push(n[item.columnKeys.optionText]);
-                    });
-                }
-                
-                console.log(labels);
-                
-                return labels.join(',');
+
+                // 템플릿에 전달 해야할 데이터 선언
+                var data = {};
+                data.id = item.id;
+                data.theme = item.theme;
+                data.size = "ax5combobox-option-group-" + item.size;
+                data.multiple = item.multiple;
+                data.lang = item.lang;
+                data.options = item.options;
+                data.selected = item.selected;
+
+                //console.log(data.options);
+                //console.log(data.selected);
+
+                return ax5.mustache.render(getLabelTmpl.call(this, item.columnKeys), data);
             },
             syncLabel = function (queIdx) {
+                //console.log(this.queue[queIdx].$displayLabel.html());
+                
                 this.queue[queIdx].$displayLabel
                     .html(getLabel.call(this, queIdx));
             },
@@ -433,7 +473,7 @@
                     }
 
                     this.queue[queIdx].optionFocusIndex = _focusIndex;
-                    if(!this.queue[queIdx].options[_focusIndex].hide){ // 옵션이 없는 값이 선택된 경우.
+                    if (!this.queue[queIdx].options[_focusIndex].hide) { // 옵션이 없는 값이 선택된 경우.
 
                         this.activecomboboxOptionGroup
                             .find('[data-option-focus-index]')
@@ -498,25 +538,25 @@
                         }
                     },
                     'keyUp': function (queIdx, e) {
+                        /// 약속된 키 이벤트가 발생하면 stopEvent를 통해 keyUp 이벤트가 발생되지 않도록 막아주는 센스
                         if (e.which == ax5.info.eventKeys.ESC && self.activecomboboxQueueIndex === -1) { // ESC키를 누르고 옵션그룹이 열려있지 않은 경우
                             U.stopEvent(e);
                             return this;
                         }
-                        if (self.activecomboboxQueueIndex != queIdx) {
+                        if (self.activecomboboxQueueIndex != queIdx) { // 닫힌 상태 인경우
                             self.open(queIdx);
                         }
-
                         debouncedFocusWord(this.queue[queIdx].$displayLabel.text(), queIdx);
                     },
                     'keyDown': function (queIdx, e) {
                         if (e.which == ax5.info.eventKeys.ESC) {
                             U.stopEvent(e);
                         }
-                        if (e.which == ax5.info.eventKeys.RETURN) {
+                        else if (e.which == ax5.info.eventKeys.RETURN) {
                             // display label에서 줄넘김막기위한 구문
                             U.stopEvent(e);
                         }
-                        if (e.which == ax5.info.eventKeys.DOWN) {
+                        else if (e.which == ax5.info.eventKeys.DOWN) {
                             focusMove.call(this, queIdx, 1);
                             U.stopEvent(e);
                         }
@@ -633,6 +673,10 @@
                         // combobox options 태그 생성
                         po = [];
                         item.options.forEach(function (O, OIndex) {
+
+                            /// @gindex : index of optionGroup
+                            /// @index : index of options (if you use optionGroup then the index is not unique)
+
                             if (O.optgroup) {
                                 // todo
                                 O['@gindex'] = OIndex;

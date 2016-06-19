@@ -361,6 +361,15 @@ $hover-types: (
             &:hover{
                 text-decoration: none;
             }
+
+            [data-ax5combobox-selected-label]{
+                display: inline-block;
+                background: #eee;
+
+                padding: 0px 3px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+            }
         }
         [data-ax5combobox-display="addon"] {
             display: table-cell;
