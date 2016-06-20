@@ -329,59 +329,71 @@
                 }
                 else if (e.which == ax5.info.eventKeys.RETURN) {
 
-
                     // todo : 패킹된 아이템이 아님 편징중인 텍스트를 구분 지어 가져오기/ 다중 값일 수 있겠다.
                     var values = [];
                     var nodeTypeProcessor = {
-                        '1': function(){
-
+                        '1': function (queIdx, inputValue) {
+                            var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[queIdx].optionFocusIndex + '"]');
+                            if ($option.get(0) && $option.attr("data-option-value") == inputValue) {
+                                return {
+                                    index: {
+                                        gindex: $option.attr("data-option-group-index"),
+                                        index: $option.attr("data-option-index")
+                                    }
+                                }
+                            } else {
+                                return inputValue;
+                            }
                         },
-                        '3': function(){
-
+                        '3': function (queIdx, inputValue) {
+                            return inputValue;
                         }
                     };
 
-                    this.queue[this.activecomboboxQueueIndex].$displayLabel.get(0).childNodes.forEach(function(node){
+
+                    var childNodes = this.queue[this.activecomboboxQueueIndex].$displayLabel.get(0).childNodes;
+                    for (var i = 0, l = childNodes.length; i < l; i++) {
+                        var node = childNodes[i];
                         var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
-                        if(text != "") {
+                        if (text != "") {
                             //console.log(text, node.nodeType);
                             // nodeType:1 - span
                             // nodeType:3 - text
+                            if (node.nodeType in nodeTypeProcessor) {
+                                values.push(nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, text));
+                            }
                         }
-                    });
-
-
-                    return;
-                    var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
-
-
-
-
-
-                    if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
-                        var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[this.activecomboboxQueueIndex].optionFocusIndex + '"]');
-                        if ($option.attr("data-option-value") == inputValue) {
-                            this.val(this.queue[this.activecomboboxQueueIndex].id, {
-                                index: {
-                                    gindex: $option.attr("data-option-group-index"),
-                                    index: $option.attr("data-option-index")
-                                }
-                            }, undefined, "internal");
-                        } else {
-                            // 이걸 넘겨서 처리 하면 될거야
-                            this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
-                        }
-                        if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
                     }
-                    else {
+
+                    this.val(this.queue[this.activecomboboxQueueIndex].id, values, undefined, "internal");
+                    if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
+
+                    /*
+                     var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
+                     if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
+                        var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[this.activecomboboxQueueIndex].optionFocusIndex + '"]');
+                     if ($option.attr("data-option-value") == inputValue) {
+                         this.val(this.queue[this.activecomboboxQueueIndex].id, {
+                         index: {
+                         gindex: $option.attr("data-option-group-index"),
+                         index: $option.attr("data-option-index")
+                         }
+                         }, undefined, "internal");
+                     } else {
+                     // 이걸 넘겨서 처리 하면 될거야
+                        this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
+                     }
+                    if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
+                     }
+                     else {
                         this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
                         if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
-                    }
+                     }
+                     */
                 }
             },
             getLabel = function (queIdx) {
                 var item = this.queue[queIdx];
-
 
                 // 템플릿에 전달 해야할 데이터 선언
                 var data = {};
@@ -393,14 +405,9 @@
                 data.options = item.options;
                 data.selected = item.selected;
 
-                //console.log(data.options);
-                //console.log(data.selected);
-
                 return ax5.mustache.render(getLabelTmpl.call(this, item.columnKeys), data);
             },
             syncLabel = function (queIdx) {
-                //console.log(this.queue[queIdx].$displayLabel.html());
-                
                 this.queue[queIdx].$displayLabel
                     .html(getLabel.call(this, queIdx));
             },
@@ -507,10 +514,31 @@
                     }
                 }
             },
-            bindComboboxTarget = (function () {
 
-                var debouncedFocusWord = U.debounce(function (searchWord, queIdx) {
-                    focusWord.call(self, queIdx, searchWord);
+            bindComboboxTarget = (function () {
+                var debouncedFocusWord = U.debounce(function (queIdx) {
+                    var childNodes = this.queue[queIdx].$displayLabel.get(0).childNodes;
+                    var searchWord = "";
+
+                    for (var i = 0, l = childNodes.length; i < l; i++) {
+                        var node = childNodes[i];
+                        var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
+                        if (text != "") {
+                            //console.log(text, node.nodeType);
+                            // nodeType:1 - span
+                            // nodeType:3 - text
+                            if (node.nodeType == "1") {
+                                // 저장된 값과 달라지면 풀어주기.
+                            }
+                            else if (node.nodeType == "3") {
+                                searchWord = text;
+                            }
+                        }
+                    }
+
+                    if (searchWord != "") {
+                        focusWord.call(self, queIdx, searchWord);
+                    }
                 }, 300);
 
                 var comboboxEvent = {
@@ -546,7 +574,7 @@
                         if (self.activecomboboxQueueIndex != queIdx) { // 닫힌 상태 인경우
                             self.open(queIdx);
                         }
-                        debouncedFocusWord(this.queue[queIdx].$displayLabel.text(), queIdx);
+                        debouncedFocusWord.call(this, queIdx);
                     },
                     'keyDown': function (queIdx, e) {
                         if (e.which == ax5.info.eventKeys.ESC) {
