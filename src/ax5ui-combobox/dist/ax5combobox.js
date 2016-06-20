@@ -219,8 +219,6 @@
             if (e.keyCode == ax5.info.eventKeys.ESC) {
                 this.close();
             } else if (e.which == ax5.info.eventKeys.RETURN) {
-
-                // todo : 패킹된 아이템이 아님 편징중인 텍스트를 구분 지어 가져오기/ 다중 값일 수 있겠다.
                 var values = [];
 
                 var item = this.queue[this.activecomboboxQueueIndex];
@@ -352,6 +350,9 @@
                     // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
                     // 방향이 있으면 라벨 값을 수정
                     this.queue[queIdx].$displayLabel.html(this.queue[queIdx].indexedOptions[_focusIndex].text);
+
+                    // todo : 포커스 이동하면 마지막 에디팅 중인 노드값만 교체.
+
                     U.selectRange(this.queue[queIdx].$displayLabel, "end");
                 }
             }
@@ -372,6 +373,7 @@
                             //
                         } else if (U.isString(value)) {
                                 searchWord = value;
+
                                 if (node.nodeType == '1' && node.getAttribute("data-ax5combobox-selected-text")) {
                                     // 노드 타입인데 문자열이 리턴 되었다면 선택을 취소해야함.
                                     searchWord = false; // 검색을 수행하지 않고 값을 변경하자.
@@ -542,7 +544,6 @@
                         /// @index : index of options (if you use optionGroup then the index is not unique)
 
                         if (O.optgroup) {
-                            // todo
                             O['@gindex'] = OIndex;
                             O.options.forEach(function (OO, OOIndex) {
                                 OO['@index'] = OOIndex;
@@ -634,7 +635,6 @@
 
         var nodeTypeProcessor = {
             '1': function _(queIdx, node, editable) {
-                // todo : 노드 비교 분석 하기.
                 var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
                 var item = this.queue[queIdx];
                 var selectedIndex, option;
@@ -664,6 +664,8 @@
                     } else {
                         return undefined;
                     }
+                } else {
+                    return text;
                 }
             },
             '3': function _(queIdx, node, editable) {
