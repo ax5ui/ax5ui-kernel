@@ -332,7 +332,9 @@
                     // todo : 패킹된 아이템이 아님 편징중인 텍스트를 구분 지어 가져오기/ 다중 값일 수 있겠다.
                     var values = [];
                     var nodeTypeProcessor = {
-                        '1': function (queIdx, inputValue) {
+                        '1': function (queIdx, node) {
+// todo : 노드 비교 분석 하기.
+                            /*
                             var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[queIdx].optionFocusIndex + '"]');
                             if ($option.get(0) && $option.attr("data-option-value") == inputValue) {
                                 return {
@@ -342,58 +344,71 @@
                                     }
                                 }
                             } else {
-                                return inputValue;
+                                return (this.queue[queIdx].editable) ? inputValue : undefined;
                             }
+                            */
                         },
-                        '3': function (queIdx, inputValue) {
-                            return inputValue;
+                        '3': function (queIdx, node) {
+                            var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
+                            if (text != "") {
+                                var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[queIdx].optionFocusIndex + '"]');
+                                if ($option.get(0) && $option.attr("data-option-value") == text) {
+                                    return {
+                                        index: {
+                                            gindex: $option.attr("data-option-group-index"),
+                                            index: $option.attr("data-option-index")
+                                        }
+                                    }
+                                } else {
+                                    return (this.queue[queIdx].editable) ? text : undefined;
+                                }
+                            } else {
+                                return undefined;
+                            }
                         }
                     };
 
-
-                    var childNodes = this.queue[this.activecomboboxQueueIndex].$displayLabel.get(0).childNodes;
+                    var item = this.queue[this.activecomboboxQueueIndex];
+                    var childNodes = item.$displayLabel.get(0).childNodes;
                     for (var i = 0, l = childNodes.length; i < l; i++) {
                         var node = childNodes[i];
-                        var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
-                        if (text != "") {
-                            //console.log(text, node.nodeType);
-                            // nodeType:1 - span
-                            // nodeType:3 - text
-                            if (node.nodeType in nodeTypeProcessor) {
-                                values.push(nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, text));
-                            }
+                        //console.log(text, node.nodeType);
+                        // nodeType:1 - span
+                        // nodeType:3 - text
+                        if (node.nodeType in nodeTypeProcessor) {
+                            var value = nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node);
+                            if (typeof value !== "undefined") values.push(value);
                         }
                     }
 
-                    this.val(this.queue[this.activecomboboxQueueIndex].id, null, undefined, "internal");
-                    this.val(this.queue[this.activecomboboxQueueIndex].id, values, undefined, "internal");
-                    U.selectRange(this.queue[this.activecomboboxQueueIndex].$displayLabel, "end");
-                    if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
+                    this.val(item.id, null, undefined, "internal");
+                    this.val(item.id, values, undefined, "internal");
+                    U.selectRange(item.$displayLabel, "end");
+                    if (!item.multiple) this.close();
 
                     //todo : keyup & down 이면
                     //todo : multiple 여부에 따라 다르게
-                    //todo : editable   
 
                     /*
                      var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
                      if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
-                        var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[this.activecomboboxQueueIndex].optionFocusIndex + '"]');
+                     var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[this.activecomboboxQueueIndex].optionFocusIndex + '"]');
                      if ($option.attr("data-option-value") == inputValue) {
-                         this.val(this.queue[this.activecomboboxQueueIndex].id, {
-                         index: {
-                         gindex: $option.attr("data-option-group-index"),
-                         index: $option.attr("data-option-index")
-                         }
-                         }, undefined, "internal");
+                     this.val(this.queue[this.activecomboboxQueueIndex].id, {
+                     index: {
+                     gindex: $option.attr("data-option-group-index"),
+                     index: $option.attr("data-option-index")
+                     }
+                     }, undefined, "internal");
                      } else {
                      // 이걸 넘겨서 처리 하면 될거야
-                        this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
+                     this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
                      }
-                    if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
+                     if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
                      }
                      else {
-                        this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
-                        if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
+                     this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
+                     if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
                      }
                      */
                 }
