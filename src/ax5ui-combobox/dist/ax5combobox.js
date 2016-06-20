@@ -255,8 +255,14 @@
                     }
                 }
 
+                this.val(this.queue[this.activecomboboxQueueIndex].id, null, undefined, "internal");
                 this.val(this.queue[this.activecomboboxQueueIndex].id, values, undefined, "internal");
+                U.selectRange(this.queue[this.activecomboboxQueueIndex].$displayLabel, "end");
                 if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
+
+                //todo : keyup & down 이면
+                //todo : multiple 여부에 따라 다르게
+                //todo : editable  
 
                 /*
                  var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
