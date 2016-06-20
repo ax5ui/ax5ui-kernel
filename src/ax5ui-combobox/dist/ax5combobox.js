@@ -117,7 +117,7 @@
             return '\n                {{#waitOptions}}\n                    <div class="ax-combobox-option-item">\n                            <div class="ax-combobox-option-item-holder">\n                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">\n                                    {{{lang.loading}}}\n                                </span>\n                            </div>\n                        </div>\n                {{/waitOptions}}\n                {{^waitOptions}}\n                    {{#options}}\n                        {{#optgroup}}\n                            <div class="ax-combobox-option-group">\n                                <div class="ax-combobox-option-item-holder">\n                                    <span class="ax-combobox-option-group-label">\n                                        {{{.}}}\n                                    </span>\n                                </div>\n                                {{#options}}\n                                {{^hide}}\n                                <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" \n                                data-option-value="{{' + columnKeys.optionValue + '}}" \n                                {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                    <div class="ax-combobox-option-item-holder">\n                                        {{#multiple}}\n                                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">\n                                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                        </span>\n                                        {{/multiple}}\n                                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                    </div>\n                                </div>\n                                {{/hide}}\n                                {{/options}}\n                            </div>                            \n                        {{/optgroup}}\n                        {{^optgroup}}\n                        {{^hide}}\n                        <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                            <div class="ax-combobox-option-item-holder">\n                                {{#multiple}}\n                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">\n                                    <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                </span>\n                                {{/multiple}}\n                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                            </div>\n                        </div>\n                        {{/hide}}\n                        {{/optgroup}}\n                    {{/options}}\n                    {{^options}}\n                        <div class="ax-combobox-option-item">\n                            <div class="ax-combobox-option-item-holder">\n                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">\n                                    {{{lang.noOptions}}}\n                                </span>\n                            </div>\n                        </div>\n                    {{/options}}\n                {{/waitOptions}}\n                ';
         },
             getLabelTmpl = function getLabelTmpl(columnKeys) {
-            return '\n                {{#selected}}\n                <span tabindex="-1" data-ax5combobox-selected-label="{{@findex}}" data-ax5combobox-selected-text="{{text}}">{{text}}</span>&nbsp; \n                {{/selected}}\n                ';
+            return '\n                {{#selected}}\n                <span tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">{{text}}</span> \n                {{/selected}}\n                <span></span>\n                ';
         },
             alignComboboxDisplay = function alignComboboxDisplay() {
             var i = this.queue.length,
@@ -222,42 +222,6 @@
 
                 // todo : 패킹된 아이템이 아님 편징중인 텍스트를 구분 지어 가져오기/ 다중 값일 수 있겠다.
                 var values = [];
-                var nodeTypeProcessor = {
-                    '1': function _(queIdx, node) {
-                        // todo : 노드 비교 분석 하기.
-                        /*
-                        var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[queIdx].optionFocusIndex + '"]');
-                        if ($option.get(0) && $option.attr("data-option-value") == inputValue) {
-                            return {
-                                index: {
-                                    gindex: $option.attr("data-option-group-index"),
-                                    index: $option.attr("data-option-index")
-                                }
-                            }
-                        } else {
-                            return (this.queue[queIdx].editable) ? inputValue : undefined;
-                        }
-                        */
-                    },
-                    '3': function _(queIdx, node) {
-                        var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
-                        if (text != "") {
-                            var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[queIdx].optionFocusIndex + '"]');
-                            if ($option.get(0) && $option.attr("data-option-value") == text) {
-                                return {
-                                    index: {
-                                        gindex: $option.attr("data-option-group-index"),
-                                        index: $option.attr("data-option-index")
-                                    }
-                                };
-                            } else {
-                                return this.queue[queIdx].editable ? text : undefined;
-                            }
-                        } else {
-                            return undefined;
-                        }
-                    }
-                };
 
                 var item = this.queue[this.activecomboboxQueueIndex];
                 var childNodes = item.$displayLabel.get(0).childNodes;
@@ -272,36 +236,13 @@
                     }
                 }
 
-                this.val(item.id, null, undefined, "internal");
-                this.val(item.id, values, undefined, "internal");
-                U.selectRange(item.$displayLabel, "end");
+                this.val(item.id, null, undefined, "internal"); // clear value
+                this.val(item.id, values, undefined, "internal"); // set Value
+                U.selectRange(item.$displayLabel, "end"); // label focus end
                 if (!item.multiple) this.close();
 
                 //todo : keyup & down 이면
                 //todo : multiple 여부에 따라 다르게
-
-                /*
-                 var inputValue = this.queue[this.activecomboboxQueueIndex].$displayLabel.text();
-                 if (this.queue[this.activecomboboxQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
-                 var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[this.activecomboboxQueueIndex].optionFocusIndex + '"]');
-                 if ($option.attr("data-option-value") == inputValue) {
-                 this.val(this.queue[this.activecomboboxQueueIndex].id, {
-                 index: {
-                 gindex: $option.attr("data-option-group-index"),
-                 index: $option.attr("data-option-index")
-                 }
-                 }, undefined, "internal");
-                 } else {
-                 // 이걸 넘겨서 처리 하면 될거야
-                 this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
-                 }
-                 if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
-                 }
-                 else {
-                 this.val(this.queue[this.activecomboboxQueueIndex].id, inputValue, undefined, "internal");
-                 if (!this.queue[this.activecomboboxQueueIndex].multiple) this.close();
-                 }
-                 */
             }
         },
             getLabel = function getLabel(queIdx) {
@@ -316,7 +257,7 @@
             data.lang = item.lang;
             data.options = item.options;
             data.selected = item.selected;
-
+            data.hasSelected = data.selected && data.selected.length > 0;
             return ax5.mustache.render(getLabelTmpl.call(this, item.columnKeys), data);
         },
             syncLabel = function syncLabel(queIdx) {
@@ -417,27 +358,39 @@
         },
             bindComboboxTarget = function () {
             var debouncedFocusWord = U.debounce(function (queIdx) {
-                var childNodes = this.queue[queIdx].$displayLabel.get(0).childNodes;
+
+                var values = [];
                 var searchWord = "";
+                var item = this.queue[queIdx];
+                var childNodes = item.$displayLabel.get(0).childNodes;
 
                 for (var i = 0, l = childNodes.length; i < l; i++) {
                     var node = childNodes[i];
-                    var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
-                    if (text != "") {
-                        //console.log(text, node.nodeType);
-                        // nodeType:1 - span
-                        // nodeType:3 - text
-                        if (node.nodeType == "1") {
-                            // 저장된 값과 달라지면 풀어주기.
-                        } else if (node.nodeType == "3") {
-                                searchWord = text;
+                    if (node.nodeType in nodeTypeProcessor) {
+                        var value = nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node, true);
+                        if (typeof value === "undefined") {
+                            //
+                        } else if (U.isString(value)) {
+                                searchWord = value;
+                                if (node.nodeType == '1' && node.getAttribute("data-ax5combobox-selected-text")) {
+                                    // 노드 타입인데 문자열이 리턴 되었다면 선택을 취소해야함.
+                                    searchWord = false; // 검색을 수행하지 않고 값을 변경하자.
+                                } else {
+                                        values.push(value);
+                                    }
+                            } else {
+                                values.push(value);
                             }
                     }
                 }
 
-                if (searchWord != "") {
-                    focusWord.call(self, queIdx, searchWord);
-                }
+                if (searchWord === false) {
+                    this.val(item.id, null, undefined, "internal"); // clear value
+                    this.val(item.id, values, undefined, "internal"); // set Value
+                    U.selectRange(item.$displayLabel, "end"); // label focus end
+                } else if (searchWord != "") {
+                        focusWord.call(self, queIdx, searchWord);
+                    }
             }, 300);
 
             var comboboxEvent = {
@@ -677,6 +630,60 @@
                     n.selected = false;
                 }
             });
+        };
+
+        var nodeTypeProcessor = {
+            '1': function _(queIdx, node, editable) {
+                // todo : 노드 비교 분석 하기.
+                var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
+                var item = this.queue[queIdx];
+                var selectedIndex, option;
+                if (node.getAttribute("data-ax5combobox-selected-text") == text) {
+                    selectedIndex = node.getAttribute("data-ax5combobox-selected-label");
+                    option = item.selected[selectedIndex];
+                    return {
+                        index: {
+                            gindex: option["@gindex"],
+                            index: option["@index"]
+                        }
+                    };
+                } else if (!node.getAttribute("data-ax5combobox-selected-text")) {
+
+                    if (text != "") {
+                        var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
+                        if ($option.get(0) && $option.attr("data-option-value") == text) {
+                            return {
+                                index: {
+                                    gindex: $option.attr("data-option-group-index"),
+                                    index: $option.attr("data-option-index")
+                                }
+                            };
+                        } else {
+                            return this.queue[queIdx].editable || editable ? text : undefined;
+                        }
+                    } else {
+                        return undefined;
+                    }
+                }
+            },
+            '3': function _(queIdx, node, editable) {
+                var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
+                if (text != "") {
+                    var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[queIdx].optionFocusIndex + '"]');
+                    if ($option.get(0) && $option.attr("data-option-value") == text) {
+                        return {
+                            index: {
+                                gindex: $option.attr("data-option-group-index"),
+                                index: $option.attr("data-option-index")
+                            }
+                        };
+                    } else {
+                        return this.queue[queIdx].editable || editable ? text : undefined;
+                    }
+                } else {
+                    return undefined;
+                }
+            }
         };
 
         /// private end
