@@ -330,7 +330,6 @@
                 }
                 else if (e.which == ax5.info.eventKeys.RETURN) {
                     var values = [];
-
                     var item = this.queue[this.activecomboboxQueueIndex];
                     var childNodes = item.$displayLabel.get(0).childNodes;
                     for (var i = 0, l = childNodes.length; i < l; i++) {
@@ -351,6 +350,9 @@
 
                     //todo : keyup & down 이면
                     //todo : multiple 여부에 따라 다르게
+                }
+                else if(e.which == ax5.info.eventKeys.DELETE || e.which == ax5.info.eventKeys.BACKSPACE){
+
                 }
             },
             getLabel = function (queIdx) {
@@ -422,26 +424,27 @@
                     _prevFocusIndex,
                     focusOptionEl,
                     optionGroupScrollContainer;
+                var item = this.queue[queIdx];
 
-                if (this.activecomboboxOptionGroup && this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
+                if (this.activecomboboxOptionGroup && item.options && item.options.length > 0) {
 
                     if (typeof findex !== "undefined") {
                         _focusIndex = findex
                     }
                     else {
-                        _prevFocusIndex = (this.queue[queIdx].optionFocusIndex == -1) ? this.queue[queIdx].optionSelectedIndex || -1 : this.queue[queIdx].optionFocusIndex;
+                        _prevFocusIndex = (item.optionFocusIndex == -1) ? item.optionSelectedIndex || -1 : item.optionFocusIndex;
                         if (_prevFocusIndex == -1) {
-                            _focusIndex = (direction > 0) ? 0 : this.queue[queIdx].optionItemLength - 1;
+                            _focusIndex = (direction > 0) ? 0 : item.optionItemLength - 1;
                         }
                         else {
                             _focusIndex = _prevFocusIndex + direction;
                             if (_focusIndex < 0) _focusIndex = 0;
-                            else if (_focusIndex > this.queue[queIdx].optionItemLength - 1) _focusIndex = this.queue[queIdx].optionItemLength - 1;
+                            else if (_focusIndex > item.optionItemLength - 1) _focusIndex = item.optionItemLength - 1;
                         }
                     }
 
-                    this.queue[queIdx].optionFocusIndex = _focusIndex;
-                    if (!this.queue[queIdx].options[_focusIndex].hide) { // 옵션이 없는 값이 선택된 경우.
+                    item.optionFocusIndex = _focusIndex;
+                    if (!item.options[_focusIndex].hide) { // 옵션이 없는 값이 선택된 경우.
 
                         this.activecomboboxOptionGroup
                             .find('[data-option-focus-index]')
@@ -470,11 +473,18 @@
                     if (typeof direction !== "undefined") {
                         // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
                         // 방향이 있으면 라벨 값을 수정
-                        this.queue[queIdx].$displayLabel.html(this.queue[queIdx].indexedOptions[_focusIndex].text);
+                        var childNodes = item.$displayLabel.get(0).childNodes;
+                        var lastNode = childNodes[childNodes.length - 1];
+                        if(lastNode.nodeType != '1'){
+                            lastNode = childNodes[childNodes.length - 2];
+                        }
+                        if(!lastNode) return this;
+                        if (lastNode.getAttribute("data-ax5combobox-selected-text")) {
 
-                        // todo : 포커스 이동하면 마지막 에디팅 중인 노드값만 교체.
-
-                        U.selectRange(this.queue[queIdx].$displayLabel, "end");
+                        }else{
+                            lastNode.innerHTML = item.indexedOptions[_focusIndex].text;
+                            U.selectRange(item.$displayLabel, "end");
+                        }
                     }
                 }
             },
@@ -486,7 +496,6 @@
                     var searchWord = "";
                     var item = this.queue[queIdx];
                     var childNodes = item.$displayLabel.get(0).childNodes;
-
                     for (var i = 0, l = childNodes.length; i < l; i++) {
                         var node = childNodes[i];
                         if (node.nodeType in nodeTypeProcessor) {
@@ -496,7 +505,6 @@
                             }
                             else if (U.isString(value)) {
                                 searchWord = value;
-
                                 if (node.nodeType == '1' && node.getAttribute("data-ax5combobox-selected-text")) {
                                     // 노드 타입인데 문자열이 리턴 되었다면 선택을 취소해야함.
                                     searchWord = false; // 검색을 수행하지 않고 값을 변경하자.
@@ -511,12 +519,16 @@
                         }
                     }
 
-                    if (searchWord === false) {
+                    if(childNodes.length == 0){
+                        this.val(item.id, null, undefined, "internal"); // clear value
+                    }
+                    else if (searchWord === false) {
                         this.val(item.id, null, undefined, "internal"); // clear value
                         this.val(item.id, values, undefined, "internal"); // set Value
                         U.selectRange(item.$displayLabel, "end"); // label focus end
                     }
                     else if (searchWord != "") {
+                        //console.log(searchWord, values);
                         focusWord.call(self, queIdx, searchWord);
                     }
 
@@ -798,7 +810,7 @@
                         }
                     }
                 }
-                else if(!node.getAttribute("data-ax5combobox-selected-text")){
+                else if (!node.getAttribute("data-ax5combobox-selected-text")) {
 
                     if (text != "") {
                         var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
@@ -816,7 +828,7 @@
                         return undefined;
                     }
                 }
-                else{
+                else {
                     return text;
                 }
             },
