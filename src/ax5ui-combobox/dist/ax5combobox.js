@@ -237,10 +237,7 @@
                 this.val(item.id, values, undefined, "internal"); // set Value
                 U.selectRange(item.$displayLabel, "end"); // label focus end
                 if (!item.multiple) this.close();
-
-                //todo : keyup & down 이면
-                //todo : multiple 여부에 따라 다르게
-            } else if (e.which == ax5.info.eventKeys.DELETE || e.which == ax5.info.eventKeys.BACKSPACE) {}
+            }
         },
             getLabel = function getLabel(queIdx) {
             var item = this.queue[queIdx];
@@ -349,12 +346,14 @@
                 if (typeof direction !== "undefined") {
                     // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
                     // 방향이 있으면 라벨 값을 수정
+
                     var childNodes = item.$displayLabel.get(0).childNodes;
                     var lastNode = childNodes[childNodes.length - 1];
                     if (lastNode.nodeType != '1') {
                         lastNode = childNodes[childNodes.length - 2];
                     }
                     if (!lastNode) return this;
+
                     if (lastNode.getAttribute("data-ax5combobox-selected-text")) {} else {
                         lastNode.innerHTML = item.indexedOptions[_focusIndex].text;
                         U.selectRange(item.$displayLabel, "end");
@@ -890,8 +889,14 @@
 
                 //item.$displayLabel.val('');
                 setTimeout(function () {
-                    item.$displayLabel.trigger("focus");
-                    U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
+                    if (item.$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
+
+                        item.$displayLabel.html('<span>&nbsp;</span>').trigger("focus");
+                        U.selectRange(item.$displayLabel, [0, 0]); // 포커스 end || selectAll
+                    } else {
+                            item.$displayLabel.trigger("focus");
+                            U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
+                        }
                 }, 1);
 
                 jQuery(window).bind("keyup.ax5combobox-" + this.instanceId, function (e) {
