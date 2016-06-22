@@ -232,8 +232,7 @@
                         if (typeof value !== "undefined") values.push(value);
                     }
                 }
-
-                this.val(item.id, null, undefined, "internal"); // clear value
+                //this.val(item.id, null, undefined, "internal"); // clear value
                 this.val(item.id, values, undefined, "internal"); // set Value
                 U.selectRange(item.$displayLabel, "end"); // label focus end
                 if (!item.multiple) this.close();
@@ -256,6 +255,15 @@
         },
             syncLabel = function syncLabel(queIdx) {
             this.queue[queIdx].$displayLabel.html(getLabel.call(this, queIdx));
+        },
+            focusLabel = function focusLabel(queIdx) {
+            if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
+                this.queue[queIdx].$displayLabel.html('<span>&nbsp;</span>').trigger("focus");
+                U.selectRange(this.queue[queIdx].$displayLabel, [0, 0]); // 포커스 end || selectAll
+            } else {
+                    this.queue[queIdx].$displayLabel.trigger("focus");
+                    U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                }
         },
             focusWord = function focusWord(queIdx, searchWord) {
             var options = [],
@@ -301,6 +309,8 @@
             if (this.activecomboboxOptionGroup) {
                 this.activecomboboxOptionGroup.find('[data-option-focus-index]').removeClass("hover").removeAttr("data-option-selected");
             }
+
+            this.queue[queIdx].optionFocusIndex = -1;
         },
             focusMove = function focusMove(queIdx, direction, findex) {
             var _focusIndex, _prevFocusIndex, focusOptionEl, optionGroupScrollContainer;
@@ -321,27 +331,27 @@
                 }
 
                 item.optionFocusIndex = _focusIndex;
-                if (!item.options[_focusIndex].hide) {
-                    // 옵션이 없는 값이 선택된 경우.
+                // todo : 포커스 인덱스가 hide아이템을 만나면 hide 아이템이 안나올 때까지 루프를 순회 합니다.
+                if (item.options[_focusIndex].hide) {// 옵션이 없는 값이 선택된 경우
 
-                    this.activecomboboxOptionGroup.find('[data-option-focus-index]').removeClass("hover");
-
-                    focusOptionEl = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + _focusIndex + '"]').addClass("hover");
-
-                    optionGroupScrollContainer = this.activecomboboxOptionGroup.find('[data-els="content"]');
-
-                    var focusOptionElHeight = focusOptionEl.outerHeight(),
-                        optionGroupScrollContainerHeight = optionGroupScrollContainer.innerHeight(),
-                        optionGroupScrollContainerScrollTop = optionGroupScrollContainer.scrollTop(),
-                        focusOptionElTop = focusOptionEl.position().top + optionGroupScrollContainer.scrollTop();
-
-                    if (optionGroupScrollContainerHeight + optionGroupScrollContainerScrollTop < focusOptionElTop + focusOptionElHeight) {
-                        optionGroupScrollContainer.scrollTop(focusOptionElTop + focusOptionElHeight - optionGroupScrollContainerHeight);
-                    } else if (optionGroupScrollContainerScrollTop > focusOptionElTop) {
-                        optionGroupScrollContainer.scrollTop(focusOptionElTop);
-                    }
-                    // optionGroup scroll check
                 }
+                this.activecomboboxOptionGroup.find('[data-option-focus-index]').removeClass("hover");
+
+                focusOptionEl = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + _focusIndex + '"]').addClass("hover");
+
+                optionGroupScrollContainer = this.activecomboboxOptionGroup.find('[data-els="content"]');
+
+                var focusOptionElHeight = focusOptionEl.outerHeight(),
+                    optionGroupScrollContainerHeight = optionGroupScrollContainer.innerHeight(),
+                    optionGroupScrollContainerScrollTop = optionGroupScrollContainer.scrollTop(),
+                    focusOptionElTop = focusOptionEl.position().top + optionGroupScrollContainer.scrollTop();
+
+                if (optionGroupScrollContainerHeight + optionGroupScrollContainerScrollTop < focusOptionElTop + focusOptionElHeight) {
+                    optionGroupScrollContainer.scrollTop(focusOptionElTop + focusOptionElHeight - optionGroupScrollContainerHeight);
+                } else if (optionGroupScrollContainerScrollTop > focusOptionElTop) {
+                    optionGroupScrollContainer.scrollTop(focusOptionElTop);
+                }
+                // optionGroup scroll check
 
                 if (typeof direction !== "undefined") {
                     // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
@@ -363,11 +373,11 @@
         },
             bindComboboxTarget = function () {
             var debouncedFocusWord = U.debounce(function (queIdx) {
-
                 var values = [];
                 var searchWord = "";
                 var item = this.queue[queIdx];
                 var childNodes = item.$displayLabel.get(0).childNodes;
+
                 for (var i = 0, l = childNodes.length; i < l; i++) {
                     var node = childNodes[i];
                     if (node.nodeType in nodeTypeProcessor) {
@@ -395,10 +405,9 @@
                         this.val(item.id, values, undefined, "internal"); // set Value
                         U.selectRange(item.$displayLabel, "end"); // label focus end
                     } else if (searchWord != "") {
-                            //console.log(searchWord, values);
                             focusWord.call(self, queIdx, searchWord);
                         }
-            }, 300);
+            }, 100);
 
             var comboboxEvent = {
                 'click': function click(queIdx, e) {
@@ -636,11 +645,13 @@
                     n.selected = false;
                 }
             });
+
+            console.log(this.queue[queIdx].options);
         };
 
         var nodeTypeProcessor = {
             '1': function _(queIdx, node, editable) {
-                var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
+                var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
                 var item = this.queue[queIdx];
                 var selectedIndex, option;
                 if (node.getAttribute("data-ax5combobox-selected-text") == text) {
@@ -653,10 +664,10 @@
                         }
                     };
                 } else if (!node.getAttribute("data-ax5combobox-selected-text")) {
-
+                    if (editable) return text; // 편집중에는 편집중인 문자열을 그대로 가져오고 , 값 결정시엔 일치하는 값이 있다면. 값으로 처리
                     if (text != "") {
                         var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
-                        if ($option.get(0) && $option.attr("data-option-value") == text) {
+                        if ($option.get(0) && $option.attr("data-option-value")) {
                             return {
                                 index: {
                                     gindex: $option.attr("data-option-group-index"),
@@ -674,7 +685,7 @@
                 }
             },
             '3': function _(queIdx, node, editable) {
-                var text = (node.textContent || node.innerText).replace(/^\W*|\W*$/g, '');
+                var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
                 if (text != "") {
                     var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[queIdx].optionFocusIndex + '"]');
                     if ($option.get(0) && $option.attr("data-option-value") == text) {
@@ -888,16 +899,11 @@
                 }
 
                 //item.$displayLabel.val('');
-                setTimeout(function () {
-                    if (item.$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
-
-                        item.$displayLabel.html('<span>&nbsp;</span>').trigger("focus");
-                        U.selectRange(item.$displayLabel, [0, 0]); // 포커스 end || selectAll
-                    } else {
-                            item.$displayLabel.trigger("focus");
-                            U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
-                        }
-                }, 1);
+                /*
+                 setTimeout((function () {
+                 focusLabel.call(this, queIdx);
+                 }).bind(this), 1);
+                 */
 
                 jQuery(window).bind("keyup.ax5combobox-" + this.instanceId, function (e) {
                     e = e || window.event;
@@ -1021,13 +1027,22 @@
                     syncLabel.call(this, queIdx);
                 },
                 'clear': function clear(queIdx) {
+
+                    // 임시추가된 options 제거
+                    this.queue[queIdx].options = U.filter(this.queue[queIdx].options, function () {
+                        return !this.addedOption;
+                    });
+
                     clearSelected.call(this, queIdx);
                     syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
                     syncLabel.call(this, queIdx);
+                    focusLabel.call(this, queIdx);
+                    focusClear.call(this, queIdx);
 
                     if (this.activecomboboxOptionGroup) {
                         this.activecomboboxOptionGroup.find('[data-option-index]').attr("data-option-Selected", "false");
                     }
+                    this.queue[queIdx].optionSelectedIndex = -1;
                 }
             };
 
@@ -1038,16 +1053,15 @@
                     return;
                 }
 
-                // setValue 이면 현재 선택값 초기화
-                if (typeof value !== "undefined" && !this.queue[queIdx].multiple) {
-                    clearSelected.call(this, queIdx);
-                }
-
                 if (typeof value == "undefined") {
                     return this.queue[queIdx].selected;
                 } else if (U.isArray(value)) {
-                    processor.arr.call(this, queIdx, value, selected);
+                    processor.clear.call(this, queIdx);
+                    processor.arr.call(this, queIdx, this.queue[queIdx].multiple || value.length == 0 ? value : [value[value.length - 1]], selected);
                 } else if (U.isString(value) || U.isNumber(value)) {
+                    if (typeof value !== "undefined" && value !== null && !this.queue[queIdx].multiple) {
+                        clearSelected.call(this, queIdx);
+                    }
                     processor.value.call(this, queIdx, value, selected);
                 } else {
                     if (value === null) {
