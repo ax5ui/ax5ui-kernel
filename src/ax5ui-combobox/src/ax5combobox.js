@@ -342,7 +342,7 @@
                             if (typeof value !== "undefined") values.push(value);
                         }
                     }
-                    
+
                     this.val(item.id, values, true, "internal"); // set Value
                     if (!item.multiple) this.close();
                 }
@@ -712,9 +712,9 @@
                     else {
                         this.queue[queIdx].selected.push(jQuery.extend({}, O));
                         /*
-                        if (this.queue[queIdx].multiple) this.queue[queIdx].selected.push(jQuery.extend({}, O));
-                        else this.queue[queIdx].selected[0] = jQuery.extend({}, O);
-                        */
+                         if (this.queue[queIdx].multiple) this.queue[queIdx].selected.push(jQuery.extend({}, O));
+                         else this.queue[queIdx].selected[0] = jQuery.extend({}, O);
+                         */
                     }
                 };
 
@@ -850,8 +850,13 @@
                 }
                 else if (!node.getAttribute("data-ax5combobox-selected-text")) {
                     if (text != "") {
-                        var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
-                        if ($option.get(0) && $option.attr("data-option-value")) {
+                        if (!editable) {
+
+                        }
+
+                        var $option;
+                        if (item.optionFocusIndex > -1) $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
+                        if (item.optionFocusIndex > -1 && $option.get(0) && $option.attr("data-option-value")) {
                             return {
                                 index: {
                                     gindex: $option.attr("data-option-group-index"),
@@ -872,9 +877,12 @@
             },
             '3': function (queIdx, node, editable) {
                 var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
+                var item = this.queue[queIdx];
+
                 if (text != "") {
-                    var $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + this.queue[queIdx].optionFocusIndex + '"]');
-                    if ($option.get(0) && $option.attr("data-option-value") == text) {
+                    var $option;
+                    if (item.optionFocusIndex > -1) $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
+                    if (item.optionFocusIndex > -1 && $option.get(0) && $option.attr("data-option-value")) {
                         return {
                             index: {
                                 gindex: $option.attr("data-option-group-index"),
@@ -882,7 +890,7 @@
                             }
                         }
                     } else {
-                        return (this.queue[queIdx].editable || editable) ? text : undefined;
+                        return (item.editable || editable) ? text : undefined;
                     }
                 } else {
                     return undefined;
@@ -1167,7 +1175,7 @@
                         }
                     }
 
-                    if(typeof setValueType === "undefined" || setValueType !== "justSetValue") {
+                    if (typeof setValueType === "undefined" || setValueType !== "justSetValue") {
                         syncComboboxOptions.call(this, queIdx, item.options);
                         syncLabel.call(this, queIdx);
                         alignComboboxOptionGroup.call(this);
@@ -1218,7 +1226,7 @@
                         item.options[optionIndex][item.columnKeys.optionSelected]
                             = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
                     }
-                    if(typeof setValueType === "undefined" || setValueType !== "justSetValue") {
+                    if (typeof setValueType === "undefined" || setValueType !== "justSetValue") {
                         syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
                         syncLabel.call(this, queIdx);
                         alignComboboxOptionGroup.call(this);
