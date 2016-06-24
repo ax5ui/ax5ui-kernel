@@ -121,10 +121,12 @@
                 <div class="form-control {{formSize}} ax5combobox-display {{theme}}" 
                 data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
                     <div class="ax5combobox-display-table" data-els="display-table">
+                        <div data-ax5combobox-display="label-holder"> 
                         <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
                         data-ax5combobox-display="label"
                         contenteditable="true"
                         spellcheck="false">{{{label}}}</a>
+                        </div>
                         <div data-ax5combobox-display="addon"> 
                             {{#multiple}}{{#reset}}
                             <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
@@ -217,7 +219,7 @@
                 {{#selected}}
                 <span tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">{{text}}</span> 
                 {{/selected}}
-                <span></span>
+                <span>&nbsp;</span>
                 `;
             },
             alignComboboxDisplay = function () {
@@ -367,6 +369,10 @@
                     .html(getLabel.call(this, queIdx));
             },
             focusLabel = function (queIdx) {
+
+                this.queue[queIdx].$displayLabel.trigger("focus");
+                U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                /*
                 if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
                     this.queue[queIdx].$displayLabel.html('<span>&nbsp;</span>').trigger("focus");
                     U.selectRange(this.queue[queIdx].$displayLabel, [0, 0]); // 포커스 end || selectAll
@@ -375,6 +381,7 @@
                     this.queue[queIdx].$displayLabel.trigger("focus");
                     U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
                 }
+                */
             },
             focusWord = function (queIdx, searchWord) {
                 var options = [], i = -1, l = this.queue[queIdx].indexedOptions.length - 1, n;
@@ -586,6 +593,9 @@
                             }
                             else {
                                 self.open(queIdx);
+                                if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
+                                    focusLabel.call(this, queIdx);
+                                }
                             }
                         }
                     },
@@ -1436,3 +1446,6 @@ jQuery.fn.ax5combobox = (function () {
         return this;
     }
 })();
+
+// todo : 선택아이템이 늘어 높이가 커지면 컨트롤 높이 재 조정하기.
+

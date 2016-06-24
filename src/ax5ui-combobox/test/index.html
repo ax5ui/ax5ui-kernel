@@ -22,6 +22,7 @@
                 <div class="form-group">
                     <div data-ax5combobox="combo1" data-ax5combobox-config='{
                     multiple: true,
+                    editable: true,
                     size: ""
                 }'></div>
                 </div>
@@ -73,7 +74,7 @@
             var act = this.getAttribute("data-btn");
             switch (act) {
                 case "setValue":
-                    myCombo.val($('[data-ax5combobox="combo1"]'), [11, 12]);
+                    myCombo.val($('[data-ax5combobox="combo1"]'), ["string", "number", "새로운 문구"]);
                     break;
                 case "getValue":
                     console.log(myCombo.val($('[data-ax5combobox="combo1"]')));

@@ -344,16 +344,20 @@ $hover-types: (
         width: 100%;
         height: 100%;
         display: table;
-        //table-layout: fixed;
+        table-layout: fixed;
         border-collapse: collapse;
         @include user-select(none);
 
-        [data-ax5combobox-display="label"] {
+        [data-ax5combobox-display="label-holder"] {
             display: table-cell;
             vertical-align: middle;
-            padding: $ax5combobox-label-padding;
+            padding: 3px 0px;
+        }
+        [data-ax5combobox-display="label"] {
+            display: block;
             white-space: nowrap;
             overflow: hidden;
+            padding: $ax5combobox-label-padding;
             &:focus{
                 outline: none;
             }
@@ -361,13 +365,30 @@ $hover-types: (
             &:hover{
                 text-decoration: none;
             }
-
-            [data-ax5combobox-selected-label]{
-                display: inline-block;
-                background: #eee;
+            &:after{
+                content: ' ';
+                display: block;
+                clear: both;
+            }
+            span{
+                display: block;
+                float: left;
+                background: transparent;
                 padding: 0px 3px;
-                border: 1px solid #ccc;
-                border-radius: 3px;
+                border: 1px solid transparent;
+                border-radius: 0px;
+                margin-left: -0.5em;
+
+                &[data-ax5combobox-selected-label]{
+                    background: #eee;
+                    border: 1px solid #ccc;
+                    border-radius: 3px;
+                    margin-left: 0px;
+                    margin-right: 3px;
+                    &:first-child{
+                        margin-left: 0px;
+                    }
+                }
             }
         }
         [data-ax5combobox-display="addon"] {
