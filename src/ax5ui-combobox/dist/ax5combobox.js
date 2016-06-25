@@ -10,7 +10,7 @@
 (function (root, _SUPER_) {
 
     /**
-     * @class ax5.ui.combobox
+     * @class ax5combobox
      * @classdesc
      * @version 0.1.0
      * @author tom@axisj.com
@@ -785,9 +785,9 @@
 
         /**
          * Preferences of combobox UI
-         * @method ax5.ui.combobox.setConfig
+         * @method ax5combobox.setConfig
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.combobox}
+         * @returns {ax5combobox}
          * @example
          * ```
          * ```
@@ -802,14 +802,14 @@
 
         /**
          * bind combobox
-         * @method ax5.ui.combobox.bind
+         * @method ax5combobox.bind
          * @param {Object} item
          * @param {String} [item.id]
          * @param {String} [item.theme]
          * @param {Boolean} [item.multiple]
          * @param {Element} item.target
          * @param {Object[]} item.options
-         * @returns {ax5.ui.combobox}
+         * @returns {ax5combobox}
          */
         this.bind = function (item) {
             var comboboxConfig = {},
@@ -859,10 +859,10 @@
 
         /**
          * open the optionBox of combobox
-         * @method ax5.ui.combobox.open
+         * @method ax5combobox.open
          * @param {(String|Number|Element)} boundID
          * @param {Number} [tryCount]
-         * @returns {ax5.ui.combobox}
+         * @returns {ax5combobox}
          */
         this.open = function () {
             var onExpand = function onExpand(item) {
@@ -1011,9 +1011,9 @@
         }();
 
         /**
-         * @method ax5.ui.combobox.update
+         * @method ax5combobox.update
          * @param {(Object|String)} item
-         * @returns {ax5.ui.combobox}
+         * @returns {ax5combobox}
          */
         this.update = function (_item) {
             this.bind(_item);
@@ -1021,11 +1021,11 @@
         };
 
         /**
-         * @method ax5.ui.combobox.val
+         * @method ax5combobox.val
          * @param {(String|Number|Element)} boundID
          * @param {(String|Object|Array)} [value]
          * @param {Boolean} [Selected]
-         * @returns {ax5.ui.combobox}
+         * @returns {ax5combobox}
          */
         this.val = function () {
             var processor = {
@@ -1175,8 +1175,8 @@
         }();
 
         /**
-         * @method ax5.ui.combobox.close
-         * @returns {ax5.ui.combobox}
+         * @method ax5combobox.close
+         * @returns {ax5combobox}
          */
         this.close = function (item) {
             if (this.closeTimer) clearTimeout(this.closeTimer);
@@ -1288,5 +1288,3 @@ jQuery.fn.ax5combobox = function () {
         return this;
     };
 }();
-
-// todo : 선택아이템이 늘어 높이가 커지면 컨트롤 높이 재 조정하기.
