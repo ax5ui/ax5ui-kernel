@@ -122,16 +122,33 @@
             alignComboboxDisplay = function alignComboboxDisplay() {
             var i = this.queue.length,
                 w;
+
             while (i--) {
-                if (this.queue[i].$display) {
-                    w = Math.max(this.queue[i].$select.outerWidth(), U.number(this.queue[i].minWidth));
-                    this.queue[i].$display.css({
+                var item = this.queue[i];
+                if (item.$display) {
+                    w = Math.max(item.$select.outerWidth(), U.number(item.minWidth));
+                    item.$display.css({
                         "min-width": w
                     });
-                    if (this.queue[i].reset) {
-                        this.queue[i].$display.find(".addon-icon-reset").css({
+                    if (item.reset) {
+                        item.$display.find(".addon-icon-reset").css({
                             "line-height": this.queue[i].$display.height() + "px"
                         });
+                    }
+
+                    // 높이조절 처리
+                    if (item.multiple) {
+                        var displayTableHeightAdjust = function () {
+                            return U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
+                        }.call(this);
+                        item.$target.height('');
+                        item.$display.height('');
+
+                        var displayTableHeight = item.$displayTable.outerHeight();
+                        if (Math.abs(displayTableHeight - item.$target.height()) > displayTableHeightAdjust) {
+                            item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
+                            item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
+                        }
                     }
                 }
             }
@@ -253,22 +270,37 @@
             return ax5.mustache.render(getLabelTmpl.call(this, item.columnKeys), data);
         },
             syncLabel = function syncLabel(queIdx) {
-            this.queue[queIdx].$displayLabel.html(getLabel.call(this, queIdx));
+            var item = this.queue[queIdx],
+                displayTableHeight;
+            item.$displayLabel.html(getLabel.call(this, queIdx));
+
+            // label 사이즈 체크
+            //console.log(this.queue[queIdx].$displayTable.outerHeight());
+            if (item.$target.height() < (displayTableHeight = item.$displayTable.outerHeight())) {
+                var displayTableHeightAdjust = function () {
+                    return U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
+                }();
+                item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
+                item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
+            } else {
+                item.$target.height('');
+                item.$display.height('');
+            }
         },
             focusLabel = function focusLabel(queIdx) {
 
             this.queue[queIdx].$displayLabel.trigger("focus");
             U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
             /*
-            if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
-                this.queue[queIdx].$displayLabel.html('<span>&nbsp;</span>').trigger("focus");
-                U.selectRange(this.queue[queIdx].$displayLabel, [0, 0]); // 포커스 end || selectAll
-            }
-            else {
-                this.queue[queIdx].$displayLabel.trigger("focus");
-                U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
-            }
-            */
+             if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
+             this.queue[queIdx].$displayLabel.html('<span>&nbsp;</span>').trigger("focus");
+             U.selectRange(this.queue[queIdx].$displayLabel, [0, 0]); // 포커스 end || selectAll
+             }
+             else {
+             this.queue[queIdx].$displayLabel.trigger("focus");
+             U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+             }
+             */
         },
             focusWord = function focusWord(queIdx, searchWord) {
             var options = [],
@@ -522,6 +554,7 @@
                     }();
 
                     item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
+                    item.$displayTable = item.$display.find('[data-els="display-table"]');
                     item.$displayLabel = item.$display.find('[data-ax5combobox-display="label"]');
 
                     if (item.$target.find("select").get(0)) {
@@ -832,7 +865,6 @@
          * @returns {ax5.ui.combobox}
          */
         this.open = function () {
-
             var onExpand = function onExpand(item) {
                 item.onExpand.call({
                     self: this,
@@ -874,7 +906,6 @@
                     }
                 }.bind(this));
             };
-
             return function (boundID, tryCount) {
                 this.waitOptionsCallback = null;
 
