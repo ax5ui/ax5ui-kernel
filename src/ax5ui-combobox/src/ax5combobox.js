@@ -1389,6 +1389,11 @@
             return this;
         };
 
+        /**
+         * @method ax5combobox.enable
+         * @param boundID
+         * @returns {ax5combobox}
+         */
         this.enable = function (boundID) {
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.removeAttr("disabled");
@@ -1402,6 +1407,11 @@
             return this;
         };
 
+        /**
+         * @method ax5combobox.disable
+         * @param boundID
+         * @returns {ax5combobox}
+         */
         this.disable = function (boundID) {
             var queIdx = getQueIdx.call(this, boundID);
             this.queue[queIdx].$display.attr("disabled", "disabled");
@@ -1433,6 +1443,21 @@
     })(); // ax5.ui에 연결
 
 })(ax5.ui, ax5.ui.root);
+
+/**
+ * ax5combobox jquery extends
+ * @namespace jQueryExtends
+ */
+
+/**
+ * @method jQueryExtends.ax5combobox
+ * @param {String} methodName
+ * @example
+ * ```js
+ * jQuery('[data-ax5combobox="ax1"]').ax5combobox();
+ * ```
+ */
+
 
 ax5.ui.combobox_instance = new ax5.ui.combobox();
 jQuery.fn.ax5combobox = (function () {
