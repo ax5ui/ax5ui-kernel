@@ -10,7 +10,7 @@
     /**
      * @class ax5combobox
      * @classdesc
-     * @version 0.1.1
+     * @version 0.1.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -552,7 +552,7 @@
                                 if (lastNode.getAttribute("data-ax5combobox-selected-text")) {
 
                                 } else {
-                                    lastNode.innerHTML = item.indexedOptions[_focusIndex].text;
+                                    lastNode.innerHTML = "&nbsp;" + item.indexedOptions[_focusIndex].text;
                                     U.selectRange(item.$displayLabel, "end");
                                 }
                             }
@@ -939,7 +939,6 @@
                 }
             }
         };
-
         /// private end
 
         /**
