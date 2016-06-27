@@ -36,7 +36,8 @@
                 }
                 return {
                     clientX: mouseObj.clientX,
-                    clientY: mouseObj.clientY
+                    clientY: mouseObj.clientY,
+                    time: (new Date()).getTime()
                 }
             };
 
@@ -261,6 +262,7 @@
                     console.log(mousePosition);
                     var getSwipePosition = function (e) {
                         mousePosition.__da = e.clientX - mousePosition.clientX;
+                        mousePosition.__time = (new Date()).getTime();
                     };
 
 
