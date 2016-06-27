@@ -91,7 +91,9 @@
             getFrameTmpl = function (columnKeys) {
                 return `
                 <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">
-                    <div data-media-viewer-els="viewer"></div>
+                    <div data-media-viewer-els="viewer-holder">
+                        <div data-media-viewer-els="viewer"></div>
+                    </div>
                     <div data-media-viewer-els="viewer-loading">
                         <div class="ax5-ui-media-viewer-loading-holder">
                             <div class="ax5-ui-media-viewer-loading-cell">
@@ -259,12 +261,11 @@
             },
             swipeMedia = {
                 "on": function (mousePosition) {
-                    console.log(mousePosition);
+                    // console.log(mousePosition);
                     var getSwipePosition = function (e) {
                         mousePosition.__da = e.clientX - mousePosition.clientX;
                         mousePosition.__time = (new Date()).getTime();
                     };
-
 
                     jQuery(document.body)
                         .bind(ENM["mousemove"] + ".ax5media-viewer-" + this.instanceId, function (e) {
@@ -337,6 +338,7 @@
             // 파트수집
             this.$ = {
                 "root": this.target.find('[data-ax5-ui-media-viewer]'),
+                "viewer-holder": this.target.find('[data-media-viewer-els="viewer-holder"]'),
                 "viewer": this.target.find('[data-media-viewer-els="viewer"]'),
                 "viewer-loading": this.target.find('[data-media-viewer-els="viewer-loading"]'),
                 "list-holder": this.target.find('[data-media-viewer-els="media-list-holder"]'),
@@ -347,6 +349,7 @@
             };
 
             this.align();
+
             jQuery(window).unbind("resize.ax5media-viewer-" + this.id).bind("resize.ax5media-viewer-" + this.id, (function () {
                 this.align();
                 alignMediaList.call(this);
@@ -380,7 +383,9 @@
          */
         this.align = function () {
             // viewer width, height
+            this.$["viewer-holder"].css({height: this.$["viewer"].width() / cfg.viewer.ratio});
             this.$["viewer"].css({height: this.$["viewer"].width() / cfg.viewer.ratio});
+
             if (this.$["viewer"].data("media-type") == "image") {
                 var $img = this.$["viewer"].find("img");
                 $img.css({
@@ -469,6 +474,7 @@
                 this.selectedIndex = Number(index);
                 var media = cfg.media.list[index];
                 select.call(this, index);
+                
                 for (var key in mediaView) {
                     if (media[key]) {
                         mediaView[key].call(this, media, onLoad[key].bind(this));

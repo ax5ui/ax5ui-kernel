@@ -16,12 +16,11 @@
 </head>
 <body style="padding: 50px;">
 
-<div id="media-viewer-target-0"></div>
-
-<div id="media-viewer-target-1"></div>
-
-<div id="media-viewer-target-2"></div>
-
+<div style="width: 50%;">
+    <div id="media-viewer-target-0"></div>
+    <div id="media-viewer-target-1"></div>
+    <div id="media-viewer-target-2"></div>
+</div>
 <script>
     $(document.body).ready(function () {
 
@@ -115,7 +114,7 @@
                 width: '36px', height: '36px',
                 poster: '<i class="fa fa-youtube-play" style="font-size: 20px;"></i>'
             }
-        })
+        });
         myViewer_1.setMediaList([
             {
                 image: {
@@ -159,7 +158,7 @@
                     poster: 'https://www.twilio.com/blog/wp-content/uploads/2013/11/Screen-Shot-2013-11-06-at-12.05.36-PM.png'
                 }
             }
-        ])
+        ]);
         myViewer_1.onClick = function () {
             console.log(this);
         };
