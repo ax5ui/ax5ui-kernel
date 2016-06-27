@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /*
  * Copyright (c) 2016. tom@axisj.com
@@ -24,7 +24,22 @@
     //== UI Class
     var axClass = function axClass() {
         var self = this,
-            cfg;
+            cfg,
+            ENM = {
+            "mousedown": ax5.info.supportTouch ? "touchstart" : "mousedown",
+            "mousemove": ax5.info.supportTouch ? "touchmove" : "mousemove",
+            "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
+        },
+            getMousePosition = function getMousePosition(e) {
+            var mouseObj = e;
+            if ('changedTouches' in e) {
+                mouseObj = e.changedTouches[0];
+            }
+            return {
+                clientX: mouseObj.clientX,
+                clientY: mouseObj.clientY
+            };
+        };
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
@@ -59,6 +74,7 @@
         this.openTimer = null;
         this.closeTimer = null;
         this.selectedIndex = 0;
+        this.mousePosition = {};
 
         cfg = this.config;
 
@@ -71,7 +87,7 @@
             return true;
         },
             getFrameTmpl = function getFrameTmpl(columnKeys) {
-            return '\n                <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">\n                    <div data-media-viewer-els="viewer"></div>\n                    <div data-media-viewer-els="viewer-loading">\n                        <div class="ax5-ui-media-viewer-loading-holder">\n                            <div class="ax5-ui-media-viewer-loading-cell">\n                                {{{loading.icon}}}\n                                {{{loading.text}}}\n                            </div>\n                        </div>\n                    </div>\n                    {{#media}}\n                    <div data-media-viewer-els="media-list-holder">\n                        <div data-media-viewer-els="media-list-prev-handle">{{{prevHandle}}}</div>\n                        <div data-media-viewer-els="media-list">\n                            <div data-media-viewer-els="media-list-table">\n                            {{#list}}\n                                <div data-media-viewer-els="media-list-table-td">\n                                    {{#image}}\n                                    <div data-media-thumbnail="{{@i}}">\n                                        <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                                    </div>\n                                    {{/image}}\n                                    {{#video}}\n                                    <div data-media-thumbnail="{{@i}}">{{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}{{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}</div>\n                                    {{/video}}\n                                </div>\n                            {{/list}}\n                            </div>\n                        </div>\n                        <div data-media-viewer-els="media-list-next-handle">{{{nextHandle}}}</div>\n                    </div>\n                    {{/media}}\n                </div>\n                ';
+            return "\n                <div data-ax5-ui-media-viewer=\"{{id}}\" class=\"{{theme}}\">\n                    <div data-media-viewer-els=\"viewer\"></div>\n                    <div data-media-viewer-els=\"viewer-loading\">\n                        <div class=\"ax5-ui-media-viewer-loading-holder\">\n                            <div class=\"ax5-ui-media-viewer-loading-cell\">\n                                {{{loading.icon}}}\n                                {{{loading.text}}}\n                            </div>\n                        </div>\n                    </div>\n                    {{#media}}\n                    <div data-media-viewer-els=\"media-list-holder\">\n                        <div data-media-viewer-els=\"media-list-prev-handle\">{{{prevHandle}}}</div>\n                        <div data-media-viewer-els=\"media-list\">\n                            <div data-media-viewer-els=\"media-list-table\">\n                            {{#list}}\n                                <div data-media-viewer-els=\"media-list-table-td\">\n                                    {{#image}}\n                                    <div data-media-thumbnail=\"{{@i}}\">\n                                        <img src=\"{{" + columnKeys.poster + "}}\" data-media-thumbnail-image=\"{{@i}}\" />\n                                    </div>\n                                    {{/image}}\n                                    {{#video}}\n                                    <div data-media-thumbnail=\"{{@i}}\">{{#" + columnKeys.poster + "}}<img src=\"{{.}}\" data-media-thumbnail-video=\"{{@i}}\" />>{{/" + columnKeys.poster + "}}{{^" + columnKeys.poster + "}}<a data-media-thumbnail-video=\"{{@i}}\">{{{media." + columnKeys.poster + "}}}</a>{{/" + columnKeys.poster + "}}</div>\n                                    {{/video}}\n                                </div>\n                            {{/list}}\n                            </div>\n                        </div>\n                        <div data-media-viewer-els=\"media-list-next-handle\">{{{nextHandle}}}</div>\n                    </div>\n                    {{/media}}\n                </div>\n                ";
         },
             getFrame = function getFrame() {
             var data = jQuery.extend(true, {}, cfg),
@@ -197,6 +213,31 @@
             containerWidth = null;
             parentLeft = null;
             newLeft = null;
+        },
+            swipeMedia = {
+            "on": function on(mousePosition) {
+                console.log(mousePosition);
+                var getSwipePosition = function getSwipePosition(e) {
+                    mousePosition.__da = e.clientX - mousePosition.clientX;
+                };
+
+                jQuery(document.body).bind(ENM["mousemove"] + ".ax5media-viewer-" + this.instanceId, function (e) {
+                    getSwipePosition(e);
+                    console.log(mousePosition);
+                }).bind(ENM["mouseup"] + ".ax5media-viewer-" + this.instanceId, function (e) {
+                    swipeMedia.off.call(self);
+                }).bind("mouseleave.ax5media-viewer-" + this.instanceId, function (e) {
+                    swipeMedia.off.call(self);
+                });
+
+                jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+            },
+            "off": function off() {
+
+                jQuery(document.body).unbind(ENM["mousemove"] + ".ax5media-viewer-" + this.instanceId).unbind(ENM["mouseup"] + ".ax5media-viewer-" + this.instanceId).unbind("mouseleave.ax5media-viewer-" + this.instanceId);
+
+                jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+            }
         };
         /// private end
 
@@ -257,6 +298,14 @@
                 onClick.call(this, e);
                 U.stopEvent(e);
             }.bind(this));
+
+            this.$.viewer.unbind(ENM["mousedown"]).bind(ENM["mousedown"], function (e) {
+                this.mousePosition = getMousePosition(e);
+                swipeMedia.on.call(this, this.mousePosition);
+            }.bind(this)).unbind("dragstart").bind("dragstart", function (e) {
+                U.stopEvent(e);
+                return false;
+            });
 
             this.select(getSelectedIndex.call(this));
             return this;

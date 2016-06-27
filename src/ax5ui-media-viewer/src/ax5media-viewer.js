@@ -23,7 +23,22 @@
     var axClass = function () {
         var
             self = this,
-            cfg;
+            cfg,
+            ENM = {
+                "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
+                "mousemove": (ax5.info.supportTouch) ? "touchmove" : "mousemove",
+                "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
+            },
+            getMousePosition = function (e) {
+                var mouseObj = e;
+                if ('changedTouches' in e) {
+                    mouseObj = e.changedTouches[0];
+                }
+                return {
+                    clientX: mouseObj.clientX,
+                    clientY: mouseObj.clientY
+                }
+            };
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
@@ -58,6 +73,7 @@
         this.openTimer = null;
         this.closeTimer = null;
         this.selectedIndex = 0;
+        this.mousePosition = {};
 
         cfg = this.config;
 
@@ -239,6 +255,46 @@
                 containerWidth = null;
                 parentLeft = null;
                 newLeft = null;
+            },
+            swipeMedia = {
+                "on": function (mousePosition) {
+                    console.log(mousePosition);
+                    var getSwipePosition = function (e) {
+                        mousePosition.__da = e.clientX - mousePosition.clientX;
+                    };
+
+
+                    jQuery(document.body)
+                        .bind(ENM["mousemove"] + ".ax5media-viewer-" + this.instanceId, function (e) {
+                            getSwipePosition(e);
+                            console.log(mousePosition);
+                        })
+                        .bind(ENM["mouseup"] + ".ax5media-viewer-" + this.instanceId, function (e) {
+                            swipeMedia.off.call(self);
+                        })
+                        .bind("mouseleave.ax5media-viewer-" + this.instanceId, function (e) {
+                            swipeMedia.off.call(self);
+                        });
+
+                    jQuery(document.body)
+                        .attr('unselectable', 'on')
+                        .css('user-select', 'none')
+                        .on('selectstart', false);
+
+                },
+                "off": function () {
+
+                    jQuery(document.body)
+                        .unbind(ENM["mousemove"] + ".ax5media-viewer-" + this.instanceId)
+                        .unbind(ENM["mouseup"] + ".ax5media-viewer-" + this.instanceId)
+                        .unbind("mouseleave.ax5media-viewer-" + this.instanceId);
+
+                    jQuery(document.body)
+                        .removeAttr('unselectable')
+                        .css('user-select', 'auto')
+                        .off('selectstart');
+
+                }
             };
         /// private end
 
@@ -299,6 +355,18 @@
                 onClick.call(this, e);
                 U.stopEvent(e);
             }).bind(this));
+
+            this.$.viewer
+                .unbind(ENM["mousedown"])
+                .bind(ENM["mousedown"], (function (e) {
+                    this.mousePosition = getMousePosition(e);
+                    swipeMedia.on.call(this, this.mousePosition);
+                }).bind(this))
+                .unbind("dragstart")
+                .bind("dragstart", function (e) {
+                    U.stopEvent(e);
+                    return false;
+                });
 
             this.select(getSelectedIndex.call(this));
             return this;
