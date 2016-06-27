@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-media-viewer",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "A mediaViewer plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, user-scalable=no">
 
@@ -14,12 +15,12 @@
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="../dist/ax5media-viewer.js"></script>
 </head>
-<body style="padding: 50px;">
+<body style="padding: 0px;">
 
-<div style="width: 50%;">
-    <div id="media-viewer-target-0"></div>
-    <div id="media-viewer-target-1"></div>
-    <div id="media-viewer-target-2"></div>
+<div style="overflow: hidden;">
+    <div id="media-viewer-target-0" style="width: 100%;"></div>
+    <div id="media-viewer-target-1" style="width: 100%;"></div>
+    <div id="media-viewer-target-2" style="width: 100%;"></div>
 </div>
 <script>
     $(document.body).ready(function () {

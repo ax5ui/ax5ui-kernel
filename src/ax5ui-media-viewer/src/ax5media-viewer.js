@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.mediaViewer
      * @classdesc
-     * @version 0.2.0
+     * @version 0.3.0
      * @author tom@axisj.com
      * @example
      * ```
@@ -31,8 +31,8 @@
             },
             getMousePosition = function (e) {
                 var mouseObj = e;
-                if ('changedTouches' in e) {
-                    mouseObj = e.changedTouches[0];
+                if ('changedTouches' in e.originalEvent) {
+                    mouseObj = e.originalEvent.changedTouches[0];
                 }
                 return {
                     clientX: mouseObj.clientX,
@@ -153,11 +153,15 @@
                         'prev': function (target) {
                             if (this.selectedIndex > 0) {
                                 this.select(this.selectedIndex - 1);
+                            } else {
+                                this.select(cfg.media.list.length - 1);
                             }
                         },
                         'next': function (target) {
                             if (this.selectedIndex < cfg.media.list.length - 1) {
                                 this.select(this.selectedIndex + 1);
+                            } else {
+                                this.select(0);
                             }
                         },
                         'viewer': function (target) {
@@ -228,10 +232,10 @@
             },
             alignMediaList = function () {
                 var thumbnail = this.$["list"].find('[data-media-thumbnail=' + this.selectedIndex + ']'),
-                    pos = thumbnail.position(), thumbnailWidth = thumbnail.width(),
-                    containerWidth = this.$["list"].width(),
+                    pos = thumbnail.position(), thumbnailWidth = thumbnail.outerWidth(),
+                    containerWidth = this.$["list"].outerWidth(),
                     parentLeft = this.$["list-table"].position().left,
-                    parentWidth = this.$["list-table"].width(),
+                    parentWidth = this.$["list-table"].outerWidth(),
                     newLeft = 0;
 
                 if (pos.left + thumbnailWidth + parentLeft > containerWidth) {
@@ -263,14 +267,56 @@
                 "on": function (mousePosition) {
                     // console.log(mousePosition);
                     var getSwipePosition = function (e) {
-                        mousePosition.__da = e.clientX - mousePosition.clientX;
+                        var mouseObj = e;
+                        if ('changedTouches' in e.originalEvent) {
+                            mouseObj = e.originalEvent.changedTouches[0];
+                        }
+
+                        mousePosition.__dx = mouseObj.clientX - mousePosition.clientX;
+                        mousePosition.__dy = mouseObj.clientY - mousePosition.clientY;
                         mousePosition.__time = (new Date()).getTime();
+
+                        if (Math.abs(mousePosition.__dx) > Math.abs(mousePosition.__dy)) {
+                            return {left: mousePosition.__dx};
+                        } else {
+                            return {top: mousePosition.__dy};
+                        }
                     };
+                    var viewerWidth = this.$["viewer"].width();
 
                     jQuery(document.body)
                         .bind(ENM["mousemove"] + ".ax5media-viewer-" + this.instanceId, function (e) {
-                            getSwipePosition(e);
-                            console.log(mousePosition);
+                            var position = getSwipePosition(e);
+
+                            if ('left' in position) {
+                                self.$["viewer-holder"].css(position);
+                                if (Math.abs(self.mousePosition.__dx) > viewerWidth / 3) {
+                                    //console.log(self.mousePosition);
+                                    // trigger nextMedia
+
+                                    var nextIndex = 0;
+
+                                    if (self.mousePosition.__dx > 0) {
+                                        if (self.selectedIndex > 0) {
+                                            nextIndex = self.selectedIndex - 1;
+                                        } else {
+                                            nextIndex = cfg.media.list.length - 1;
+                                        }
+                                    }
+                                    else {
+                                        if (self.selectedIndex < cfg.media.list.length - 1) {
+                                            nextIndex = self.selectedIndex + 1;
+                                        }
+                                    }
+
+                                    self.select(nextIndex);
+                                    swipeMedia.off.call(self);
+
+
+                                }
+
+                                U.stopEvent(e);
+                            }
                         })
                         .bind(ENM["mouseup"] + ".ax5media-viewer-" + this.instanceId, function (e) {
                             swipeMedia.off.call(self);
@@ -286,7 +332,7 @@
 
                 },
                 "off": function () {
-
+                    self.$["viewer-holder"].css({left: 0});
                     jQuery(document.body)
                         .unbind(ENM["mousemove"] + ".ax5media-viewer-" + this.instanceId)
                         .unbind(ENM["mouseup"] + ".ax5media-viewer-" + this.instanceId)
@@ -474,7 +520,7 @@
                 this.selectedIndex = Number(index);
                 var media = cfg.media.list[index];
                 select.call(this, index);
-                
+
                 for (var key in mediaView) {
                     if (media[key]) {
                         mediaView[key].call(this, media, onLoad[key].bind(this));
