@@ -355,12 +355,16 @@ $hover-types: (
     height: $input-height-base; // Make inputs at least the height of their button counterpart (base line-height + padding + border)
     font-size: $font-size-base;
     color: $input-color;
-    background-color: transparent;
-    background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+
+    @include ax-background(#eee, #fff);
+    //background-color: transparent;
+    //background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+
     border: 1px solid $input-border;
     border-radius: $input-border-radius; // Note: This has no effect on <select>s in some browsers, due to the limited stylability of <select>s in CSS.
     text-decoration: none;
-    @include box-shadow(inset 0px -2px 5px rgba(0,0,0,.075));
+    @include box-shadow(none);
+    // @include box-shadow(inset 0px -2px 5px rgba(0,0,0,.075));
 
     &:hover, &:focus {
         text-decoration: none;
@@ -432,6 +436,7 @@ $hover-types: (
 
     &[data-select-option-group-opened] {
         @include box-shadow(inset 1px 1px 3px rgba(0, 0, 0, 0.2));
+        background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
         .ax5select-display-table [data-ax5select-display="addon"] {
             .addon-icon-reset {
                 display: block;

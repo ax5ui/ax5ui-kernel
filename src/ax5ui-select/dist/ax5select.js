@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.3.7
+     * @version 0.3.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -341,6 +341,11 @@
             }
         },
             bindSelectTarget = function () {
+            var focusWordCall = U.debounce(function (searchWord, queIdx) {
+                focusWord.call(self, queIdx, searchWord);
+                self.queue[queIdx].$displayInput.val('');
+            }, 300);
+
             var selectEvent = {
                 'click': function click(queIdx, e) {
                     var target = U.findParentNode(e.target, function (target) {
@@ -370,12 +375,7 @@
                         selectEvent.click.call(this, queIdx, e);
                     } else if (!ctrlKeys[e.which]) {
                         // 사용자 입력이 뜸해지면 찾고 검색 값 제거...
-                        if (this.keyUpTimer) clearTimeout(this.keyUpTimer);
-                        this.keyUpTimer = setTimeout(function () {
-                            var searchWord = this.queue[queIdx].$displayInput.val();
-                            focusWord.call(this, queIdx, searchWord);
-                            this.queue[queIdx].$displayInput.val('');
-                        }.bind(this), 500);
+                        focusWordCall(this.queue[queIdx].$displayInput.val(), queIdx);
                     }
                 },
                 'keyDown': function keyDown(queIdx, e) {

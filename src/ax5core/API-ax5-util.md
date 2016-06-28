@@ -511,3 +511,15 @@ ax5.util.stopEvent(e);
     });
 </script>
 ```
+
+## ax5.util.debounce
+`ax5.util.debounce(func, wait)`
+```js
+var debounceFn = ax5.util.debounce(function( val ) {
+    console.log(val);
+}, 300);
+
+$(document.body).click(function(){
+    debounceFn(new Date());
+});
+```

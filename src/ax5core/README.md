@@ -59,12 +59,12 @@ https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js
 ```js
 ax5.util.date("20111111");
 //Fri Nov 11 2011 23:59:00 GMT+0900 (KST)
-ax5.util.date("20111111", {'return':'yyyy/mm/dd'});
+ax5.util.date("20111111", {'return':'yyyy/MM/dd'});
 //"2011/11/11"
 
 //set multi option
-ax5.util.date("20111111", {'return':'yyyy/mm/dd', add:{"d":1}} );
-"2011/11/12"
+ax5.util.date("20111111", {'return':'yyyy/MM/dd hh:mm:ss', add:{"d":1}} );
+"2011/11/12 23:59:00"
 ```
 
 ### API

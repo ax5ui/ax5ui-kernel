@@ -21,6 +21,8 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <div data-ax5combobox="combo1" data-ax5combobox-config='{
+                    multiple: true,
+                    editable: true,
                     size: ""
                 }'></div>
                 </div>
@@ -72,18 +74,18 @@
             var act = this.getAttribute("data-btn");
             switch (act) {
                 case "setValue":
-                    mySelect.val($('[data-ax5select="select1"]'), [11, 12]);
+                    myCombo.val($('[data-ax5combobox="combo1"]'), ["string", "number", "새로운 문구"]);
                     break;
                 case "getValue":
-                    console.log($('[data-ax5select="select2"]').ax5select("getValue"));
-                    console.log(mySelect.val($('[data-ax5select="select1"]')));
+                    console.log(myCombo.val($('[data-ax5combobox="combo1"]')));
                     console.log($(document.forms).serialize());
                     break;
                 case "setValueSelect":
-                    $('[data-ax-path="select3"]').val("7").trigger("change");
+                    //$('[data-ax-path="select3"]').val("7").trigger("change");
                     //$('[data-ax-path="select2"]').val(["optionValue7", "optionValue9"]).trigger("change");
                     break;
                 case "update":
+                    /*
                     mySelect.update({
                         target: $('[data-ax5select="select1"]'),
                         options: [
@@ -93,6 +95,7 @@
                     $('[data-ax5select="select2"]').ax5select({
                         options: options
                     });
+                    */
                     break;
             }
         });
@@ -120,6 +123,7 @@
 
 
     // todo : onStateChanged
+    // todo : css overflow 상황 해결.
 </script>
 
 </body>

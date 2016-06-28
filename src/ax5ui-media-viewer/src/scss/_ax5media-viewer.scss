@@ -82,9 +82,17 @@ $font-colors: (
     *{
         box-sizing: border-box;
     }
+    [data-media-viewer-els="viewer-holder"] {
+        position: relative;
+    }
     [data-media-viewer-els="viewer"] {
+        position: absolute;
+        left: 0;
+        top: 0;
         overflow: hidden;
         text-align: center;
+        width: 100%;
+        height: 100%;
         img {
             position: absolute;
             left: 0;

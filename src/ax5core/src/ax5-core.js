@@ -1757,7 +1757,7 @@
          * ax5.util.stopEvent(e);
          * ```
          */
-        function stopEvent(e) {
+        function stopEvent(e) { 
             // 이벤트 중지 구문
             if (!e) var e = window.event;
 
@@ -1881,6 +1881,50 @@
             }
         })();
 
+        /**
+         * @method ax5.util.debounce
+         * @param {Function} func
+         * @param {Number} wait
+         * @returns {debounced}
+         * @example
+         * ```js
+         * var debounceFn = ax5.util.debounce(function( val ) { console.log(val); }, 300);
+         * $(document.body).click(function(){
+         *  debounceFn(new Date());
+         * });
+         * ```
+         */
+        var debounce = function (func, wait) {
+            var timeout, removeTimeout;
+            var debounced = function () {
+                var args = toArray(arguments);
+
+                if(removeTimeout) clearTimeout(removeTimeout);
+                if (timeout) {
+                    // 두번째 호출
+                    if (timeout) clearTimeout(timeout);
+                    timeout = setTimeout((function (args) {
+                        func.apply(this, args);
+                    }).bind(this, args), wait);
+                } else {
+                    // 첫 호출
+                    timeout = setTimeout((function (args) {
+                        func.apply(this, args);
+                    }).bind(this, args), 0);
+                }
+                removeTimeout = setTimeout(function(){
+                    clearTimeout(timeout);
+                    timeout = null;
+                }, wait);
+            };
+            debounced.cancel = function () {
+                clearTimeout(timeout);
+                clearTimeout(removeTimeout);
+                timeout = null;
+            };
+
+            return debounced;
+        };
 
         return {
             alert: alert,
@@ -1930,7 +1974,8 @@
             isDate: isDate,
             isDateFormat: isDateFormat,
             stopEvent: stopEvent,
-            selectRange: selectRange
+            selectRange: selectRange,
+            debounce: debounce
         }
     })();
 

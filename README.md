@@ -9,7 +9,7 @@ https://cdn.rawgit.com/ax5ui/ax5ui-kernel/master/dist/ax5ui.all.min.js
 1. Fork this Origninal repository to your repository.
 2. Clone your repository to your desktop.
 3. Open Terminal
-4. Move to git Location : ax5ui-kernel
+4. Move to git folder (Folder Name : ax5ui-kernel)
 5. Type this instruction : npm install
 
 ```
@@ -30,7 +30,7 @@ toms-mac:ax5ui-kernel tom$ gulp default
 [13:25:57] Finished 'default' after 227 msa
 ```
 >* if you success, you can see this screen.
-    2. if you fail to run gulp, the reason is 'you don't have permission' or 'npm is not installed'
+    2. if you fail to run gulp, the reason is ['you don't have permission' or 'npm is not installed']
     3. please refer to an Internet
     4. this keyword will help you : 
       1. npm init
