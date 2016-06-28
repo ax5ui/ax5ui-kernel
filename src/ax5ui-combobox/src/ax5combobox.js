@@ -10,7 +10,7 @@
     /**
      * @class ax5combobox
      * @classdesc
-     * @version 0.1.2
+     * @version 0.1.3
      * @author tom@axisj.com
      * @example
      * ```
@@ -239,7 +239,7 @@
                         }
 
                         // 높이조절 처리
-                        if(item.multiple){
+                        if (item.multiple) {
                             var displayTableHeightAdjust = (function () {
                                 return U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
                             }).call(this);
@@ -570,7 +570,9 @@
                     for (var i = 0, l = childNodes.length; i < l; i++) {
                         var node = childNodes[i];
                         if (node.nodeType in nodeTypeProcessor) {
+
                             var value = nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node, true);
+
                             if (typeof value === "undefined") {
                                 //
                             }
@@ -694,7 +696,6 @@
 
                         if (item.$target.find("select").get(0)) {
                             item.$select = item.$target.find("select");
-                            // input 속성만 변경
                             item.$select
                                 .attr("tabindex", "-1")
                                 .attr("class", "form-control " + data.formSize);
@@ -708,11 +709,11 @@
                         else {
                             item.$select = jQuery(ax5.mustache.render(getSelectTmpl.call(this, queIdx), data));
                             item.$target.append(item.$select);
-                            // combobox append
                         }
 
                         item.$target.append(item.$display);
                         // 라벨에 사용자 입력 필드가 있으므로 displayInput은 필요 없음.
+                        // select.options로 item.options를 만들어내거나 item.options로 select.options를 만들어냄
                         item.options = syncComboboxOptions.call(this, queIdx, item.options);
 
                         alignComboboxDisplay.call(this);
@@ -754,6 +755,7 @@
                     else {
                         this.queue[queIdx].selected.push(jQuery.extend({}, O));
                         /*
+                         콤보박스는 selected가 없을 때 options의 첫번째 아이템이 selected가 되지 않는다.
                          if (this.queue[queIdx].multiple) this.queue[queIdx].selected.push(jQuery.extend({}, O));
                          else this.queue[queIdx].selected[0] = jQuery.extend({}, O);
                          */
@@ -774,10 +776,8 @@
                         po.push('<option value=""></option>');
 
                         item.options.forEach(function (O, OIndex) {
-
                             /// @gindex : index of optionGroup
                             /// @index : index of options (if you use optionGroup then the index is not unique)
-
                             if (O.optgroup) {
                                 O['@gindex'] = OIndex;
                                 O.options.forEach(function (OO, OOIndex) {
@@ -816,7 +816,6 @@
                         item.$select.html(po.join(''));
                     }
                     else {
-                        /// 현재 사용되지 않는 구문
                         /// select > options 태그로 스크립트 options를 만들어주는 역할
                         elementOptions = U.toArray(item.$select.get(0).options);
                         // select option 스크립트 생성
@@ -827,12 +826,18 @@
                             option[item.columnKeys.optionText] = O.text;
                             option[item.columnKeys.optionSelected] = O.selected;
                             option['@index'] = OIndex;
+                            option['@findex'] = focusIndex;
                             if (O.selected) setSelected.call(self, queIdx, option);
                             newOptions.push(option);
+                            focusIndex++;
+
                             option = null;
                         });
                         item.options = newOptions;
                         item.indexedOptions = newOptions;
+
+                        item.$select.prepend('<option value=""></option>');
+                        item.$select.get(0).options[0].selected = true;
                     }
 
                     po = null;
@@ -896,14 +901,13 @@
 
                         }
 
-                        var $option;
-                        if (item.optionFocusIndex > -1) $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
-                        if (item.optionFocusIndex > -1 && $option.get(0) && $option.attr("data-option-value")) {
+                        var option;
+                        if (item.optionFocusIndex > -1 && (option = item.indexedOptions[item.optionFocusIndex]) && option[cfg.columnKeys.optionText].substr(0, text.length) === text) {
                             return {
                                 index: {
-                                    gindex: $option.attr("data-option-group-index"),
-                                    index: $option.attr("data-option-index"),
-                                    value: $option.attr("data-option-value")
+                                    gindex: option["@gindex"],
+                                    index: option["@index"],
+                                    value: option[cfg.columnKeys.optionValue]
                                 }
                             }
                         } else {
