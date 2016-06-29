@@ -361,7 +361,7 @@
                             if (typeof value !== "undefined") values.push(value);
                         }
                     }
-
+                    console.log(values);
                     this.val(item.id, values, true, "internal"); // set Value
                     if (!item.multiple) this.close();
                 }
@@ -385,18 +385,17 @@
                 var item = this.queue[queIdx], displayTableHeight;
                 item.$displayLabel
                     .html(getLabel.call(this, queIdx));
+                item.$target.height('');
+                item.$display.height('');
 
                 // label 사이즈 체크
-                //console.log(this.queue[queIdx].$displayTable.outerHeight());
+                // console.log(item.$target.height(), item.$displayTable.outerHeight());
                 if (item.$target.height() < (displayTableHeight = item.$displayTable.outerHeight())) {
                     var displayTableHeightAdjust = (function () {
                         return U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
                     })();
                     item.$target.css({height: displayTableHeight + displayTableHeightAdjust});
                     item.$display.css({height: displayTableHeight + displayTableHeightAdjust});
-                } else {
-                    item.$target.height('');
-                    item.$display.height('');
                 }
             },
             focusLabel = function (queIdx) {
@@ -443,9 +442,11 @@
                         }
                     })(item, O);
 
+                    /*
                     item.$display
                         .find('[data-ax5combobox-display="label"]')
                         .html(getLabel.call(this, this.activecomboboxQueueIndex));
+                        */
                     item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
 
                     alignComboboxDisplay.call(this);
@@ -664,7 +665,8 @@
                         focusWord.call(self, queIdx, searchWord);
                     }
 
-                }, 100);
+                }, 300);
+
                 var comboboxEvent = {
                     'click': function (queIdx, e) {
                         var target = U.findParentNode(e.target, function (target) {
@@ -687,6 +689,8 @@
                             else {
                                 self.open(queIdx);
                                 if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
+                                    this.queue[queIdx].$displayLabel
+                                        .html(getLabel.call(this, queIdx));
                                     focusLabel.call(this, queIdx);
                                 }
                             }
@@ -851,7 +855,11 @@
                                     }
 
                                     item.indexedOptions.push({
-                                        '@findex': focusIndex, value: OO[item.columnKeys.optionValue], text: OO[item.columnKeys.optionText]
+                                        '@gindex': OIndex,
+                                        '@index': OOIndex,
+                                        '@findex': focusIndex, 
+                                        value: OO[item.columnKeys.optionValue], 
+                                        text: OO[item.columnKeys.optionText]
                                     });
                                     focusIndex++;
                                 });
@@ -867,7 +875,10 @@
                                 }
 
                                 item.indexedOptions.push({
-                                    '@findex': focusIndex, value: O[item.columnKeys.optionValue], text: O[item.columnKeys.optionText]
+                                    '@index': OIndex,
+                                    '@findex': focusIndex, 
+                                    value: O[item.columnKeys.optionValue], 
+                                    text: O[item.columnKeys.optionText]
                                 });
                                 focusIndex++;
                             }
@@ -1399,6 +1410,7 @@
                                 break;
                             }
                         }
+
                         syncLabel.call(this, queIdx);
                     }
                 }
