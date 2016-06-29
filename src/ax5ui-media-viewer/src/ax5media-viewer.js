@@ -30,10 +30,8 @@
                 "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
             },
             getMousePosition = function (e) {
-                var mouseObj = e;
-                if ('changedTouches' in e.originalEvent) {
-                    mouseObj = e.originalEvent.changedTouches[0];
-                }
+                var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+                
                 return {
                     clientX: mouseObj.clientX,
                     clientY: mouseObj.clientY,

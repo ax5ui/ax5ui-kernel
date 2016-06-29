@@ -12,7 +12,7 @@
     /**
      * @class ax5combobox
      * @classdesc
-     * @version 0.1.3
+     * @version 0.1.4
      * @author tom@axisj.com
      * @example
      * ```
@@ -302,6 +302,50 @@
              }
              */
         },
+            onSearch = function onSearch(queIdx, searchWord) {
+
+            this.queue[queIdx].waitOptions = true;
+            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx])));
+
+            this.queue[queIdx].onSearch.call({
+                self: this,
+                item: this.queue[queIdx]
+            }, function (O) {
+
+                var data = {};
+                var item = this.queue[this.activecomboboxQueueIndex];
+
+                /// 현재 selected 검증후 처리
+                (function (item, O) {
+                    var optionsMap = {};
+                    O.options.forEach(function (_O, _OIndex) {
+                        _O["@index"] = _OIndex;
+                        optionsMap[_O[item.columnKeys.optionValue]] = _O;
+                    });
+                    if (U.isArray(item.selected)) {
+                        item.selected.forEach(function (_O) {
+                            if (optionsMap[_O[item.columnKeys.optionValue]]) {
+                                O.options[optionsMap[_O[item.columnKeys.optionValue]]["@index"]][item.columnKeys.optionSelected] = true;
+                            }
+                        });
+                    }
+                })(item, O);
+
+                item.$display.find('[data-ax5combobox-display="label"]').html(getLabel.call(this, this.activecomboboxQueueIndex));
+                item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
+
+                alignComboboxDisplay.call(this);
+
+                /// 템플릿에 전달할 오브젝트 선언
+                data.id = item.id;
+                data.theme = item.theme;
+                data.size = "ax5combobox-option-group-" + item.size;
+                data.multiple = item.multiple;
+                data.lang = item.lang;
+                data.options = item.options;
+                this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+            }.bind(this));
+        },
             focusWord = function focusWord(queIdx, searchWord) {
             var options = [],
                 i = -1,
@@ -310,6 +354,19 @@
             if (searchWord != "") {
                 var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
                 searchWord = searchWord.replace(regExp, "");
+                if (this.queue[queIdx].onSearch) {
+                    onSearch.call(this, queIdx, searchWord);
+
+                    try {
+                        return options;
+                    } finally {
+                        options = null;
+                        i = null;
+                        l = null;
+                        n = null;
+                    }
+                    // if there is a "onSearch", to end this process
+                }
 
                 while (l - i++) {
                     n = this.queue[queIdx].indexedOptions[i];
@@ -729,7 +786,7 @@
                 var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
                 var item = this.queue[queIdx];
                 var selectedIndex, option;
-                if (node.getAttribute("data-ax5combobox-selected-text") == text) {
+                if (item.selected && item.selected.length > 0 && node.getAttribute("data-ax5combobox-selected-text") == text) {
                     selectedIndex = node.getAttribute("data-ax5combobox-selected-label");
                     option = item.selected[selectedIndex];
                     return {
