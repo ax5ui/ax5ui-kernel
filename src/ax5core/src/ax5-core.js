@@ -1885,6 +1885,7 @@
          * @method ax5.util.debounce
          * @param {Function} func
          * @param {Number} wait
+         * @param {Boolean} immediately
          * @returns {debounced}
          * @example
          * ```js
@@ -1894,7 +1895,7 @@
          * });
          * ```
          */
-        var debounce = function (func, wait) {
+        var debounce = function (func, wait, immediately) {
             var timeout, removeTimeout;
             var debounced = function () {
                 var args = toArray(arguments);
@@ -1910,8 +1911,8 @@
                     // 첫 호출
                     timeout = setTimeout((function (args) {
                         func.apply(this, args);
-                    }).bind(this, args), 0);
-                }
+                    }).bind(this, args), (immediately) ? 0 : wait);
+                } 
                 removeTimeout = setTimeout(function(){
                     clearTimeout(timeout);
                     timeout = null;

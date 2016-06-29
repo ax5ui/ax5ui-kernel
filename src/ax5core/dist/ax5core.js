@@ -1813,6 +1813,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * @method ax5.util.debounce
          * @param {Function} func
          * @param {Number} wait
+         * @param {Boolean} immediately
          * @returns {debounced}
          * @example
          * ```js
@@ -1822,7 +1823,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * });
          * ```
          */
-        var debounce = function debounce(func, wait) {
+        var debounce = function debounce(func, wait, immediately) {
             var timeout, removeTimeout;
             var debounced = function debounced() {
                 var args = toArray(arguments);
@@ -1838,7 +1839,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     // 첫 호출
                     timeout = setTimeout(function (args) {
                         func.apply(this, args);
-                    }.bind(this, args), 0);
+                    }.bind(this, args), immediately ? 0 : wait);
                 }
                 removeTimeout = setTimeout(function () {
                     clearTimeout(timeout);

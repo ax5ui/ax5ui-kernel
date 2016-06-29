@@ -513,7 +513,7 @@ ax5.util.stopEvent(e);
 ```
 
 ## ax5.util.debounce
-`ax5.util.debounce(func, wait)`
+`ax5.util.debounce(func, wait[, immediately])`
 ```js
 var debounceFn = ax5.util.debounce(function( val ) {
     console.log(val);
