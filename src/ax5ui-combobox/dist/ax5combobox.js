@@ -12,7 +12,7 @@
     /**
      * @class ax5combobox
      * @classdesc
-     * @version 0.1.4
+     * @version 0.1.5
      * @author tom@axisj.com
      * @example
      * ```
@@ -249,7 +249,7 @@
                         if (typeof value !== "undefined") values.push(value);
                     }
                 }
-                console.log(values);
+
                 this.val(item.id, values, true, "internal"); // set Value
                 if (!item.multiple) this.close();
             }
@@ -350,6 +350,7 @@
             }.bind(this));
         },
             focusWord = function focusWord(queIdx, searchWord) {
+            if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
             var options = [],
                 i = -1,
                 l = this.queue[queIdx].indexedOptions.length - 1,
@@ -495,11 +496,12 @@
         },
             bindComboboxTarget = function () {
             var debouncedFocusWord = U.debounce(function (queIdx) {
+                if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
+
                 var values = [];
                 var searchWord = "";
                 var item = this.queue[queIdx];
                 var childNodes = item.$displayLabel.get(0).childNodes;
-
                 for (var i = 0, l = childNodes.length; i < l; i++) {
                     var node = childNodes[i];
                     if (node.nodeType in nodeTypeProcessor) {
@@ -532,6 +534,32 @@
                             focusWord.call(self, queIdx, searchWord);
                         }
             }, 300);
+
+            var blurLabel = function blurLabel(queIdx) {
+                var values = [];
+                var item = this.queue[queIdx];
+                var editingText;
+                var childNodes = item.$displayLabel.get(0).childNodes;
+
+                for (var i = 0, l = childNodes.length; i < l; i++) {
+                    var node = childNodes[i];
+                    if (node.nodeType in nodeTypeProcessor) {
+                        var value = nodeTypeProcessor[node.nodeType].call(this, queIdx, node, true);
+                        if (typeof value === "undefined") {
+                            //
+                        } else if (U.isString(value)) {
+                                editingText = value;
+                                values.push(value);
+                            } else {
+                                values.push(value);
+                            }
+                    }
+                }
+
+                if (typeof editingText !== "undefined") {
+                    this.val(item.id, values, undefined, "internal"); // set Value
+                }
+            };
 
             var comboboxEvent = {
                 'click': function click(queIdx, e) {
@@ -593,6 +621,9 @@
                 },
                 'blur': function blur(queIdx, e) {
                     //console.log(e);
+                    //debouncedFocusWord.call(this, queIdx);
+                    blurLabel.call(this, queIdx);
+                    U.stopEvent(e);
                 }
             };
 
@@ -797,6 +828,7 @@
             '1': function _(queIdx, node, editable) {
                 var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
                 var item = this.queue[queIdx];
+
                 var selectedIndex, option;
                 if (item.selected && item.selected.length > 0 && node.getAttribute("data-ax5combobox-selected-text") == text) {
                     selectedIndex = node.getAttribute("data-ax5combobox-selected-label");
@@ -1025,7 +1057,9 @@
                     // onExpand 인 경우 UI 대기모드 추가
                     data.waitOptions = true;
                 }
-                data.options = item.options;
+                data.options = U.filter(item.options, function () {
+                    return !this.hide;
+                });
 
                 this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
                 this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
