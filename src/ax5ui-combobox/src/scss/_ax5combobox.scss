@@ -29,6 +29,11 @@
         // Inline-block all the things for "inline"
         [data-ax5combobox] {
             display: inline-block;
+            .ax5combobox-display {
+                .ax5combobox-display-table {
+                    table-layout: auto;
+                }
+            }
         }
     }
 }
@@ -38,6 +43,14 @@
     position: relative;
     overflow: visible;
     display: block;
+    margin: 0px;
+
+    select {
+        z-index: 1;
+        position: absolute;
+        opacity: 0;
+        @include user-select(none);
+    }
 }
 
 @include keyframes(ax-combobox-option-group) {
@@ -331,10 +344,10 @@ $hover-types: (
 
 /// select-display
 .ax5combobox-display {
-    position: absolute;
-    top: 0px;
+    position: relative;
     z-index: 2;
     padding: 0px;
+    display: block;
 
     &:hover, &:focus {
         text-decoration: none;
