@@ -10,7 +10,7 @@
     /**
      * @class ax5combobox
      * @classdesc
-     * @version 0.1.5
+     * @version 0.1.6
      * @author tom@axisj.com
      * @example
      * ```
@@ -762,6 +762,9 @@
                         //debouncedFocusWord.call(this, queIdx);
                         blurLabel.call(this, queIdx);
                         U.stopEvent(e);
+                    },
+                    'selectChange': function (queIdx, e) {
+                        this.val(queIdx, this.queue[queIdx].$select.val(), true);
                     }
                 };
 
@@ -836,6 +839,11 @@
                         .bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx))
                         .unbind("keydown.ax5combobox")
                         .bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
+
+                    // select 태그에 대한 change 이벤트 감시
+                    item.$select
+                        .unbind('change.ax5combobox')
+                        .bind('change.ax5combobox', comboboxEvent.selectChange.bind(this, queIdx));
 
                     data = null;
                     item = null;

@@ -38,9 +38,10 @@
 
         <div class="form-group">
             <div data-ax5combobox="combo3" data-ax5combobox-config='{
+            multiple: true,
             size:""
         }'>
-                <select data-ax-path="select2">
+                <select data-ax-path="combo3">
                     <option value="1">장기영</option>
                     <option value="2">이영희</option>
                     <option value="3">황인서</option>
@@ -88,7 +89,7 @@
                     console.log($(document.forms).serialize());
                     break;
                 case "setValueSelect":
-                    //$('[data-ax-path="select3"]').val("7").trigger("change");
+                    $('[data-ax-path="combo3"]').val("6").trigger("change");
                     //$('[data-ax-path="select2"]').val(["optionValue7", "optionValue9"]).trigger("change");
                     break;
                 case "update":
