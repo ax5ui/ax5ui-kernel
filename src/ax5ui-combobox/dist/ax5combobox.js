@@ -12,7 +12,7 @@
     /**
      * @class ax5combobox
      * @classdesc
-     * @version 0.1.6
+     * @version 0.1.7
      * @author tom@axisj.com
      * @example
      * ```
@@ -533,7 +533,7 @@
                     } else if (searchWord != "") {
                             focusWord.call(self, queIdx, searchWord);
                         }
-            }, 300);
+            }, 150);
 
             var blurLabel = function blurLabel(queIdx) {
                 var values = [];
@@ -1378,9 +1378,23 @@
 /**
  * @method jQueryExtends.ax5combobox
  * @param {String} methodName
+ * @param [arguments]
+ * @param [arguments]
  * @example
- * ```js
+ * ```html
+ * <div data-ax5combobox="combo1" data-ax5combobox-config='{
+ *  multiple: true,
+ *  editable: true,
+ *  size: "",
+ *  theme:""
+ *  }'></div>
+ * <script>
  * jQuery('[data-ax5combobox="ax1"]').ax5combobox();
+ * $('[data-ax5combobox="ax1"]').ax5combobox("getValue");
+ * $('[data-ax5combobox="ax1"]').ax5combobox("setValue", ["string", "number"]);
+ * $('[data-ax5combobox="ax1"]').ax5combobox("enable");
+ * $('[data-ax5combobox="ax1"]').ax5combobox("disable");
+ * </script>
  * ```
  */
 
