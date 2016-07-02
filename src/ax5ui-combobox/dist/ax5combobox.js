@@ -12,7 +12,7 @@
     /**
      * @class ax5combobox
      * @classdesc
-     * @version 0.1.7
+     * @version 0.1.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -108,7 +108,7 @@
             return '\n                <div class="ax5combobox-option-group {{theme}} {{size}}" data-ax5combobox-option-group="{{id}}">\n                    <div class="ax-combobox-body">\n                        <div class="ax-combobox-option-group-content" data-els="content"></div>\n                    </div>\n                    <div class="ax-combobox-arrow"></div> \n                </div>\n                ';
         },
             getTmpl = function getTmpl() {
-            return '\n                <div class="form-control {{formSize}} ax5combobox-display {{theme}}" \n                data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">\n                    <div class="ax5combobox-display-table" data-els="display-table">\n                        <div data-ax5combobox-display="label-holder"> \n                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n                        data-ax5combobox-display="label"\n                        contenteditable="true"\n                        spellcheck="false">{{{label}}}</a>\n                        </div>\n                        <div data-ax5combobox-display="addon"> \n                            {{#multiple}}{{#reset}}\n                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                            {{/reset}}{{/multiple}}\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
+            return '\n                <div class="form-control {{formSize}} ax5combobox-display {{theme}}" \n                data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">\n                    <div class="ax5combobox-display-table" data-els="display-table">\n                        <div data-ax5combobox-display="label-holder"> \n                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n                        data-ax5combobox-display="label"\n                        contentEditable="true"\n                        spellcheck="false">{{{label}}}</a>\n                        </div>\n                        <div data-ax5combobox-display="addon"> \n                            {{#multiple}}{{#reset}}\n                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                            {{/reset}}{{/multiple}}\n                            {{#icons}}\n                            <span class="addon-icon-closed">{{clesed}}</span>\n                            <span class="addon-icon-opened">{{opened}}</span>\n                            {{/icons}}\n                            {{^icons}}\n                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                            {{/icons}}\n                        </div>\n                    </div>\n                </a>\n                ';
         },
             getSelectTmpl = function getSelectTmpl() {
             return '\n                <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n                ';
@@ -117,7 +117,7 @@
             return '\n                {{#waitOptions}}\n                    <div class="ax-combobox-option-item">\n                            <div class="ax-combobox-option-item-holder">\n                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">\n                                    {{{lang.loading}}}\n                                </span>\n                            </div>\n                        </div>\n                {{/waitOptions}}\n                {{^waitOptions}}\n                    {{#options}}\n                        {{#optgroup}}\n                            <div class="ax-combobox-option-group">\n                                <div class="ax-combobox-option-item-holder">\n                                    <span class="ax-combobox-option-group-label">\n                                        {{{.}}}\n                                    </span>\n                                </div>\n                                {{#options}}\n                                {{^hide}}\n                                <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" \n                                data-option-value="{{' + columnKeys.optionValue + '}}" \n                                {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                    <div class="ax-combobox-option-item-holder">\n                                        {{#multiple}}\n                                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">\n                                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                        </span>\n                                        {{/multiple}}\n                                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                    </div>\n                                </div>\n                                {{/hide}}\n                                {{/options}}\n                            </div>                            \n                        {{/optgroup}}\n                        {{^optgroup}}\n                        {{^hide}}\n                        <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                            <div class="ax-combobox-option-item-holder">\n                                {{#multiple}}\n                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">\n                                    <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                </span>\n                                {{/multiple}}\n                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                            </div>\n                        </div>\n                        {{/hide}}\n                        {{/optgroup}}\n                    {{/options}}\n                    {{^options}}\n                        <div class="ax-combobox-option-item">\n                            <div class="ax-combobox-option-item-holder">\n                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">\n                                    {{{lang.noOptions}}}\n                                </span>\n                            </div>\n                        </div>\n                    {{/options}}\n                {{/waitOptions}}\n                ';
         },
             getLabelTmpl = function getLabelTmpl(columnKeys) {
-            return '\n                {{#selected}}\n                <span tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">{{text}}</span> \n                {{/selected}}\n                <span>&nbsp;</span>\n                ';
+            return '{{#selected}}<span tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">{{text}}</span>{{/selected}}';
         },
             alignComboboxDisplay = function alignComboboxDisplay() {
             var i = this.queue.length,
@@ -267,7 +267,7 @@
             data.options = item.options;
             data.selected = item.selected;
             data.hasSelected = data.selected && data.selected.length > 0;
-            return ax5.mustache.render(getLabelTmpl.call(this, item.columnKeys), data);
+            return ax5.mustache.render(getLabelTmpl.call(this, item.columnKeys), data) + "&nbsp;";
         },
             syncLabel = function syncLabel(queIdx) {
             var item = this.queue[queIdx],
@@ -287,19 +287,8 @@
             }
         },
             focusLabel = function focusLabel(queIdx) {
-
             this.queue[queIdx].$displayLabel.trigger("focus");
             U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
-            /*
-             if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
-             this.queue[queIdx].$displayLabel.html('<span>&nbsp;</span>').trigger("focus");
-             U.selectRange(this.queue[queIdx].$displayLabel, [0, 0]); // 포커스 end || selectAll
-             }
-             else {
-             this.queue[queIdx].$displayLabel.trigger("focus");
-             U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
-             }
-             */
         },
             onSearch = function onSearch(queIdx, searchWord) {
 
@@ -563,6 +552,7 @@
 
             var comboboxEvent = {
                 'click': function click(queIdx, e) {
+
                     var target = U.findParentNode(e.target, function (target) {
                         if (target.getAttribute("data-selected-clear")) {
                             //clickEl = "clear";
@@ -581,6 +571,7 @@
                             }
                         } else {
                             self.open(queIdx);
+
                             if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
                                 this.queue[queIdx].$displayLabel.html(getLabel.call(this, queIdx));
                                 focusLabel.call(this, queIdx);
@@ -685,6 +676,7 @@
                 item.$display.unbind('click.ax5combobox').bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
 
                 // combobox 태그에 대한 이벤트 감시
+
                 item.$displayLabel.unbind("focus.ax5combobox").bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx)).unbind("blur.ax5combobox").bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx)).unbind('keyup.ax5combobox').bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5combobox").bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
 
                 // select 태그에 대한 change 이벤트 감시
@@ -769,7 +761,9 @@
                     item.$select.html(po.join(''));
                 } else {
                     /// select > options 태그로 스크립트 options를 만들어주는 역할
+                    item.$select.get(0).options[0].selected = false;
                     elementOptions = U.toArray(item.$select.get(0).options);
+
                     // select option 스크립트 생성
                     newOptions = [];
                     elementOptions.forEach(function (O, OIndex) {

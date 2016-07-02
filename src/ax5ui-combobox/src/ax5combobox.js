@@ -10,7 +10,7 @@
     /**
      * @class ax5combobox
      * @classdesc
-     * @version 0.1.7
+     * @version 0.1.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -124,7 +124,7 @@
                         <div data-ax5combobox-display="label-holder"> 
                         <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
                         data-ax5combobox-display="label"
-                        contenteditable="true"
+                        contentEditable="true"
                         spellcheck="false">{{{label}}}</a>
                         </div>
                         <div data-ax5combobox-display="addon"> 
@@ -215,12 +215,7 @@
                 `;
             },
             getLabelTmpl = function (columnKeys) {
-                return `
-                {{#selected}}
-                <span tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">{{text}}</span> 
-                {{/selected}}
-                <span>&nbsp;</span>
-                `;
+                return `{{#selected}}<span tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">{{text}}</span>{{/selected}}`;
             },
             alignComboboxDisplay = function () {
                 var i = this.queue.length, w;
@@ -379,7 +374,7 @@
                 data.options = item.options;
                 data.selected = item.selected;
                 data.hasSelected = (data.selected && data.selected.length > 0);
-                return ax5.mustache.render(getLabelTmpl.call(this, item.columnKeys), data);
+                return ax5.mustache.render(getLabelTmpl.call(this, item.columnKeys), data) + "&nbsp;";
             },
             syncLabel = function (queIdx) {
                 var item = this.queue[queIdx], displayTableHeight;
@@ -399,19 +394,8 @@
                 }
             },
             focusLabel = function (queIdx) {
-
                 this.queue[queIdx].$displayLabel.trigger("focus");
                 U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
-                /*
-                 if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
-                 this.queue[queIdx].$displayLabel.html('<span>&nbsp;</span>').trigger("focus");
-                 U.selectRange(this.queue[queIdx].$displayLabel, [0, 0]); // 포커스 end || selectAll
-                 }
-                 else {
-                 this.queue[queIdx].$displayLabel.trigger("focus");
-                 U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
-                 }
-                 */
             },
             onSearch = function (queIdx, searchWord) {
 
@@ -698,6 +682,7 @@
 
                 var comboboxEvent = {
                     'click': function (queIdx, e) {
+
                         var target = U.findParentNode(e.target, function (target) {
                             if (target.getAttribute("data-selected-clear")) {
                                 //clickEl = "clear";
@@ -717,6 +702,7 @@
                             }
                             else {
                                 self.open(queIdx);
+
                                 if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
                                     this.queue[queIdx].$displayLabel
                                         .html(getLabel.call(this, queIdx));
@@ -830,6 +816,7 @@
                         .bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
 
                     // combobox 태그에 대한 이벤트 감시
+
                     item.$displayLabel
                         .unbind("focus.ax5combobox")
                         .bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx))
@@ -928,7 +915,9 @@
                     }
                     else {
                         /// select > options 태그로 스크립트 options를 만들어주는 역할
+                        item.$select.get(0).options[0].selected = false;
                         elementOptions = U.toArray(item.$select.get(0).options);
+
                         // select option 스크립트 생성
                         newOptions = [];
                         elementOptions.forEach(function (O, OIndex) {

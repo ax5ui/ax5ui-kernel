@@ -359,7 +359,6 @@ $hover-types: (
         display: table;
         table-layout: fixed;
         border-collapse: collapse;
-        @include user-select(none);
 
         [data-ax5combobox-display="label-holder"] {
             display: table-cell;
