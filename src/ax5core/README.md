@@ -2,7 +2,8 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5core
-"ax5core" is a collection of utility functions, designed for use in ax5ui. "ax5core" consist of "ax5" keys.(ax5.info, ax5.util ...) class variable will be added under "ax5.ui"
+"ax5core" is a collection of utility functions, designed for use in ax5ui. "ax5core" consist of "ax5" keys.(ax5.info, ax5.util ...) class variable will be added under "ax5.ui".
+
 By these build system, "ax5core" needs only a minimal code and "ax5core" can guarantee the safety, application-compatibility.
 
 > *Dependencies*
