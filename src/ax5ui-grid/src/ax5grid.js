@@ -1,14 +1,14 @@
-// ax5.ui.select
+// ax5.ui.grid
 (function (root, _SUPER_) {
 
     /**
-     * @class ax5.ui.select
+     * @class ax5.ui.grid
      * @classdesc
-     * @version 0.4.5
+     * @version 0.0.1
      * @author tom@axisj.com
      * @example
      * ```
-     * var myselect = new ax5.ui.select();
+     * var myGrid = new ax5.ui.grid();
      * ```
      */
     var U = ax5.util;
@@ -21,18 +21,12 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.queue = [];
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
             title: '',
             animateTime: 250
         };
-
-        this.activeselect = null;
-        this.activeselectQueueIndex = -1;
-        this.openTimer = null;
-        this.closeTimer = null;
 
         cfg = this.config;
 
@@ -49,56 +43,19 @@
         /// private end
 
         /**
-         * Preferences of select UI
-         * @method ax5.ui.select.setConfig
+         * Preferences of grid UI
+         * @method ax5.ui.grid.setConfig
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.select}
+         * @returns {ax5.ui.grid}
          * @example
          * ```
          * ```
          */
         this.init = function () {
             this.onStateChanged = cfg.onStateChanged;
+            this.onClick = cfg.onClick;
+
         };
-
-        this.bind = function (opts) {
-            var
-                selectConfig = {},
-                optIdx;
-
-            jQuery.extend(true, selectConfig, cfg);
-            if (opts) jQuery.extend(true, selectConfig, opts);
-            opts = selectConfig;
-
-            if (!opts.target) {
-                console.log(ax5.info.getError("ax5select", "401", "bind"));
-                return this;
-            }
-            opts.$target = jQuery(opts.target);
-            if (!opts.id) opts.id = opts.$target.data("ax5-select");
-
-            if (!opts.id) {
-                opts.id = 'ax5-select-' + ax5.getGuid();
-                opts.$target.data("ax5-select", opts.id);
-            }
-            optIdx = U.search(this.queue, function () {
-                return this.id == opts.id;
-            });
-
-            if (optIdx === -1) {
-                this.queue.push(opts);
-                bindselectTarget.call(this, opts, this.queue.length - 1);
-            }
-            else {
-                this.queue[optIdx] = opts;
-                bindselectTarget.call(this, this.queue[optIdx], optIdx);
-            }
-
-            selectConfig = null;
-            optIdx = null;
-            return this;
-        };
-
 
         // 클래스 생성자
         this.main = (function () {
@@ -109,25 +66,9 @@
     };
     //== UI Class
 
-    root.select = (function () {
+    root.grid = (function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
     })(); // ax5.ui에 연결
 
 })(ax5.ui, ax5.ui.root);
-
-ax5.ui.select_instance = new ax5.ui.select();
-
-$.fn.ax5select = (function () {
-    return function (config) {
-        if (typeof config == "undefined") config = {};
-        $.each(this, function () {
-            var defaultConfig = {
-                target: this
-            };
-            config = $.extend(true, config, defaultConfig);
-            ax5.ui.select_instance.bind(config);
-        });
-        return this;
-    }
-})();
