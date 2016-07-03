@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.grid
      * @classdesc
-     * @version 0.0.1
+     * @version 0.0.2
      * @author tom@axisj.com
      * @example
      * ```
