@@ -10,7 +10,7 @@
     /**
      * @class ax5.ui.mediaViewer
      * @classdesc
-     * @version 0.3.0
+     * @version 0.3.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -542,6 +542,10 @@
 
         // 클래스 생성자
         this.main = (function () {
+
+            root.mediaViewer_instance = root.mediaViewer_instance || [];
+            root.mediaViewer_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }

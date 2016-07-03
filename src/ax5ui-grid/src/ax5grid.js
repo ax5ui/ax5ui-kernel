@@ -59,6 +59,10 @@
 
         // 클래스 생성자
         this.main = (function () {
+
+            root.grid_instance = root.grid_instance || [];
+            root.grid_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }

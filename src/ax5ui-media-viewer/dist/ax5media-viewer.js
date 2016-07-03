@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.mediaViewer
      * @classdesc
-     * @version 0.3.0
+     * @version 0.3.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -31,10 +31,8 @@
             "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
         },
             getMousePosition = function getMousePosition(e) {
-            var mouseObj = e;
-            if ('changedTouches' in e.originalEvent) {
-                mouseObj = e.originalEvent.changedTouches[0];
-            }
+            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+
             return {
                 clientX: mouseObj.clientX,
                 clientY: mouseObj.clientY,
@@ -477,6 +475,10 @@
 
         // 클래스 생성자
         this.main = function () {
+
+            root.mediaViewer_instance = root.mediaViewer_instance || [];
+            root.mediaViewer_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             } else {

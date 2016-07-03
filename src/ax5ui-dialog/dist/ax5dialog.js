@@ -6,7 +6,7 @@
     /**
      * @class ax5.ui.dialog
      * @classdesc
-     * @version 0.6.7
+     * @version 0.6.9
      * @author tom@axisj.com
      * @example
      * ```
@@ -437,6 +437,10 @@
 
         // 클래스 생성자
         this.main = function () {
+
+            root.dialog_instance = root.dialog_instance || [];
+            root.dialog_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
