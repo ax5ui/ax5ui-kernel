@@ -21,6 +21,9 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
+        this.name = "ax5grid";
+        this.version = "0.0.2";
+        
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
@@ -55,6 +58,7 @@
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
 
+            
         };
 
         // 클래스 생성자
@@ -62,6 +66,8 @@
 
             root.grid_instance = root.grid_instance || [];
             root.grid_instance.push(this);
+
+            // console.log(root.grid.tmpl.main);
 
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // ax5.ui.grid
 (function (root, _SUPER_) {
@@ -21,6 +21,9 @@
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
+
+        this.name = "ax5grid";
+        this.version = "0.0.2";
 
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
@@ -61,6 +64,8 @@
             root.grid_instance = root.grid_instance || [];
             root.grid_instance.push(this);
 
+            // console.log(root.grid.tmpl.main);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
@@ -73,3 +78,14 @@
         return axClass;
     }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);
+
+// ax5.ui.grid.tmpl
+(function (root) {
+    "use strict";
+
+    var main = "\n        main \n    ";
+
+    root.tmpl = {
+        main: main
+    };
+})(ax5.ui.grid);
