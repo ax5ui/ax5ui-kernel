@@ -2227,7 +2227,7 @@ ax5.info.errorMsg["ax5combobox"] = {
 /**
  * @class ax5.ui.root
  * @classdesc ax5 ui class
- * @version v0.0.1
+ * @version v0.1.0
  * @author tom@axisj.com
  * @logs
  * 2014-12-12 tom : start
@@ -2284,6 +2284,10 @@ ax5.ui = function (core) {
             if (e.stopPropagation) e.stopPropagation();
             e.cancelBubble = true;
             return false;
+        };
+
+        this.toString = function () {
+            return this.name + '@' + this.version;
         };
 
         // instance init
