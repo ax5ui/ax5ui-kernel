@@ -372,7 +372,7 @@
             },
             focusWord = function (queIdx, searchWord) {
                 var options = [], i = -1, l = this.queue[queIdx].indexedOptions.length - 1, n;
-                if(searchWord) {
+                if (searchWord) {
                     while (l - i++) {
                         n = this.queue[queIdx].indexedOptions[i];
                         if (('' + n.value).toLowerCase() == searchWord.toLowerCase()) {
@@ -453,7 +453,7 @@
                 }
             },
             bindSelectTarget = (function () {
-                var focusWordCall = U.debounce(function(searchWord, queIdx) {
+                var focusWordCall = U.debounce(function (searchWord, queIdx) {
                     focusWord.call(self, queIdx, searchWord);
                     self.queue[queIdx].$displayInput.val('');
                 }, 300);
@@ -531,7 +531,7 @@
 
                         item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
                         item.$displayLabel = item.$display.find('[data-ax5select-display="label"]');
-                        
+
                         if (item.$target.find("select").get(0)) {
                             item.$select = item.$target.find("select");
                             // select 속성만 변경
@@ -652,20 +652,21 @@
                         item.$select.html(po.join(''));
                     }
                     else {
-                        /// 현재 사용되지 않는 구문
                         /// select > options 태그로 스크립트 options를 만들어주는 역할
                         elementOptions = U.toArray(item.$select.get(0).options);
                         // select option 스크립트 생성
                         newOptions = [];
                         elementOptions.forEach(function (O, OIndex) {
                             var option = {};
-                            option[item.columnKeys.optionValue] = O.value;
-                            option[item.columnKeys.optionText] = O.text;
-                            option[item.columnKeys.optionSelected] = O.selected;
-                            option['@index'] = OIndex;
-                            option['@findex'] = OIndex;
-                            if (O.selected) setSelected.call(self, queIdx, option);
-                            newOptions.push(option);
+                            //if (O.value != "") {
+                                option[item.columnKeys.optionValue] = O.value;
+                                option[item.columnKeys.optionText] = O.text;
+                                option[item.columnKeys.optionSelected] = O.selected;
+                                option['@index'] = OIndex;
+                                option['@findex'] = OIndex;
+                                if (O.selected) setSelected.call(self, queIdx, option);
+                                newOptions.push(option);
+                            //}
                             option = null;
                         });
                         item.options = newOptions;

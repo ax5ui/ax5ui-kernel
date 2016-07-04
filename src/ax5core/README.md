@@ -2,46 +2,45 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5core
-"AX5" utility is very safe and useful.
-'ax5.info', 'ax5.util', and consists of 'ax5.ui', are among the "ax5.ui" At the same time, perform the parenting
-role and the root of the UI library.
+"ax5core" is a collection of utility functions, designed for use in ax5ui. "ax5core" consist of "ax5" keys.(ax5.info, ax5.util ...) class variable will be added under "ax5.ui".
 
-"ax5core" is a collection of utility functions that have been designed for use in ax5ui. 
-It was designed to the utility to act as a minimum code. So it can be considered to be simple compared to other utilities.
+By these build system, "ax5core" needs only a minimal code and "ax5core" can guarantee the safety, application-compatibility.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 
 ### Install by bower
+You can download ax5core by using bower.
+
+
 ```sh
 bower install ax5core
 ```
-[bower](http://bower.io/#install-bower) is web front-end package manager.
-using the `bower`, when you install the plug-in is installed to resolve the plug-in dependencies under the `bower_components` folder.  
-(You can change the folder location. [.bowerrc](http://bower.io/docs/config/#bowerrc-specification) )
+[bower](http://bower.io/#install-bower) is web front-end package manager. using bower, you can resolve the plug-in dependencies under the `bower_components` folder. (You can change the folder location. [.bowerrc](http://bower.io/docs/config/#bowerrc-specification) )
 
-It is recommended that you install by using the `bower`. 
-If you've never used a bower is, you will be able to be used for [http://bower.io/#install-bower](http://bower.io/#install-bower).
-
+To install ax5core by `bower` is recomended. 
+[http://bower.io/#install-bower](http://bower.io/#install-bower)  will help you. 
 ### Install by npm
-If you do not use the bower, it can be downloaded by using the npm as second best.
-In npm, so pile on the package manager for the front end, you need to solve the problem of plug-in dependencies.
+Otherwise you can download ax5core by using npm.
 
 ```sh
 npm install jquery
 npm install ax5core
 ```
 
-After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
-If the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.
+In npm, you need to solve the problem of plug-in dependencies.
+
+After you download the file by npm install, you have to copy the file where you want to use as a resource for the project.
+this process(managing project files) can be optimize by ['gulp'](http://gulpjs.com/) or ['grunt'](http://gruntjs.com/).
+
 
 ### Download code
 - [ax5core Github releases](https://github.com/ax5ui/ax5core/releases)
+- [Git clone here](https://github.com/ax5ui/ax5core)
 
 
 ### Insert the "ax5" in the HTML HEAD.
-Location of the folder can be determined freely in your project. But be careful not to accidentally caused
-exactly the path.
+You can determine folder location freely in you project. But be careful not to accidentally caused exactly the path.
 ```html
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
 <script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"></script>

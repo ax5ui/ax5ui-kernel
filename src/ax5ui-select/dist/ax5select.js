@@ -513,13 +513,13 @@
                     item.optionItemLength = focusIndex;
                     item.$select.html(po.join(''));
                 } else {
-                    /// 현재 사용되지 않는 구문
                     /// select > options 태그로 스크립트 options를 만들어주는 역할
                     elementOptions = U.toArray(item.$select.get(0).options);
                     // select option 스크립트 생성
                     newOptions = [];
                     elementOptions.forEach(function (O, OIndex) {
                         var option = {};
+                        //if (O.value != "") {
                         option[item.columnKeys.optionValue] = O.value;
                         option[item.columnKeys.optionText] = O.text;
                         option[item.columnKeys.optionSelected] = O.selected;
@@ -527,6 +527,7 @@
                         option['@findex'] = OIndex;
                         if (O.selected) setSelected.call(self, queIdx, option);
                         newOptions.push(option);
+                        //}
                         option = null;
                     });
                     item.options = newOptions;

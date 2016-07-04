@@ -4,7 +4,7 @@
     /**
      * @class ax5.ui.menu
      * @classdesc
-     * @version 0.5.1
+     * @version 0.5.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -705,6 +705,10 @@
 
         // 클래스 생성자
         this.main = (function () {
+
+            root.menu_instance = root.menu_instance || [];
+            root.menu_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }

@@ -6,7 +6,7 @@
     /**
      * @class ax5modal
      * @alias ax5.ui.modal
-     * @version 0.6.1
+     * @version 0.6.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -497,6 +497,10 @@
 
         // 클래스 생성자
         this.main = function () {
+
+            root.modal_instance = root.modal_instance || [];
+            root.modal_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }

@@ -12,7 +12,7 @@
     /**
      * @class ax5.ui.uploader
      * @classdesc
-     * @version 0.4.6
+     * @version 0.0.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -347,6 +347,10 @@
 
         // 클래스 생성자
         this.main = function () {
+
+            root.uploader_instance = root.uploader_instance || [];
+            root.uploader_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             } else {

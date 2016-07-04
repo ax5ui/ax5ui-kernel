@@ -30,10 +30,8 @@
                     "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
                 },
                 getMousePosition = function (e) {
-                    var mouseObj = e;
-                    if ('changedTouches' in e) {
-                        mouseObj = e.changedTouches[0];
-                    }
+                    var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+
                     return {
                         clientX: mouseObj.clientX,
                         clientY: mouseObj.clientY
@@ -374,7 +372,9 @@
                         };
                         var getResizerPosition = {
                             "left": function (e) {
-                                panel.__da = e.clientX - panel.mousePosition.clientX;
+                                var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+
+                                panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
                                 var minWidth = panel.minWidth || 0;
                                 var maxWidth = panel.maxWidth || (item.targetDimension.width - getDockPanelOuterSize["width"](item.dockPanel.left) - getDockPanelOuterSize["width"](item.dockPanel.right));
 
@@ -387,7 +387,9 @@
                                 return {left: panel.$splitter.position().left + panel.__da};
                             },
                             "right": function (e) {
-                                panel.__da = e.clientX - panel.mousePosition.clientX;
+                                var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+
+                                panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
                                 var minWidth = panel.minWidth || 0;
                                 var maxWidth = panel.maxWidth || (item.targetDimension.width - getDockPanelOuterSize["width"](item.dockPanel.left) - getDockPanelOuterSize["width"](item.dockPanel.right));
 
@@ -400,7 +402,9 @@
                                 return {left: panel.$splitter.position().left + panel.__da};
                             },
                             "top": function (e) {
-                                panel.__da = e.clientY - panel.mousePosition.clientY;
+                                var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+
+                                panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
                                 var minHeight = panel.minHeight || 0;
                                 var maxHeight = panel.maxHeight || (item.targetDimension.height - getDockPanelOuterSize["height"](item.dockPanel.top) - getDockPanelOuterSize["height"](item.dockPanel.bottom));
 
@@ -413,7 +417,9 @@
                                 return {top: panel.$splitter.position().top + panel.__da};
                             },
                             "bottom": function (e) {
-                                panel.__da = e.clientY - panel.mousePosition.clientY;
+                                var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+
+                                panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
                                 var minHeight = panel.minHeight || 0;
                                 var maxHeight = panel.maxHeight || (item.targetDimension.height - getDockPanelOuterSize["height"](item.dockPanel.top) - getDockPanelOuterSize["height"](item.dockPanel.bottom));
 
@@ -426,8 +432,10 @@
                                 return {top: panel.$splitter.position().top + panel.__da};
                             },
                             "split": function (e) {
+                                var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+
                                 if (item.oriental == "vertical") {
-                                    panel.__da = e.clientY - panel.mousePosition.clientY;
+                                    panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
 
                                     var prevPanel = item.splitPanel[panel.panelIndex - 1];
                                     var nextPanel = item.splitPanel[panel.panelIndex + 1];
@@ -446,7 +454,7 @@
                                 }
                                 else {
                                     /// todo : min & max 범위 정하기
-                                    panel.__da = e.clientX - panel.mousePosition.clientX;
+                                    panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
 
                                     var prevPanel = item.splitPanel[panel.panelIndex - 1];
                                     var nextPanel = item.splitPanel[panel.panelIndex + 1];

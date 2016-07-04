@@ -5,7 +5,7 @@
     /**
      * @class ax5.ui.calendar
      * @classdesc
-     * @version 0.8.0
+     * @version 0.8.1
      * @author tom@axisj.com
      * @logs
      * 2014-06-21 tom : 시작
@@ -875,6 +875,10 @@
 
         // 클래스 생성자
         this.main = function () {
+
+            root.calendar_instance = root.calendar_instance || [];
+            root.calendar_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }

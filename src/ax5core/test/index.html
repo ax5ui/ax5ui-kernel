@@ -12,6 +12,7 @@
 <div id="select-test-1" contentEditable="true">SELECT TEST</div>
 <div id="select-test-2" contentEditable="true">SELECT TEST</div>
 
+<div data-ax5combobox-display="label" contenteditable="true" spellcheck="false">&nbsp;</div>
 
 <script>
     //console.log(ax5.info.eventKeys);
@@ -45,10 +46,10 @@
      console.log(output);
 
 
-    /*
+
      $(document.body).ready(function () {
      ax5.util.selectRange($("#select-test-0"), "end");
-     ax5.util.selectRange($("#select-test-1").get(0), [1, 5]);
+     //ax5.util.selectRange($("#select-test-1").get(0), [1, 5]);
      //ax5.util.selectRange($("#select-test-2"), "end");
      });
 
@@ -63,11 +64,11 @@
     });
 
     //console.log(rs);
-    /*
+
     console.log(ax5.util.sum(arr, 10, function () {
         return this.value;
     }));
-    */
+
 
     var chk_fn = ax5.util.debounce(function( val ) { console.log(val); }, 300);
 

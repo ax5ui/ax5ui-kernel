@@ -6,7 +6,7 @@
     /**
      * @class ax5.ui.toast
      * @classdesc
-     * @version 0.2.4
+     * @version 0.2.5
      * @author tom@axisj.com
      * @example
      * ```
@@ -293,6 +293,10 @@
 
         // 클래스 생성자
         this.main = function () {
+
+            root.toast_instance = root.toast_instance || [];
+            root.toast_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }

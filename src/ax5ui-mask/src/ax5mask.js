@@ -3,7 +3,7 @@
     /**
      * @class ax5.ui.mask
      * @classdesc
-     * @version 0.6.7
+     * @version 0.6.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -202,6 +202,10 @@
 
         // 클래스 생성자
         this.main = (function () {
+
+            root.mask_instance = root.mask_instance || [];
+            root.mask_instance.push(this);
+
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
