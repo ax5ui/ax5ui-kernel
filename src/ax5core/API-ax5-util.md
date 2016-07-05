@@ -20,7 +20,7 @@ Javascript object type name is not clear. so util.getType() method is very usefu
 ## ax5.util.is*Type*()
 Return Boolean value depending on the correspondence of 'does the argument is this type?'.
 - argument : any type of variable.
-return : Boolean Value 1 || 0 (True || False)
+- return : Boolean Value 1 || 0 (True || False)
 
 ```js
 // return 1 || 0 (True || False)
