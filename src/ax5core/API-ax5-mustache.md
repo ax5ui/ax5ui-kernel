@@ -14,7 +14,7 @@ Instance01_ template:
 ```js
 var tmpl = "{{title}} spends {{calc}}";
 ```
-> -  It makes the format.
+ -  It makes an expression format.
 
 Instance02_ view:
 ```js
@@ -31,7 +31,7 @@ Usage_ ax5.mustache.render(template, view):
 ```
 var output = ax5.mustache.render(template, view);
 ```
-- You can use 'view' instance as 'template' format, by "ax5.mustach.render" code
+- You can express 'view' data as 'template' format, by "ax5.mustach.render" code
 
 Output_ console.log(output):
 ```js
@@ -62,7 +62,7 @@ var template =
 ```
 - '#' annotation : loop start signal at Array type.  
 - '/'  annotation : loop end signal at Array type.  
-- '@' annotation : loop index signal.(It can be used like as '?' with 'first'(@first=?first))
+- '@' annotation : loop index signal.(It can be used like as '?' with 'first'.(@first=?first))
 
 Instance02_ view:
 ```js
