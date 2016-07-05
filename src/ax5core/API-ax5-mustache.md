@@ -7,16 +7,16 @@ in the "https://github.com/janl/mustache.js", some of the syntax.
 ## ax5.mustache.render  
 `ax5.mustache.render(template, view)`
 
- > *Instance01_template, Instance02_view, Usage, Output*
+ > *Argument01_template, Argument02_view, Usage, Output*
 
 
-Instance01_ template:
+Argument01_ template:
 ```js
 var tmpl = "{{title}} spends {{calc}}";
 ```
  -  It makes an expression format.
 
-Instance02_ view:
+Argument02_ view:
 ```js
 var view = {
   title: "Joe",
@@ -47,11 +47,11 @@ Joe spends 6
 
 ## Array
 
- > *Instance01_template, Instance02_view, Usage, Output*
+ > *Argument01_template, Argument_view, Usage, Output*
 
 
 
-Instnace01_ template:
+Argument01_ template:
 ```
 var template =
 "
@@ -64,7 +64,7 @@ var template =
 - '/'  annotation : loop end signal at Array type.  
 - '@' annotation : loop index signal.(It can be used like as '?' with 'first'.(@first=?first))
 
-Instance02_ view:
+Argument02_ view:
 ```js
 var view = {
   "beatles": [
@@ -93,10 +93,10 @@ Output:
 
 ## Object.@each
 
- > *Instance01_template, Instance02_view, Usage, Output*
+ > *Argument01_template, Argument02_view, Usage, Output*
 
 
-Instance01_ template:
+Argument01_ template:
 ```
 var template=
 "
@@ -111,7 +111,7 @@ var template=
 - '.' annotation : access to child variable.
 
 
-Instance02_ view
+Argument02_ view
 ```js
 var view = {
     "beatles": {
