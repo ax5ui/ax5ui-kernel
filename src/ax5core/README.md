@@ -55,6 +55,7 @@ https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js
 ```
 
 ### Basic Usage
+You can check whether ax5core is correctly installed, by these basic example code.
 ```js
 ax5.util.date("20111111");
 //Fri Nov 11 2011 23:59:00 GMT+0900 (KST)
