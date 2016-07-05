@@ -79,6 +79,15 @@
                 msg: theme + ' color'
             }, function () {
                 console.log(this);
+
+                dialog.alert({
+                    theme: theme,
+                    title: 'Alert ' + theme,
+                    msg: theme + ' color'
+                }, function () {
+                    console.log(this);
+                });
+
             });
         });
 

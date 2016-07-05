@@ -6,7 +6,7 @@
     /**
      * @class ax5.ui.dialog
      * @classdesc
-     * @version 0.6.9
+     * @version 0.7.0
      * @author tom@axisj.com
      * @example
      * ```
@@ -271,7 +271,7 @@
         * }, function(){});
          * ```
          */
-        this.alert = function (opts, callBack) {
+        this.alert = function (opts, callBack, tryCount) {
             if (U.isString(opts)) {
                 opts = {
                     title: cfg.title,
@@ -280,7 +280,15 @@
             }
 
             if (this.activeDialog) {
-                console.log(ax5.info.getError("ax5dialog", "501", "alert"));
+                // try one more
+                if (!tryCount) {
+                    console.log("111");
+                    setTimeout(function () {
+                        this.alert(opts, callBack, 1);
+                    }.bind(this), Number(cfg.animateTime) + 100);
+                } else {
+                    console.log(ax5.info.getError("ax5dialog", "501", "alert"));
+                }
                 return this;
             }
 
@@ -315,7 +323,7 @@
         * }, function(){});
          * ```
          */
-        this.confirm = function (opts, callBack) {
+        this.confirm = function (opts, callBack, tryCount) {
             if (U.isString(opts)) {
                 opts = {
                     title: cfg.title,
@@ -324,7 +332,14 @@
             }
 
             if (this.activeDialog) {
-                console.log(ax5.info.getError("ax5dialog", "501", "confirm"));
+                // try one more
+                if (!tryCount) {
+                    setTimeout(function () {
+                        this.confirm(opts, callBack, 1);
+                    }.bind(this), Number(cfg.animateTime) + 100);
+                } else {
+                    console.log(ax5.info.getError("ax5dialog", "501", "confirm"));
+                }
                 return this;
             }
 
@@ -361,7 +376,7 @@
         * }, function(){});
          * ```
          */
-        this.prompt = function (opts, callBack) {
+        this.prompt = function (opts, callBack, tryCount) {
             if (U.isString(opts)) {
                 opts = {
                     title: cfg.title,
@@ -370,7 +385,14 @@
             }
 
             if (this.activeDialog) {
-                console.log(ax5.info.getError("ax5dialog", "501", "prompt"));
+                // try one more
+                if (!tryCount) {
+                    setTimeout(function () {
+                        this.prompt(opts, callBack, 1);
+                    }.bind(this), Number(cfg.animateTime) + 100);
+                } else {
+                    console.log(ax5.info.getError("ax5dialog", "501", "prompt"));
+                }
                 return this;
             }
 
@@ -418,6 +440,7 @@
                 setTimeout(function () {
                     this.activeDialog.remove();
                     this.activeDialog = null;
+
                     that = {
                         self: this,
                         state: "close"
