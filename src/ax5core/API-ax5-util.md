@@ -53,9 +53,7 @@ console.log(ax5.util.isDateFormat('20161132')); // false
 # Object
 ## ax5.util.filter
 You can freely edit filter by anonymous function when use.
-the second argument is original data.
-it is filtered by your customized filter function.
-if the result is True, saved to the first argument.
+The argument is filtered by your customized filter function.
 
  > *Argument, Usage, Output*
  
@@ -64,7 +62,7 @@ Argument :
 ```js
 var array = [5, 4, 3, 2, 1];
 ```
-- aaray : original data.
+- array : original data.
 
 Usage :
 ```js
@@ -137,34 +135,71 @@ console.log( ax5.util.toJson(result) );
 ---
 
 ## ax5.util.search
-It returns the first item of the result of the function is True.
+You can freely edit search function by anonymous function when use.
+The search function will return the first item which is correspondent to the function.
+
+> *Argument, Usage, Output*
+
+#####// Example 01
+Argument :
 ```js
 var a = ["A", "X", "5"];
+```
+
+Usgae :
+```js
 var idx = ax5.util.search(a, function () {
     return this == "X";
 });
+```
+
+Output :
+```js
 console.log(a[idx]);
+> X
+```
+- if there is no correspondont item, it will retrun -1
 
-idx = ax5.util.search(a, function () {
-    return this == "B";
-});
-console.log(idx);
-// -1
 
-console.log(a[
-    ax5.util.search(a, function (idx) {
-        return idx == 2;
-    })
-    ]);
-// 5
+#####// Example 02
+Argument : 
+```js
+var a = ["A", "X", "5"];
+```
+Usage :
+```js
+console.log(
+      a[
+        ax5.util.search(a, function (idx){
+            return idx == 2;
+          })
+      ]
+    );
+```
+Output :
+```js
+> 5
+```
 
+#####// Example 03
+Argument :
+```js
 var b = {a: "AX5-0", x: "AX5-1", 5: "AX5-2"};
-console.log(b[
-    ax5.util.search(b, function (k, v) {
-        return k == "x";
-    })
-    ]);
-// AX5-1
+```
+
+Usage :
+```js
+console.log(
+      b[
+        ax5.util.search(b, function (k) {
+            return k == "x";
+        })
+      ]
+    );
+```
+Output :
+```js
+> AX5-1
 ```
 ---
 
