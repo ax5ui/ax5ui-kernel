@@ -2,8 +2,8 @@
 
 ## ax5.util.getType()
 Return argument object type.
-> argument : any type of variable.
-> return : The type of argument(number, string, array, object, function, nodelist, fragment).
+> - argument : any type of variable.
+> - return : The type of argument(number, string, array, object, function, nodelist, fragment).
 
 ```js
 ax5.util.getType(1); // "number"
@@ -19,8 +19,8 @@ Javascript object type name is not clear. so util.getType() method is very usefu
 ---
 ## ax5.util.is*Type*()
 Return Boolean value depending on the correspondence of 'does the argument is this type?'.
-> argument : any type of variable.
-> return : Boolean Value 1 || 0 (True || False)
+> - argument : any type of variable.
+> - return : Boolean Value 1 || 0 (True || False)
 
 ```js
 // return 1 || 0 (True || False)
@@ -55,10 +55,10 @@ console.log(ax5.util.isDateFormat('20161132')); // false
 You can freely edit filter by anonymous function when use.
 The argument is filtered by your customized filter function.
 
- > Argument 01 : Original Data.
- >  Argument 02 : Anonymous function. 
- >  Usage : ax5.util.filter(Argument01, function(){ return }).
- >  Output
+ > - Argument 01 : Original Data.
+ >- Argument 02 : Anonymous function. 
+ >- Usage : ax5.util.filter(Argument01, function(){ return }).
+ >- Output
  
 #####//Example 01
 Argument :
@@ -141,10 +141,10 @@ console.log( ax5.util.toJson(result) );
 You can freely edit search function by anonymous function when use.
 The search function will return the first item which is correspondent to the function.
 
- > Argument 01 : Original Data.
-> Argument 02 : Anonymous function. 
->  Usage : ax5.util.search(Argument01, function(){ return }).
- >  Output
+ > - Argument 01 : Original Data.
+> - Argument 02 : Anonymous function. 
+> - Usage : ax5.util.search(Argument01, function(){ return }).
+ >- Output
 
 #####// Example 01
 Argument :
@@ -214,10 +214,10 @@ You can freely edit mapping function by anonymous function when use.
 The mapping function will return the new array or object which is set by original data.
 In the example I've created a simple object array as a numeric array.
 
- > Argument 01 : Original Data.
- >  Argument 02 : Anonymous function. 
- >  Usage : ax5.util.map(Argument01, function(){ return }).
- >  Output
+ > - Argument 01 : Original Data.
+ >- Argument 02 : Anonymous function. 
+ >- Usage : ax5.util.map(Argument01, function(){ return }).
+ >- Output
 
 Argument :
 ```js
@@ -277,10 +277,10 @@ Output :
 ## ax5.util.reduce
 As a result of the process performed in the operation from the left to the right of the array it will be reflected to the left side item. It returns the final value of the item.
 
-> Argument 01 : Original Data.
- >  Argument 02 : Anonymous function. 
->  Usage : ax5.util.reduce(Argument01, function(){ return }).
->  Output
+> - Argument 01 : Original Data.
+ >- Argument 02 : Anonymous function. 
+> - Usage : ax5.util.reduce(Argument01, function(){ return }).
+> - Output
 
 #####// Example 01
 Variable :
