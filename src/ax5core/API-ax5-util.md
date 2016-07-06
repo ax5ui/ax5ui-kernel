@@ -2,8 +2,8 @@
 
 ## ax5.util.getType()
 Return argument object type.
-- argument : any type of variable.
-- return : The type of argument(number, string, array, object, function, nodelist, fragment).
+> - argument : any type of variable.
+> - return : The type of argument(number, string, array, object, function, nodelist, fragment).
 
 ```js
 ax5.util.getType(1); // "number"
@@ -19,8 +19,8 @@ Javascript object type name is not clear. so util.getType() method is very usefu
 ---
 ## ax5.util.is*Type*()
 Return Boolean value depending on the correspondence of 'does the argument is this type?'.
-- argument : any type of variable.
-- return : Boolean Value 1 || 0 (True || False)
+> - argument : any type of variable.
+> - return : Boolean Value 1 || 0 (True || False)
 
 ```js
 // return 1 || 0 (True || False)
@@ -53,18 +53,19 @@ console.log(ax5.util.isDateFormat('20161132')); // false
 # Object
 ## ax5.util.filter
 You can freely edit filter by anonymous function when use.
-the second argument is original data.
-it is filtered by your customized filter function.
-if the result is True, saved to the first argument.
+The argument is filtered by your customized filter function.
 
- > *Argument, Usage, Output*
+ > - Argument 01 : Original Data.
+ >- Argument 02 : Anonymous function. 
+ >- Usage : ax5.util.filter(Argument01, function(){ return }).
+ >- Output
  
 #####//Example 01
 Argument :
 ```js
-var array = [5, 4, 3, 2, 1];
+var aarray = [5, 4, 3, 2, 1];
 ```
-- aaray : original data.
+- aarray : original data.
 
 Usage :
 ```js
@@ -137,76 +138,186 @@ console.log( ax5.util.toJson(result) );
 ---
 
 ## ax5.util.search
-It returns the first item of the result of the function is True.
+You can freely edit search function by anonymous function when use.
+The search function will return the first item which is correspondent to the function.
+
+ > - Argument 01 : Original Data.
+> - Argument 02 : Anonymous function. 
+> - Usage : ax5.util.search(Argument01, function(){ return }).
+ >- Output
+
+#####// Example 01
+Argument :
 ```js
 var a = ["A", "X", "5"];
+```
+
+Usgae :
+```js
 var idx = ax5.util.search(a, function () {
     return this == "X";
 });
+```
+
+Output :
+```js
 console.log(a[idx]);
+> X
+```
+- if there is no correspondont item, it will retrun -1
 
-idx = ax5.util.search(a, function () {
-    return this == "B";
-});
-console.log(idx);
-// -1
 
-console.log(a[
-    ax5.util.search(a, function (idx) {
-        return idx == 2;
-    })
-    ]);
-// 5
+#####// Example 02
+Argument : 
+```js
+var a = ["A", "X", "5"];
+```
+Usage :
+```js
+console.log(
+      a[
+        ax5.util.search(a, function (idx){
+            return idx == 2;
+          })
+      ]
+    );
+```
+Output :
+```js
+> 5
+```
 
+#####// Example 03
+Argument :
+```js
 var b = {a: "AX5-0", x: "AX5-1", 5: "AX5-2"};
-console.log(b[
-    ax5.util.search(b, function (k, v) {
-        return k == "x";
-    })
-    ]);
-// AX5-1
+```
+
+Usage :
+```js
+console.log(
+      b[
+        ax5.util.search(b, function (k) {
+            return k == "x";
+        })
+      ]
+    );
+```
+Output :
+```js
+> AX5-1
 ```
 ---
 
 ## ax5.util.map
-`"map"` creating a new array features set into an array or object. In the example I've created a simple object array as a numeric array.
+You can freely edit mapping function by anonymous function when use.
+The mapping function will return the new array or object which is set by original data.
+In the example I've created a simple object array as a numeric array.
+
+ > - Argument 01 : Original Data.
+ >- Argument 02 : Anonymous function. 
+ >- Usage : ax5.util.map(Argument01, function(){ return }).
+ >- Output
+
+Argument :
 ```js
 var a = [1, 2, 3, 4, 5];
+```
+Usage 01 :
+```js
 a = ax5.util.map(a, function () {
     return {id: this};
 });
-console.log(ax5.util.toJson(a));
+```
 
+Output 01 :
+```js
+console.log(ax5.util.toJson(a));
+> [{"id": 1},{"id": 2},{"id": 3},{"id": 4},{"id": 5}]
+```
+
+Usage 02 :
+```js
 console.log(
     ax5.util.map({a: 1, b: 2}, function (k, v) {
         return {id: k, value: v};
     })
 );
 ```
+
+Output 02 :
+```js
+> [object, object]
+>> object0.id = a
+>> object0.value = 1
+>> object1.id = b
+>> object1.value = 2
+```
 ---
 
 ## ax5.util.merge
-`"array like"` the type of object `"concat"`.
+concat the 'array like' objects.
+> *Argument, Usage, Output
+
+Argument : 
 ```js
 var a = [1, 2, 3], b = [7, 8, 9];
-console.log(ax5.util.merge(a, b));
+```
+Usage :
+```js
+var c = ax5.util.merge(a,b);
+```
+
+Output :
+```js
+> [1, 2, 3, 7, 8, 9]
 ```
 ---
 
 ## ax5.util.reduce
 As a result of the process performed in the operation from the left to the right of the array it will be reflected to the left side item. It returns the final value of the item.
-```js
-var aarray = [5, 4, 3, 2, 1], result;
-console.log(ax5.util.reduce(aarray, function (p, n) {
-    return p * n;
-}));
-// 120
 
-console.log(ax5.util.reduce({a: 1, b: 2}, function (p, n) {
-    // If the "Object" is the first "p" value is "undefined".
-    return parseInt(p | 0) + parseInt(n);
+> - Argument 01 : Original Data.
+ >- Argument 02 : Anonymous function. 
+> - Usage : ax5.util.reduce(Argument01, function(){ return }).
+> - Output
+
+#####// Example 01
+Variable :
+```js
+var aarray = [5, 4, 3, 2, 1];
+```
+
+Usage :
+```js
+console.log(ax5.util.reduce(aarray, function (p, n) {
+    return p * n; //This sentence is same to (return p = p*n)
 }));
-// 3
+```
+- p : result variable. (initial value = 5)
+- n : 'second to last' located variable. (initial value = 4. auto move left to right)
+
+Output :
+```js
+> 120
+```
+
+#####// Example 02
+Usage :
+```js
+console.log(ax5.util.reduce({a: 1, b: 2}, function (p, n) {
+    return parseInt(p || 0) + parseInt(n);
+    // This sentence is same to (return p=p+parseInt(n);)
+}));
+```
+- if the first 'p' value is object, 'p' will be undefined. So 'n' will point first index.
+- p : result variable. (initial value = 0 (undefined || 0)
+- n : 'first to last' located variable. (initaili value = a: 1)
+- parseInt(n) : object value n > parse into int value. (initail value = 1)
+
+Output :
+```js
+> 3
 ```
 ---
 
