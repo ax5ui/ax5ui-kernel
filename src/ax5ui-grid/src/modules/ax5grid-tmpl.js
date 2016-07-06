@@ -1,4 +1,3 @@
-
 // ax5.ui.grid.tmpl
 (function (root) {
     "use strict";
@@ -31,7 +30,10 @@
     root.tmpl = {
         main: main,
         header: header,
-        body: body
+        body: body,
+        get: function (tmplName, data) {
+            return ax5.mustache.render(root.tmpl[tmplName], data);
+        }
     };
 
 })(ax5.ui.grid);

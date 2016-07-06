@@ -42,6 +42,11 @@
                     this.onStateChanged.call(that, that);
                 }
                 return true;
+            },
+            initGrid = function () {
+                var grid = this.gridConfig;
+                // todo : 템플릿 랜더~
+                grid.$target.html(root.grid.tmpl.get("main", grid));
             };
         /// private end
 
@@ -58,7 +63,7 @@
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
 
-            var grid = jQuery.extend(true, {}, cfg, config);
+            var grid = this.gridConfig = jQuery.extend(true, {}, cfg, config);
 
             if (!grid.target) {
                 console.log(ax5.info.getError("ax5grid", "401", "init"));
@@ -79,8 +84,7 @@
                 }
             })(U.parseJson(grid.$target.attr("data-ax5grid-config"), true));
 
-            // todo : 템플릿 랜더~
-
+            initGrid.call(this);
         };
 
         // 클래스 생성자

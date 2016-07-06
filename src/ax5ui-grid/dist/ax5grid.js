@@ -41,6 +41,11 @@
                 this.onStateChanged.call(that, that);
             }
             return true;
+        },
+            initGrid = function initGrid() {
+            var grid = this.gridConfig;
+            // todo : 템플릿 랜더~
+            grid.$target.html(root.grid.tmpl.get("main", grid));
         };
         /// private end
 
@@ -57,7 +62,7 @@
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
 
-            var grid = jQuery.extend(true, {}, cfg, config);
+            var grid = this.gridConfig = jQuery.extend(true, {}, cfg, config);
 
             if (!grid.target) {
                 console.log(ax5.info.getError("ax5grid", "401", "init"));
@@ -78,7 +83,7 @@
                 }
             })(U.parseJson(grid.$target.attr("data-ax5grid-config"), true));
 
-            // todo : 템플릿 랜더~
+            initGrid.call(this);
         };
 
         // 클래스 생성자
@@ -102,6 +107,18 @@
     }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);
 
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+// ax5.ui.grid.layout
+(function (root) {
+    "use strict";
+
+    root.layout = {};
+})(ax5.ui.grid);
 // ax5.ui.grid.tmpl
 (function (root) {
     "use strict";
@@ -115,6 +132,9 @@
     root.tmpl = {
         main: main,
         header: header,
-        body: body
+        body: body,
+        get: function get(tmplName, data) {
+            return ax5.mustache.render(root.tmpl[tmplName], data);
+        }
     };
 })(ax5.ui.grid);
