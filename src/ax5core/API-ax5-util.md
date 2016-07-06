@@ -56,7 +56,7 @@ You can freely edit filter by anonymous function when use.
 The argument is filtered by your customized filter function.
 
  > - Argument 01 : Original Data.
- >- Argument 02 : Anonymous function. 
+ >- Argument 02 : Anonymous function(filter function). 
  >- Usage : ax5.util.filter(Argument01, function(){ return }).
  >- Output
  
@@ -142,8 +142,8 @@ You can freely edit search function by anonymous function when use.
 The search function will return the first item which is correspondent to the function.
 
  > - Argument 01 : Original Data.
-> - Argument 02 : Anonymous function. 
-> - Usage : ax5.util.search(Argument01, function(){ return }).
+> - Argument 02 : Anonymous function(search function). 
+> - Usage : Argumentt01[ ax5.util.search(Argument01, function(){ return }) ].
  >- Output
 
 #####// Example 01
@@ -211,11 +211,11 @@ Output :
 
 ## ax5.util.map
 You can freely edit mapping function by anonymous function when use.
-The mapping function will return the new array or object which is set by original data.
+The mapping function will return the array or object which is set by original data.
 In the example I've created a simple object array as a numeric array.
 
  > - Argument 01 : Original Data.
- >- Argument 02 : Anonymous function. 
+ >- Argument 02 : Anonymous function(mapping function). 
  >- Usage : ax5.util.map(Argument01, function(){ return }).
  >- Output
 
@@ -257,7 +257,7 @@ Output 02 :
 
 ## ax5.util.merge
 concat the 'array like' objects.
-> *Argument, Usage, Output
+> Argument, Usage, Output
 
 Argument : 
 ```js
@@ -275,11 +275,11 @@ Output :
 ---
 
 ## ax5.util.reduce
-As a result of the process performed in the operation from the left to the right of the array it will be reflected to the left side item. It returns the final value of the item.
+This method is performed by data argument and anonymous function. the anonymous function has two arguments(result value, index value). the anonymous function excute code using the data argument of index value. return value is saved at result value and index value moves to right. repeat this process for the end of data argument.
 
 > - Argument 01 : Original Data.
- >- Argument 02 : Anonymous function. 
-> - Usage : ax5.util.reduce(Argument01, function(){ return }).
+ >- Argument 02 : Anonymous function(reduce function). 
+> - Usage : ax5.util.reduce(Argument01, function(result, index){ return }).
 > - Output
 
 #####// Example 01
@@ -291,10 +291,10 @@ var aarray = [5, 4, 3, 2, 1];
 Usage :
 ```js
 console.log(ax5.util.reduce(aarray, function (p, n) {
-    return p * n; //This sentence is same to (return p = p*n)
+    return p * n; //This sentence is same to <return p = p*n>
 }));
 ```
-- p : result variable. (initial value = 5)
+- p : result variable. The return value is saved at 'p'.(initial value = 5)
 - n : 'second to last' located variable. (initial value = 4. auto move left to right)
 
 Output :
@@ -307,13 +307,13 @@ Usage :
 ```js
 console.log(ax5.util.reduce({a: 1, b: 2}, function (p, n) {
     return parseInt(p || 0) + parseInt(n);
-    // This sentence is same to (return p=p+parseInt(n);)
+    // This sentence is same to (return p=p+n;)
 }));
 ```
 - if the first 'p' value is object, 'p' will be undefined. So 'n' will point first index.
-- p : result variable. (initial value = 0 (undefined || 0)
-- n : 'first to last' located variable. (initaili value = a: 1)
-- parseInt(n) : object value n > parse into int value. (initail value = 1)
+- p : result variable. The return value is saved at 'p'. (initial value = 0 (undefined || 0))
+- n : the 'value' value of 'first to last' located variable. (initail value = 1)
+- parseInt(n) : not necessiry in this example. but parsing is recommended to prevent errors.
 
 Output :
 ```js
@@ -328,149 +328,230 @@ var aarray = [5, 4, 3, 2, 1];
 console.log(ax5.util.reduceRight(aarray, function (p, n) {
     return p - n;
 }));
-// -13
+> -13
 ```
 ---
 
 ## ax5.util.sum
-It returns the sum. The sum of all the values returned by the function.
+You can freely edit summation function by anonymous function when use.
+The summation function will add the values which corresponds to conditions of your summation function.
+
+>- Argument 01 : Original Data.
+>- Argument 02 : Anonymous function(summation function). 
+>- Usage : ax5.util.sum(Argument01, function(){ return }).
+>- Output
+
+Argument :
 ```js
 var arr = [
     {name: "122", value: 9},
     {name: "122", value: 10},
     {name: "123", value: 11}
 ];
+```
 
+Usage 01 :
+```js
 var rs = ax5.util.sum(arr, function () {
     if(this.name == "122") {
         return this.value;
     }
 });
-console.log(rs); // 19
+```
 
+Output 01 :
+```js
+console.log(rs); 
+> 19
+```
+
+Usage 02 :
+```js
 console.log(ax5.util.sum(arr, 10, function () {
     return this.value;
 }));
-// 40
+```
+
+Output 02 :
+```js
+> 40
 ```
 ---
 
 ## ax5.util.avg
-It returns the average. The average of all the values returned by the function.
+You can freely edit averaging function by anonymous function when use.
+The averaging function will get average of values which correspond to conditions of your averaging function.
+
+>- Argument 01 : Original Data.
+>- Argument 02 : Anonymous function(averaging function). 
+>- Usage : ax5.util.avg(Argument01, function(){ return }).
+>- Output
+
+Argument :
 ```js
 var arr = [
     {name: "122", value: 9},
     {name: "122", value: 10},
     {name: "123", value: 11}
 ];
+```
 
+Usage :
+```js
 var rs = ax5.util.avg(arr, function () {
     return this.value;
 });
+```
 
+Output :
+
+```js
 console.log(rs); // 10
 ```
 ---
 
 
 ## ax5.util.first
-It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array [0]" rather than using the "first" method.
+It returns the first element in Array or Object. However, to use Array in the "Array [0]" is faster than using the "first()" method.
+>- Argument 01 : Original Data.
+>- Usage : ax5.util.first(Argument01)
+>- Output
+
+Argument :
 ```js
 var _arr = ["ax5", "axisj"];
 var _obj = {k: "ax5", z: "axisj"};
+```
 
+Usage :
+```js
 console.log(ax5.util.first(_arr));
-// ax5
-
 console.log(ax5.util.toJson(ax5.util.first(_obj)));
-// {"k": "ax5"}
+```
+
+Output :
+```js
+> "ax5"
+> {"k": "ax5"}
 ```
 ---
 
 ## ax5.util.last
-It returns the last element in the Array, or Object.
+It returns the last element in the or Object.
+
+Argument :
 ```js
 var _arr = ["ax5", "axisj"];
 var _obj = {k: "ax5", z: "axisj"};
+```
 
+Usage :
+```js
 console.log(ax5.util.last(_arr));
-// axisj
-
 console.log(ax5.util.toJson(ax5.util.last(_obj)));
-// {"z": "axisj"}
+```
+
+Output :
+```js
+> "axisj"
+> {"z": "axisj"}
 ```
 ---
 
 # String
 
 ## ax5.util.left
-Returns. Since the beginning of the string to the index, up to a certain character in a string from the beginning of the string.
+Return string from first index to finall index of original data.
+
+>- Argument 01 : Original Data.
+>- Argument 02 : finall index || finall character.
+>- Usage : ax5.util.left(Argument01, Argument02)
+>- Output
+
 ```js
 console.log(ax5.util.left("abcd.efd", 3));
-// abc
+> abc
 console.log(ax5.util.left("abcd.efd", "."));
-// abcd
+> abcd
 ```
 ---
 
 ## ax5.util.right
-Returns. Up from the end of the string index, up to a certain character in a string from the end of the string
+Return string from start index to end index of original data. The arrangement is not changing.
+
+>- Argument 01 : Original Data.
+>- Argument 02 : start index || start character.
+>- Usage : ax5.util.left(Argument01, Argument02)
+>- Output
+
+
 ```js
 console.log(ax5.util.right("abcd.efd", 3));
-// efd
+> efd
 console.log(ax5.util.right("abcd.efd", "."));
-// efd
+> efd
 ```
 ---
 
 ## ax5.util.camelCase
-It converts a string to "Camel Case". "a-b", "aB" will be the "aB".
+Converts a string to "Camel Case". "a-b", "aB" will be the "aB".
 ```js
 console.log(ax5.util.camelCase("inner-width"));
+> innerWidth
 console.log(ax5.util.camelCase("innerWidth"));
-// innerWidth
+> innerWidth
 console.log(ax5.util.camelCase("camelCase"));
-// camelCase
+> camelCase
 console.log(ax5.util.camelCase("aBc"));
-// aBc
+> aBc
 ```
 ---
 
 ## ax5.util.snakeCase
-It converts a string to "Snake Case". "aB" will be the "a-b".
+Converts a string to "Snake Case". "aB" will be the "a-b".
 ```js
 console.log(ax5.util.snakeCase("inner-width"));
-// inner-width
+> inner-width
 console.log(ax5.util.snakeCase("camelCase"));
-// camel-case
+> camel-case 
 console.log(ax5.util.snakeCase("aBc"));
-// a-bc
+> a-bc
 ```
 ---
 
 # Number
 
 ## ax5.util.number
-When the number covers the development, often it requires multiple steps. The syntax is very complex and it is difficult to maintain. "ax5.util.number" command to convert a number that were resolved by passing a JSON format.
+by this method, you can modify original data to variety number-like types. there are several options such as round, money, byte, abs.
+
+When the number covers the development, it often requires multiple steps. The syntax is very complex and it is difficult to maintain. "ax5.util.number" command to convert a number that were resolved by passing a JSON format.
+
+>- Argument 01 : Original Data.
+>- Option_round : set dcimal place. less than that place value will be rounded.
+>- Option_money : convert to money type.(shoots comma for every third digit.)
+>- Option_byte :  convert to byte, KB, MB, GB.
+>- Option_abs : set absolute value option.
+>- Output
+
 ```js
 console.log('round(1) : ' + ax5.util.number(123456789.678, {round: 1}));
-// round(1) : 123456789.7
+> round(1) : 123456789.7
 
 console.log('round(1) money() : '
     + ax5.util.number(123456789.678, {round: 1, money: true}));
-// round(1) money() : 123,456,789.7
+> round(1) money() : 123,456,789.7
 
 console.log('round(2) byte() : '
     + ax5.util.number(123456789.678, {round: 2, byte: true}));
-// round(2) byte() : 117.7MB
+> round(2) byte() : 117.7MB
 
 console.log('abs() round(2) money() : '
     + ax5.util.number(-123456789.678, {abs: true, round: 2, money: true}));
-// abs() round(2) money() : 123,456,789.68
+> abs() round(2) money() : 123,456,789.68
 
 console.log('abs() round(2) money() : '
     + ax5.util.number("A-1234~~56789.8~888PX", {abs: true, round: 2, money: true}));
-// abs() round(2) money() : 123,456,789.89
+> abs() round(2) money() : 123,456,789.89
 ```
 - - -
 
@@ -559,13 +640,24 @@ ax5.util.alert({a: 1, b: 2});
 ```
 --- 
 ## ax5.util.toArray
-"nodelist" or on the Array Like such "arguments", has properties such as "length", but you can not use functions defined in Array.prototype. With "toArray" because it is easy to convert an array.
+It converts 'Array-like objects' to 'Array' such as nodelist, arguments. 'Array-like objects' already have some useful properties such as "length", however they can not applied for functions defined in Array.prototype. So, if you want to use array functions, convert to Array by toArray() method. it's very easy to convert.
+
+>- Argument 01 : Original Data.
+>- Usgae : ax5.util.toArray(Argument);
+>- Output
+
+Usage :
 ```js
 function something() {
     var arr = ax5.util.toArray(arguments);
     console.log(ax5.util.toJson(arr));
 }
 something("A", "X", "I", "S", "J");
+```
+
+Output :
+```js
+> ["A","X","I","S","J"]
 ```
 ---
 
@@ -689,7 +781,7 @@ ax5.util.isString('');
 ax5.util.isNumber(1);
 
 // return is nodeList.
-ax5.util.isNodelist(document.querySelectorAll(".content"));
+ax5.util.isNodelist(document.querySelectoraAll(".content"));
 
 // return is undefined.
 ax5.util.isUndefined();
