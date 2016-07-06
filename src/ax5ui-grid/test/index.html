@@ -16,16 +16,15 @@
 </head>
 <body>
 
-<div data-ax5grid="first-grid"></div>
+<div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}'></div>
 
 <script>
     var firstGrid = new ax5.ui.grid();
 
     $(document.body).ready(function () {
-
-
-
-
+        firstGrid.setConfig({
+            target: $('[data-ax5grid="first-grid"]')
+        });
     });
 </script>
 

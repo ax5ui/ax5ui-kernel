@@ -23,7 +23,7 @@
 
         this.name = "ax5grid";
         this.version = "0.0.2";
-        
+
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
@@ -54,11 +54,33 @@
          * ```
          * ```
          */
-        this.init = function () {
+        this.init = function (config) {
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
 
-            
+            var grid = jQuery.extend(true, {}, cfg, config);
+
+            if (!grid.target) {
+                console.log(ax5.info.getError("ax5grid", "401", "init"));
+                return this;
+            }
+            grid.$target = jQuery(grid.target);
+
+            if (!grid.id) grid.id = grid.$target.data("data-ax5grid-id");
+            if (!grid.id) {
+                grid.id = 'ax5grid-' + ax5.getGuid();
+                grid.$target.data("data-ax5grid-id", grid.id);
+            }
+
+            // target attribute data
+            (function (data) {
+                if (U.isObject(data) && !data.error) {
+                    grid = jQuery.extend(true, grid, data);
+                }
+            })(U.parseJson(grid.$target.attr("data-ax5grid-config"), true));
+
+            // todo : 템플릿 랜더~
+
         };
 
         // 클래스 생성자
