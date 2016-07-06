@@ -3,11 +3,7 @@
 ## ax5.util.getType()
 Return argument object type.
 > - argument : any type of variable.
-<<<<<<< HEAD
 > - return : The type of argument(number, string, array, object, function, nodelist, fragment).
-=======
-> return : The type of argument(number, string, array, object, function, nodelist, fragment).
->>>>>>> origin/master
 
 ```js
 ax5.util.getType(1); // "number"
