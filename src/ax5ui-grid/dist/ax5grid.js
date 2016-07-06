@@ -41,6 +41,11 @@
                 this.onStateChanged.call(that, that);
             }
             return true;
+        },
+            initGrid = function initGrid() {
+            var grid = this.gridConfig;
+            // todo : 템플릿 랜더~
+            grid.$target.html(root.grid.tmpl.get("main", grid));
         };
         /// private end
 
@@ -53,9 +58,32 @@
          * ```
          * ```
          */
-        this.init = function () {
+        this.init = function (config) {
             this.onStateChanged = cfg.onStateChanged;
             this.onClick = cfg.onClick;
+
+            var grid = this.gridConfig = jQuery.extend(true, {}, cfg, config);
+
+            if (!grid.target) {
+                console.log(ax5.info.getError("ax5grid", "401", "init"));
+                return this;
+            }
+            grid.$target = jQuery(grid.target);
+
+            if (!grid.id) grid.id = grid.$target.data("data-ax5grid-id");
+            if (!grid.id) {
+                grid.id = 'ax5grid-' + ax5.getGuid();
+                grid.$target.data("data-ax5grid-id", grid.id);
+            }
+
+            // target attribute data
+            (function (data) {
+                if (U.isObject(data) && !data.error) {
+                    grid = jQuery.extend(true, grid, data);
+                }
+            })(U.parseJson(grid.$target.attr("data-ax5grid-config"), true));
+
+            initGrid.call(this);
         };
 
         // 클래스 생성자
@@ -79,13 +107,34 @@
     }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);
 
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+// ax5.ui.grid.layout
+(function (root) {
+    "use strict";
+
+    root.layout = {};
+})(ax5.ui.grid);
 // ax5.ui.grid.tmpl
 (function (root) {
     "use strict";
 
-    var main = "\n        main \n    ";
+    var main = "\n        <div data-ax5grid-container=\"root\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\"></div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\"></div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"left-body\"></div>\n                <div data-ax5grid-panel=\"body\"></div>\n                <div data-ax5grid-panel=\"right-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\"></div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>\n    ";
+
+    var header = "";
+
+    var body = "";
 
     root.tmpl = {
-        main: main
+        main: main,
+        header: header,
+        body: body,
+        get: function get(tmplName, data) {
+            return ax5.mustache.render(root.tmpl[tmplName], data);
+        }
     };
 })(ax5.ui.grid);
