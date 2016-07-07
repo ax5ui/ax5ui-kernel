@@ -15,6 +15,11 @@
 <div data-ax5combobox-display="label" contenteditable="true" spellcheck="false">&nbsp;</div>
 
 <script>
+
+    var today = new Date();
+    var ppp = ax5.util.date(today, {return:'yyyy-MM-dd'});
+    console.log(ppp);
+
     //console.log(ax5.info.eventKeys);
     /*
     var templatel = "{{title}} spends {{calc}}";

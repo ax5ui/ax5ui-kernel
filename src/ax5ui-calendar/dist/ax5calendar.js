@@ -93,13 +93,13 @@
             }
         },
             getDayTmpl = function getDayTmpl() {
-            return "\n                <table data-calendar-table=\"day\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n                    <thead>\n                        <tr>\n                        {{#weekNames}}\n                            <td class=\"calendar-col-{{@i}}\" style=\"height: {{colHeadHeight}}\">\n                            {{label}}\n                            </td>\n                        {{/weekNames}}\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfWeek}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfWeek}}\n                            <td class=\"calendar-col-{{@i}}\" style=\"{{itemStyles}}\">\n                                <a class=\"calendar-item-day {{addClass}}\" data-calendar-item-date=\"{{thisDate}}\">\n                                    <span class=\"addon\"></span>\n                                    {{thisDataLabel}}\n                                    <span class=\"lunar\"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ";
+            return "\n                <table data-calendar-table=\"day\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n                    <thead>\n                        <tr>\n                        {{#weekNames}}\n                            <td class=\"calendar-col-{{col}}\" style=\"height: {{colHeadHeight}}\">\n                            {{label}}\n                            </td>\n                        {{/weekNames}}\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfWeek}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfWeek}}\n                            <td class=\"calendar-col-{{col}}\" style=\"{{itemStyles}}\">\n                                <a class=\"calendar-item-day {{addClass}}\" data-calendar-item-date=\"{{thisDate}}\">\n                                    <span class=\"addon\"></span>\n                                    {{thisDataLabel}}\n                                    <span class=\"lunar\"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ";
         },
             getMonthTmpl = function getMonthTmpl() {
-            return "\n                <table data-calendar-table=\"month\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n                    <thead>\n                        <tr>\n                            <td class=\"calendar-col-0\" colspan=\"3\" style=\"height: {{colHeadHeight}}\">\n                            {{colHeadLabel}}\n                            </td>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfRow}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfRow}}\n                            <td class=\"calendar-col-{{@i}}\" style=\"{{itemStyles}}\">\n                                <a class=\"calendar-item-month {{addClass}}\" data-calendar-item-month=\"{{thisMonth}}\">\n                                    <span class=\"addon\"></span>\n                                    {{thisMonthLabel}}\n                                    <span class=\"lunar\"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ";
+            return "\n                <table data-calendar-table=\"month\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n                    <thead>\n                        <tr>\n                            <td class=\"calendar-col-0\" colspan=\"3\" style=\"height: {{colHeadHeight}}\">\n                            {{colHeadLabel}}\n                            </td>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfRow}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfRow}}\n                            <td class=\"calendar-col-{{col}}\" style=\"{{itemStyles}}\">\n                                <a class=\"calendar-item-month {{addClass}}\" data-calendar-item-month=\"{{thisMonth}}\">\n                                    <span class=\"addon\"></span>\n                                    {{thisMonthLabel}}\n                                    <span class=\"lunar\"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ";
         },
             getYearTmpl = function getYearTmpl() {
-            return "\n                <table data-calendar-table=\"year\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n                    <thead>\n                        <tr>\n                            <td class=\"calendar-col-0\" colspan=\"4\" style=\"height: {{colHeadHeight}}\">\n                            {{colHeadLabel}}\n                            </td>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfRow}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfRow}}\n                            <td class=\"calendar-col-{{@i}}\" style=\"{{itemStyles}}\">\n                                <a class=\"calendar-item-year {{addClass}}\" data-calendar-item-year=\"{{thisYear}}\">\n                                    <span class=\"addon\"></span>\n                                    {{thisYearLabel}}\n                                    <span class=\"lunar\"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ";
+            return "\n                <table data-calendar-table=\"year\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n                    <thead>\n                        <tr>\n                            <td class=\"calendar-col-0\" colspan=\"4\" style=\"height: {{colHeadHeight}}\">\n                            {{colHeadLabel}}\n                            </td>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfRow}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfRow}}\n                            <td class=\"calendar-col-{{col}}\" style=\"{{itemStyles}}\">\n                                <a class=\"calendar-item-year {{addClass}}\" data-calendar-item-year=\"{{thisYear}}\">\n                                    <span class=\"addon\"></span>\n                                    {{thisYearLabel}}\n                                    <span class=\"lunar\"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ";
         },
             setDisplay = function setDisplay() {
             var myDate = U.date(cfg.displayDate),
@@ -200,6 +200,8 @@
                 while (k < 7) {
                     var thisDate = '' + U.date(loopDate, { "return": cfg.dateFormat }),
                         _date = {
+                        'row': i,
+                        'col': k,
                         isStartOfWeek: k == 0,
                         thisDate: '' + thisDate,
                         thisDataLabel: cfg.lang.dayTmpl.replace('%s', loopDate.getDate()),
@@ -588,6 +590,16 @@
                     this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass("selected-day");
                 }
             }.bind(this));
+        },
+            applyPeriodMap = function applyPeriodMap(theme) {
+            setTimeout(function () {
+                if (cfg.mode === "day" || cfg.mode === "d") {
+                    this.$["body"].find('[data-calendar-item-date]').removeClass(theme);
+                    for (var k in this.periodMap) {
+                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass(theme);
+                    }
+                }
+            }.bind(this));
         };
 
         /**
@@ -869,6 +881,46 @@
                 this.markerMap = result;
                 // 변경내용 적용하여 출력
                 if (isApply !== false) applyMarkerMap.call(this);
+                return this;
+            };
+        }();
+
+        /**
+         * @method ax5.ui.calendar.setPeriod
+         */
+        this.setPeriod = function () {
+            self.periodMap = {};
+
+            var processor = function processor(n, map) {
+                map = {};
+
+                if (U.isDateFormat(n.from) && U.isDateFormat(n.to)) {
+                    for (var d = U.date(n.from); d <= U.date(n.to); d.setDate(d.getDate() + 1)) {
+                        if (d == U.date(n.from)) {
+                            map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme, label: n.fromLabel };
+                        } else if (d == U.date(n.to)) {
+                            map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme, label: n.toLabel };
+                        } else {
+                            map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme };
+                        }
+                    }
+                }
+
+                return map;
+            };
+
+            return function (period, isApply) {
+
+                var key,
+                    result = {};
+
+                if (cfg.period = period) {
+                    result = processor(period);
+                }
+
+                this.periodMap = result;
+                // 변경내용 적용하여 출력
+                if (isApply !== false) applyPeriodMap.call(this, period.theme);
                 return this;
             };
         }();

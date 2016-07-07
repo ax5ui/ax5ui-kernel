@@ -90,6 +90,7 @@
 			table-layout: fixed;
 			border-collapse: collapse;
 			border-spacing: 0px;
+			border: 0px none;
 			thead {
 				td, th {
 					box-sizing: border-box;
@@ -140,21 +141,18 @@
 
 						span.addon {
 							position: absolute;
-							left: 0px;
-							top: 0px;
 							width: 100%;
 							text-align: center;
 							line-height: 10px;
-						}
-						span.lunar {
-							position: absolute;
-							left: 0px;
-							bottom: 3px;
-							width: 100%;
-							text-align: center;
-							font-size: 12px;
-							color: #eee;
-							line-height: 12px;
+
+							&.addon-header{
+								left: 0px;
+								top: 0px;
+							}
+							&.addon-footer{
+								left: 0px;
+								bottom: 0px;
+							}
 						}
 
 						&.live {
