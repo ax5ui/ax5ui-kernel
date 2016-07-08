@@ -143,15 +143,16 @@
                             position: absolute;
                             width: 100%;
                             text-align: center;
-                            line-height: 10px;
+                            line-height: $ax5calendar-body-font-size * 0.8;
+                            font-size: $ax5calendar-body-font-size * 0.8;
 
                             &.addon-header {
                                 left: 0px;
-                                top: 0px;
+                                top: 1px;
                             }
                             &.addon-footer {
                                 left: 0px;
-                                bottom: 0px;
+                                bottom: 1px;
                             }
                         }
 

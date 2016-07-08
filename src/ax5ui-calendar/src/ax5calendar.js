@@ -3,7 +3,7 @@
     /**
      * @class ax5.ui.calendar
      * @classdesc
-     * @version 0.8.2
+     * @version 0.8.3
      * @author tom@axisj.com
      * @logs
      * 2014-06-21 tom : 시작
