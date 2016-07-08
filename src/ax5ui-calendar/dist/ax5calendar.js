@@ -605,14 +605,12 @@
             }.bind(this));
         },
             clearPeriodMap = function clearPeriodMap() {
-            setTimeout(function () {
-                if (cfg.mode === "day" || cfg.mode === "d") {
-                    for (var k in this.periodMap) {
-                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').find(".addon-footer").empty();
-                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').removeClass(this.periodMap[k].theme);
-                    }
+            if (cfg.mode === "day" || cfg.mode === "d") {
+                for (var k in this.periodMap) {
+                    this.$["body"].find('[data-calendar-item-date="' + k + '"]').find(".addon-footer").empty();
+                    this.$["body"].find('[data-calendar-item-date="' + k + '"]').removeClass(this.periodMap[k].theme);
                 }
-            }.bind(this));
+            }
         };
 
         /**
@@ -912,8 +910,7 @@
 
                     v.range.forEach(function (n) {
                         if (U.isDateFormat(n.from) && U.isDateFormat(n.to)) {
-
-                            for (var d = U.date(n.from); d <= U.date(n.to); d.setDate(d.getDate() + 1)) {
+                            for (var d = new Date(U.date(n.from)); d <= U.date(n.to); d.setDate(d.getDate() + 1)) {
                                 if (d.getTime() == U.date(n.from).getTime()) {
                                     map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme || cfg.defaultPeriodTheme, label: n.fromLabel };
                                 } else if (d.getTime() == U.date(n.to).getTime()) {
@@ -935,6 +932,11 @@
                 var key,
                     result = {};
 
+                // 변경내용 적용하여 출력
+                if (isApply !== false) {
+                    clearPeriodMap.call(this);
+                }
+
                 if (cfg.period = period) {
                     result = processor.range(period);
                 }
@@ -945,7 +947,6 @@
 
                 // 변경내용 적용하여 출력
                 if (isApply !== false) {
-                    clearPeriodMap.call(this);
                     applyPeriodMap.call(this);
                 }
                 return this;
