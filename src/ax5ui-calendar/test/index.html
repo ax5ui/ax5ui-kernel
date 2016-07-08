@@ -24,8 +24,8 @@
 
 <script>
     var
-    today = new Date(),
-    _c_date = ax5.util.date;
+            today = new Date(),
+            _c_date = ax5.util.date;
 
     $(document.body).ready(function () {
 
@@ -55,9 +55,9 @@
 
             /*
              lang: {
-                 year: "%s",
-                 month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                 day: "%s"
+             year: "%s",
+             month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+             day: "%s"
              },
              */
 
@@ -65,26 +65,27 @@
             displayDate: (new Date()),
             mode: "day",
             selectMode: "day",
+            coloringToSelection: true,
 
             // selectable: {range:[{from: '2016-02-01', to: '2016-02-20'}]},
             marker: (function () {
                 var marker = {};
-                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: -1}})] = true;
-                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: 0}})] = true;
-                marker[_c_date(today, {'return':'yyyy-mm-dd', 'add': {d: 1}})] = true;
+                marker[_c_date(today, {'return': 'yyyy-mm-dd', 'add': {d: -1}})] = true;
+                marker[_c_date(today, {'return': 'yyyy-mm-dd', 'add': {d: 0}})] = true;
+                marker[_c_date(today, {'return': 'yyyy-mm-dd', 'add': {d: 1}})] = true;
 
                 console.log(marker);
 
                 return marker;
             })(),
-/*
-            marker: {
-                '2016-04-07': {theme: 'holiday', label: '설날'},
-                '2016-04-08': {theme: 'holiday', label: '설날'},
-                '2016-04-09': {theme: 'holiday', label: '설날'},
-                '2016-04-10': {theme: 'holiday', label: '대체휴일'}
-            },
-*/
+            /*
+             marker: {
+             '2016-04-07': {theme: 'holiday', label: '설날'},
+             '2016-04-08': {theme: 'holiday', label: '설날'},
+             '2016-04-09': {theme: 'holiday', label: '설날'},
+             '2016-04-10': {theme: 'holiday', label: '대체휴일'}
+             },
+             */
             onClick: function () {
                 console.log(myCalendar.getSelection());
             },
@@ -95,16 +96,17 @@
         });
 
         /// todo : 공휴일 표시에 대한 대안 필요.
-        myCalendar.setSelection(['2016-04-11', '2016-04-12', '2016-04-13']);
+        myCalendar.setSelection(['2016-04-11', '2016-04-12']);
+        myCalendar.setPeriod({theme: 'period', from: '2016-07-05', to: '2016-07-09', fromLabel: '시작', toLabel: '종료'});
 
         /*
-        myCalendar.setMarker({
-            '2016-04-07': true,
-            '2016-04-08': true,
-            '2016-04-09': true,
-            '2016-04-10': true
-        });
-        */
+         myCalendar.setMarker({
+         '2016-04-07': true,
+         '2016-04-08': true,
+         '2016-04-09': true,
+         '2016-04-10': true
+         });
+         */
     });
 </script>
 

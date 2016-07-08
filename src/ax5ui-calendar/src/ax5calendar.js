@@ -13,7 +13,7 @@
      * ```
      */
     var U = ax5.util;
- 
+
     //== UI Class
     var axClass = function () {
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -114,7 +114,7 @@
                     <thead>
                         <tr>
                         {{#weekNames}}
-                            <td class="calendar-col-{{@i}}" style="height: {{colHeadHeight}}">
+                            <td class="calendar-col-{{col}}" style="height: {{colHeadHeight}}">
                             {{label}}
                             </td>
                         {{/weekNames}}
@@ -129,7 +129,7 @@
                         <tr>
                             {{/@first}}
                             {{/isStartOfWeek}}
-                            <td class="calendar-col-{{@i}}" style="{{itemStyles}}">
+                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">
                                 <a class="calendar-item-day {{addClass}}" data-calendar-item-date="{{thisDate}}">
                                     <span class="addon"></span>
                                     {{thisDataLabel}}
@@ -161,7 +161,7 @@
                         <tr>
                             {{/@first}}
                             {{/isStartOfRow}}
-                            <td class="calendar-col-{{@i}}" style="{{itemStyles}}">
+                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">
                                 <a class="calendar-item-month {{addClass}}" data-calendar-item-month="{{thisMonth}}">
                                     <span class="addon"></span>
                                     {{thisMonthLabel}}
@@ -193,7 +193,7 @@
                         <tr>
                             {{/@first}}
                             {{/isStartOfRow}}
-                            <td class="calendar-col-{{@i}}" style="{{itemStyles}}">
+                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">
                                 <a class="calendar-item-year {{addClass}}" data-calendar-item-year="{{thisYear}}">
                                     <span class="addon"></span>
                                     {{thisYearLabel}}
@@ -313,6 +313,8 @@
                         var
                             thisDate = '' + U.date(loopDate, {"return": cfg.dateFormat}),
                             _date = {
+                                'row': i,
+                                'col': k,
                                 isStartOfWeek: (k == 0),
                                 thisDate: '' + thisDate,
                                 thisDataLabel: cfg.lang.dayTmpl.replace('%s', loopDate.getDate()),
@@ -735,6 +737,17 @@
                         this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass("selected-day");
                     }
                 }).bind(this));
+            },
+            applyPeriodMap = function(theme){
+                setTimeout((function () {
+                    if (cfg.mode === "day" || cfg.mode === "d") {
+                        this.$["body"].find('[data-calendar-item-date]').removeClass(theme);
+                        for (var k in this.periodMap) {
+                            this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass(theme);
+                        }
+                    }
+                }).bind(this));
+
             };
 
         /**
@@ -1034,6 +1047,51 @@
                 return this;
             };
         })();
+
+        /**
+         * @method ax5.ui.calendar.setPeriod
+         */
+        this.setPeriod = (function () {
+            self.periodMap = {};
+
+            var processor = function (n, map) {
+                map = {};
+
+                if (U.isDateFormat(n.from) && U.isDateFormat(n.to)) {
+                    for (var d = U.date(n.from); d <= U.date(n.to); d.setDate(d.getDate() + 1)) {
+                        if (d == U.date(n.from)) {
+                            map[U.date(d, {"return": cfg.dateFormat})] = {theme: n.theme, label: n.fromLabel};
+                        }
+                        else if (d == U.date(n.to)) {
+                            map[U.date(d, {"return": cfg.dateFormat})] = {theme: n.theme, label: n.toLabel};
+                        }
+                        else {
+                            map[U.date(d, {"return": cfg.dateFormat})] = {theme: n.theme};
+                        }
+                    }
+                }
+
+                return map;
+            };
+
+            return function (period, isApply) {
+
+                var
+                    key,
+                    result = {}
+                    ;
+
+                if (cfg.period = period) {
+                    result = processor(period);
+                }
+
+                this.periodMap = result;
+                // 변경내용 적용하여 출력
+                if (isApply !== false) applyPeriodMap.call(this, period.theme);
+                return this;
+            };
+        })();
+
 
         // 클래스 생성자
         this.main = (function () {
