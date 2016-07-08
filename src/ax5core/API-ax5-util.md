@@ -1,7 +1,7 @@
 # Type
 
 ## ax5.util.getType()
-Return argument object type.
+Return argument's object type.
 > - argument : any type of variable.
 > - return : The type of argument(number, string, array, object, function, nodelist, fragment).
 
@@ -52,12 +52,12 @@ console.log(ax5.util.isDateFormat('20161132')); // false
 
 # Object
 ## ax5.util.filter
-You can freely edit filter by anonymous function when use.
-The argument is filtered by your customized filter function.
+You can freely edit filter function by anonymous function when use.
+The data is filtered by your customized filter function.
 
  > - Argument 01 : Original Data.
  >- Argument 02 : Anonymous function(filter function). 
- >- Usage : ax5.util.filter(Argument01, function(){ return }).
+ >- Usage : ax5.util.filter(Argument01, function(){ return });
  >- Output
  
 #####//Example 01
@@ -143,7 +143,7 @@ The search function will return the first item which is correspondent to the fun
 
  > - Argument 01 : Original Data.
 > - Argument 02 : Anonymous function(search function). 
-> - Usage : Argumentt01[ ax5.util.search(Argument01, function(){ return }) ].
+> - Usage : Argumentt01[ ax5.util.search(Argument01, function(){ return }) ];
  >- Output
 
 #####// Example 01
