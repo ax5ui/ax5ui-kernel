@@ -5,12 +5,16 @@
  * - www.axisj.com
  */
 
-// ax5.ui.grid.layout
+// ax5.ui.grid.view
 (function (root) {
     "use strict";
 
-    root.layout = {
-        
+    var setHeader = function(){
+
+    };
+
+    root.control = {
+        setHeader: setHeader
     };
 
 })(ax5.ui.grid);

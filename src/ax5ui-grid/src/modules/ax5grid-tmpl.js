@@ -3,7 +3,7 @@
     "use strict";
 
     var main = `
-        <div data-ax5grid-container="root">
+        <div data-ax5grid-container="root" data-ax5grid-instance="{{instanceId}}">
             <div data-ax5grid-container="header">
                 <div data-ax5grid-panel="left-header"></div>
                 <div data-ax5grid-panel="header"></div>

@@ -44,9 +44,33 @@
                 return true;
             },
             initGrid = function () {
-                var grid = this.gridConfig;
-                // todo : 템플릿 랜더~
-                grid.$target.html(root.grid.tmpl.get("main", grid));
+                // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
+                var data = {
+                    instanceId: this.id
+                };
+                this.$target.html(root.grid.tmpl.get("main", data));
+
+                // 그리드 패널 프레임의 각 엘리먼트를 캐쉬합시다.
+                this.$ = {
+                    "container": {
+                        "header": this.$target.find('[data-ax5grid-container="header"]'),
+                        "body": this.$target.find('[data-ax5grid-container="body"]')
+                    },
+                    "panel": {
+                        "left-header": this.$target.find('[data-ax5grid-panel="left-header"]'),
+                        "header": this.$target.find('[data-ax5grid-panel="header"]'),
+                        "right-header": this.$target.find('[data-ax5grid-panel="right-header"]'),
+                        "top-left-body": this.$target.find('[data-ax5grid-panel="top-left-body"]'),
+                        "top-body": this.$target.find('[data-ax5grid-panel="top-body"]'),
+                        "top-right-body": this.$target.find('[data-ax5grid-panel="rop-right-body"]'),
+                        "left-body": this.$target.find('[data-ax5grid-panel="left-body"]'),
+                        "body": this.$target.find('[data-ax5grid-panel="body"]'),
+                        "right-body": this.$target.find('[data-ax5grid-panel="right-body"]'),
+                        "bottom-left-body": this.$target.find('[data-ax5grid-panel="bottom-left-body"]'),
+                        "bottom-body": this.$target.find('[data-ax5grid-panel="bottom-body"]'),
+                        "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
+                    }
+                }
             };
         /// private end
 
@@ -69,12 +93,12 @@
                 console.log(ax5.info.getError("ax5grid", "401", "init"));
                 return this;
             }
-            grid.$target = jQuery(grid.target);
+            this.$target = jQuery(grid.target);
 
-            if (!grid.id) grid.id = grid.$target.data("data-ax5grid-id");
-            if (!grid.id) {
-                grid.id = 'ax5grid-' + ax5.getGuid();
-                grid.$target.data("data-ax5grid-id", grid.id);
+            if (!this.id) this.id = this.$target.data("data-ax5grid-id");
+            if (!this.id) {
+                this.id = 'ax5grid-' + ax5.getGuid();
+                this.$target.data("data-ax5grid-id", grid.id);
             }
 
             // target attribute data
@@ -82,9 +106,14 @@
                 if (U.isObject(data) && !data.error) {
                     grid = jQuery.extend(true, grid, data);
                 }
-            })(U.parseJson(grid.$target.attr("data-ax5grid-config"), true));
+            })(U.parseJson(this.$target.attr("data-ax5grid-config"), true));
 
-            initGrid.call(this);
+            initGrid.call(this); // 그리드를 그리기 위한 가장 기초적인 작업 뼈대와 틀을 준비합니다. 이 메소드는 초기화 시 한번만 호출 되게 됩니다.
+            // 초기화 후 그리드의 각영역을 그리기
+            /// header
+            
+            /// body
+            
         };
 
         // 클래스 생성자
@@ -92,8 +121,6 @@
 
             root.grid_instance = root.grid_instance || [];
             root.grid_instance.push(this);
-
-            // console.log(root.grid.tmpl.main);
 
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
