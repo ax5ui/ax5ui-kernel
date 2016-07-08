@@ -5,7 +5,7 @@
     /**
      * @class ax5.ui.calendar
      * @classdesc
-     * @version 0.8.1
+     * @version 0.8.2
      * @author tom@axisj.com
      * @logs
      * 2014-06-21 tom : 시작
@@ -54,7 +54,8 @@
             },
             multipleSelect: false,
             selectMode: 'day',
-            defaultMarkerTheme: 'holiday'
+            defaultMarkerTheme: 'holiday',
+            defaultPeriodTheme: 'period'
         };
 
         cfg = this.config;
@@ -93,7 +94,7 @@
             }
         },
             getDayTmpl = function getDayTmpl() {
-            return "\n                <table data-calendar-table=\"day\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n                    <thead>\n                        <tr>\n                        {{#weekNames}}\n                            <td class=\"calendar-col-{{col}}\" style=\"height: {{colHeadHeight}}\">\n                            {{label}}\n                            </td>\n                        {{/weekNames}}\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfWeek}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfWeek}}\n                            <td class=\"calendar-col-{{col}}\" style=\"{{itemStyles}}\">\n                                <a class=\"calendar-item-day {{addClass}}\" data-calendar-item-date=\"{{thisDate}}\">\n                                    <span class=\"addon\"></span>\n                                    {{thisDataLabel}}\n                                    <span class=\"lunar\"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ";
+            return "\n                <table data-calendar-table=\"day\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n                    <thead>\n                        <tr>\n                        {{#weekNames}}\n                            <td class=\"calendar-col-{{col}}\" style=\"height: {{colHeadHeight}}\">\n                            {{label}}\n                            </td>\n                        {{/weekNames}}\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfWeek}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfWeek}}\n                            <td class=\"calendar-col-{{col}}\" style=\"{{itemStyles}}\">\n                                <a class=\"calendar-item-day {{addClass}}\" data-calendar-item-date=\"{{thisDate}}\">\n                                    <span class=\"addon addon-header\"></span>\n                                    {{thisDataLabel}}\n                                    <span class=\"addon addon-footer\"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ";
         },
             getMonthTmpl = function getMonthTmpl() {
             return "\n                <table data-calendar-table=\"month\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n                    <thead>\n                        <tr>\n                            <td class=\"calendar-col-0\" colspan=\"3\" style=\"height: {{colHeadHeight}}\">\n                            {{colHeadLabel}}\n                            </td>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfRow}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfRow}}\n                            <td class=\"calendar-col-{{col}}\" style=\"{{itemStyles}}\">\n                                <a class=\"calendar-item-month {{addClass}}\" data-calendar-item-month=\"{{thisMonth}}\">\n                                    <span class=\"addon\"></span>\n                                    {{thisMonthLabel}}\n                                    <span class=\"lunar\"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ";
@@ -591,12 +592,24 @@
                 }
             }.bind(this));
         },
-            applyPeriodMap = function applyPeriodMap(theme) {
+            applyPeriodMap = function applyPeriodMap() {
             setTimeout(function () {
                 if (cfg.mode === "day" || cfg.mode === "d") {
-                    this.$["body"].find('[data-calendar-item-date]').removeClass(theme);
                     for (var k in this.periodMap) {
-                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass(theme);
+                        if (this.periodMap[k].label) {
+                            this.$["body"].find('[data-calendar-item-date="' + k + '"]').find(".addon-footer").html(this.periodMap[k].label);
+                        }
+                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass(this.periodMap[k].theme);
+                    }
+                }
+            }.bind(this));
+        },
+            clearPeriodMap = function clearPeriodMap() {
+            setTimeout(function () {
+                if (cfg.mode === "day" || cfg.mode === "d") {
+                    for (var k in this.periodMap) {
+                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').find(".addon-footer").empty();
+                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').removeClass(this.periodMap[k].theme);
                     }
                 }
             }.bind(this));
@@ -891,22 +904,30 @@
         this.setPeriod = function () {
             self.periodMap = {};
 
-            var processor = function processor(n, map) {
-                map = {};
+            var processor = {
+                'range': function range(v, map) {
+                    map = {};
+                    if (U.isArray(v)) return map;
+                    if (!v.range) return map;
 
-                if (U.isDateFormat(n.from) && U.isDateFormat(n.to)) {
-                    for (var d = U.date(n.from); d <= U.date(n.to); d.setDate(d.getDate() + 1)) {
-                        if (d == U.date(n.from)) {
-                            map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme, label: n.fromLabel };
-                        } else if (d == U.date(n.to)) {
-                            map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme, label: n.toLabel };
-                        } else {
-                            map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme };
+                    v.range.forEach(function (n) {
+                        if (U.isDateFormat(n.from) && U.isDateFormat(n.to)) {
+
+                            for (var d = U.date(n.from); d <= U.date(n.to); d.setDate(d.getDate() + 1)) {
+                                if (d.getTime() == U.date(n.from).getTime()) {
+                                    map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme || cfg.defaultPeriodTheme, label: n.fromLabel };
+                                } else if (d.getTime() == U.date(n.to).getTime()) {
+                                    map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme || cfg.defaultPeriodTheme, label: n.toLabel };
+                                } else {
+                                    map[U.date(d, { "return": cfg.dateFormat })] = { theme: n.theme || cfg.defaultPeriodTheme };
+                                }
+                            }
                         }
-                    }
-                }
+                    });
 
-                return map;
+                    v = null;
+                    return map;
+                }
             };
 
             return function (period, isApply) {
@@ -915,12 +936,18 @@
                     result = {};
 
                 if (cfg.period = period) {
-                    result = processor(period);
+                    result = processor.range(period);
                 }
 
                 this.periodMap = result;
+
+                //console.log(this.periodMap);
+
                 // 변경내용 적용하여 출력
-                if (isApply !== false) applyPeriodMap.call(this, period.theme);
+                if (isApply !== false) {
+                    clearPeriodMap.call(this);
+                    applyPeriodMap.call(this);
+                }
                 return this;
             };
         }();
