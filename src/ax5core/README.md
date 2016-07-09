@@ -36,7 +36,6 @@ this process(managing project files) can be optimize by ['gulp'](http://gulpjs.c
 
 ### Download code
 - [ax5core Github releases](https://github.com/ax5ui/ax5core/releases)
-- [Git clone here](https://github.com/ax5ui/ax5core)
 
 
 ### Insert the "ax5" in the HTML HEAD.
