@@ -5,16 +5,17 @@
  * - www.axisj.com
  */
 
-// ax5.ui.grid.view
+// ax5.ui.grid.scroller
 (function (root) {
     "use strict";
 
-    var setHeader = function(){
+    
+    var init = function(){
 
     };
 
-    root.view = {
-        setHeader: setHeader
+    root.scroller = {
+        init: init
     };
 
 })(ax5.ui.grid);

@@ -16,14 +16,23 @@
 </head>
 <body>
 
-<div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}'></div>
+<div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 400px;"></div>
 
 <script>
     var firstGrid = new ax5.ui.grid();
 
     $(document.body).ready(function () {
         firstGrid.setConfig({
-            target: $('[data-ax5grid="first-grid"]')
+            target: $('[data-ax5grid="first-grid"]'),
+            columns: [
+                {key: "a", label: "필드A"},
+                {key: "b", label: "필드B"},
+                {key: "c", label: "필드C", columns:[
+                    {key: "c1", label: "필드C-1"},
+                    {key: "c2", label: "필드C-2"}
+                ]},
+                {key: "d", label: "필드D"}
+            ]
         });
     });
 </script>
