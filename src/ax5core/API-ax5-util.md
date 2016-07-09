@@ -143,7 +143,7 @@ The search function will return the first item which is correspondent to the fun
 
  > - Argument 01 : Original Data.
 > - Argument 02 : Anonymous function(search function). 
-> - Usage : Argumentt01[ ax5.util.search(Argument01, function(){ return }) ];
+> - Usage : Argument01[ ax5.util.search(Argument01, function(){ return }) ];
  >- Output
 
 #####// Example 01
