@@ -3,37 +3,41 @@
     "use strict";
 
     var init = function () {
-        //console.log(this.columns);
         this.header = []; // 헤더 초기화
+        this.headerMap = {}; // 컬럼의 __id값으로 빠르게 데이터를 접근하기 위한 map
 
-        var colIndex = 0, collectColumns = [];
-        var makeHeader = function (columns) {
-            console.log(columns);
+        var colIndex = 0, fieldID = 0;
+        var makeHeader = function (columns, parentField) {
             var i = 0, l = columns.length;
             for (; i < l; i++) {
-                console.log(i);
                 var field = columns[i];
-
-                if (!('columns' in field)) {
-
-                    field["columnIndex"] = colIndex++;
+                field.__id = fieldID++;
+                if ('columns' in field) {
+                    field.childColumnIndexs = [];
+                    makeHeader.call(this, field.columns, field);
                 }
+                else{
+                    field["columnIndex"] = colIndex++;
+                    if(parentField){
+                        parentField.childColumnIndexs.push(field["columnIndex"]);
+                    }
+                }
+                this.headerMap[field.__id] = field;
             }
         };
-        makeHeader(this.columns);
+        makeHeader.call(this, this.columns);
 
-        console.log(JSON.stringify(this.columns));
-        /*
-         for (; i < l; i++) {
-         this.header.push({
+        //console.log(JSON.stringify(this.columns));
+        // console.log(this.headerMap);
+    };
 
-         });
-         }
-         */
+    var render = function(){
+
     };
 
     root.header = {
-        init: init
+        init: init,
+        render: render
     };
 
 })(ax5.ui.grid);

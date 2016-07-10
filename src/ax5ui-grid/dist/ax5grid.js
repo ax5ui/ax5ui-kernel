@@ -1,7 +1,5 @@
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 // ax5.ui.grid
 (function (root, _SUPER_) {
     "use strict";
@@ -17,6 +15,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * ```
      */
 
+    var modules;
     var U = ax5.util;
 
     //== UI Class
@@ -82,30 +81,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return this;
         },
             initColumns = function initColumns(columns) {
-
-            function deepCopy(obj) {
-                if ((typeof obj === "undefined" ? "undefined" : _typeof(obj)) == 'object') {
-                    if (U.isArray(obj)) {
-                        var l = obj.length;
-                        var r = new Array(l);
-                        for (var i = 0; i < l; i++) {
-                            r[i] = deepCopy(obj[i]);
-                        }
-                        return r;
-                    } else {
-                        var r = {};
-                        r.prototype = obj.prototype;
-                        for (var k in obj) {
-                            r[k] = deepCopy(obj[k]);
-                        }
-                        return r;
-                    }
-                }
-                return obj;
-            }
-
-            this.columns = deepCopy(columns);
-
+            this.columns = U.deepCopy(columns);
             return this;
         };
         /// private end
@@ -152,8 +128,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             // columns데이터를 분석하여 미리 처리해야하는 데이터를 정리합니다.
             initColumns.call(this, grid.columns);
 
-            // columns의 데이터로 header데이터를 만들고 header를 출력합니다.
-            root.grid.header.init.call(this);
+            // columns의 데이터로 header데이터를 만들고
+            modules.header.init.call(this);
+            // header를 출력합니다.
+            modules.header.render.call(this);
         };
 
         /**
@@ -179,7 +157,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
     //== UI Class
 
-    root.grid = function () {
+    modules = root.grid = function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
     }(); // ax5.ui에 연결
@@ -207,38 +185,40 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     "use strict";
 
     var init = function init() {
-        //console.log(this.columns);
         this.header = []; // 헤더 초기화
+        this.headerMap = {}; // 컬럼의 __id값으로 빠르게 데이터를 접근하기 위한 map
 
         var colIndex = 0,
-            collectColumns = [];
-        var makeHeader = function makeHeader(columns) {
-            console.log(columns);
+            fieldID = 0;
+        var makeHeader = function makeHeader(columns, parentField) {
             var i = 0,
                 l = columns.length;
             for (; i < l; i++) {
-                console.log(i);
                 var field = columns[i];
-
-                if (!('columns' in field)) {
-
+                field.__id = fieldID++;
+                if ('columns' in field) {
+                    field.childColumnIndexs = [];
+                    makeHeader.call(this, field.columns, field);
+                } else {
                     field["columnIndex"] = colIndex++;
+                    if (parentField) {
+                        parentField.childColumnIndexs.push(field["columnIndex"]);
+                    }
                 }
+                this.headerMap[field.__id] = field;
             }
         };
-        makeHeader(this.columns);
+        makeHeader.call(this, this.columns);
 
-        console.log(JSON.stringify(this.columns));
-        /*
-         for (; i < l; i++) {
-         this.header.push({
-          });
-         }
-         */
+        //console.log(JSON.stringify(this.columns));
+        // console.log(this.headerMap);
     };
 
+    var render = function render() {};
+
     root.header = {
-        init: init
+        init: init,
+        render: render
     };
 })(ax5.ui.grid);
 

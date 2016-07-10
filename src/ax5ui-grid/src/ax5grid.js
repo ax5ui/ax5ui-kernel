@@ -12,6 +12,7 @@
      * var myGrid = new ax5.ui.grid();
      * ```
      */
+    var modules;
     var U = ax5.util;
 
     //== UI Class
@@ -75,35 +76,12 @@
                         "bottom-body": this.$target.find('[data-ax5grid-panel="bottom-body"]'),
                         "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
                     }
-                }
+                };
 
                 return this;
             },
             initColumns = function(columns){
-
-                function deepCopy(obj) {
-                    if (typeof obj == 'object') {
-                        if (U.isArray(obj)) {
-                            var l = obj.length;
-                            var r = new Array(l);
-                            for (var i = 0; i < l; i++) {
-                                r[i] = deepCopy(obj[i]);
-                            }
-                            return r;
-                        } else {
-                            var r = {};
-                            r.prototype = obj.prototype;
-                            for (var k in obj) {
-                                r[k] = deepCopy(obj[k]);
-                            }
-                            return r;
-                        }
-                    }
-                    return obj;
-                }
-                
-                this.columns = deepCopy(columns);
-
+                this.columns = U.deepCopy(columns);
                 return this;
             };
         /// private end
@@ -151,8 +129,10 @@
             // columns데이터를 분석하여 미리 처리해야하는 데이터를 정리합니다.
             initColumns.call(this, grid.columns);
 
-            // columns의 데이터로 header데이터를 만들고 header를 출력합니다.
-            root.grid.header.init.call(this);
+            // columns의 데이터로 header데이터를 만들고 
+            modules.header.init.call(this);
+            // header를 출력합니다.
+            modules.header.render.call(this);
             
         };
 
@@ -179,9 +159,10 @@
     };
     //== UI Class
 
-    root.grid = (function () {
+    modules = root.grid = (function () {
         if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
         return axClass;
     })(); // ax5.ui에 연결
+
 
 })(ax5.ui, ax5.ui.root);
