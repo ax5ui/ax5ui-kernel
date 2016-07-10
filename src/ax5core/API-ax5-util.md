@@ -428,6 +428,22 @@ Output :
 ```
 ---
 
+## ax5.util.deepCopy
+It returns deep copied Object.
+```js
+var obj = [
+    {name:"A", child:[{name:"a-1"}]},
+    {name:"B", child:[{name:"b-1"}], callBack: function(){ console.log('callBack'); }}
+];
+var copiedObj = ax5.util.deepCopy(obj);
+
+obj[1].callBack();
+copiedObj[1].callBack();
+copiedObj[1].child[0].name = "c-1";
+
+console.log(obj[1].child[0].name, copiedObj[1].child[0].name);
+```
+
 # String
 
 ## ax5.util.left

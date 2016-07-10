@@ -1855,6 +1855,41 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return debounced;
         };
 
+        /**
+         * @method ax5.util.deepCopy
+         * @param {Object} obj
+         * @returns {Object}
+         * @example
+         * ```js
+         * var obj = [
+         *  {name:"A", child:[{name:"a-1"}]},
+         *  {name:"B", child:[{name:"b-1"}], callBack: function(){ console.log('callBack'); }}
+         * ];
+         * var copiedObj = ax5.util.deepCopy(obj)
+         * ```
+         */
+        function deepCopy(obj) {
+            var r, l;
+            if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) == 'object') {
+                if (U.isArray(obj)) {
+                    l = obj.length;
+                    r = new Array(l);
+                    for (var i = 0; i < l; i++) {
+                        r[i] = deepCopy(obj[i]);
+                    }
+                    return r;
+                } else {
+                    r = {};
+                    r.prototype = obj.prototype;
+                    for (var k in obj) {
+                        r[k] = deepCopy(obj[k]);
+                    }
+                    return r;
+                }
+            }
+            return obj;
+        }
+
         return {
             alert: alert,
             each: each,
@@ -1869,6 +1904,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             parseJson: parseJson,
             first: first,
             last: last,
+            deepCopy: deepCopy,
+
             left: left,
             right: right,
             getType: getType,

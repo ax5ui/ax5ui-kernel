@@ -16,11 +16,14 @@
 
 <script>
 
+    /* 날짜 포멧팅
     var today = new Date();
     var ppp = ax5.util.date(today, {return:'yyyy-MM-dd'});
     console.log(ppp);
+    */
 
     //console.log(ax5.info.eventKeys);
+
     /*
     var templatel = "{{title}} spends {{calc}}";
 
@@ -44,16 +47,16 @@
      ]
      };
 
+    /*
      var template =
      "{{#beatles}} * {{firstName}} {{lastName}} ({{@i}}) ({{@first}}) {{/beatles}}";
 
      var output = ax5.mustache.render(template, view);
      console.log(output);
-
-
+    */
 
      $(document.body).ready(function () {
-     ax5.util.selectRange($("#select-test-0"), "end");
+        ax5.util.selectRange($("#select-test-0"), "end");
      //ax5.util.selectRange($("#select-test-1").get(0), [1, 5]);
      //ax5.util.selectRange($("#select-test-2"), "end");
      });
@@ -81,6 +84,17 @@
         chk_fn(new Date());
     });
 
+    var obj = [
+        {name:"A", child:[{name:"a-1"}]},
+        {name:"B", child:[{name:"b-1"}], callBack: function(){ console.log('callBack'); }}
+    ];
+    var copiedObj = ax5.util.deepCopy(obj);
+
+    obj[1].callBack();
+    copiedObj[1].callBack();
+    copiedObj[1].child[0].name = "c-1";
+    
+    console.log(obj[1].child[0].name, copiedObj[1].child[0].name);
 </script>
 
 </body>
