@@ -1,5 +1,7 @@
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 // ax5.ui.grid
 (function (root, _SUPER_) {
     "use strict";
@@ -80,8 +82,30 @@
             return this;
         },
             initColumns = function initColumns(columns) {
-            this.columns = [].concat(columns);
-            // todo : array deep copy
+
+            function deepCopy(obj) {
+                if ((typeof obj === "undefined" ? "undefined" : _typeof(obj)) == 'object') {
+                    if (U.isArray(obj)) {
+                        var l = obj.length;
+                        var r = new Array(l);
+                        for (var i = 0; i < l; i++) {
+                            r[i] = deepCopy(obj[i]);
+                        }
+                        return r;
+                    } else {
+                        var r = {};
+                        r.prototype = obj.prototype;
+                        for (var k in obj) {
+                            r[k] = deepCopy(obj[k]);
+                        }
+                        return r;
+                    }
+                }
+                return obj;
+            }
+
+            this.columns = deepCopy(columns);
+
             return this;
         };
         /// private end
