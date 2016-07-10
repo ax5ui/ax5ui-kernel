@@ -1,5 +1,6 @@
 // ax5.ui.grid
 (function (root, _SUPER_) {
+    "use strict";
 
     /**
      * @class ax5grid
@@ -79,7 +80,8 @@
                 return this;
             },
             initColumns = function(columns){
-                this.columns = jQuery.extend({}, columns);
+                this.columns = [].concat(columns);
+                // todo : array deep copy
                 return this;
             };
         /// private end

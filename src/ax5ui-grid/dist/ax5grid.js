@@ -2,6 +2,7 @@
 
 // ax5.ui.grid
 (function (root, _SUPER_) {
+    "use strict";
 
     /**
      * @class ax5grid
@@ -13,6 +14,7 @@
      * var myGrid = new ax5.ui.grid();
      * ```
      */
+
     var U = ax5.util;
 
     //== UI Class
@@ -78,7 +80,8 @@
             return this;
         },
             initColumns = function initColumns(columns) {
-            this.columns = jQuery.extend({}, columns);
+            this.columns = [].concat(columns);
+            // todo : array deep copy
             return this;
         };
         /// private end
@@ -158,12 +161,6 @@
     }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);
 
-/*
- * Copyright (c) 2016. tom@axisj.com
- * - github.com/thomasjang
- * - www.axisj.com
- */
-
 // ax5.ui.grid.body
 (function (root) {
     "use strict";
@@ -175,43 +172,51 @@
     };
 })(ax5.ui.grid);
 
-/*
- * Copyright (c) 2016. tom@axisj.com
- * - github.com/thomasjang
- * - www.axisj.com
- */
-
 // ax5.ui.grid.layout
 (function (root) {
     "use strict";
 
     root.data = {};
 })(ax5.ui.grid);
-
-/*
- * Copyright (c) 2016. tom@axisj.com
- * - github.com/thomasjang
- * - www.axisj.com
- */
-
 // ax5.ui.grid.header
 (function (root) {
     "use strict";
 
     var init = function init() {
-        console.log(this.columns);
+        //console.log(this.columns);
+        this.header = []; // 헤더 초기화
+
+        var colIndex = 0,
+            collectColumns = [];
+        var makeHeader = function makeHeader(columns) {
+            console.log(columns);
+            var i = 0,
+                l = columns.length;
+            for (; i < l; i++) {
+                console.log(i);
+                var field = columns[i];
+
+                if (!('columns' in field)) {
+
+                    field["columnIndex"] = colIndex++;
+                }
+            }
+        };
+        makeHeader(this.columns);
+
+        console.log(JSON.stringify(this.columns));
+        /*
+         for (; i < l; i++) {
+         this.header.push({
+          });
+         }
+         */
     };
 
     root.header = {
         init: init
     };
 })(ax5.ui.grid);
-
-/*
- * Copyright (c) 2016. tom@axisj.com
- * - github.com/thomasjang
- * - www.axisj.com
- */
 
 // ax5.ui.grid.scroller
 (function (root) {
@@ -223,6 +228,7 @@
         init: init
     };
 })(ax5.ui.grid);
+
 // ax5.ui.grid.tmpl
 (function (root) {
     "use strict";
