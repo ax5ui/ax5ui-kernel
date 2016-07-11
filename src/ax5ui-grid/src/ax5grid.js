@@ -50,7 +50,7 @@
                 var data = {
                     instanceId: this.id
                 };
-                this.$target.html(root.grid.tmpl.get("main", data));
+                this.$target.html(modules.tmpl.get("main", data));
 
                 // 그리드 패널 프레임의 각 엘리먼트를 캐쉬합시다.
                 this.$ = {
@@ -132,7 +132,7 @@
             // columns의 데이터로 header데이터를 만들고 
             modules.header.init.call(this);
             // header를 출력합니다.
-            modules.header.render.call(this);
+            modules.header.repaint.call(this);
             
         };
 

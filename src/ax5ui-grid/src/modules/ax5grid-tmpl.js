@@ -3,8 +3,8 @@
 (function (root) {
     "use strict";
 
-    var main = `
-        <div data-ax5grid-container="root" data-ax5grid-instance="{{instanceId}}">
+    var main =
+        `<div data-ax5grid-container="root" data-ax5grid-instance="{{instanceId}}">
             <div data-ax5grid-container="header">
                 <div data-ax5grid-panel="aside-header"></div>
                 <div data-ax5grid-panel="left-header"></div>
@@ -25,10 +25,19 @@
                 <div data-ax5grid-panel="bottom-body"></div>
                 <div data-ax5grid-panel="bottom-right-body"></div>
             </div>
-        </div>
-    `;
+        </div>`;
 
-    var header = ``;
+    var header =
+        `<table>
+            {{#table.rows}}
+            <tr>
+                {{#cols}}
+                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
+                {{/cols}}
+            </tr>
+            {{/table.rows}}
+        </table>
+        `;
 
     var body = ``;
 
