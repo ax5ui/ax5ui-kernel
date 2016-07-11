@@ -24,6 +24,12 @@
     $(document.body).ready(function () {
         firstGrid.setConfig({
             target: $('[data-ax5grid="first-grid"]'),
+            header:{
+                cellHeight: 20
+            },
+            body:{
+                cellHeight: 20
+            },
             columns: [
                 {key: "a", label: "필드A", columns:[
                     {key: "c1", label: "필드A-1"},

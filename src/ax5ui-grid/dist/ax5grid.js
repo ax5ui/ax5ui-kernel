@@ -185,9 +185,13 @@
     "use strict";
 
     var init = function init() {
-        this.headerTable = {}; // 헤더 초기화
-        this.headerMap = {}; // 컬럼의 __id값으로 빠르게 데이터를 접근하기 위한 map
+        // 헤더 초기화
+        this.leftHeaderTable = {};
+        this.headerTable = {};
+        this.rightHeaderTable = {};
 
+        // 컬럼의 __id값으로 빠르게 데이터를 접근하기 위한 map | 아직 구현전. 필요성 타진 후 맵 데이터를 생성하도록 합니다.
+        // this.headerMap = {};
         var createHeader = function createHeader(columns) {
             var table = {
                 rows: []
@@ -204,6 +208,7 @@
                     field.colspan = 1;
                     field.rowspan = 1;
 
+                    field.rowIndex = depth;
                     field.colIndex = function () {
                         if (!parentField) {
                             return colIndex++;
@@ -246,19 +251,25 @@
 
             return table;
         };
-
         this.headerTable = createHeader.call(this, this.columns);
-        console.log(this.headerTable);
-        // console.log(this.columns);
-        // console.log(this.headerMap);
+    };
+
+    var resetFixedCol = function resetFixedCol() {
+        // 틀고정 위치 조정
     };
 
     var repaint = function repaint() {
-        //console.log(this.columns);
-        var data = {
+        //console.log(this.headerTable);
+
+        this.$.panel["left-header"].html(root.tmpl.get("left-header", {
+            table: this.leftHeaderTable
+        }));
+        this.$.panel["header"].html(root.tmpl.get("header", {
             table: this.headerTable
-        };
-        this.$.panel.header.html(root.tmpl.get("header", data));
+        }));
+        this.$.panel["right-header"].html(root.tmpl.get("right-header", {
+            table: this.rightHeaderTable
+        }));
 
         // resize header elements
     };
@@ -288,12 +299,18 @@
 
     var header = "<table border=\"1\" style=\"table-layout: fixed;width: 100%;\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
 
+    var leftHeader = "";
+
+    var rightHeader = "";
+
     var body = "";
 
     root.tmpl = {
-        main: main,
-        header: header,
-        body: body,
+        "main": main,
+        "header": header,
+        "left-header": leftHeader,
+        "right-header": rightHeader,
+        "body": body,
         get: function get(tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);
         }

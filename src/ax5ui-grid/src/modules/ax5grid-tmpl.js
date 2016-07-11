@@ -39,12 +39,18 @@
         </table>
         `;
 
+    var leftHeader = ``;
+
+    var rightHeader = ``;
+
     var body = ``;
 
     root.tmpl = {
-        main: main,
-        header: header,
-        body: body,
+        "main": main,
+        "header": header,
+        "left-header": leftHeader,
+        "right-header": rightHeader,
+        "body": body,
         get: function (tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);
         }
