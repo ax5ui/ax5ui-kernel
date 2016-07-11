@@ -1952,12 +1952,7 @@
                     }
                     return r;
                 } else {
-                    r = {};
-                    r.prototype = obj.prototype;
-                    for (var k in obj) {
-                        r[k] = deepCopy(obj[k]);
-                    }
-                    return r;
+                    return jQuery.extend({}, obj);
                 }
             }
             return obj;
