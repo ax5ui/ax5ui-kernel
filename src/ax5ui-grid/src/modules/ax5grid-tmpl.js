@@ -28,7 +28,7 @@
         </div>`;
 
     var header =
-        `<table>
+        `<table border="1" style="table-layout: fixed;width: 100%;">
             {{#table.rows}}
             <tr>
                 {{#cols}}

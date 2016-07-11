@@ -25,11 +25,22 @@
         firstGrid.setConfig({
             target: $('[data-ax5grid="first-grid"]'),
             columns: [
-                {key: "a", label: "필드A"},
+                {key: "a", label: "필드A", columns:[
+                    {key: "c1", label: "필드A-1"},
+                    {key: "c2", label: "필드A-2", columns:[
+                        {key: "c2-1", label: "필드A-2-1"},
+                        {key: "c2-2", label: "필드A-2-2", columns:[
+                            {key: "c2-1", label: "필드A-2-2-1"}
+                        ]}
+                    ]}
+                ]},
                 {key: "b", label: "필드B"},
                 {key: "c", label: "필드C", columns:[
                     {key: "c1", label: "필드C-1"},
-                    {key: "c2", label: "필드C-2"}
+                    {key: "c2", label: "필드C-2", columns:[
+                        {key: "c2-1", label: "필드C-2-1"},
+                        {key: "c2-2", label: "필드C-2-2"}
+                    ]}
                 ]},
                 {key: "d", label: "필드D"}
             ]

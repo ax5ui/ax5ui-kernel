@@ -197,8 +197,10 @@
                 var row = { cols: [] };
                 var i = 0,
                     l = _columns.length;
+
                 for (; i < l; i++) {
                     var field = _columns[i];
+                    var colspan = 1;
                     field.colspan = 1;
                     field.rowspan = 1;
 
@@ -206,7 +208,6 @@
                         if (!parentField) {
                             return colIndex++;
                         } else {
-                            parentField.colspan = i + 1;
                             colIndex = parentField.colIndex + i + 1;
                             return parentField.colIndex + i;
                         }
@@ -215,14 +216,18 @@
                     row.cols.push(field);
 
                     if ('columns' in field) {
-                        maekRows(field.columns, depth + 1, field);
+                        colspan = maekRows(field.columns, depth + 1, field);
                     }
+
+                    field.colspan = colspan;
                 }
 
                 if (!table.rows[depth]) {
                     table.rows[depth] = { cols: [] };
                 }
                 table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+
+                return row.cols.length - 1 + colspan;
             };
             maekRows(columns, 0);
 
@@ -281,7 +286,7 @@
 
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\"></div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\"></div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\"></div>\n                <div data-ax5grid-panel=\"left-body\"></div>\n                <div data-ax5grid-panel=\"body\"></div>\n                <div data-ax5grid-panel=\"right-body\"></div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\"></div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
 
-    var header = "<table>\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
+    var header = "<table border=\"1\" style=\"table-layout: fixed;width: 100%;\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
 
     var body = "";
 
