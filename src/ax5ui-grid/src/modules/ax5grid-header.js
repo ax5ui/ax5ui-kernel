@@ -4,9 +4,10 @@
 
     var init = function () {
         // 헤더 초기화
-        this.leftHeaderTable = {};
         this.headerTable = {};
-        this.rightHeaderTable = {};
+        this.leftHeaderData = {};
+        this.headerData = {};
+        this.rightHeaderData = {};
 
         // 컬럼의 __id값으로 빠르게 데이터를 접근하기 위한 map | 아직 구현전. 필요성 타진 후 맵 데이터를 생성하도록 합니다.
         // this.headerMap = {};
@@ -50,7 +51,7 @@
                 table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
 
 
-                return (row.cols.length-1) + colspan;
+                return (row.cols.length - 1) + colspan;
             };
             maekRows(columns, 0);
 
@@ -70,9 +71,70 @@
             return table;
         };
         this.headerTable = createHeader.call(this, this.columns);
+
+
+
+        //** 틀고정 인덱스에 따라 ~~~~
+        var fixedColIndex = 1;
+        // header를 틀고정 인덱스로 잘라내어 leftHeader와 header로 나눈다.
+        // console.log(JSON.stringify(this.headerTable.rows));
+
+
+        var tempTable_l = {rows: []};
+        var tempTable_r = {rows: []};
+        for (var r = 0, rl = this.headerTable.rows.length; r < rl; r++) {
+            var row = this.headerTable.rows[r];
+
+            tempTable_l.rows[r] = {cols:[]};
+            tempTable_r.rows[r] = {cols:[]};
+
+            for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                var col = jQuery.extend({}, row.cols[c]);
+                var colStartIndex = col.colIndex, colEndIndex = col.colIndex + col.colspan;
+
+                if(colStartIndex < fixedColIndex){
+                    if(colEndIndex <= fixedColIndex){
+                        // 좌측편에 변형없이 추가
+                        tempTable_l.rows[r].cols.push( col );
+                    }else{
+                        var leftCol = jQuery.extend({}, col);
+                        var rightCol = jQuery.extend({}, leftCol);
+                        leftCol.colspan = fixedColIndex - leftCol.colIndex;
+                        rightCol.colIndex = fixedColIndex;
+                        rightCol.colspan = col.colspan - leftCol.colspan;
+
+                        tempTable_l.rows[r].cols.push( leftCol );
+                        tempTable_r.rows[r].cols.push( rightCol );
+                    }
+                }
+                else{
+                    // 오른편
+                    tempTable_r.rows[r].cols.push( col );
+                }
+            }
+        }
+
+        console.log(JSON.stringify(
+            ax5.util.map(tempTable_l.rows[0].cols, function(){
+            return {
+                key: this.key,
+                colIndex: this.colIndex,
+                colspan: this.colspan
+            }
+        } )));
+
+        console.log(JSON.stringify(
+            ax5.util.map(tempTable_r.rows[0].cols, function(){
+                return {
+                    key: this.key,
+                    colIndex: this.colIndex,
+                    colspan: this.colspan
+                }
+            } )));
+
     };
 
-    var resetFixedCol = function(){
+    var resetFixedColIndex = function () {
         // 틀고정 위치 조정
     };
 
@@ -80,13 +142,13 @@
         //console.log(this.headerTable);
 
         this.$.panel["left-header"].html(root.tmpl.get("left-header", {
-            table: this.leftHeaderTable
+            table: this.leftHeaderData
         }));
         this.$.panel["header"].html(root.tmpl.get("header", {
             table: this.headerTable
         }));
         this.$.panel["right-header"].html(root.tmpl.get("right-header", {
-            table: this.rightHeaderTable
+            table: this.rightHeaderData
         }));
 
         // resize header elements
@@ -94,7 +156,8 @@
 
     root.header = {
         init: init,
-        repaint: repaint
+        repaint: repaint,
+        resetFixedColIndex: resetFixedColIndex
     };
 
 })(ax5.ui.grid);
