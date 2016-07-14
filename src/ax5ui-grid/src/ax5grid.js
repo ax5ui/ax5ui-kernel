@@ -29,8 +29,11 @@
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
-            title: '',
-            animateTime: 250
+            animateTime: 250,
+
+            // 틀고정 속성
+            frozenColumnIndex: 0,
+            frozenRowIndex: 0
         };
 
         cfg = this.config;
@@ -80,7 +83,7 @@
 
                 return this;
             },
-            initColumns = function(columns){
+            initColumns = function (columns) {
                 this.columns = U.deepCopy(columns);
                 return this;
             };
@@ -133,7 +136,7 @@
             modules.header.init.call(this);
             // header를 출력합니다.
             modules.header.repaint.call(this);
-            
+
         };
 
         /**
@@ -141,7 +144,7 @@
          * @method ax5grid.align
          * @returns {ax5grid}
          */
-        this.align = function(){
+        this.align = function () {
 
             return this;
         };
