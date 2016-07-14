@@ -28,7 +28,7 @@
         </div>`;
 
     var header =
-        `<table border="1" style="table-layout: fixed;width: 100%;">
+        `<table border="1" style="">
             {{#table.rows}}
             <tr>
                 {{#cols}}
@@ -39,7 +39,17 @@
         </table>
         `;
 
-    var leftHeader = ``;
+    var leftHeader =
+        `<table border="1" style="">
+            {{#table.rows}}
+            <tr>
+                {{#cols}}
+                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
+                {{/cols}}
+            </tr>
+            {{/table.rows}}
+        </table>
+        `;
 
     var rightHeader = ``;
 

@@ -255,7 +255,7 @@
         this.headerTable = createHeader.call(this, this.columns);
 
         //** 틀고정 인덱스에 따라 ~~~~
-        var fixedColIndex = 1;
+        var fixedColIndex = 0;
         // header를 틀고정 인덱스로 잘라내어 leftHeader와 header로 나눈다.
         // console.log(JSON.stringify(this.headerTable.rows));
 
@@ -293,21 +293,8 @@
             }
         }
 
-        console.log(JSON.stringify(ax5.util.map(tempTable_l.rows[0].cols, function () {
-            return {
-                key: this.key,
-                colIndex: this.colIndex,
-                colspan: this.colspan
-            };
-        })));
-
-        console.log(JSON.stringify(ax5.util.map(tempTable_r.rows[0].cols, function () {
-            return {
-                key: this.key,
-                colIndex: this.colIndex,
-                colspan: this.colspan
-            };
-        })));
+        this.leftHeaderData = tempTable_l;
+        this.headerData = tempTable_r;
     };
 
     var resetFixedColIndex = function resetFixedColIndex() {
@@ -321,7 +308,7 @@
             table: this.leftHeaderData
         }));
         this.$.panel["header"].html(root.tmpl.get("header", {
-            table: this.headerTable
+            table: this.headerData
         }));
         this.$.panel["right-header"].html(root.tmpl.get("right-header", {
             table: this.rightHeaderData
@@ -354,9 +341,9 @@
 
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\"></div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\"></div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\"></div>\n                <div data-ax5grid-panel=\"left-body\"></div>\n                <div data-ax5grid-panel=\"body\"></div>\n                <div data-ax5grid-panel=\"right-body\"></div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\"></div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
 
-    var header = "<table border=\"1\" style=\"table-layout: fixed;width: 100%;\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
+    var header = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
 
-    var leftHeader = "";
+    var leftHeader = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
 
     var rightHeader = "";
 

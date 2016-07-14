@@ -75,7 +75,7 @@
 
 
         //** 틀고정 인덱스에 따라 ~~~~
-        var fixedColIndex = 1;
+        var fixedColIndex = 0;
         // header를 틀고정 인덱스로 잘라내어 leftHeader와 header로 나눈다.
         // console.log(JSON.stringify(this.headerTable.rows));
 
@@ -114,24 +114,11 @@
             }
         }
 
-        console.log(JSON.stringify(
-            ax5.util.map(tempTable_l.rows[0].cols, function(){
-            return {
-                key: this.key,
-                colIndex: this.colIndex,
-                colspan: this.colspan
-            }
-        } )));
 
-        console.log(JSON.stringify(
-            ax5.util.map(tempTable_r.rows[0].cols, function(){
-                return {
-                    key: this.key,
-                    colIndex: this.colIndex,
-                    colspan: this.colspan
-                }
-            } )));
+        this.leftHeaderData = tempTable_l;
+        this.headerData = tempTable_r;
 
+        
     };
 
     var resetFixedColIndex = function () {
@@ -145,7 +132,7 @@
             table: this.leftHeaderData
         }));
         this.$.panel["header"].html(root.tmpl.get("header", {
-            table: this.headerTable
+            table: this.headerData
         }));
         this.$.panel["right-header"].html(root.tmpl.get("right-header", {
             table: this.rightHeaderData
