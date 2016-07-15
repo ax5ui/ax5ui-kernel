@@ -87,6 +87,7 @@
                 this.columns = U.deepCopy(columns);
                 return this;
             };
+
         /// private end
 
         /**
@@ -136,6 +137,12 @@
             modules.header.init.call(this);
             // header를 출력합니다.
             modules.header.repaint.call(this);
+
+            // columns의 데이터로 body데이터를 만들고
+            modules.body.init.call(this);
+            // header를 출력합니다.
+            modules.body.repaint.call(this);
+
 
         };
 

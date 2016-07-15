@@ -81,57 +81,10 @@
         return table;
     };
 
-    /**
-     * @method ax5grid.header.divideHeader
-     * @param headerTable
-     * @param frozenColumnIndex
-     * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
-     */
-    var divideHeader = function (headerTable, frozenColumnIndex) {
-        var tempTable_l = {rows: []};
-        var tempTable_r = {rows: []};
-        for (var r = 0, rl = headerTable.rows.length; r < rl; r++) {
-            var row = headerTable.rows[r];
-
-            tempTable_l.rows[r] = {cols: []};
-            tempTable_r.rows[r] = {cols: []};
-
-            for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                var col = jQuery.extend({}, row.cols[c]);
-                var colStartIndex = col.colIndex, colEndIndex = col.colIndex + col.colspan;
-
-                if (colStartIndex < frozenColumnIndex) {
-                    if (colEndIndex <= frozenColumnIndex) {
-                        // 좌측편에 변형없이 추가
-                        tempTable_l.rows[r].cols.push(col);
-                    } else {
-                        var leftCol = jQuery.extend({}, col);
-                        var rightCol = jQuery.extend({}, leftCol);
-                        leftCol.colspan = frozenColumnIndex - leftCol.colIndex;
-                        rightCol.colIndex = frozenColumnIndex;
-                        rightCol.colspan = col.colspan - leftCol.colspan;
-
-                        tempTable_l.rows[r].cols.push(leftCol);
-                        tempTable_r.rows[r].cols.push(rightCol);
-                    }
-                }
-                else {
-                    // 오른편
-                    tempTable_r.rows[r].cols.push(col);
-                }
-            }
-        }
-
-        return {
-            leftHeaderData: tempTable_l,
-            headerData: tempTable_r
-        }
-    };
-
     var repaint = function () {
-        var dividedHeaderObj = divideHeader(this.headerTable, this.config.frozenColumnIndex);
-        this.leftHeaderData = dividedHeaderObj.leftHeaderData;
-        this.headerData = dividedHeaderObj.headerData;
+        var dividedHeaderObj = root.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+        this.leftHeaderData = dividedHeaderObj.leftData;
+        this.headerData = dividedHeaderObj.rightData;
 
         this.$.panel["left-header"].html(root.tmpl.get("left-header", {
             table: this.leftHeaderData
@@ -146,7 +99,6 @@
 
     root.header = {
         init: init,
-        divideHeader: divideHeader,
         repaint: repaint
     };
 
