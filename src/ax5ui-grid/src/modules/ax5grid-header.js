@@ -11,18 +11,23 @@
 
         // 컬럼의 __id값으로 빠르게 데이터를 접근하기 위한 map | 아직 구현전. 필요성 타진 후 맵 데이터를 생성하도록 합니다.
         // this.headerMap = {};
-        var createHeader = function (columns) {
-            var table = {
-                rows: []
-            };
-            var colIndex = 0;
-            var maekRows = function (_columns, depth, parentField) {
-                var row = {cols: []};
-                var i = 0, l = _columns.length;
+        this.headerTable = makeHeaderTable.call(this, this.columns);
+    };
 
-                for (; i < l; i++) {
-                    var field = _columns[i];
-                    var colspan = 1;
+    var makeHeaderTable = function (columns) {
+        var table = {
+            rows: []
+        };
+        var colIndex = 0;
+        var maekRows = function (_columns, depth, parentField) {
+            var row = {cols: []};
+            var i = 0, l = _columns.length;
+
+            for (; i < l; i++) {
+                var field = _columns[i];
+                var colspan = 1;
+
+                if(!field.hidden) {
                     field.colspan = 1;
                     field.rowspan = 1;
 
@@ -41,38 +46,47 @@
                     if ('columns' in field) {
                         colspan = maekRows(field.columns, depth + 1, field);
                     }
-
                     field.colspan = colspan;
+                }else{
+                    console.log("hh");
                 }
+            }
 
+            if(row.cols.length > 0) {
                 if (!table.rows[depth]) {
                     table.rows[depth] = {cols: []};
                 }
                 table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
-
-
                 return (row.cols.length - 1) + colspan;
-            };
-            maekRows(columns, 0);
+            }else{
+                return colspan;
+            }
 
-            (function () {
-                // set rowspan
-                for (var r = 0, rl = table.rows.length; r < rl; r++) {
-                    var row = table.rows[r];
-                    for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                        var col = row.cols[c];
-                        if (!('columns' in col)) {
-                            col.rowspan = rl - r;
-                        }
+        };
+        maekRows(columns, 0);
+
+        (function () {
+            // set rowspan
+            for (var r = 0, rl = table.rows.length; r < rl; r++) {
+                var row = table.rows[r];
+                for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                    var col = row.cols[c];
+                    if (!('columns' in col)) {
+                        col.rowspan = rl - r;
                     }
                 }
-            })();
+            }
+        })();
 
-            return table;
-        };
-        this.headerTable = createHeader.call(this, this.columns);
+        return table;
     };
 
+    /**
+     * @method ax5grid.header.divideHeader
+     * @param headerTable
+     * @param frozenColumnIndex
+     * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
+     */
     var divideHeader = function (headerTable, frozenColumnIndex) {
         var tempTable_l = {rows: []};
         var tempTable_r = {rows: []};
@@ -132,6 +146,7 @@
 
     root.header = {
         init: init,
+        divideHeader: divideHeader,
         repaint: repaint
     };
 
