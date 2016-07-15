@@ -27,17 +27,6 @@
             </div>
         </div>`;
 
-    var header =
-        `<table border="1" style="">
-            {{#table.rows}}
-            <tr>
-                {{#cols}}
-                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
-                {{/cols}}
-            </tr>
-            {{/table.rows}}
-        </table>
-        `;
 
     var leftHeader =
         `<table border="1" style="">
@@ -51,16 +40,55 @@
         </table>
         `;
 
+    var header =
+        `<table border="1" style="">
+            {{#table.rows}}
+            <tr>
+                {{#cols}}
+                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
+                {{/cols}}
+            </tr>
+            {{/table.rows}}
+        </table>
+        `;
+
+
     var rightHeader = ``;
 
-    var body = ``;
+    var leftBody =
+        `<table border="1" style="">
+            {{#table.rows}}
+            <tr>
+                {{#cols}}
+                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
+                {{/cols}}
+            </tr>
+            {{/table.rows}}
+        </table>
+        `;
+
+    var body =
+        `<table border="1" style="">
+            {{#table.rows}}
+            <tr>
+                {{#cols}}
+                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
+                {{/cols}}
+            </tr>
+            {{/table.rows}}
+        </table>
+        `;
+
+    var rightBody = ``;
 
     root.tmpl = {
         "main": main,
         "header": header,
         "left-header": leftHeader,
         "right-header": rightHeader,
+        "left-body": leftBody,
         "body": body,
+        "right-body": rightBody,
         get: function (tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);
         }

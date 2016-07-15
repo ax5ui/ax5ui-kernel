@@ -48,7 +48,7 @@
                     }
                     field.colspan = colspan;
                 }else{
-                    console.log("hh");
+
                 }
             }
 

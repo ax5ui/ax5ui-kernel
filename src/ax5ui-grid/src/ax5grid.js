@@ -140,8 +140,9 @@
 
             // columns의 데이터로 body데이터를 만들고
             modules.body.init.call(this);
-            // header를 출력합니다.
+            // bodyRow 눈금을 출력합니다.
             modules.body.repaint.call(this);
+
 
 
         };

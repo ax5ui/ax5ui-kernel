@@ -139,7 +139,7 @@
 
             // columns의 데이터로 body데이터를 만들고
             modules.body.init.call(this);
-            // header를 출력합니다.
+            // bodyRow 눈금을 출력합니다.
             modules.body.repaint.call(this);
         };
 
@@ -201,7 +201,7 @@
                 var field = _columns[i];
                 var colspan = 1;
 
-                if (!field.hidden) {
+                if (!field.hidden && 'key' in field) {
                     field.colspan = 1;
                     field.rowspan = 1;
 
@@ -221,9 +221,7 @@
                         colspan = maekRows(field.columns, depth + 1, field);
                     }
                     field.colspan = colspan;
-                } else {
-                    console.log("hh");
-                }
+                } else {}
             }
 
             if (row.cols.length > 0) {
@@ -259,22 +257,23 @@
         this.leftBodyRowData = dividedBodyRowObj.leftData;
         this.bodyRowData = dividedBodyRowObj.rightData;
 
-        /*
-        this.$.panel["left-header"].html(root.tmpl.get("left-header", {
-            table: this.leftHeaderData
+        this.$.panel["left-body"].html(root.tmpl.get("left-body", {
+            table: this.leftBodyRowData
         }));
-        this.$.panel["header"].html(root.tmpl.get("header", {
-            table: this.headerData
+        this.$.panel["body"].html(root.tmpl.get("body", {
+            table: this.bodyRowData
         }));
-        this.$.panel["right-header"].html(root.tmpl.get("right-header", {
-            table: this.rightHeaderData
+        this.$.panel["right-body"].html(root.tmpl.get("right-body", {
+            table: this.rightBodyRowData
         }));
-        */
     };
+
+    var setData = function setData() {};
 
     root.body = {
         init: init,
-        repaint: repaint
+        repaint: repaint,
+        setData: setData
     };
 })(ax5.ui.grid);
 
@@ -334,9 +333,7 @@
                         colspan = maekRows(field.columns, depth + 1, field);
                     }
                     field.colspan = colspan;
-                } else {
-                    console.log("hh");
-                }
+                } else {}
             }
 
             if (row.cols.length > 0) {
@@ -406,20 +403,26 @@
 
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\"></div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\"></div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\"></div>\n                <div data-ax5grid-panel=\"left-body\"></div>\n                <div data-ax5grid-panel=\"body\"></div>\n                <div data-ax5grid-panel=\"right-body\"></div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\"></div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
 
-    var header = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
-
     var leftHeader = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
+
+    var header = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
 
     var rightHeader = "";
 
-    var body = "";
+    var leftBody = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
+
+    var body = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
+
+    var rightBody = "";
 
     root.tmpl = {
         "main": main,
         "header": header,
         "left-header": leftHeader,
         "right-header": rightHeader,
+        "left-body": leftBody,
         "body": body,
+        "right-body": rightBody,
         get: function get(tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);
         }

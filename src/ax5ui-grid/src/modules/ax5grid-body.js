@@ -27,7 +27,7 @@
                 var field = _columns[i];
                 var colspan = 1;
 
-                if(!field.hidden) {
+                if(!field.hidden && 'key' in field) {
                     field.colspan = 1;
                     field.rowspan = 1;
 
@@ -48,7 +48,7 @@
                     }
                     field.colspan = colspan;
                 }else{
-                    console.log("hh");
+
                 }
             }
 
@@ -86,23 +86,26 @@
         this.leftBodyRowData = dividedBodyRowObj.leftData;
         this.bodyRowData = dividedBodyRowObj.rightData;
 
-        /*
-        this.$.panel["left-header"].html(root.tmpl.get("left-header", {
-            table: this.leftHeaderData
+        this.$.panel["left-body"].html(root.tmpl.get("left-body", {
+            table: this.leftBodyRowData
         }));
-        this.$.panel["header"].html(root.tmpl.get("header", {
-            table: this.headerData
+        this.$.panel["body"].html(root.tmpl.get("body", {
+            table: this.bodyRowData
         }));
-        this.$.panel["right-header"].html(root.tmpl.get("right-header", {
-            table: this.rightHeaderData
+        this.$.panel["right-body"].html(root.tmpl.get("right-body", {
+            table: this.rightBodyRowData
         }));
-        */
+    };
+
+    var setData = function(){
+
     };
 
 
     root.body = {
         init: init,
-        repaint: repaint
+        repaint: repaint,
+        setData: setData
     };
 
 })(ax5.ui.grid);
