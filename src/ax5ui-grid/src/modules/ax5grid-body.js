@@ -86,6 +86,20 @@
         this.leftBodyRowData = dividedBodyRowObj.leftData;
         this.bodyRowData = dividedBodyRowObj.rightData;
 
+        var leftBodyRow = root.tmpl.get("body-row", {
+            table: this.leftBodyRowData
+        });
+        var BodyRow = root.tmpl.get("body-row", {
+            table: this.bodyRowData
+        });
+        var rightBodyRow = root.tmpl.get("body-row", {
+            table: this.rightBodyRowData
+        });
+
+
+        // 바디를 템플릿으로 만드는 일이 가능한 것일까..
+
+        /*
         this.$.panel["left-body"].html(root.tmpl.get("left-body", {
             table: this.leftBodyRowData
         }));
@@ -95,6 +109,7 @@
         this.$.panel["right-body"].html(root.tmpl.get("right-body", {
             table: this.rightBodyRowData
         }));
+        */
     };
 
     var setData = function(){

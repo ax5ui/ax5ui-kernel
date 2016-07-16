@@ -55,7 +55,7 @@
 
     var rightHeader = ``;
 
-    var leftBody =
+    var bodyRow =
         `<table border="1" style="">
             {{#table.rows}}
             <tr>
@@ -67,28 +67,15 @@
         </table>
         `;
 
-    var body =
-        `<table border="1" style="">
-            {{#table.rows}}
-            <tr>
-                {{#cols}}
-                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
-                {{/cols}}
-            </tr>
-            {{/table.rows}}
-        </table>
-        `;
-
-    var rightBody = ``;
 
     root.tmpl = {
         "main": main,
         "header": header,
         "left-header": leftHeader,
         "right-header": rightHeader,
-        "left-body": leftBody,
-        "body": body,
-        "right-body": rightBody,
+
+        "body-row": bodyRow,
+
         get: function (tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);
         }
