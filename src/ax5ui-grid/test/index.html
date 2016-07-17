@@ -32,26 +32,22 @@
                 cellHeight: 20
             },
             columns: [
-                {key: "a", label: "필드A", columns:[
-                    {key: "c1", label: "필드A-1"},
-                    {key: "c2", label: "필드A-2", columns:[
-                        {key: "c2-1", label: "필드A-2-1"},
-                        {key: "c2-2", label: "필드A-2-2", columns:[
-                            {key: "c2-1", label: "필드A-2-2-1"}
-                        ]}
-                    ]}
-                ]},
+                {key: "a", label: "필드A"},
                 {key: "b", label: "필드B"},
-                {key: "c", label: "필드C", columns:[
+                {label: "필드C", columns:[
                     {key: "c1", label: "필드C-1"},
-                    {key: "c2", label: "필드C-2", columns:[
-                        {key: "c2-1", label: "필드C-2-1"},
-                        {key: "c2-2", label: "필드C-2-2"}
-                    ]}
+                    {key: "c2", label: "필드C-2"}
                 ]},
                 {key: "d", label: "필드D"}
             ]
         });
+
+        firstGrid.setData([
+            {a:"컬럼 테스트", b:"필드 B 값", c1:1, c2:"!@#$", "d": "필드D값"},
+            {a:"두번째 줄", c1:2, "c2-1":"가나다라마바사"},
+            {a:"컬럼 테스트", c1:3},
+            {a:"컬럼 테스트", c1:4}
+        ]);
     });
 </script>
 

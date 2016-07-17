@@ -36,6 +36,9 @@
             frozenRowIndex: 0
         };
 
+        // 그리드 데이터셋
+        this.data = [];
+
         cfg = this.config;
 
         var
@@ -142,9 +145,6 @@
             modules.body.init.call(this);
             // bodyRow 눈금을 출력합니다.
             modules.body.repaint.call(this);
-
-
-
         };
 
         /**
@@ -154,6 +154,13 @@
          */
         this.align = function () {
 
+            return this;
+        };
+
+
+        this.setData = function(data){
+            modules.data.set.call(this, data);
+            modules.body.repaint.call(this);
             return this;
         };
 

@@ -27,19 +27,6 @@
             </div>
         </div>`;
 
-
-    var leftHeader =
-        `<table border="1" style="">
-            {{#table.rows}}
-            <tr>
-                {{#cols}}
-                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
-                {{/cols}}
-            </tr>
-            {{/table.rows}}
-        </table>
-        `;
-
     var header =
         `<table border="1" style="">
             {{#table.rows}}
@@ -52,18 +39,17 @@
         </table>
         `;
 
-
-    var rightHeader = ``;
-
-    var bodyRow =
+    var body =
         `<table border="1" style="">
-            {{#table.rows}}
+            {{#list}}
+            {{#@rows}}
             <tr>
-                {{#cols}}
-                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
-                {{/cols}}
+                {{#@cols}}
+                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{#@columnValue}}{{{value}}}{{/@columnValue}}</td>
+                {{/@cols}}
             </tr>
-            {{/table.rows}}
+            {{/@rows}}
+            {{/list}}
         </table>
         `;
 
@@ -71,10 +57,7 @@
     root.tmpl = {
         "main": main,
         "header": header,
-        "left-header": leftHeader,
-        "right-header": rightHeader,
-
-        "body-row": bodyRow,
+        "body": body,
 
         get: function (tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);

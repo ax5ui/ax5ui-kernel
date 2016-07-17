@@ -38,6 +38,9 @@
             frozenRowIndex: 0
         };
 
+        // 그리드 데이터셋
+        this.data = [];
+
         cfg = this.config;
 
         var onStateChanged = function onStateChanged(opts, that) {
@@ -153,6 +156,12 @@
             return this;
         };
 
+        this.setData = function (data) {
+            modules.data.set.call(this, data);
+            modules.body.repaint.call(this);
+            return this;
+        };
+
         // 클래스 생성자
         this.main = function () {
 
@@ -171,7 +180,6 @@
         return axClass;
     }(); // ax5.ui에 연결
 })(ax5.ui, ax5.ui.root);
-
 // ax5.ui.grid.body
 (function (root) {
     "use strict";
@@ -197,30 +205,73 @@
             var i = 0,
                 l = _columns.length;
 
+            var selfMakeRow = function selfMakeRow(__columns) {
+                var i = 0,
+                    l = __columns.length;
+                for (; i < l; i++) {
+                    var field = __columns[i];
+                    var colspan = 1;
+
+                    if (!field.hidden) {
+
+                        if ('key' in field) {
+                            field.colspan = 1;
+                            field.rowspan = 1;
+
+                            field.rowIndex = depth;
+                            field.colIndex = function () {
+                                if (!parentField) {
+                                    return colIndex++;
+                                } else {
+                                    colIndex = parentField.colIndex + i + 1;
+                                    return parentField.colIndex + i;
+                                }
+                            }();
+
+                            row.cols.push(field);
+                            if ('columns' in field) {
+                                colspan = maekRows(field.columns, depth + 1, field);
+                            }
+                            field.colspan = colspan;
+                        } else {
+                            if ('columns' in field) {
+                                selfMakeRow(field.columns, depth);
+                            }
+                        }
+                    } else {}
+                }
+            };
+
             for (; i < l; i++) {
                 var field = _columns[i];
                 var colspan = 1;
 
-                if (!field.hidden && 'key' in field) {
-                    field.colspan = 1;
-                    field.rowspan = 1;
+                if (!field.hidden) {
 
-                    field.rowIndex = depth;
-                    field.colIndex = function () {
-                        if (!parentField) {
-                            return colIndex++;
-                        } else {
-                            colIndex = parentField.colIndex + i + 1;
-                            return parentField.colIndex + i;
+                    if ('key' in field) {
+                        field.colspan = 1;
+                        field.rowspan = 1;
+
+                        field.rowIndex = depth;
+                        field.colIndex = function () {
+                            if (!parentField) {
+                                return colIndex++;
+                            } else {
+                                colIndex = parentField.colIndex + i + 1;
+                                return parentField.colIndex + i;
+                            }
+                        }();
+
+                        row.cols.push(field);
+                        if ('columns' in field) {
+                            colspan = maekRows(field.columns, depth + 1, field);
                         }
-                    }();
-
-                    row.cols.push(field);
-
-                    if ('columns' in field) {
-                        colspan = maekRows(field.columns, depth + 1, field);
+                        field.colspan = colspan;
+                    } else {
+                        if ('columns' in field) {
+                            selfMakeRow(field.columns, depth);
+                        }
                     }
-                    field.colspan = colspan;
                 } else {}
             }
 
@@ -254,17 +305,48 @@
 
     var repaint = function repaint() {
         var dividedBodyRowObj = root.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
-        this.leftBodyRowData = dividedBodyRowObj.leftData;
-        this.bodyRowData = dividedBodyRowObj.rightData;
+        var leftBodyRowData = this.leftBodyRowData = dividedBodyRowObj.leftData;
+        var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
 
-        this.$.panel["left-body"].html(root.tmpl.get("left-body", {
-            table: this.leftBodyRowData
+        var data = this.data;
+        // todo : 현재 화면에 출력된 범위를 연산하여 data를 결정.
+
+        var getCols = function getCols() {
+            var ci = this.cols.length;
+            while (ci--) {
+                this.cols[ci]['@dataIndex'] = this['@dataIndex'];
+            }
+            return this.cols;
+        };
+        var getColumnValue = function getColumnValue() {
+            return {
+                value: data[this['@dataIndex']][this.key] || "&nbsp;"
+            };
+        };
+
+        this.$.panel["left-body"].html(root.tmpl.get("body", {
+            list: data,
+            '@rows': function rows() {
+                var ri = leftBodyRowData.rows.length;
+                while (ri--) {
+                    leftBodyRowData.rows[ri]['@dataIndex'] = this['@i'];
+                }
+                return leftBodyRowData.rows;
+            },
+            '@cols': getCols,
+            '@columnValue': getColumnValue
         }));
         this.$.panel["body"].html(root.tmpl.get("body", {
-            table: this.bodyRowData
-        }));
-        this.$.panel["right-body"].html(root.tmpl.get("right-body", {
-            table: this.rightBodyRowData
+            list: data,
+            '@rows': function rows() {
+                var ri = bodyRowData.rows.length;
+                while (ri--) {
+                    bodyRowData.rows[ri]['@dataIndex'] = this['@i'];
+                }
+                return bodyRowData.rows;
+            },
+            '@cols': getCols,
+            '@columnValue': getColumnValue
         }));
     };
 
@@ -276,12 +358,25 @@
         setData: setData
     };
 })(ax5.ui.grid);
-
 // ax5.ui.grid.layout
 (function (root) {
     "use strict";
 
-    root.data = {};
+    var U = ax5.util;
+    var init = function init() {};
+
+    var set = function set(data) {
+        this.data = U.deepCopy(data);
+        return this;
+    };
+
+    var get = function get() {};
+
+    root.data = {
+        init: init,
+        set: set,
+        get: get
+    };
 })(ax5.ui.grid);
 // ax5.ui.grid.header
 (function (root) {
@@ -369,15 +464,21 @@
         this.leftHeaderData = dividedHeaderObj.leftData;
         this.headerData = dividedHeaderObj.rightData;
 
-        this.$.panel["left-header"].html(root.tmpl.get("left-header", {
-            table: this.leftHeaderData
-        }));
+        if (this.config.frozenColumnIndex > 0) {
+            this.$.panel["left-header"].html(root.tmpl.get("header", {
+                table: this.leftHeaderData
+            }));
+        }
+
         this.$.panel["header"].html(root.tmpl.get("header", {
             table: this.headerData
         }));
-        this.$.panel["right-header"].html(root.tmpl.get("right-header", {
-            table: this.rightHeaderData
-        }));
+
+        if (this.config.rowSum) {
+            this.$.panel["right-header"].html(root.tmpl.get("header", {
+                table: this.rightHeaderData
+            }));
+        }
     };
 
     root.header = {
@@ -403,26 +504,15 @@
 
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\"></div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\"></div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\"></div>\n                <div data-ax5grid-panel=\"left-body\"></div>\n                <div data-ax5grid-panel=\"body\"></div>\n                <div data-ax5grid-panel=\"right-body\"></div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\"></div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
 
-    var leftHeader = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
-
     var header = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
 
-    var rightHeader = "";
-
-    var leftBody = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
-
-    var body = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
-
-    var rightBody = "";
+    var body = "<table border=\"1\" style=\"\">\n            {{#list}}\n            {{#@rows}}\n            <tr>\n                {{#@cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{#@columnValue}}{{{value}}}{{/@columnValue}}</td>\n                {{/@cols}}\n            </tr>\n            {{/@rows}}\n            {{/list}}\n        </table>\n        ";
 
     root.tmpl = {
         "main": main,
         "header": header,
-        "left-header": leftHeader,
-        "right-header": rightHeader,
-        "left-body": leftBody,
         "body": body,
-        "right-body": rightBody,
+
         get: function get(tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);
         }

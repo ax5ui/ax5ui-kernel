@@ -86,15 +86,21 @@
         this.leftHeaderData = dividedHeaderObj.leftData;
         this.headerData = dividedHeaderObj.rightData;
 
-        this.$.panel["left-header"].html(root.tmpl.get("left-header", {
-            table: this.leftHeaderData
-        }));
+        if(this.config.frozenColumnIndex > 0) {
+            this.$.panel["left-header"].html(root.tmpl.get("header", {
+                table: this.leftHeaderData
+            }));
+        }
+
         this.$.panel["header"].html(root.tmpl.get("header", {
             table: this.headerData
         }));
-        this.$.panel["right-header"].html(root.tmpl.get("right-header", {
-            table: this.rightHeaderData
-        }));
+
+        if(this.config.rowSum) {
+            this.$.panel["right-header"].html(root.tmpl.get("header", {
+                table: this.rightHeaderData
+            }));
+        }
     };
 
     root.header = {
