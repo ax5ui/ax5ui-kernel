@@ -41,10 +41,10 @@ this process(managing project files) can be optimize by ['gulp'](http://gulpjs.c
 ### Insert the "ax5calendar" in the HTML HEAD.
 You can determine folder location freely in you project. But be careful not to accidentally caused exactly the path.
 ```html
-<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.css" /\>
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"\>\</script\>
-<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"\>\</script\>
-<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.min.js"\>\</script\>
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.css">
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"\>\</script>
+<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"\>\</script>
+<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.min.js"\>\</script>
 ```
 ***
 
