@@ -3,25 +3,24 @@
 # ax5ui-calendar
 
 > *Dependencies*
-> * _[jQuery 1.X+](http://jquery.com/)_
-> * _[ax5core](http://ax5.io/ax5core)_
-> * _[bootstrap](http://getbootstrap.com/)_
+* _[jQuery 1.X+](http://jquery.com/)_
+* _[ax5core](http://ax5.io/ax5core)_
+* _[bootstrap](http://getbootstrap.com/)_
 
 
-### Install by bower
+
+You can download ax5core by using bower.
+
+
 ```sh
 bower install ax5ui-calendar
 ```
-[bower](http://bower.io/#install-bower) is web front-end package manager.
-using the `bower`, when you install the plug-in is installed to resolve the plug-in dependencies under the `bower_components` folder.
-(You can change the folder location. [.bowerrc](http://bower.io/docs/config/#bowerrc-specification) )
+[bower](http://bower.io/#install-bower) is web front-end package manager. using bower, you can resolve the plug-in dependencies under the `bower_components` folder. (You can change the folder location. [.bowerrc](http://bower.io/docs/config/#bowerrc-specification) )
 
-It is recommended that you install by using the `bower`. 
-If you've never used a bower is, you will be able to be used for [http://bower.io/#install-bower](http://bower.io/#install-bower).
-
+To install ax5ui-calendar by `bower` is recomended. 
+[http://bower.io/#install-bower](http://bower.io/#install-bower)  will help you. 
 ### Install by npm
-If you do not use the bower, it can be downloaded by using the npm as second best.
-In npm, so pile on the package manager for the front end, you need to solve the problem of plug-in dependencies.
+Otherwise you can download ax5core by using npm.
 
 ```sh
 npm install jquery
@@ -29,25 +28,25 @@ npm install ax5core
 npm install ax5ui-calendar
 ```
 
-After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
-If the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.
+In npm, you need to solve the problem of plug-in dependencies.
+
+After you download the file by npm install, you have to copy the file where you want to use as a resource for the project.
+this process(managing project files) can be optimize by ['gulp'](http://gulpjs.com/) or ['grunt'](http://gruntjs.com/).
+
 
 ### Download code
-
 - [ax5core Github releases](https://github.com/ax5ui/ax5core/releases)
 - [ax5ui-calendar Github releases](https://github.com/ax5ui/ax5ui-calendar/releases)
 
-
 ### Insert the "ax5calendar" in the HTML HEAD.
-
-Location of the folder can be determined freely in your project. But be careful not to accidentally caused
-exactly the path.
+You can determine folder location freely in you project. But be careful not to accidentally caused exactly the path.
 ```html
-<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.css" />
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
-<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"></script>
-<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.css" /\>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"\>\</script\>
+<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"\>\</script\>
+<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-calendar/master/dist/ax5calendar.min.js"\>\</script\>
 ```
+***
 
 **CDN urls**
 It is CDN url of ax5ui-select. ax5ui offers the CDN services through the rawgit.
