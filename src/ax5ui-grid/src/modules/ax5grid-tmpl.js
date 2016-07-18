@@ -28,9 +28,12 @@
         </div>`;
 
     var header =
-        `<table border="1" style="">
+        `<table border="0" cellpadding="0" cellspacing="0">
+            <colgroup>
+            {{#colGroup}}<col style="width:{{@getColWidth}};" />{{/colGroup}}
+            </colgroup>
             {{#table.rows}}
-            <tr>
+            <tr class="first">
                 {{#cols}}
                 <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
                 {{/cols}}
@@ -39,25 +42,9 @@
         </table>
         `;
 
-    var body =
-        `<table border="1" style="">
-            {{#list}}
-            {{#@rows}}
-            <tr>
-                {{#@cols}}
-                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{#@columnValue}}{{{value}}}{{/@columnValue}}</td>
-                {{/@cols}}
-            </tr>
-            {{/@rows}}
-            {{/list}}
-        </table>
-        `;
-
-
     root.tmpl = {
         "main": main,
         "header": header,
-        "body": body,
 
         get: function (tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);

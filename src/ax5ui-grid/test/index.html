@@ -25,29 +25,32 @@
         firstGrid.setConfig({
             target: $('[data-ax5grid="first-grid"]'),
             frozenColumnIndex: 0,
-            header:{
+
+            header: {
                 cellHeight: 20
             },
-            body:{
+            body: {
                 cellHeight: 20
             },
             columns: [
                 {key: "a", label: "필드A"},
                 {key: "b", label: "필드B"},
-                {label: "필드C", columns:[
+                {
+                    key: "c", label: "필드C", columns: [
                     {key: "c1", label: "필드C-1"},
                     {key: "c2", label: "필드C-2"}
-                ]},
+                ]
+                },
                 {key: "d", label: "필드D"}
             ]
         });
 
-        firstGrid.setData([
-            {a:"컬럼 테스트", b:"필드 B 값", c1:1, c2:"!@#$", "d": "필드D값"},
-            {a:"두번째 줄", c1:2, "c2-1":"가나다라마바사"},
-            {a:"컬럼 테스트", c1:3},
-            {a:"컬럼 테스트", c1:4}
-        ]);
+
+        var list = [];
+        for (var a = 0, l = 10; a < l; a++) {
+            list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹", c1: 1, c2: "!@#$", "d": "필드D값"});
+        }
+        firstGrid.setData(list);
     });
 </script>
 

@@ -35,10 +35,13 @@
 
             // 틀고정 속성
             frozenColumnIndex: 0,
-            frozenRowIndex: 0
+            frozenRowIndex: 0,
+            height: 400,
+            columnMinWidth: 100
         };
 
         // 그리드 데이터셋
+        this.colGroup = [];
         this.data = [];
 
         cfg = this.config;
@@ -86,8 +89,91 @@
 
             return this;
         },
+            makeHeaderTable = function makeHeaderTable(columns) {
+            var table = {
+                rows: []
+            };
+            var colIndex = 0;
+            var maekRows = function maekRows(_columns, depth, parentField) {
+                var row = { cols: [] };
+                var i = 0,
+                    l = _columns.length;
+
+                for (; i < l; i++) {
+                    var field = _columns[i];
+                    var colspan = 1;
+
+                    if (!field.hidden) {
+                        field.colspan = 1;
+                        field.rowspan = 1;
+
+                        field.rowIndex = depth;
+                        field.colIndex = function () {
+                            if (!parentField) {
+                                return colIndex++;
+                            } else {
+                                colIndex = parentField.colIndex + i + 1;
+                                return parentField.colIndex + i;
+                            }
+                        }();
+
+                        row.cols.push(field);
+
+                        if ('columns' in field) {
+                            colspan = maekRows(field.columns, depth + 1, field);
+                        } else {
+                            field.width = 'width' in field ? field.width : cfg.columnMinWidth;
+                        }
+                        field.colspan = colspan;
+                    } else {}
+                }
+
+                if (row.cols.length > 0) {
+                    if (!table.rows[depth]) {
+                        table.rows[depth] = { cols: [] };
+                    }
+                    table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                    return row.cols.length - 1 + colspan;
+                } else {
+                    return colspan;
+                }
+            };
+            maekRows(columns, 0);
+
+            (function () {
+                // set rowspan
+                for (var r = 0, rl = table.rows.length; r < rl; r++) {
+                    var row = table.rows[r];
+                    for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                        var col = row.cols[c];
+                        if (!('columns' in col)) {
+                            col.rowspan = rl - r;
+                        }
+                    }
+                }
+            })();
+
+            return table;
+        },
             initColumns = function initColumns(columns) {
             this.columns = U.deepCopy(columns);
+            this.headerTable = makeHeaderTable.call(this, this.columns);
+
+            var colGroupMap = {};
+            for (var r = 0, rl = this.headerTable.rows.length; r < rl; r++) {
+                var row = this.headerTable.rows[r];
+                for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                    colGroupMap[row.cols[c].colIndex] = jQuery.extend({}, row.cols[c]);
+                }
+            }
+
+            this.colGroup = [];
+            for (var k in colGroupMap) {
+                this.colGroup.push(colGroupMap[k]);
+            }
+
+            console.log(this.colGroup);
+
             return this;
         };
 
@@ -142,7 +228,7 @@
 
             // columns의 데이터로 body데이터를 만들고
             modules.body.init.call(this);
-            // bodyRow 눈금을 출력합니다.
+            // body를 출력합니다.
             modules.body.repaint.call(this);
         };
 
@@ -158,6 +244,7 @@
 
         this.setData = function (data) {
             modules.data.set.call(this, data);
+            //modules.body.repaintByTmpl.call(this);
             modules.body.repaint.call(this);
             return this;
         };
@@ -311,6 +398,39 @@
         var data = this.data;
         // todo : 현재 화면에 출력된 범위를 연산하여 data를 결정.
 
+        var SS = [];
+        SS.push('<table border="0" cellpadding="0" cellspacing="0">');
+        SS.push('<colgroup>');
+        for (var cgi = 0, cgl = this.headerColGroup.length; cgi < cgl; cgi++) {
+            SS.push('<col style="width:' + this.headerColGroup[cgi]._realWidth + ';"  />');
+        }
+        SS.push('</colgroup>');
+
+        for (var di = 0, dl = data.length; di < dl; di++) {
+            for (var tri = 0, trl = bodyRowData.rows.length; tri < trl; tri++) {
+                SS.push('<tr>');
+                for (var ci = 0, cl = bodyRowData.rows[tri].cols.length; ci < cl; ci++) {
+                    var col = bodyRowData.rows[tri].cols[ci];
+                    SS.push('<td colspan="' + col.colspan + '" rowspan="' + col.rowspan + '">');
+                    SS.push(data[di][col.key] || "&nbsp;");
+                    SS.push('</td>');
+                }
+                SS.push('</tr>');
+            }
+        }
+        SS.push('</table>');
+
+        this.$.panel["body"].html(SS.join(''));
+    };
+
+    var repaintByTmpl = function repaintByTmpl() {
+        var dividedBodyRowObj = root.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
+        var leftBodyRowData = this.leftBodyRowData = dividedBodyRowObj.leftData;
+        var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
+
+        var data = this.data;
+        // todo : 현재 화면에 출력된 범위를 연산하여 data를 결정.
+
         var getCols = function getCols() {
             var ci = this.cols.length;
             while (ci--) {
@@ -324,18 +444,21 @@
             };
         };
 
-        this.$.panel["left-body"].html(root.tmpl.get("body", {
-            list: data,
-            '@rows': function rows() {
-                var ri = leftBodyRowData.rows.length;
-                while (ri--) {
-                    leftBodyRowData.rows[ri]['@dataIndex'] = this['@i'];
-                }
-                return leftBodyRowData.rows;
-            },
-            '@cols': getCols,
-            '@columnValue': getColumnValue
-        }));
+        if (this.config.frozenColumnIndex > 0) {
+            this.$.panel["left-body"].html(root.tmpl.get("body", {
+                list: data,
+                '@rows': function rows() {
+                    var ri = leftBodyRowData.rows.length;
+                    while (ri--) {
+                        leftBodyRowData.rows[ri]['@dataIndex'] = this['@i'];
+                    }
+                    return leftBodyRowData.rows;
+                },
+                '@cols': getCols,
+                '@columnValue': getColumnValue
+            }));
+        }
+
         this.$.panel["body"].html(root.tmpl.get("body", {
             list: data,
             '@rows': function rows() {
@@ -355,6 +478,7 @@
     root.body = {
         init: init,
         repaint: repaint,
+        repaintByTmpl: repaintByTmpl,
         setData: setData
     };
 })(ax5.ui.grid);
@@ -384,98 +508,47 @@
 
     var init = function init() {
         // 헤더 초기화
-        this.headerTable = {};
         this.leftHeaderData = {};
         this.headerData = {};
         this.rightHeaderData = {};
-
-        // 컬럼의 __id값으로 빠르게 데이터를 접근하기 위한 map | 아직 구현전. 필요성 타진 후 맵 데이터를 생성하도록 합니다.
-        // this.headerMap = {};
-        this.headerTable = makeHeaderTable.call(this, this.columns);
-    };
-
-    var makeHeaderTable = function makeHeaderTable(columns) {
-        var table = {
-            rows: []
-        };
-        var colIndex = 0;
-        var maekRows = function maekRows(_columns, depth, parentField) {
-            var row = { cols: [] };
-            var i = 0,
-                l = _columns.length;
-
-            for (; i < l; i++) {
-                var field = _columns[i];
-                var colspan = 1;
-
-                if (!field.hidden) {
-                    field.colspan = 1;
-                    field.rowspan = 1;
-
-                    field.rowIndex = depth;
-                    field.colIndex = function () {
-                        if (!parentField) {
-                            return colIndex++;
-                        } else {
-                            colIndex = parentField.colIndex + i + 1;
-                            return parentField.colIndex + i;
-                        }
-                    }();
-
-                    row.cols.push(field);
-
-                    if ('columns' in field) {
-                        colspan = maekRows(field.columns, depth + 1, field);
-                    }
-                    field.colspan = colspan;
-                } else {}
-            }
-
-            if (row.cols.length > 0) {
-                if (!table.rows[depth]) {
-                    table.rows[depth] = { cols: [] };
-                }
-                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
-                return row.cols.length - 1 + colspan;
-            } else {
-                return colspan;
-            }
-        };
-        maekRows(columns, 0);
-
-        (function () {
-            // set rowspan
-            for (var r = 0, rl = table.rows.length; r < rl; r++) {
-                var row = table.rows[r];
-                for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                    var col = row.cols[c];
-                    if (!('columns' in col)) {
-                        col.rowspan = rl - r;
-                    }
-                }
-            }
-        })();
-
-        return table;
     };
 
     var repaint = function repaint() {
+
         var dividedHeaderObj = root.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
         this.leftHeaderData = dividedHeaderObj.leftData;
         this.headerData = dividedHeaderObj.rightData;
 
+        this.leftHeaderColGroup = this.colGroup.slice(0, this.config.frozenColumnIndex);
+        this.headerColGroup = this.colGroup.slice(this.config.frozenColumnIndex);
+
+        var getColWidth = function getColWidth() {
+            if (ax5.util.isNumber(this.width)) {
+                this._realWidth = this.width + "px";
+                return this._realWidth;
+            } else {
+                this._realWidth = undefined;
+                return "";
+            }
+        };
+
         if (this.config.frozenColumnIndex > 0) {
             this.$.panel["left-header"].html(root.tmpl.get("header", {
+                '@getColWidth': getColWidth,
+                colGroup: this.leftHeaderColGroup,
                 table: this.leftHeaderData
             }));
         }
 
         this.$.panel["header"].html(root.tmpl.get("header", {
+            '@getColWidth': getColWidth,
+            colGroup: this.headerColGroup,
             table: this.headerData
         }));
 
         if (this.config.rowSum) {
             this.$.panel["right-header"].html(root.tmpl.get("header", {
+                '@getColWidth': getColWidth,
                 table: this.rightHeaderData
             }));
         }
@@ -504,14 +577,11 @@
 
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\"></div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\"></div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\"></div>\n                <div data-ax5grid-panel=\"left-body\"></div>\n                <div data-ax5grid-panel=\"body\"></div>\n                <div data-ax5grid-panel=\"right-body\"></div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\"></div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
 
-    var header = "<table border=\"1\" style=\"\">\n            {{#table.rows}}\n            <tr>\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
-
-    var body = "<table border=\"1\" style=\"\">\n            {{#list}}\n            {{#@rows}}\n            <tr>\n                {{#@cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{#@columnValue}}{{{value}}}{{/@columnValue}}</td>\n                {{/@cols}}\n            </tr>\n            {{/@rows}}\n            {{/list}}\n        </table>\n        ";
+    var header = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n            <colgroup>\n            {{#colGroup}}<col style=\"width:{{@getColWidth}};\" />{{/colGroup}}\n            </colgroup>\n            {{#table.rows}}\n            <tr class=\"first\">\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
 
     root.tmpl = {
         "main": main,
         "header": header,
-        "body": body,
 
         get: function get(tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);

@@ -33,10 +33,13 @@
 
             // 틀고정 속성
             frozenColumnIndex: 0,
-            frozenRowIndex: 0
+            frozenRowIndex: 0,
+            height: 400,
+            columnMinWidth: 100
         };
 
         // 그리드 데이터셋
+        this.colGroup = [];
         this.data = [];
 
         cfg = this.config;
@@ -86,8 +89,93 @@
 
                 return this;
             },
+            makeHeaderTable = function (columns) {
+                var table = {
+                    rows: []
+                };
+                var colIndex = 0;
+                var maekRows = function (_columns, depth, parentField) {
+                    var row = {cols: []};
+                    var i = 0, l = _columns.length;
+
+                    for (; i < l; i++) {
+                        var field = _columns[i];
+                        var colspan = 1;
+
+                        if (!field.hidden) {
+                            field.colspan = 1;
+                            field.rowspan = 1;
+
+                            field.rowIndex = depth;
+                            field.colIndex = (function () {
+                                if (!parentField) {
+                                    return colIndex++;
+                                } else {
+                                    colIndex = parentField.colIndex + i + 1;
+                                    return parentField.colIndex + i;
+                                }
+                            })();
+
+                            row.cols.push(field);
+
+                            if ('columns' in field) {
+                                colspan = maekRows(field.columns, depth + 1, field);
+                            } else {
+                                field.width = ('width' in field) ? field.width : cfg.columnMinWidth;
+                            }
+                            field.colspan = colspan;
+                        } else {
+
+                        }
+                    }
+
+                    if (row.cols.length > 0) {
+                        if (!table.rows[depth]) {
+                            table.rows[depth] = {cols: []};
+                        }
+                        table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                        return (row.cols.length - 1) + colspan;
+                    } else {
+                        return colspan;
+                    }
+
+                };
+                maekRows(columns, 0);
+
+                (function () {
+                    // set rowspan
+                    for (var r = 0, rl = table.rows.length; r < rl; r++) {
+                        var row = table.rows[r];
+                        for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                            var col = row.cols[c];
+                            if (!('columns' in col)) {
+                                col.rowspan = rl - r;
+                            }
+                        }
+                    }
+                })();
+
+                return table;
+            },
             initColumns = function (columns) {
                 this.columns = U.deepCopy(columns);
+                this.headerTable = makeHeaderTable.call(this, this.columns);
+
+                var colGroupMap = {};
+                for (var r = 0, rl = this.headerTable.rows.length; r < rl; r++) {
+                    var row = this.headerTable.rows[r];
+                    for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                        colGroupMap[row.cols[c].colIndex] = jQuery.extend({}, row.cols[c]);
+                    }
+                }
+
+                this.colGroup = [];
+                for (var k in colGroupMap) {
+                    this.colGroup.push(colGroupMap[k]);
+                }
+
+                console.log(this.colGroup);
+
                 return this;
             };
 
@@ -143,7 +231,7 @@
 
             // columns의 데이터로 body데이터를 만들고
             modules.body.init.call(this);
-            // bodyRow 눈금을 출력합니다.
+            // body를 출력합니다.
             modules.body.repaint.call(this);
         };
 
@@ -158,8 +246,9 @@
         };
 
 
-        this.setData = function(data){
+        this.setData = function (data) {
             modules.data.set.call(this, data);
+            //modules.body.repaintByTmpl.call(this);
             modules.body.repaint.call(this);
             return this;
         };
