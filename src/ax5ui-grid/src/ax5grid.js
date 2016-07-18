@@ -54,41 +54,6 @@
                 }
                 return true;
             },
-            initGrid = function () {
-                // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
-                var data = {
-                    instanceId: this.id
-                };
-                this.$target.html(modules.tmpl.get("main", data));
-
-                // 그리드 패널 프레임의 각 엘리먼트를 캐쉬합시다.
-                this.$ = {
-                    "container": {
-                        "header": this.$target.find('[data-ax5grid-container="header"]'),
-                        "body": this.$target.find('[data-ax5grid-container="body"]')
-                    },
-                    "panel": {
-                        "aside-header": this.$target.find('[data-ax5grid-panel="aside-header"]'),
-                        "left-header": this.$target.find('[data-ax5grid-panel="left-header"]'),
-                        "header": this.$target.find('[data-ax5grid-panel="header"]'),
-                        "right-header": this.$target.find('[data-ax5grid-panel="right-header"]'),
-                        "top-aside-body": this.$target.find('[data-ax5grid-panel="top-aside-body"]'),
-                        "top-left-body": this.$target.find('[data-ax5grid-panel="top-left-body"]'),
-                        "top-body": this.$target.find('[data-ax5grid-panel="top-body"]'),
-                        "top-right-body": this.$target.find('[data-ax5grid-panel="rop-right-body"]'),
-                        "aside-body": this.$target.find('[data-ax5grid-panel="aside-body"]'),
-                        "left-body": this.$target.find('[data-ax5grid-panel="left-body"]'),
-                        "body": this.$target.find('[data-ax5grid-panel="body"]'),
-                        "right-body": this.$target.find('[data-ax5grid-panel="right-body"]'),
-                        "bottom-aside-body": this.$target.find('[data-ax5grid-panel="bottom-aside-body"]'),
-                        "bottom-left-body": this.$target.find('[data-ax5grid-panel="bottom-left-body"]'),
-                        "bottom-body": this.$target.find('[data-ax5grid-panel="bottom-body"]'),
-                        "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
-                    }
-                };
-
-                return this;
-            },
             makeHeaderTable = function (columns) {
                 var table = {
                     rows: []
@@ -157,6 +122,45 @@
 
                 return table;
             },
+            initGrid = function () {
+                // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
+                var data = {
+                    instanceId: this.id
+                };
+
+                this.$target.html(modules.tmpl.get("main", data));
+
+                // 그리드 패널 프레임의 각 엘리먼트를 캐쉬합시다.
+                this.$ = {
+                    "container": {
+                        "root": this.$target.find('[data-ax5grid-container="root"]'),
+                        "header": this.$target.find('[data-ax5grid-container="header"]'),
+                        "body": this.$target.find('[data-ax5grid-container="body"]')
+                    },
+                    "panel": {
+                        "aside-header": this.$target.find('[data-ax5grid-panel="aside-header"]'),
+                        "left-header": this.$target.find('[data-ax5grid-panel="left-header"]'),
+                        "header": this.$target.find('[data-ax5grid-panel="header"]'),
+                        "right-header": this.$target.find('[data-ax5grid-panel="right-header"]'),
+                        "top-aside-body": this.$target.find('[data-ax5grid-panel="top-aside-body"]'),
+                        "top-left-body": this.$target.find('[data-ax5grid-panel="top-left-body"]'),
+                        "top-body": this.$target.find('[data-ax5grid-panel="top-body"]'),
+                        "top-right-body": this.$target.find('[data-ax5grid-panel="rop-right-body"]'),
+                        "aside-body": this.$target.find('[data-ax5grid-panel="aside-body"]'),
+                        "left-body": this.$target.find('[data-ax5grid-panel="left-body"]'),
+                        "body": this.$target.find('[data-ax5grid-panel="body"]'),
+                        "right-body": this.$target.find('[data-ax5grid-panel="right-body"]'),
+                        "bottom-aside-body": this.$target.find('[data-ax5grid-panel="bottom-aside-body"]'),
+                        "bottom-left-body": this.$target.find('[data-ax5grid-panel="bottom-left-body"]'),
+                        "bottom-body": this.$target.find('[data-ax5grid-panel="bottom-body"]'),
+                        "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
+                    }
+                };
+
+                this.$["container"]["root"].css({height: cfg.height});
+
+                return this;
+            },
             initColumns = function (columns) {
                 this.columns = U.deepCopy(columns);
                 this.headerTable = makeHeaderTable.call(this, this.columns);
@@ -174,9 +178,16 @@
                     this.colGroup.push(colGroupMap[k]);
                 }
 
-                console.log(this.colGroup);
-
+                // todo : 컬럼 width에 %, * 지원
                 return this;
+            },
+            alignGrid = function(isFirst){
+                var CT_WIDTH = this.$["container"]["root"].width();
+                var CT_HEIGHT = this.$["container"]["root"].height();
+                //console.log(CT_WIDTH);
+
+
+
             };
 
         /// private end
@@ -233,6 +244,11 @@
             modules.body.init.call(this);
             // body를 출력합니다.
             modules.body.repaint.call(this);
+
+            // 그리드의 각 요소의 크기를 맞춤니다.
+            alignGrid.call(this, true);
+
+            return this;
         };
 
         /**
@@ -241,7 +257,7 @@
          * @returns {ax5grid}
          */
         this.align = function () {
-
+            alignGrid.call(this);
             return this;
         };
 
