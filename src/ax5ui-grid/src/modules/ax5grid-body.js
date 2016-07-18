@@ -135,29 +135,37 @@
         var data = this.data;
         // todo : 현재 화면에 출력된 범위를 연산하여 data를 결정.
 
-        var SS = [];
-        SS.push('<table border="0" cellpadding="0" cellspacing="0">');
-        SS.push('<colgroup>');
-        for (var cgi = 0, cgl = this.headerColGroup.length; cgi < cgl; cgi++) {
-            SS.push('<col style="width:'+ this.headerColGroup[cgi]._realWidth +';"  />');
-        }
-        SS.push('</colgroup>');
-
-        for (var di = 0, dl = data.length; di < dl; di++) {
-            for (var tri = 0, trl = bodyRowData.rows.length; tri < trl; tri++) {
-                SS.push('<tr>');
-                for (var ci = 0, cl = bodyRowData.rows[tri].cols.length; ci < cl; ci++) {
-                    var col = bodyRowData.rows[tri].cols[ci];
-                    SS.push('<td colspan="' + col.colspan + '" rowspan="' + col.rowspan + '">');
-                    SS.push( data[di][col.key] || "&nbsp;" );
-                    SS.push('</td>');
-                }
-                SS.push('</tr>');
+        var repaintBody = function (_elTarget, _colGroup, _bodyRow, _data) {
+            var SS = [];
+            SS.push('<table border="0" cellpadding="0" cellspacing="0">');
+            SS.push('<colgroup>');
+            for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                SS.push('<col style="width:' + _colGroup[cgi]._realWidth + ';"  />');
             }
-        }
-        SS.push('</table>');
+            SS.push('</colgroup>');
 
-        this.$.panel["body"].html(SS.join(''));
+            for (var di = 0, dl = _data.length; di < dl; di++) {
+                for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                    SS.push('<tr>');
+                    for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                        var col = _bodyRow.rows[tri].cols[ci];
+                        SS.push('<td colspan="' + col.colspan + '" rowspan="' + col.rowspan + '">');
+                        SS.push(_data[di][col.key] || "&nbsp;");
+                        SS.push('</td>');
+                    }
+                    SS.push('</tr>');
+                }
+            }
+            SS.push('</table>');
+
+            _elTarget.html(SS.join(''));
+        };
+
+        if (this.config.frozenColumnIndex > 0) {
+            repaintBody(this.$.panel["left-body"], this.leftHeaderColGroup, leftBodyRowData, data);
+        }
+        repaintBody(this.$.panel["body"], this.headerColGroup, bodyRowData, data);
+
     };
 
     var repaintByTmpl = function () {
