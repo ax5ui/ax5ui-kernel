@@ -34,8 +34,20 @@
             // 틀고정 속성
             frozenColumnIndex: 0,
             frozenRowIndex: 0,
+            rightSum: false,
+            footSum: false,
+            showLineNumber: false,
+            showRowSelector: false,
+
             height: 400,
-            columnMinWidth: 100
+            columnMinWidth: 100,
+
+            header: {
+                columnHeight: 23
+            },
+            body: {
+                columnHeight: 23
+            }
         };
 
         // 그리드 데이터셋
@@ -184,10 +196,47 @@
             alignGrid = function(isFirst){
                 var CT_WIDTH = this.$["container"]["root"].width();
                 var CT_HEIGHT = this.$["container"]["root"].height();
-                //console.log(CT_WIDTH);
+
+                //console.log(this.headerTable.rows.length * cfg.header.columnHeight);
+
+                var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
+                var headerPanelHeight = headerHeight;
+                this.$["container"]["header"].css({height: headerHeight});
+                this.$["container"]["body"].css({height: CT_HEIGHT - headerHeight});
 
 
+                this.$["panel"]["aside-header"].css({height: headerPanelHeight });
+                this.$["panel"]["left-header"].css({height: headerPanelHeight});
+                this.$["panel"]["header"].css({height: headerPanelHeight});
+                this.$["panel"]["right-header"].css({height: headerPanelHeight});
 
+                // todo : 나머지 너비와 높이를 다 잡아주자
+                // 상황 고정열 고정행, 우측합계, 푸터합계
+                this.$["panel"]["top-aside-body"].hide();
+                this.$["panel"]["aside-body"].hide();
+                this.$["panel"]["bottom-aside-body"].hide();
+
+                if(cfg.frozenRowIndex == 0) {
+                    this.$["panel"]["top-left-body"].hide();
+                    this.$["panel"]["top-body"].hide();
+                    this.$["panel"]["top-right-body"].hide();
+                }
+
+                if(cfg.frozenColumnIndex == 0) {
+                    this.$["panel"]["left-body"].hide();
+                }
+
+                this.$["panel"]["body"].css({height: CT_HEIGHT - headerHeight});
+
+                if(!cfg.rightSum) {
+                    this.$["panel"]["right-body"].hide();
+                }
+
+                if(!cfg.footSum) {
+                    this.$["panel"]["bottom-left-body"].hide();
+                    this.$["panel"]["bottom-body"].hide();
+                    this.$["panel"]["bottom-right-body"].hide();
+                }
             };
 
         /// private end

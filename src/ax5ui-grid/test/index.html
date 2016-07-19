@@ -14,9 +14,10 @@
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="../dist/ax5grid.js"></script>
 </head>
-<body>
+<body style="padding: 20px;">
 
 <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 400px;"></div>
+
 
 <script>
     var firstGrid = new ax5.ui.grid();
@@ -27,20 +28,18 @@
             frozenColumnIndex: 0,
 
             header: {
-                cellHeight: 20
+                columnHeight: 30
             },
             body: {
-                cellHeight: 20
+                columnHeight: 30
             },
             columns: [
                 {key: "a", label: "필드A"},
                 {key: "b", label: "필드B"},
                 {
-                    key: "c", label: "필드C", columns: [
-                    {key: "c1", label: "필드C-1"},
-                    {key: "c2", label: "필드C-2"}
-                ]
+                    key: "c", label: "필드C", columns: [{key: "c1", label: "필드C-1"},{key: "c2", label: "필드C-2"}]
                 },
+                {key: "c", label: "필드C"},
                 {key: "d", label: "필드D"}
             ]
         });

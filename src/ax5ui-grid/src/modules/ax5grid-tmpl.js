@@ -32,10 +32,13 @@
             <colgroup>
             {{#colGroup}}<col style="width:{{@getColWidth}};" />{{/colGroup}}
             </colgroup>
-            {{#table.rows}}
-            <tr class="first">
+            {{#table.rows}} 
+            <tr style="height:{{@getRowHeight}};">
                 {{#cols}}
-                <td colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</td>
+                <td colspan="{{colspan}}" rowspan="{{rowspan}}">
+                    <div data-ax5grid-cellBG="" style="{{@getColStyle}}"></div>
+                    <span data-ax5grid-cellHolder="">{{{label}}}</span>
+                </td>
                 {{/cols}}
             </tr>
             {{/table.rows}}

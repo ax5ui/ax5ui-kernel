@@ -1,14 +1,64 @@
-[data-ax5grid]{
-    [data-ax5grid-container="root"]{
+// mixins
+@mixin gridPanel($container) {
+    [data-ax5grid-panel] {
+        position: absolute;
+        overflow: hidden;
+
+        table {
+            //table-layout: fixed;
+            border-collapse: collapse;
+            border-spacing: 0;
+            @if ($container == "header") {
+                height: 100%;
+            }
+            tr {
+                border-bottom: 0px none;
+            }
+            td {
+                box-sizing: border-box;
+                border-left: 1px solid #ccc;
+                border-right: 1px solid #ccc;
+                border-bottom: 0px none;
+                overflow: hidden;
+                position: relative;
+                [data-ax5grid-cellBg] {
+                    position: absolute;
+                    left: 0px;
+                    top: 0px;
+                    width: 100%;
+                    display: block;
+                    box-sizing: border-box;
+                    vertical-align: middle;
+                    border-bottom: 1px solid #ccc;
+                    padding: 0px;
+                }
+                [data-ax5grid-cellHolder] {
+                    box-sizing: border-box;
+                    padding: 3px;
+                }
+            }
+        }
+    }
+}
+
+// body
+[data-ax5grid] {
+    [data-ax5grid-container="root"] {
         position: relative;
-
-        [data-ax5grid-container="header"]{
+        border: 1px solid #ccc;
+        [data-ax5grid-container="header"] {
             position: relative;
+            overflow: hidden;
+            background: #eee;
+            border-bottom: 1px solid #ccc;
+            @include gridPanel("header");
         }
 
-        [data-ax5grid-container="body"]{
+        [data-ax5grid-container="body"] {
             position: relative;
-
+            overflow: hidden;
+            @include gridPanel("body");
         }
+
     }
 }

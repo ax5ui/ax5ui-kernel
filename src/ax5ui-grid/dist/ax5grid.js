@@ -36,8 +36,20 @@
             // 틀고정 속성
             frozenColumnIndex: 0,
             frozenRowIndex: 0,
+            rightSum: false,
+            footSum: false,
+            showLineNumber: false,
+            showRowSelector: false,
+
             height: 400,
-            columnMinWidth: 100
+            columnMinWidth: 100,
+
+            header: {
+                columnHeight: 23
+            },
+            body: {
+                columnHeight: 23
+            }
         };
 
         // 그리드 데이터셋
@@ -182,7 +194,46 @@
             alignGrid = function alignGrid(isFirst) {
             var CT_WIDTH = this.$["container"]["root"].width();
             var CT_HEIGHT = this.$["container"]["root"].height();
-            //console.log(CT_WIDTH);
+
+            //console.log(this.headerTable.rows.length * cfg.header.columnHeight);
+
+            var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
+            var headerPanelHeight = headerHeight;
+            this.$["container"]["header"].css({ height: headerHeight });
+            this.$["container"]["body"].css({ height: CT_HEIGHT - headerHeight });
+
+            this.$["panel"]["aside-header"].css({ height: headerPanelHeight });
+            this.$["panel"]["left-header"].css({ height: headerPanelHeight });
+            this.$["panel"]["header"].css({ height: headerPanelHeight });
+            this.$["panel"]["right-header"].css({ height: headerPanelHeight });
+
+            // todo : 나머지 너비와 높이를 다 잡아주자
+            // 상황 고정열 고정행, 우측합계, 푸터합계
+            this.$["panel"]["top-aside-body"].hide();
+            this.$["panel"]["aside-body"].hide();
+            this.$["panel"]["bottom-aside-body"].hide();
+
+            if (cfg.frozenRowIndex == 0) {
+                this.$["panel"]["top-left-body"].hide();
+                this.$["panel"]["top-body"].hide();
+                this.$["panel"]["top-right-body"].hide();
+            }
+
+            if (cfg.frozenColumnIndex == 0) {
+                this.$["panel"]["left-body"].hide();
+            }
+
+            this.$["panel"]["body"].css({ height: CT_HEIGHT - headerHeight });
+
+            if (!cfg.rightSum) {
+                this.$["panel"]["right-body"].hide();
+            }
+
+            if (!cfg.footSum) {
+                this.$["panel"]["bottom-left-body"].hide();
+                this.$["panel"]["bottom-body"].hide();
+                this.$["panel"]["bottom-right-body"].hide();
+            }
         };
 
         /// private end
@@ -404,6 +455,7 @@
     };
 
     var repaint = function repaint() {
+        var cfg = this.config;
         var dividedBodyRowObj = root.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
         var leftBodyRowData = this.leftBodyRowData = dividedBodyRowObj.leftData;
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
@@ -422,11 +474,14 @@
 
             for (var di = 0, dl = _data.length; di < dl; di++) {
                 for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
-                    SS.push('<tr>');
+                    SS.push('<tr style="height: ' + cfg.body.columnHeight + 'px;">');
                     for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                         var col = _bodyRow.rows[tri].cols[ci];
-                        SS.push('<td colspan="' + col.colspan + '" rowspan="' + col.rowspan + '">');
-                        SS.push(_data[di][col.key] || "&nbsp;");
+                        var cellHeight = cfg.body.columnHeight * col.rowspan;
+
+                        SS.push('<td colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" style="line-height: ' + cfg.body.columnHeight + 'px;min-height: 1px;">');
+                        SS.push('<div data-ax5grid-cellBG="" style="height:' + cellHeight + 'px;"></div>');
+                        SS.push('<span data-ax5grid-cellHolder="" style="">', _data[di][col.key] || "&nbsp;", '</span>');
                         SS.push('</td>');
                     }
                     SS.push('</tr>');
@@ -437,10 +492,12 @@
             _elTarget.html(SS.join(''));
         };
 
-        if (this.config.frozenColumnIndex > 0) {
+        if (cfg.frozenColumnIndex > 0) {
             repaintBody(this.$.panel["left-body"], this.leftHeaderColGroup, leftBodyRowData, data);
         }
         repaintBody(this.$.panel["body"], this.headerColGroup, bodyRowData, data);
+
+        if (cfg.rightSum) {}
     };
 
     var repaintByTmpl = function repaintByTmpl() {
@@ -541,6 +598,7 @@
 
         this.leftHeaderColGroup = this.colGroup.slice(0, this.config.frozenColumnIndex);
         this.headerColGroup = this.colGroup.slice(this.config.frozenColumnIndex);
+        var cfg = this.config;
 
         var getColWidth = function getColWidth() {
             if (ax5.util.isNumber(this.width)) {
@@ -551,10 +609,18 @@
                 return "";
             }
         };
+        var getRowHeight = function getRowHeight() {
+            return cfg.header.columnHeight + "px";
+        };
+        var getColStyle = function getColStyle() {
+            return "height:" + cfg.header.columnHeight * this.rowspan + "px";
+        };
 
         if (this.config.frozenColumnIndex > 0) {
             this.$.panel["left-header"].html(root.tmpl.get("header", {
                 '@getColWidth': getColWidth,
+                '@getRowHeight': getRowHeight,
+                '@getColStyle': getColStyle,
                 colGroup: this.leftHeaderColGroup,
                 table: this.leftHeaderData
             }));
@@ -562,13 +628,17 @@
 
         this.$.panel["header"].html(root.tmpl.get("header", {
             '@getColWidth': getColWidth,
+            '@getRowHeight': getRowHeight,
+            '@getColStyle': getColStyle,
             colGroup: this.headerColGroup,
             table: this.headerData
         }));
 
-        if (this.config.rowSum) {
+        if (this.config.rightSum) {
             this.$.panel["right-header"].html(root.tmpl.get("header", {
                 '@getColWidth': getColWidth,
+                '@getRowHeight': getRowHeight,
+                '@getColStyle': getColStyle,
                 table: this.rightHeaderData
             }));
         }
@@ -597,7 +667,7 @@
 
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\"></div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\"></div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\"></div>\n                <div data-ax5grid-panel=\"left-body\"></div>\n                <div data-ax5grid-panel=\"body\"></div>\n                <div data-ax5grid-panel=\"right-body\"></div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\"></div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
 
-    var header = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n            <colgroup>\n            {{#colGroup}}<col style=\"width:{{@getColWidth}};\" />{{/colGroup}}\n            </colgroup>\n            {{#table.rows}}\n            <tr class=\"first\">\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">{{{label}}}</td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
+    var header = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n            <colgroup>\n            {{#colGroup}}<col style=\"width:{{@getColWidth}};\" />{{/colGroup}}\n            </colgroup>\n            {{#table.rows}} \n            <tr style=\"height:{{@getRowHeight}};\">\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">\n                    <div data-ax5grid-cellBG=\"\" style=\"{{@getColStyle}}\"></div>\n                    <span data-ax5grid-cellHolder=\"\">{{{label}}}</span>\n                </td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
 
     root.tmpl = {
         "main": main,

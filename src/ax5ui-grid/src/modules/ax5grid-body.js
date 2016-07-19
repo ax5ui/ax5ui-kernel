@@ -128,6 +128,7 @@
     };
 
     var repaint = function () {
+        var cfg = this.config;
         var dividedBodyRowObj = root.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
         var leftBodyRowData = this.leftBodyRowData = dividedBodyRowObj.leftData;
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
@@ -146,11 +147,14 @@
 
             for (var di = 0, dl = _data.length; di < dl; di++) {
                 for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
-                    SS.push('<tr>');
+                    SS.push('<tr style="height: '+ cfg.body.columnHeight +'px;">');
                     for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                         var col = _bodyRow.rows[tri].cols[ci];
-                        SS.push('<td colspan="' + col.colspan + '" rowspan="' + col.rowspan + '">');
-                        SS.push(_data[di][col.key] || "&nbsp;");
+                        var cellHeight = cfg.body.columnHeight * col.rowspan;
+
+                        SS.push('<td colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" style="line-height: '+ cfg.body.columnHeight +'px;min-height: 1px;">');
+                        SS.push('<div data-ax5grid-cellBG="" style="height:'+ cellHeight +'px;"></div>');
+                        SS.push('<span data-ax5grid-cellHolder="" style="">', _data[di][col.key] || "&nbsp;", '</span>');
                         SS.push('</td>');
                     }
                     SS.push('</tr>');
@@ -161,11 +165,14 @@
             _elTarget.html(SS.join(''));
         };
 
-        if (this.config.frozenColumnIndex > 0) {
+        if (cfg.frozenColumnIndex > 0) {
             repaintBody(this.$.panel["left-body"], this.leftHeaderColGroup, leftBodyRowData, data);
         }
         repaintBody(this.$.panel["body"], this.headerColGroup, bodyRowData, data);
 
+        if (cfg.rightSum) {
+
+        }
     };
 
     var repaintByTmpl = function () {

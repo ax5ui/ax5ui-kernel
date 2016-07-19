@@ -17,21 +17,30 @@
 
         this.leftHeaderColGroup = this.colGroup.slice(0, this.config.frozenColumnIndex);
         this.headerColGroup = this.colGroup.slice(this.config.frozenColumnIndex);
+        var cfg = this.config;
 
         var getColWidth = function () {
-            if(ax5.util.isNumber(this.width)){
+            if (ax5.util.isNumber(this.width)) {
                 this._realWidth = this.width + "px";
                 return this._realWidth;
             }
-            else{
+            else {
                 this._realWidth = undefined;
                 return "";
             }
+        };
+        var getRowHeight = function () {
+            return cfg.header.columnHeight + "px";
+        };
+        var getColStyle = function () {
+            return "height:" + (cfg.header.columnHeight * this.rowspan) + "px";
         };
 
         if (this.config.frozenColumnIndex > 0) {
             this.$.panel["left-header"].html(root.tmpl.get("header", {
                 '@getColWidth': getColWidth,
+                '@getRowHeight': getRowHeight,
+                '@getColStyle': getColStyle,
                 colGroup: this.leftHeaderColGroup,
                 table: this.leftHeaderData
             }));
@@ -39,13 +48,17 @@
 
         this.$.panel["header"].html(root.tmpl.get("header", {
             '@getColWidth': getColWidth,
+            '@getRowHeight': getRowHeight,
+            '@getColStyle': getColStyle,
             colGroup: this.headerColGroup,
             table: this.headerData
         }));
 
-        if (this.config.rowSum) {
+        if (this.config.rightSum) {
             this.$.panel["right-header"].html(root.tmpl.get("header", {
                 '@getColWidth': getColWidth,
+                '@getRowHeight': getRowHeight,
+                '@getColStyle': getColStyle,
                 table: this.rightHeaderData
             }));
         }
