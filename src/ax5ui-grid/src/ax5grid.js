@@ -41,6 +41,7 @@
 
             height: 400,
             columnMinWidth: 100,
+            asideColumnWidth: 30,
 
             header: {
                 columnHeight: 23
@@ -193,50 +194,157 @@
                 // todo : 컬럼 width에 %, * 지원
                 return this;
             },
-            alignGrid = function(isFirst){
+            alignGrid = function (isFirst) {
                 var CT_WIDTH = this.$["container"]["root"].width();
                 var CT_HEIGHT = this.$["container"]["root"].height();
-
-                //console.log(this.headerTable.rows.length * cfg.header.columnHeight);
-
+                var asideColumnWidth = (function () {
+                    var width = 0;
+                    if (cfg.showLineNumber) width += cfg.asideColumnWidth;
+                    if (cfg.showRowSelector) width += cfg.asideColumnWidth;
+                    return width;
+                })();
                 var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
                 var headerPanelHeight = headerHeight;
+                var panelDisplayProcess = function (panel, vPosition, hPosition, containerType) {
+                    var css = {};
+                    var isHide = false;
+                    switch (hPosition) {
+                        case "aside":
+                            if (asideColumnWidth === 0) {
+                                panel.hide();
+                                isHide = true;
+                            } else {
+                                css["width"] = asideColumnWidth;
+                            }
+                            break;
+                        case "left":
+
+                            break;
+                        case "right":
+
+                            break;
+                    }
+
+                    if (isHide) {
+                        // 프로세스 중지
+                        return this;
+                    }
+
+                    panel.css(css);
+                    return this;
+                };
+
+
+                /*
+                 {
+                 "aside-header": function (panel) {
+                 if (asideColumnWidth === 0) {
+                 panel.hide();
+                 } else {
+                 panel.show().css({width: asideColumnWidth});
+                 }
+                 },
+                 "left-header": function (panel) {
+                 if (cfg.frozenColumnIndex == 0) {
+                 panel.hide();
+                 }
+                 },
+                 "header": function (panel) {
+                 },
+                 "right-header": function (panel) {
+                 },
+                 "top-aside-body": function (panel) {
+                 },
+                 "aside-body": function (panel) {
+                 },
+                 "bottom-aside-body": function (panel) {
+                 },
+                 "top-left-body": function (panel) {
+                 },
+                 "top-body": function (panel) {
+                 },
+                 "top-right-body": function (panel) {
+                 },
+                 "left-body": function (panel) {
+                 },
+                 "body": function (panel) {
+                 },
+                 "right-body": function (panel) {
+                 },
+                 "bottom-left-body": function (panel) {
+                 },
+                 "bottom-body": function (panel) {
+                 },
+                 "bottom-right-body": function (panel) {
+                 }
+                 };
+                 */
+                //~~~
+
                 this.$["container"]["header"].css({height: headerHeight});
                 this.$["container"]["body"].css({height: CT_HEIGHT - headerHeight});
 
+                /*
+                 this.$["panel"]["aside-header"].css({height: headerPanelHeight});
+                 this.$["panel"]["left-header"].css({height: headerPanelHeight});
+                 this.$["panel"]["header"].css({height: headerPanelHeight});
+                 this.$["panel"]["right-header"].css({height: headerPanelHeight});
+                 */
 
-                this.$["panel"]["aside-header"].css({height: headerPanelHeight });
-                this.$["panel"]["left-header"].css({height: headerPanelHeight});
-                this.$["panel"]["header"].css({height: headerPanelHeight});
-                this.$["panel"]["right-header"].css({height: headerPanelHeight});
+                // 패널들의 크기 표시여부를 결정합니다
+                panelDisplayProcess.call(this, this.$["panel"]["aside-header"], "", "aside", "header");
+                panelDisplayProcess.call(this, this.$["panel"]["left-header"], "", "left", "header");
+                panelDisplayProcess.call(this, this.$["panel"]["header"], "", "", "header");
+                panelDisplayProcess.call(this, this.$["panel"]["right-header"], "", "right", "header");
 
-                // todo : 나머지 너비와 높이를 다 잡아주자
-                // 상황 고정열 고정행, 우측합계, 푸터합계
-                this.$["panel"]["top-aside-body"].hide();
-                this.$["panel"]["aside-body"].hide();
-                this.$["panel"]["bottom-aside-body"].hide();
+                /*
+                 panelDisplayProcess["left-header"].call(this, this.$["panel"]["left-header"]);
+                 panelDisplayProcess["header"].call(this, this.$["panel"]["header"]);
+                 panelDisplayProcess["right-header"].call(this, this.$["panel"]["right-header"]);
 
-                if(cfg.frozenRowIndex == 0) {
-                    this.$["panel"]["top-left-body"].hide();
-                    this.$["panel"]["top-body"].hide();
-                    this.$["panel"]["top-right-body"].hide();
-                }
+                 panelDisplayProcess["top-aside-body"].call(this, this.$["panel"]["top-aside-body"]);
+                 panelDisplayProcess["top-left-body"].call(this, this.$["panel"]["aside-header"]);
+                 panelDisplayProcess["top-body"].call(this, this.$["panel"]["aside-header"]);
+                 panelDisplayProcess["top-right-body"].call(this, this.$["panel"]["aside-header"]);
 
-                if(cfg.frozenColumnIndex == 0) {
-                    this.$["panel"]["left-body"].hide();
-                }
+                 panelDisplayProcess["aside-body"].call(this, this.$["panel"]["aside-body"]);
+                 panelDisplayProcess["left-body"].call(this, this.$["panel"]["left-body"]);
+                 panelDisplayProcess["body"].call(this, this.$["panel"]["body"]);
+                 panelDisplayProcess["right-body"].call(this, this.$["panel"]["right-body"]);
 
-                this.$["panel"]["body"].css({height: CT_HEIGHT - headerHeight});
+                 panelDisplayProcess["bottom-aside-body"].call(this, this.$["panel"]["bottom-aside-body"]);
+                 panelDisplayProcess["bottom-left-body"].call(this, this.$["panel"]["bottom-left-body"]);
+                 panelDisplayProcess["bottom-body"].call(this, this.$["panel"]["bottom-body"]);
+                 panelDisplayProcess["bottom-right-body"].call(this, this.$["panel"]["bottom-right-body"]);
+                 */
 
-                if(!cfg.rightSum) {
-                    this.$["panel"]["right-body"].hide();
-                }
+                /*
+                 this.$["panel"]["top-aside-body"].hide();
+                 this.$["panel"]["aside-body"].hide();
+                 this.$["panel"]["bottom-aside-body"].hide();
 
-                if(!cfg.footSum) {
-                    this.$["panel"]["bottom-left-body"].hide();
-                    this.$["panel"]["bottom-body"].hide();
-                    this.$["panel"]["bottom-right-body"].hide();
-                }
+                 if(cfg.frozenRowIndex == 0) {
+                 this.$["panel"]["top-left-body"].hide();
+                 this.$["panel"]["top-body"].hide();
+                 this.$["panel"]["top-right-body"].hide();
+                 }
+
+                 if(cfg.frozenColumnIndex == 0) {
+                 this.$["panel"]["left-body"].hide();
+                 }
+
+                 this.$["panel"]["body"].css({height: CT_HEIGHT - headerHeight});
+
+                 if(!cfg.rightSum) {
+                 this.$["panel"]["right-body"].hide();
+                 }
+
+                 if(!cfg.footSum) {
+                 this.$["panel"]["bottom-left-body"].hide();
+                 this.$["panel"]["bottom-body"].hide();
+                 this.$["panel"]["bottom-right-body"].hide();
+                 }
+                 */
             };
 
         /// private end
