@@ -14,18 +14,42 @@
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="../dist/ax5grid.js"></script>
 </head>
-<body>
+<body style="padding: 20px;">
 
-<div data-ax5grid="first-grid"></div>
+<div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 400px;"></div>
+
 
 <script>
     var firstGrid = new ax5.ui.grid();
 
     $(document.body).ready(function () {
+        firstGrid.setConfig({
+            target: $('[data-ax5grid="first-grid"]'),
+            frozenColumnIndex: 0,
+
+            header: {
+                columnHeight: 30
+            },
+            body: {
+                columnHeight: 30
+            },
+            columns: [
+                {key: "a", label: "필드A"},
+                {key: "b", label: "필드B"},
+                {
+                    key: "c", label: "필드C", columns: [{key: "c1", label: "필드C-1"},{key: "c2", label: "필드C-2"}]
+                },
+                {key: "c", label: "필드C"},
+                {key: "d", label: "필드D"}
+            ]
+        });
 
 
-
-
+        var list = [];
+        for (var a = 0, l = 10; a < l; a++) {
+            list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹", c1: 1, c2: "!@#$", "d": "필드D값"});
+        }
+        firstGrid.setData(list);
     });
 </script>
 

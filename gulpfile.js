@@ -167,7 +167,7 @@ for (var k in PATHS) {
     if (__p.isPlugin && __p.js) {
         gulp.task(k + '-scripts', (function (k, __p) {
             return function () {
-                gulp.src(PATHS[k].src + '/*.js')
+                gulp.src([PATHS[k].src + '/*.js', PATHS[k].src + '/modules/*.js'])
                     .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(concat(__p.js + '.js'))
                     .pipe(babel({
@@ -193,7 +193,7 @@ gulp.task('default', function () {
 
         var __p = PATHS[k];
         if (__p.isPlugin && __p.js) {
-            gulp.watch(PATHS[k].src + '/*.js', [k + '-scripts']);
+            gulp.watch(PATHS[k].src + '/**/*.js', [k + '-scripts']);
         }
         if (__p.isPlugin && __p.scss) {
             gulp.watch(PATHS[k].src + '/**/*.scss', [k + '-scss']);

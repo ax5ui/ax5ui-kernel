@@ -3,7 +3,7 @@
     /**
      * @class ax5.ui.calendar
      * @classdesc
-     * @version 0.8.1
+     * @version 0.8.3
      * @author tom@axisj.com
      * @logs
      * 2014-06-21 tom : 시작
@@ -13,7 +13,7 @@
      * ```
      */
     var U = ax5.util;
- 
+
     //== UI Class
     var axClass = function () {
         if (_SUPER_) _SUPER_.call(this); // 부모호출
@@ -54,7 +54,8 @@
             },
             multipleSelect: false,
             selectMode: 'day',
-            defaultMarkerTheme: 'holiday'
+            defaultMarkerTheme: 'holiday',
+            defaultPeriodTheme: 'period'
         };
 
         cfg = this.config;
@@ -114,7 +115,7 @@
                     <thead>
                         <tr>
                         {{#weekNames}}
-                            <td class="calendar-col-{{@i}}" style="height: {{colHeadHeight}}">
+                            <td class="calendar-col-{{col}}" style="height: {{colHeadHeight}}">
                             {{label}}
                             </td>
                         {{/weekNames}}
@@ -129,11 +130,11 @@
                         <tr>
                             {{/@first}}
                             {{/isStartOfWeek}}
-                            <td class="calendar-col-{{@i}}" style="{{itemStyles}}">
+                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">
                                 <a class="calendar-item-day {{addClass}}" data-calendar-item-date="{{thisDate}}">
-                                    <span class="addon"></span>
+                                    <span class="addon addon-header"></span>
                                     {{thisDataLabel}}
-                                    <span class="lunar"></span>
+                                    <span class="addon addon-footer"></span>
                                 </a>
                             </td>
                             {{/list}}
@@ -161,7 +162,7 @@
                         <tr>
                             {{/@first}}
                             {{/isStartOfRow}}
-                            <td class="calendar-col-{{@i}}" style="{{itemStyles}}">
+                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">
                                 <a class="calendar-item-month {{addClass}}" data-calendar-item-month="{{thisMonth}}">
                                     <span class="addon"></span>
                                     {{thisMonthLabel}}
@@ -193,7 +194,7 @@
                         <tr>
                             {{/@first}}
                             {{/isStartOfRow}}
-                            <td class="calendar-col-{{@i}}" style="{{itemStyles}}">
+                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">
                                 <a class="calendar-item-year {{addClass}}" data-calendar-item-year="{{thisYear}}">
                                     <span class="addon"></span>
                                     {{thisYearLabel}}
@@ -313,6 +314,8 @@
                         var
                             thisDate = '' + U.date(loopDate, {"return": cfg.dateFormat}),
                             _date = {
+                                'row': i,
+                                'col': k,
                                 isStartOfWeek: (k == 0),
                                 thisDate: '' + thisDate,
                                 thisDataLabel: cfg.lang.dayTmpl.replace('%s', loopDate.getDate()),
@@ -735,6 +738,26 @@
                         this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass("selected-day");
                     }
                 }).bind(this));
+            },
+            applyPeriodMap = function () {
+                setTimeout((function () {
+                    if (cfg.mode === "day" || cfg.mode === "d") {
+                        for (var k in this.periodMap) {
+                            if (this.periodMap[k].label) {
+                                this.$["body"].find('[data-calendar-item-date="' + k + '"]').find(".addon-footer").html(this.periodMap[k].label);
+                            }
+                            this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass(this.periodMap[k].theme);
+                        }
+                    }
+                }).bind(this));
+            },
+            clearPeriodMap = function () {
+                if (cfg.mode === "day" || cfg.mode === "d") {
+                    for (var k in this.periodMap) {
+                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').find(".addon-footer").empty();
+                        this.$["body"].find('[data-calendar-item-date="' + k + '"]').removeClass(this.periodMap[k].theme);
+                    }
+                }
             };
 
         /**
@@ -1034,6 +1057,66 @@
                 return this;
             };
         })();
+
+        /**
+         * @method ax5.ui.calendar.setPeriod
+         */
+        this.setPeriod = (function () {
+            self.periodMap = {};
+
+            var processor = {
+                'range': function (v, map) {
+                    map = {};
+                    if (U.isArray(v)) return map;
+                    if (!v.range) return map;
+
+                    v.range.forEach(function (n) {
+                        if (U.isDateFormat(n.from) && U.isDateFormat(n.to)) {
+                            for (var d = new Date(U.date(n.from)); d <= U.date(n.to); d.setDate(d.getDate() + 1)) {
+                                if (d.getTime() == U.date(n.from).getTime()) {
+                                    map[U.date(d, {"return": cfg.dateFormat})] = {theme: n.theme || cfg.defaultPeriodTheme, label: n.fromLabel};
+                                } else if (d.getTime() == U.date(n.to).getTime()) {
+                                    map[U.date(d, {"return": cfg.dateFormat})] = {theme: n.theme || cfg.defaultPeriodTheme, label: n.toLabel};
+                                } else {
+                                    map[U.date(d, {"return": cfg.dateFormat})] = {theme: n.theme || cfg.defaultPeriodTheme};
+                                }
+                            }
+                        }
+                    });
+
+                    v = null;
+                    return map;
+                }
+            };
+
+            return function (period, isApply) {
+
+                var
+                    key,
+                    result = {}
+                    ;
+
+                // 변경내용 적용하여 출력
+                if (isApply !== false) {
+                    clearPeriodMap.call(this);
+                }
+
+                if (cfg.period = period) {
+                    result = processor.range(period);
+                }
+
+                this.periodMap = result;
+
+                //console.log(this.periodMap);
+
+                // 변경내용 적용하여 출력
+                if (isApply !== false) {
+                    applyPeriodMap.call(this);
+                }
+                return this;
+            };
+        })();
+
 
         // 클래스 생성자
         this.main = (function () {

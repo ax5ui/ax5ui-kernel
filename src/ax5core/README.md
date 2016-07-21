@@ -1,5 +1,4 @@
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj)
-![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5core
 "ax5core" is a collection of utility functions, designed for use in ax5ui. "ax5core" consist of "ax5" keys.(ax5.info, ax5.util ...) class variable will be added under "ax5.ui".
@@ -55,6 +54,7 @@ https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js
 ```
 
 ### Basic Usage
+You can check whether ax5core is correctly installed, by these basic example code.
 ```js
 ax5.util.date("20111111");
 //Fri Nov 11 2011 23:59:00 GMT+0900 (KST)

@@ -1855,6 +1855,36 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return debounced;
         };
 
+        /**
+         * @method ax5.util.deepCopy
+         * @param {Object} obj
+         * @returns {Object}
+         * @example
+         * ```js
+         * var obj = [
+         *  {name:"A", child:[{name:"a-1"}]},
+         *  {name:"B", child:[{name:"b-1"}], callBack: function(){ console.log('callBack'); }}
+         * ];
+         * var copiedObj = ax5.util.deepCopy(obj)
+         * ```
+         */
+        function deepCopy(obj) {
+            var r, l;
+            if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) == 'object') {
+                if (U.isArray(obj)) {
+                    l = obj.length;
+                    r = new Array(l);
+                    for (var i = 0; i < l; i++) {
+                        r[i] = deepCopy(obj[i]);
+                    }
+                    return r;
+                } else {
+                    return jQuery.extend({}, obj);
+                }
+            }
+            return obj;
+        }
+
         return {
             alert: alert,
             each: each,
@@ -1869,6 +1899,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             parseJson: parseJson,
             first: first,
             last: last,
+            deepCopy: deepCopy,
+
             left: left,
             right: right,
             getType: getType,
@@ -2227,7 +2259,7 @@ ax5.info.errorMsg["ax5combobox"] = {
 /**
  * @class ax5.ui.root
  * @classdesc ax5 ui class
- * @version v0.0.1
+ * @version v0.1.0
  * @author tom@axisj.com
  * @logs
  * 2014-12-12 tom : start
@@ -2284,6 +2316,10 @@ ax5.ui = function (core) {
             if (e.stopPropagation) e.stopPropagation();
             e.cancelBubble = true;
             return false;
+        };
+
+        this.toString = function () {
+            return this.name + '@' + this.version;
         };
 
         // instance init
