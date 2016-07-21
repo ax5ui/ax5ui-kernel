@@ -141,7 +141,7 @@
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
-                SS.push('<col style="width:' + _colGroup[cgi]._realWidth + ';"  />');
+                SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
             }
             SS.push('<col  />');
             SS.push('</colgroup>');

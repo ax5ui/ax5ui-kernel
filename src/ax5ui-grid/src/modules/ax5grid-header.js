@@ -15,24 +15,15 @@
         var leftHeaderData = this.leftHeaderData = dividedHeaderObj.leftData;
         var headerData = this.headerData = dividedHeaderObj.rightData;
 
-        this.colGroup.forEach(function (n) {
-            if (ax5.util.isNumber(n.width)) {
-                n._realWidth = n.width + "px";
-            }
-            else {
-                n._realWidth = undefined;
-            }
-        });
-
         this.leftHeaderColGroup = this.colGroup.slice(0, this.config.frozenColumnIndex);
         this.headerColGroup = this.colGroup.slice(this.config.frozenColumnIndex);
 
-        var repaintBody = function (_elTarget, _colGroup, _bodyRow) {
+        var repaintHeader = function (_elTarget, _colGroup, _bodyRow) {
             var SS = [];
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
-                SS.push('<col style="width:' + _colGroup[cgi]._realWidth + ';"  />');
+                SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
             }
             SS.push('<col  />');
             SS.push('</colgroup>');
@@ -73,9 +64,9 @@
         };
 
         if (cfg.frozenColumnIndex > 0) {
-            repaintBody(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
+            repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
-        repaintBody(this.$.panel["header"], this.headerColGroup, headerData);
+        repaintHeader(this.$.panel["header"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {
 
