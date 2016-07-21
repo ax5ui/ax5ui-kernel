@@ -34,6 +34,9 @@
                     border-right: 1px solid #ccc;
                     border-bottom: 1px solid #ccc;
                 }
+                &.isLastColumn{
+
+                }
                 &[data-ax5grid-column-row="null"]{
                     border-right: 0px none;
                 }
@@ -54,6 +57,20 @@
 
                     &[data-ax5grid-cellHolder="multiLine"] {
                         white-space: normal;
+                    }
+                }
+            }
+        }
+
+        &[data-ax5grid-panel="left-header"],
+        &[data-ax5grid-panel="top-left-body"],
+        &[data-ax5grid-panel="left-body"],
+        &[data-ax5grid-panel="bottom-body"] {
+            border-right: 1px solid darken(#ccc, 10%);
+            table {
+                td {
+                    &.isLastColumn {
+                        border-right: 0px none;
                     }
                 }
             }

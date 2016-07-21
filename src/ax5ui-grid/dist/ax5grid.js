@@ -602,6 +602,7 @@
                         var cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
                         var tdCSS_class = "";
                         if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
 
                         SS.push('<td ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + tdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
@@ -616,7 +617,7 @@
 
                         SS.push('</td>');
                     }
-                    SS.push('<td data-ax5grid-column-row="null" data-ax5grid-column-col="null"  data-ax5grid-data-index="' + di + '">&nbsp;</td>');
+                    SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
                     SS.push('</tr>');
                 }
             }
@@ -697,10 +698,10 @@
                 for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                     var col = _bodyRow.rows[tri].cols[ci];
                     var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
-                    var colTdCSS_class = "";
-                    if (cfg.header.columnBorderWidth) colTdCSS_class += "hasBorder ";
-
-                    SS.push('<td ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + colTdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+                    var tdCSS_class = "";
+                    if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
+                    if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                    SS.push('<td ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + tdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                     SS.push(function () {
                         var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
@@ -713,7 +714,7 @@
 
                     SS.push('</td>');
                 }
-                SS.push('<td data-ax5grid-column-row="null" data-ax5grid-column-col="null"></td>');
+                SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'style="height: ' + cfg.header.columnHeight + 'px;min-height: 1px;" ', '></td>');
                 SS.push('</tr>');
             }
             SS.push('</table>');

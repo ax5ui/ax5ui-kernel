@@ -153,13 +153,14 @@
                         var col = _bodyRow.rows[tri].cols[ci];
                         var cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
                         var tdCSS_class = "";
-                        if(cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                        if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
 
                         SS.push('<td ',
                             'data-ax5grid-column-row="' + tri + '" ',
                             'data-ax5grid-column-col="' + ci + '" ',
                             'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ',
-                            'class="'+ tdCSS_class +'" ',
+                            'class="' + tdCSS_class + '" ',
                             'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                         SS.push((function () {
@@ -173,7 +174,12 @@
 
                         SS.push('</td>');
                     }
-                    SS.push('<td data-ax5grid-column-row="null" data-ax5grid-column-col="null"  data-ax5grid-data-index="' + di + '">&nbsp;</td>');
+                    SS.push('<td ',
+                        'data-ax5grid-column-row="null" ',
+                        'data-ax5grid-column-col="null" ',
+                        'data-ax5grid-data-index="' + di + '" ',
+                        'style="height: ' + (cfg.body.columnHeight) + 'px;min-height: 1px;" ',
+                        '></td>');
                     SS.push('</tr>');
                 }
             }
