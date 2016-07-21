@@ -27,27 +27,9 @@
             </div>
         </div>`;
 
-    var header =
-        `<table border="0" cellpadding="0" cellspacing="0">
-            <colgroup>
-            {{#colGroup}}<col style="width:{{@getColWidth}};" />{{/colGroup}}
-            </colgroup>
-            {{#table.rows}} 
-            <tr style="height:{{@getRowHeight}};">
-                {{#cols}}
-                <td colspan="{{colspan}}" rowspan="{{rowspan}}">
-                    <div data-ax5grid-cellBG="" style="{{@getColStyle}}"></div>
-                    <span data-ax5grid-cellHolder="">{{{label}}}</span>
-                </td>
-                {{/cols}}
-            </tr>
-            {{/table.rows}}
-        </table>
-        `;
 
     root.tmpl = {
         "main": main,
-        "header": header,
 
         get: function (tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);

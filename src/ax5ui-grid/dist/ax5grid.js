@@ -46,10 +46,14 @@
             asideColumnWidth: 30,
 
             header: {
-                columnHeight: 23
+                columnHeight: 23,
+                columnPadding: 3,
+                columnBorderWidth: 1
             },
             body: {
-                columnHeight: 23
+                columnHeight: 23,
+                columnPadding: 3,
+                columnBorderWidth: 1
             }
         };
 
@@ -570,20 +574,32 @@
             for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
                 SS.push('<col style="width:' + _colGroup[cgi]._realWidth + ';"  />');
             }
+            SS.push('<col  />');
             SS.push('</colgroup>');
 
             for (var di = 0, dl = _data.length; di < dl; di++) {
                 for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
-                    SS.push('<tr style="height: ' + cfg.body.columnHeight + 'px;">');
+                    SS.push('<tr class="tr-' + di % 4 + '">');
                     for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                         var col = _bodyRow.rows[tri].cols[ci];
-                        var cellHeight = cfg.body.columnHeight * col.rowspan;
+                        var cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                        var tdCSS_class = "";
+                        if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
 
-                        SS.push('<td colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" style="line-height: ' + cfg.body.columnHeight + 'px;min-height: 1px;">');
-                        SS.push('<div data-ax5grid-cellBG="" style="height:' + cellHeight + 'px;"></div>');
-                        SS.push('<span data-ax5grid-cellHolder="" style="">', _data[di][col.key] || "&nbsp;", '</span>');
+                        SS.push('<td ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + tdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                        SS.push(function () {
+                            var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                            if (col.multiLine) {
+                                return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                            } else {
+                                return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                            }
+                        }(), _data[di][col.key] || "&nbsp;", '</span>');
+
                         SS.push('</td>');
                     }
+                    SS.push('<td data-ax5grid-column-row="null" data-ax5grid-column-col="null"  data-ax5grid-data-index="' + di + '">&nbsp;</td>');
                     SS.push('</tr>');
                 }
             }
@@ -600,62 +616,11 @@
         if (cfg.rightSum) {}
     };
 
-    var repaintByTmpl = function repaintByTmpl() {
-        var dividedBodyRowObj = root.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
-        var leftBodyRowData = this.leftBodyRowData = dividedBodyRowObj.leftData;
-        var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
-
-        var data = this.data;
-        // todo : 현재 화면에 출력된 범위를 연산하여 data를 결정.
-
-        var getCols = function getCols() {
-            var ci = this.cols.length;
-            while (ci--) {
-                this.cols[ci]['@dataIndex'] = this['@dataIndex'];
-            }
-            return this.cols;
-        };
-        var getColumnValue = function getColumnValue() {
-            return {
-                value: data[this['@dataIndex']][this.key] || "&nbsp;"
-            };
-        };
-
-        if (this.config.frozenColumnIndex > 0) {
-            this.$.panel["left-body"].html(root.tmpl.get("body", {
-                list: data,
-                '@rows': function rows() {
-                    var ri = leftBodyRowData.rows.length;
-                    while (ri--) {
-                        leftBodyRowData.rows[ri]['@dataIndex'] = this['@i'];
-                    }
-                    return leftBodyRowData.rows;
-                },
-                '@cols': getCols,
-                '@columnValue': getColumnValue
-            }));
-        }
-
-        this.$.panel["body"].html(root.tmpl.get("body", {
-            list: data,
-            '@rows': function rows() {
-                var ri = bodyRowData.rows.length;
-                while (ri--) {
-                    bodyRowData.rows[ri]['@dataIndex'] = this['@i'];
-                }
-                return bodyRowData.rows;
-            },
-            '@cols': getCols,
-            '@columnValue': getColumnValue
-        }));
-    };
-
     var setData = function setData() {};
 
     root.body = {
         init: init,
         repaint: repaint,
-        repaintByTmpl: repaintByTmpl,
         setData: setData
     };
 })(ax5.ui.grid);
@@ -691,57 +656,68 @@
     };
 
     var repaint = function repaint() {
-
+        var cfg = this.config;
         var dividedHeaderObj = root.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
-        this.leftHeaderData = dividedHeaderObj.leftData;
-        this.headerData = dividedHeaderObj.rightData;
+        var leftHeaderData = this.leftHeaderData = dividedHeaderObj.leftData;
+        var headerData = this.headerData = dividedHeaderObj.rightData;
+
+        this.colGroup.forEach(function (n) {
+            if (ax5.util.isNumber(n.width)) {
+                n._realWidth = n.width + "px";
+            } else {
+                n._realWidth = undefined;
+            }
+        });
 
         this.leftHeaderColGroup = this.colGroup.slice(0, this.config.frozenColumnIndex);
         this.headerColGroup = this.colGroup.slice(this.config.frozenColumnIndex);
-        var cfg = this.config;
 
-        var getColWidth = function getColWidth() {
-            if (ax5.util.isNumber(this.width)) {
-                this._realWidth = this.width + "px";
-                return this._realWidth;
-            } else {
-                this._realWidth = undefined;
-                return "";
+        var repaintBody = function repaintBody(_elTarget, _colGroup, _bodyRow) {
+            var SS = [];
+            SS.push('<table border="0" cellpadding="0" cellspacing="0">');
+            SS.push('<colgroup>');
+            for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                SS.push('<col style="width:' + _colGroup[cgi]._realWidth + ';"  />');
             }
-        };
-        var getRowHeight = function getRowHeight() {
-            return cfg.header.columnHeight + "px";
-        };
-        var getColStyle = function getColStyle() {
-            return "height:" + cfg.header.columnHeight * this.rowspan + "px";
+            SS.push('<col  />');
+            SS.push('</colgroup>');
+
+            for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                var trCSS_class = "";
+                SS.push('<tr class="' + trCSS_class + '">');
+                for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    var col = _bodyRow.rows[tri].cols[ci];
+                    var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
+                    var colTdCSS_class = "";
+                    if (cfg.header.columnBorderWidth) colTdCSS_class += "hasBorder ";
+
+                    SS.push('<td ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + colTdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                    SS.push(function () {
+                        var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
+                        if (col.multiLine) {
+                            return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        } else {
+                            return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                        }
+                    }(), col.label || "&nbsp;", '</span>');
+
+                    SS.push('</td>');
+                }
+                SS.push('<td data-ax5grid-column-row="null" data-ax5grid-column-col="null"></td>');
+                SS.push('</tr>');
+            }
+            SS.push('</table>');
+
+            _elTarget.html(SS.join(''));
         };
 
-        if (this.config.frozenColumnIndex > 0) {
-            this.$.panel["left-header"].html(root.tmpl.get("header", {
-                '@getColWidth': getColWidth,
-                '@getRowHeight': getRowHeight,
-                '@getColStyle': getColStyle,
-                colGroup: this.leftHeaderColGroup,
-                table: this.leftHeaderData
-            }));
+        if (cfg.frozenColumnIndex > 0) {
+            repaintBody(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
+        repaintBody(this.$.panel["header"], this.headerColGroup, headerData);
 
-        this.$.panel["header"].html(root.tmpl.get("header", {
-            '@getColWidth': getColWidth,
-            '@getRowHeight': getRowHeight,
-            '@getColStyle': getColStyle,
-            colGroup: this.headerColGroup,
-            table: this.headerData
-        }));
-
-        if (this.config.rightSum) {
-            this.$.panel["right-header"].html(root.tmpl.get("header", {
-                '@getColWidth': getColWidth,
-                '@getRowHeight': getRowHeight,
-                '@getColStyle': getColStyle,
-                table: this.rightHeaderData
-            }));
-        }
+        if (cfg.rightSum) {}
     };
 
     root.header = {
@@ -767,11 +743,8 @@
 
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\"></div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\"></div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\"></div>\n                <div data-ax5grid-panel=\"left-body\"></div>\n                <div data-ax5grid-panel=\"body\"></div>\n                <div data-ax5grid-panel=\"right-body\"></div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\"></div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
 
-    var header = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n            <colgroup>\n            {{#colGroup}}<col style=\"width:{{@getColWidth}};\" />{{/colGroup}}\n            </colgroup>\n            {{#table.rows}} \n            <tr style=\"height:{{@getRowHeight}};\">\n                {{#cols}}\n                <td colspan=\"{{colspan}}\" rowspan=\"{{rowspan}}\">\n                    <div data-ax5grid-cellBG=\"\" style=\"{{@getColStyle}}\"></div>\n                    <span data-ax5grid-cellHolder=\"\">{{{label}}}</span>\n                </td>\n                {{/cols}}\n            </tr>\n            {{/table.rows}}\n        </table>\n        ";
-
     root.tmpl = {
         "main": main,
-        "header": header,
 
         get: function get(tmplName, data) {
             return ax5.mustache.render(root.tmpl[tmplName], data);

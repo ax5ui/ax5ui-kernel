@@ -44,10 +44,14 @@
             asideColumnWidth: 30,
 
             header: {
-                columnHeight: 23
+                columnHeight: 23,
+                columnPadding: 3,
+                columnBorderWidth: 1
             },
             body: {
-                columnHeight: 23
+                columnHeight: 23,
+                columnPadding: 3,
+                columnBorderWidth: 1
             }
         };
 
