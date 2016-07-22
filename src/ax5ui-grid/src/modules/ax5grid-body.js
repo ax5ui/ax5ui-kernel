@@ -11,6 +11,10 @@
 
         // this.bodyRowMap = {};
         this.bodyRowTable = makeBodyRowTable.call(this, this.columns);
+
+        // set oneRowHeight = this.bodyTrHeight
+        // 바디에 표현될 한줄의 높이를 계산합니다.
+        this.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
     };
 
     var makeBodyRowTable = function (columns) {

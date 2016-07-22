@@ -200,18 +200,18 @@
                 this.colGroup.push(colGroupMap[k]);
             }
 
-            // todo : 컬럼 width에 %, * 지원
             return this;
         },
             resetColGroupWidth = function resetColGroupWidth() {
             /// !! 그리드 target의 크기가 변경되면 이 함수를 호출하려 this.colGroup의 _width 값을 재 계산 하여야 함. [tom]
             var CT_WIDTH = this.$["container"]["root"].width();
             var totalWidth = 0;
-            var comptedWidth;
+            var computedWidth;
             var autoWidthColgroupIndexs = [];
             var colGroup = this.colGroup;
+            var i, l;
 
-            for (var i = 0, l = colGroup.length; i < l; i++) {
+            for (i = 0, l = colGroup.length; i < l; i++) {
                 if (U.isNumber(colGroup[i].width)) {
                     totalWidth += colGroup[i]._width = colGroup[i].width;
                 } else if (colGroup[i].width === "*") {
@@ -221,9 +221,9 @@
                 }
             }
             if (autoWidthColgroupIndexs.length > 0) {
-                comptedWidth = (CT_WIDTH - totalWidth) / autoWidthColgroupIndexs.length;
-                for (var i = 0, l = autoWidthColgroupIndexs.length; i < l; i++) {
-                    colGroup[autoWidthColgroupIndexs[i]]._width = comptedWidth;
+                computedWidth = (CT_WIDTH - totalWidth) / autoWidthColgroupIndexs.length;
+                for (i = 0, l = autoWidthColgroupIndexs.length; i < l; i++) {
+                    colGroup[autoWidthColgroupIndexs[i]]._width = computedWidth;
                 }
             }
         },
@@ -474,6 +474,10 @@
 
         // this.bodyRowMap = {};
         this.bodyRowTable = makeBodyRowTable.call(this, this.columns);
+
+        // set oneRowHeight = this.bodyTrHeight
+        // 바디에 표현될 한줄의 높이를 계산합니다.
+        this.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
     };
 
     var makeBodyRowTable = function makeBodyRowTable(columns) {
