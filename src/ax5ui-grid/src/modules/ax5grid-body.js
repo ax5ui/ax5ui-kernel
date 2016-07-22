@@ -188,13 +188,21 @@
             _elTarget.html(SS.join(''));
         };
 
-        if (cfg.frozenColumnIndex > 0) {
-            repaintBody(this.$.panel["left-body"], this.leftHeaderColGroup, leftBodyRowData, data);
+        if (cfg.frozenRowIndex > 0) {
+            // 상단 행고정
         }
-        repaintBody(this.$.panel["body"], this.headerColGroup, bodyRowData, data);
+
+        if (cfg.frozenColumnIndex > 0) {
+            repaintBody(this.$.panel["left-body-scroll"], this.leftHeaderColGroup, leftBodyRowData, data);
+        }
+        repaintBody(this.$.panel["body-scroll"], this.headerColGroup, bodyRowData, data);
 
         if (cfg.rightSum) {
 
+        }
+
+        if (cfg.footSum) {
+            // 바닥 합계
         }
     };
 

@@ -156,18 +156,25 @@
                     "aside-header": this.$target.find('[data-ax5grid-panel="aside-header"]'),
                     "left-header": this.$target.find('[data-ax5grid-panel="left-header"]'),
                     "header": this.$target.find('[data-ax5grid-panel="header"]'),
+                    "header-scroll": this.$target.find('[data-ax5grid-panel-scroll="header"]'),
                     "right-header": this.$target.find('[data-ax5grid-panel="right-header"]'),
                     "top-aside-body": this.$target.find('[data-ax5grid-panel="top-aside-body"]'),
                     "top-left-body": this.$target.find('[data-ax5grid-panel="top-left-body"]'),
                     "top-body": this.$target.find('[data-ax5grid-panel="top-body"]'),
+                    "top-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="top-body"]'),
                     "top-right-body": this.$target.find('[data-ax5grid-panel="top-right-body"]'),
                     "aside-body": this.$target.find('[data-ax5grid-panel="aside-body"]'),
+                    "aside-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="aside-body"]'),
                     "left-body": this.$target.find('[data-ax5grid-panel="left-body"]'),
+                    "left-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="left-body"]'),
                     "body": this.$target.find('[data-ax5grid-panel="body"]'),
+                    "body-scroll": this.$target.find('[data-ax5grid-panel-scroll="body"]'),
                     "right-body": this.$target.find('[data-ax5grid-panel="right-body"]'),
+                    "right-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="right-body"]'),
                     "bottom-aside-body": this.$target.find('[data-ax5grid-panel="bottom-aside-body"]'),
                     "bottom-left-body": this.$target.find('[data-ax5grid-panel="bottom-left-body"]'),
                     "bottom-body": this.$target.find('[data-ax5grid-panel="bottom-body"]'),
+                    "bottom-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="bottom-body"]'),
                     "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
                 }
             };
@@ -320,6 +327,8 @@
                             }
                             break;
                     }
+                } else if (containerType === "header") {
+                    css["height"] = headerHeight;
                 }
 
                 if (isHide) {
@@ -626,12 +635,20 @@
             _elTarget.html(SS.join(''));
         };
 
-        if (cfg.frozenColumnIndex > 0) {
-            repaintBody(this.$.panel["left-body"], this.leftHeaderColGroup, leftBodyRowData, data);
+        if (cfg.frozenRowIndex > 0) {
+            // 상단 행고정
         }
-        repaintBody(this.$.panel["body"], this.headerColGroup, bodyRowData, data);
+
+        if (cfg.frozenColumnIndex > 0) {
+            repaintBody(this.$.panel["left-body-scroll"], this.leftHeaderColGroup, leftBodyRowData, data);
+        }
+        repaintBody(this.$.panel["body-scroll"], this.headerColGroup, bodyRowData, data);
 
         if (cfg.rightSum) {}
+
+        if (cfg.footSum) {
+            // 바닥 합계
+        }
     };
 
     var setData = function setData() {};
@@ -725,7 +742,7 @@
         if (cfg.frozenColumnIndex > 0) {
             repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
-        repaintHeader(this.$.panel["header"], this.headerColGroup, headerData);
+        repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {}
     };
@@ -746,12 +763,11 @@
         init: init
     };
 })(ax5.ui.grid);
-
 // ax5.ui.grid.tmpl
 (function (root) {
     "use strict";
 
-    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\"></div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\"></div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\"></div>\n                <div data-ax5grid-panel=\"left-body\"></div>\n                <div data-ax5grid-panel=\"body\"></div>\n                <div data-ax5grid-panel=\"right-body\"></div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\"></div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
+    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
 
     root.tmpl = {
         "main": main,

@@ -70,7 +70,7 @@
         if (cfg.frozenColumnIndex > 0) {
             repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
-        repaintHeader(this.$.panel["header"], this.headerColGroup, headerData);
+        repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {
 

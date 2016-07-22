@@ -158,18 +158,25 @@
                         "aside-header": this.$target.find('[data-ax5grid-panel="aside-header"]'),
                         "left-header": this.$target.find('[data-ax5grid-panel="left-header"]'),
                         "header": this.$target.find('[data-ax5grid-panel="header"]'),
+                        "header-scroll": this.$target.find('[data-ax5grid-panel-scroll="header"]'),
                         "right-header": this.$target.find('[data-ax5grid-panel="right-header"]'),
                         "top-aside-body": this.$target.find('[data-ax5grid-panel="top-aside-body"]'),
                         "top-left-body": this.$target.find('[data-ax5grid-panel="top-left-body"]'),
                         "top-body": this.$target.find('[data-ax5grid-panel="top-body"]'),
+                        "top-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="top-body"]'),
                         "top-right-body": this.$target.find('[data-ax5grid-panel="top-right-body"]'),
                         "aside-body": this.$target.find('[data-ax5grid-panel="aside-body"]'),
+                        "aside-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="aside-body"]'),
                         "left-body": this.$target.find('[data-ax5grid-panel="left-body"]'),
+                        "left-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="left-body"]'),
                         "body": this.$target.find('[data-ax5grid-panel="body"]'),
+                        "body-scroll": this.$target.find('[data-ax5grid-panel-scroll="body"]'),
                         "right-body": this.$target.find('[data-ax5grid-panel="right-body"]'),
+                        "right-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="right-body"]'),
                         "bottom-aside-body": this.$target.find('[data-ax5grid-panel="bottom-aside-body"]'),
                         "bottom-left-body": this.$target.find('[data-ax5grid-panel="bottom-left-body"]'),
                         "bottom-body": this.$target.find('[data-ax5grid-panel="bottom-body"]'),
+                        "bottom-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="bottom-body"]'),
                         "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
                     }
                 };
@@ -324,6 +331,8 @@
                                 }
                                 break;
                         }
+                    } else if (containerType === "header") {
+                        css["height"] = headerHeight;
                     }
 
                     if (isHide) {

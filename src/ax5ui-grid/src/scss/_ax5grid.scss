@@ -15,12 +15,14 @@
             tr {
                 border-bottom: 0px none;
 
-                &.tr-0{}
-                &.tr-1{
+                &.tr-0 {
+                }
+                &.tr-1 {
                     background: #f3f3f3;
                 }
-                &.tr-2{}
-                &.tr-3{
+                &.tr-2 {
+                }
+                &.tr-3 {
                     background: #f3f3f3;
                 }
             }
@@ -30,14 +32,14 @@
                 position: relative;
                 padding: 0px;
                 font-size: 10px;
-                &.hasBorder{
+                &.hasBorder {
                     border-right: 1px solid #ccc;
                     border-bottom: 1px solid #ccc;
                 }
-                &.isLastColumn{
+                &.isLastColumn {
 
                 }
-                &[data-ax5grid-column-row="null"]{
+                &[data-ax5grid-column-row="null"] {
                     border-right: 0px none;
                 }
                 [data-ax5grid-cellHolder] {
@@ -74,6 +76,12 @@
                     }
                 }
             }
+        }
+
+        [data-ax5grid-panel-scroll] {
+            position: absolute;
+            left: 0px;
+            top: 0px;
         }
     }
 }
