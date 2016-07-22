@@ -138,7 +138,10 @@
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
 
         var data = this.data;
-        // todo : 현재 화면에 출력된 범위를 연산하여 data를 결정.
+        // todo : 현재 화면에 출력될 범위를 연산하여 data를 결정.
+
+        /// body-scroll top, height를 가지고. 처리
+        console.log(this.$.panel["body-scroll"].position().top, this.$.panel["body"].height());
 
         var repaintBody = function (_elTarget, _colGroup, _bodyRow, _data) {
             var SS = [];

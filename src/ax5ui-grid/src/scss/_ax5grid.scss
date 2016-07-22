@@ -94,8 +94,11 @@
         [data-ax5grid-container="header"] {
             position: relative;
             overflow: hidden;
-            background: #eee;
+
             border-bottom: 1px solid #ccc;
+
+            @include ax-background(#FFFFFF, #F0F0F0);
+
             @include gridPanel("header");
         }
 

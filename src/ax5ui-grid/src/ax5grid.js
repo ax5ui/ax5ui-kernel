@@ -415,6 +415,10 @@
             initColumns.call(this, grid.columns);
             resetColGroupWidth.call(this);
 
+
+            // 그리드의 각 요소의 크기를 맞춤니다.
+            alignGrid.call(this, true);
+
             // columns의 데이터로 header데이터를 만들고 
             modules.header.init.call(this);
             // header를 출력합니다.
@@ -424,9 +428,6 @@
             modules.body.init.call(this);
             // body를 출력합니다.
             modules.body.repaint.call(this);
-
-            // 그리드의 각 요소의 크기를 맞춤니다.
-            alignGrid.call(this, true);
 
             return this;
         };
