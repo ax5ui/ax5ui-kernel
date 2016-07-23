@@ -138,28 +138,41 @@
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
 
         var data = this.data;
+        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.bodyTrHeight);
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.bodyTrHeight);
         // todo : 현재 화면에 출력될 범위를 연산하여 data를 결정.
-
-        /// body-scroll top, height를 가지고. 처리
-        console.log(this.$.panel["body-scroll"].position().top, this.$.panel["body"].height());
+        // body-scroll 의 포지션에 의존적이므로..
 
         var repaintBody = function (_elTarget, _colGroup, _bodyRow, _data) {
             var SS = [];
+            var cgi, cgl;
+            var di, dl;
+            var tri, trl;
+            var ci, cl;
+            var col, cellHeight, tdCSS_class;
+
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
-            for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+            for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
                 SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
             }
             SS.push('<col  />');
             SS.push('</colgroup>');
 
-            for (var di = 0, dl = _data.length; di < dl; di++) {
-                for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+            for (di = paintStartRowIndex, dl = (function () {
+                var len;
+                len = _data.length;
+                if (paintRowCount + paintStartRowIndex < len) {
+                    len = paintRowCount + paintStartRowIndex;
+                }
+                return len;
+            })(); di < dl; di++) {
+                for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
                     SS.push('<tr class="tr-' + (di % 4) + '">');
-                    for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
-                        var col = _bodyRow.rows[tri].cols[ci];
-                        var cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
-                        var tdCSS_class = "";
+                    for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                        col = _bodyRow.rows[tri].cols[ci];
+                        cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                        tdCSS_class = "";
                         if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
                         if (ci == cl - 1) tdCSS_class += "isLastColumn ";
 

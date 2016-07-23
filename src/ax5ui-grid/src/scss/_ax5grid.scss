@@ -13,7 +13,7 @@
                 height: 100%;
             }
             tr {
-                border-bottom: 0px none;
+                border-bottom: 0 none;
 
                 &.tr-0 {
                 }
@@ -30,7 +30,7 @@
                 box-sizing: border-box;
                 overflow: hidden;
                 position: relative;
-                padding: 0px;
+                padding: 0;
                 font-size: 10px;
                 &.hasBorder {
                     border-right: 1px solid #ccc;
@@ -40,7 +40,7 @@
 
                 }
                 &[data-ax5grid-column-row="null"] {
-                    border-right: 0px none;
+                    border-right: 0 none;
                 }
                 [data-ax5grid-cellHolder] {
                     // 그리드 셀표현 : 그리드의 컬럼텍스트가 여기에 출력됨
@@ -72,7 +72,7 @@
             table {
                 td {
                     &.isLastColumn {
-                        border-right: 0px none;
+                        border-right: 0 none;
                     }
                 }
             }
@@ -80,8 +80,8 @@
 
         [data-ax5grid-panel-scroll] {
             position: absolute;
-            left: 0px;
-            top: 0px;
+            left: 0;
+            top: 0;
         }
     }
 }
@@ -94,11 +94,8 @@
         [data-ax5grid-container="header"] {
             position: relative;
             overflow: hidden;
-
-            border-bottom: 1px solid #ccc;
-
             @include ax-background(#FFFFFF, #F0F0F0);
-
+            border-bottom: 1px solid #ccc;
             @include gridPanel("header");
         }
 
