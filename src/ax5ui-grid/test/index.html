@@ -29,19 +29,20 @@
             frozenColumnIndex: 2,
 
             header: {
-                columnHeight: 30
+                columnHeight: 28
             },
             body: {
-                columnHeight: 23
+                columnHeight: 25
             },
             columns: [
-                {key: "a", label: "필드A"},
+                {key: "a", label: "필드A", width: 80},
                 {key: "b", label: "필드B"},
                 {
-                    key: "c", label: "필드C", columns: [{key: "c1", label: "필드C-1"},{key: "c2", label: "필드C-2"}]
+                    label: "필드C", columns: [{key: "c1", label: "필드C-1"},{key: "c2", label: "필드C-2"}]
                 },
                 {key: "c", label: "필드C", multiLine: false},
-                {key: "d", label: "필드D"}
+                {key: "d", label: "필드D"},
+                {key: "c1", label: "필드D", width: 120}
             ]
         });
 
