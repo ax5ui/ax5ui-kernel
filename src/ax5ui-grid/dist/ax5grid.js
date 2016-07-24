@@ -230,20 +230,20 @@
             alignGrid = function alignGrid(isFirst) {
             var CT_WIDTH = this.$["container"]["root"].width();
             var CT_HEIGHT = this.$["container"]["root"].height();
-            var asideColumnWidth = function () {
+            var asidePanelWidth = cfg.asidePanelWidth = function () {
                 var width = 0;
                 if (cfg.showLineNumber) width += cfg.asideColumnWidth;
                 if (cfg.showRowSelector) width += cfg.asideColumnWidth;
                 return width;
             }();
-            var frozenColumnWidth = function (colGroup, endIndex) {
+            var frozenPanelWidth = cfg.frozenPanelWidth = function (colGroup, endIndex) {
                 var width = 0;
                 for (var i = 0, l = endIndex; i < l; i++) {
                     width += colGroup[i]._width;
                 }
                 return width;
             }(this.colGroup, cfg.frozenColumnIndex);
-            var rightColumnWidth = 0; // todo : 우측 함계컬럼 넘비 계산
+            var rightPanelWidth = 0; // todo : 우측 함계컬럼 넘비 계산
 
             var frozenRowHeight = 0; // todo : 고정행 높이 계산하기
             var footSumHeight = 0;
@@ -256,11 +256,12 @@
 
                 switch (hPosition) {
                     case "aside":
-                        if (asideColumnWidth === 0) {
+                        if (asidePanelWidth === 0) {
                             panel.hide();
                             isHide = true;
                         } else {
-                            css["width"] = asideColumnWidth;
+                            css["left"] = 0;
+                            css["width"] = asidePanelWidth;
                         }
                         break;
                     case "left":
@@ -268,8 +269,8 @@
                             panel.hide();
                             isHide = true;
                         } else {
-                            css["left"] = 0;
-                            css["width"] = frozenColumnWidth;
+                            css["left"] = asidePanelWidth;
+                            css["width"] = frozenPanelWidth;
                         }
                         break;
                     case "right":
@@ -280,11 +281,11 @@
                         break;
                     default:
                         if (cfg.frozenColumnIndex === 0) {
-                            css["left"] = 0;
-                            css["width"] = CT_WIDTH - rightColumnWidth;
+                            css["left"] = asidePanelWidth;
+                            css["width"] = CT_WIDTH - rightPanelWidth;
                         } else {
-                            css["left"] = frozenColumnWidth;
-                            css["width"] = CT_WIDTH - rightColumnWidth - frozenColumnWidth;
+                            css["left"] = frozenPanelWidth + asidePanelWidth;
+                            css["width"] = CT_WIDTH - rightPanelWidth - frozenPanelWidth;
                         }
                         break;
                 }
@@ -477,7 +478,7 @@
 
         // set oneRowHeight = this.bodyTrHeight
         // 바디에 표현될 한줄의 높이를 계산합니다.
-        this.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
+        this.config.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
     };
 
     var makeBodyRowTable = function makeBodyRowTable(columns) {
@@ -595,8 +596,8 @@
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
 
         var data = this.data;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.bodyTrHeight);
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.bodyTrHeight);
+        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.config.bodyTrHeight);
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.config.bodyTrHeight);
         // todo : 현재 화면에 출력될 범위를 연산하여 data를 결정.
         // body-scroll 의 포지션에 의존적이므로..
 
@@ -758,6 +759,11 @@
 
             _elTarget.html(SS.join(''));
         };
+
+        if (cfg.asidePanelWidth > 0) {
+            repaintHeader(this.$.panel["aside-header"], [], { rows: [] });
+            // todo : aside
+        }
 
         if (cfg.frozenColumnIndex > 0) {
             repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);

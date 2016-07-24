@@ -232,20 +232,20 @@
             alignGrid = function (isFirst) {
                 var CT_WIDTH = this.$["container"]["root"].width();
                 var CT_HEIGHT = this.$["container"]["root"].height();
-                var asideColumnWidth = (function () {
+                var asidePanelWidth = cfg.asidePanelWidth = (function () {
                     var width = 0;
                     if (cfg.showLineNumber) width += cfg.asideColumnWidth;
                     if (cfg.showRowSelector) width += cfg.asideColumnWidth;
                     return width;
                 })();
-                var frozenColumnWidth = (function (colGroup, endIndex) {
+                var frozenPanelWidth = cfg.frozenPanelWidth = (function (colGroup, endIndex) {
                     var width = 0;
                     for (var i = 0, l = endIndex; i < l; i++) {
                         width += colGroup[i]._width;
                     }
                     return width;
                 })(this.colGroup, cfg.frozenColumnIndex);
-                var rightColumnWidth = 0; // todo : 우측 함계컬럼 넘비 계산
+                var rightPanelWidth = 0; // todo : 우측 함계컬럼 넘비 계산
 
                 var frozenRowHeight = 0; // todo : 고정행 높이 계산하기
                 var footSumHeight = 0;
@@ -258,11 +258,12 @@
 
                     switch (hPosition) {
                         case "aside":
-                            if (asideColumnWidth === 0) {
+                            if (asidePanelWidth === 0) {
                                 panel.hide();
                                 isHide = true;
                             } else {
-                                css["width"] = asideColumnWidth;
+                                css["left"] = 0;
+                                css["width"] = asidePanelWidth;
                             }
                             break;
                         case "left":
@@ -270,8 +271,8 @@
                                 panel.hide();
                                 isHide = true;
                             } else {
-                                css["left"] = 0;
-                                css["width"] = frozenColumnWidth;
+                                css["left"] = asidePanelWidth;
+                                css["width"] = frozenPanelWidth;
                             }
                             break;
                         case "right":
@@ -284,11 +285,11 @@
                             break;
                         default:
                             if (cfg.frozenColumnIndex === 0) {
-                                css["left"] = 0;
-                                css["width"] = CT_WIDTH - rightColumnWidth;
+                                css["left"] = asidePanelWidth;
+                                css["width"] = CT_WIDTH - rightPanelWidth;
                             } else {
-                                css["left"] = frozenColumnWidth;
-                                css["width"] = CT_WIDTH - rightColumnWidth - frozenColumnWidth;
+                                css["left"] = frozenPanelWidth + asidePanelWidth;
+                                css["width"] = CT_WIDTH - rightPanelWidth - frozenPanelWidth;
                             }
                             break;
                     }

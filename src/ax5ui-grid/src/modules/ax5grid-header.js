@@ -67,6 +67,13 @@
             _elTarget.html(SS.join(''));
         };
 
+        if(cfg.asidePanelWidth > 0){
+            repaintHeader(this.$.panel["aside-header"], [
+
+            ], {rows:[]});
+            // todo : aside
+        }
+
         if (cfg.frozenColumnIndex > 0) {
             repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
