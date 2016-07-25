@@ -12,18 +12,18 @@
     var repaint = function () {
         var cfg = this.config;
         var dividedHeaderObj = root.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
-        var asideHeaderData = this.asideHeaderData = (function (headerTable) {
+        var asideHeaderData = this.asideHeaderData = (function (dataTable) {
             var colGroup = [];
-            var header = {rows:[]};
-            for (var i = 0, l = headerTable.rows.length; i < l; i++) {
-                header.rows[i] = {cols:[]};
+            var data = {rows:[]};
+            for (var i = 0, l = dataTable.rows.length; i < l; i++) {
+                data.rows[i] = {cols:[]};
                 if(i === 0){
                     var col = {
                         width: cfg.asideColumnWidth,
                         _width: cfg.asideColumnWidth,
                         label: "",
                         colspan: 1,
-                        rowspan: headerTable.rows.length,
+                        rowspan: dataTable.rows.length,
                         key: "__dindex__",
                         colIndex: null
                     }, _col = {};
@@ -31,18 +31,18 @@
                     if (cfg.showLineNumber) {
                         _col = jQuery.extend({}, col, {label: "&nbsp;"});
                         colGroup.push(_col);
-                        header.rows[i].cols.push(_col);
+                        data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
                         _col = jQuery.extend({}, col, {label: ""});
                         colGroup.push(_col);
-                        header.rows[i].cols.push(_col);
+                        data.rows[i].cols.push(_col);
                     }
                 }
             }
 
             this.asideColGroup = colGroup;
-            return header;
+            return data;
         }).call(this, this.headerTable);
         var leftHeaderData = this.leftHeaderData = dividedHeaderObj.leftData;
         var headerData = this.headerData = dividedHeaderObj.rightData;

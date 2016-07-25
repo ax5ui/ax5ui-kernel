@@ -134,7 +134,34 @@
     var repaint = function () {
         var cfg = this.config;
         var dividedBodyRowObj = root.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
-        var asideBodyRowData = this.asideBodyRowData = this.asideHeaderData;
+        var asideBodyRowData = this.asideBodyRowData = (function (dataTable) {
+            var data = {rows:[]};
+            for (var i = 0, l = dataTable.rows.length; i < l; i++) {
+                data.rows[i] = {cols:[]};
+                if(i === 0){
+                    var col = {
+                        width: cfg.asideColumnWidth,
+                        _width: cfg.asideColumnWidth,
+                        label: "",
+                        colspan: 1,
+                        rowspan: dataTable.rows.length,
+                        key: "__dindex__",
+                        colIndex: null
+                    }, _col = {};
+
+                    if (cfg.showLineNumber) {
+                        _col = jQuery.extend({}, col, {label: "&nbsp;"});
+                        data.rows[i].cols.push(_col);
+                    }
+                    if (cfg.showRowSelector) {
+                        _col = jQuery.extend({}, col, {label: ""});
+                        data.rows[i].cols.push(_col);
+                    }
+                }
+            }
+
+            return data;
+        }).call(this, this.bodyRowTable);
         var leftBodyRowData = this.leftBodyRowData = dividedBodyRowObj.leftData;
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
 
