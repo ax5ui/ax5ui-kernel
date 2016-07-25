@@ -714,9 +714,43 @@
     var repaint = function repaint() {
         var cfg = this.config;
         var dividedHeaderObj = root.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+        var asideHeaderData = this.asideHeaderData = function (headerTable) {
+            var colGroup = [];
+            var header = { rows: [] };
+            for (var i = 0, l = headerTable.rows.length; i < l; i++) {
+                header.rows[i] = { cols: [] };
+                if (i === 0) {
+                    var col = {
+                        width: cfg.asideColumnWidth,
+                        _width: cfg.asideColumnWidth,
+                        label: "",
+                        colspan: 1,
+                        rowspan: headerTable.rows.length,
+                        key: null,
+                        colIndex: null
+                    },
+                        _col = {};
+
+                    if (cfg.showLineNumber) {
+                        _col = jQuery.extend({}, col, { label: "&nbsp;" });
+                        colGroup.push(_col);
+                        header.rows[i].cols.push(_col);
+                    }
+                    if (cfg.showRowSelector) {
+                        _col = jQuery.extend({}, col, { label: "" });
+                        colGroup.push(_col);
+                        header.rows[i].cols.push(_col);
+                    }
+                }
+            }
+
+            this.asideColGroup = colGroup;
+            return header;
+        }.call(this, this.headerTable);
         var leftHeaderData = this.leftHeaderData = dividedHeaderObj.leftData;
         var headerData = this.headerData = dividedHeaderObj.rightData;
 
+        // this.asideColGroup : asideHeaderData에서 처리 함.
         this.leftHeaderColGroup = this.colGroup.slice(0, this.config.frozenColumnIndex);
         this.headerColGroup = this.colGroup.slice(this.config.frozenColumnIndex);
 
@@ -761,7 +795,7 @@
         };
 
         if (cfg.asidePanelWidth > 0) {
-            repaintHeader(this.$.panel["aside-header"], [], { rows: [] });
+            repaintHeader(this.$.panel["aside-header"], this.asideColGroup, asideHeaderData);
             // todo : aside
         }
 

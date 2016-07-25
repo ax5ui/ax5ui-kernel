@@ -64,6 +64,17 @@
             }
         }
 
+        &[data-ax5grid-panel="aside-header"]{
+            border-right: 1px solid darken(#ccc, 0%);
+            table {
+                td {
+                    &.isLastColumn {
+                        border-right: 0 none;
+                    }
+                }
+            }
+        }
+
         &[data-ax5grid-panel="left-header"],
         &[data-ax5grid-panel="top-left-body"],
         &[data-ax5grid-panel="left-body"],
