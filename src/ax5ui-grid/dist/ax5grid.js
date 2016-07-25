@@ -592,6 +592,7 @@
     var repaint = function repaint() {
         var cfg = this.config;
         var dividedBodyRowObj = root.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
+        var asideBodyRowData = this.asideBodyRowData = this.asideHeaderData;
         var leftBodyRowData = this.leftBodyRowData = dividedBodyRowObj.leftData;
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
 
@@ -608,7 +609,13 @@
             var tri, trl;
             var ci, cl;
             var col, cellHeight, tdCSS_class;
-
+            var getFieldValue = function getFieldValue(data, index, key) {
+                if (key === "__dindex__") {
+                    return index + 1;
+                } else {
+                    return data[key] || "&nbsp;";
+                }
+            };
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -643,7 +650,7 @@
                             } else {
                                 return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                             }
-                        }(), _data[di][col.key] || "&nbsp;", '</span>');
+                        }(), getFieldValue.call(this, _data[di], di, col.key), '</span>');
 
                         SS.push('</td>');
                     }
@@ -655,6 +662,20 @@
 
             _elTarget.html(SS.join(''));
         };
+
+        if (cfg.asidePanelWidth > 0) {
+            if (cfg.frozenRowIndex > 0) {
+                // 상단 행고정
+                repaintBody(this.$.panel["top-aside-body"], this.asideColGroup, asideBodyRowData, data);
+            }
+
+            repaintBody(this.$.panel["aside-body-scroll"], this.asideColGroup, asideBodyRowData, data);
+
+            if (cfg.footSum) {
+                // 바닥 합계
+                repaintBody(this.$.panel["bottom-aside-body"], this.asideColGroup, asideBodyRowData, data);
+            }
+        }
 
         if (cfg.frozenRowIndex > 0) {
             // 상단 행고정
@@ -726,7 +747,7 @@
                         label: "",
                         colspan: 1,
                         rowspan: headerTable.rows.length,
-                        key: null,
+                        key: "__dindex__",
                         colIndex: null
                     },
                         _col = {};

@@ -24,7 +24,7 @@
                         label: "",
                         colspan: 1,
                         rowspan: headerTable.rows.length,
-                        key: null,
+                        key: "__dindex__",
                         colIndex: null
                     }, _col = {};
 

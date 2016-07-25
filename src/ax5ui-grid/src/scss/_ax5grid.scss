@@ -64,12 +64,30 @@
             }
         }
 
-        &[data-ax5grid-panel="aside-header"]{
+        &[data-ax5grid-panel="aside-header"],
+        &[data-ax5grid-panel="top-aside-body"],
+        &[data-ax5grid-panel="aside-body"],
+        &[data-ax5grid-panel="bottom-aside-body"]
+        {
             border-right: 1px solid darken(#ccc, 0%);
             table {
                 td {
                     &.isLastColumn {
                         border-right: 0 none;
+                    }
+                }
+            }
+        }
+
+        &[data-ax5grid-panel="top-aside-body"],
+        &[data-ax5grid-panel="aside-body"],
+        &[data-ax5grid-panel="bottom-aside-body"]
+        {
+            table {
+                tr {
+                    background: #fbfbfb;
+                    td{
+                        text-align: center;
                     }
                 }
             }
