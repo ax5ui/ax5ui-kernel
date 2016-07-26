@@ -52,6 +52,9 @@
                 columnHeight: 23,
                 columnPadding: 3,
                 columnBorderWidth: 1
+            },
+            scroller: {
+                size: 15
             }
         };
 
@@ -254,12 +257,15 @@
                     return width;
                 })(this.colGroup, cfg.frozenColumnIndex);
                 var rightPanelWidth = 0; // todo : 우측 함계컬럼 넘비 계산
-
                 var frozenRowHeight = 0; // todo : 고정행 높이 계산하기
                 var footSumHeight = 0;
 
                 var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
                 var bodyHeight = CT_HEIGHT - headerHeight;
+
+                /// todo : 그리드 스크롤러 표시여부 결정 스크롤러 표시 여부에 따라 그리드 각 패널들의 크기 조정
+
+
                 var panelDisplayProcess = function (panel, vPosition, hPosition, containerType) {
                     var css = {};
                     var isHide = false;
