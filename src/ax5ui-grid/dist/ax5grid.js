@@ -150,7 +150,8 @@
                 "container": {
                     "root": this.$target.find('[data-ax5grid-container="root"]'),
                     "header": this.$target.find('[data-ax5grid-container="header"]'),
-                    "body": this.$target.find('[data-ax5grid-container="body"]')
+                    "body": this.$target.find('[data-ax5grid-container="body"]'),
+                    "scroller": this.$target.find('[data-ax5grid-container="scroller"]')
                 },
                 "panel": {
                     "aside-header": this.$target.find('[data-ax5grid-panel="aside-header"]'),
@@ -176,6 +177,13 @@
                     "bottom-body": this.$target.find('[data-ax5grid-panel="bottom-body"]'),
                     "bottom-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="bottom-body"]'),
                     "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
+                },
+                "scroller": {
+                    "vertical": this.$target.find('[data-ax5grid-scroller="vertical"]'),
+                    "vertical-bar": this.$target.find('[data-ax5grid-scroller="vertical-bar"]'),
+                    "horizontal": this.$target.find('[data-ax5grid-scroller="horizontal"]'),
+                    "horizontal-bar": this.$target.find('[data-ax5grid-scroller="horizontal-bar"]'),
+                    "corner": this.$target.find('[data-ax5grid-scroller="corner"]')
                 }
             };
 
@@ -603,17 +611,16 @@
                         label: "",
                         colspan: 1,
                         rowspan: dataTable.rows.length,
-                        key: "__dindex__",
                         colIndex: null
                     },
                         _col = {};
 
                     if (cfg.showLineNumber) {
-                        _col = jQuery.extend({}, col, { label: "&nbsp;" });
+                        _col = jQuery.extend({}, col, { label: "&nbsp;", key: "__d-index__" });
                         data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
-                        _col = jQuery.extend({}, col, { label: "" });
+                        _col = jQuery.extend({}, col, { label: "", key: "__d-checkbox__" });
                         data.rows[i].cols.push(_col);
                     }
                 }
@@ -638,8 +645,10 @@
             var ci, cl;
             var col, cellHeight, tdCSS_class;
             var getFieldValue = function getFieldValue(data, index, key) {
-                if (key === "__dindex__") {
+                if (key === "__d-index__") {
                     return index + 1;
+                } else if (key === "__d-checkbox__") {
+                    return "C";
                 } else {
                     return data[key] || "&nbsp;";
                 }
@@ -876,7 +885,7 @@
 (function (root) {
     "use strict";
 
-    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n        </div>";
+    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
 
     root.tmpl = {
         "main": main,

@@ -71,24 +71,23 @@
         {
             border-right: 1px solid darken(#ccc, 0%);
             table {
-                td {
-                    &.isLastColumn {
-                        border-right: 0 none;
+                tr {
+                    background: #f2f2f2;
+                    td{
+                        text-align: center;
+                        &.isLastColumn {
+                            border-right: 0 none;
+                        }
                     }
                 }
             }
         }
 
-        &[data-ax5grid-panel="top-aside-body"],
-        &[data-ax5grid-panel="aside-body"],
-        &[data-ax5grid-panel="bottom-aside-body"]
+        &[data-ax5grid-panel="aside-header"]
         {
-            table {
-                tr {
-                    background: #fbfbfb;
-                    td{
-                        text-align: center;
-                    }
+            table{
+                tr{
+                    @include ax-background(top, #FFFFFF, #f2f2f2);
                 }
             }
         }
@@ -123,7 +122,7 @@
         [data-ax5grid-container="header"] {
             position: relative;
             overflow: hidden;
-            @include ax-background(#FFFFFF, #F0F0F0);
+            @include ax-background(top, #FFFFFF, #F0F0F0);
             border-bottom: 1px solid #ccc;
             @include gridPanel("header");
         }

@@ -152,7 +152,8 @@
                     "container": {
                         "root": this.$target.find('[data-ax5grid-container="root"]'),
                         "header": this.$target.find('[data-ax5grid-container="header"]'),
-                        "body": this.$target.find('[data-ax5grid-container="body"]')
+                        "body": this.$target.find('[data-ax5grid-container="body"]'),
+                        "scroller": this.$target.find('[data-ax5grid-container="scroller"]')
                     },
                     "panel": {
                         "aside-header": this.$target.find('[data-ax5grid-panel="aside-header"]'),
@@ -178,6 +179,13 @@
                         "bottom-body": this.$target.find('[data-ax5grid-panel="bottom-body"]'),
                         "bottom-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="bottom-body"]'),
                         "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
+                    },
+                    "scroller": {
+                        "vertical": this.$target.find('[data-ax5grid-scroller="vertical"]'),
+                        "vertical-bar": this.$target.find('[data-ax5grid-scroller="vertical-bar"]'),
+                        "horizontal": this.$target.find('[data-ax5grid-scroller="horizontal"]'),
+                        "horizontal-bar": this.$target.find('[data-ax5grid-scroller="horizontal-bar"]'),
+                        "corner": this.$target.find('[data-ax5grid-scroller="corner"]')
                     }
                 };
 

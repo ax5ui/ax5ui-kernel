@@ -145,16 +145,15 @@
                         label: "",
                         colspan: 1,
                         rowspan: dataTable.rows.length,
-                        key: "__dindex__",
                         colIndex: null
                     }, _col = {};
 
                     if (cfg.showLineNumber) {
-                        _col = jQuery.extend({}, col, {label: "&nbsp;"});
+                        _col = jQuery.extend({}, col, {label: "&nbsp;", key: "__d-index__"});
                         data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
-                        _col = jQuery.extend({}, col, {label: ""});
+                        _col = jQuery.extend({}, col, {label: "", key: "__d-checkbox__"});
                         data.rows[i].cols.push(_col);
                     }
                 }
@@ -179,8 +178,11 @@
             var ci, cl;
             var col, cellHeight, tdCSS_class;
             var getFieldValue = function(data, index, key){
-                if(key === "__dindex__"){
+                if(key === "__d-index__"){
                     return index + 1;
+                }
+                else if(key === "__d-checkbox__"){
+                    return "C";
                 }
                 else{
                     return data[key] || "&nbsp;";

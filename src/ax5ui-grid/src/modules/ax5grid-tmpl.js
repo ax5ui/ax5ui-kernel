@@ -38,6 +38,15 @@
                 </div>
                 <div data-ax5grid-panel="bottom-right-body"></div>
             </div>
+            <div data-ax5grid-container="scroller">
+                <div data-ax5grid-scroller="vertical">
+                    <div data-ax5grid-scroller="vertical-bar"></div>    
+                </div>
+                <div data-ax5grid-scroller="horizontal">
+                    <div data-ax5grid-scroller="horizontal-bar"></div>
+                </div>
+                <div data-ax5grid-scroller="corner"></div>
+            </div>
         </div>`;
 
 
