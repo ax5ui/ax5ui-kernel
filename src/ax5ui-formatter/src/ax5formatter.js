@@ -4,7 +4,6 @@
     /**
      * @class ax5.ui.formatter
      * @classdesc
-     * @version 0.4.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -45,11 +44,15 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.queue = [];
+        this.name = "ax5formatter";
+        this.version = "0.5.0";
+        this.instanceId = ax5.getGuid();
+
         this.config = {
             animateTime: 250
         };
 
+        this.queue = [];
         this.openTimer = null;
         this.closeTimer = null;
 
