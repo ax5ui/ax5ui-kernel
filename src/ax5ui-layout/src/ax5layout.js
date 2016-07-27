@@ -40,7 +40,10 @@
 
             if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-            this.queue = [];
+            this.name = "ax5layout";
+            this.version = "0.2.0";
+            this.instanceId = ax5.getGuid();
+
             this.config = {
                 theme: 'default',
                 animateTime: 250,
@@ -49,6 +52,7 @@
                 },
                 autoResize: true
             };
+            this.queue = [];
 
             this.openTimer = null;
             this.closeTimer = null;
