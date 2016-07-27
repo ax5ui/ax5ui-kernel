@@ -12,7 +12,6 @@
     /**
      * @class ax5.ui.mediaViewer
      * @classdesc
-     * @version 0.3.1
      * @author tom@axisj.com
      * @example
      * ```
@@ -42,7 +41,10 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.queue = [];
+        this.name = "ax5mediaViewer";
+        this.version = "0.4.0";
+        this.instanceId = ax5.getGuid();
+
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
@@ -69,7 +71,7 @@
                 list: []
             }
         };
-
+        this.queue = [];
         this.openTimer = null;
         this.closeTimer = null;
         this.selectedIndex = 0;
