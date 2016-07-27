@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // ax5.ui.picker
 (function (root, _SUPER_) {
@@ -6,7 +6,6 @@
     /**
      * @class ax5.ui.picker
      * @classdesc
-     * @version 0.6.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -22,7 +21,10 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.queue = [];
+        this.name = "ax5picker";
+        this.version = "0.7.0";
+        this.instanceId = ax5.getGuid();
+
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
@@ -165,7 +167,7 @@
             };
         }(),
             getTmpl = function getTmpl(queIdx) {
-            return '\n                <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n                    {{#title}}\n                        <div class="ax-picker-heading">{{title}}</div>\n                    {{/title}}\n                    <div class="ax-picker-body">\n                        <div class="ax-picker-content" data-picker-els="content" style="width:{{contentWidth}}px;"></div>\n                        {{#btns}}\n                            <div class="ax-picker-buttons">\n                            {{#btns}}\n                                {{#@each}}\n                                <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    <div class="ax-picker-arrow"></div>\n                </div>\n                ';
+            return "\n                <div class=\"ax5-ui-picker {{theme}}\" id=\"{{id}}\" data-picker-els=\"root\">\n                    {{#title}}\n                        <div class=\"ax-picker-heading\">{{title}}</div>\n                    {{/title}}\n                    <div class=\"ax-picker-body\">\n                        <div class=\"ax-picker-content\" data-picker-els=\"content\" style=\"width:{{contentWidth}}px;\"></div>\n                        {{#btns}}\n                            <div class=\"ax-picker-buttons\">\n                            {{#btns}}\n                                {{#@each}}\n                                <button data-picker-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    <div class=\"ax-picker-arrow\"></div>\n                </div>\n                ";
         },
             alignPicker = function alignPicker(append) {
             if (!this.activePicker) return this;
