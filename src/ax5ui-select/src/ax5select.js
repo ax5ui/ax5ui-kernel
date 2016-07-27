@@ -10,7 +10,6 @@
     /**
      * @class ax5.ui.select
      * @classdesc
-     * @version 0.3.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -27,8 +26,10 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
+        this.name = "ax5select";
+        this.version = "0.4.0";
         this.instanceId = ax5.getGuid();
-        this.queue = [];
+
         this.config = {
             theme: 'default',
             animateTime: 250,
@@ -44,7 +45,7 @@
                 optionSelected: 'selected'
             }
         };
-
+        this.queue = [];
         this.activeSelectOptionGroup = null;
         this.activeSelectQueueIndex = -1;
         this.openTimer = null;
