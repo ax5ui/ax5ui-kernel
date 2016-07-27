@@ -20,7 +20,6 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-
         this.name = "ax5menu";
         this.version = "0.6.0";
         this.instanceId = ax5.getGuid();
