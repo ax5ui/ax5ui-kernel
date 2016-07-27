@@ -4,7 +4,6 @@
     /**
      * @class ax5.ui.dialog
      * @classdesc
-     * @version 0.7.0
      * @author tom@axisj.com
      * @example
      * ```
@@ -20,8 +19,14 @@
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
+
+        this.name = "ax5dialog";
+        this.version = "0.8.0";
+        this.instanceId = ax5.getGuid();
+
         this.activeDialog = null;
         this.config = {
+            id: 'ax5-dialog-' + this.instanceId,
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
             width: 300,
@@ -34,7 +39,6 @@
         };
 
         cfg = this.config;
-        cfg.id = 'ax5-dialog-' + ax5.getGuid();
 
         var
             onStateChanged = function (opts, that) {

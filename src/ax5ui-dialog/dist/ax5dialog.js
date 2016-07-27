@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // ax5.ui.dialog
 (function (root, _SUPER_) {
@@ -6,7 +6,6 @@
     /**
      * @class ax5.ui.dialog
      * @classdesc
-     * @version 0.7.0
      * @author tom@axisj.com
      * @example
      * ```
@@ -21,8 +20,14 @@
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
+
+        this.name = "ax5dialog";
+        this.version = "0.8.0";
+        this.instanceId = ax5.getGuid();
+
         this.activeDialog = null;
         this.config = {
+            id: 'ax5-dialog-' + this.instanceId,
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
             theme: 'default',
             width: 300,
@@ -35,7 +40,6 @@
         };
 
         cfg = this.config;
-        cfg.id = 'ax5-dialog-' + ax5.getGuid();
 
         var onStateChanged = function onStateChanged(opts, that) {
             if (opts && opts.onStateChanged) {
@@ -48,7 +52,7 @@
             return true;
         },
             getContentTmpl = function getContentTmpl() {
-            return '\n                <div id="{{dialogId}}" data-ax5-ui="dialog" class="ax5-ui-dialog {{theme}}">\n                    <div class="ax-dialog-header">\n                        {{{title}}}\n                    </div>\n                    <div class="ax-dialog-body">\n                        <div class="ax-dialog-msg">{{{msg}}}</div>\n                        \n                        {{#input}}\n                        <div class="ax-dialog-prompt">\n                            {{#@each}}\n                            <div class="form-group">\n                            {{#@value.label}}\n                            <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>\n                            {{/@value.label}}\n                            <input type="{{@value.type}}" placeholder="{{@value.placeholder}}" class="form-control {{@value.theme}}" data-dialog-prompt="{{@key}}" style="width:100%;" value="{{@value.value}}" />\n                            {{#@value.help}}\n                            <p class="help-block">{{#_crlf}}{{.}}{{/_crlf}}</p>\n                            {{/@value.help}}\n                            </div>\n                            {{/@each}}\n                        </div>\n                        {{/input}}\n                        \n                        <div class="ax-dialog-buttons">\n                            <div class="ax-button-wrap">\n                            {{#btns}}\n                                {{#@each}}\n                                <button type="button" data-dialog-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        </div>\n                    </div>\n                </div>  \n                ';
+            return "\n                <div id=\"{{dialogId}}\" data-ax5-ui=\"dialog\" class=\"ax5-ui-dialog {{theme}}\">\n                    <div class=\"ax-dialog-header\">\n                        {{{title}}}\n                    </div>\n                    <div class=\"ax-dialog-body\">\n                        <div class=\"ax-dialog-msg\">{{{msg}}}</div>\n                        \n                        {{#input}}\n                        <div class=\"ax-dialog-prompt\">\n                            {{#@each}}\n                            <div class=\"form-group\">\n                            {{#@value.label}}\n                            <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>\n                            {{/@value.label}}\n                            <input type=\"{{@value.type}}\" placeholder=\"{{@value.placeholder}}\" class=\"form-control {{@value.theme}}\" data-dialog-prompt=\"{{@key}}\" style=\"width:100%;\" value=\"{{@value.value}}\" />\n                            {{#@value.help}}\n                            <p class=\"help-block\">{{#_crlf}}{{.}}{{/_crlf}}</p>\n                            {{/@value.help}}\n                            </div>\n                            {{/@each}}\n                        </div>\n                        {{/input}}\n                        \n                        <div class=\"ax-dialog-buttons\">\n                            <div class=\"ax-button-wrap\">\n                            {{#btns}}\n                                {{#@each}}\n                                <button type=\"button\" data-dialog-btn=\"{{@key}}\" class=\"btn btn-{{@value.theme}}\">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        </div>\n                    </div>\n                </div>  \n                ";
         },
             getContent = function getContent(dialogId, opts) {
             var data = {
