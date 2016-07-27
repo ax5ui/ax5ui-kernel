@@ -30,7 +30,6 @@
         this.version = "0.1.9";
         this.instanceId = ax5.getGuid();
 
-        this.queue = [];
         this.config = {
             theme: 'default',
             animateTime: 250,
@@ -46,6 +45,7 @@
             }
         };
 
+        this.queue = [];
         this.activecomboboxOptionGroup = null;
         this.activecomboboxQueueIndex = -1;
         this.openTimer = null;
