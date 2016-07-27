@@ -24,7 +24,7 @@
             selectableCount = 1;
 
         this.name = "ax5calendar";
-        this.version = "0.8.4";
+        this.version = "0.8.5";
         this.instanceId = ax5.getGuid();
 
         this.target = null;
