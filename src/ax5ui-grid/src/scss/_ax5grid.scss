@@ -112,6 +112,27 @@
     }
 }
 
+@mixin scrollBar($type) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    @include border-top-radius(10px);
+    @include border-bottom-radius(10px);
+    background: #000;
+    opacity: 0.3;
+
+    @if ($type == "vertical-bar") {
+        cursor: ns-resize;
+    }
+    @else{
+        cursor: ew-resize;
+    }
+
+    &:hover{
+        opacity: 0.6;
+    }
+}
+
 // body
 [data-ax5grid] {
     [data-ax5grid-container="root"] {
@@ -147,6 +168,10 @@
                 height: 100%;
                 background: #f3f3f3;
                 border-left: 1px solid #ccc;
+
+                [data-ax5grid-scroller="vertical-bar"] {
+                    @include scrollBar("vertical-bar");
+                }
             }
             [data-ax5grid-scroller="horizontal"] {
                 box-sizing: border-box;
@@ -158,6 +183,10 @@
                 width: 100%;
                 background: #f3f3f3;
                 border-top: 1px solid #ccc;
+
+                [data-ax5grid-scroller="horizontal-bar"] {
+                    @include scrollBar("horizontal-bar");
+                }
             }
             [data-ax5grid-scroller="corner"] {
                 position: absolute;

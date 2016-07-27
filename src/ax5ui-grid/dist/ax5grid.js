@@ -503,8 +503,13 @@
             // body를 출력합니다.
             modules.body.repaint.call(this);
 
+            // scroller
+            modules.scroller.init.call(this);
+            modules.scroller.setPosition.call(this);
+
             jQuery(window).bind("resize.ax5grid-" + this.instanceId, function () {
                 alignGrid.call(this);
+                modules.scroller.setPosition.call(this);
             }.bind(this));
             return this;
         };
@@ -944,15 +949,25 @@
         repaint: repaint
     };
 })(ax5.ui.grid);
-
 // ax5.ui.grid.scroller
 (function (root) {
     "use strict";
 
-    var init = function init() {};
+    var init = function init() {
+        //this.config.scroller.size
+        var margin = 4;
+        this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
+        this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
+    };
+
+    var setPosition = function setPosition() {
+        this.$["scroller"]["vertical-bar"].css({ top: 0, height: 100 });
+        this.$["scroller"]["horizontal-bar"].css({ left: 0, width: 100 });
+    };
 
     root.scroller = {
-        init: init
+        init: init,
+        setPosition: setPosition
     };
 })(ax5.ui.grid);
 // ax5.ui.grid.tmpl

@@ -507,8 +507,13 @@
             // body를 출력합니다.
             modules.body.repaint.call(this);
 
+            // scroller
+            modules.scroller.init.call(this);
+            modules.scroller.setPosition.call(this);
+
             jQuery(window).bind("resize.ax5grid-" + this.instanceId, (function () {
                 alignGrid.call(this);
+                modules.scroller.setPosition.call(this);
             }).bind(this));
             return this;
         };
