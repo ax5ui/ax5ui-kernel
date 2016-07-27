@@ -1,11 +1,10 @@
-'use strict';
+"use strict";
 
 // ax5.ui.mask
 (function (root, _SUPER_) {
     /**
      * @class ax5.ui.mask
      * @classdesc
-     * @version 0.6.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -19,12 +18,17 @@
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
-        this.maskContent = '';
-        this.status = "off";
+
+        this.name = "ax5mask";
+        this.version = "0.7.0";
+        this.instanceId = ax5.getGuid();
+
         this.config = {
             theme: '',
             target: jQuery(document.body).get(0)
         };
+        this.maskContent = '';
+        this.status = "off";
 
         cfg = this.config;
 
@@ -40,7 +44,7 @@
             return true;
         },
             getBodyTmpl = function getBodyTmpl() {
-            return '\n                <div class="ax-mask {{theme}}" id="{{maskId}}">\n                    <div class="ax-mask-bg"></div>\n                    <div class="ax-mask-content">\n                        <div class="ax-mask-body">\n                        {{{body}}}\n                        </div>\n                    </div>\n                </div>\n                ';
+            return "\n                <div class=\"ax-mask {{theme}}\" id=\"{{maskId}}\">\n                    <div class=\"ax-mask-bg\"></div>\n                    <div class=\"ax-mask-content\">\n                        <div class=\"ax-mask-body\">\n                        {{{body}}}\n                        </div>\n                    </div>\n                </div>\n                ";
         },
             setBody = function setBody(content) {
             this.maskContent = content;

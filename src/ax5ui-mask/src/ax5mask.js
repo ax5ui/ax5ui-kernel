@@ -3,7 +3,6 @@
     /**
      * @class ax5.ui.mask
      * @classdesc
-     * @version 0.6.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -19,12 +18,17 @@
             ;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
-        this.maskContent = '';
-        this.status = "off";
+
+        this.name = "ax5mask";
+        this.version = "0.7.0";
+        this.instanceId = ax5.getGuid();
+
         this.config = {
             theme: '',
             target: jQuery(document.body).get(0)
         };
+        this.maskContent = '';
+        this.status = "off";
 
         cfg = this.config;
 
