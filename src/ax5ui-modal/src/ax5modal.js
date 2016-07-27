@@ -4,7 +4,6 @@
     /**
      * @class ax5modal
      * @alias ax5.ui.modal
-     * @version 0.6.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -36,9 +35,13 @@
             };
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
-        this.activeModal = null;
-        this.$ = {}; // UI inside of the jQuery object store
+
+        this.name = "ax5modal";
+        this.version = "0.7.0";
+        this.instanceId = ax5.getGuid();
+
         this.config = {
+            id: 'ax5-modal-' + this.instanceId,
             position: {
                 left: "center",
                 top: "middle",
@@ -52,8 +55,10 @@
             closeToEsc: true,
             animateTime: 250
         };
+        this.activeModal = null;
+        this.$ = {}; // UI inside of the jQuery object store
+
         cfg = this.config; // extended config copy cfg
-        cfg.id = 'ax5-modal-' + ax5.getGuid(); // instance id
 
         var
             onStateChanged = function (opts, that) {
