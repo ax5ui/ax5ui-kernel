@@ -10,7 +10,6 @@
     /**
      * @class ax5combobox
      * @classdesc
-     * @version 0.1.8
      * @author tom@axisj.com
      * @example
      * ```
@@ -27,7 +26,10 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
+        this.name = "ax5combobox";
+        this.version = "0.1.9";
         this.instanceId = ax5.getGuid();
+
         this.queue = [];
         this.config = {
             theme: 'default',

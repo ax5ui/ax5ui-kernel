@@ -3,7 +3,6 @@
     /**
      * @class ax5.ui.calendar
      * @classdesc
-     * @version 0.8.3
      * @author tom@axisj.com
      * @logs
      * 2014-06-21 tom : 시작
@@ -23,6 +22,10 @@
             cfg,
             selectableCount = 1
             ;
+
+        this.name = "ax5calendar";
+        this.version = "0.8.4";
+        this.instanceId = ax5.getGuid();
 
         this.target = null;
         this.selection = [];

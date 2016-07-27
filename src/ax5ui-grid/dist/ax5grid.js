@@ -27,6 +27,7 @@
 
         this.name = "ax5grid";
         this.version = "0.0.2";
+        this.instanceId = ax5.getGuid();
 
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
@@ -243,6 +244,9 @@
             // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
             var CT_WIDTH = this.$["container"]["root"].width();
             var CT_HEIGHT = this.$["container"]["root"].height();
+            var CT_INNER_WIDTH = CT_WIDTH;
+            var CT_INNER_HEIGHT = CT_HEIGHT;
+
             var asidePanelWidth = cfg.asidePanelWidth = function () {
                 var width = 0;
                 if (cfg.showLineNumber) width += cfg.asideColumnWidth;
@@ -261,29 +265,29 @@
             var footSumHeight = 0;
 
             var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
-            var bodyHeight = CT_HEIGHT - headerHeight;
-
             /// todo : 그리드 스크롤러 표시여부 결정 스크롤러 표시 여부에 따라 그리드 각 패널들의 크기 조정
             // 데이터의 길이가 body보다 높을때. 수직 스크롤러 활성화
             var verticalScrollerWidth = function () {
-                return bodyHeight < this.data.length * this.config.bodyTrHeight ? this.config.scroller.size : 0;
+                return CT_HEIGHT - headerHeight < this.data.length * this.config.bodyTrHeight ? this.config.scroller.size : 0;
             }.call(this);
             // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
             var horizontalScrollerHeight = function () {
-
                 var totalColGroupWidth = 0;
+                // aside 빼고 너비
+                // 수직 스크롤이 있으면 또 빼고 비교
+                var bodyWidth = CT_WIDTH - asidePanelWidth - verticalScrollerWidth;
                 for (var i = 0, l = this.colGroup.length; i < l; i++) {
                     totalColGroupWidth += this.colGroup[i]._width;
                 }
-                console.log(totalColGroupWidth);
-
-                // aside 빼고 너비
-                // 수직 스크롤이 있으면 또 빼고 비교
+                return totalColGroupWidth > bodyWidth ? this.config.scroller.size : 0;
             }.call(this);
 
-            // 수평 스크롤러의 너비 결정
+            // 수평 너비 결정
+            CT_INNER_WIDTH = CT_WIDTH - verticalScrollerWidth;
             // 수직 스크롤러의 높이 결정.
-            // -- 그리드의 몸체 크기 결정
+            CT_INNER_HEIGHT = CT_HEIGHT - horizontalScrollerHeight;
+
+            var bodyHeight = CT_INNER_HEIGHT - headerHeight;
 
             var panelDisplayProcess = function panelDisplayProcess(panel, vPosition, hPosition, containerType) {
                 var css = {};
@@ -292,7 +296,6 @@
                 switch (hPosition) {
                     case "aside":
                         if (asidePanelWidth === 0) {
-                            panel.hide();
                             isHide = true;
                         } else {
                             css["left"] = 0;
@@ -301,7 +304,6 @@
                         break;
                     case "left":
                         if (cfg.frozenColumnIndex === 0) {
-                            panel.hide();
                             isHide = true;
                         } else {
                             css["left"] = asidePanelWidth;
@@ -310,17 +312,16 @@
                         break;
                     case "right":
                         if (!cfg.rightSum) {
-                            panel.hide();
                             isHide = true;
                         } else {}
                         break;
                     default:
                         if (cfg.frozenColumnIndex === 0) {
                             css["left"] = asidePanelWidth;
-                            css["width"] = CT_WIDTH - rightPanelWidth;
+                            css["width"] = CT_INNER_WIDTH - rightPanelWidth;
                         } else {
                             css["left"] = frozenPanelWidth + asidePanelWidth;
-                            css["width"] = CT_WIDTH - rightPanelWidth - frozenPanelWidth;
+                            css["width"] = CT_INNER_WIDTH - rightPanelWidth - frozenPanelWidth;
                         }
                         break;
                 }
@@ -334,7 +335,6 @@
                     switch (vPosition) {
                         case "top":
                             if (cfg.frozenRowIndex === 0) {
-                                panel.hide();
                                 isHide = true;
                             } else {
                                 css["top"] = 0;
@@ -343,7 +343,6 @@
                             break;
                         case "bottom":
                             if (!cfg.footSum) {
-                                panel.hide();
                                 isHide = true;
                             } else {
                                 css["top"] = bodyHeight - footSumHeight;
@@ -368,12 +367,54 @@
                 }
 
                 if (isHide) {
+                    panel.hide();
                     // 프로세스 중지
                     return this;
                 }
 
                 panel.css(css);
                 return this;
+            };
+            var scrollerDisplayProcess = function scrollerDisplayProcess(panel, scrollerWidth, scrollerHeight, containerType) {
+                var css = {};
+                var isHide = false;
+
+                switch (containerType) {
+                    case "vertical":
+                        if (scrollerWidth > 0) {
+                            css["width"] = scrollerWidth;
+                            css["height"] = CT_INNER_HEIGHT;
+                            css["bottom"] = scrollerHeight;
+                        } else {
+                            isHide = true;
+                        }
+                        break;
+                    case "horizontal":
+                        if (scrollerHeight > 0) {
+                            css["width"] = CT_INNER_WIDTH;
+                            css["height"] = scrollerHeight;
+                            css["right"] = scrollerWidth;
+                        } else {
+                            isHide = true;
+                        }
+                        break;
+                    case "corner":
+                        if (scrollerWidth > 0 && scrollerHeight > 0) {
+                            css["width"] = scrollerWidth;
+                            css["height"] = scrollerHeight;
+                        } else {
+                            isHide = true;
+                        }
+                        break;
+                }
+
+                if (isHide) {
+                    panel.hide();
+                    // 프로세스 중지
+                    return this;
+                }
+
+                panel.show().css(css);
             };
 
             this.$["container"]["header"].css({ height: headerHeight });
@@ -399,6 +440,10 @@
             panelDisplayProcess.call(this, this.$["panel"]["bottom-left-body"], "bottom", "left", "body");
             panelDisplayProcess.call(this, this.$["panel"]["bottom-body"], "bottom", "", "body");
             panelDisplayProcess.call(this, this.$["panel"]["bottom-right-body"], "bottom", "right", "body");
+
+            scrollerDisplayProcess.call(this, this.$["scroller"]["vertical"], verticalScrollerWidth, horizontalScrollerHeight, "vertical");
+            scrollerDisplayProcess.call(this, this.$["scroller"]["horizontal"], verticalScrollerWidth, horizontalScrollerHeight, "horizontal");
+            scrollerDisplayProcess.call(this, this.$["scroller"]["corner"], verticalScrollerWidth, horizontalScrollerHeight, "corner");
         };
 
         /// private end
@@ -458,6 +503,9 @@
             // body를 출력합니다.
             modules.body.repaint.call(this);
 
+            jQuery(window).bind("resize.ax5grid-" + this.instanceId, function () {
+                alignGrid.call(this);
+            }.bind(this));
             return this;
         };
 
