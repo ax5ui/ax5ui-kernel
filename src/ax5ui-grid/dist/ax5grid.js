@@ -44,6 +44,7 @@
             height: 400,
             columnMinWidth: 100,
             asideColumnWidth: 30,
+            bodyTrHeight: 0,
 
             header: {
                 columnHeight: 23,
@@ -239,6 +240,7 @@
             }
         },
             alignGrid = function alignGrid(isFirst) {
+            // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
             var CT_WIDTH = this.$["container"]["root"].width();
             var CT_HEIGHT = this.$["container"]["root"].height();
             var asidePanelWidth = cfg.asidePanelWidth = function () {
@@ -262,6 +264,26 @@
             var bodyHeight = CT_HEIGHT - headerHeight;
 
             /// todo : 그리드 스크롤러 표시여부 결정 스크롤러 표시 여부에 따라 그리드 각 패널들의 크기 조정
+            // 데이터의 길이가 body보다 높을때. 수직 스크롤러 활성화
+            var verticalScrollerWidth = function () {
+                return bodyHeight < this.data.length * this.config.bodyTrHeight ? this.config.scroller.size : 0;
+            }.call(this);
+            // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
+            var horizontalScrollerHeight = function () {
+
+                var totalColGroupWidth = 0;
+                for (var i = 0, l = this.colGroup.length; i < l; i++) {
+                    totalColGroupWidth += this.colGroup[i]._width;
+                }
+                console.log(totalColGroupWidth);
+
+                // aside 빼고 너비
+                // 수직 스크롤이 있으면 또 빼고 비교
+            }.call(this);
+
+            // 수평 스크롤러의 너비 결정
+            // 수직 스크롤러의 높이 결정.
+            // -- 그리드의 몸체 크기 결정
 
             var panelDisplayProcess = function panelDisplayProcess(panel, vPosition, hPosition, containerType) {
                 var css = {};
@@ -416,7 +438,6 @@
             })(U.parseJson(this.$target.attr("data-ax5grid-config"), true));
 
             ///========
-
             // 그리드를 그리기 위한 가장 기초적인 작업 뼈대와 틀을 준비합니다. 이 메소드는 초기화 시 한번만 호출 되게 됩니다.
             initGrid.call(this);
 
@@ -452,7 +473,7 @@
 
         this.setData = function (data) {
             modules.data.set.call(this, data);
-            //modules.body.repaintByTmpl.call(this);
+            alignGrid.call(this);
             modules.body.repaint.call(this);
             return this;
         };
