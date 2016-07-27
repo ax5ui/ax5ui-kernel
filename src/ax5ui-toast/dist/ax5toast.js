@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // ax5.ui.toast
 (function (root, _SUPER_) {
@@ -6,7 +6,6 @@
     /**
      * @class ax5.ui.toast
      * @classdesc
-     * @version 0.2.5
      * @author tom@axisj.com
      * @example
      * ```
@@ -24,8 +23,11 @@
             toastSeqClear = null;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
-        this.toastContainer = null;
-        this.queue = [];
+
+        this.name = "ax5toast";
+        this.version = "0.3.0";
+        this.instanceId = ax5.getGuid();
+
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
             theme: 'default',
@@ -40,6 +42,8 @@
             animateTime: 250,
             containerPosition: "bottom-left"
         };
+        this.toastContainer = null;
+        this.queue = [];
 
         cfg = this.config;
 
@@ -55,7 +59,7 @@
             return true;
         },
             getContentTmpl = function getContentTmpl() {
-            return '\n                <div id="{{toastId}}" data-ax5-ui="toast" class="ax5-ui-toast {{theme}}">\n                    {{#icon}}\n                    <div class="ax-toast-icon">{{{.}}}</div>\n                    {{/icon}}\n                    <div class="ax-toast-body">{{{msg}}}</div>\n                    {{#btns}}\n                    <div class="ax-toast-buttons">\n                        <div class="ax-button-wrap">\n                        {{#@each}}\n                        <button type="button" data-ax-toast-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{{@value.label}}}</button>\n                        {{/@each}}\n                        </div>\n                    </div>\n                    {{/btns}}\n                    {{^btns}}\n                    <a class="ax-toast-close" data-ax-toast-btn="ok">{{{closeIcon}}}</a>\n                    {{/btns}}\n                    <div style="clear:both;"></div>\n                </div>\n                ';
+            return "\n                <div id=\"{{toastId}}\" data-ax5-ui=\"toast\" class=\"ax5-ui-toast {{theme}}\">\n                    {{#icon}}\n                    <div class=\"ax-toast-icon\">{{{.}}}</div>\n                    {{/icon}}\n                    <div class=\"ax-toast-body\">{{{msg}}}</div>\n                    {{#btns}}\n                    <div class=\"ax-toast-buttons\">\n                        <div class=\"ax-button-wrap\">\n                        {{#@each}}\n                        <button type=\"button\" data-ax-toast-btn=\"{{@key}}\" class=\"btn btn-{{@value.theme}}\">{{{@value.label}}}</button>\n                        {{/@each}}\n                        </div>\n                    </div>\n                    {{/btns}}\n                    {{^btns}}\n                    <a class=\"ax-toast-close\" data-ax-toast-btn=\"ok\">{{{closeIcon}}}</a>\n                    {{/btns}}\n                    <div style=\"clear:both;\"></div>\n                </div>\n                ";
         },
             getContent = function getContent(toastId, opts) {
             var data = {

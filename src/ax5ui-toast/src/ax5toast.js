@@ -4,7 +4,6 @@
     /**
      * @class ax5.ui.toast
      * @classdesc
-     * @version 0.2.5
      * @author tom@axisj.com
      * @example
      * ```
@@ -22,8 +21,11 @@
             toastSeq = 0, toastSeqClear = null;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
-        this.toastContainer = null;
-        this.queue = [];
+
+        this.name = "ax5toast";
+        this.version = "0.3.0";
+        this.instanceId = ax5.getGuid();
+
         this.config = {
             clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
             theme: 'default',
@@ -38,6 +40,8 @@
             animateTime: 250,
             containerPosition: "bottom-left"
         };
+        this.toastContainer = null;
+        this.queue = [];
 
         cfg = this.config;
 
