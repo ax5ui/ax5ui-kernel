@@ -52,11 +52,13 @@
         this.headerColGroup = this.colGroup.slice(this.config.frozenColumnIndex);
 
         var repaintHeader = function (_elTarget, _colGroup, _bodyRow) {
+            var tableWidth = 0;
             var SS = [];
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
                 SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
+                tableWidth += _colGroup[cgi]._width;
             }
             SS.push('<col  />');
             SS.push('</colgroup>');
@@ -98,6 +100,8 @@
             SS.push('</table>');
 
             _elTarget.html(SS.join(''));
+
+            return tableWidth;
         };
 
         if (cfg.asidePanelWidth > 0) {
@@ -108,7 +112,7 @@
         if (cfg.frozenColumnIndex > 0) {
             repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
-        repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
+        this.xvar.scrollContentWidth = repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {
 

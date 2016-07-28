@@ -45,7 +45,6 @@
             height: 400,
             columnMinWidth: 100,
             asideColumnWidth: 30,
-            bodyTrHeight: 0,
 
             header: {
                 columnHeight: 23,
@@ -61,7 +60,11 @@
                 size: 15
             }
         };
-
+        this.xvar = {
+            bodyTrHeight: 0, // 한줄의 높이
+            scrollContentWidth: 0, // 스크롤 될 내용물의 너비 (스크롤 될 내용물 : panel['body-scroll'] 안에 컬럼이 있는)
+            scrollContentHeight: 0 // 스크롤 된 내용물의 높이
+        };
         // 그리드 데이터셋
         this.colGroup = [];
         this.data = [];
@@ -268,7 +271,7 @@
             /// todo : 그리드 스크롤러 표시여부 결정 스크롤러 표시 여부에 따라 그리드 각 패널들의 크기 조정
             // 데이터의 길이가 body보다 높을때. 수직 스크롤러 활성화
             var verticalScrollerWidth = function () {
-                return CT_HEIGHT - headerHeight < this.data.length * this.config.bodyTrHeight ? this.config.scroller.size : 0;
+                return CT_HEIGHT - headerHeight < this.data.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
             }.call(this);
             // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
             var horizontalScrollerHeight = function () {
@@ -318,11 +321,10 @@
                     default:
                         if (cfg.frozenColumnIndex === 0) {
                             css["left"] = asidePanelWidth;
-                            css["width"] = CT_INNER_WIDTH - rightPanelWidth;
                         } else {
                             css["left"] = frozenPanelWidth + asidePanelWidth;
-                            css["width"] = CT_INNER_WIDTH - rightPanelWidth - frozenPanelWidth;
                         }
+                        css["width"] = CT_INNER_WIDTH - asidePanelWidth - frozenPanelWidth - rightPanelWidth;
                         break;
                 }
 
@@ -505,11 +507,11 @@
 
             // scroller
             modules.scroller.init.call(this);
-            modules.scroller.setPosition.call(this);
+            modules.scroller.resize.call(this);
 
             jQuery(window).bind("resize.ax5grid-" + this.instanceId, function () {
                 alignGrid.call(this);
-                modules.scroller.setPosition.call(this);
+                modules.scroller.resize.call(this);
             }.bind(this));
             return this;
         };
@@ -521,6 +523,7 @@
          */
         this.align = function () {
             alignGrid.call(this);
+            modules.scroller.resize.call(this);
             return this;
         };
 
@@ -528,6 +531,7 @@
             modules.data.set.call(this, data);
             alignGrid.call(this);
             modules.body.repaint.call(this);
+            modules.scroller.resize.call(this);
             return this;
         };
 
@@ -565,7 +569,7 @@
 
         // set oneRowHeight = this.bodyTrHeight
         // 바디에 표현될 한줄의 높이를 계산합니다.
-        this.config.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
+        this.xvar.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
     };
 
     var makeBodyRowTable = function makeBodyRowTable(columns) {
@@ -711,8 +715,10 @@
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
 
         var data = this.data;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.config.bodyTrHeight);
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.config.bodyTrHeight);
+        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight);
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight);
+
+        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.data.length - this.config.frozenRowIndex);
         // todo : 현재 화면에 출력될 범위를 연산하여 data를 결정.
         // body-scroll 의 포지션에 의존적이므로..
 
@@ -892,11 +898,13 @@
         this.headerColGroup = this.colGroup.slice(this.config.frozenColumnIndex);
 
         var repaintHeader = function repaintHeader(_elTarget, _colGroup, _bodyRow) {
+            var tableWidth = 0;
             var SS = [];
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
                 SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
+                tableWidth += _colGroup[cgi]._width;
             }
             SS.push('<col  />');
             SS.push('</colgroup>');
@@ -929,6 +937,8 @@
             SS.push('</table>');
 
             _elTarget.html(SS.join(''));
+
+            return tableWidth;
         };
 
         if (cfg.asidePanelWidth > 0) {
@@ -939,7 +949,7 @@
         if (cfg.frozenColumnIndex > 0) {
             repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
-        repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
+        this.xvar.scrollContentWidth = repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {}
     };
@@ -960,14 +970,25 @@
         this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
     };
 
-    var setPosition = function setPosition() {
-        this.$["scroller"]["vertical-bar"].css({ top: 0, height: 100 });
-        this.$["scroller"]["horizontal-bar"].css({ left: 0, width: 100 });
+    var resize = function resize() {
+        var VERTICAL_SCROLLER_HEIGHT = this.$["scroller"]["vertical"].height();
+        var HORIZONTAL_SCROLLER_WIDTH = this.$["scroller"]["horizontal"].width();
+        var PANEL_HEIGHT = this.$["panel"]["body"].height();
+        var PANEL_WIDTH = this.$["panel"]["body"].width();
+        var CONTENT_HEIGHT = this.xvar.scrollContentHeight;
+        var CONTENT_WIDTH = this.xvar.scrollContentWidth;
+        var verticalScrollBarHeight, horizontalScrollBarWidth;
+
+        verticalScrollBarHeight = PANEL_HEIGHT * VERTICAL_SCROLLER_HEIGHT / CONTENT_HEIGHT;
+        horizontalScrollBarWidth = PANEL_WIDTH * HORIZONTAL_SCROLLER_WIDTH / CONTENT_WIDTH;
+
+        this.$["scroller"]["vertical-bar"].css({ top: 0, height: verticalScrollBarHeight });
+        this.$["scroller"]["horizontal-bar"].css({ left: 0, width: horizontalScrollBarWidth });
     };
 
     root.scroller = {
         init: init,
-        setPosition: setPosition
+        resize: resize
     };
 })(ax5.ui.grid);
 // ax5.ui.grid.tmpl

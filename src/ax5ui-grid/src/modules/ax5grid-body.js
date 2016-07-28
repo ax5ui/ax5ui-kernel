@@ -14,7 +14,7 @@
 
         // set oneRowHeight = this.bodyTrHeight
         // 바디에 표현될 한줄의 높이를 계산합니다.
-        this.config.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
+        this.xvar.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
     };
 
     var makeBodyRowTable = function (columns) {
@@ -165,8 +165,10 @@
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
 
         var data = this.data;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.config.bodyTrHeight);
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.config.bodyTrHeight);
+        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight);
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight);
+        
+        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.data.length - this.config.frozenRowIndex);
         // todo : 현재 화면에 출력될 범위를 연산하여 data를 결정.
         // body-scroll 의 포지션에 의존적이므로..
 

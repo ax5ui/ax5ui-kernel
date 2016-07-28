@@ -43,7 +43,6 @@
             height: 400,
             columnMinWidth: 100,
             asideColumnWidth: 30,
-            bodyTrHeight: 0,
 
             header: {
                 columnHeight: 23,
@@ -59,7 +58,11 @@
                 size: 15
             }
         };
-
+        this.xvar = {
+            bodyTrHeight: 0, // 한줄의 높이
+            scrollContentWidth: 0, // 스크롤 될 내용물의 너비 (스크롤 될 내용물 : panel['body-scroll'] 안에 컬럼이 있는)
+            scrollContentHeight: 0 // 스크롤 된 내용물의 높이
+        };
         // 그리드 데이터셋
         this.colGroup = [];
         this.data = [];
@@ -270,7 +273,7 @@
                 /// todo : 그리드 스크롤러 표시여부 결정 스크롤러 표시 여부에 따라 그리드 각 패널들의 크기 조정
                 // 데이터의 길이가 body보다 높을때. 수직 스크롤러 활성화
                 var verticalScrollerWidth = (function () {
-                    return ((CT_HEIGHT - headerHeight) < this.data.length * this.config.bodyTrHeight) ? this.config.scroller.size : 0;
+                    return ((CT_HEIGHT - headerHeight) < this.data.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
                 }).call(this);
                 // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
                 var horizontalScrollerHeight = (function () {
@@ -322,11 +325,10 @@
                         default:
                             if (cfg.frozenColumnIndex === 0) {
                                 css["left"] = asidePanelWidth;
-                                css["width"] = CT_INNER_WIDTH - rightPanelWidth;
                             } else {
                                 css["left"] = frozenPanelWidth + asidePanelWidth;
-                                css["width"] = CT_INNER_WIDTH - rightPanelWidth - frozenPanelWidth;
                             }
+                            css["width"] = CT_INNER_WIDTH - asidePanelWidth - frozenPanelWidth - rightPanelWidth;
                             break;
                     }
 
@@ -509,11 +511,11 @@
 
             // scroller
             modules.scroller.init.call(this);
-            modules.scroller.setPosition.call(this);
+            modules.scroller.resize.call(this);
 
             jQuery(window).bind("resize.ax5grid-" + this.instanceId, (function () {
                 alignGrid.call(this);
-                modules.scroller.setPosition.call(this);
+                modules.scroller.resize.call(this);
             }).bind(this));
             return this;
         };
@@ -525,6 +527,7 @@
          */
         this.align = function () {
             alignGrid.call(this);
+            modules.scroller.resize.call(this);
             return this;
         };
 
@@ -533,6 +536,7 @@
             modules.data.set.call(this, data);
             alignGrid.call(this);
             modules.body.repaint.call(this);
+            modules.scroller.resize.call(this);
             return this;
         };
 
