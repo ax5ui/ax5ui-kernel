@@ -50,8 +50,25 @@
         }
     };
 
+    var getMousePosition = function (e) {
+        var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+
+        return {
+            clientX: mouseObj.clientX,
+            clientY: mouseObj.clientY
+        }
+    };
+
+    var ENM = {
+        "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
+        "mousemove": (ax5.info.supportTouch) ? "touchmove" : "mousemove",
+        "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
+    };
+
     root.util = {
-        divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex
+        divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
+        getMousePosition: getMousePosition,
+        ENM: ENM
     };
 
 })(ax5.ui.grid);

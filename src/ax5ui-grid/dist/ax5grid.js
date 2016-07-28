@@ -963,11 +963,25 @@
 (function (root) {
     "use strict";
 
+    var U = ax5.util;
     var init = function init() {
+
         //this.config.scroller.size
         var margin = 4;
         this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
         this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
+
+        this.$["scroller"]["horizontal-bar"].bind("click.ax5grid", function () {});
+
+        this.$["scroller"]["vertical"].bind(root.util.ENM["mousedown"], function (e) {
+            console.log(e.clientX);
+            //panelInfo.mousePosition = getMousePosition(e);
+            //resizeSplitter.on.call(self, queIdx, panelInfo, panelInfo.$splitter);
+        }).bind("dragstart", function (e) {
+            U.stopEvent(e);
+            return false;
+        });
+        // todo : scroller scroll ready
     };
 
     var resize = function resize() {
@@ -1058,7 +1072,24 @@
         };
     };
 
+    var getMousePosition = function getMousePosition(e) {
+        var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+
+        return {
+            clientX: mouseObj.clientX,
+            clientY: mouseObj.clientY
+        };
+    };
+
+    var ENM = {
+        "mousedown": ax5.info.supportTouch ? "touchstart" : "mousedown",
+        "mousemove": ax5.info.supportTouch ? "touchmove" : "mousemove",
+        "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
+    };
+
     root.util = {
-        divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex
+        divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
+        getMousePosition: getMousePosition,
+        ENM: ENM
     };
 })(ax5.ui.grid);
