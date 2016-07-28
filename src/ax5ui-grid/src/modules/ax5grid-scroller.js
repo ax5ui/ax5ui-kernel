@@ -3,23 +3,62 @@
     "use strict";
 
     var U = ax5.util;
+
+    var scrollMover = {
+        "on": function (track, bar, type) {
+            var self = this;
+            // console.log(this.xvar.mousePosition);
+
+            self.xvar.__da = 0;
+                jQuery(document.body)
+                .bind(root.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
+                    //self.resizer.css(getResizerPosition[panel.resizerType](e));
+                    var mouseObj = root.util.getMousePosition(e);
+                    self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+                    
+                    console.log(self.xvar.__da);
+                    
+                })
+                .bind(root.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
+                    scrollMover.off.call(self);
+                })
+                .bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
+                    scrollMover.off.call(self);
+                });
+
+            jQuery(document.body)
+                .attr('unselectable', 'on')
+                .css('user-select', 'none')
+                .on('selectstart', false);
+
+        },
+        "off": function () {
+
+            jQuery(document.body)
+                .unbind(root.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId)
+                .unbind(root.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId)
+                .unbind("mouseleave.ax5grid-" + this.instanceId);
+
+            jQuery(document.body)
+                .removeAttr('unselectable')
+                .css('user-select', 'auto')
+                .off('selectstart');
+        }
+    };
+
     var init = function () {
 
         //this.config.scroller.size
         var margin = 4;
+
         this.$["scroller"]["vertical-bar"].css({width: this.config.scroller.size - (margin + 1), left: margin / 2});
         this.$["scroller"]["horizontal-bar"].css({height: this.config.scroller.size - (margin + 1), top: margin / 2});
 
-        this.$["scroller"]["horizontal-bar"].bind("click.ax5grid", function(){
-
-        });
-
         this.$["scroller"]["vertical"]
-            .bind(root.util.ENM["mousedown"], function (e) {
-                console.log(e.clientX);
-                //panelInfo.mousePosition = getMousePosition(e);
-                //resizeSplitter.on.call(self, queIdx, panelInfo, panelInfo.$splitter);
-            })
+            .bind(root.util.ENM["mousedown"], (function (e) {
+                this.xvar.mousePosition = root.util.getMousePosition(e);
+                scrollMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical");
+            }).bind(this))
             .bind("dragstart", function (e) {
                 U.stopEvent(e);
                 return false;
