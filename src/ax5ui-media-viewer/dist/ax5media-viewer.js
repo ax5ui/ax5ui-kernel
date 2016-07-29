@@ -10,7 +10,7 @@
 (function (root, _SUPER_) {
 
     /**
-     * @class ax5.ui.mediaViewer
+     * @class ax5mediaViewer
      * @classdesc
      * @author tom@axisj.com
      * @example
@@ -18,10 +18,15 @@
      * var myViewer = new ax5.ui.mediaViewer();
      * ```
      */
+
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5mediaViewer";
+    var VERSION = "0.4.1";
 
     //== UI Class
-    var axClass = function axClass() {
+    var ax5mediaViewer = function ax5mediaViewer() {
         var self = this,
             cfg,
             ENM = {
@@ -41,8 +46,8 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5mediaViewer";
-        this.version = "0.4.0";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -288,9 +293,9 @@
 
         /**
          * Preferences of mediaViewer UI
-         * @method ax5.ui.mediaViewer.setConfig
+         * @method ax5mediaViewer.setConfig
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.mediaViewer}
+         * @returns {ax5mediaViewer}
          * @example
          * ```
          * ```
@@ -305,10 +310,10 @@
         };
 
         /**
-         * @method ax5.ui.mediaViewer.attach
+         * @method ax5mediaViewer.attach
          * @param target
          * @param options
-         * @returns {ax5.ui.mediaViewer}
+         * @returns {ax5mediaViewer}
          */
         this.attach = function (target, options) {
             if (!target) {
@@ -359,8 +364,8 @@
         };
 
         /**
-         * @method ax5.ui.mediaViewer.align
-         * @returns {axClass}
+         * @method ax5mediaViewer.align
+         * @returns {ax5mediaViewer}
          */
         this.align = function () {
             // viewer width, height
@@ -396,9 +401,9 @@
         };
 
         /**
-         * @method ax5.ui.mediaViewer.select
+         * @method ax5mediaViewer.select
          * @param index
-         * @returns {axClass}
+         * @returns {ax5mediaViewer}
          */
         this.select = function () {
             var mediaView = {
@@ -465,9 +470,9 @@
         }();
 
         /**
-         * @method ax5.ui.mediaViewer.setMediaList
+         * @method ax5mediaViewer.setMediaList
          * @param list
-         * @returns {axClass}
+         * @returns {ax5mediaViewer}
          */
         this.setMediaList = function (list) {
             cfg.media.list = [].concat(list);
@@ -490,8 +495,8 @@
     };
     //== UI Class
 
-    root.mediaViewer = function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.mediaViewer = function () {
+        if (U.isFunction(_SUPER_)) ax5mediaViewer.prototype = new _SUPER_(); // 상속
+        return ax5mediaViewer;
     }(); // ax5.ui에 연결
-})(ax5.ui, ax5.ui.root);
+})();

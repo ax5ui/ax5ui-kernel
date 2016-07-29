@@ -1,10 +1,10 @@
 "use strict";
 
 // ax5.ui.toast
-(function (root, _SUPER_) {
+(function () {
 
     /**
-     * @class ax5.ui.toast
+     * @class ax5toast
      * @classdesc
      * @author tom@axisj.com
      * @example
@@ -12,11 +12,14 @@
      * var my_toast = new ax5.ui.toast();
      * ```
      */
-
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5toast";
+    var VERSION = "0.3.1";
 
     //== UI Class
-    var axClass = function axClass() {
+    var ax5toast = function ax5toast() {
         var self = this,
             cfg,
             toastSeq = 0,
@@ -24,8 +27,8 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5toast";
-        this.version = "0.3.0";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -160,9 +163,9 @@
 
         /**
          * Preferences of toast UI
-         * @method ax5.ui.toast.set_config
+         * @method ax5toast.set_config
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.toast}
+         * @returns {ax5toast}
          * @example
          * ```
          * ```
@@ -181,10 +184,10 @@
         };
 
         /**
-         * @method ax5.ui.toast.push
+         * @method ax5toast.push
          * @param opts
          * @param callBack
-         * @returns {ax5.ui.toast}
+         * @returns {ax5toast}
          */
         this.push = function (opts, callBack) {
             if (!self.containerId) {
@@ -210,10 +213,10 @@
         };
 
         /**
-         * @method ax5.ui.toast.confirm
+         * @method ax5toast.confirm
          * @param opts
          * @param callBack
-         * @returns {ax5.ui.toast}
+         * @returns {ax5toast}
          */
         this.confirm = function (opts, callBack) {
             if (!self.containerId) {
@@ -245,8 +248,8 @@
 
         /**
          * close the toast
-         * @method ax5.ui.toast.close
-         * @returns {ax5.ui.toast}
+         * @method ax5toast.close
+         * @returns {ax5toast}
          * @example
          * ```
          * my_toast.close();
@@ -308,8 +311,8 @@
     };
     //== UI Class
 
-    root.toast = function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.toast = function () {
+        if (U.isFunction(_SUPER_)) ax5toast.prototype = new _SUPER_(); // 상속
+        return ax5toast;
     }(); // ax5.ui에 연결
-})(ax5.ui, ax5.ui.root);
+})();

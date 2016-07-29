@@ -1,5 +1,5 @@
 // ax5.ui.modal
-(function (root, _SUPER_) {
+(function () {
 
     /**
      * @class ax5modal
@@ -10,11 +10,14 @@
      * var my_modal = new ax5.ui.modal();
      * ```
      */
-
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5modal";
+    var VERSION = "0.7.1";
 
     //== UI Class
-    var axClass = function () {
+    var ax5modal = function () {
         var
             self = this,
             cfg,
@@ -36,8 +39,8 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5modal";
-        this.version = "0.7.0";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -573,9 +576,9 @@
     };
     //== UI Class
 
-    root.modal = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.modal = (function () {
+        if (U.isFunction(_SUPER_)) ax5modal.prototype = new _SUPER_(); // 상속
+        return ax5modal;
     })(); // ax5.ui에 연결
 
-})(ax5.ui, ax5.ui.root);
+})();

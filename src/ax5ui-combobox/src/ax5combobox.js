@@ -5,7 +5,7 @@
  */
 
 // ax5.ui.combobox
-(function (root, _SUPER_) {
+(function () {
 
     /**
      * @class ax5combobox
@@ -16,18 +16,22 @@
      * var mycombobox = new ax5.ui.combobox();
      * ```
      */
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5combobox";
+    var VERSION = "0.2.0";
 
     //== UI Class
-    var axClass = function () {
+    var ax5combobox = function () {
         var
             self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5combobox";
-        this.version = "0.1.9";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -1544,14 +1548,13 @@
             }
         }).apply(this, arguments);
     };
-    //== UI Class
 
-    root.combobox = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.combobox = (function () {
+        if (U.isFunction(_SUPER_)) ax5combobox.prototype = new _SUPER_(); // 상속
+        return ax5combobox;
     })(); // ax5.ui에 연결
 
-})(ax5.ui, ax5.ui.root);
+})();
 
 /**
  * ax5combobox jquery extends
@@ -1580,7 +1583,6 @@
  * </script>
  * ```
  */
-
 
 ax5.ui.combobox_instance = new ax5.ui.combobox();
 jQuery.fn.ax5combobox = (function () {

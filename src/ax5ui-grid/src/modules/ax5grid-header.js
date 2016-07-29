@@ -1,6 +1,8 @@
 // ax5.ui.grid.header
-(function (root) {
+(function () {
     "use strict";
+
+    var root = ax5.ui.grid;
 
     var init = function () {
         // 헤더 초기화
@@ -124,4 +126,4 @@
         repaint: repaint
     };
 
-})(ax5.ui.grid);
+})();

@@ -1,9 +1,9 @@
 "use strict";
 
 // ax5.ui.calendar
-(function (root, _SUPER_) {
+(function () {
     /**
-     * @class ax5.ui.calendar
+     * @class ax5calendar
      * @classdesc
      * @author tom@axisj.com
      * @logs
@@ -13,18 +13,22 @@
      * var my_pad = new ax5.ui.calendar();
      * ```
      */
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5calendar";
+    var VERSION = "0.8.6";
 
     //== UI Class
-    var axClass = function axClass() {
+    var ax5calendar = function ax5calendar() {
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
         var self = this,
             cfg,
             selectableCount = 1;
 
-        this.name = "ax5calendar";
-        this.version = "0.8.5";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.target = null;
@@ -618,9 +622,9 @@
 
         /**
          * Preferences of calendar UI
-         * @method ax5.ui.calendar.setConfig
+         * @method ax5calendar.setConfig
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.calendar}
+         * @returns {ax5calendar}
          * @example
          * ```
          * setConfig({
@@ -684,10 +688,10 @@
         };
 
         /**
-         * @method ax5.ui.calendar.changeMode
+         * @method ax5calendar.changeMode
          * @param {String} mode
          * @param {String} changeDate
-         * @returns {ax5.ui.calendar}
+         * @returns {ax5calendar}
          */
         this.changeMode = function (mode, changeDate) {
             if (typeof changeDate != "undefined") cfg.displayDate = changeDate;
@@ -709,9 +713,9 @@
         };
 
         /**
-         * @method ax5.ui.calendar.setSelection
+         * @method ax5calendar.setSelection
          * @param {Array} selection
-         * @returns {ax5.ui.calendar}
+         * @returns {ax5calendar}
          * @example
          * ```
          *
@@ -756,14 +760,14 @@
         }();
 
         /**
-         * @method ax5.ui.calendar.getSelection
+         * @method ax5calendar.getSelection
          */
         this.getSelection = function () {
             return this.selection;
         };
 
         /**
-         * @method ax5.ui.calendar.setSelectable
+         * @method ax5calendar.setSelectable
          */
         this.setSelectable = function () {
             self.selectableMap = {};
@@ -837,7 +841,7 @@
         }();
 
         /**
-         * @method ax5.ui.calendar.setMarker
+         * @method ax5calendar.setMarker
          */
         this.setMarker = function () {
             self.markerMap = {};
@@ -900,7 +904,7 @@
         }();
 
         /**
-         * @method ax5.ui.calendar.setPeriod
+         * @method ax5calendar.setPeriod
          */
         this.setPeriod = function () {
             self.periodMap = {};
@@ -959,18 +963,17 @@
         // 클래스 생성자
         this.main = function () {
 
-            root.calendar_instance = root.calendar_instance || [];
-            root.calendar_instance.push(this);
+            ROOT.calendar_instance = ROOT.calendar_instance || [];
+            ROOT.calendar_instance.push(this);
 
             if (arguments && U.isObject(arguments[0])) {
                 this.setConfig(arguments[0]);
             }
         }.apply(this, arguments);
     };
-    //== UI Class
 
-    root.calendar = function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.calendar = function () {
+        if (U.isFunction(_SUPER_)) ax5calendar.prototype = new _SUPER_(); // 상속
+        return ax5calendar;
     }(); // ax5.ui에 연결
-})(ax5.ui, ax5.ui.root);
+})();

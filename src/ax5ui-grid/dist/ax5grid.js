@@ -1,13 +1,12 @@
 "use strict";
 
 // ax5.ui.grid
-(function (root, _SUPER_) {
+(function () {
     "use strict";
 
     /**
      * @class ax5grid
      * @classdesc
-     * @version 0.0.2
      * @author tom@axisj.com
      * @example
      * ```
@@ -15,18 +14,22 @@
      * ```
      */
 
-    var modules;
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var MODULES;
+    var CLASS_NAME = "ax5grid";
+    var VERSION = "0.0.2";
 
     //== UI Class
-    var axClass = function axClass() {
+    var ax5grid = function ax5grid() {
         var self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5grid";
-        this.version = "0.0.2";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -151,7 +154,7 @@
                 instanceId: this.id
             };
 
-            this.$target.html(modules.tmpl.get("main", data));
+            this.$target.html(MODULES.tmpl.get("main", data));
 
             // 그리드 패널 프레임의 각 엘리먼트를 캐쉬합시다.
             this.$ = {
@@ -496,22 +499,22 @@
             alignGrid.call(this, true);
 
             // columns의 데이터로 header데이터를 만들고
-            modules.header.init.call(this);
+            MODULES.header.init.call(this);
             // header를 출력합니다.
-            modules.header.repaint.call(this);
+            MODULES.header.repaint.call(this);
 
             // columns의 데이터로 body데이터를 만들고
-            modules.body.init.call(this);
+            MODULES.body.init.call(this);
             // body를 출력합니다.
-            modules.body.repaint.call(this);
+            MODULES.body.repaint.call(this);
 
             // scroller
-            modules.scroller.init.call(this);
-            modules.scroller.resize.call(this);
+            MODULES.scroller.init.call(this);
+            MODULES.scroller.resize.call(this);
 
             jQuery(window).bind("resize.ax5grid-" + this.instanceId, function () {
                 alignGrid.call(this);
-                modules.scroller.resize.call(this);
+                MODULES.scroller.resize.call(this);
             }.bind(this));
             return this;
         };
@@ -523,15 +526,15 @@
          */
         this.align = function () {
             alignGrid.call(this);
-            modules.scroller.resize.call(this);
+            MODULES.scroller.resize.call(this);
             return this;
         };
 
         this.setData = function (data) {
-            modules.data.set.call(this, data);
+            MODULES.data.set.call(this, data);
             alignGrid.call(this);
-            modules.body.repaint.call(this);
-            modules.scroller.resize.call(this);
+            MODULES.body.repaint.call(this);
+            MODULES.scroller.resize.call(this);
             return this;
         };
 
@@ -546,17 +549,17 @@
             }
         }.apply(this, arguments);
     };
-    //== UI Class
 
-    modules = root.grid = function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    MODULES = ROOT.grid = function () {
+        if (U.isFunction(_SUPER_)) ax5grid.prototype = new _SUPER_(); // 상속
+        return ax5grid;
     }(); // ax5.ui에 연결
-})(ax5.ui, ax5.ui.root);
+})();
 // ax5.ui.grid.body
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     var init = function init() {
         // 바디 초기화
         this.bodyRowTable = {};
@@ -822,12 +825,14 @@
         repaint: repaint,
         setData: setData
     };
-})(ax5.ui.grid);
+})();
 // ax5.ui.grid.layout
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     var U = ax5.util;
+
     var init = function init() {};
 
     var set = function set(data) {
@@ -842,10 +847,12 @@
         set: set,
         get: get
     };
-})(ax5.ui.grid);
+})();
 // ax5.ui.grid.header
-(function (root) {
+(function () {
     "use strict";
+
+    var root = ax5.ui.grid;
 
     var init = function init() {
         // 헤더 초기화
@@ -958,11 +965,12 @@
         init: init,
         repaint: repaint
     };
-})(ax5.ui.grid);
+})();
 // ax5.ui.grid.scroller
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     var U = ax5.util;
 
     var scrollMover = {
@@ -1005,7 +1013,8 @@
             self.xvar.__da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
 
             jQuery(document.body).bind(root.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
-                bar.css(getScrollerPosition[type](e));
+                var css = getScrollerPosition[type](e);
+                bar.css(css);
             }).bind(root.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
                 scrollMover.off.call(self);
             }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
@@ -1069,11 +1078,12 @@
         init: init,
         resize: resize
     };
-})(ax5.ui.grid);
+})();
 // ax5.ui.grid.tmpl
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
 
     root.tmpl = {
@@ -1083,19 +1093,19 @@
             return ax5.mustache.render(root.tmpl[tmplName], data);
         }
     };
-})(ax5.ui.grid);
+})();
 
 // ax5.ui.grid.util
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
      * @param table
      * @param frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
-
     var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(table, frozenColumnIndex) {
         var tempTable_l = { rows: [] };
         var tempTable_r = { rows: [] };
@@ -1157,4 +1167,4 @@
         getMousePosition: getMousePosition,
         ENM: ENM
     };
-})(ax5.ui.grid);
+})();

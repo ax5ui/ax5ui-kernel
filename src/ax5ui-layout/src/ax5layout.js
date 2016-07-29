@@ -5,22 +5,25 @@
  */
 
 // ax5.ui.layout
-(function (root, _SUPER_) {
+(function () {
 
     /**
      * @class ax5layout
      * @alias ax5.ui.layout
-     * @version 0.1.1
      * @author tom@axisj.com
      * @example
      * ```
      * var myLayout = new ax5.ui.layout();
      * ```
      */
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5layout";
+    var VERSION = "0.2.1";
 
     //== UI Class
-    var axClass = function () {
+    var ax5layout = function () {
             var
                 self = this,
                 cfg,
@@ -31,7 +34,6 @@
                 },
                 getMousePosition = function (e) {
                     var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
-
                     return {
                         clientX: mouseObj.clientX,
                         clientY: mouseObj.clientY
@@ -40,8 +42,8 @@
 
             if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-            this.name = "ax5layout";
-            this.version = "0.2.0";
+            this.name = CLASS_NAME;
+            this.version = VERSION;
             this.instanceId = ax5.getGuid();
 
             this.config = {
@@ -912,13 +914,12 @@
         ;
 //== UI Class
 
-    root.layout = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.layout = (function () {
+        if (U.isFunction(_SUPER_)) ax5layout.prototype = new _SUPER_(); // 상속
+        return ax5layout;
     })(); // ax5.ui에 연결
 
-})
-(ax5.ui, ax5.ui.root);
+})();
 
 ax5.ui.layout_instance = new ax5.ui.layout();
 

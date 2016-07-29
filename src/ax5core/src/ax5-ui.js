@@ -8,14 +8,12 @@
  * @classdesc ax5 ui class
  * @version v0.1.0
  * @author tom@axisj.com
- * @logs
- * 2014-12-12 tom : start
  * @example
  * ```
  * var myui = new ax5.ui.root();
  * ```
  */
-ax5.ui = (function (core) {
+ax5.ui = (function () {
 
     function axUi() {
         this.config = {};
@@ -47,7 +45,6 @@ ax5.ui = (function (core) {
         };
 
         this.bindWindowResize = function (callBack) {
-
             setTimeout((function () {
                 jQuery(window).resize((function () {
                     if (this.bindWindowResize__) clearTimeout(this.bindWindowResize__);
@@ -56,7 +53,6 @@ ax5.ui = (function (core) {
                     }).bind(this), 10);
                 }).bind(this));
             }).bind(this), 100);
-
         };
 
         this.stopEvent = function (e) {
@@ -79,5 +75,5 @@ ax5.ui = (function (core) {
     return {
         root: axUi
     }
-})(ax5);
+})();
 

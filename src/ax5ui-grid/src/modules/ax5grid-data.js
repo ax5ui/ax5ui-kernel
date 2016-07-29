@@ -1,8 +1,10 @@
 // ax5.ui.grid.layout
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     var U = ax5.util;
+
     var init = function () {
 
     };
@@ -22,4 +24,4 @@
         get: get
     };
 
-})(ax5.ui.grid);
+})();

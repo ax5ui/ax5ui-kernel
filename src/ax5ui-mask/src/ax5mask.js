@@ -1,7 +1,7 @@
 // ax5.ui.mask
-(function (root, _SUPER_) {
+(function () {
     /**
-     * @class ax5.ui.mask
+     * @class ax5mask
      * @classdesc
      * @author tom@axisj.com
      * @example
@@ -9,9 +9,13 @@
      * var my_mask = new ax5.ui.mask();
      * ```
      */
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5mask";
+    var VERSION = "0.7.1";
 
-    var axClass = function () {
+    var ax5mask = function () {
         var
             self = this,
             cfg
@@ -19,8 +23,8 @@
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5mask";
-        this.version = "0.7.0";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -63,9 +67,9 @@
 
         /**
          * Preferences of Mask UI
-         * @method ax5.ui.mask.setConfig
+         * @method ax5mask.setConfig
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.mask}
+         * @returns {ax5mask}
          * @example
          * ```
          * setConfig({
@@ -84,9 +88,9 @@
 
         /**
          * open mask
-         * @method ax5.ui.mask.open
+         * @method ax5mask.open
          * @param {Object} config
-         * @returns {ax5.ui.mask}
+         * @returns {ax5mask}
          * @example
          * ```js
          * my_mask.open({
@@ -183,8 +187,8 @@
 
         /**
          * close mask
-         * @method ax5.ui.mask.close
-         * @returns {ax5.ui.mask}
+         * @method ax5mask.close
+         * @returns {ax5mask}
          * @example
          * ```
          * my_mask.close();
@@ -216,9 +220,9 @@
         }).apply(this, arguments);
     };
 
-    root.mask = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.mask = (function () {
+        if (U.isFunction(_SUPER_)) ax5mask.prototype = new _SUPER_(); // 상속
+        return ax5mask;
     })(); // ax5.ui에 연결
 
-})(ax5.ui, ax5.ui.root);
+})();

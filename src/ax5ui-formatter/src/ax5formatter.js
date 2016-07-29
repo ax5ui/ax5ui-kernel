@@ -1,5 +1,5 @@
 // ax5.ui.formatter
-(function (root, _SUPER_) {
+(function () {
 
     /**
      * @class ax5.ui.formatter
@@ -10,11 +10,14 @@
      * var formatter = new ax5.ui.formatter();
      * ```
      */
-    var U = ax5.util,
-        TODAY = new Date();
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
+    var U = ax5.util;
+    var CLASS_NAME = "ax5formatter";
+    var VERSION = "0.5.1";
 
-    var
-        setSelectionRange = function (input, pos) {
+    var TODAY = new Date();
+    var setSelectionRange = function (input, pos) {
             if (typeof pos == "undefined") {
                 pos = input.value.length;
             }
@@ -37,15 +40,15 @@
         };
 
     //== UI Class
-    var axClass = function () {
+    var ax5formatter = function () {
         var
             self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5formatter";
-        this.version = "0.5.0";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -507,14 +510,13 @@
             }
         }).apply(this, arguments);
     };
-    //== UI Class
 
-    root.formatter = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.formatter = (function () {
+        if (U.isFunction(_SUPER_)) ax5formatter.prototype = new _SUPER_(); // 상속
+        return ax5formatter;
     })(); // ax5.ui에 연결
 
-})(ax5.ui, ax5.ui.root);
+})();
 
 ax5.ui.formatter_instance = new ax5.ui.formatter();
 

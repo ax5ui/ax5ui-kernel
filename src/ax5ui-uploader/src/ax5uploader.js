@@ -5,10 +5,10 @@
  */
 
 // ax5.ui.select
-(function (root, _SUPER_) {
+(function () {
 
     /**
-     * @class ax5.ui.uploader
+     * @class ax5uploader
      * @classdesc
      * @author tom@axisj.com
      * @example
@@ -16,18 +16,22 @@
      * var myuploader = new ax5.ui.uploader();
      * ```
      */
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5uploader";
+    var VERSION = "0.0.4";
 
     //== UI Class
-    var axClass = function () {
+    var ax5uploader = function () {
         var
             self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5uploader";
-        this.version = "0.0.3";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -371,9 +375,9 @@
     };
     //== UI Class
 
-    root.uploader = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.uploader = (function () {
+        if (U.isFunction(_SUPER_)) ax5uploader.prototype = new _SUPER_(); // 상속
+        return ax5uploader;
     })(); // ax5.ui에 연결
 
-})(ax5.ui, ax5.ui.root);
+})();

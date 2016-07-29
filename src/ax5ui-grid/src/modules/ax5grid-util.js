@@ -1,8 +1,9 @@
 
 // ax5.ui.grid.util
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
      * @param table
@@ -71,4 +72,4 @@
         ENM: ENM
     };
 
-})(ax5.ui.grid);
+})();

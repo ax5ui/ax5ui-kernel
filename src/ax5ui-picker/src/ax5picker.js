@@ -1,8 +1,8 @@
 // ax5.ui.picker
-(function (root, _SUPER_) {
+(function () {
 
     /**
-     * @class ax5.ui.picker
+     * @class ax5picker
      * @classdesc
      * @author tom@axisj.com
      * @example
@@ -10,18 +10,22 @@
      * var myPicker = new ax5.ui.picker();
      * ```
      */
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5picker";
+    var VERSION = "0.7.1";
 
     //== UI Class
-    var axClass = function () {
+    var ax5picker = function () {
         var
             self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5picker";
-        this.version = "0.7.0";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -326,9 +330,9 @@
 
         /**
          * Preferences of picker UI
-         * @method ax5.ui.picker.setConfig
+         * @method ax5picker.setConfig
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.picker}
+         * @returns {ax5picker}
          * @example
          * ```
          * ```
@@ -380,11 +384,11 @@
         };
 
         /**
-         * @method ax5.ui.picker.setContentValue
+         * @method ax5picker.setContentValue
          * @param {String} boundID
          * @param {Number} inputIndex
          * @param {String} val
-         * @returns {ax5.ui.picker} this
+         * @returns {ax5picker} this
          */
         this.setContentValue = function (boundID, inputIndex, val) {
             var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
@@ -416,9 +420,9 @@
         };
 
         /**
-         * @method ax5.ui.picker.open
+         * @method ax5picker.open
          * @param {String} boundObjectId
-         * @returns {ax5.ui.picker} this
+         * @returns {ax5picker} this
          */
         this.open = (function () {
 
@@ -625,8 +629,8 @@
         })();
 
         /**
-         * @method ax5.ui.picker.close
-         * @returns {ax5.ui.picker} this
+         * @method ax5picker.close
+         * @returns {ax5picker} this
          */
         this.close = function (item) {
             if (this.closeTimer) clearTimeout(this.closeTimer);
@@ -663,12 +667,12 @@
     };
     //== UI Class
 
-    root.picker = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.picker = (function () {
+        if (U.isFunction(_SUPER_)) ax5picker.prototype = new _SUPER_(); // 상속
+        return ax5picker;
     })(); // ax5.ui에 연결
 
-})(ax5.ui, ax5.ui.root);
+})();
 
 ax5.ui.picker_instance = new ax5.ui.picker();
 

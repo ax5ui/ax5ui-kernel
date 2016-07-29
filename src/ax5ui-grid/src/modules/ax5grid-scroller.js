@@ -1,7 +1,8 @@
 // ax5.ui.grid.scroller
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     var U = ax5.util;
 
     var scrollMover = {
@@ -47,7 +48,8 @@
 
             jQuery(document.body)
                 .bind(root.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
-                    bar.css(getScrollerPosition[type](e));
+                    var css = getScrollerPosition[type](e);
+                    bar.css(css);
                 })
                 .bind(root.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
                     scrollMover.off.call(self);
@@ -135,4 +137,4 @@
         resize: resize
     };
 
-})(ax5.ui.grid);
+})();

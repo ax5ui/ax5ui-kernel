@@ -1,5 +1,5 @@
 // ax5.ui.menu
-(function (root, _SUPER_) {
+(function () {
 
     /**
      * @class ax5.ui.menu
@@ -10,18 +10,22 @@
      * var menu = new ax5.ui.menu();
      * ```
      */
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5menu";
+    var VERSION = "0.6.1";
 
     //== UI Class
-    var axClass = function () {
+    var ax5menu = function () {
         var
             self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5menu";
-        this.version = "0.6.0";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -719,9 +723,9 @@
     };
     //== UI Class
 
-    root.menu = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.menu = (function () {
+        if (U.isFunction(_SUPER_)) ax5menu.prototype = new _SUPER_(); // 상속
+        return ax5menu;
     })(); // ax5.ui에 연결
 
-})(ax5.ui, ax5.ui.root);
+})();

@@ -5,10 +5,10 @@
  */
 
 // ax5.ui.select
-(function (root, _SUPER_) {
+(function () {
 
     /**
-     * @class ax5.ui.select
+     * @class ax5select
      * @classdesc
      * @author tom@axisj.com
      * @example
@@ -16,18 +16,22 @@
      * var myselect = new ax5.ui.select();
      * ```
      */
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5select";
+    var VERSION = "0.4.1";
 
     //== UI Class
-    var axClass = function () {
+    var ax5select = function () {
         var
             self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5select";
-        this.version = "0.4.0";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -707,9 +711,9 @@
 
         /**
          * Preferences of select UI
-         * @method ax5.ui.select.setConfig
+         * @method ax5select.setConfig
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.select}
+         * @returns {ax5select}
          * @example
          * ```
          * ```
@@ -724,14 +728,14 @@
 
         /**
          * bind select
-         * @method ax5.ui.select.bind
+         * @method ax5select.bind
          * @param {Object} item
          * @param {String} [item.id]
          * @param {String} [item.theme]
          * @param {Boolean} [item.multiple]
          * @param {Element} item.target
          * @param {Object[]} item.options
-         * @returns {ax5.ui.select}
+         * @returns {ax5select}
          */
         this.bind = function (item) {
             var
@@ -783,10 +787,10 @@
 
         /**
          * open the optionBox of select
-         * @method ax5.ui.select.open
+         * @method ax5select.open
          * @param {(String|Number|Element)} boundID
          * @param {Number} [tryCount]
-         * @returns {ax5.ui.select}
+         * @returns {ax5select}
          */
         this.open = (function () {
 
@@ -943,9 +947,9 @@
         })();
 
         /**
-         * @method ax5.ui.select.update
+         * @method ax5select.update
          * @param {(Object|String)} item
-         * @returns {ax5.ui.select}
+         * @returns {ax5select}
          */
         this.update = function (_item) {
             this.bind(_item);
@@ -953,11 +957,11 @@
         };
 
         /**
-         * @method ax5.ui.select.val
+         * @method ax5select.val
          * @param {(String|Number|Element)} boundID
          * @param {(String|Object|Array)} [value]
          * @param {Boolean} [selected]
-         * @returns {ax5.ui.select}
+         * @returns {ax5select}
          */
         this.val = (function () {
 
@@ -1128,8 +1132,8 @@
         })();
 
         /**
-         * @method ax5.ui.select.close
-         * @returns {ax5.ui.select}
+         * @method ax5select.close
+         * @returns {ax5select}
          */
         this.close = function (item) {
             if (this.closeTimer) clearTimeout(this.closeTimer);
@@ -1201,12 +1205,12 @@
     };
     //== UI Class
 
-    root.select = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.select = (function () {
+        if (U.isFunction(_SUPER_)) ax5select.prototype = new _SUPER_(); // 상속
+        return ax5select;
     })(); // ax5.ui에 연결
 
-})(ax5.ui, ax5.ui.root);
+})();
 
 ax5.ui.select_instance = new ax5.ui.select();
 jQuery.fn.ax5select = (function () {

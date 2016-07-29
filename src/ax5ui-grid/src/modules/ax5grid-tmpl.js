@@ -1,7 +1,8 @@
 // ax5.ui.grid.tmpl
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     var main =
         `<div data-ax5grid-container="root" data-ax5grid-instance="{{instanceId}}">
             <div data-ax5grid-container="header">
@@ -58,4 +59,4 @@
         }
     };
 
-})(ax5.ui.grid);
+})();

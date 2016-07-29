@@ -1,30 +1,33 @@
 // ax5.ui.grid
-(function (root, _SUPER_) {
+(function () {
     "use strict";
 
     /**
      * @class ax5grid
      * @classdesc
-     * @version 0.0.2
      * @author tom@axisj.com
      * @example
      * ```
      * var myGrid = new ax5.ui.grid();
      * ```
      */
-    var modules;
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var MODULES;
+    var CLASS_NAME = "ax5grid";
+    var VERSION = "0.0.2";
 
     //== UI Class
-    var axClass = function () {
+    var ax5grid = function () {
         var
             self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5grid";
-        this.version = "0.0.2";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.config = {
@@ -153,7 +156,7 @@
                     instanceId: this.id
                 };
 
-                this.$target.html(modules.tmpl.get("main", data));
+                this.$target.html(MODULES.tmpl.get("main", data));
 
                 // 그리드 패널 프레임의 각 엘리먼트를 캐쉬합시다.
                 this.$ = {
@@ -500,22 +503,22 @@
             alignGrid.call(this, true);
 
             // columns의 데이터로 header데이터를 만들고 
-            modules.header.init.call(this);
+            MODULES.header.init.call(this);
             // header를 출력합니다.
-            modules.header.repaint.call(this);
+            MODULES.header.repaint.call(this);
 
             // columns의 데이터로 body데이터를 만들고
-            modules.body.init.call(this);
+            MODULES.body.init.call(this);
             // body를 출력합니다.
-            modules.body.repaint.call(this);
+            MODULES.body.repaint.call(this);
 
             // scroller
-            modules.scroller.init.call(this);
-            modules.scroller.resize.call(this);
+            MODULES.scroller.init.call(this);
+            MODULES.scroller.resize.call(this);
 
             jQuery(window).bind("resize.ax5grid-" + this.instanceId, (function () {
                 alignGrid.call(this);
-                modules.scroller.resize.call(this);
+                MODULES.scroller.resize.call(this);
             }).bind(this));
             return this;
         };
@@ -527,16 +530,16 @@
          */
         this.align = function () {
             alignGrid.call(this);
-            modules.scroller.resize.call(this);
+            MODULES.scroller.resize.call(this);
             return this;
         };
 
 
         this.setData = function (data) {
-            modules.data.set.call(this, data);
+            MODULES.data.set.call(this, data);
             alignGrid.call(this);
-            modules.body.repaint.call(this);
-            modules.scroller.resize.call(this);
+            MODULES.body.repaint.call(this);
+            MODULES.scroller.resize.call(this);
             return this;
         };
 
@@ -551,12 +554,9 @@
             }
         }).apply(this, arguments);
     };
-    //== UI Class
 
-    modules = root.grid = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    MODULES = ROOT.grid = (function () {
+        if (U.isFunction(_SUPER_)) ax5grid.prototype = new _SUPER_(); // 상속
+        return ax5grid;
     })(); // ax5.ui에 연결
-
-
-})(ax5.ui, ax5.ui.root);
+})();

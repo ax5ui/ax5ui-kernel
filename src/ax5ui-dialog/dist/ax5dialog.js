@@ -1,10 +1,10 @@
 "use strict";
 
 // ax5.ui.dialog
-(function (root, _SUPER_) {
+(function () {
 
     /**
-     * @class ax5.ui.dialog
+     * @class ax5dialog
      * @classdesc
      * @author tom@axisj.com
      * @example
@@ -12,17 +12,21 @@
      * var myDialog = new ax5.ui.dialog();
      * ```
      */
+    var ROOT = ax5.ui;
+    var _SUPER_ = ax5.ui.root;
     var U = ax5.util;
+    var CLASS_NAME = "ax5dialog";
+    var VERSION = "0.8.1";
 
     //== UI Class
-    var axClass = function axClass() {
+    var ax5dialog = function ax5dialog() {
         var self = this,
             cfg;
 
         if (_SUPER_) _SUPER_.call(this); // 부모호출
 
-        this.name = "ax5dialog";
-        this.version = "0.8.0";
+        this.name = CLASS_NAME;
+        this.version = VERSION;
         this.instanceId = ax5.getGuid();
 
         this.activeDialog = null;
@@ -247,9 +251,9 @@
 
         /**
          * Preferences of dialog UI
-         * @method ax5.ui.dialog.setConfig
+         * @method ax5dialog.setConfig
          * @param {Object} config - 클래스 속성값
-         * @returns {ax5.ui.dialog}
+         * @returns {ax5dialog}
          * @example
          * ```
          * ```
@@ -263,10 +267,10 @@
 
         /**
          * open the dialog of alert type
-         * @method ax5.ui.dialog.alert
+         * @method ax5dialog.alert
          * @param {Object|String} [{theme, title, msg, btns}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
          * @param {Function} [callBack] - 사용자 확인 이벤트시 호출될 callBack 함수
-         * @returns {ax5.ui.dialog}
+         * @returns {ax5dialog}
          * @example
          * ```
          * myDialog.alert({
@@ -286,7 +290,6 @@
             if (this.activeDialog) {
                 // try one more
                 if (!tryCount) {
-                    console.log("111");
                     setTimeout(function () {
                         this.alert(opts, callBack, 1);
                     }.bind(this), Number(cfg.animateTime) + 100);
@@ -315,10 +318,10 @@
 
         /**
          * open the dialog of confirm type
-         * @method ax5.ui.dialog.confirm
+         * @method ax5dialog.confirm
          * @param {Object|String} [{theme, title, msg, btns}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
          * @param {Function} [callBack] - 사용자 확인 이벤트시 호출될 callBack 함수
-         * @returns {ax5.ui.dialog}
+         * @returns {ax5dialog}
          * @example
          * ```
          * myDialog.confirm({
@@ -368,10 +371,10 @@
 
         /**
          * open the dialog of prompt type
-         * @method ax5.ui.dialog.prompt
+         * @method ax5dialog.prompt
          * @param {Object|String} [{theme, title, msg, btns, input}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
          * @param {Function} [callBack] - 사용자 확인 이벤트시 호출될 callBack 함수
-         * @returns {ax5.ui.dialog}
+         * @returns {ax5dialog}
          * @example
          * ```
          * myDialog.prompt({
@@ -427,8 +430,8 @@
 
         /**
          * close the dialog
-         * @method ax5.ui.dialog.close
-         * @returns {ax5.ui.dialog}
+         * @method ax5dialog.close
+         * @returns {ax5dialog}
          * @example
          * ```
          * myDialog.close();
@@ -473,10 +476,9 @@
             }
         }.apply(this, arguments);
     };
-    //== UI Class
 
-    root.dialog = function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
+    ROOT.dialog = function () {
+        if (U.isFunction(_SUPER_)) ax5dialog.prototype = new _SUPER_(); // 상속
+        return ax5dialog;
     }(); // ax5.ui에 연결
-})(ax5.ui, ax5.ui.root);
+})();

@@ -1,7 +1,8 @@
 // ax5.ui.grid.body
-(function (root) {
+(function () {
     "use strict";
 
+    var root = ax5.ui.grid;
     var init = function () {
         // 바디 초기화
         this.bodyRowTable = {};
@@ -285,11 +286,9 @@
 
     };
 
-
     root.body = {
         init: init,
         repaint: repaint,
         setData: setData
     };
-
-})(ax5.ui.grid);
+})();
