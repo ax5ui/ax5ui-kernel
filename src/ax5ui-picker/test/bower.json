@@ -2,9 +2,9 @@
 	"name": "ax5ui-picker-tester",
 	"dependencies": {
 		"jquery": "^1.11.0",
-		"ax5core": "",
+		"ax5core": ">=1.0.9",
 		"ax5ui-mask": "",
-		"ax5ui-calendar": "",
+		"ax5ui-calendar": ">=0.8.6",
 		"ax5ui-formatter": "",
 		"bootstrap": "^3.3.6",
 		"font-awesome": ""
