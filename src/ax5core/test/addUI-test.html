@@ -19,35 +19,38 @@
     (function () {
         var UI = ax5.ui;
         var U = ax5.util;
-        var CLASS_NAME = "testClass";
-        var VERSION = "0.0.1";
 
-        UI.addUI(CLASS_NAME, VERSION, (function () {
+        UI.addClass({
+            className: "testClass",
+            version: "0.0.1"
+        }, (function () {
+
             var testClass = function () {
-                var
-                        self = this,
-                        cfg,
-                        selectableCount = 1
-                        ;
 
-                this.name = CLASS_NAME;
-                this.version = VERSION;
-                this.instanceId = ax5.getGuid();
+                var self = this,
+                        cfg;
 
-                this.sampleMethod = function(){
+                this.config = {};
+                cfg = this.config;
+
+                this.sampleMethod = function () {
 
                 };
 
                 // 클래스 생성자
+                // 클래스 생성자
                 this.main = (function () {
-
+                    if (arguments && U.isObject(arguments[0])) {
+                        this.setConfig(arguments[0]);
+                    }
                 }).apply(this, arguments);
+
             };
             return testClass;
-        })());
 
+        })());
     })();
-    
+
     var myUI = new ax5.ui.testClass();
     console.log(myUI);
 

@@ -2259,7 +2259,6 @@ ax5.info.errorMsg["ax5combobox"] = {
 /**
  * @class ax5.ui.root
  * @classdesc ax5 ui class
- * @version v0.1.0
  * @author tom@axisj.com
  * @example
  * ```
@@ -2323,12 +2322,19 @@ ax5.ui = function () {
         this.main = function () {}.apply(this, arguments);
     }
 
-    var addUI = function addUI(key, version, cls) {
-        /*
-         if (ax5.ui.root) ax5.ui.root.call(this); // 부모호출
-         if (ax5.util.isFunction(ax5.ui.root)) cls.prototype = new ax5.ui.root(); // 상속
-         ax5.ui[key] = cls;
-         */
+    /**
+     * @method ax5.ui.addClass
+     * @param {Object} config
+     * @param {String} config.className - name of Class
+     * @param {String} [config.version=""] - version of Class
+     * @param {Object} [config.classStore=ax5.ui] - 클래스가 저장될 경로
+     * @param {Function} [config.superClass=ax5.ui.root]
+     * @param {Function} cls - Class Function
+     */
+    function addClass(config, cls) {
+        if (!config || !config.className) throw 'invalid call';
+        var classStore = config.classStore ? config.classStore : ax5.ui;
+        if (!classStore) throw 'invalid classStore';
 
         var factory = function factory(cls, arg) {
             switch (arg.length) {
@@ -2341,28 +2347,35 @@ ax5.ui = function () {
                 case 2:
                     return new cls(arg[0], arg[1]);
                     break;
+                case 3:
+                    return new cls(arg[0], arg[1], arg[2]);
+                    break;
             }
         };
-        var initInstance = function initInstance(instance) {
-            instance.a = "";
+        var initInstance = function initInstance(name, version, instance) {
+            instance.name = name;
+            instance.version = version;
+            instance.instanceId = ax5.getGuid();
             return instance;
         };
         var initPrototype = function initPrototype(cls) {
-            var fn = cls.prototype;
+            var superClass = config.superClass ? config.superClass : ax5.ui.root;
+            if (!ax5.util.isFunction(superClass)) throw 'invalid superClass';
+            superClass.call(this); // 부모호출
+            cls.prototype = new superClass(); // 상속
         };
-
         var wrapper = function wrapper() {
             if (!this || !(this instanceof wrapper)) throw 'invalid call';
             var instance = factory(cls, arguments);
-            return initInstance(instance);
+            return initInstance(config.className, config.version || "", instance);
         };
-        initPrototype(cls);
-        ax5.ui[key] = wrapper;
-    };
+        initPrototype.call(this, cls);
+        classStore[config.className] = wrapper;
+    }
 
     return {
         root: axUi,
-        addUI: addUI
+        addClass: addClass
     };
 }();
 /*!
