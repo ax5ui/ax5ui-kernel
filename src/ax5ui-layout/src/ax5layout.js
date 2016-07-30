@@ -1,31 +1,23 @@
-/*
- * Copyright (c) 2016. tom@axisj.com
- * - github.com/thomasjang
- * - www.axisj.com
- */
-
 // ax5.ui.layout
 (function () {
-
-    /**
-     * @class ax5layout
-     * @alias ax5.ui.layout
-     * @author tom@axisj.com
-     * @example
-     * ```
-     * var myLayout = new ax5.ui.layout();
-     * ```
-     */
-    var ROOT = ax5.ui;
-    var _SUPER_ = ax5.ui.root;
+    var UI = ax5.ui;
     var U = ax5.util;
-    var CLASS_NAME = "ax5layout";
-    var VERSION = "0.2.1";
 
-    //== UI Class
-    var ax5layout = function () {
-            var
-                self = this,
+    UI.addClass({
+        className: "layout",
+        version: "0.2.2"
+    }, (function () {
+        /**
+         * @class ax5layout
+         * @alias ax5.ui.layout
+         * @author tom@axisj.com
+         * @example
+         * ```
+         * var myLayout = new ax5.ui.layout();
+         * ```
+         */
+        var ax5layout = function () {
+            var self = this,
                 cfg,
                 ENM = {
                     "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
@@ -39,12 +31,6 @@
                         clientY: mouseObj.clientY
                     }
                 };
-
-            if (_SUPER_) _SUPER_.call(this); // 부모호출
-
-            this.name = CLASS_NAME;
-            this.version = VERSION;
-            this.instanceId = ax5.getGuid();
 
             this.config = {
                 theme: 'default',
@@ -297,7 +283,7 @@
                                 css.left = prevPosition;
                                 panel.offsetStart = prevPosition;
                                 panel.offsetEnd = Number(prevPosition) + Number(css.width);
-                                
+
                                 panel.$target.css(css);
                             }
                         }
@@ -910,15 +896,9 @@
                     this.init();
                 }
             }).apply(this, arguments);
-        }
-        ;
-//== UI Class
-
-    ROOT.layout = (function () {
-        if (U.isFunction(_SUPER_)) ax5layout.prototype = new _SUPER_(); // 상속
+        };
         return ax5layout;
-    })(); // ax5.ui에 연결
-
+    })());
 })();
 
 ax5.ui.layout_instance = new ax5.ui.layout();
