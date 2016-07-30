@@ -2323,11 +2323,48 @@ ax5.ui = function () {
         this.main = function () {}.apply(this, arguments);
     }
 
+    var addUI = function addUI(key, version, cls) {
+        /*
+         if (ax5.ui.root) ax5.ui.root.call(this); // 부모호출
+         if (ax5.util.isFunction(ax5.ui.root)) cls.prototype = new ax5.ui.root(); // 상속
+         ax5.ui[key] = cls;
+         */
+
+        var factory = function factory(cls, arg) {
+            switch (arg.length) {
+                case 0:
+                    return new cls();
+                    break;
+                case 1:
+                    return new cls(arg[0]);
+                    break;
+                case 2:
+                    return new cls(arg[0], arg[1]);
+                    break;
+            }
+        };
+        var initInstance = function initInstance(instance) {
+            instance.a = "";
+            return instance;
+        };
+        var initPrototype = function initPrototype(cls) {
+            var fn = cls.prototype;
+        };
+
+        var wrapper = function wrapper() {
+            if (!this || !(this instanceof wrapper)) throw 'invalid call';
+            var instance = factory(cls, arguments);
+            return initInstance(instance);
+        };
+        initPrototype(cls);
+        ax5.ui[key] = wrapper;
+    };
+
     return {
-        root: axUi
+        root: axUi,
+        addUI: addUI
     };
 }();
-
 /*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
  * http://github.com/janl/mustache.js
