@@ -3,7 +3,7 @@
 (function () {
     "use strict";
 
-    var root = ax5.ui.grid;
+    var GRID = ax5.ui.grid;
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
      * @param table
@@ -66,7 +66,7 @@
         "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
     };
 
-    root.util = {
+    GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
         getMousePosition: getMousePosition,
         ENM: ENM

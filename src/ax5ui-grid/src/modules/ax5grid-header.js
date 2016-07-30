@@ -2,7 +2,8 @@
 (function () {
     "use strict";
 
-    var root = ax5.ui.grid;
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
 
     var init = function () {
         // 헤더 초기화
@@ -13,7 +14,7 @@
 
     var repaint = function () {
         var cfg = this.config;
-        var dividedHeaderObj = root.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+        var dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
         var asideHeaderData = this.asideHeaderData = (function (dataTable) {
             var colGroup = [];
             var data = {rows:[]};
@@ -121,7 +122,7 @@
         }
     };
 
-    root.header = {
+    GRID.header = {
         init: init,
         repaint: repaint
     };

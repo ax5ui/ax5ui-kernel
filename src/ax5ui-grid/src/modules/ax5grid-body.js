@@ -2,7 +2,9 @@
 (function () {
     "use strict";
 
-    var root = ax5.ui.grid;
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
     var init = function () {
         // 바디 초기화
         this.bodyRowTable = {};
@@ -134,7 +136,7 @@
 
     var repaint = function () {
         var cfg = this.config;
-        var dividedBodyRowObj = root.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
+        var dividedBodyRowObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
         var asideBodyRowData = this.asideBodyRowData = (function (dataTable) {
             var data = {rows:[]};
             for (var i = 0, l = dataTable.rows.length; i < l; i++) {
@@ -286,7 +288,7 @@
 
     };
 
-    root.body = {
+    GRID.body = {
         init: init,
         repaint: repaint,
         setData: setData

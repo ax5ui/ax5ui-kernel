@@ -2,7 +2,7 @@
 (function () {
     "use strict";
 
-    var root = ax5.ui.grid;
+    var GRID = ax5.ui.grid;
     var main =
         `<div data-ax5grid-container="root" data-ax5grid-instance="{{instanceId}}">
             <div data-ax5grid-container="header">
@@ -51,11 +51,11 @@
         </div>`;
 
 
-    root.tmpl = {
+    GRID.tmpl = {
         "main": main,
 
         get: function (tmplName, data) {
-            return ax5.mustache.render(root.tmpl[tmplName], data);
+            return ax5.mustache.render(GRID.tmpl[tmplName], data);
         }
     };
 
