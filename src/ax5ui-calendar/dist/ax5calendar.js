@@ -9,6 +9,7 @@
         className: "calendar",
         version: "0.8.7"
     }, function () {
+
         /**
          * @class ax5calendar
          * @classdesc
