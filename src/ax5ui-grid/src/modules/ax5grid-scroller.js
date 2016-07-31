@@ -73,7 +73,7 @@
 
                     var scrollPositon = convertScrollPosition[type](css);
                     if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
-                    GRID.body.scrollTo.call(self, scrollPositon);
+                    GRID.body.scrollTo.call(self, scrollPositon, type);
                 })
                 .bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
                     scrollMover.off.call(self);

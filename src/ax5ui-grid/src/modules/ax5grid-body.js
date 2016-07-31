@@ -172,9 +172,10 @@
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight);
 
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.data.length - this.config.frozenRowIndex);
-        // todo : 현재 화면에 출력될 범위를 연산하여 data를 결정.
-        // body-scroll 의 포지션에 의존적이므로..
+        if(this.xvar.dataRowCount === data.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this;
 
+
+        // body-scroll 의 포지션에 의존적이므로..
         var repaintBody = function (_elTarget, _colGroup, _bodyRow, _data) {
             var SS = [];
             var cgi, cgl;
@@ -248,6 +249,7 @@
             }
             SS.push('</table>');
 
+            _elTarget.css({paddingTop: paintStartRowIndex * cfg.body.columnHeight});
             _elTarget.html(SS.join(''));
         };
 
@@ -272,6 +274,7 @@
         if (cfg.frozenColumnIndex > 0) {
             repaintBody(this.$.panel["left-body-scroll"], this.leftHeaderColGroup, leftBodyRowData, data);
         }
+
         repaintBody(this.$.panel["body-scroll"], this.headerColGroup, bodyRowData, data);
 
         if (cfg.rightSum) {
@@ -281,10 +284,16 @@
         if (cfg.footSum) {
             // 바닥 합계
         }
+
+        this.xvar.paintStartRowIndex = paintStartRowIndex;
+        this.xvar.dataRowCount = data.length;
     };
 
-    var scrollTo = function (css) {
+    var scrollTo = function (css, type) {
         this.$.panel["body-scroll"].css(css);
+        if(type === "vertical"){
+            repaint.call(this);
+        }
     };
 
     var setData = function () {
