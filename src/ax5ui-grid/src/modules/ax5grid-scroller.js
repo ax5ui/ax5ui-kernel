@@ -15,6 +15,14 @@
                 trackBox = {
                     width: track.innerWidth(), height: track.innerHeight()
                 },
+
+                _vertical_scroller_height = self.$["scroller"]["vertical"].height(),
+                _panel_height = self.$["panel"]["body"].height(),
+                _horizontal_scroller_width = self.$["scroller"]["horizontal"].width(),
+                _panel_width = self.$["panel"]["body"].width(),
+                _content_height = this.xvar.scrollContentHeight,
+                _content_width = this.xvar.scrollContentWidth,
+
                 getScrollerPosition = {
                     "vertical": function (e) {
                         var mouseObj = GRID.util.getMousePosition(e);
@@ -42,6 +50,18 @@
                         }
                         return {left: newLeft};
                     }
+                },
+                convertScrollPosition = {
+                    "vertical": function (css) {
+                        return {
+                            top: -(_content_height * self.$["scroller"]["vertical-bar"].position().top) / _vertical_scroller_height
+                        }
+                    },
+                    "horizontal": function (css) {
+                        return {
+                            left: -(_content_width * self.$["scroller"]["horizontal-bar"].position().left) / _horizontal_scroller_width
+                        }
+                    }
                 };
 
             self.xvar.__da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
@@ -50,6 +70,10 @@
                 .bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
                     var css = getScrollerPosition[type](e);
                     bar.css(css);
+
+                    var scrollPositon = convertScrollPosition[type](css);
+                    if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
+                    GRID.body.scrollTo.call(self, scrollPositon);
                 })
                 .bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
                     scrollMover.off.call(self);
@@ -65,7 +89,6 @@
 
         },
         "off": function () {
-
             jQuery(document.body)
                 .unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId)
                 .unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId)
@@ -117,19 +140,26 @@
     };
 
     var resize = function () {
-        var VERTICAL_SCROLLER_HEIGHT = this.$["scroller"]["vertical"].height();
-        var HORIZONTAL_SCROLLER_WIDTH = this.$["scroller"]["horizontal"].width();
-        var PANEL_HEIGHT = this.$["panel"]["body"].height();
-        var PANEL_WIDTH = this.$["panel"]["body"].width();
-        var CONTENT_HEIGHT = this.xvar.scrollContentHeight;
-        var CONTENT_WIDTH = this.xvar.scrollContentWidth;
-        var verticalScrollBarHeight, horizontalScrollBarWidth;
-
-        verticalScrollBarHeight = PANEL_HEIGHT * VERTICAL_SCROLLER_HEIGHT / CONTENT_HEIGHT;
-        horizontalScrollBarWidth = PANEL_WIDTH * HORIZONTAL_SCROLLER_WIDTH / CONTENT_WIDTH;
+        var _vertical_scroller_height = this.$["scroller"]["vertical"].height(),
+            _horizontal_scroller_width = this.$["scroller"]["horizontal"].width(),
+            _panel_height = this.$["panel"]["body"].height(),
+            _panel_width = this.$["panel"]["body"].width(),
+            _content_height = this.xvar.scrollContentHeight,
+            _content_width = this.xvar.scrollContentWidth,
+            verticalScrollBarHeight = _panel_height * _vertical_scroller_height / _content_height,
+            horizontalScrollBarWidth = _panel_width * _horizontal_scroller_width / _content_width;
 
         this.$["scroller"]["vertical-bar"].css({top: 0, height: verticalScrollBarHeight});
         this.$["scroller"]["horizontal-bar"].css({left: 0, width: horizontalScrollBarWidth});
+
+        _vertical_scroller_height = null;
+        _horizontal_scroller_width = null;
+        _panel_height = null;
+        _panel_width = null;
+        _content_height = null;
+        _content_width = null;
+        verticalScrollBarHeight = null;
+        horizontalScrollBarWidth = null;
     };
 
     GRID.scroller = {

@@ -138,10 +138,10 @@
         var cfg = this.config;
         var dividedBodyRowObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.config.frozenColumnIndex);
         var asideBodyRowData = this.asideBodyRowData = (function (dataTable) {
-            var data = {rows:[]};
+            var data = {rows: []};
             for (var i = 0, l = dataTable.rows.length; i < l; i++) {
-                data.rows[i] = {cols:[]};
-                if(i === 0){
+                data.rows[i] = {cols: []};
+                if (i === 0) {
                     var col = {
                         width: cfg.asideColumnWidth,
                         _width: cfg.asideColumnWidth,
@@ -170,7 +170,7 @@
         var data = this.data;
         var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight);
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight);
-        
+
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.data.length - this.config.frozenRowIndex);
         // todo : 현재 화면에 출력될 범위를 연산하여 data를 결정.
         // body-scroll 의 포지션에 의존적이므로..
@@ -182,14 +182,14 @@
             var tri, trl;
             var ci, cl;
             var col, cellHeight, tdCSS_class;
-            var getFieldValue = function(data, index, key){
-                if(key === "__d-index__"){
+            var getFieldValue = function (data, index, key) {
+                if (key === "__d-index__") {
                     return index + 1;
                 }
-                else if(key === "__d-checkbox__"){
+                else if (key === "__d-checkbox__") {
                     return "C";
                 }
-                else{
+                else {
                     return data[key] || "&nbsp;";
                 }
             };
@@ -265,7 +265,6 @@
             }
         }
 
-
         if (cfg.frozenRowIndex > 0) {
             // 상단 행고정
         }
@@ -284,6 +283,10 @@
         }
     };
 
+    var scrollTo = function (css) {
+        this.$.panel["body-scroll"].css(css);
+    };
+
     var setData = function () {
 
     };
@@ -291,6 +294,7 @@
     GRID.body = {
         init: init,
         repaint: repaint,
-        setData: setData
+        setData: setData,
+        scrollTo: scrollTo
     };
 })();

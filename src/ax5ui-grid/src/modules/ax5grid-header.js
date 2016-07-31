@@ -122,9 +122,14 @@
         }
     };
 
+    var scrollTo = function (css) {
+        this.$.panel["header-scroll"].css(css);
+    };
+
     GRID.header = {
         init: init,
-        repaint: repaint
+        repaint: repaint,
+        scrollTo: scrollTo
     };
 
 })();
