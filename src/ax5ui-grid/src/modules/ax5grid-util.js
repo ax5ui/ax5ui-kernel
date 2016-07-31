@@ -1,8 +1,9 @@
 
 // ax5.ui.grid.util
-(function (root) {
+(function () {
     "use strict";
 
+    var GRID = ax5.ui.grid;
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
      * @param table
@@ -50,8 +51,25 @@
         }
     };
 
-    root.util = {
-        divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex
+    var getMousePosition = function (e) {
+        var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+
+        return {
+            clientX: mouseObj.clientX,
+            clientY: mouseObj.clientY
+        }
     };
 
-})(ax5.ui.grid);
+    var ENM = {
+        "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
+        "mousemove": (ax5.info.supportTouch) ? "touchmove" : "mousemove",
+        "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
+    };
+
+    GRID.util = {
+        divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
+        getMousePosition: getMousePosition,
+        ENM: ENM
+    };
+
+})();

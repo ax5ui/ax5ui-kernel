@@ -1,8 +1,10 @@
 // ax5.ui.grid.layout
-(function (root) {
+(function () {
     "use strict";
 
+    var GRID = ax5.ui.grid;
     var U = ax5.util;
+
     var init = function () {
 
     };
@@ -16,10 +18,10 @@
 
     };
 
-    root.data = {
+    GRID.data = {
         init: init,
         set: set,
         get: get
     };
 
-})(ax5.ui.grid);
+})();

@@ -1,28 +1,23 @@
-/*
- * Copyright (c) 2016. tom@axisj.com
- * - github.com/thomasjang
- * - www.axisj.com
- */
-
 // ax5.ui.layout
-(function (root, _SUPER_) {
-
-    /**
-     * @class ax5layout
-     * @alias ax5.ui.layout
-     * @version 0.1.1
-     * @author tom@axisj.com
-     * @example
-     * ```
-     * var myLayout = new ax5.ui.layout();
-     * ```
-     */
+(function () {
+    var UI = ax5.ui;
     var U = ax5.util;
 
-    //== UI Class
-    var axClass = function () {
-            var
-                self = this,
+    UI.addClass({
+        className: "layout",
+        version: "0.2.2"
+    }, (function () {
+        /**
+         * @class ax5layout
+         * @alias ax5.ui.layout
+         * @author tom@axisj.com
+         * @example
+         * ```
+         * var myLayout = new ax5.ui.layout();
+         * ```
+         */
+        var ax5layout = function () {
+            var self = this,
                 cfg,
                 ENM = {
                     "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
@@ -31,16 +26,12 @@
                 },
                 getMousePosition = function (e) {
                     var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
-
                     return {
                         clientX: mouseObj.clientX,
                         clientY: mouseObj.clientY
                     }
                 };
 
-            if (_SUPER_) _SUPER_.call(this); // 부모호출
-
-            this.queue = [];
             this.config = {
                 theme: 'default',
                 animateTime: 250,
@@ -49,6 +40,7 @@
                 },
                 autoResize: true
             };
+            this.queue = [];
 
             this.openTimer = null;
             this.closeTimer = null;
@@ -291,7 +283,7 @@
                                 css.left = prevPosition;
                                 panel.offsetStart = prevPosition;
                                 panel.offsetEnd = Number(prevPosition) + Number(css.width);
-                                
+
                                 panel.$target.css(css);
                             }
                         }
@@ -904,17 +896,10 @@
                     this.init();
                 }
             }).apply(this, arguments);
-        }
-        ;
-//== UI Class
-
-    root.layout = (function () {
-        if (U.isFunction(_SUPER_)) axClass.prototype = new _SUPER_(); // 상속
-        return axClass;
-    })(); // ax5.ui에 연결
-
-})
-(ax5.ui, ax5.ui.root);
+        };
+        return ax5layout;
+    })());
+})();
 
 ax5.ui.layout_instance = new ax5.ui.layout();
 

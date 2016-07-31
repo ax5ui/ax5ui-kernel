@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-select",
-	"version": "0.3.8",
+	"version": "0.4.2",
 	"description": "A select plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
@@ -18,7 +18,7 @@
 	],
 	"dependencies": {
 		"jquery": "^1.11.0",
-		"ax5core": "",
+		"ax5core": ">=1.0.9",
 		"bootstrap": "^3.3.6"
 	},
 	"license": "LGPLv3",

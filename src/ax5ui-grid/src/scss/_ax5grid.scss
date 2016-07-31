@@ -5,39 +5,131 @@
         overflow: hidden;
 
         table {
-            //table-layout: fixed;
+            table-layout: fixed;
             border-collapse: collapse;
             border-spacing: 0;
+            width: 100%;
             @if ($container == "header") {
                 height: 100%;
             }
             tr {
-                border-bottom: 0px none;
+                border-bottom: 0 none;
+
+                &.tr-0 {
+                }
+                &.tr-1 {
+                    background: #f3f3f3;
+                }
+                &.tr-2 {
+                }
+                &.tr-3 {
+                    background: #f3f3f3;
+                }
             }
             td {
                 box-sizing: border-box;
-                border-left: 1px solid #ccc;
-                border-right: 1px solid #ccc;
-                border-bottom: 0px none;
                 overflow: hidden;
                 position: relative;
-                [data-ax5grid-cellBg] {
-                    position: absolute;
-                    left: 0px;
-                    top: 0px;
-                    width: 100%;
-                    display: block;
-                    box-sizing: border-box;
-                    vertical-align: middle;
+                padding: 0;
+                font-size: 10px;
+                &.hasBorder {
+                    border-right: 1px solid #ccc;
                     border-bottom: 1px solid #ccc;
-                    padding: 0px;
+                }
+                &.isLastColumn {
+
+                }
+                &[data-ax5grid-column-row="null"] {
+                    border-right: 0 none;
                 }
                 [data-ax5grid-cellHolder] {
+                    // 그리드 셀표현 : 그리드의 컬럼텍스트가 여기에 출력됨
+                    display: block;
                     box-sizing: border-box;
                     padding: 3px;
+                    font-size: 12px;
+
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+
+                    @if ($container == "header") {
+                        text-align: center;
+                    }
+
+                    &[data-ax5grid-cellHolder="multiLine"] {
+                        white-space: normal;
+                    }
                 }
             }
         }
+
+        &[data-ax5grid-panel="aside-header"],
+        &[data-ax5grid-panel="top-aside-body"],
+        &[data-ax5grid-panel="aside-body"],
+        &[data-ax5grid-panel="bottom-aside-body"] {
+            border-right: 1px solid darken(#ccc, 0%);
+            table {
+                tr {
+                    background: #f2f2f2;
+                    td {
+                        text-align: center;
+                        &.isLastColumn {
+                            border-right: 0 none;
+                        }
+                    }
+                }
+            }
+        }
+
+        &[data-ax5grid-panel="aside-header"] {
+            table {
+                tr {
+                    @include ax-background(top, #FFFFFF, #f2f2f2);
+                }
+            }
+        }
+
+        &[data-ax5grid-panel="left-header"],
+        &[data-ax5grid-panel="top-left-body"],
+        &[data-ax5grid-panel="left-body"],
+        &[data-ax5grid-panel="bottom-body"] {
+            border-right: 1px solid darken(#ccc, 10%);
+            table {
+                td {
+                    &.isLastColumn {
+                        border-right: 0 none;
+                    }
+                }
+            }
+        }
+
+        [data-ax5grid-panel-scroll] {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    }
+}
+
+@mixin scrollBar($type) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    @include border-top-radius(10px);
+    @include border-bottom-radius(10px);
+    background: #000;
+    opacity: 0.3;
+
+    @if ($type == "vertical-bar") {
+        cursor: ns-resize;
+    }
+    @else{
+        cursor: ew-resize;
+    }
+
+    &:hover{
+        opacity: 0.6;
     }
 }
 
@@ -49,7 +141,7 @@
         [data-ax5grid-container="header"] {
             position: relative;
             overflow: hidden;
-            background: #eee;
+            @include ax-background(top, #FFFFFF, #F0F0F0);
             border-bottom: 1px solid #ccc;
             @include gridPanel("header");
         }
@@ -60,5 +152,54 @@
             @include gridPanel("body");
         }
 
+        [data-ax5grid-container="scroller"] {
+            position: absolute;
+            right: 0px;
+            bottom: 0px;
+
+            $scroller-size: 15px;
+            [data-ax5grid-scroller="vertical"] {
+                box-sizing: border-box;
+                position: absolute;
+                display: none;
+                right: 0;
+                bottom: 0;
+                width: $scroller-size;
+                height: 100%;
+                background: #f3f3f3;
+                border-left: 1px solid #ccc;
+
+                [data-ax5grid-scroller="vertical-bar"] {
+                    @include scrollBar("vertical-bar");
+                }
+            }
+            [data-ax5grid-scroller="horizontal"] {
+                box-sizing: border-box;
+                position: absolute;
+                display: none;
+                right: 0;
+                bottom: 0;
+                height: $scroller-size;
+                width: 100%;
+                background: #f3f3f3;
+                border-top: 1px solid #ccc;
+
+                [data-ax5grid-scroller="horizontal-bar"] {
+                    @include scrollBar("horizontal-bar");
+                }
+            }
+            [data-ax5grid-scroller="corner"] {
+                position: absolute;
+                display: none;
+                right: 0px;
+                bottom: 0px;
+                width: $scroller-size;
+                height: $scroller-size;
+
+                background: #fff;
+                border-top: 1px solid #ccc;
+                border-left: 1px solid #ccc;
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-uploader",
-	"version": "0.0.2",
+	"version": "0.0.5",
 	"description": "A uploader plugin that works with Bootstrap & jQuery",
 	"license": "LGPLv3",
 	"repository": {
