@@ -168,7 +168,7 @@
         var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
 
         var data = this.data;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight);
+        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight);
 
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.data.length - this.config.frozenRowIndex);
@@ -290,7 +290,16 @@
     };
 
     var scrollTo = function (css, type) {
+        var cfg = this.config;
+
+        if (cfg.asidePanelWidth > 0 && type === "vertical") {
+            this.$.panel["aside-body-scroll"].css(css);
+        }
+        if (cfg.frozenColumnIndex > 0 && type === "vertical") {
+            this.$.panel["left-body-scroll"].css(css);
+        }
         this.$.panel["body-scroll"].css(css);
+
         if(type === "vertical"){
             repaint.call(this);
         }

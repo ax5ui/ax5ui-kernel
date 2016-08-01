@@ -5,6 +5,28 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
+    var convertScrollPosition = {
+        "vertical": function (css, _var) {
+            var top = (_var._content_height * css.top) / _var._vertical_scroller_height;
+            if (top < 0) top = 0;
+            else if (_var._content_height - _var._panel_height < top) {
+                top = _var._content_height - _var._panel_height;
+            }
+            return {
+                top: -top
+            }
+        },
+        "horizontal": function (css, _var) {
+            var left = (_var._content_width * css.left) / _var._horizontal_scroller_width;
+            if (left < 0) left = 0;
+            else if (_var._content_width - _var._panel_width < left) {
+                left = _var._content_width - _var._panel_width;
+            }
+            return {
+                left: -left
+            }
+        }
+    };
     var scrollMover = {
         "on": function (track, bar, type) {
             var self = this,
@@ -16,9 +38,9 @@
                     width: track.innerWidth(), height: track.innerHeight()
                 },
 
-                _vertical_scroller_height = self.$["scroller"]["vertical"].height(),
+                _vertical_scroller_height = self.$["scroller"]["vertical"].innerHeight(),
                 _panel_height = self.$["panel"]["body"].height(),
-                _horizontal_scroller_width = self.$["scroller"]["horizontal"].width(),
+                _horizontal_scroller_width = self.$["scroller"]["horizontal"].innerWidth(),
                 _panel_width = self.$["panel"]["body"].width(),
                 _content_height = this.xvar.scrollContentHeight,
                 _content_width = this.xvar.scrollContentWidth,
@@ -50,18 +72,6 @@
                         }
                         return {left: newLeft};
                     }
-                },
-                convertScrollPosition = {
-                    "vertical": function (css) {
-                        return {
-                            top: -(_content_height * self.$["scroller"]["vertical-bar"].position().top) / _vertical_scroller_height
-                        }
-                    },
-                    "horizontal": function (css) {
-                        return {
-                            left: -(_content_width * self.$["scroller"]["horizontal-bar"].position().left) / _horizontal_scroller_width
-                        }
-                    }
                 };
 
             self.xvar.__da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
@@ -71,7 +81,14 @@
                     var css = getScrollerPosition[type](e);
                     bar.css(css);
 
-                    var scrollPositon = convertScrollPosition[type](css);
+                    var scrollPositon = convertScrollPosition[type].call(self, css, {
+                        _content_width: _content_width,
+                        _content_height: _content_height,
+                        _panel_width: _panel_width,
+                        _panel_height: _panel_height,
+                        _horizontal_scroller_width: _horizontal_scroller_width,
+                        _vertical_scroller_height: _vertical_scroller_height
+                    });
                     if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
                     GRID.body.scrollTo.call(self, scrollPositon, type);
                 })
@@ -149,8 +166,51 @@
             verticalScrollBarHeight = _panel_height * _vertical_scroller_height / _content_height,
             horizontalScrollBarWidth = _panel_width * _horizontal_scroller_width / _content_width;
 
-        this.$["scroller"]["vertical-bar"].css({top: 0, height: verticalScrollBarHeight});
-        this.$["scroller"]["horizontal-bar"].css({left: 0, width: horizontalScrollBarWidth});
+        var convertScrollBarPosition = {
+            "vertical": function (_top) {
+                var type = "vertical";
+                var top = (_vertical_scroller_height * _top) / _content_height;
+                if (verticalScrollBarHeight - top > _vertical_scroller_height) {
+                    top = verticalScrollBarHeight - _vertical_scroller_height;
+
+                    var scrollPositon = convertScrollPosition[type].call(this, {top: -top}, {
+                        _content_width: _content_width,
+                        _content_height: _content_height,
+                        _panel_width: _panel_width,
+                        _panel_height: _panel_height,
+                        _horizontal_scroller_width: _horizontal_scroller_width,
+                        _vertical_scroller_height: _vertical_scroller_height
+                    });
+
+                    GRID.body.scrollTo.call(this, scrollPositon, type);
+
+                }
+                return -top
+            },
+            "horizontal": function (_left) {
+                var type = "horizontal";
+                var left = (_horizontal_scroller_width * _left) / _content_width;
+                if (horizontalScrollBarWidth - left > _horizontal_scroller_width) {
+                    left = horizontalScrollBarWidth - _horizontal_scroller_width;
+
+                    var scrollPositon = convertScrollPosition[type].call(this, {left: -left}, {
+                        _content_width: _content_width,
+                        _content_height: _content_height,
+                        _panel_width: _panel_width,
+                        _panel_height: _panel_height,
+                        _horizontal_scroller_width: _horizontal_scroller_width,
+                        _vertical_scroller_height: _vertical_scroller_height
+                    });
+
+                    GRID.header.scrollTo.call(this, scrollPositon);
+                    GRID.body.scrollTo.call(this, scrollPositon, type);
+                }
+                return -left
+            }
+        };
+
+        this.$["scroller"]["vertical-bar"].css({top: convertScrollBarPosition.vertical.call(this, this.$.panel["body-scroll"].position().top), height: verticalScrollBarHeight});
+        this.$["scroller"]["horizontal-bar"].css({left: convertScrollBarPosition.horizontal.call(this, this.$.panel["body-scroll"].position().left), width: horizontalScrollBarWidth});
 
         _vertical_scroller_height = null;
         _horizontal_scroller_width = null;
