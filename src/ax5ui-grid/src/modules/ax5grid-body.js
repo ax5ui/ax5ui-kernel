@@ -172,17 +172,23 @@
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight);
 
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.data.length - this.config.frozenRowIndex);
-        if(this.xvar.dataRowCount === data.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this;
+        if (this.xvar.dataRowCount === data.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this;
 
 
         // body-scroll 의 포지션에 의존적이므로..
-        var repaintBody = function (_elTarget, _colGroup, _bodyRow, _data) {
+        var repaintBody = function (_elTarget, _colGroup, _bodyRow, _data, _scrollConfig) {
             var SS = [];
             var cgi, cgl;
             var di, dl;
             var tri, trl;
             var ci, cl;
             var col, cellHeight, tdCSS_class;
+            if(typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined"){
+                _scrollConfig = {
+                    paintStartRowIndex: 0,
+                    paintRowCount : _data.length
+                }
+            }
             var getFieldValue = function (data, index, key) {
                 if (key === "__d-index__") {
                     return index + 1;
@@ -202,11 +208,11 @@
             SS.push('<col  />');
             SS.push('</colgroup>');
 
-            for (di = paintStartRowIndex, dl = (function () {
+            for (di = _scrollConfig.paintStartRowIndex, dl = (function () {
                 var len;
                 len = _data.length;
-                if (paintRowCount + paintStartRowIndex < len) {
-                    len = paintRowCount + paintStartRowIndex;
+                if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
+                    len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
                 }
                 return len;
             })(); di < dl; di++) {
@@ -249,17 +255,19 @@
             }
             SS.push('</table>');
 
-            _elTarget.css({paddingTop: paintStartRowIndex * cfg.body.columnHeight});
+            _elTarget.css({paddingTop: _scrollConfig.paintStartRowIndex * cfg.body.columnHeight});
             _elTarget.html(SS.join(''));
         };
 
+        // aside
         if (cfg.asidePanelWidth > 0) {
+
             if (cfg.frozenRowIndex > 0) {
                 // 상단 행고정
-                repaintBody(this.$.panel["top-aside-body"], this.asideColGroup, asideBodyRowData, data);
+                repaintBody(this.$.panel["top-aside-body"], this.asideColGroup, asideBodyRowData, data.slice(0, cfg.frozenRowIndex));
             }
 
-            repaintBody(this.$.panel["aside-body-scroll"], this.asideColGroup, asideBodyRowData, data);
+            repaintBody(this.$.panel["aside-body-scroll"], this.asideColGroup, asideBodyRowData, data, "scroll");
 
             if (cfg.footSum) {
                 // 바닥 합계
@@ -267,22 +275,37 @@
             }
         }
 
+        // left
+        if (cfg.frozenColumnIndex > 0) {
+            if (cfg.frozenRowIndex > 0) {
+                // 상단 행고정
+                repaintBody(this.$.panel["top-left-body"], this.leftHeaderColGroup, leftBodyRowData, data.slice(0, cfg.frozenRowIndex));
+            }
+            repaintBody(this.$.panel["left-body-scroll"], this.leftHeaderColGroup, leftBodyRowData, data, {
+                paintStartRowIndex: paintStartRowIndex,
+                paintRowCount: paintRowCount
+            });
+            if (cfg.footSum) {
+
+            }
+        }
+
+        // body
         if (cfg.frozenRowIndex > 0) {
             // 상단 행고정
+            repaintBody(this.$.panel["top-body-scroll"], this.headerColGroup, bodyRowData, data.slice(0, cfg.frozenRowIndex));
+        }
+        repaintBody(this.$.panel["body-scroll"], this.headerColGroup, bodyRowData, data, {
+            paintStartRowIndex: paintStartRowIndex,
+            paintRowCount: paintRowCount
+        });
+        if (cfg.footSum) {
+
         }
 
-        if (cfg.frozenColumnIndex > 0) {
-            repaintBody(this.$.panel["left-body-scroll"], this.leftHeaderColGroup, leftBodyRowData, data);
-        }
-
-        repaintBody(this.$.panel["body-scroll"], this.headerColGroup, bodyRowData, data);
-
+        // right
         if (cfg.rightSum) {
 
-        }
-
-        if (cfg.footSum) {
-            // 바닥 합계
         }
 
         this.xvar.paintStartRowIndex = paintStartRowIndex;
@@ -298,9 +321,12 @@
         if (cfg.frozenColumnIndex > 0 && type === "vertical") {
             this.$.panel["left-body-scroll"].css(css);
         }
+        if (cfg.frozenRowIndex > 0 && type === "horizontal") {
+            this.$.panel["top-body-scroll"].css(css);
+        }
         this.$.panel["body-scroll"].css(css);
 
-        if(type === "vertical"){
+        if (type === "vertical") {
             repaint.call(this);
         }
     };

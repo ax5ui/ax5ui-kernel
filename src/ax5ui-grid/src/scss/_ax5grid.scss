@@ -94,7 +94,7 @@
         &[data-ax5grid-panel="top-left-body"],
         &[data-ax5grid-panel="left-body"],
         &[data-ax5grid-panel="bottom-body"] {
-            border-right: 1px solid darken(#ccc, 10%);
+            border-right: 1px solid darken(#ccc, 10%); /// frozen Line color
             table {
                 td {
                     &.isLastColumn {
@@ -102,6 +102,13 @@
                     }
                 }
             }
+        }
+
+        &[data-ax5grid-panel="top-aside-body"],
+        &[data-ax5grid-panel="top-left-body"],
+        &[data-ax5grid-panel="top-body"],
+        &[data-ax5grid-panel="top-right-body"] {
+            border-bottom: 1px solid darken(#ccc, 10%); /// frozen Line color
         }
 
         [data-ax5grid-panel-scroll] {

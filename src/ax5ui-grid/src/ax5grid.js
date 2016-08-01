@@ -262,7 +262,9 @@
                         return width;
                     })(this.colGroup, cfg.frozenColumnIndex);
                     var rightPanelWidth = 0; // todo : 우측 함계컬럼 넘비 계산
-                    var frozenRowHeight = 0; // todo : 고정행 높이 계산하기
+                    var frozenRowHeight = (function (bodyTrHeight) {
+                        return cfg.frozenRowIndex * bodyTrHeight;
+                    })(this.xvar.bodyTrHeight); // todo : 고정행 높이 계산하기
                     var footSumHeight = 0;
 
                     var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
@@ -336,7 +338,7 @@
                         if (containerType === "body") {
                             switch (vPosition) {
                                 case "top":
-                                    if (cfg.frozenRowIndex === 0) {
+                                    if (cfg.frozenRowIndex == 0) {
                                         isHide = true;
                                     } else {
                                         css["top"] = 0;
@@ -352,16 +354,10 @@
                                     }
                                     break;
                                 default:
-                                    css["top"] = 0;
-                                    css["height"] = bodyHeight; // footSum height
-                                    if (cfg.frozenRowIndex === 0) {
-                                        css["top"] = frozenRowHeight;
-                                        css["height"] = bodyHeight - frozenRowHeight; // footSum height
-                                    }
-                                    if (cfg.footSum) {
-                                        // 높이값 빼기
-                                        css["height"] -= footSumHeight;
-                                    }
+
+                                    css["top"] = frozenRowHeight;
+                                    css["height"] = bodyHeight - frozenRowHeight - footSumHeight;
+
                                     break;
                             }
                         } else if (containerType === "header") {
