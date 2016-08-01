@@ -109,7 +109,6 @@
 
         if (cfg.asidePanelWidth > 0) {
             repaintHeader(this.$.panel["aside-header"], this.asideColGroup, asideHeaderData);
-            // todo : aside
         }
 
         if (cfg.frozenColumnIndex > 0) {

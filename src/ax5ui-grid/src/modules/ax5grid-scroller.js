@@ -28,6 +28,63 @@
         }
     };
     var scrollMover = {
+        "click": function (track, bar, type, e) {
+
+            var self = this,
+                trackOffset = track.offset(),
+                barBox = {
+                    width: bar.width(), height: bar.height()
+                },
+                trackBox = {
+                    width: track.innerWidth(), height: track.innerHeight()
+                },
+                _vertical_scroller_height = self.$["scroller"]["vertical"].innerHeight(),
+                _panel_height = self.$["panel"]["body"].height(),
+                _horizontal_scroller_width = self.$["scroller"]["horizontal"].innerWidth(),
+                _panel_width = self.$["panel"]["body"].width(),
+                _content_height = self.xvar.scrollContentHeight,
+                _content_width = self.xvar.scrollContentWidth,
+                getScrollerPosition = {
+                    "vertical": function (e) {
+                        var mouseObj = GRID.util.getMousePosition(e);
+                        // track을 벗어 나지 안도록 범위 체크
+                        var newTop = mouseObj.clientY - trackOffset.top;
+                        if (newTop < 0) {
+                            newTop = 0;
+                        }
+                        else if ((newTop + barBox.height) > trackBox.height) {
+                            newTop = trackBox.height - barBox.height;
+                        }
+                        return {top: newTop};
+                    },
+                    "horizontal": function (e) {
+                        var mouseObj = GRID.util.getMousePosition(e);
+                        // track을 벗어 나지 안도록 범위 체크
+                        var newLeft = mouseObj.clientX - trackOffset.left;
+                        if (newLeft < 0) {
+                            newLeft = 0;
+                        }
+                        else if ((newLeft + barBox.width) > trackBox.width) {
+                            newLeft = trackBox.width - barBox.width;
+                        }
+                        return {left: newLeft};
+                    }
+                };
+
+            var css = getScrollerPosition[type](e);
+            bar.css(css);
+
+            var scrollPositon = convertScrollPosition[type].call(self, css, {
+                _content_width: _content_width,
+                _content_height: _content_height,
+                _panel_width: _panel_width,
+                _panel_height: _panel_height,
+                _horizontal_scroller_width: _horizontal_scroller_width,
+                _vertical_scroller_height: _vertical_scroller_height
+            });
+            if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
+            GRID.body.scrollTo.call(self, scrollPositon, type);
+        },
         "on": function (track, bar, type) {
             var self = this,
                 barOffset = bar.position(),
@@ -42,8 +99,8 @@
                 _panel_height = self.$["panel"]["body"].height(),
                 _horizontal_scroller_width = self.$["scroller"]["horizontal"].innerWidth(),
                 _panel_width = self.$["panel"]["body"].width(),
-                _content_height = this.xvar.scrollContentHeight,
-                _content_width = this.xvar.scrollContentWidth,
+                _content_height = self.xvar.scrollContentHeight,
+                _content_width = self.xvar.scrollContentWidth,
 
                 getScrollerPosition = {
                     "vertical": function (e) {
@@ -137,7 +194,9 @@
             });
         this.$["scroller"]["vertical"]
             .bind("click", (function (e) {
-
+                if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "vertical") {
+                    scrollMover.click.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical", e);
+                }
             }).bind(this));
 
         this.$["scroller"]["horizontal-bar"]
@@ -151,7 +210,9 @@
             });
         this.$["scroller"]["horizontal"]
             .bind("click", (function (e) {
-
+                if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "horizontal") {
+                    scrollMover.click.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal", e);
+                }
             }).bind(this));
 
     };
@@ -229,5 +290,4 @@
 
 })();
 
-//todo : 스크롤바 클릭하면 이동
 //todo : 휠스크롤 & 터치 스크롤
