@@ -169,9 +169,9 @@
 
         var data = this.data;
         var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight);
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + cfg.frozenRowIndex;
 
-        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.data.length - this.config.frozenRowIndex);
+        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.data.length - cfg.frozenRowIndex);
         if (this.xvar.dataRowCount === data.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this;
 
 
@@ -183,12 +183,18 @@
             var tri, trl;
             var ci, cl;
             var col, cellHeight, tdCSS_class;
-            if(typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined"){
-                _scrollConfig = {
-                    paintStartRowIndex: 0,
-                    paintRowCount : _data.length
+            var isScrolled = (function () {
+                if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
+                    _scrollConfig = {
+                        paintStartRowIndex: 0,
+                        paintRowCount: _data.length
+                    };
+                    return false;
+                } else {
+                    return true;
                 }
-            }
+            })();
+
             var getFieldValue = function (data, index, key) {
                 if (key === "__d-index__") {
                     return index + 1;
@@ -255,19 +261,23 @@
             }
             SS.push('</table>');
 
-            _elTarget.css({paddingTop: _scrollConfig.paintStartRowIndex * cfg.body.columnHeight});
+            if(isScrolled) {
+                _elTarget.css({paddingTop: (_scrollConfig.paintStartRowIndex - cfg.frozenRowIndex) * cfg.body.columnHeight});
+            }
             _elTarget.html(SS.join(''));
         };
 
         // aside
         if (cfg.asidePanelWidth > 0) {
-
             if (cfg.frozenRowIndex > 0) {
                 // 상단 행고정
                 repaintBody(this.$.panel["top-aside-body"], this.asideColGroup, asideBodyRowData, data.slice(0, cfg.frozenRowIndex));
             }
 
-            repaintBody(this.$.panel["aside-body-scroll"], this.asideColGroup, asideBodyRowData, data, "scroll");
+            repaintBody(this.$.panel["aside-body-scroll"], this.asideColGroup, asideBodyRowData, data, {
+                paintStartRowIndex: paintStartRowIndex,
+                paintRowCount: paintRowCount
+            });
 
             if (cfg.footSum) {
                 // 바닥 합계
@@ -305,7 +315,7 @@
 
         // right
         if (cfg.rightSum) {
-
+            // todo : right 표현 정리
         }
 
         this.xvar.paintStartRowIndex = paintStartRowIndex;
