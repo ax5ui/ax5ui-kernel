@@ -6,7 +6,7 @@
 
         table {
             table-layout: fixed;
-            border-collapse: collapse;
+            border-collapse: separate;
             border-spacing: 0;
             width: 100%;
             @if ($container == "header") {

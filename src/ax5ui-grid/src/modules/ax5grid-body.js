@@ -261,7 +261,7 @@
             }
             SS.push('</table>');
 
-            if(isScrolled) {
+            if (isScrolled) {
                 _elTarget.css({paddingTop: (_scrollConfig.paintStartRowIndex - cfg.frozenRowIndex) * cfg.body.columnHeight});
             }
             _elTarget.html(SS.join(''));
@@ -325,19 +325,35 @@
     var scrollTo = function (css, type) {
         var cfg = this.config;
 
-        if (cfg.asidePanelWidth > 0 && type === "vertical") {
-            this.$.panel["aside-body-scroll"].css(css);
-        }
-        if (cfg.frozenColumnIndex > 0 && type === "vertical") {
-            this.$.panel["left-body-scroll"].css(css);
-        }
-        if (cfg.frozenRowIndex > 0 && type === "horizontal") {
-            this.$.panel["top-body-scroll"].css(css);
-        }
-        this.$.panel["body-scroll"].css(css);
+        if (typeof type === "undefined") {
 
-        if (type === "vertical") {
+            if (cfg.asidePanelWidth > 0) {
+                this.$.panel["aside-body-scroll"].css({top: css.top});
+            }
+            if (cfg.frozenColumnIndex > 0) {
+                this.$.panel["left-body-scroll"].css({top: css.top});
+            }
+            if (cfg.frozenRowIndex > 0) {
+                this.$.panel["top-body-scroll"].css({left: css.left});
+            }
+            this.$.panel["body-scroll"].css(css);
+
             repaint.call(this);
+        } else {
+            if (cfg.asidePanelWidth > 0 && type === "vertical") {
+                this.$.panel["aside-body-scroll"].css(css);
+            }
+            if (cfg.frozenColumnIndex > 0 && type === "vertical") {
+                this.$.panel["left-body-scroll"].css(css);
+            }
+            if (cfg.frozenRowIndex > 0 && type === "horizontal") {
+                this.$.panel["top-body-scroll"].css(css);
+            }
+            this.$.panel["body-scroll"].css(css);
+
+            if (type === "vertical") {
+                repaint.call(this);
+            }
         }
     };
 

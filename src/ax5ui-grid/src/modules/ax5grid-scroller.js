@@ -27,6 +27,48 @@
             }
         }
     };
+    var convertScrollBarPosition = {
+        "vertical": function (_top, _var) {
+            var type = "vertical";
+            var top = (_var._vertical_scroller_height * _top) / _var._content_height;
+            if (_var.verticalScrollBarHeight - top > _var._vertical_scroller_height) {
+                top = _var.verticalScrollBarHeight - _var._vertical_scroller_height;
+
+                var scrollPositon = convertScrollPosition[type].call(this, {top: -top}, {
+                    _content_width: _var._content_width,
+                    _content_height: _var._content_height,
+                    _panel_width: _var._panel_width,
+                    _panel_height: _var._panel_height,
+                    _horizontal_scroller_width: _var._horizontal_scroller_width,
+                    _vertical_scroller_height: _var._vertical_scroller_height
+                });
+
+                GRID.body.scrollTo.call(this, scrollPositon, type);
+
+            }
+            return -top
+        },
+        "horizontal": function (_left, _var) {
+            var type = "horizontal";
+            var left = (_var._horizontal_scroller_width * _left) / _var._content_width;
+            if (_var.horizontalScrollBarWidth - left > _var._horizontal_scroller_width) {
+                left = _var.horizontalScrollBarWidth - _var._horizontal_scroller_width;
+
+                var scrollPositon = convertScrollPosition[type].call(this, {left: -left}, {
+                    _content_width: _var._content_width,
+                    _content_height: _var._content_height,
+                    _panel_width: _var._panel_width,
+                    _panel_height: _var._panel_height,
+                    _horizontal_scroller_width: _var._horizontal_scroller_width,
+                    _vertical_scroller_height: _var._vertical_scroller_height
+                });
+
+                GRID.header.scrollTo.call(this, scrollPositon);
+                GRID.body.scrollTo.call(this, scrollPositon, type);
+            }
+            return -left
+        }
+    };
     var scrollMover = {
         "click": function (track, bar, type, e) {
 
@@ -172,6 +214,52 @@
                 .removeAttr('unselectable')
                 .css('user-select', 'auto')
                 .off('selectstart');
+        },
+        "wheel": function (delta) {
+            var self = this,
+                _panel_height = self.$["panel"]["body"].height(),
+                _panel_width = self.$["panel"]["body"].width(),
+                _content_height = self.xvar.scrollContentHeight,
+                _content_width = self.xvar.scrollContentWidth;
+
+            var _body_scroll_position = self.$["panel"]["body-scroll"].position();
+            var newLeft, newTop;
+            var _top_is_end = false;
+            var _left_is_end = false;
+
+            newLeft = _body_scroll_position.left - delta.x;
+            newTop = _body_scroll_position.top - delta.y;
+
+            // newTop이 범위를 넘었는지 체크
+            if (newTop >= 0) {
+                newTop = 0;
+                _top_is_end = true;
+            } else if (newTop <= _panel_height - _content_height) {
+                newTop = _panel_height - _content_height;
+                if (newTop >= 0) newTop = 0;
+                _top_is_end = true;
+            } else {
+                if (delta.y == 0) _top_is_end = true;
+            }
+
+            // newLeft이 범위를 넘었는지 체크
+            if (newLeft >= 0) {
+                newLeft = 0;
+                _left_is_end = true;
+            } else if (newLeft <= _panel_width - _content_width) {
+                newLeft = _panel_width - _content_width;
+                if (newLeft >= 0) newLeft = 0;
+                _left_is_end = true;
+            } else {
+                if (delta.x == 0) _left_is_end = true;
+            }
+
+            //self.$["panel"]["body-scroll"].css({left: newLeft, top: newTop});
+            GRID.header.scrollTo.call(this, {left: newLeft});
+            GRID.body.scrollTo.call(this, {left: newLeft, top: newTop});
+            resize.call(this);
+
+            return !_top_is_end;
         }
     };
 
@@ -215,6 +303,26 @@
                 }
             }).bind(this));
 
+        this.$["container"]["body"].bind('mousewheel DOMMouseScroll', (function (e) {
+            var E = e.originalEvent;
+            var delta = {x: 0, y: 0};
+            if (E.detail) {
+                delta.y = E.detail * 10;
+            } else {
+                if (typeof E.deltaY === "undefined") {
+                    delta.y = E.wheelDelta;
+                    delta.x = 0;
+                } else {
+                    delta.y = E.deltaY;
+                    delta.x = E.deltaX;
+                }
+            }
+
+            if (scrollMover.wheel.call(this, delta)) {
+                U.stopEvent(e);
+            }
+        }).bind(this));
+
     };
 
     var resize = function () {
@@ -227,51 +335,32 @@
             verticalScrollBarHeight = _panel_height * _vertical_scroller_height / _content_height,
             horizontalScrollBarWidth = _panel_width * _horizontal_scroller_width / _content_width;
 
-        var convertScrollBarPosition = {
-            "vertical": function (_top) {
-                var type = "vertical";
-                var top = (_vertical_scroller_height * _top) / _content_height;
-                if (verticalScrollBarHeight - top > _vertical_scroller_height) {
-                    top = verticalScrollBarHeight - _vertical_scroller_height;
-
-                    var scrollPositon = convertScrollPosition[type].call(this, {top: -top}, {
-                        _content_width: _content_width,
-                        _content_height: _content_height,
-                        _panel_width: _panel_width,
-                        _panel_height: _panel_height,
-                        _horizontal_scroller_width: _horizontal_scroller_width,
-                        _vertical_scroller_height: _vertical_scroller_height
-                    });
-
-                    GRID.body.scrollTo.call(this, scrollPositon, type);
-
-                }
-                return -top
-            },
-            "horizontal": function (_left) {
-                var type = "horizontal";
-                var left = (_horizontal_scroller_width * _left) / _content_width;
-                if (horizontalScrollBarWidth - left > _horizontal_scroller_width) {
-                    left = horizontalScrollBarWidth - _horizontal_scroller_width;
-
-                    var scrollPositon = convertScrollPosition[type].call(this, {left: -left}, {
-                        _content_width: _content_width,
-                        _content_height: _content_height,
-                        _panel_width: _panel_width,
-                        _panel_height: _panel_height,
-                        _horizontal_scroller_width: _horizontal_scroller_width,
-                        _vertical_scroller_height: _vertical_scroller_height
-                    });
-
-                    GRID.header.scrollTo.call(this, scrollPositon);
-                    GRID.body.scrollTo.call(this, scrollPositon, type);
-                }
-                return -left
-            }
-        };
-
-        this.$["scroller"]["vertical-bar"].css({top: convertScrollBarPosition.vertical.call(this, this.$.panel["body-scroll"].position().top), height: verticalScrollBarHeight});
-        this.$["scroller"]["horizontal-bar"].css({left: convertScrollBarPosition.horizontal.call(this, this.$.panel["body-scroll"].position().left), width: horizontalScrollBarWidth});
+        this.$["scroller"]["vertical-bar"].css({
+            top: convertScrollBarPosition.vertical.call(this, this.$.panel["body-scroll"].position().top, {
+                _content_width: _content_width,
+                _content_height: _content_height,
+                _panel_width: _panel_width,
+                _panel_height: _panel_height,
+                _horizontal_scroller_width: _horizontal_scroller_width,
+                _vertical_scroller_height: _vertical_scroller_height,
+                verticalScrollBarHeight: verticalScrollBarHeight,
+                horizontalScrollBarWidth: horizontalScrollBarWidth
+            }),
+            height: verticalScrollBarHeight
+        });
+        this.$["scroller"]["horizontal-bar"].css({
+            left: convertScrollBarPosition.horizontal.call(this, this.$.panel["body-scroll"].position().left, {
+                _content_width: _content_width,
+                _content_height: _content_height,
+                _panel_width: _panel_width,
+                _panel_height: _panel_height,
+                _horizontal_scroller_width: _horizontal_scroller_width,
+                _vertical_scroller_height: _vertical_scroller_height,
+                verticalScrollBarHeight: verticalScrollBarHeight,
+                horizontalScrollBarWidth: horizontalScrollBarWidth
+            }),
+            width: horizontalScrollBarWidth
+        });
 
         _vertical_scroller_height = null;
         _horizontal_scroller_width = null;
