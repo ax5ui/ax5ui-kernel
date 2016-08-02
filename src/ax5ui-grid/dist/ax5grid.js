@@ -1270,7 +1270,7 @@
             GRID.body.scrollTo.call(this, { left: newLeft, top: newTop });
             resize.call(this);
 
-            return !_top_is_end;
+            return !_top_is_end || !_left_is_end;
         }
     };
 
