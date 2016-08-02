@@ -51,7 +51,8 @@
                     columnBorderWidth: 1
                 },
                 scroller: {
-                    size: 15
+                    size: 15,
+                    barMinSize: 15
                 }
             };
             this.xvar = {
