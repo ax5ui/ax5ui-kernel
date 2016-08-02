@@ -19,7 +19,7 @@
 
 <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 400px;"></div>
 
-<div style="height: 1000px;"></div>
+<div style="height: 10px;"></div>
 <script>
     var firstGrid = new ax5.ui.grid();
 
@@ -27,8 +27,8 @@
 
         firstGrid.setConfig({
             target: $('[data-ax5grid="first-grid"]'),
-            frozenColumnIndex: 3,
-            frozenRowIndex: 3,
+            frozenColumnIndex: 0,
+            frozenRowIndex: 0,
             showLineNumber: true,
             showRowSelector: false,
             header: {
@@ -41,7 +41,7 @@
                 {key: "a", label: "필드A", width: 80},
                 {key: "b", label: "필드B"},
                 {
-                    label: "필드C", columns: [
+                    key: "c", label: "필드C", columns: [
                             {key: "c1", label: "필드C-1"},{key: "c2", label: "필드C-2"}
                     ]
                 },

@@ -787,11 +787,15 @@
             SS.push('</table>');
 
             if (isScrolled) {
-                _elTarget.css({ paddingTop: (_scrollConfig.paintStartRowIndex - cfg.frozenRowIndex) * cfg.body.columnHeight });
+                _elTarget.css({ paddingTop: (_scrollConfig.paintStartRowIndex - cfg.frozenRowIndex) * _scrollConfig.bodyTrHeight });
             }
             _elTarget.html(SS.join(''));
         };
-
+        var scrollConfig = {
+            paintStartRowIndex: paintStartRowIndex,
+            paintRowCount: paintRowCount,
+            bodyTrHeight: this.xvar.bodyTrHeight
+        };
         // aside
         if (cfg.asidePanelWidth > 0) {
             if (cfg.frozenRowIndex > 0) {
@@ -799,10 +803,7 @@
                 repaintBody(this.$.panel["top-aside-body"], this.asideColGroup, asideBodyRowData, data.slice(0, cfg.frozenRowIndex));
             }
 
-            repaintBody(this.$.panel["aside-body-scroll"], this.asideColGroup, asideBodyRowData, data, {
-                paintStartRowIndex: paintStartRowIndex,
-                paintRowCount: paintRowCount
-            });
+            repaintBody(this.$.panel["aside-body-scroll"], this.asideColGroup, asideBodyRowData, data, scrollConfig);
 
             if (cfg.footSum) {
                 // 바닥 합계
@@ -816,10 +817,7 @@
                 // 상단 행고정
                 repaintBody(this.$.panel["top-left-body"], this.leftHeaderColGroup, leftBodyRowData, data.slice(0, cfg.frozenRowIndex));
             }
-            repaintBody(this.$.panel["left-body-scroll"], this.leftHeaderColGroup, leftBodyRowData, data, {
-                paintStartRowIndex: paintStartRowIndex,
-                paintRowCount: paintRowCount
-            });
+            repaintBody(this.$.panel["left-body-scroll"], this.leftHeaderColGroup, leftBodyRowData, data, scrollConfig);
             if (cfg.footSum) {}
         }
 
@@ -828,10 +826,7 @@
             // 상단 행고정
             repaintBody(this.$.panel["top-body-scroll"], this.headerColGroup, bodyRowData, data.slice(0, cfg.frozenRowIndex));
         }
-        repaintBody(this.$.panel["body-scroll"], this.headerColGroup, bodyRowData, data, {
-            paintStartRowIndex: paintStartRowIndex,
-            paintRowCount: paintRowCount
-        });
+        repaintBody(this.$.panel["body-scroll"], this.headerColGroup, bodyRowData, data, scrollConfig);
         if (cfg.footSum) {}
 
         // right
@@ -1069,6 +1064,24 @@
             var _content_height = _var._content_height - _var._panel_height;
             var _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight;
             var top = _scroller_height * _top / _content_height;
+
+            if (-top > _scroller_height) {
+                top = -_scroller_height;
+
+                var scrollPositon = convertScrollPosition[type].call(this, { top: -top }, {
+                    _content_width: _var._content_width,
+                    _content_height: _var._content_height,
+                    _panel_width: _var._panel_width,
+                    _panel_height: _var._panel_height,
+                    _horizontal_scroller_width: _var._horizontal_scroller_width,
+                    _vertical_scroller_height: _var._vertical_scroller_height,
+                    verticalScrollBarHeight: _var.verticalScrollBarHeight,
+                    horizontalScrollBarWidth: _var.horizontalScrollBarWidth
+                });
+
+                GRID.body.scrollTo.call(this, scrollPositon, type);
+            }
+
             return -top;
         },
         "horizontal": function horizontal(_left, _var) {
@@ -1076,6 +1089,24 @@
             var _content_width = _var._content_width - _var._panel_width;
             var _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth;
             var left = _scroller_width * _left / _content_width;
+
+            if (-left > _scroller_width) {
+                left = -_scroller_width;
+                var scrollPositon = convertScrollPosition[type].call(this, { left: -left }, {
+                    _content_width: _var._content_width,
+                    _content_height: _var._content_height,
+                    _panel_width: _var._panel_width,
+                    _panel_height: _var._panel_height,
+                    _horizontal_scroller_width: _var._horizontal_scroller_width,
+                    _vertical_scroller_height: _var._vertical_scroller_height,
+                    verticalScrollBarHeight: _var.verticalScrollBarHeight,
+                    horizontalScrollBarWidth: _var.horizontalScrollBarWidth
+                });
+
+                GRID.header.scrollTo.call(this, scrollPositon);
+                GRID.body.scrollTo.call(this, scrollPositon, type);
+            }
+
             return -left;
         }
     };
@@ -1369,8 +1400,6 @@
         resize: resize
     };
 })();
-
-// todo : 스크롤바 최소크기 만들기. (트랙의 길이는 트랙의 길이 - 바이길이)
 
 // ax5.ui.grid.tmpl
 (function () {
