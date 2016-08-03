@@ -39,7 +39,8 @@
 
                 height: 400,
                 columnMinWidth: 100,
-                asideColumnWidth: 30,
+                lineNumberColumnWidth: 30,
+                rowSelectorColumnWidth: 30,
 
                 header: {
                     columnHeight: 23,
@@ -248,8 +249,8 @@
 
                 var asidePanelWidth = cfg.asidePanelWidth = function () {
                     var width = 0;
-                    if (cfg.showLineNumber) width += cfg.asideColumnWidth;
-                    if (cfg.showRowSelector) width += cfg.asideColumnWidth;
+                    if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
+                    if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
                     return width;
                 }();
                 var frozenPanelWidth = cfg.frozenPanelWidth = function (colGroup, endIndex) {
@@ -928,8 +929,6 @@
                 data.rows[i] = { cols: [] };
                 if (i === 0) {
                     var col = {
-                        width: cfg.asideColumnWidth,
-                        _width: cfg.asideColumnWidth,
                         label: "",
                         colspan: 1,
                         rowspan: dataTable.rows.length,
@@ -939,12 +938,20 @@
                         _col = {};
 
                     if (cfg.showLineNumber) {
-                        _col = jQuery.extend({}, col, { label: "&nbsp;" });
+                        _col = jQuery.extend({}, col, {
+                            label: "&nbsp;",
+                            width: cfg.lineNumberColumnWidth,
+                            _width: cfg.lineNumberColumnWidth
+                        });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
-                        _col = jQuery.extend({}, col, { label: "" });
+                        _col = jQuery.extend({}, col, {
+                            label: "",
+                            width: cfg.rowSelectorColumnWidth,
+                            _width: cfg.rowSelectorColumnWidth
+                        });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
                     }
@@ -1127,6 +1134,8 @@
                 _panel_width = self.$["panel"]["body"].width(),
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
+                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].height(),
+                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].width(),
                 getScrollerPosition = {
                 "vertical": function vertical(e) {
                     var mouseObj = GRID.util.getMousePosition(e);
@@ -1161,7 +1170,9 @@
                 _panel_width: _panel_width,
                 _panel_height: _panel_height,
                 _horizontal_scroller_width: _horizontal_scroller_width,
-                _vertical_scroller_height: _vertical_scroller_height
+                _vertical_scroller_height: _vertical_scroller_height,
+                verticalScrollBarHeight: verticalScrollBarHeight,
+                horizontalScrollBarWidth: horizontalScrollBarWidth
             });
             if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
             GRID.body.scrollTo.call(self, scrollPositon, type);
@@ -1401,6 +1412,7 @@
     };
 })();
 
+// todo : aside checkbox
 // ax5.ui.grid.tmpl
 (function () {
     "use strict";

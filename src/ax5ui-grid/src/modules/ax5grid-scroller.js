@@ -100,6 +100,8 @@
                 _panel_width = self.$["panel"]["body"].width(),
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
+                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].height(),
+                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].width(),
                 getScrollerPosition = {
                     "vertical": function (e) {
                         var mouseObj = GRID.util.getMousePosition(e);
@@ -136,7 +138,9 @@
                 _panel_width: _panel_width,
                 _panel_height: _panel_height,
                 _horizontal_scroller_width: _horizontal_scroller_width,
-                _vertical_scroller_height: _vertical_scroller_height
+                _vertical_scroller_height: _vertical_scroller_height,
+                verticalScrollBarHeight: verticalScrollBarHeight,
+                horizontalScrollBarWidth: horizontalScrollBarWidth
             });
             if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
             GRID.body.scrollTo.call(self, scrollPositon, type);
@@ -400,3 +404,5 @@
     };
 
 })();
+
+// todo : aside checkbox

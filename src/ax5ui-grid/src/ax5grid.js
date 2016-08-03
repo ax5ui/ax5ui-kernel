@@ -38,7 +38,8 @@
 
                 height: 400,
                 columnMinWidth: 100,
-                asideColumnWidth: 30,
+                lineNumberColumnWidth: 30,
+                rowSelectorColumnWidth: 30,
 
                 header: {
                     columnHeight: 23,
@@ -251,8 +252,8 @@
 
                     var asidePanelWidth = cfg.asidePanelWidth = (function () {
                         var width = 0;
-                        if (cfg.showLineNumber) width += cfg.asideColumnWidth;
-                        if (cfg.showRowSelector) width += cfg.asideColumnWidth;
+                        if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
+                        if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
                         return width;
                     })();
                     var frozenPanelWidth = cfg.frozenPanelWidth = (function (colGroup, endIndex) {

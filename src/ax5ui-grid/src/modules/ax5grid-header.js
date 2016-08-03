@@ -22,8 +22,6 @@
                 data.rows[i] = {cols:[]};
                 if(i === 0){
                     var col = {
-                        width: cfg.asideColumnWidth,
-                        _width: cfg.asideColumnWidth,
                         label: "",
                         colspan: 1,
                         rowspan: dataTable.rows.length,
@@ -32,12 +30,20 @@
                     }, _col = {};
 
                     if (cfg.showLineNumber) {
-                        _col = jQuery.extend({}, col, {label: "&nbsp;"});
+                        _col = jQuery.extend({}, col, {
+                            label: "&nbsp;",
+                            width: cfg.lineNumberColumnWidth,
+                            _width: cfg.lineNumberColumnWidth
+                        });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
-                        _col = jQuery.extend({}, col, {label: ""});
+                        _col = jQuery.extend({}, col, {
+                            label: "",
+                            width: cfg.rowSelectorColumnWidth,
+                            _width: cfg.rowSelectorColumnWidth
+                        });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
                     }
