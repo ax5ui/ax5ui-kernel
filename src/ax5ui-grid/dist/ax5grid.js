@@ -1342,7 +1342,7 @@
                 delta.y = E.detail * 10;
             } else {
                 if (typeof E.deltaY === "undefined") {
-                    delta.y = E.wheelDelta;
+                    delta.y = -E.wheelDelta;
                     delta.x = 0;
                 } else {
                     delta.y = E.deltaY;
@@ -1483,10 +1483,10 @@
 
     var getMousePosition = function getMousePosition(e) {
         var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
-
+        // clientX, Y 쓰면 스크롤에서 문제 발생
         return {
-            clientX: mouseObj.clientX,
-            clientY: mouseObj.clientY
+            clientX: mouseObj.pageX,
+            clientY: mouseObj.pageY
         };
     };
 

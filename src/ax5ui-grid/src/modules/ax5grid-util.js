@@ -53,10 +53,10 @@
 
     var getMousePosition = function (e) {
         var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
-
+        // clientX, Y 쓰면 스크롤에서 문제 발생
         return {
-            clientX: mouseObj.clientX,
-            clientY: mouseObj.clientY
+            clientX: mouseObj.pageX,
+            clientY: mouseObj.pageY
         }
     };
 

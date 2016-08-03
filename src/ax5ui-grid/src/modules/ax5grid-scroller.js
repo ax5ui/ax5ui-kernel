@@ -333,7 +333,7 @@
                 delta.y = E.detail * 10;
             } else {
                 if (typeof E.deltaY === "undefined") {
-                    delta.y = E.wheelDelta;
+                    delta.y = -E.wheelDelta;
                     delta.x = 0;
                 } else {
                     delta.y = E.deltaY;
