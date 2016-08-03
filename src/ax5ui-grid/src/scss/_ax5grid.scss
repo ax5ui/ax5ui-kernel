@@ -1,4 +1,17 @@
 // mixins
+
+@mixin gridColumn(){
+    &.isLastColumn {
+
+    }
+    &.lineNumberColumn{
+
+    }
+    &.rowSelectorColumn{
+        //todo : checkBox CSS 구현
+    }
+}
+
 @mixin gridPanel($container) {
     [data-ax5grid-panel] {
         position: absolute;
@@ -38,9 +51,6 @@
                     border-right: 1px solid #ccc;
                     border-bottom: 1px solid #ccc;
                 }
-                &.isLastColumn {
-
-                }
                 &[data-ax5grid-column-row="null"] {
                     border-right: 0 none;
                 }
@@ -63,31 +73,30 @@
                         white-space: normal;
                     }
                 }
+                @include gridColumn();
             }
         }
 
-        &[data-ax5grid-panel="aside-header"],
-        &[data-ax5grid-panel="top-aside-body"],
-        &[data-ax5grid-panel="aside-body"],
-        &[data-ax5grid-panel="bottom-aside-body"] {
+        &[data-ax5grid-panel="aside-header"]{
             border-right: 1px solid darken(#ccc, 0%);
             table {
                 tr {
-                    background: #f2f2f2;
                     td {
                         text-align: center;
-                        &.isLastColumn {
-                            border-right: 0 none;
-                        }
                     }
                 }
             }
         }
-
-        &[data-ax5grid-panel="aside-header"] {
+        &[data-ax5grid-panel="top-aside-body"],
+        &[data-ax5grid-panel="aside-body"],
+        &[data-ax5grid-panel="bottom-aside-body"] {
+            border-right: 1px solid darken(#ccc, 0%);
+            background: #f2f2f2;
             table {
                 tr {
-                    @include ax-background(top, #FFFFFF, #f2f2f2);
+                    td {
+                        text-align: center;
+                    }
                 }
             }
         }
@@ -95,15 +104,8 @@
         &[data-ax5grid-panel="left-header"],
         &[data-ax5grid-panel="top-left-body"],
         &[data-ax5grid-panel="left-body"],
-        &[data-ax5grid-panel="bottom-body"] {
+        &[data-ax5grid-panel="bottom-left-body"] {
             border-right: 1px solid darken(#ccc, 10%); /// frozen Line color
-            table {
-                td {
-                    &.isLastColumn {
-                        border-right: 0 none;
-                    }
-                }
-            }
         }
 
         &[data-ax5grid-panel="top-aside-body"],

@@ -404,5 +404,3 @@
     };
 
 })();
-
-// todo : aside checkbox

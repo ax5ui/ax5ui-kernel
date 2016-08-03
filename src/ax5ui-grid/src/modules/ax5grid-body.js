@@ -183,6 +183,7 @@
             var ci, cl;
             var col, cellHeight, tdCSS_class;
             var isScrolled = (function () {
+                // repaint 함수가 스크롤되는지 여부
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
                     _scrollConfig = {
                         paintStartRowIndex: 0,
@@ -222,6 +223,7 @@
                 return len;
             })(); di < dl; di++) {
                 for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+
                     SS.push('<tr class="tr-' + (di % 4) + '" data-ax5grid-data-index="' + di + '">');
                     for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                         col = _bodyRow.rows[tri].cols[ci];
@@ -362,3 +364,5 @@
         scrollTo: scrollTo
     };
 })();
+
+// todo : aside checkbox

@@ -74,37 +74,39 @@
 
             for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
                 var trCSS_class = "";
-                SS.push('<tr class="' + trCSS_class + '">');
-                for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
-                    var col = _bodyRow.rows[tri].cols[ci];
-                    var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
-                    var tdCSS_class = "";
-                    if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
-                    if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+
+                    SS.push('<tr class="' + trCSS_class + '">');
+                    for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                        var col = _bodyRow.rows[tri].cols[ci];
+                        var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
+                        var tdCSS_class = "";
+                        if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
+                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                        SS.push('<td ',
+                            'data-ax5grid-column-row="' + tri + '" ',
+                            'data-ax5grid-column-col="' + ci + '" ',
+                            'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ',
+                            'class="' + tdCSS_class + '" ',
+                            'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                        SS.push((function () {
+                            var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth);
+                            if (col.multiLine) {
+                                return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                            } else {
+                                return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                            }
+                        })(), (col.label || "&nbsp;"), '</span>');
+
+                        SS.push('</td>');
+                    }
                     SS.push('<td ',
-                        'data-ax5grid-column-row="' + tri + '" ',
-                        'data-ax5grid-column-col="' + ci + '" ',
-                        'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ',
-                        'class="' + tdCSS_class + '" ',
-                        'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+                        'data-ax5grid-column-row="null" ',
+                        'data-ax5grid-column-col="null" ',
+                        'style="height: ' + (cfg.header.columnHeight) + 'px;min-height: 1px;" ',
+                        '></td>');
+                    SS.push('</tr>');
 
-                    SS.push((function () {
-                        var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth);
-                        if (col.multiLine) {
-                            return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                        } else {
-                            return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
-                        }
-                    })(), (col.label || "&nbsp;"), '</span>');
-
-                    SS.push('</td>');
-                }
-                SS.push('<td ',
-                    'data-ax5grid-column-row="null" ',
-                    'data-ax5grid-column-col="null" ',
-                    'style="height: ' + (cfg.header.columnHeight) + 'px;min-height: 1px;" ',
-                    '></td>');
-                SS.push('</tr>');
             }
             SS.push('</table>');
 
