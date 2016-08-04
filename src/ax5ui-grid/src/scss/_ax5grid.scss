@@ -1,14 +1,41 @@
 // mixins
 
 @mixin gridColumn(){
-    &.isLastColumn {
+    td {
+        &.isLastColumn {
 
-    }
-    &.lineNumberColumn{
+        }
+        &.lineNumberColumn {
 
+        }
     }
-    &.rowSelectorColumn{
+    .rowSelectorColumn{
         //todo : checkBox CSS 구현
+        .checkBox {
+            $ax5combobox-option-item-checkbox-size: 10px;
+            $ax5combobox-option-item-height: 20;
+            &:after {
+                content: '';
+                width: $ax5combobox-option-item-checkbox-size;
+                height: $ax5combobox-option-item-checkbox-size / 2;
+                position: absolute;
+                top: ($ax5combobox-option-item-height) / 4;
+                right: 0px;
+                border: 2px solid #000;
+                border-top: none;
+                border-right: none;
+                background: transparent;
+                opacity: 0.1;
+                @include transform(rotate(-50deg));
+            }
+        }
+    }
+    [data-ax5grid-selected="true"]{
+        .checkBox {
+            &:after {
+                opacity: 1;
+            }
+        }
     }
 }
 
@@ -73,8 +100,8 @@
                         white-space: normal;
                     }
                 }
-                @include gridColumn();
             }
+            @include gridColumn();
         }
 
         &[data-ax5grid-panel="aside-header"]{

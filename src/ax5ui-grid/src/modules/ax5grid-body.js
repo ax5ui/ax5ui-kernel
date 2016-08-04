@@ -143,8 +143,6 @@
                 data.rows[i] = {cols: []};
                 if (i === 0) {
                     var col = {
-                        width: cfg.asideColumnWidth,
-                        _width: cfg.asideColumnWidth,
                         label: "",
                         colspan: 1,
                         rowspan: dataTable.rows.length,
@@ -152,11 +150,21 @@
                     }, _col = {};
 
                     if (cfg.showLineNumber) {
-                        _col = jQuery.extend({}, col, {label: "&nbsp;", key: "__d-index__"});
+                        _col = jQuery.extend({}, col, {
+                            width: cfg.lineNumberColumnWidth,
+                            _width: cfg.lineNumberColumnWidth,
+                            CSSClass: "lineNumberColumn",
+                            label: "&nbsp;", key: "__d-index__"
+                        });
                         data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
-                        _col = jQuery.extend({}, col, {label: "", key: "__d-checkbox__"});
+                        _col = jQuery.extend({}, col, {
+                            width: cfg.rowSelectorColumnWidth,
+                            _width: cfg.rowSelectorColumnWidth,
+                            CSSClass: "rowSelectorColumn",
+                            label: "", key: "__d-checkbox__"
+                        });
                         data.rows[i].cols.push(_col);
                     }
                 }
@@ -173,13 +181,13 @@
 
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.data.length - cfg.frozenRowIndex);
         if (this.xvar.dataRowCount === data.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this;
-        
+
         // body-scroll 의 포지션에 의존적이므로..
         var repaintBody = function (_elTarget, _colGroup, _bodyRow, _data, _scrollConfig) {
             var SS = [];
             var cgi, cgl;
             var di, dl;
-            var tri, trl; 
+            var tri, trl;
             var ci, cl;
             var col, cellHeight, tdCSS_class;
             var isScrolled = (function () {
@@ -200,7 +208,7 @@
                     return index + 1;
                 }
                 else if (key === "__d-checkbox__") {
-                    return "C";
+                    return '<div class="checkBox"></div>';
                 }
                 else {
                     return data[key] || "&nbsp;";
@@ -231,6 +239,13 @@
                         tdCSS_class = "";
                         if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
                         if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+
+                        //if(_colGroup[col.colIndex]) {
+                        //    console.log(col.colIndex);
+                        //}
+
+                        if (_colGroup[col.colIndex] && _colGroup[col.colIndex].CSSClass) tdCSS_class += _colGroup[col.colIndex].CSSClass + " ";
+                        if (col.CSSClass) tdCSS_class += col.CSSClass + " ";
 
                         SS.push('<td ',
                             'data-ax5grid-column-row="' + tri + '" ',

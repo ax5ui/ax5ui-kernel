@@ -682,8 +682,6 @@
                 data.rows[i] = { cols: [] };
                 if (i === 0) {
                     var col = {
-                        width: cfg.asideColumnWidth,
-                        _width: cfg.asideColumnWidth,
                         label: "",
                         colspan: 1,
                         rowspan: dataTable.rows.length,
@@ -692,11 +690,21 @@
                         _col = {};
 
                     if (cfg.showLineNumber) {
-                        _col = jQuery.extend({}, col, { label: "&nbsp;", key: "__d-index__" });
+                        _col = jQuery.extend({}, col, {
+                            width: cfg.lineNumberColumnWidth,
+                            _width: cfg.lineNumberColumnWidth,
+                            CSSClass: "lineNumberColumn",
+                            label: "&nbsp;", key: "__d-index__"
+                        });
                         data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
-                        _col = jQuery.extend({}, col, { label: "", key: "__d-checkbox__" });
+                        _col = jQuery.extend({}, col, {
+                            width: cfg.rowSelectorColumnWidth,
+                            _width: cfg.rowSelectorColumnWidth,
+                            CSSClass: "rowSelectorColumn",
+                            label: "", key: "__d-checkbox__"
+                        });
                         data.rows[i].cols.push(_col);
                     }
                 }
@@ -739,7 +747,7 @@
                 if (key === "__d-index__") {
                     return index + 1;
                 } else if (key === "__d-checkbox__") {
-                    return "C";
+                    return '<div class="checkBox"></div>';
                 } else {
                     return data[key] || "&nbsp;";
                 }
@@ -769,6 +777,13 @@
                         tdCSS_class = "";
                         if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
                         if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+
+                        //if(_colGroup[col.colIndex]) {
+                        //    console.log(col.colIndex);
+                        //}
+
+                        if (_colGroup[col.colIndex] && _colGroup[col.colIndex].CSSClass) tdCSS_class += _colGroup[col.colIndex].CSSClass + " ";
+                        if (col.CSSClass) tdCSS_class += col.CSSClass + " ";
 
                         SS.push('<td ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-data-index="' + di + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + tdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
