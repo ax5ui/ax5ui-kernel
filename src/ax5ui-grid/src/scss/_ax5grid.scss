@@ -10,22 +10,31 @@
         }
     }
     .rowSelectorColumn{
+        [data-ax5grid-cellHolder] {
+            padding: 5px;
+        }
         //todo : checkBox CSS 구현
         .checkBox {
-            $ax5combobox-option-item-checkbox-size: 10px;
-            $ax5combobox-option-item-height: 20;
+            $ax5grid-row-selector-checkbox-size: 8px;
+            $ax5grid-row-selector-size: 10px;
+            display: block;
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            @include ax-background(top, #FFFFFF, #F0F0F0);
+            height: 100%;
             &:after {
                 content: '';
-                width: $ax5combobox-option-item-checkbox-size;
-                height: $ax5combobox-option-item-checkbox-size / 2;
+                width: 60%;
+                height: 40%;
                 position: absolute;
-                top: ($ax5combobox-option-item-height) / 4;
-                right: 0px;
-                border: 2px solid #000;
+                top: 20%;
+                right: 20%;
+                border: 0.2em solid #000;
                 border-top: none;
                 border-right: none;
                 background: transparent;
-                opacity: 0.1;
+                opacity: 0.0;
                 @include transform(rotate(-50deg));
             }
         }

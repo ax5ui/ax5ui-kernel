@@ -18,6 +18,15 @@
         // set oneRowHeight = this.bodyTrHeight
         // 바디에 표현될 한줄의 높이를 계산합니다.
         this.xvar.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
+
+        this.$["container"]["body"].on("click", (function(e){
+            var target = ax5.util.findParentNode(e.originalEvent.target, {"data-ax5grid-event":"click"});
+            console.log(target);
+            if(target){
+
+            }
+
+        }).bind(this))
     };
 
     var makeBodyRowTable = function (columns) {
@@ -248,6 +257,7 @@
                         if (col.CSSClass) tdCSS_class += col.CSSClass + " ";
 
                         SS.push('<td ',
+                            'data-ax5grid-event="click" ',
                             'data-ax5grid-column-row="' + tri + '" ',
                             'data-ax5grid-column-col="' + ci + '" ',
                             'data-ax5grid-data-index="' + di + '" ',
