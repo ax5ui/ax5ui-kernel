@@ -1560,7 +1560,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * );
          * // cond 함수로 처리하기
          * jQuery('#id').bind("click.app_expand", function(e){
-        * 	var target = ax5.dom.findParentNode(e.target, function(target){
+        * 	var target = ax5.util.findParentNode(e.target, function(target){
         * 		if($(target).hasClass("aside")){
         * 			return true;
         * 		}

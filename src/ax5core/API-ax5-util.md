@@ -679,7 +679,7 @@ console.log(
 
 // using cond 
 jQuery('#id').bind("click.app_expand", function(e){
-    var target = ax5.dom.findParentNode(e.target, function(target){
+    var target = ax5.util.findParentNode(e.target, function(target){
         if($(target).hasClass("aside")){
             return true;
         }
