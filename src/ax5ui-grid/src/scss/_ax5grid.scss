@@ -1,6 +1,6 @@
 // mixins
 
-@mixin gridColumn(){
+@mixin gridColumn() {
     td {
         &.isLastColumn {
 
@@ -9,7 +9,7 @@
 
         }
     }
-    [data-ax5grid-column-attr="rowSelector"]{
+    [data-ax5grid-column-attr="rowSelector"] {
         cursor: pointer;
         [data-ax5grid-cellHolder] {
             padding: 5px;
@@ -40,12 +40,28 @@
             }
         }
     }
-    [data-ax5grid-selected="true"]{
+    [data-ax5grid-selected="true"] {
         .checkBox {
             &:after {
                 opacity: 1;
             }
         }
+    }
+}
+
+@mixin gridRowBackground() {
+    &.tr-0 {
+    }
+    &.tr-1 {
+        background: #f3f3f3;
+    }
+    &.tr-2 {
+    }
+    &.tr-3 {
+        background: #f3f3f3;
+    }
+    &[data-ax5grid-selected="true"] {
+        background: #cce2f3;
     }
 }
 
@@ -65,17 +81,7 @@
             }
             tr {
                 border-bottom: 0 none;
-
-                &.tr-0 {
-                }
-                &.tr-1 {
-                    background: #f3f3f3;
-                }
-                &.tr-2 {
-                }
-                &.tr-3 {
-                    background: #f3f3f3;
-                }
+                @include gridRowBackground();
             }
             td {
                 box-sizing: border-box;
@@ -114,7 +120,7 @@
             @include gridColumn();
         }
 
-        &[data-ax5grid-panel="aside-header"]{
+        &[data-ax5grid-panel="aside-header"] {
             border-right: 1px solid darken(#ccc, 0%);
             table {
                 tr {
@@ -171,12 +177,11 @@
 
     @if ($type == "vertical-bar") {
         cursor: ns-resize;
-    }
-    @else{
+    } @else {
         cursor: ew-resize;
     }
 
-    &:hover{
+    &:hover {
         opacity: 0.6;
     }
 }
