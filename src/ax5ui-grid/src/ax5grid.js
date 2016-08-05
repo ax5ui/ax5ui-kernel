@@ -54,6 +54,10 @@
                 scroller: {
                     size: 15,
                     barMinSize: 15
+                },
+
+                columnKeys:{
+                    selected: '_SELECTED'
                 }
             };
             this.xvar = {
@@ -186,6 +190,7 @@
                             "bottom-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="bottom-body"]'),
                             "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
                         },
+                        "livePanelKeys": [], // 현재 사용중인 패널들 (grid-body repaint에서 수집하여 처리)
                         "scroller": {
                             "vertical": this.$target.find('[data-ax5grid-scroller="vertical"]'),
                             "vertical-bar": this.$target.find('[data-ax5grid-scroller="vertical-bar"]'),

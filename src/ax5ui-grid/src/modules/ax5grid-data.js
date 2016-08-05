@@ -18,10 +18,25 @@
 
     };
 
+    var setValue = function(){
+
+    };
+
+    var select = function(dindex, selected){
+        if(typeof selected === "undefined") {
+            this.data[dindex][this.config.columnKeys.selected] = !this.data[dindex][this.config.columnKeys.selected];
+        }else{
+            this.data[dindex][this.config.columnKeys.selected] = selected;
+        }
+        return this.data[dindex][this.config.columnKeys.selected];
+    };
+
     GRID.data = {
         init: init,
         set: set,
-        get: get
+        get: get,
+        setValue: setValue,
+        select: select
     };
 
 })();

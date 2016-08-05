@@ -9,7 +9,8 @@
 
         }
     }
-    .rowSelectorColumn{
+    [data-ax5grid-column-attr="rowSelector"]{
+        cursor: pointer;
         [data-ax5grid-cellHolder] {
             padding: 5px;
         }
