@@ -1556,6 +1556,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         * 	[, 그 외 찾고 싶은 attribute명들]
         * };
          * console.log(
+         * console.log(
          *    ax5.util.findParentNode(e.target, {tagname:"a", clazz:"ax-menu-handel", "data-custom-attr":"attr_value"})
          * );
          * // cond 함수로 처리하기

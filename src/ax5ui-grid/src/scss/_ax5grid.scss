@@ -60,6 +60,9 @@
     &.tr-3 {
         background: #f3f3f3;
     }
+    &.hover {
+        background: lighten(#cce2f3, 5%);
+    }
     &[data-ax5grid-selected="true"] {
         background: #cce2f3;
     }
