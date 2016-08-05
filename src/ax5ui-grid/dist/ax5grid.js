@@ -1219,7 +1219,7 @@
             return -left;
         }
     };
-    var scrollMover = {
+    var scrollBarMover = {
         "click": function click(track, bar, type, e) {
 
             var self = this,
@@ -1343,9 +1343,9 @@
                 if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
                 GRID.body.scrollTo.call(self, scrollPositon, type);
             }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
-                scrollMover.off.call(self);
+                scrollBarMover.off.call(self);
             }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
-                scrollMover.off.call(self);
+                scrollBarMover.off.call(self);
             });
 
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
@@ -1354,7 +1354,9 @@
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
-        },
+        }
+    };
+    var scrollContentMover = {
         "wheel": function wheel(delta) {
             var self = this,
                 _panel_height = self.$["panel"]["body"].height(),
@@ -1400,6 +1402,43 @@
             resize.call(this);
 
             return !_top_is_end || !_left_is_end;
+        },
+        "on": function on() {
+            var self = this,
+                _vertical_scroller_height = self.$["scroller"]["vertical"].innerHeight(),
+                _panel_height = self.$["panel"]["body"].height(),
+                _horizontal_scroller_width = self.$["scroller"]["horizontal"].innerWidth(),
+                _panel_width = self.$["panel"]["body"].width(),
+                _content_height = self.xvar.scrollContentHeight,
+                _content_width = self.xvar.scrollContentWidth,
+                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].height(),
+                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].width(),
+                getContentPosition = function getContentPosition(e) {
+                var mouseObj = GRID.util.getMousePosition(e);
+                self.xvar.__x_da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                self.xvar.__y_da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+
+                console.log(self.xvar.__x_da, self.xvar.__y_da);
+            };
+
+            self.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            self.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+
+            jQuery(document.body).bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
+                var css = getContentPosition(e);
+                // todo : body move
+            }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
+                scrollContentMover.off.call(self);
+            }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
+                scrollContentMover.off.call(self);
+            });
+
+            jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+        },
+        "off": function off() {
+            jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
+
+            jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
         }
     };
 
@@ -1413,27 +1452,27 @@
 
         this.$["scroller"]["vertical-bar"].bind(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
-            scrollMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical");
+            scrollBarMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical");
         }.bind(this)).bind("dragstart", function (e) {
             U.stopEvent(e);
             return false;
         });
         this.$["scroller"]["vertical"].bind("click", function (e) {
             if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "vertical") {
-                scrollMover.click.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical", e);
+                scrollBarMover.click.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical", e);
             }
         }.bind(this));
 
         this.$["scroller"]["horizontal-bar"].bind(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
-            scrollMover.on.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal");
+            scrollBarMover.on.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal");
         }.bind(this)).bind("dragstart", function (e) {
             U.stopEvent(e);
             return false;
         });
         this.$["scroller"]["horizontal"].bind("click", function (e) {
             if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "horizontal") {
-                scrollMover.click.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal", e);
+                scrollBarMover.click.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal", e);
             }
         }.bind(this));
 
@@ -1452,10 +1491,17 @@
                 }
             }
 
-            if (scrollMover.wheel.call(this, delta)) {
+            if (scrollContentMover.wheel.call(this, delta)) {
                 U.stopEvent(e);
             }
         }.bind(this));
+        this.$["container"]["body"].bind(GRID.util.ENM["mousedown"], function (e) {
+            this.xvar.mousePosition = GRID.util.getMousePosition(e);
+            scrollContentMover.on.call(this);
+        }.bind(this)).bind("dragstart", function (e) {
+            U.stopEvent(e);
+            return false;
+        });
     };
 
     var resize = function resize() {

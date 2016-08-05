@@ -21,19 +21,19 @@
 
 <div style="height: 10px;"></div>
 
-<TEXTAREA ID="holdtext" STYLE="display:2none;"></TEXTAREA>
+<TEXTAREA ID="holdtext" STYLE="position:absolute;top:-1000px;"></TEXTAREA>
 <script>
     var firstGrid = new ax5.ui.grid();
 
-    function copy(){
-        var holdtext = $("#holdtext").get(0);
-        holdtext.innerText = "Thomas Jang 123123123";
-        ax5.util.selectRange($("#holdtext"));
+    function copy() {
+        var holdtext = $("#holdtext");
+        holdtext.get(0).innerText = "Thomas Jang 123123123";
+        ax5.util.selectRange(holdtext);
 
         var copysuccess // var to check whether execCommand successfully executed
-        try{
+        try {
             copysuccess = document.execCommand("copy") // run command to copy selected text to clipboard
-        } catch(e){
+        } catch (e) {
             copysuccess = false
         }
         return copysuccess;
@@ -60,8 +60,8 @@
                 {key: "b", label: "필드B"},
                 {
                     key: "c", label: "필드C", columns: [
-                            {key: "c1", label: "필드C-1"},{key: "c2", label: "필드C-2"}
-                    ]
+                    {key: "c1", label: "필드C-1"}, {key: "c2", label: "필드C-2"}
+                ]
                 },
                 {key: "c", label: "필드C", multiLine: false},
                 {key: "d", label: "필드D"},
