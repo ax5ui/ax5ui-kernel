@@ -40,15 +40,15 @@
                 height: 400,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
-                rowSelectorColumnWidth: 30,
+                rowSelectorColumnWidth: 25,
 
                 header: {
-                    columnHeight: 23,
+                    columnHeight: 25,
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
                 body: {
-                    columnHeight: 23,
+                    columnHeight: 25,
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
