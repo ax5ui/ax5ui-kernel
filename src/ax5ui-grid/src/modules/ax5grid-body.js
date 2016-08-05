@@ -56,11 +56,15 @@
                     //rowIndex: rowIndex, colIndex: colIndex
                 });
             }
-
         });
         this.$["container"]["body"].on("mouseover", "tr", function (e) {
-            //console.log(this.getAttribute("data-ax5grid-tr-data-index"));
-            rowHover.call(self, this.getAttribute("data-ax5grid-tr-data-index"));
+            var dindex = this.getAttribute("data-ax5grid-tr-data-index");
+            var i = self.$.livePanelKeys.length;
+            while (i--) {
+                if(typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
+                self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
+            }
+            self.xvar.dataHoveredIndex = dindex;
         })
     };
 
@@ -417,15 +421,6 @@
                 repaint.call(this);
             }
         }
-    };
-
-    var rowHover = function (dindex) {
-        var i = this.$.livePanelKeys.length;
-        while (i--) {
-            if(typeof this.xvar.dataHoveredIndex !== "undefined") this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + this.xvar.dataHoveredIndex + '"]').removeClass("hover");
-            this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
-        }
-        this.xvar.dataHoveredIndex = dindex;
     };
 
     var updateRowState = function (dindex, states) {
