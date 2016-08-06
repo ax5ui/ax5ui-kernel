@@ -5,6 +5,14 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
+    var columnSelector = {
+        "on": function(){
+
+        },
+        "off": function(){
+
+        }
+    };
     var init = function () {
         var self = this;
         // 바디 초기화
@@ -25,6 +33,8 @@
             var targetClick = {
                 "default": function (column) {
                     // seletedColumn
+
+                    /* column select 기능 columnSelector에서 처리 click은 클릭만 처리 하자 (inline edit도 처리 해야함 ? selector랑 충돌이 날 수 있으니 주의가 필요하겠다.)
                     updateRowState.call(self, ["clearSelectedColumn"]);
                     self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = (function (data) {
                         if (data) {
@@ -39,6 +49,7 @@
                         }
                     })(self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex]);
                     updateRowState.call(self, ["selectedColumn"], column.dindex, column);
+                    */
                 },
                 "rowSelector": function (column) {
                     //console.log(column);
@@ -78,7 +89,15 @@
                 self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
             }
             self.xvar.dataHoveredIndex = dindex;
-        })
+        });
+        this.$["container"]["body"]
+            .on("mousedown", "td", function (e) {
+                console.log(this);
+            })
+            .on("dragstart", function (e) {
+                U.stopEvent(e);
+                return false;
+            });
     };
 
     var makeBodyRowTable = function (columns) {

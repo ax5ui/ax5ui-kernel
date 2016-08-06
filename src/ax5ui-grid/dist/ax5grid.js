@@ -555,6 +555,10 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
+    var columnSelector = {
+        "on": function on() {},
+        "off": function off() {}
+    };
     var init = function init() {
         var self = this;
         // 바디 초기화
@@ -575,8 +579,10 @@
             var targetClick = {
                 "default": function _default(column) {
                     // seletedColumn
+
+                    /* column select 기능 columnSelector에서 처리 click은 클릭만 처리 하자 (inline edit도 처리 해야함 ? selector랑 충돌이 날 수 있으니 주의가 필요하겠다.)
                     updateRowState.call(self, ["clearSelectedColumn"]);
-                    self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = function (data) {
+                    self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = (function (data) {
                         if (data) {
                             return false;
                         } else {
@@ -585,10 +591,11 @@
                                 dindex: column.dindex,
                                 rowIndex: column.rowIndex,
                                 colIndex: column.colIndex
-                            };
+                            }
                         }
-                    }(self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex]);
+                    })(self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex]);
                     updateRowState.call(self, ["selectedColumn"], column.dindex, column);
+                    */
                 },
                 "rowSelector": function rowSelector(column) {
                     //console.log(column);
@@ -626,6 +633,12 @@
                 self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
             }
             self.xvar.dataHoveredIndex = dindex;
+        });
+        this.$["container"]["body"].on("mousedown", "td", function (e) {
+            console.log(this);
+        }).on("dragstart", function (e) {
+            U.stopEvent(e);
+            return false;
         });
     };
 

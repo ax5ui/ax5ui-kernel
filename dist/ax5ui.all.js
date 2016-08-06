@@ -8343,6 +8343,7 @@ jQuery.fn.ax5select = function () {
             // 그리드 데이터셋
             this.colGroup = [];
             this.data = [];
+            this.selectedColumn = {};
 
             cfg = this.config;
 
