@@ -11,6 +11,7 @@
 
     var set = function (data) {
         this.data = U.deepCopy(data);
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         return this;
     };
 

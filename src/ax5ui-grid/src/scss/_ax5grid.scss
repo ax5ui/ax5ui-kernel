@@ -8,6 +8,11 @@
         &.lineNumberColumn {
 
         }
+        &[data-ax5grid-column-selected="true"]{
+            box-shadow: inset 0 0 3px #0581f2;
+            background: lighten(#0581f2, 50%);
+            //border: 1px solid #0581f2;
+        }
     }
     [data-ax5grid-column-attr="rowSelector"] {
         cursor: pointer;
