@@ -25,7 +25,6 @@
                 cfg;
 
             this.config = {
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
                 animateTime: 250,
 
@@ -908,41 +907,24 @@
 
         this.xvar.paintStartRowIndex = paintStartRowIndex;
         this.xvar.dataRowCount = data.length;
-        //bindRowHoverEvent.call(this);
     };
 
-    var scrollTo = function scrollTo(css, type) {
+    var scrollTo = function scrollTo(css, noRepaint) {
         var cfg = this.config;
 
-        if (typeof type === "undefined") {
+        if (cfg.asidePanelWidth > 0 && "top" in css) {
+            this.$.panel["aside-body-scroll"].css({ top: css.top });
+        }
+        if (cfg.frozenColumnIndex > 0 && "top" in css) {
+            this.$.panel["left-body-scroll"].css({ top: css.top });
+        }
+        if (cfg.frozenRowIndex > 0 && "left" in css) {
+            this.$.panel["top-body-scroll"].css({ left: css.left });
+        }
+        this.$.panel["body-scroll"].css(css);
 
-            if (cfg.asidePanelWidth > 0) {
-                this.$.panel["aside-body-scroll"].css({ top: css.top });
-            }
-            if (cfg.frozenColumnIndex > 0) {
-                this.$.panel["left-body-scroll"].css({ top: css.top });
-            }
-            if (cfg.frozenRowIndex > 0) {
-                this.$.panel["top-body-scroll"].css({ left: css.left });
-            }
-            this.$.panel["body-scroll"].css(css);
-
+        if (!noRepaint && "top" in css) {
             repaint.call(this);
-        } else {
-            if (cfg.asidePanelWidth > 0 && type === "vertical") {
-                this.$.panel["aside-body-scroll"].css(css);
-            }
-            if (cfg.frozenColumnIndex > 0 && type === "vertical") {
-                this.$.panel["left-body-scroll"].css(css);
-            }
-            if (cfg.frozenRowIndex > 0 && type === "horizontal") {
-                this.$.panel["top-body-scroll"].css(css);
-            }
-            this.$.panel["body-scroll"].css(css);
-
-            if (type === "vertical") {
-                repaint.call(this);
-            }
         }
     };
 
@@ -1188,7 +1170,7 @@
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
-                GRID.body.scrollTo.call(this, scrollPositon, type);
+                GRID.body.scrollTo.call(this, scrollPositon);
             }
 
             return -top;
@@ -1213,7 +1195,7 @@
                 });
 
                 GRID.header.scrollTo.call(this, scrollPositon);
-                GRID.body.scrollTo.call(this, scrollPositon, type);
+                GRID.body.scrollTo.call(this, scrollPositon);
             }
 
             return -left;
@@ -1277,7 +1259,7 @@
                 horizontalScrollBarWidth: horizontalScrollBarWidth
             });
             if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
-            GRID.body.scrollTo.call(self, scrollPositon, type);
+            GRID.body.scrollTo.call(self, scrollPositon);
         },
         "on": function on(track, bar, type) {
             var self = this,
@@ -1341,7 +1323,7 @@
                 });
 
                 if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
-                GRID.body.scrollTo.call(self, scrollPositon, type);
+                GRID.body.scrollTo.call(self, scrollPositon);
             }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
                 scrollBarMover.off.call(self);
             }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
@@ -1359,12 +1341,12 @@
     var scrollContentMover = {
         "wheel": function wheel(delta) {
             var self = this,
+                _body_scroll_position = self.$["panel"]["body-scroll"].position(),
                 _panel_height = self.$["panel"]["body"].height(),
                 _panel_width = self.$["panel"]["body"].width(),
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth;
 
-            var _body_scroll_position = self.$["panel"]["body-scroll"].position();
             var newLeft, newTop;
             var _top_is_end = false;
             var _left_is_end = false;
@@ -1405,45 +1387,72 @@
         },
         "on": function on() {
             var self = this,
-                _vertical_scroller_height = self.$["scroller"]["vertical"].innerHeight(),
+                _body_scroll_position = self.$["panel"]["body-scroll"].position(),
                 _panel_height = self.$["panel"]["body"].height(),
-                _horizontal_scroller_width = self.$["scroller"]["horizontal"].innerWidth(),
                 _panel_width = self.$["panel"]["body"].width(),
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
-                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].height(),
-                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].width(),
                 getContentPosition = function getContentPosition(e) {
                 var mouseObj = GRID.util.getMousePosition(e);
+                var newLeft, newTop;
+
                 self.xvar.__x_da = mouseObj.clientX - self.xvar.mousePosition.clientX;
                 self.xvar.__y_da = mouseObj.clientY - self.xvar.mousePosition.clientY;
 
-                console.log(self.xvar.__x_da, self.xvar.__y_da);
+                newLeft = _body_scroll_position.left + self.xvar.__x_da;
+                newTop = _body_scroll_position.top + self.xvar.__y_da;
+
+                // newTop이 범위를 넘었는지 체크
+                if (newTop >= 0) {
+                    newTop = 0;
+                } else if (newTop <= _panel_height - _content_height) {
+                    newTop = _panel_height - _content_height;
+                    if (newTop >= 0) newTop = 0;
+                }
+
+                // newLeft이 범위를 넘었는지 체크
+                if (newLeft >= 0) {
+                    newLeft = 0;
+                } else if (newLeft <= _panel_width - _content_width) {
+                    newLeft = _panel_width - _content_width;
+                    if (newLeft >= 0) newLeft = 0;
+                }
+
+                return {
+                    left: newLeft, top: newTop
+                };
             };
 
-            self.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
-            self.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
 
-            jQuery(document.body).bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
+            jQuery(document.body).bind("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
                 var css = getContentPosition(e);
-                // todo : body move
-            }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
-                scrollContentMover.off.call(self);
-            }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
+                GRID.header.scrollTo.call(self, { left: css.left });
+                GRID.body.scrollTo.call(self, css, "noRepaint");
+                resize.call(self);
+                U.stopEvent(e);
+            }).bind("touchend" + ".ax5grid-" + this.instanceId, function (e) {
+                var css = getContentPosition(e);
+                GRID.header.scrollTo.call(self, { left: css.left });
+                GRID.body.scrollTo.call(self, css);
+                resize.call(self);
+                U.stopEvent(e);
                 scrollContentMover.off.call(self);
             });
 
-            jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+            jQuery(document).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
-            jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
-            jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+            jQuery(document).unbind("touchmove" + ".ax5grid-" + this.instanceId).unbind("touchend" + ".ax5grid-" + this.instanceId);
+
+            jQuery(document).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
         }
     };
 
     var init = function init() {
-
+        var self = this;
         //this.config.scroller.size
         var margin = 4;
 
@@ -1495,13 +1504,13 @@
                 U.stopEvent(e);
             }
         }.bind(this));
-        this.$["container"]["body"].bind(GRID.util.ENM["mousedown"], function (e) {
-            this.xvar.mousePosition = GRID.util.getMousePosition(e);
-            scrollContentMover.on.call(this);
-        }.bind(this)).bind("dragstart", function (e) {
-            U.stopEvent(e);
-            return false;
-        });
+
+        if (document.addEventListener && ax5.info.supportTouch) {
+            this.$["container"]["body"].on("touchstart", '[data-ax5grid-panel]', function (e) {
+                self.xvar.mousePosition = GRID.util.getMousePosition(e);
+                scrollContentMover.on.call(self);
+            });
+        }
     };
 
     var resize = function resize() {
@@ -1628,7 +1637,9 @@
     };
 
     var getMousePosition = function getMousePosition(e) {
-        var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+        var mouseObj,
+            originalEvent = e.originalEvent ? e.originalEvent : e;
+        mouseObj = 'changedTouches' in originalEvent ? originalEvent.changedTouches[0] : originalEvent;
         // clientX, Y 쓰면 스크롤에서 문제 발생
         return {
             clientX: mouseObj.pageX,

@@ -61,7 +61,7 @@
             var dindex = this.getAttribute("data-ax5grid-tr-data-index");
             var i = self.$.livePanelKeys.length;
             while (i--) {
-                if(typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
+                if (typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
                 self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
             }
             self.xvar.dataHoveredIndex = dindex;
@@ -385,41 +385,24 @@
 
         this.xvar.paintStartRowIndex = paintStartRowIndex;
         this.xvar.dataRowCount = data.length;
-        //bindRowHoverEvent.call(this);
     };
 
-    var scrollTo = function (css, type) {
+    var scrollTo = function (css, noRepaint) {
         var cfg = this.config;
 
-        if (typeof type === "undefined") {
+        if (cfg.asidePanelWidth > 0 && "top" in css) {
+            this.$.panel["aside-body-scroll"].css({top: css.top});
+        }
+        if (cfg.frozenColumnIndex > 0 && "top" in css) {
+            this.$.panel["left-body-scroll"].css({top: css.top});
+        }
+        if (cfg.frozenRowIndex > 0 && "left" in css) {
+            this.$.panel["top-body-scroll"].css({left: css.left});
+        }
+        this.$.panel["body-scroll"].css(css);
 
-            if (cfg.asidePanelWidth > 0) {
-                this.$.panel["aside-body-scroll"].css({top: css.top});
-            }
-            if (cfg.frozenColumnIndex > 0) {
-                this.$.panel["left-body-scroll"].css({top: css.top});
-            }
-            if (cfg.frozenRowIndex > 0) {
-                this.$.panel["top-body-scroll"].css({left: css.left});
-            }
-            this.$.panel["body-scroll"].css(css);
-
+        if(!noRepaint && "top" in css) {
             repaint.call(this);
-        } else {
-            if (cfg.asidePanelWidth > 0 && type === "vertical") {
-                this.$.panel["aside-body-scroll"].css(css);
-            }
-            if (cfg.frozenColumnIndex > 0 && type === "vertical") {
-                this.$.panel["left-body-scroll"].css(css);
-            }
-            if (cfg.frozenRowIndex > 0 && type === "horizontal") {
-                this.$.panel["top-body-scroll"].css(css);
-            }
-            this.$.panel["body-scroll"].css(css);
-
-            if (type === "vertical") {
-                repaint.call(this);
-            }
         }
     };
 

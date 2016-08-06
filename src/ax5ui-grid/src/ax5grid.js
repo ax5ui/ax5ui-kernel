@@ -24,7 +24,6 @@
                 cfg;
 
             this.config = {
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
                 animateTime: 250,
 
