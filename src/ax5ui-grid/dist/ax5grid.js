@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.5"
+        version: "0.0.6"
     }, function () {
         /**
          * @class ax5grid
@@ -1441,13 +1441,13 @@
                 scrollContentMover.off.call(self);
             });
 
-            jQuery(document).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+            jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
 
-            jQuery(document).unbind("touchmove" + ".ax5grid-" + this.instanceId).unbind("touchend" + ".ax5grid-" + this.instanceId);
+            jQuery(document.body).unbind("touchmove" + ".ax5grid-" + this.instanceId).unbind("touchend" + ".ax5grid-" + this.instanceId);
 
-            jQuery(document).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+            jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
         }
     };
 

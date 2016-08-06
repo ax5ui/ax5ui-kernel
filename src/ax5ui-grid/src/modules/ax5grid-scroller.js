@@ -344,18 +344,18 @@
                     scrollContentMover.off.call(self);
                 });
 
-            jQuery(document)
+            jQuery(document.body)
                 .attr('unselectable', 'on')
                 .css('user-select', 'none')
                 .on('selectstart', false);
         },
         "off": function () {
 
-            jQuery(document)
+            jQuery(document.body)
                 .unbind("touchmove" + ".ax5grid-" + this.instanceId)
                 .unbind("touchend" + ".ax5grid-" + this.instanceId);
 
-            jQuery(document)
+            jQuery(document.body)
                 .removeAttr('unselectable')
                 .css('user-select', 'auto')
                 .off('selectstart');
