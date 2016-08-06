@@ -1556,11 +1556,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         * 	[, 그 외 찾고 싶은 attribute명들]
         * };
          * console.log(
+         * console.log(
          *    ax5.util.findParentNode(e.target, {tagname:"a", clazz:"ax-menu-handel", "data-custom-attr":"attr_value"})
          * );
          * // cond 함수로 처리하기
          * jQuery('#id').bind("click.app_expand", function(e){
-        * 	var target = ax5.dom.findParentNode(e.target, function(target){
+        * 	var target = ax5.util.findParentNode(e.target, function(target){
         * 		if($(target).hasClass("aside")){
         * 			return true;
         * 		}
@@ -8283,7 +8284,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "grid",
-        version: "0.0.3"
+        version: "0.0.6"
     }, function () {
         /**
          * @class ax5grid
@@ -8299,7 +8300,6 @@ jQuery.fn.ax5select = function () {
                 cfg;
 
             this.config = {
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
                 animateTime: 250,
 
@@ -8313,20 +8313,26 @@ jQuery.fn.ax5select = function () {
 
                 height: 400,
                 columnMinWidth: 100,
-                asideColumnWidth: 30,
+                lineNumberColumnWidth: 30,
+                rowSelectorColumnWidth: 25,
 
                 header: {
-                    columnHeight: 23,
+                    columnHeight: 25,
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
                 body: {
-                    columnHeight: 23,
+                    columnHeight: 25,
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
                 scroller: {
-                    size: 15
+                    size: 15,
+                    barMinSize: 15
+                },
+
+                columnKeys: {
+                    selected: '_SELECTED'
                 }
             };
             this.xvar = {
@@ -8455,6 +8461,7 @@ jQuery.fn.ax5select = function () {
                         "bottom-body-scroll": this.$target.find('[data-ax5grid-panel-scroll="bottom-body"]'),
                         "bottom-right-body": this.$target.find('[data-ax5grid-panel="bottom-right-body"]')
                     },
+                    "livePanelKeys": [], // 현재 사용중인 패널들 (grid-body repaint에서 수집하여 처리)
                     "scroller": {
                         "vertical": this.$target.find('[data-ax5grid-scroller="vertical"]'),
                         "vertical-bar": this.$target.find('[data-ax5grid-scroller="vertical-bar"]'),
@@ -8521,8 +8528,8 @@ jQuery.fn.ax5select = function () {
 
                 var asidePanelWidth = cfg.asidePanelWidth = function () {
                     var width = 0;
-                    if (cfg.showLineNumber) width += cfg.asideColumnWidth;
-                    if (cfg.showRowSelector) width += cfg.asideColumnWidth;
+                    if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
+                    if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
                     return width;
                 }();
                 var frozenPanelWidth = cfg.frozenPanelWidth = function (colGroup, endIndex) {
@@ -8533,7 +8540,9 @@ jQuery.fn.ax5select = function () {
                     return width;
                 }(this.colGroup, cfg.frozenColumnIndex);
                 var rightPanelWidth = 0; // todo : 우측 함계컬럼 넘비 계산
-                var frozenRowHeight = 0; // todo : 고정행 높이 계산하기
+                var frozenRowHeight = function (bodyTrHeight) {
+                    return cfg.frozenRowIndex * bodyTrHeight;
+                }(this.xvar.bodyTrHeight); // todo : 고정행 높이 계산하기
                 var footSumHeight = 0;
 
                 var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
@@ -8605,7 +8614,7 @@ jQuery.fn.ax5select = function () {
                     if (containerType === "body") {
                         switch (vPosition) {
                             case "top":
-                                if (cfg.frozenRowIndex === 0) {
+                                if (cfg.frozenRowIndex == 0) {
                                     isHide = true;
                                 } else {
                                     css["top"] = 0;
@@ -8621,16 +8630,10 @@ jQuery.fn.ax5select = function () {
                                 }
                                 break;
                             default:
-                                css["top"] = 0;
-                                css["height"] = bodyHeight; // footSum height
-                                if (cfg.frozenRowIndex === 0) {
-                                    css["top"] = frozenRowHeight;
-                                    css["height"] = bodyHeight - frozenRowHeight; // footSum height
-                                }
-                                if (cfg.footSum) {
-                                    // 높이값 빼기
-                                    css["height"] -= footSumHeight;
-                                }
+
+                                css["top"] = frozenRowHeight;
+                                css["height"] = bodyHeight - frozenRowHeight - footSumHeight;
+
                                 break;
                         }
                     } else if (containerType === "header") {
