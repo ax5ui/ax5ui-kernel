@@ -6,21 +6,78 @@
     var U = ax5.util;
 
     var columnSelect = {
-        init: function(cell){
-console.log(cell);
+        focusClear: function () {
+            var self = this;
+            for (var c in self.focusedColumn) {
+                var _column = self.focusedColumn[c];
+                if (_column) {
+                    self.$.panel[_column.panelName]
+                        .find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]')
+                        .find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]')
+                        .removeAttr('data-ax5grid-column-focused');
+                }
+            }
+            self.focusedColumn = {};
         },
-        update: function(cell){
-console.log(cell);
+        clear: function () {
+            var self = this;
+            for (var c in self.selectedColumn) {
+                var _column = self.selectedColumn[c];
+                if (_column) {
+                    self.$.panel[_column.panelName]
+                        .find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]')
+                        .find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]')
+                        .removeAttr('data-ax5grid-column-selected');
+                }
+            }
+            self.selectedColumn = {};
+        },
+        init: function (column) {
+            var self = this;
+
+            // focus
+            columnSelect.focusClear.call(self);
+            self.focusedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = {
+                panelName: column.panelName,
+                dindex: column.dindex,
+                rowIndex: column.rowIndex,
+                colIndex: column.colIndex
+            };
+
+            // select
+            columnSelect.clear.call(self);
+            self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = (function (data) {
+                if (data) {
+                    return false;
+                } else {
+                    return {
+                        panelName: column.panelName,
+                        dindex: column.dindex,
+                        rowIndex: column.rowIndex,
+                        colIndex: column.colIndex
+                    }
+                }
+            })(self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex]);
+
+            this.$.panel[column.panelName]
+                .find('[data-ax5grid-tr-data-index="' + column.dindex + '"]')
+                .find('[data-ax5grid-column-rowindex="' + column.rowIndex + '"][data-ax5grid-column-colindex="' + column.colIndex + '"]')
+                .attr('data-ax5grid-column-focused', "true")
+                .attr('data-ax5grid-column-selected', "true");
+        },
+        update: function (cell) {
+
         }
     };
     var columnSelector = {
-        "on": function(cell){
+        "on": function (cell) {
             var self = this;
             columnSelect.init.call(self, cell);
 
             this.$["container"]["body"]
                 .on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function () {
                     columnSelect.update.call(self, {
+                        panelName: this.getAttribute("data-ax5grid-panel-name"),
                         dindex: this.getAttribute("data-ax5grid-data-index"),
                         rowIndex: this.getAttribute("data-ax5grid-column-rowIndex"),
                         colIndex: this.getAttribute("data-ax5grid-column-colIndex")
@@ -38,7 +95,7 @@ console.log(cell);
                 .css('user-select', 'none')
                 .on('selectstart', false);
         },
-        "off": function(){
+        "off": function () {
             console.log("off");
 
             this.$["container"]["body"]
@@ -71,24 +128,7 @@ console.log(cell);
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
                 "default": function (column) {
-                    // seletedColumn
 
-                    /* column select 기능 columnSelector에서 처리 click은 클릭만 처리 하자 (inline edit도 처리 해야함 ? selector랑 충돌이 날 수 있으니 주의가 필요하겠다.)
-                    updateRowState.call(self, ["clearSelectedColumn"]);
-                    self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = (function (data) {
-                        if (data) {
-                            return false;
-                        } else {
-                            return {
-                                panelName: column.panelName,
-                                dindex: column.dindex,
-                                rowIndex: column.rowIndex,
-                                colIndex: column.colIndex
-                            }
-                        }
-                    })(self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex]);
-                    updateRowState.call(self, ["selectedColumn"], column.dindex, column);
-                    */
                 },
                 "rowSelector": function (column) {
                     GRID.data.select.call(self, column.dindex);
@@ -131,6 +171,7 @@ console.log(cell);
             .on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
                 //console.log(this);
                 columnSelector.on.call(self, {
+                    panelName: this.getAttribute("data-ax5grid-panel-name"),
                     dindex: this.getAttribute("data-ax5grid-data-index"),
                     rowIndex: this.getAttribute("data-ax5grid-column-rowIndex"),
                     colIndex: this.getAttribute("data-ax5grid-column-colIndex")
@@ -374,6 +415,17 @@ console.log(cell);
                             'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ',
                             'data-ax5grid-column-colIndex="' + col.colIndex + '" ',
                             'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
+                            (function (_focusedColumn, _selectedColumn) {
+                                var attrs = "";
+                                if (_focusedColumn) {
+                                    attrs += 'data-ax5grid-column-focused="true" ';
+                                }
+                                if (_selectedColumn) {
+                                    attrs += 'data-ax5grid-column-selected="true" ';
+                                }
+                                return attrs;
+                            })(this.focusedColumn[di + "_" + col.rowIndex + "_" + col.colIndex], this.selectedColumn[di + "_" + col.rowIndex + "_" + col.colIndex]),
+
                             'data-ax5grid-column-selected="' + ((!this.selectedColumn[di + "_" + col.rowIndex + "_" + col.colIndex]) ? "false" : "true") + '" ',
                             'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ',
                             'class="' + tdCSS_class + '" ',
@@ -490,26 +542,6 @@ console.log(cell);
                 while (i--) {
                     this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').attr("data-ax5grid-selected", this.data[dindex][cfg.columnKeys.selected]);
                 }
-            },
-
-            // 사용 방법 변경으로 폐기 예정
-            "selectedColumn": function (dindex, data) {
-                this.$.panel[data.panelName]
-                    .find('[data-ax5grid-tr-data-index="' + dindex + '"]')
-                    .find('[data-ax5grid-column-rowindex="' + data.rowIndex + '"][data-ax5grid-column-colindex="' + data.colIndex + '"]')
-                    .attr('data-ax5grid-column-selected', (this.selectedColumn[data.dindex + "_" + data.rowIndex + "_" + data.colIndex] ? "true" : "false"));
-            },
-            "clearSelectedColumn": function () {
-                for (var c in this.selectedColumn) {
-                    var _column = this.selectedColumn[c];
-                    if(_column) {
-                        this.$.panel[_column.panelName]
-                            .find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]')
-                            .find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]')
-                            .attr('data-ax5grid-column-selected', "false");
-                    }
-                }
-                this.selectedColumn = {};
             }
         };
         states.forEach(function (state) {

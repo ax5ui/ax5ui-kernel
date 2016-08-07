@@ -67,6 +67,7 @@
             // 그리드 데이터셋
             this.colGroup = [];
             this.data = [];
+            this.focusedColumn = {};
             this.selectedColumn = {};
 
             cfg = this.config;
