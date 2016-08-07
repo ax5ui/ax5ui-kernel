@@ -6,25 +6,30 @@
     var U = ax5.util;
 
     var columnSelect = {
-        init: function(){
-
+        init: function(cell){
+console.log(cell);
         },
-        update: function(){
-
+        update: function(cell){
+console.log(cell);
         }
     };
     var columnSelector = {
         "on": function(cell){
-
             var self = this;
-            this.$["container"]["body"]
-                .on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function (e) {
+            columnSelect.init.call(self, cell);
 
+            this.$["container"]["body"]
+                .on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function () {
+                    columnSelect.update.call(self, {
+                        dindex: this.getAttribute("data-ax5grid-data-index"),
+                        rowIndex: this.getAttribute("data-ax5grid-column-rowIndex"),
+                        colIndex: this.getAttribute("data-ax5grid-column-colIndex")
+                    });
                 })
-                .on("mouseup.ax5grid-" + this.instanceId, function (e) {
+                .on("mouseup.ax5grid-" + this.instanceId, function () {
                     columnSelector.off.call(self);
                 })
-                .on("mouseleave.ax5grid-" + this.instanceId, function (e) {
+                .on("mouseleave.ax5grid-" + this.instanceId, function () {
                     columnSelector.off.call(self);
                 });
 
