@@ -555,9 +555,29 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
+    var columnSelect = {
+        init: function init() {},
+        update: function update() {}
+    };
     var columnSelector = {
-        "on": function on() {},
-        "off": function off() {}
+        "on": function on(cell) {
+
+            var self = this;
+            this.$["container"]["body"].on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function (e) {}).on("mouseup.ax5grid-" + this.instanceId, function (e) {
+                columnSelector.off.call(self);
+            }).on("mouseleave.ax5grid-" + this.instanceId, function (e) {
+                columnSelector.off.call(self);
+            });
+
+            jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+        },
+        "off": function off() {
+            console.log("off");
+
+            this.$["container"]["body"].off("mousemove.ax5grid-" + this.instanceId).off("mouseup.ax5grid-" + this.instanceId).off("mouseleave.ax5grid-" + this.instanceId);
+
+            jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+        }
     };
     var init = function init() {
         var self = this;
@@ -574,7 +594,7 @@
         // 바디에 표현될 한줄의 높이를 계산합니다.
         this.xvar.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
 
-        this.$["container"]["body"].on("click", '[data-ax5grid-event="click"]', function () {
+        this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function () {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
                 "default": function _default(column) {
@@ -598,8 +618,6 @@
                     */
                 },
                 "rowSelector": function rowSelector(column) {
-                    //console.log(column);
-                    //console.log();
                     GRID.data.select.call(self, column.dindex);
                     updateRowState.call(self, ["selected"], column.dindex);
                 },
@@ -634,8 +652,13 @@
             }
             self.xvar.dataHoveredIndex = dindex;
         });
-        this.$["container"]["body"].on("mousedown", "td", function (e) {
-            console.log(this);
+        this.$["container"]["body"].on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
+            //console.log(this);
+            columnSelector.on.call(self, {
+                dindex: this.getAttribute("data-ax5grid-data-index"),
+                rowIndex: this.getAttribute("data-ax5grid-column-rowIndex"),
+                colIndex: this.getAttribute("data-ax5grid-column-colIndex")
+            });
         }).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
@@ -859,7 +882,7 @@
                         if (_colGroup[col.colIndex] && _colGroup[col.colIndex].CSSClass) tdCSS_class += _colGroup[col.colIndex].CSSClass + " ";
                         if (col.CSSClass) tdCSS_class += col.CSSClass + " ";
 
-                        SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-event="click" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', 'data-ax5grid-column-selected="' + (!this.selectedColumn[di + "_" + col.rowIndex + "_" + col.colIndex] ? "false" : "true") + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + tdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+                        SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', 'data-ax5grid-column-selected="' + (!this.selectedColumn[di + "_" + col.rowIndex + "_" + col.colIndex] ? "false" : "true") + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + tdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                         SS.push(function () {
                             var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
@@ -963,6 +986,8 @@
                     this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').attr("data-ax5grid-selected", this.data[dindex][cfg.columnKeys.selected]);
                 }
             },
+
+            // 사용 방법 변경으로 폐기 예정
             "selectedColumn": function selectedColumn(dindex, data) {
                 this.$.panel[data.panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + data.rowIndex + '"][data-ax5grid-column-colindex="' + data.colIndex + '"]').attr('data-ax5grid-column-selected', this.selectedColumn[data.dindex + "_" + data.rowIndex + "_" + data.colIndex] ? "true" : "false");
             },

@@ -13,6 +13,9 @@
             background: lighten(#0581f2, 50%);
             //border: 1px solid #0581f2;
         }
+        &.focused{
+
+        }
     }
     [data-ax5grid-column-attr="rowSelector"] {
         cursor: pointer;
