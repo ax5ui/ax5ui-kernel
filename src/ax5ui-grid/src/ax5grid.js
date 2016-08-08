@@ -55,7 +55,7 @@
                     barMinSize: 15
                 },
 
-                columnKeys:{
+                columnKeys: {
                     selected: '_SELECTED'
                 }
             };
@@ -65,8 +65,9 @@
                 scrollContentHeight: 0 // 스크롤 된 내용물의 높이
             };
             // 그리드 데이터셋
-            this.colGroup = [];
-            this.data = [];
+            this.columns = []; // config.columns에서 복제된 오브젝트
+            this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
+            this.data = []; // 그리드의 데이터
             this.focusedColumn = {};
             this.selectedColumn = {};
 
@@ -208,6 +209,7 @@
                 initColumns = function (columns) {
                     this.columns = U.deepCopy(columns);
                     this.headerTable = makeHeaderTable.call(this, this.columns);
+                    this.xvar.frozenColumnIndex = (cfg.frozenColumnIndex > this.columns.length) ? this.columns.length : cfg.frozenColumnIndex;
 
                     var colGroupMap = {};
                     for (var r = 0, rl = this.headerTable.rows.length; r < rl; r++) {
@@ -533,6 +535,10 @@
 
 
             this.setData = function (data) {
+
+                // console.log(this.xvar.frozenColumnIndex);
+                this.xvar.frozenRowIndex = (cfg.frozenRowIndex > data.length) ? data.length : cfg.frozenRowIndex;
+
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
