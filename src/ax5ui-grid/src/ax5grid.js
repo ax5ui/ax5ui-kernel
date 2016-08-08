@@ -519,6 +519,32 @@
                     alignGrid.call(this);
                     GRID.scroller.resize.call(this);
                 }).bind(this));
+
+                jQuery(document.body).on("click.ax5grid-" + this.instanceId, function (e) {
+                    var target = U.findParentNode(e.target, {"data-ax5grid-container": "root"});
+                    if (target) {
+                        self.focused = true;
+                    } else {
+                        self.focused = false;
+                        GRID.body.blur.call(self);
+                    }
+                });
+
+                jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
+                    if(self.focused){
+                        switch(e.which){
+                            case ax5.info.eventKeys.UP:
+                                break;
+                            case ax5.info.eventKeys.DOWN:
+                                break;
+                            case ax5.info.eventKeys.LEFT:
+                                break;
+                            case ax5.info.eventKeys.RIGHT:
+                                break;
+                        }
+                    }
+                });
+                
                 return this;
             };
 

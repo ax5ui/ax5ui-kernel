@@ -132,6 +132,7 @@
 
         }
     };
+
     var columnSelector = {
         "on": function (cell) {
             var self = this;
@@ -618,11 +619,17 @@
         }
     };
 
+    var blur = function () {
+        columnSelect.focusClear.call(this);
+        columnSelect.clear.call(this);
+    };
+
     GRID.body = {
         init: init,
         repaint: repaint,
         updateRowState: updateRowState,
-        scrollTo: scrollTo
+        scrollTo: scrollTo,
+        blur: blur
     };
 })();
 
