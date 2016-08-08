@@ -41,7 +41,8 @@
                 panelName: column.panelName,
                 dindex: column.dindex,
                 rowIndex: column.rowIndex,
-                colIndex: column.colIndex
+                colIndex: column.colIndex,
+                colspan: column.colspan
             };
 
             // select
@@ -58,7 +59,8 @@
                         panelName: column.panelName,
                         dindex: column.dindex,
                         rowIndex: column.rowIndex,
-                        colIndex: column.colIndex
+                        colIndex: column.colIndex,
+                        colspan: column.colspan
                     }
                 }
             })(self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex]);
@@ -68,6 +70,7 @@
                 .find('[data-ax5grid-column-rowindex="' + column.rowIndex + '"][data-ax5grid-column-colindex="' + column.colIndex + '"]')
                 .attr('data-ax5grid-column-focused', "true")
                 .attr('data-ax5grid-column-selected', "true");
+
         },
         update: function (column) {
             var self = this;
@@ -75,7 +78,6 @@
 
             self.xvar.selectedRange["end"] = [column.dindex, column.rowIndex, column.colIndex, column.colspan - 1];
             columnSelect.clear.call(self);
-
 
             var range = {
                 r: {
@@ -108,7 +110,8 @@
                             panelName: panelName,
                             dindex: dindex,
                             rowIndex: rowIndex,
-                            colIndex: colIndex
+                            colIndex: colIndex,
+                            colspan: column.colspan
                         };
                     }
 
@@ -202,10 +205,9 @@
         this.bodyRowData = {};
         this.rightBodyRowData = {};
 
-        // this.bodyRowMap = {};
         this.bodyRowTable = makeBodyRowTable.call(this, this.columns);
+        this.bodyRowMap = makeBodyRowMap.call(this, this.bodyRowTable);
 
-        // set oneRowHeight = this.bodyTrHeight
         // 바디에 표현될 한줄의 높이를 계산합니다.
         this.xvar.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
 
@@ -279,7 +281,6 @@
         var maekRows = function (_columns, depth, parentField) {
             var row = {cols: []};
             var i = 0, l = _columns.length;
-
 
             var selfMakeRow = function (__columns) {
                 var i = 0, l = __columns.length;
@@ -383,6 +384,15 @@
         })();
 
         return table;
+    };
+    var makeBodyRowMap = function (table) {
+        var map = {};
+        table.rows.forEach(function (row) {
+            row.cols.forEach(function (col) {
+                map[col.rowIndex + "_" + col.colIndex] = jQuery.extend({}, col);
+            });
+        });
+        return map;
     };
 
     var repaint = function () {
@@ -624,12 +634,150 @@
         columnSelect.clear.call(this);
     };
 
+    var moveFocus = function (_position) {
+        var focus = {
+            "UD": function (_dy) {
+                var focusedColumn;
+                for (var c in this.focusedColumn) {
+                    focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                    break;
+                }
+
+                columnSelect.focusClear.call(this);
+                columnSelect.clear.call(this);
+
+                focusedColumn.dindex = focusedColumn.dindex + _dy;
+                if (_dy < 0) {
+                    if (focusedColumn.dindex < 0) focusedColumn.dindex = 0;
+                }
+
+                //todo : focus column이 안보이면 보이게 하자.
+
+                focusedColumn.panelName = (function () {
+                    var _panels = [],
+                        panelName = "";
+
+                    if (this.xvar.frozenRowIndex > focusedColumn.dindex) _panels.push("top");
+                    if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
+                    _panels.push("body");
+                    if (_panels[0] !== "top") _panels.push("scroll");
+                    panelName = _panels.join("-");
+
+                    return panelName;
+                }).call(this);
+
+                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.rowIndex + "_" + focusedColumn.colIndex] = focusedColumn;
+                this.$.panel[focusedColumn.panelName]
+                    .find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]')
+                    .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]')
+                    .attr('data-ax5grid-column-focused', "true");
+            },
+            "LR": function (_dx) {
+
+                var focusedColumn;
+                for (var c in this.focusedColumn) {
+                    focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                    break;
+                }
+                var originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
+
+                columnSelect.focusClear.call(this);
+                columnSelect.clear.call(this);
+
+                if (_dx < 0) {
+                    focusedColumn.colIndex = focusedColumn.colIndex + _dx;
+                    if(focusedColumn.colIndex < 0) focusedColumn.colIndex = 0;
+                }else{
+                    focusedColumn.colIndex = focusedColumn.colIndex + (originalColumn.colspan - 1) + _dx;
+                }
+
+                var while_i = 0;
+                while(typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined"){
+                    if(while_i % 2 == 0){
+                        focusedColumn.colIndex--;
+                    }else{
+                        focusedColumn.rowIndex--;
+                    }
+                    if(focusedColumn.rowIndex == 0 && focusedColumn.colIndex == 0){
+                        // find fail
+                        break;
+                    }
+                    while_i++;
+                }
+                focusedColumn.panelName = (function () {
+                    var _panels = [],
+                        panelName = "";
+
+                    if (this.xvar.frozenRowIndex > focusedColumn.dindex) _panels.push("top");
+                    if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
+                    _panels.push("body");
+                    if (_panels[0] !== "top") _panels.push("scroll");
+                    panelName = _panels.join("-");
+
+                    return panelName;
+                }).call(this);
+
+                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.rowIndex + "_" + focusedColumn.colIndex] = focusedColumn;
+                this.$.panel[focusedColumn.panelName]
+                    .find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]')
+                    .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]')
+                    .attr('data-ax5grid-column-focused', "true");
+            }
+        };
+        var processor = {
+            "UP": function () {
+                focus["UD"].call(this, -1);
+            },
+            "DOWN": function () {
+                focus["UD"].call(this, 1);
+            },
+            "LEFT": function () {
+                focus["LR"].call(this, -1);
+            },
+            "RIGHT": function () {
+                focus["LR"].call(this, 1);
+            },
+            "position": function (_position) {
+                console.log("222");
+            }
+        };
+
+        if (_position in processor) {
+            processor[_position].call(this);
+            return this;
+        } else {
+            processor["position"].call(this, _position);
+        }
+
+
+    };
+
+    var onKeyDown = function (_act, _data) {
+        var processor = {
+            "KEY_UP": function () {
+                moveFocus.call(this, "UP");
+            },
+            "KEY_DOWN": function () {
+                moveFocus.call(this, "DOWN");
+            },
+            "KEY_LEFT": function () {
+                moveFocus.call(this, "LEFT");
+            },
+            "KEY_RIGHT": function () {
+                moveFocus.call(this, "RIGHT");
+            }
+        };
+        if (_act in processor) processor[_act].call(this, _data);
+    };
+
+
     GRID.body = {
         init: init,
         repaint: repaint,
         updateRowState: updateRowState,
         scrollTo: scrollTo,
-        blur: blur
+        blur: blur,
+        onKeyDown: onKeyDown
     };
 })();
 

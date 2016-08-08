@@ -530,21 +530,19 @@
                     }
                 });
 
+                var ctrlKeys = {
+                    "33": "KEY_PAGEUP",
+                    "34": "KEY_PAGEDOWN",
+                    "35": "KEY_END",
+                    "36": "KEY_HOME",
+                    "37": "KEY_LEFT",
+                    "38": "KEY_UP",
+                    "39": "KEY_RIGHT",
+                    "40": "KEY_DOWN"
+                };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
-                    if(self.focused){
-                        switch(e.which){
-                            case ax5.info.eventKeys.UP:
-                                break;
-                            case ax5.info.eventKeys.DOWN:
-                                break;
-                            case ax5.info.eventKeys.LEFT:
-                                break;
-                            case ax5.info.eventKeys.RIGHT:
-                                break;
-                        }
-                    }
+                    if (self.focused && ctrlKeys[e.which]) GRID.body.onKeyDown.call(self, ctrlKeys[e.which], e);
                 });
-                
                 return this;
             };
 
