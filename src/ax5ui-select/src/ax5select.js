@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "select",
-        version: "0.4.2"
+        version: "0.4.3"
     }, (function () {
         /**
          * @class ax5select
@@ -22,6 +22,7 @@
                 self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 theme: 'default',
                 animateTime: 250,
@@ -110,8 +111,8 @@
                     </div>
                     `;
                     },
-                    getTmpl = function () {
-                        return `
+                getTmpl = function () {
+                    return `
                     <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5select-display {{theme}}" 
                     data-ax5select-display="{{id}}" data-ax5select-instance="{{instanceId}}">
                         <div class="ax5select-display-table" data-els="display-table">

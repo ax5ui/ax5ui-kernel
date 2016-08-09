@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "mediaViewer",
-        version: "0.4.2"
+        version: "0.4.3"
     }, function () {
         /**
          * @class ax5mediaViewer
@@ -37,6 +37,7 @@
                 };
             };
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',

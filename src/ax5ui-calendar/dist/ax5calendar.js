@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "calendar",
-        version: "0.8.7"
+        version: "0.8.8"
     }, function () {
 
         /**
@@ -26,6 +26,7 @@
                 cfg,
                 selectableCount = 1;
 
+            this.instanceId = ax5.getGuid();
             this.target = null;
             this.selection = [];
             this.selectionMap = {};

@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "dialog",
-        version: "0.8.2"
+        version: "0.8.3"
     }, function () {
         /**
          * @class ax5dialog
@@ -23,7 +23,7 @@
             var self = this,
                 cfg;
 
-            this.activeDialog = null;
+            this.instanceId = ax5.getGuid();
             this.config = {
                 id: 'ax5-dialog-' + this.instanceId,
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
@@ -36,7 +36,7 @@
                 },
                 animateTime: 250
             };
-
+            this.activeDialog = null;
             cfg = this.config;
 
             var onStateChanged = function onStateChanged(opts, that) {

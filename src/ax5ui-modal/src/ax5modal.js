@@ -37,6 +37,7 @@
                     }
                 };
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 id: 'ax5-modal-' + this.instanceId,
                 position: {
@@ -69,36 +70,36 @@
                 },
                 getContentTmpl = function () {
                     return ` 
-                <div id="{{modalId}}" data-modal-els="root" class="ax5modal {{theme}} {{fullscreen}}" style="{{styles}}">
-                    {{#header}}
-                    <div class="ax-modal-header" data-modal-els="header">
-                        {{{title}}}
-                        {{#btns}}
-                            <div class="ax-modal-header-addon">
-                            {{#@each}}
-                            <a tabindex="-1" data-modal-header-btn="{{@key}}" class="{{@value.theme}}">{{{@value.label}}}</a>
-                            {{/@each}}
-                            </div>
-                        {{/btns}}
-                    </div>
-                    {{/header}}
-                    <div class="ax-modal-body" data-modal-els="body">
-                    {{#iframe}}
-                        <div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">
-                        <iframe name="{{modalId}}-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>
+                    <div id="{{modalId}}" data-modal-els="root" class="ax5modal {{theme}} {{fullscreen}}" style="{{styles}}">
+                        {{#header}}
+                        <div class="ax-modal-header" data-modal-els="header">
+                            {{{title}}}
+                            {{#btns}}
+                                <div class="ax-modal-header-addon">
+                                {{#@each}}
+                                <a tabindex="-1" data-modal-header-btn="{{@key}}" class="{{@value.theme}}">{{{@value.label}}}</a>
+                                {{/@each}}
+                                </div>
+                            {{/btns}}
                         </div>
-                        <form name="{{modalId}}-form" data-modal-els="iframe-form">
-                        <input type="hidden" name="modalId" value="{{modalId}}" />
-                        {{#param}}
-                        {{#@each}}
-                        <input type="hidden" name="{{@key}}" value="{{@value}}" />
-                        {{/@each}}
-                        {{/param}}
-                        </form>
-                    {{/iframe}}
+                        {{/header}}
+                        <div class="ax-modal-body" data-modal-els="body">
+                        {{#iframe}}
+                            <div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">
+                            <iframe name="{{modalId}}-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>
+                            </div>
+                            <form name="{{modalId}}-form" data-modal-els="iframe-form">
+                            <input type="hidden" name="modalId" value="{{modalId}}" />
+                            {{#param}}
+                            {{#@each}}
+                            <input type="hidden" name="{{@key}}" value="{{@value}}" />
+                            {{/@each}}
+                            {{/param}}
+                            </form>
+                        {{/iframe}}
+                        </div>
                     </div>
-                </div>
-                `;
+                    `;
                 },
                 getContent = function (modalId, opts) {
                     var
@@ -122,7 +123,6 @@
                 },
                 open = function (opts, callBack) {
                     var that;
-
                     jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
                     this.activeModal = jQuery('#' + opts.id);
@@ -566,6 +566,7 @@
                 if (arguments && U.isObject(arguments[0])) {
                     this.setConfig(arguments[0]);
                 }
+                
             }).apply(this, arguments);
         };
         return ax5modal;

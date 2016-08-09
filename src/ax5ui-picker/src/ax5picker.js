@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.2"
+        version: "0.7.3"
     }, (function () {
         /**
          * @class ax5picker
@@ -22,6 +22,7 @@
                 self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',

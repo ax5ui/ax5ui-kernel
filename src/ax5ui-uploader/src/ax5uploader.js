@@ -22,6 +22,7 @@
                 self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',

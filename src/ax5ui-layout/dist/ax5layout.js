@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "layout",
-        version: "0.2.2"
+        version: "0.2.3"
     }, function () {
         /**
          * @class ax5layout
@@ -34,6 +34,7 @@
                 };
             };
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 theme: 'default',
                 animateTime: 250,

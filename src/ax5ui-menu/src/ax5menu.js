@@ -5,7 +5,7 @@
 
     UI.addClass({
         className: "menu",
-        version: "0.6.2"
+        version: "0.6.3"
     }, (function () {
         /**
          * @class ax5.ui.menu
@@ -21,6 +21,7 @@
                 self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 theme: "default",
                 iconWidth: 22,

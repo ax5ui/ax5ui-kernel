@@ -5,7 +5,7 @@
 
     UI.addClass({
         className: "formatter",
-        version: "0.5.2"
+        version: "0.5.3"
     }, (function () {
         var TODAY = new Date();
         var setSelectionRange = function (input, pos) {
@@ -44,6 +44,7 @@
                 self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 animateTime: 250
             };

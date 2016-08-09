@@ -12,7 +12,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.2.1"
+        version: "0.2.2"
     }, (function () {
         /**
          * @class ax5combobox
@@ -28,6 +28,7 @@
                 self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 theme: 'default',
                 animateTime: 250,

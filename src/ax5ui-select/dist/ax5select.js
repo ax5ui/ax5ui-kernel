@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "select",
-        version: "0.4.2"
+        version: "0.4.3"
     }, function () {
         /**
          * @class ax5select
@@ -23,6 +23,7 @@
             var self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 theme: 'default',
                 animateTime: 250,

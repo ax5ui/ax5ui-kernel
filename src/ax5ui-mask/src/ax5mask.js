@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "mask",
-        version: "0.7.2"
+        version: "0.7.3"
     }, (function () {
         /**
          * @class ax5mask
@@ -21,6 +21,7 @@
             var self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 theme: '',
                 target: jQuery(document.body).get(0)
