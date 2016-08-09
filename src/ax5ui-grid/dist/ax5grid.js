@@ -1135,6 +1135,7 @@
         }
 
         this.xvar.paintStartRowIndex = paintStartRowIndex;
+        this.xvar.paintRowCount = paintRowCount;
         this.xvar.dataRowCount = data.length;
     };
 
@@ -1211,8 +1212,6 @@
                     while_i++;
                 }
 
-                //todo : focus column이 안보이면 보이게 하자.
-
                 focusedColumn.panelName = function () {
                     var _panels = [],
                         panelName = "";
@@ -1226,6 +1225,19 @@
                     return panelName;
                 }.call(this);
 
+                // 포커스 컬럼의 위치에 따라 스크롤 처리.
+                (function () {
+                    if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
+                        if (focusedColumn.dindex < this.xvar.paintStartRowIndex) {
+                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight });
+                            GRID.scroller.resize.call(this);
+                        } else if (focusedColumn.dindex + 1 > this.xvar.paintStartRowIndex + (this.xvar.paintRowCount - 2)) {
+                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.paintRowCount + 3) * this.xvar.bodyTrHeight });
+                            GRID.scroller.resize.call(this);
+                        }
+                    }
+                }).call(this);
+
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.rowIndex + "_" + focusedColumn.colIndex] = focusedColumn;
                 this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
             },
@@ -1234,6 +1246,8 @@
                 var focusedColumn;
                 var originalColumn;
                 var while_i = 0;
+                var isScrollPanel = false;
+                var containerPanelName = "";
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -1274,14 +1288,46 @@
                     if (this.xvar.frozenRowIndex > focusedColumn.dindex) _panels.push("top");
                     if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
                     _panels.push("body");
-                    if (_panels[0] !== "top") _panels.push("scroll");
+                    if (_panels[0] !== "top") {
+                        if (this.xvar.frozenColumnIndex <= focusedColumn.colIndex) {
+                            containerPanelName = _panels.join("-");
+                            isScrollPanel = true;
+                        }
+                        _panels.push("scroll");
+                    }
                     panelName = _panels.join("-");
 
                     return panelName;
                 }.call(this);
 
+                // 포커스 컬럼의 위치에 따라 스크롤 처리.
+                (function () {}).call(this);
+
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.rowIndex + "_" + focusedColumn.colIndex] = focusedColumn;
-                this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
+
+                var $column = this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
+
+                if (isScrollPanel) {
+                    // 스크롤 패널 이라면~
+                    var newLeft = function () {
+                        if ($column.position().left + $column.outerWidth() > Math.abs(this.$.panel[focusedColumn.panelName].position().left) + this.$.panel[containerPanelName].width()) {
+                            console.log("i'm here");
+                            return $column.position().left + $column.outerWidth() - this.$.panel[containerPanelName].width();
+                        } else if (Math.abs(this.$.panel[focusedColumn.panelName].position().left) > $column.position().left) {
+                            return $column.position().left;
+                        } else {
+                            return;
+                        }
+                    }.call(this);
+
+                    //console.log(newLeft);
+
+                    if (typeof newLeft !== "undefined") {
+                        GRID.header.scrollTo.call(this, { left: -newLeft });
+                        scrollTo.call(this, { left: -newLeft });
+                        GRID.scroller.resize.call(this);
+                    }
+                }
             }
         };
         var processor = {
@@ -1340,7 +1386,7 @@
 
 // todo : cell selected -- ok
 // todo : cell multi selected -- ok
-// todo : cell selected focus move by keyboard -- ok & scroll
+// todo : cell selected focus move by keyboard -- ok & scroll body
 // todo : column resize
 // todo : column reorder
 // todo : cell formatter
