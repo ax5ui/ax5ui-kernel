@@ -638,17 +638,50 @@
         var focus = {
             "UD": function (_dy) {
                 var focusedColumn;
+                var originalColumn;
+                var while_i;
+
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
                     break;
                 }
+                originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
 
                 columnSelect.focusClear.call(this);
                 columnSelect.clear.call(this);
 
-                focusedColumn.dindex = focusedColumn.dindex + _dy;
-                if (_dy < 0) {
-                    if (focusedColumn.dindex < 0) focusedColumn.dindex = 0;
+                if (_dy > 0) {
+                    if (focusedColumn.rowIndex + (originalColumn.rowspan - 1) + _dy > this.bodyRowTable.rows.length - 1) {
+                        focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.rowIndex = 0;
+                        if(focusedColumn.dindex > this.data.length - 1) focusedColumn.dindex = this.data.length - 1;
+                    } else {
+                        focusedColumn.rowIndex = focusedColumn.rowIndex + _dy;
+                    }
+                }
+                else {
+                    if (focusedColumn.rowIndex + _dy < 0) {
+                        focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.rowIndex = this.bodyRowTable.rows.length - 1;
+                        if(focusedColumn.dindex < 0) focusedColumn.dindex = 0;
+                    } else {
+                        focusedColumn.rowIndex = focusedColumn.rowIndex + _dy;
+                    }
+                }
+
+                while_i = 0;
+                while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                    if (focusedColumn.rowIndex == 0 || while_i % 2 == ((_dy > 0) ? 0 : 1)) {
+                        focusedColumn.colIndex--;
+                    } else {
+                        focusedColumn.rowIndex--;
+                    }
+
+                    if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
+                        // find fail
+                        break;
+                    }
+                    while_i++;
                 }
 
                 //todo : focus column이 안보이면 보이게 하자.
@@ -671,42 +704,47 @@
                     .find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]')
                     .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]')
                     .attr('data-ax5grid-column-focused', "true");
+
             },
             "LR": function (_dx) {
 
                 var focusedColumn;
+                var originalColumn;
+                var while_i = 0;
+
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
                     break;
                 }
-                var originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
+                originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
 
                 columnSelect.focusClear.call(this);
                 columnSelect.clear.call(this);
 
                 if (_dx < 0) {
                     focusedColumn.colIndex = focusedColumn.colIndex + _dx;
-                    if(focusedColumn.colIndex < 0) focusedColumn.colIndex = 0;
-                }else{
+                    if (focusedColumn.colIndex < 0) focusedColumn.colIndex = 0;
+                } else {
                     focusedColumn.colIndex = focusedColumn.colIndex + (originalColumn.colspan - 1) + _dx;
+                    if (focusedColumn.colIndex > this.colGroup.length - 1) focusedColumn.colIndex = this.colGroup.length - 1;
                 }
 
-                var while_i = 0;
-                while(typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined"){
-                    if(while_i % 2 == 0){
-                        focusedColumn.colIndex--;
-                    }else{
+                while_i = 0;
+                while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                    if (while_i % 2 == ((focusedColumn.rowIndex > 0) ? 0 : 1)) {
                         focusedColumn.rowIndex--;
+                    } else {
+                        focusedColumn.colIndex--;
                     }
-                    if(focusedColumn.rowIndex == 0 && focusedColumn.colIndex == 0){
+                    if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
                         // find fail
                         break;
                     }
                     while_i++;
                 }
+
                 focusedColumn.panelName = (function () {
-                    var _panels = [],
-                        panelName = "";
+                    var _panels = [], panelName = "";
 
                     if (this.xvar.frozenRowIndex > focusedColumn.dindex) _panels.push("top");
                     if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
