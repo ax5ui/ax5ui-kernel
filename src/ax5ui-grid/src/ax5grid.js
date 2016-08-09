@@ -71,6 +71,12 @@
             this.data = []; // 그리드의 데이터
             this.focusedColumn = {};
             this.selectedColumn = {};
+            this.bodyRowTable = {};
+            this.leftBodyRowData = {};
+            this.bodyRowData = {};
+            this.rightBodyRowData = {};
+            this.bodyRowTable = {};
+            this.bodyRowMap = {};
 
             cfg = this.config;
 
@@ -202,6 +208,9 @@
                             "horizontal": this.$target.find('[data-ax5grid-scroller="horizontal"]'),
                             "horizontal-bar": this.$target.find('[data-ax5grid-scroller="horizontal-bar"]'),
                             "corner": this.$target.find('[data-ax5grid-scroller="corner"]')
+                        },
+                        "form": {
+                            "clipboard": this.$target.find('[data-ax5grid-form="clipboard"]')
                         }
                     };
 
@@ -600,18 +609,45 @@
 
             this.copySelect = function () {
                 var copysuccess;
-                var $clipBoard = this.$["container"]["hidden"];
+                var $clipBoard = this.$["form"]["clipboard"];
+                var copyTextArray = [];
                 var copyText = "";
 
+                var _rowIndex, _colIndex, _dindex;
+                var _di = 0;
                 for (var c in this.selectedColumn) {
                     var _column = this.selectedColumn[c];
                     if (_column) {
-                        console.log(_column);
+                        if (typeof _dindex === "undefined") {
+                            _dindex = _column.dindex;
+                            _rowIndex = _column.rowIndex;
+                            _colIndex = _column.rowIndex;
+                        }
+
+                        if (_dindex != _column.dindex || _rowIndex != _column.rowIndex) {
+                            _di++;
+                        }
+
+                        if (!copyTextArray[_di]) {
+                            copyTextArray[_di] = [];
+                        }
+                        var originalColumn = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                        if (originalColumn) {
+                            copyTextArray[_di].push(this.data[_column.dindex][originalColumn.key]);
+                        } else {
+                            copyTextArray[_di].push("");
+                        }
+
+                        _dindex = _column.dindex;
+                        _rowIndex = _column.rowIndex;
                     }
-                    // todo : make copy text
                 }
 
-                $clipBoard.text("장서우 장기영");
+                copyTextArray.forEach(function (r) {
+                    copyText += r.join('\t') + "\n";
+                });
+
+                $clipBoard.get(0).innerText = (copyText);
                 U.selectRange($clipBoard);
 
                 try {
@@ -649,3 +685,18 @@
 
     GRID = ax5.ui.grid;
 })();
+
+
+// todo : cell selected -- ok
+// todo : cell multi selected -- ok
+// todo : cell selected focus move by keyboard -- ok & scroll body -- ok
+// todo : clipboard copy -- ok
+// todo : column resize
+// todo : column reorder
+// todo : cell formatter
+// todo : cell inline edit
+// todo : row add
+// todo : sort & filter
+// todo : body menu
+// todo : page
+// todo : paging

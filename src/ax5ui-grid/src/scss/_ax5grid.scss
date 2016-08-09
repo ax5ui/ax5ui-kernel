@@ -207,6 +207,7 @@
         overflow: hidden;
         [data-ax5grid-container="hidden"] {
             position: absolute;
+            //z-index: 100;
             left: -100%;
             top: -100%;
             height: 100%;

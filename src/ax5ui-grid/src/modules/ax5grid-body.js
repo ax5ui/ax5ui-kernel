@@ -37,7 +37,7 @@
 
             // focus
             columnSelect.focusClear.call(self);
-            self.focusedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = {
+            self.focusedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex] = {
                 panelName: column.panelName,
                 dindex: column.dindex,
                 rowIndex: column.rowIndex,
@@ -51,7 +51,7 @@
                 start: [column.dindex, column.rowIndex, column.colIndex, column.colspan - 1],
                 end: null
             };
-            self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = (function (data) {
+            self.selectedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex] = (function (data) {
                 if (data) {
                     return false;
                 } else {
@@ -63,7 +63,7 @@
                         colspan: column.colspan
                     }
                 }
-            })(self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex]);
+            })(self.selectedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex]);
 
             this.$.panel[column.panelName]
                 .find('[data-ax5grid-tr-data-index="' + column.dindex + '"]')
@@ -92,31 +92,33 @@
 
             dindex = range.r.s;
             for (; dindex <= range.r.e; dindex++) {
-                colIndex = range.c.s;
-                for (; colIndex <= range.c.e; colIndex++) {
-                    var _panels = [],
-                        panelName = "";
 
-                    if (self.xvar.frozenRowIndex > dindex) _panels.push("top");
-                    if (self.xvar.frozenColumnIndex > colIndex) _panels.push("left");
-                    _panels.push("body");
-                    if (_panels[0] !== "top") _panels.push("scroll");
-                    panelName = _panels.join("-");
 
-                    rowIndex = 0;
-                    trl = this.bodyRowTable.rows.length;
-                    for (; rowIndex < trl; rowIndex++) {
-                        self.selectedColumn[dindex + "_" + rowIndex + "_" + colIndex] = {
+                trl = this.bodyRowTable.rows.length;
+                rowIndex = 0;
+                for (; rowIndex < trl; rowIndex++) {
+                    colIndex = range.c.s;
+                    for (; colIndex <= range.c.e; colIndex++) {
+                        var _panels = [],
+                            panelName = "";
+
+                        if (self.xvar.frozenRowIndex > dindex) _panels.push("top");
+                        if (self.xvar.frozenColumnIndex > colIndex) _panels.push("left");
+                        _panels.push("body");
+                        if (_panels[0] !== "top") _panels.push("scroll");
+                        panelName = _panels.join("-");
+
+                        self.selectedColumn[dindex + "_" + colIndex + "_" + rowIndex] = {
                             panelName: panelName,
                             dindex: dindex,
                             rowIndex: rowIndex,
                             colIndex: colIndex,
                             colspan: column.colspan
                         };
-                    }
 
-                    _panels = null;
-                    panelName = null;
+                        _panels = null;
+                        panelName = null;
+                    }
                 }
             }
             dindex = null;
@@ -166,7 +168,6 @@
                 .on('selectstart', false);
         },
         "off": function () {
-            console.log("off");
 
             this.$["container"]["body"]
                 .off("mousemove.ax5grid-" + this.instanceId)
@@ -531,7 +532,7 @@
                                     attrs += 'data-ax5grid-column-selected="true" ';
                                 }
                                 return attrs;
-                            })(this.focusedColumn[di + "_" + col.rowIndex + "_" + col.colIndex], this.selectedColumn[di + "_" + col.rowIndex + "_" + col.colIndex]),
+                            })(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]),
                             'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ',
                             'class="' + tdCSS_class + '" ',
                             'style="height: ' + cellHeight + 'px;min-height: 1px;">');
@@ -775,7 +776,7 @@
                     if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
                     _panels.push("body");
                     if (_panels[0] !== "top") {
-                        if(this.xvar.frozenColumnIndex <= focusedColumn.colIndex) {
+                        if (this.xvar.frozenColumnIndex <= focusedColumn.colIndex) {
                             containerPanelName = _panels.join("-");
                             isScrollPanel = true;
                         }
@@ -808,9 +809,9 @@
                             return;
                         }
                     }).call(this);
-                    
+
                     //console.log(newLeft);
-                    
+
                     if (typeof newLeft !== "undefined") {
                         GRID.header.scrollTo.call(this, {left: -newLeft});
                         scrollTo.call(this, {left: -newLeft});
@@ -858,17 +859,3 @@
         moveFocus: moveFocus
     };
 })();
-
-// todo : cell selected -- ok
-// todo : cell multi selected -- ok
-// todo : cell selected focus move by keyboard -- ok & scroll body -- ok
-// todo : clipboard copy
-// todo : column resize
-// todo : column reorder
-// todo : cell formatter
-// todo : cell inline edit
-// todo : row add
-// todo : sort & filter
-// todo : body menu
-// todo : page
-// todo : paging

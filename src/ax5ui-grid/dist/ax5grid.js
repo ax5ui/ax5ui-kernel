@@ -72,6 +72,12 @@
             this.data = []; // 그리드의 데이터
             this.focusedColumn = {};
             this.selectedColumn = {};
+            this.bodyRowTable = {};
+            this.leftBodyRowData = {};
+            this.bodyRowData = {};
+            this.rightBodyRowData = {};
+            this.bodyRowTable = {};
+            this.bodyRowMap = {};
 
             cfg = this.config;
 
@@ -199,6 +205,9 @@
                         "horizontal": this.$target.find('[data-ax5grid-scroller="horizontal"]'),
                         "horizontal-bar": this.$target.find('[data-ax5grid-scroller="horizontal-bar"]'),
                         "corner": this.$target.find('[data-ax5grid-scroller="corner"]')
+                    },
+                    "form": {
+                        "clipboard": this.$target.find('[data-ax5grid-form="clipboard"]')
                     }
                 };
 
@@ -596,18 +605,45 @@
 
             this.copySelect = function () {
                 var copysuccess;
-                var $clipBoard = this.$["container"]["hidden"];
+                var $clipBoard = this.$["form"]["clipboard"];
+                var copyTextArray = [];
                 var copyText = "";
 
+                var _rowIndex, _colIndex, _dindex;
+                var _di = 0;
                 for (var c in this.selectedColumn) {
                     var _column = this.selectedColumn[c];
                     if (_column) {
-                        console.log(_column);
+                        if (typeof _dindex === "undefined") {
+                            _dindex = _column.dindex;
+                            _rowIndex = _column.rowIndex;
+                            _colIndex = _column.rowIndex;
+                        }
+
+                        if (_dindex != _column.dindex || _rowIndex != _column.rowIndex) {
+                            _di++;
+                        }
+
+                        if (!copyTextArray[_di]) {
+                            copyTextArray[_di] = [];
+                        }
+                        var originalColumn = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                        if (originalColumn) {
+                            copyTextArray[_di].push(this.data[_column.dindex][originalColumn.key]);
+                        } else {
+                            copyTextArray[_di].push("");
+                        }
+
+                        _dindex = _column.dindex;
+                        _rowIndex = _column.rowIndex;
                     }
-                    // todo : make copy text
                 }
 
-                $clipBoard.text("장서우 장기영");
+                copyTextArray.forEach(function (r) {
+                    copyText += r.join('\t') + "\n";
+                });
+
+                $clipBoard.get(0).innerText = copyText;
                 U.selectRange($clipBoard);
 
                 try {
@@ -645,6 +681,21 @@
 
     GRID = ax5.ui.grid;
 })();
+
+// todo : cell selected -- ok
+// todo : cell multi selected -- ok
+// todo : cell selected focus move by keyboard -- ok & scroll body -- ok
+// todo : clipboard copy -- ok
+// todo : column resize
+// todo : column reorder
+// todo : cell formatter
+// todo : cell inline edit
+// todo : row add
+// todo : sort & filter
+// todo : body menu
+// todo : page
+// todo : paging
+
 // ax5.ui.grid.body
 (function () {
     "use strict";
@@ -678,7 +729,7 @@
 
             // focus
             columnSelect.focusClear.call(self);
-            self.focusedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = {
+            self.focusedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex] = {
                 panelName: column.panelName,
                 dindex: column.dindex,
                 rowIndex: column.rowIndex,
@@ -692,7 +743,7 @@
                 start: [column.dindex, column.rowIndex, column.colIndex, column.colspan - 1],
                 end: null
             };
-            self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex] = function (data) {
+            self.selectedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex] = function (data) {
                 if (data) {
                     return false;
                 } else {
@@ -704,7 +755,7 @@
                         colspan: column.colspan
                     };
                 }
-            }(self.selectedColumn[column.dindex + "_" + column.rowIndex + "_" + column.colIndex]);
+            }(self.selectedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex]);
 
             this.$.panel[column.panelName].find('[data-ax5grid-tr-data-index="' + column.dindex + '"]').find('[data-ax5grid-column-rowindex="' + column.rowIndex + '"][data-ax5grid-column-colindex="' + column.colIndex + '"]').attr('data-ax5grid-column-focused', "true").attr('data-ax5grid-column-selected', "true");
         },
@@ -728,31 +779,32 @@
 
             dindex = range.r.s;
             for (; dindex <= range.r.e; dindex++) {
-                colIndex = range.c.s;
-                for (; colIndex <= range.c.e; colIndex++) {
-                    var _panels = [],
-                        panelName = "";
 
-                    if (self.xvar.frozenRowIndex > dindex) _panels.push("top");
-                    if (self.xvar.frozenColumnIndex > colIndex) _panels.push("left");
-                    _panels.push("body");
-                    if (_panels[0] !== "top") _panels.push("scroll");
-                    panelName = _panels.join("-");
+                trl = this.bodyRowTable.rows.length;
+                rowIndex = 0;
+                for (; rowIndex < trl; rowIndex++) {
+                    colIndex = range.c.s;
+                    for (; colIndex <= range.c.e; colIndex++) {
+                        var _panels = [],
+                            panelName = "";
 
-                    rowIndex = 0;
-                    trl = this.bodyRowTable.rows.length;
-                    for (; rowIndex < trl; rowIndex++) {
-                        self.selectedColumn[dindex + "_" + rowIndex + "_" + colIndex] = {
+                        if (self.xvar.frozenRowIndex > dindex) _panels.push("top");
+                        if (self.xvar.frozenColumnIndex > colIndex) _panels.push("left");
+                        _panels.push("body");
+                        if (_panels[0] !== "top") _panels.push("scroll");
+                        panelName = _panels.join("-");
+
+                        self.selectedColumn[dindex + "_" + colIndex + "_" + rowIndex] = {
                             panelName: panelName,
                             dindex: dindex,
                             rowIndex: rowIndex,
                             colIndex: colIndex,
                             colspan: column.colspan
                         };
-                    }
 
-                    _panels = null;
-                    panelName = null;
+                        _panels = null;
+                        panelName = null;
+                    }
                 }
             }
             dindex = null;
@@ -792,7 +844,6 @@
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
-            console.log("off");
 
             this.$["container"]["body"].off("mousemove.ax5grid-" + this.instanceId).off("mouseup.ax5grid-" + this.instanceId).off("mouseleave.ax5grid-" + this.instanceId);
 
@@ -1129,7 +1180,7 @@
                                 attrs += 'data-ax5grid-column-selected="true" ';
                             }
                             return attrs;
-                        }(this.focusedColumn[di + "_" + col.rowIndex + "_" + col.colIndex], this.selectedColumn[di + "_" + col.rowIndex + "_" + col.colIndex]), 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + tdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+                        }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + tdCSS_class + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                         SS.push(function () {
                             var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
@@ -1430,20 +1481,6 @@
         moveFocus: moveFocus
     };
 })();
-
-// todo : cell selected -- ok
-// todo : cell multi selected -- ok
-// todo : cell selected focus move by keyboard -- ok & scroll body -- ok
-// todo : clipboard copy
-// todo : column resize
-// todo : column reorder
-// todo : cell formatter
-// todo : cell inline edit
-// todo : row add
-// todo : sort & filter
-// todo : body menu
-// todo : page
-// todo : paging
 
 // ax5.ui.grid.layout
 (function () {
@@ -2066,7 +2103,7 @@
     "use strict";
 
     var GRID = ax5.ui.grid;
-    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\"></div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\"></div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
+    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\">\n                <textarea data-ax5grid-form=\"clipboard\"></textarea>\n            </div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\"></div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
 
     GRID.tmpl = {
         "main": main,

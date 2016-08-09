@@ -5,7 +5,9 @@
     var GRID = ax5.ui.grid;
     var main =
         `<div data-ax5grid-container="root" data-ax5grid-instance="{{instanceId}}">
-            <div data-ax5grid-container="hidden"></div>
+            <div data-ax5grid-container="hidden">
+                <textarea data-ax5grid-form="clipboard"></textarea>
+            </div>
             <div data-ax5grid-container="header">
                 <div data-ax5grid-panel="aside-header"></div>
                 <div data-ax5grid-panel="left-header"></div>
