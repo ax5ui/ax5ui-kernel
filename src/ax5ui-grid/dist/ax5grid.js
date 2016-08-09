@@ -991,6 +991,12 @@
         // body-scroll 의 포지션에 의존적이므로..
         var repaintBody = function repaintBody(_elTargetKey, _colGroup, _bodyRow, _data, _scrollConfig) {
             var _elTarget = this.$.panel[_elTargetKey];
+
+            if (!isFirstPaint && !_scrollConfig) {
+                this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
+                return false;
+            }
+
             var SS = [];
             var cgi, cgl;
             var di, dl;
@@ -1081,6 +1087,7 @@
             }
             _elTarget.html(SS.join(''));
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
+            return true;
         };
         var scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
@@ -1090,14 +1097,14 @@
 
         // aside
         if (cfg.asidePanelWidth > 0) {
-            if (this.xvar.frozenRowIndex > 0 && isFirstPaint) {
+            if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
                 repaintBody.call(this, "top-aside-body", this.asideColGroup, asideBodyRowData, data.slice(0, this.xvar.frozenRowIndex));
             }
 
             repaintBody.call(this, "aside-body-scroll", this.asideColGroup, asideBodyRowData, data, scrollConfig);
 
-            if (cfg.footSum && isFirstPaint) {
+            if (cfg.footSum) {
                 // 바닥 합계
                 repaintBody.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, data);
             }
@@ -1105,17 +1112,17 @@
 
         // left
         if (this.xvar.frozenColumnIndex > 0) {
-            if (this.xvar.frozenRowIndex > 0 && isFirstPaint) {
+            if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
                 repaintBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, data.slice(0, this.xvar.frozenRowIndex));
             }
             repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, data, scrollConfig);
 
-            if (cfg.footSum && isFirstPaint) {}
+            if (cfg.footSum) {}
         }
 
         // body
-        if (this.xvar.frozenRowIndex > 0 && isFirstPaint) {
+        if (this.xvar.frozenRowIndex > 0) {
             // 상단 행고정
             repaintBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, data.slice(0, this.xvar.frozenRowIndex));
         }
@@ -1245,13 +1252,14 @@
                     if (focusedColumn.colIndex > this.colGroup.length - 1) focusedColumn.colIndex = this.colGroup.length - 1;
                 }
 
+                if (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                    focusedColumn.rowIndex = 0;
+                }
                 while_i = 0;
                 while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
-                    if (while_i % 2 == (focusedColumn.rowIndex > 0 ? 0 : 1)) {
-                        focusedColumn.rowIndex--;
-                    } else {
-                        focusedColumn.colIndex--;
-                    }
+
+                    focusedColumn.colIndex--;
+
                     if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
                         // find fail
                         break;
@@ -1332,11 +1340,12 @@
 
 // todo : cell selected -- ok
 // todo : cell multi selected -- ok
-// todo : cell selected focus move by keyboard
+// todo : cell selected focus move by keyboard -- ok & scroll
 // todo : column resize
 // todo : column reorder
 // todo : cell formatter
 // todo : cell inline edit
+// todo : row add
 // todo : sort & filter
 // todo : body menu
 // todo : page
