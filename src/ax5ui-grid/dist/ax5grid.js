@@ -159,9 +159,11 @@
                 // 그리드 패널 프레임의 각 엘리먼트를 캐쉬합시다.
                 this.$ = {
                     "container": {
+                        "hidden": this.$target.find('[data-ax5grid-container="hidden"]'),
                         "root": this.$target.find('[data-ax5grid-container="root"]'),
                         "header": this.$target.find('[data-ax5grid-container="header"]'),
                         "body": this.$target.find('[data-ax5grid-container="body"]'),
+                        "page": this.$target.find('[data-ax5grid-container="page"]'),
                         "scroller": this.$target.find('[data-ax5grid-container="scroller"]')
                     },
                     "panel": {
@@ -536,7 +538,19 @@
                     "40": "KEY_DOWN"
                 };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
-                    if (self.focused && ctrlKeys[e.which]) GRID.body.onKeyDown.call(self, ctrlKeys[e.which], e);
+                    if (self.focused) {
+                        if (e.metaKey || e.ctrlKey) {
+                            if (e.which == 67) {
+                                // c
+                                //console.log("copy");
+                                self.copySelect();
+                            }
+                        } else {
+                            if (ctrlKeys[e.which]) {
+                                self.keyDown(ctrlKeys[e.which], e);
+                            }
+                        }
+                    }
                 });
                 return this;
             };
@@ -550,6 +564,57 @@
                 alignGrid.call(this);
                 GRID.scroller.resize.call(this);
                 return this;
+            };
+
+            /**
+             * @method ax5grid.keyDown
+             * @param {String} keyName
+             * @param {Event||Object} data
+             * @return {ax5grid}
+             */
+            this.keyDown = function () {
+                var processor = {
+                    "KEY_UP": function KEY_UP() {
+                        GRID.body.moveFocus.call(this, "UP");
+                    },
+                    "KEY_DOWN": function KEY_DOWN() {
+                        GRID.body.moveFocus.call(this, "DOWN");
+                    },
+                    "KEY_LEFT": function KEY_LEFT() {
+                        GRID.body.moveFocus.call(this, "LEFT");
+                    },
+                    "KEY_RIGHT": function KEY_RIGHT() {
+                        GRID.body.moveFocus.call(this, "RIGHT");
+                    }
+                };
+                return function (_act, _data) {
+                    if (_act in processor) processor[_act].call(this, _data);
+                    return this;
+                };
+            }();
+
+            this.copySelect = function () {
+                var copysuccess;
+                var $clipBoard = this.$["container"]["hidden"];
+                var copyText = "";
+
+                for (var c in this.selectedColumn) {
+                    var _column = this.selectedColumn[c];
+                    if (_column) {
+                        console.log(_column);
+                    }
+                    // todo : make copy text
+                }
+
+                $clipBoard.text("장서우 장기영");
+                U.selectRange($clipBoard);
+
+                try {
+                    copysuccess = document.execCommand("copy");
+                } catch (e) {
+                    copysuccess = false;
+                }
+                return copysuccess;
             };
 
             this.setData = function (data) {
@@ -1356,37 +1421,20 @@
         }
     };
 
-    var onKeyDown = function onKeyDown(_act, _data) {
-        var processor = {
-            "KEY_UP": function KEY_UP() {
-                moveFocus.call(this, "UP");
-            },
-            "KEY_DOWN": function KEY_DOWN() {
-                moveFocus.call(this, "DOWN");
-            },
-            "KEY_LEFT": function KEY_LEFT() {
-                moveFocus.call(this, "LEFT");
-            },
-            "KEY_RIGHT": function KEY_RIGHT() {
-                moveFocus.call(this, "RIGHT");
-            }
-        };
-        if (_act in processor) processor[_act].call(this, _data);
-    };
-
     GRID.body = {
         init: init,
         repaint: repaint,
         updateRowState: updateRowState,
         scrollTo: scrollTo,
         blur: blur,
-        onKeyDown: onKeyDown
+        moveFocus: moveFocus
     };
 })();
 
 // todo : cell selected -- ok
 // todo : cell multi selected -- ok
-// todo : cell selected focus move by keyboard -- ok & scroll body
+// todo : cell selected focus move by keyboard -- ok & scroll body -- ok
+// todo : clipboard copy
 // todo : column resize
 // todo : column reorder
 // todo : cell formatter
@@ -2018,7 +2066,7 @@
     "use strict";
 
     var GRID = ax5.ui.grid;
-    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
+    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\"></div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\"></div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
 
     GRID.tmpl = {
         "main": main,

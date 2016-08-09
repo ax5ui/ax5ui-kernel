@@ -850,38 +850,20 @@
 
     };
 
-    var onKeyDown = function (_act, _data) {
-        var processor = {
-            "KEY_UP": function () {
-                moveFocus.call(this, "UP");
-            },
-            "KEY_DOWN": function () {
-                moveFocus.call(this, "DOWN");
-            },
-            "KEY_LEFT": function () {
-                moveFocus.call(this, "LEFT");
-            },
-            "KEY_RIGHT": function () {
-                moveFocus.call(this, "RIGHT");
-            }
-        };
-        if (_act in processor) processor[_act].call(this, _data);
-    };
-
-
     GRID.body = {
         init: init,
         repaint: repaint,
         updateRowState: updateRowState,
         scrollTo: scrollTo,
         blur: blur,
-        onKeyDown: onKeyDown
+        moveFocus: moveFocus
     };
 })();
 
 // todo : cell selected -- ok
 // todo : cell multi selected -- ok
-// todo : cell selected focus move by keyboard -- ok & scroll body
+// todo : cell selected focus move by keyboard -- ok & scroll body -- ok
+// todo : clipboard copy
 // todo : column resize
 // todo : column reorder
 // todo : cell formatter

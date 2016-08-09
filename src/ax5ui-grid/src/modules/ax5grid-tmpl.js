@@ -5,6 +5,7 @@
     var GRID = ax5.ui.grid;
     var main =
         `<div data-ax5grid-container="root" data-ax5grid-instance="{{instanceId}}">
+            <div data-ax5grid-container="hidden"></div>
             <div data-ax5grid-container="header">
                 <div data-ax5grid-panel="aside-header"></div>
                 <div data-ax5grid-panel="left-header"></div>
@@ -39,6 +40,7 @@
                 </div>
                 <div data-ax5grid-panel="bottom-right-body"></div>
             </div>
+            <div data-ax5grid-container="page"></div>
             <div data-ax5grid-container="scroller">
                 <div data-ax5grid-scroller="vertical">
                     <div data-ax5grid-scroller="vertical-bar"></div>    

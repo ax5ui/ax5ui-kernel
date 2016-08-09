@@ -162,9 +162,11 @@
                     // 그리드 패널 프레임의 각 엘리먼트를 캐쉬합시다.
                     this.$ = {
                         "container": {
+                            "hidden": this.$target.find('[data-ax5grid-container="hidden"]'),
                             "root": this.$target.find('[data-ax5grid-container="root"]'),
                             "header": this.$target.find('[data-ax5grid-container="header"]'),
                             "body": this.$target.find('[data-ax5grid-container="body"]'),
+                            "page": this.$target.find('[data-ax5grid-container="page"]'),
                             "scroller": this.$target.find('[data-ax5grid-container="scroller"]')
                         },
                         "panel": {
@@ -541,7 +543,18 @@
                     "40": "KEY_DOWN"
                 };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
-                    if (self.focused && ctrlKeys[e.which]) GRID.body.onKeyDown.call(self, ctrlKeys[e.which], e);
+                    if (self.focused) {
+                        if (e.metaKey || e.ctrlKey) {
+                            if (e.which == 67) { // c
+                                //console.log("copy");
+                                self.copySelect();
+                            }
+                        } else {
+                            if (ctrlKeys[e.which]) {
+                                self.keyDown(ctrlKeys[e.which], e);
+                            }
+                        }
+                    }
                 });
                 return this;
             };
@@ -557,6 +570,56 @@
                 return this;
             };
 
+            /**
+             * @method ax5grid.keyDown
+             * @param {String} keyName
+             * @param {Event||Object} data
+             * @return {ax5grid}
+             */
+            this.keyDown = (function () {
+                var processor = {
+                    "KEY_UP": function () {
+                        GRID.body.moveFocus.call(this, "UP");
+                    },
+                    "KEY_DOWN": function () {
+                        GRID.body.moveFocus.call(this, "DOWN");
+                    },
+                    "KEY_LEFT": function () {
+                        GRID.body.moveFocus.call(this, "LEFT");
+                    },
+                    "KEY_RIGHT": function () {
+                        GRID.body.moveFocus.call(this, "RIGHT");
+                    }
+                };
+                return function (_act, _data) {
+                    if (_act in processor) processor[_act].call(this, _data);
+                    return this;
+                }
+            })();
+
+            this.copySelect = function () {
+                var copysuccess;
+                var $clipBoard = this.$["container"]["hidden"];
+                var copyText = "";
+
+                for (var c in this.selectedColumn) {
+                    var _column = this.selectedColumn[c];
+                    if (_column) {
+                        console.log(_column);
+                    }
+                    // todo : make copy text
+                }
+
+                $clipBoard.text("장서우 장기영");
+                U.selectRange($clipBoard);
+
+                try {
+                    copysuccess = document.execCommand("copy");
+                } catch (e) {
+                    copysuccess = false;
+                }
+                return copysuccess;
+            };
 
             this.setData = function (data) {
 
