@@ -1376,7 +1376,6 @@
                     // 스크롤 패널 이라면~
                     var newLeft = function () {
                         if ($column.position().left + $column.outerWidth() > Math.abs(this.$.panel[focusedColumn.panelName].position().left) + this.$.panel[containerPanelName].width()) {
-                            console.log("i'm here");
                             return $column.position().left + $column.outerWidth() - this.$.panel[containerPanelName].width();
                         } else if (Math.abs(this.$.panel[focusedColumn.panelName].position().left) > $column.position().left) {
                             return $column.position().left;

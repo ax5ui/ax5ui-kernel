@@ -1,7 +1,7 @@
 # What is it!
 
-AX5UI는 HTML5 웹표준에 최적화된 UI 플러그인입니다. 
-AX5UI를 브라우저에 효과적으로 출력하기 위해 HTML, JS, CSS의 API를 사용하고 있습니다.
+AX5UI는 HTML5웹표준 API를 이용하는 UI 플러그인입니다. 
+AX5UI를 사용하기 위해서는 HTML, JS, CSS대한 기본지식이 있어야 합니다.
 JS를 좀 더 효과적으로 사용하기 위해 jQuery 라이브러리를 기반하여 제작이 되었고, 사용자에게 친근한 Bootstrap 프레임워크의 CSS Class구조에 완벽 호환되게 개발되었습니다.
 
 AX5UI는 AXISJ의 개발경험을 가지고 설계 개발된 소프트웨어 입니다.
