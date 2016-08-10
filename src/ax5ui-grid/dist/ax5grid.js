@@ -52,6 +52,10 @@
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
+                page: {
+                    height: 25,
+                    display: false
+                },
                 scroller: {
                     size: 15,
                     barMinSize: 15
@@ -205,6 +209,10 @@
                         "horizontal": this.$target.find('[data-ax5grid-scroller="horizontal"]'),
                         "horizontal-bar": this.$target.find('[data-ax5grid-scroller="horizontal-bar"]'),
                         "corner": this.$target.find('[data-ax5grid-scroller="corner"]')
+                    },
+                    "page": {
+                        "navigation": "",
+                        "status": ""
                     },
                     "form": {
                         "clipboard": this.$target.find('[data-ax5grid-form="clipboard"]')
@@ -603,6 +611,10 @@
                 };
             }();
 
+            /**
+             * @method ax5grid.copySelect
+             * @returns {Boolean} copysuccess
+             */
             this.copySelect = function () {
                 var copysuccess;
                 var $clipBoard = this.$["form"]["clipboard"];
@@ -654,11 +666,13 @@
                 return copysuccess;
             };
 
+            /**
+             * @method ax5grid.setData
+             * @param {Array} data
+             * @returns {ax5grid}
+             */
             this.setData = function (data) {
-
-                // console.log(this.xvar.frozenColumnIndex);
                 this.xvar.frozenRowIndex = cfg.frozenRowIndex > data.length ? data.length : cfg.frozenRowIndex;
-
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
@@ -686,15 +700,17 @@
 // todo : cell multi selected -- ok
 // todo : cell selected focus move by keyboard -- ok & scroll body -- ok
 // todo : clipboard copy -- ok
+// todo : page
+// todo : paging
+
+// todo : row add / remove / update
+
 // todo : column resize
 // todo : column reorder
 // todo : cell formatter
 // todo : cell inline edit
-// todo : row add
 // todo : sort & filter
 // todo : body menu
-// todo : page
-// todo : paging
 
 // ax5.ui.grid.body
 (function () {
@@ -2103,10 +2119,15 @@
     "use strict";
 
     var GRID = ax5.ui.grid;
-    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\">\n                <textarea data-ax5grid-form=\"clipboard\"></textarea>\n            </div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\"></div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
+    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\">\n                <textarea data-ax5grid-form=\"clipboard\"></textarea>\n            </div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\">\n                <div data-ax5grid-page=\"navigation\"></div>\n                <div data-ax5grid-page=\"status\"></div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
+
+    var page_navigation = "";
+    var page_status = "";
 
     GRID.tmpl = {
         "main": main,
+        "page_navigation": page_navigation,
+        "page_status": page_status,
 
         get: function get(tmplName, data) {
             return ax5.mustache.render(GRID.tmpl[tmplName], data);

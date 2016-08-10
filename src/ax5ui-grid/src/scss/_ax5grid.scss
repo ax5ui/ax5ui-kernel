@@ -1,5 +1,7 @@
 // mixins
-
+@mixin gridBoxModal(){
+    margin: 0; padding: 0;
+}
 @mixin gridColumn() {
     td {
         &.isLastColumn {
@@ -80,6 +82,7 @@
 
 @mixin gridPanel($container) {
     [data-ax5grid-panel] {
+        @include gridBoxModal();
         position: absolute;
         overflow: hidden;
 
@@ -202,10 +205,13 @@
 // body
 [data-ax5grid] {
     [data-ax5grid-container="root"] {
+        @include gridBoxModal();
         position: relative;
         border: 1px solid #ccc;
         overflow: hidden;
+
         [data-ax5grid-container="hidden"] {
+            @include gridBoxModal();
             position: absolute;
             //z-index: 100;
             left: -100%;
@@ -213,21 +219,35 @@
             height: 100%;
             width: 100%;
         }
+
         [data-ax5grid-container="header"] {
+            @include gridBoxModal();
             position: relative;
             overflow: hidden;
             @include ax-background(top, #FFFFFF, #F0F0F0);
+            border: 0px none;
             border-bottom: 1px solid #ccc;
             @include gridPanel("header");
         }
 
         [data-ax5grid-container="body"] {
+            @include gridBoxModal();
             position: relative;
             overflow: hidden;
             @include gridPanel("body");
         }
 
+        [data-ax5grid-container="page"]{
+            @include gridBoxModal();
+            position: relative;
+            overflow: hidden;
+            @include ax-background(top, #FFFFFF, #F0F0F0);
+            border: 0px none;
+            border-top: 1px solid #ccc;
+        }
+
         [data-ax5grid-container="scroller"] {
+            @include gridBoxModal();
             position: absolute;
             right: 0px;
             bottom: 0px;

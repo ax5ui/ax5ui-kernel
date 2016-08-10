@@ -51,6 +51,10 @@
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
+                page: {
+                    height: 25,
+                    display: false
+                },
                 scroller: {
                     size: 15,
                     barMinSize: 15
@@ -208,6 +212,10 @@
                             "horizontal": this.$target.find('[data-ax5grid-scroller="horizontal"]'),
                             "horizontal-bar": this.$target.find('[data-ax5grid-scroller="horizontal-bar"]'),
                             "corner": this.$target.find('[data-ax5grid-scroller="corner"]')
+                        },
+                        "page": {
+                            "navigation": "",
+                            "status": ""
                         },
                         "form": {
                             "clipboard": this.$target.find('[data-ax5grid-form="clipboard"]')
@@ -697,9 +705,10 @@
 // todo : cell multi selected -- ok
 // todo : cell selected focus move by keyboard -- ok & scroll body -- ok
 // todo : clipboard copy -- ok
-// todo : row add / remove / update
 // todo : page
 // todo : paging
+
+// todo : row add / remove / update
 
 // todo : column resize
 // todo : column reorder

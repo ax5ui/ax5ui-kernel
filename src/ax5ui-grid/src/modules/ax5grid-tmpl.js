@@ -42,7 +42,10 @@
                 </div>
                 <div data-ax5grid-panel="bottom-right-body"></div>
             </div>
-            <div data-ax5grid-container="page"></div>
+            <div data-ax5grid-container="page">
+                <div data-ax5grid-page="navigation"></div>
+                <div data-ax5grid-page="status"></div>
+            </div>
             <div data-ax5grid-container="scroller">
                 <div data-ax5grid-scroller="vertical">
                     <div data-ax5grid-scroller="vertical-bar"></div>    
@@ -54,9 +57,14 @@
             </div>
         </div>`;
 
+    var page_navigation = ``;
+    var page_status = ``;
+
 
     GRID.tmpl = {
         "main": main,
+        "page_navigation": page_navigation,
+        "page_status": page_status,
 
         get: function (tmplName, data) {
             return ax5.mustache.render(GRID.tmpl[tmplName], data);
