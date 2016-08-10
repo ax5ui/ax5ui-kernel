@@ -607,6 +607,10 @@
                 }
             })();
 
+            /**
+             * @method ax5grid.copySelect
+             * @returns {Boolean} copysuccess
+             */
             this.copySelect = function () {
                 var copysuccess;
                 var $clipBoard = this.$["form"]["clipboard"];
@@ -658,11 +662,13 @@
                 return copysuccess;
             };
 
+            /**
+             * @method ax5grid.setData
+             * @param {Array} data
+             * @returns {ax5grid}
+             */
             this.setData = function (data) {
-
-                // console.log(this.xvar.frozenColumnIndex);
                 this.xvar.frozenRowIndex = (cfg.frozenRowIndex > data.length) ? data.length : cfg.frozenRowIndex;
-
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
@@ -691,12 +697,14 @@
 // todo : cell multi selected -- ok
 // todo : cell selected focus move by keyboard -- ok & scroll body -- ok
 // todo : clipboard copy -- ok
+// todo : row add / remove / update
+// todo : page
+// todo : paging
+
 // todo : column resize
 // todo : column reorder
 // todo : cell formatter
 // todo : cell inline edit
-// todo : row add
 // todo : sort & filter
 // todo : body menu
-// todo : page
-// todo : paging
+
