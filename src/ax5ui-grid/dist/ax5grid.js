@@ -664,7 +664,8 @@
                 });
 
                 $clipBoard.get(0).innerText = copyText;
-                U.selectRange($clipBoard);
+                //U.selectRange($clipBoard);
+                $clipBoard.select();
 
                 try {
                     copysuccess = document.execCommand("copy");
