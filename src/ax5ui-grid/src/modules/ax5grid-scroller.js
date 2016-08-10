@@ -1,6 +1,5 @@
 // ax5.ui.grid.scroller
 (function () {
-    "use strict";
 
     var GRID = ax5.ui.grid;
     var U = ax5.util;

@@ -1,7 +1,9 @@
 // mixins
-@mixin gridBoxModal(){
-    margin: 0; padding: 0;
+@mixin gridBoxModal() {
+    margin: 0;
+    padding: 0;
 }
+
 @mixin gridColumn() {
     td {
         &.isLastColumn {
@@ -10,12 +12,12 @@
         &.lineNumberColumn {
 
         }
-        &[data-ax5grid-column-selected]{
+        &[data-ax5grid-column-selected] {
             //box-shadow: inset 0px 0px 1px 0px #0581f2;
             background: lighten(#0581f2, 40%);
             border-color: #ccc;
         }
-        &[data-ax5grid-column-focused]{
+        &[data-ax5grid-column-focused] {
             box-shadow: inset 0px 0px 1px 1px #0581f2;
             background: lighten(#0581f2, 50%);
 
@@ -237,16 +239,34 @@
             @include gridPanel("body");
         }
 
-        [data-ax5grid-container="page"]{
+        [data-ax5grid-container="page"] {
             @include gridBoxModal();
             position: absolute;
             bottom: 0;
-            left:0;
+            left: 0;
             width: 100%;
             overflow: hidden;
             @include ax-background(top, #FFFFFF, #F0F0F0);
             border: 0px none;
             border-top: 1px solid #ccc;
+
+            [data-ax5grid-page="holder"] {
+                display: table;
+                table-layout: fixed;
+                width: 100%;
+                height: 100%;
+                [data-ax5grid-page="navigation"] {
+                    display: table-cell;
+                    vertical-align: middle;
+                }
+                [data-ax5grid-page="status"] {
+                    display: table-cell;
+                    text-align: right;
+                    vertical-align: middle;
+                    padding-right: 5px;
+                    font-size: 12px;
+                }
+            }
         }
 
         [data-ax5grid-container="scroller"] {

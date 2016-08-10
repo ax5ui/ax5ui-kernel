@@ -1,6 +1,5 @@
 // ax5.ui.grid.tmpl
 (function () {
-    "use strict";
 
     var GRID = ax5.ui.grid;
     var main =
@@ -43,8 +42,10 @@
                 <div data-ax5grid-panel="bottom-right-body"></div>
             </div>
             <div data-ax5grid-container="page">
-                <div data-ax5grid-page="navigation"></div>
-                <div data-ax5grid-page="status"></div>
+                <div data-ax5grid-page="holder">
+                    <div data-ax5grid-page="navigation"></div>
+                    <div data-ax5grid-page="status"></div>
+                </div>
             </div>
             <div data-ax5grid-container="scroller">
                 <div data-ax5grid-scroller="vertical">
@@ -58,7 +59,7 @@
         </div>`;
 
     var page_navigation = ``;
-    var page_status = ``;
+    var page_status = `<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>`;
 
 
     GRID.tmpl = {

@@ -1,6 +1,5 @@
 // ax5.ui.grid.body
 (function () {
-    "use strict";
 
     var GRID = ax5.ui.grid;
     var U = ax5.util;
@@ -619,6 +618,8 @@
         this.xvar.paintStartRowIndex = paintStartRowIndex;
         this.xvar.paintRowCount = paintRowCount;
         this.xvar.dataRowCount = data.length;
+
+        GRID.page.statusUpdate.call(this);
     };
 
     var scrollTo = function (css, noRepaint) {

@@ -53,7 +53,7 @@
                 },
                 page: {
                     height: 25,
-                    display: false
+                    display: true
                 },
                 scroller: {
                     size: 15,
@@ -353,12 +353,14 @@
                                 }
                                 break;
                             default:
-                                if (cfg.frozenColumnIndex === 0) {
-                                    css["left"] = asidePanelWidth;
-                                } else {
-                                    css["left"] = frozenPanelWidth + asidePanelWidth;
+                                if (containerType !== "page") {
+                                    if (cfg.frozenColumnIndex === 0) {
+                                        css["left"] = asidePanelWidth;
+                                    } else {
+                                        css["left"] = frozenPanelWidth + asidePanelWidth;
+                                    }
+                                    css["width"] = CT_INNER_WIDTH - asidePanelWidth - frozenPanelWidth - rightPanelWidth;
                                 }
-                                css["width"] = CT_INNER_WIDTH - asidePanelWidth - frozenPanelWidth - rightPanelWidth;
                                 break;
                         }
 
@@ -394,6 +396,12 @@
                             }
                         } else if (containerType === "header") {
                             css["height"] = headerHeight;
+                        } else if (containerType === "page") {
+                            if(pageHeight == 0){
+                                isHide = true;
+                            }else {
+                                css["height"] = pageHeight;
+                            }
                         }
 
                         if (isHide) {
@@ -477,9 +485,7 @@
                     scrollerDisplayProcess.call(this, this.$["scroller"]["horizontal"], verticalScrollerWidth, horizontalScrollerHeight, "horizontal");
                     scrollerDisplayProcess.call(this, this.$["scroller"]["corner"], verticalScrollerWidth, horizontalScrollerHeight, "corner");
 
-                    if(pageHeight){
-                        this.$["container"]["page"].css({height: pageHeight});
-                    }
+                    panelDisplayProcess.call(this, this.$["container"]["page"], "", "", "page");
                 };
 
             /// private end
@@ -667,8 +673,7 @@
                     copyText += r.join('\t') + "\n";
                 });
 
-                $clipBoard.get(0).innerText = (copyText);
-                //U.selectRange($clipBoard);
+                $clipBoard.get(0).innerText = copyText;
                 $clipBoard.select();
 
                 try {

@@ -1,7 +1,5 @@
-
 // ax5.ui.grid.util
 (function () {
-    "use strict";
 
     var GRID = ax5.ui.grid;
     /**
