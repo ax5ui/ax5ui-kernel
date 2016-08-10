@@ -239,7 +239,10 @@
 
         [data-ax5grid-container="page"]{
             @include gridBoxModal();
-            position: relative;
+            position: absolute;
+            bottom: 0;
+            left:0;
+            width: 100%;
             overflow: hidden;
             @include ax-background(top, #FFFFFF, #F0F0F0);
             border: 0px none;

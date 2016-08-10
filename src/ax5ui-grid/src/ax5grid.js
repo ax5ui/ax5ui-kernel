@@ -214,8 +214,8 @@
                             "corner": this.$target.find('[data-ax5grid-scroller="corner"]')
                         },
                         "page": {
-                            "navigation": "",
-                            "status": ""
+                            "navigation": this.$target.find('[data-ax5grid-page="navigation"]'),
+                            "status": this.$target.find('[data-ax5grid-page="status"]')
                         },
                         "form": {
                             "clipboard": this.$target.find('[data-ax5grid-form="clipboard"]')
@@ -298,11 +298,13 @@
                     var footSumHeight = 0;
 
                     var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
-                    /// todo : 그리드 스크롤러 표시여부 결정 스크롤러 표시 여부에 따라 그리드 각 패널들의 크기 조정
+                    var pageHeight = (cfg.page.display) ? cfg.page.height : 0;
+
                     // 데이터의 길이가 body보다 높을때. 수직 스크롤러 활성화
                     var verticalScrollerWidth = (function () {
-                        return ((CT_HEIGHT - headerHeight) < this.data.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
+                        return ((CT_HEIGHT - headerHeight - pageHeight) < this.data.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
                     }).call(this);
+
                     // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
                     var horizontalScrollerHeight = (function () {
                         var totalColGroupWidth = 0;
@@ -318,7 +320,7 @@
                     // 수평 너비 결정
                     CT_INNER_WIDTH = CT_WIDTH - verticalScrollerWidth;
                     // 수직 스크롤러의 높이 결정.
-                    CT_INNER_HEIGHT = CT_HEIGHT - horizontalScrollerHeight;
+                    CT_INNER_HEIGHT = CT_HEIGHT - pageHeight - horizontalScrollerHeight;
 
                     var bodyHeight = CT_INNER_HEIGHT - headerHeight;
 
@@ -412,7 +414,7 @@
                                 if (scrollerWidth > 0) {
                                     css["width"] = scrollerWidth;
                                     css["height"] = CT_INNER_HEIGHT;
-                                    css["bottom"] = scrollerHeight;
+                                    css["bottom"] = scrollerHeight + pageHeight;
                                 } else {
                                     isHide = true;
                                 }
@@ -422,6 +424,7 @@
                                     css["width"] = CT_INNER_WIDTH;
                                     css["height"] = scrollerHeight;
                                     css["right"] = scrollerWidth;
+                                    css["bottom"] = pageHeight;
                                 } else {
                                     isHide = true;
                                 }
@@ -430,6 +433,7 @@
                                 if (scrollerWidth > 0 && scrollerHeight > 0) {
                                     css["width"] = scrollerWidth;
                                     css["height"] = scrollerHeight;
+                                    css["bottom"] = pageHeight;
                                 } else {
                                     isHide = true;
                                 }
@@ -472,6 +476,10 @@
                     scrollerDisplayProcess.call(this, this.$["scroller"]["vertical"], verticalScrollerWidth, horizontalScrollerHeight, "vertical");
                     scrollerDisplayProcess.call(this, this.$["scroller"]["horizontal"], verticalScrollerWidth, horizontalScrollerHeight, "horizontal");
                     scrollerDisplayProcess.call(this, this.$["scroller"]["corner"], verticalScrollerWidth, horizontalScrollerHeight, "corner");
+
+                    if(pageHeight){
+                        this.$["container"]["page"].css({height: pageHeight});
+                    }
                 };
 
             /// private end
