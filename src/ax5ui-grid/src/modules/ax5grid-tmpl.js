@@ -59,8 +59,7 @@
         </div>`;
 
     var page_navigation =
-        `{{#page}}
-        <div data-ax5grid-page-navigation="holder">
+        `<div data-ax5grid-page-navigation="holder">
             <div data-ax5grid-page-navigation="cell">    
                 <button data-ax5grid-page-move="first">{{firstIcon}}</button>
                 <button data-ax5grid-page-move="prev">{{prevIcon}}</button>
@@ -74,8 +73,7 @@
                 <button data-ax5grid-page-move="next">{{nextIcon}}</button>
                 <button data-ax5grid-page-move="end">{{endIcon}}</button>
             </div>
-        </div>
-        {{/page}}`;
+        </div>`;
 
     var page_status =
         `<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>`;

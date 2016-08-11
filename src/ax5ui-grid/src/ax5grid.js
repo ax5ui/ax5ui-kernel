@@ -53,7 +53,8 @@
                 },
                 page: {
                     height: 25,
-                    display: true
+                    display: true,
+                    navigationItemCount: 10
                 },
                 scroller: {
                     size: 15,
