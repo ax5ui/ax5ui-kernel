@@ -5,7 +5,7 @@
     var U = ax5.util;
 
     var statusUpdate = function () {
-        var fromRowIndex = this.xvar.paintStartRowIndex;
+        var fromRowIndex = this.xvar.paintStartRowIndex - 1;
         var toRowIndex = this.xvar.paintStartRowIndex + this.xvar.paintRowCount - 1;
         var totalElements = this.xvar.dataRowCount;
         if(toRowIndex > totalElements){

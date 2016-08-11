@@ -821,6 +821,77 @@
                 }
 
 
+            },
+            "INDEX": function (_dindex){
+
+                var focusedColumn;
+                var originalColumn;
+                var while_i;
+
+                for (var c in this.focusedColumn) {
+                    focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                    break;
+                }
+                originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
+
+                columnSelect.focusClear.call(this);
+                columnSelect.clear.call(this);
+
+
+                if(_dindex == "end"){
+                    _dindex = this.data.length - 1;
+                }
+
+                focusedColumn.dindex = _dindex;
+                focusedColumn.rowIndex = 0;
+
+                while_i = 0;
+                while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                    if (focusedColumn.rowIndex == 0 || while_i % 2 == ((_dy > 0) ? 0 : 1)) {
+                        focusedColumn.colIndex--;
+                    } else {
+                        focusedColumn.rowIndex--;
+                    }
+
+                    if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
+                        // find fail
+                        break;
+                    }
+                    while_i++;
+                }
+
+                focusedColumn.panelName = (function () {
+                    var _panels = [],
+                        panelName = "";
+
+                    if (this.xvar.frozenRowIndex > focusedColumn.dindex) _panels.push("top");
+                    if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
+                    _panels.push("body");
+                    if (_panels[0] !== "top") _panels.push("scroll");
+                    panelName = _panels.join("-");
+
+                    return panelName;
+                }).call(this);
+
+                // 포커스 컬럼의 위치에 따라 스크롤 처리.
+                (function () {
+                    if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
+                        if (focusedColumn.dindex < this.xvar.paintStartRowIndex) {
+                            scrollTo.call(this, {top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight});
+                            GRID.scroller.resize.call(this);
+                        }
+                        else if (focusedColumn.dindex + 1 > this.xvar.paintStartRowIndex + (this.xvar.paintRowCount - 2)) {
+                            scrollTo.call(this, {top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.paintRowCount + 3) * this.xvar.bodyTrHeight});
+                            GRID.scroller.resize.call(this);
+                        }
+                    }
+                }).call(this);
+
+                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.rowIndex + "_" + focusedColumn.colIndex] = focusedColumn;
+                this.$.panel[focusedColumn.panelName]
+                    .find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]')
+                    .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]')
+                    .attr('data-ax5grid-column-focused', "true");
             }
         };
         var processor = {
@@ -836,8 +907,14 @@
             "RIGHT": function () {
                 focus["LR"].call(this, 1);
             },
+            "HOME": function () {
+                focus["INDEX"].call(this, 0);
+            },
+            "END": function () {
+                focus["INDEX"].call(this, "end");
+            },
             "position": function (_position) {
-                console.log("222");
+                focus["INDEX"].call(this, _position);
             }
         };
 

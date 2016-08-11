@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.6"
+        version: "0.0.7"
     }, (function () {
         /**
          * @class ax5grid
@@ -621,6 +621,12 @@
                     },
                     "KEY_RIGHT": function () {
                         GRID.body.moveFocus.call(this, "RIGHT");
+                    },
+                    "KEY_HOME" : function (){
+                        GRID.body.moveFocus.call(this, "HOME");
+                    },
+                    "KEY_END" : function (){
+                        GRID.body.moveFocus.call(this, "END");
                     }
                 };
                 return function (_act, _data) {
@@ -723,11 +729,12 @@
 // todo : paging
 
 // todo : row add / remove / update
+// todo : cell inline edit
 
 // todo : column resize
 // todo : column reorder
 // todo : cell formatter
-// todo : cell inline edit
+
 // todo : sort & filter
 // todo : body menu
 
