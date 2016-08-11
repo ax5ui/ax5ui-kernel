@@ -714,6 +714,10 @@
              */
             this.setHeight = function(_height){
                 //console.log(this.$target);
+
+                if(_height == "100%"){
+                    _height = this.$target.offsetParent().innerHeight();
+                }
                 this.$target.css({height: _height});
                 this.$["container"]["root"].css({height: _height});
                 alignGrid.call(this);

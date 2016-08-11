@@ -19,12 +19,15 @@
 </head>
 <body style="padding: 20px;">
 
+<div style="border:1px solid #0a68b4;position: relative;" id="grid-parent">
 <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 400px;"></div>
+</div>
 
 <div style="padding: 10px;">
     <button class="btn btn-default" data-set-height="300">높이조절(300px)</button>
     <button class="btn btn-default" data-set-height="400">높이조절(400px)</button>
     <button class="btn btn-default" data-set-height="800">높이조절(800px)</button>
+    <button class="btn btn-default" data-set-height="100%">높이조절(100%)</button>
 </div>
 
 <div style="height: 10px;"></div>
@@ -108,6 +111,11 @@
 
         $('[data-set-height]').click(function () {
             var height = this.getAttribute("data-set-height");
+            if(height == "100%"){
+                $("#grid-parent").css({height: 500});
+            }else{
+                $("#grid-parent").css({height: "auto"});
+            }
             firstGrid.setHeight(height);
         });
 
