@@ -54,7 +54,7 @@
                 page: {
                     height: 25,
                     display: true,
-                    navigationItemCount: 10
+                    navigationItemCount: 5
                 },
                 scroller: {
                     size: 15,
@@ -700,6 +700,7 @@
             this.setData = function (data) {
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
+                GRID.body.scrollTo.call(this, {top:0});
                 GRID.body.repaint.call(this);
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
@@ -751,8 +752,9 @@
 // todo : cell multi selected -- ok
 // todo : cell selected focus move by keyboard -- ok & scroll body -- ok
 // todo : clipboard copy -- ok
-// todo : page
-// todo : paging
+// todo : page -- ok
+// todo : paging -- ok
+// todo : setStatus : loading, empty, etcs
 
 // todo : row add / remove / update
 // todo : cell inline edit

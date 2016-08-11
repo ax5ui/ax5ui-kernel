@@ -33,65 +33,84 @@
 <script>
     var firstGrid = new ax5.ui.grid();
 
+    var gridView = {
+        initView: function () {
+            firstGrid.setConfig({
+                target: $('[data-ax5grid="first-grid"]'),
+                frozenColumnIndex: 2,
+                frozenRowIndex: 0,
+                showLineNumber: true,
+                showRowSelector: false,
+                lineNumberColumnWidth: 40,
+                rowSelectorColumnWidth: 28,
+                header: {
+                    columnHeight: 28
+                },
+                body: {
+                    columnHeight: 28
+                },
+                page: {
+                    navigationItemCount: 9,
+                    height: 30,
+                    display: true,
+                    firstIcon: '<i class="fa fa-step-backward" aria-hidden="true"></i>',
+                    prevIcon: '<i class="fa fa-caret-left" aria-hidden="true"></i>',
+                    nextIcon: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
+                    lastIcon: '<i class="fa fa-step-forward" aria-hidden="true"></i>',
+                    onChange: function () {
+                        //console.log(this.page.selectPage);
+                        gridView.setData(this.page.selectPage);
+                    }
+                },
+                columns: [
+                    {key: "a", label: "필드A", width: 80},
+                    {key: "b", label: "필드B"},
+                    {
+                        label: "필드C", columns: [
+                        {key: "c1", label: "필드C-1"}, {key: "c2", label: "필드C-2"}
+                    ]
+                    },
+                    {key: "c", label: "필드C", multiLine: false},
+                    {key: "d", label: "필드D"},
+                    {key: "c1", label: "필드D", width: 80},
+                    {key: "a", label: "필드A", width: 80},
+                    {key: "a", label: "필드A", width: 80}
+                ]
+            });
+            return this;
+        },
+        setData: function (_pageNo) {
+            var _my_pageNo = (_pageNo || 0) + 1;
+            var list = [];
+            for (var a = 0, l = 100; a < l; a++) {
+                list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": "필드D값"});
+            }
+            firstGrid.setData({
+                list: list,
+                page: {
+                    currentPage: _pageNo || 0,
+                    pageSize: 50,
+                    totalElements: 500,
+                    totalPages: 100
+                }
+            });
+
+            return this;
+        }
+    };
+
     $(document.body).ready(function () {
 
-        firstGrid.setConfig({
-            target: $('[data-ax5grid="first-grid"]'),
-            frozenColumnIndex: 2,
-            frozenRowIndex: 0,
-            showLineNumber: true,
-            showRowSelector: false,
-            lineNumberColumnWidth: 40,
-            rowSelectorColumnWidth: 28,
-            header: {
-                columnHeight: 28
-            },
-            body: {
-                columnHeight: 28
-            },
-            page: {
-                height: 25,
-                display: true,
-                onChange: function(){
+        gridView
+                .initView()
+                .setData();
 
-                }
-            },
-            columns: [
-                {key: "a", label: "필드A", width: 80},
-                {key: "b", label: "필드B"},
-                {
-                    label: "필드C", columns: [
-                    {key: "c1", label: "필드C-1"}, {key: "c2", label: "필드C-2"}
-                ]
-                },
-                {key: "c", label: "필드C", multiLine: false},
-                {key: "d", label: "필드D"},
-                {key: "c1", label: "필드D", width: 80},
-                {key: "a", label: "필드A", width: 80},
-                {key: "a", label: "필드A", width: 80}
-            ]
-        });
 
-        var list = [];
-        for (var a = 0, l = 100; a < l; a++) {
-            list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: 1, c2: "!@#$", "d": "필드D값"});
-        }
-        firstGrid.setData({
-            list: list,
-            page: {
-                currentPage: 0,
-                pageSize: 50,
-                totalElements: 500,
-                totalPages: 10
-            }
-        });
-        
-        
-        $('[data-set-height]').click(function(){
-           var height = this.getAttribute("data-set-height");
+        $('[data-set-height]').click(function () {
+            var height = this.getAttribute("data-set-height");
             firstGrid.setHeight(height);
         });
-        
+
     });
 </script>
 

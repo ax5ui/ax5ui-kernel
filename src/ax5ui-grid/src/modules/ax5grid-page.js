@@ -4,13 +4,58 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
+    var onclickPageMove = function (_act) {
+        var callBack = function (_pageNo) {
+            if (this.page.currentPage != _pageNo) {
+                this.page.selectPage = _pageNo;
+                if (this.config.page.onChange) {
+                    this.config.page.onChange.call({
+                        self: this,
+                        page: this.page,
+                        data: this.data
+                    });
+                }
+            }
+        };
+        var processor = {
+            "first": function () {
+                callBack.call(this, 0);
+            },
+            "prev": function () {
+                var pageNo = this.page.currentPage - 1;
+                if (pageNo < 0) pageNo = 0;
+                callBack.call(this, pageNo);
+            },
+            "next": function () {
+                var pageNo = this.page.currentPage + 1;
+                if (pageNo > this.page.totalPages - 1) pageNo = this.page.totalPages - 1;
+                callBack.call(this, pageNo);
+            },
+            "last": function () {
+                callBack.call(this, this.page.totalPages - 1);
+            }
+        };
+
+        if (_act in processor) {
+            processor[_act].call(this);
+        }
+        else {
+            callBack.call(this, _act-1);
+        }
+    };
+
     var navigationUpdate = function () {
-        if(this.page) {
+        var self = this;
+        if (this.page) {
             var page = {
                 currentPage: this.page.currentPage,
                 pageSize: this.page.pageSize,
                 totalElements: this.page.totalElements,
-                totalPages: this.page.totalPages
+                totalPages: this.page.totalPages,
+                firstIcon: this.config.page.firstIcon,
+                prevIcon: this.config.page.prevIcon || "«",
+                nextIcon: this.config.page.nextIcon || "»",
+                lastIcon: this.config.page.lastIcon,
             };
             var navigationItemCount = this.config.page.navigationItemCount;
 
@@ -20,10 +65,16 @@
                 var startI = page.currentPage - Math.floor(navigationItemCount / 2);
                 if (startI < 0) startI = 0;
                 var endI = page.currentPage + navigationItemCount;
-                if (endI - startI > 10) {
-                    endI = startI + 10;
-                }
                 if (endI > page.totalPages) endI = page.totalPages;
+
+                if (endI - startI > navigationItemCount) {
+                    endI = startI + navigationItemCount;
+                }
+
+                if(endI - startI < navigationItemCount){
+                    startI = endI - navigationItemCount;
+                }
+                if (startI < 0) startI = 0;
 
                 for (var p = startI, l = endI; p < l; p++) {
                     returns.push({'pageNo': (p + 1), 'selected': page.currentPage == p});
@@ -32,7 +83,11 @@
             })();
 
             this.$["page"]["navigation"].html(GRID.tmpl.get("page_navigation", page));
-        }else{
+            this.$["page"]["navigation"].find("[data-ax5grid-page-move]").on("click", function () {
+                var act = this.getAttribute("data-ax5grid-page-move");
+                onclickPageMove.call(self, act);
+            });
+        } else {
             this.$["page"]["navigation"].empty();
         }
     };

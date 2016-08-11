@@ -55,7 +55,7 @@
                 page: {
                     height: 25,
                     display: true,
-                    navigationItemCount: 10
+                    navigationItemCount: 5
                 },
                 scroller: {
                     size: 15,
@@ -696,6 +696,7 @@
             this.setData = function (data) {
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
+                GRID.body.scrollTo.call(this, { top: 0 });
                 GRID.body.repaint.call(this);
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
@@ -746,8 +747,9 @@
 // todo : cell multi selected -- ok
 // todo : cell selected focus move by keyboard -- ok & scroll body -- ok
 // todo : clipboard copy -- ok
-// todo : page
-// todo : paging
+// todo : page -- ok
+// todo : paging -- ok
+// todo : setStatus : loading, empty, etcs
 
 // todo : row add / remove / update
 // todo : cell inline edit
@@ -1800,13 +1802,57 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
+    var onclickPageMove = function onclickPageMove(_act) {
+        var callBack = function callBack(_pageNo) {
+            if (this.page.currentPage != _pageNo) {
+                this.page.selectPage = _pageNo;
+                if (this.config.page.onChange) {
+                    this.config.page.onChange.call({
+                        self: this,
+                        page: this.page,
+                        data: this.data
+                    });
+                }
+            }
+        };
+        var processor = {
+            "first": function first() {
+                callBack.call(this, 0);
+            },
+            "prev": function prev() {
+                var pageNo = this.page.currentPage - 1;
+                if (pageNo < 0) pageNo = 0;
+                callBack.call(this, pageNo);
+            },
+            "next": function next() {
+                var pageNo = this.page.currentPage + 1;
+                if (pageNo > this.page.totalPages - 1) pageNo = this.page.totalPages - 1;
+                callBack.call(this, pageNo);
+            },
+            "last": function last() {
+                callBack.call(this, this.page.totalPages - 1);
+            }
+        };
+
+        if (_act in processor) {
+            processor[_act].call(this);
+        } else {
+            callBack.call(this, _act - 1);
+        }
+    };
+
     var navigationUpdate = function navigationUpdate() {
+        var self = this;
         if (this.page) {
             var page = {
                 currentPage: this.page.currentPage,
                 pageSize: this.page.pageSize,
                 totalElements: this.page.totalElements,
-                totalPages: this.page.totalPages
+                totalPages: this.page.totalPages,
+                firstIcon: this.config.page.firstIcon,
+                prevIcon: this.config.page.prevIcon || "«",
+                nextIcon: this.config.page.nextIcon || "»",
+                lastIcon: this.config.page.lastIcon
             };
             var navigationItemCount = this.config.page.navigationItemCount;
 
@@ -1816,10 +1862,16 @@
                 var startI = page.currentPage - Math.floor(navigationItemCount / 2);
                 if (startI < 0) startI = 0;
                 var endI = page.currentPage + navigationItemCount;
-                if (endI - startI > 10) {
-                    endI = startI + 10;
-                }
                 if (endI > page.totalPages) endI = page.totalPages;
+
+                if (endI - startI > navigationItemCount) {
+                    endI = startI + navigationItemCount;
+                }
+
+                if (endI - startI < navigationItemCount) {
+                    startI = endI - navigationItemCount;
+                }
+                if (startI < 0) startI = 0;
 
                 for (var p = startI, l = endI; p < l; p++) {
                     returns.push({ 'pageNo': p + 1, 'selected': page.currentPage == p });
@@ -1828,6 +1880,10 @@
             }();
 
             this.$["page"]["navigation"].html(GRID.tmpl.get("page_navigation", page));
+            this.$["page"]["navigation"].find("[data-ax5grid-page-move]").on("click", function () {
+                var act = this.getAttribute("data-ax5grid-page-move");
+                onclickPageMove.call(self, act);
+            });
         } else {
             this.$["page"]["navigation"].empty();
         }
@@ -2309,7 +2365,7 @@
     var GRID = ax5.ui.grid;
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\">\n                <textarea data-ax5grid-form=\"clipboard\"></textarea>\n            </div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\">\n                <div data-ax5grid-page=\"holder\">\n                    <div data-ax5grid-page=\"navigation\"></div>\n                    <div data-ax5grid-page=\"status\"></div>\n                </div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
 
-    var page_navigation = "<div data-ax5grid-page-navigation=\"holder\">\n            <div data-ax5grid-page-navigation=\"cell\">    \n                <button data-ax5grid-page-move=\"first\">{{firstIcon}}</button>\n                <button data-ax5grid-page-move=\"prev\">{{prevIcon}}</button>\n            </div>\n            <div data-ax5grid-page-navigation=\"cell-paging\">\n                {{#@paging}}\n                <button data-ax5grid-page-move=\"{{pageNo}}\" data-ax5grid-page-selected=\"{{selected}}\">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation=\"cell\">\n                <button data-ax5grid-page-move=\"next\">{{nextIcon}}</button>\n                <button data-ax5grid-page-move=\"end\">{{endIcon}}</button>\n            </div>\n        </div>";
+    var page_navigation = "<div data-ax5grid-page-navigation=\"holder\">\n            <div data-ax5grid-page-navigation=\"cell\">    \n                {{#firstIcon}}<button data-ax5grid-page-move=\"first\">{{{firstIcon}}}</button>{{/firstIcon}}\n                <button data-ax5grid-page-move=\"prev\">{{{prevIcon}}}</button>\n            </div>\n            <div data-ax5grid-page-navigation=\"cell-paging\">\n                {{#@paging}}\n                <button data-ax5grid-page-move=\"{{pageNo}}\" data-ax5grid-page-selected=\"{{selected}}\">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation=\"cell\">\n                <button data-ax5grid-page-move=\"next\">{{{nextIcon}}}</button>\n                {{#lastIcon}}<button data-ax5grid-page-move=\"last\">{{{lastIcon}}}</button>{{/lastIcon}}\n            </div>\n        </div>";
 
     var page_status = "<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>";
 

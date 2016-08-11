@@ -61,8 +61,8 @@
     var page_navigation =
         `<div data-ax5grid-page-navigation="holder">
             <div data-ax5grid-page-navigation="cell">    
-                <button data-ax5grid-page-move="first">{{firstIcon}}</button>
-                <button data-ax5grid-page-move="prev">{{prevIcon}}</button>
+                {{#firstIcon}}<button data-ax5grid-page-move="first">{{{firstIcon}}}</button>{{/firstIcon}}
+                <button data-ax5grid-page-move="prev">{{{prevIcon}}}</button>
             </div>
             <div data-ax5grid-page-navigation="cell-paging">
                 {{#@paging}}
@@ -70,8 +70,8 @@
                 {{/@paging}}
             </div>
             <div data-ax5grid-page-navigation="cell">
-                <button data-ax5grid-page-move="next">{{nextIcon}}</button>
-                <button data-ax5grid-page-move="end">{{endIcon}}</button>
+                <button data-ax5grid-page-move="next">{{{nextIcon}}}</button>
+                {{#lastIcon}}<button data-ax5grid-page-move="last">{{{lastIcon}}}</button>{{/lastIcon}}
             </div>
         </div>`;
 
