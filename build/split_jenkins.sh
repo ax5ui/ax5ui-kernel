@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-git subsplit update
+git subsplit init git@github.com:ax5ui/ax5ui-kernel.git
 git subsplit publish --heads="master" --no-tags src/ax5core:git@github.com:ax5ui/ax5core.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-mask:git@github.com:ax5ui/ax5ui-mask.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-dialog:git@github.com:ax5ui/ax5ui-dialog.git
