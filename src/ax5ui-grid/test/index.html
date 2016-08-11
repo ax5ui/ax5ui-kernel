@@ -21,6 +21,12 @@
 
 <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 400px;"></div>
 
+<div style="padding: 10px;">
+    <button class="btn btn-default" data-set-height="300">높이조절(300px)</button>
+    <button class="btn btn-default" data-set-height="400">높이조절(400px)</button>
+    <button class="btn btn-default" data-set-height="800">높이조절(800px)</button>
+</div>
+
 <div style="height: 10px;"></div>
 
 <TEXTAREA ID="holdtext" STYLE="position:absolute;top:-1000px;"></TEXTAREA>
@@ -64,10 +70,25 @@
         });
 
         var list = [];
-        for (var a = 0, l = 1000; a < l; a++) {
+        for (var a = 0, l = 100; a < l; a++) {
             list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: 1, c2: "!@#$", "d": "필드D값"});
         }
-        firstGrid.setData(list);
+        firstGrid.setData({
+            list: list,
+            page: {
+                currentPage: 0,
+                pageSize: 50,
+                totalElements: 500,
+                totalPages: 10
+            }
+        });
+        
+        
+        $('[data-set-height]').click(function(){
+           var height = this.getAttribute("data-set-height");
+            firstGrid.setHeight(height);
+        });
+        
     });
 </script>
 

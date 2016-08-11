@@ -59,7 +59,23 @@
         </div>`;
 
     var page_navigation =
-        ``;
+        `{{#page}}
+        <div data-ax5grid-page-navigation="holder">
+            <div data-ax5grid-page-navigation="cell">    
+                <button data-ax5grid-page-move="first">{{firstIcon}}</button>
+                <button data-ax5grid-page-move="prev">{{prevIcon}}</button>
+            </div>
+            <div data-ax5grid-page-navigation="cell-paging">
+                {{#@paging}}
+                <button data-ax5grid-page-move="{{pageNo}}" data-ax5grid-page-selected="{{selected}}">{{pageNo}}</button>
+                {{/@paging}}
+            </div>
+            <div data-ax5grid-page-navigation="cell">
+                <button data-ax5grid-page-move="next">{{nextIcon}}</button>
+                <button data-ax5grid-page-move="end">{{endIcon}}</button>
+            </div>
+        </div>
+        {{/page}}`;
 
     var page_status =
         `<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>`;

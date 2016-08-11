@@ -397,10 +397,12 @@
         return map;
     };
 
-    var repaint = function () {
+    var repaint = function (_reset) {
         var cfg = this.config;
         var data = this.data;
-
+        if(_reset){
+            this.xvar.paintStartRowIndex = undefined;
+        }
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (this.xvar.dataRowCount === data.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
         var isFirstPaint = (typeof this.xvar.paintStartRowIndex === "undefined");

@@ -73,6 +73,7 @@
             this.columns = []; // config.columns에서 복제된 오브젝트
             this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
             this.data = []; // 그리드의 데이터
+            this.page = {}; // 그리드의 페이지 정보
             this.focusedColumn = {};
             this.selectedColumn = {};
             this.bodyRowTable = {};
@@ -696,11 +697,35 @@
              * @returns {ax5grid}
              */
             this.setData = function (data) {
-                this.xvar.frozenRowIndex = (cfg.frozenRowIndex > data.length) ? data.length : cfg.frozenRowIndex;
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
                 GRID.scroller.resize.call(this);
+                GRID.page.navigationUpdate.call(this);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.setHeight
+             * @param {Number} _height
+             * @returns {ax5grid}
+             */
+            this.setHeight = function(_height){
+                //console.log(this.$target);
+                this.$target.css({height: _height});
+                this.$["container"]["root"].css({height: _height});
+                alignGrid.call(this);
+                GRID.body.repaint.call(this, "reset");
+                GRID.scroller.resize.call(this);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.align
+             * @returns {ax5grid}
+             */
+            this.align = function(){
+                alignGrid.call(this);
                 return this;
             };
 

@@ -65,14 +65,16 @@
 
 @mixin gridRowBackground() {
     &.tr-0 {
+        background: #f3f3f3;
     }
     &.tr-1 {
-        background: #f3f3f3;
+
     }
     &.tr-2 {
+        background: #f3f3f3;
     }
     &.tr-3 {
-        background: #f3f3f3;
+
     }
     &.hover {
         background: lighten(#cce2f3, 5%);

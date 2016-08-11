@@ -74,6 +74,7 @@
             this.columns = []; // config.columns에서 복제된 오브젝트
             this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
             this.data = []; // 그리드의 데이터
+            this.page = {}; // 그리드의 페이지 정보
             this.focusedColumn = {};
             this.selectedColumn = {};
             this.bodyRowTable = {};
@@ -692,11 +693,35 @@
              * @returns {ax5grid}
              */
             this.setData = function (data) {
-                this.xvar.frozenRowIndex = cfg.frozenRowIndex > data.length ? data.length : cfg.frozenRowIndex;
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
                 GRID.scroller.resize.call(this);
+                GRID.page.navigationUpdate.call(this);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.setHeight
+             * @param {Number} _height
+             * @returns {ax5grid}
+             */
+            this.setHeight = function (_height) {
+                //console.log(this.$target);
+                this.$target.css({ height: _height });
+                this.$["container"]["root"].css({ height: _height });
+                alignGrid.call(this);
+                GRID.body.repaint.call(this, "reset");
+                GRID.scroller.resize.call(this);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.align
+             * @returns {ax5grid}
+             */
+            this.align = function () {
+                alignGrid.call(this);
                 return this;
             };
 
@@ -1091,10 +1116,12 @@
         return map;
     };
 
-    var repaint = function repaint() {
+    var repaint = function repaint(_reset) {
         var cfg = this.config;
         var data = this.data;
-
+        if (_reset) {
+            this.xvar.paintStartRowIndex = undefined;
+        }
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (this.xvar.dataRowCount === data.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
         var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
@@ -1601,7 +1628,16 @@
     var init = function init() {};
 
     var set = function set(data) {
-        this.data = U.deepCopy(data);
+
+        if (U.isArray(data)) {
+            this.page = null;
+            this.data = U.deepCopy(data);
+        } else if ("page" in data) {
+            this.page = jQuery.extend({}, data.page);
+            this.data = U.deepCopy(data.list);
+        }
+
+        this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.data.length ? this.data.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         return this;
     };
@@ -1762,9 +1798,21 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
+    var navigationUpdate = function navigationUpdate() {
+        var page = {
+            currentPage: this.page.currentPage,
+            pageSize: this.page.pageSize,
+            totalElements: this.page.totalElements,
+            totalPages: this.page.totalPages
+        };
+
+        this.$["page"]["navigation"].html(GRID.tmpl.get("page_navigation", page));
+    };
+
     var statusUpdate = function statusUpdate() {
         var fromRowIndex = this.xvar.paintStartRowIndex;
         var toRowIndex = this.xvar.paintStartRowIndex + this.xvar.paintRowCount - 1;
+        //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
         var totalElements = this.xvar.dataRowCount;
         if (toRowIndex > totalElements) {
             toRowIndex = totalElements;
@@ -1778,6 +1826,7 @@
     };
 
     GRID.page = {
+        navigationUpdate: navigationUpdate,
         statusUpdate: statusUpdate
     };
 })();
@@ -2236,7 +2285,7 @@
     var GRID = ax5.ui.grid;
     var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\">\n                <textarea data-ax5grid-form=\"clipboard\"></textarea>\n            </div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\">\n                <div data-ax5grid-page=\"holder\">\n                    <div data-ax5grid-page=\"navigation\"></div>\n                    <div data-ax5grid-page=\"status\"></div>\n                </div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n        </div>";
 
-    var page_navigation = "";
+    var page_navigation = "{{#page}}\n        <div data-ax5grid-page-navigation=\"holder\">\n            <div data-ax5grid-page-navigation=\"cell\">    \n                <button data-ax5grid-page-move=\"first\">{{firstIcon}}</button>\n                <button data-ax5grid-page-move=\"prev\">{{prevIcon}}</button>\n            </div>\n            <div data-ax5grid-page-navigation=\"cell-paging\">\n                {{#@paging}}\n                <button data-ax5grid-page-move=\"{{pageNo}}\" data-ax5grid-page-selected=\"{{selected}}\">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation=\"cell\">\n                <button data-ax5grid-page-move=\"next\">{{nextIcon}}</button>\n                <button data-ax5grid-page-move=\"end\">{{endIcon}}</button>\n            </div>\n        </div>\n        {{/page}}";
 
     var page_status = "<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>";
 
