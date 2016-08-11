@@ -58,8 +58,11 @@
             </div>
         </div>`;
 
-    var page_navigation = ``;
-    var page_status = `<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>`;
+    var page_navigation =
+        ``;
+
+    var page_status =
+        `<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>`;
 
 
     GRID.tmpl = {

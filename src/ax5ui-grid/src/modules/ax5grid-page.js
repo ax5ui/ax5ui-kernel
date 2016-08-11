@@ -5,7 +5,7 @@
     var U = ax5.util;
 
     var statusUpdate = function () {
-        var fromRowIndex = this.xvar.paintStartRowIndex - 1;
+        var fromRowIndex = this.xvar.paintStartRowIndex;
         var toRowIndex = this.xvar.paintStartRowIndex + this.xvar.paintRowCount - 1;
         var totalElements = this.xvar.dataRowCount;
         if(toRowIndex > totalElements){
@@ -13,7 +13,7 @@
         }
 
         this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
-            fromRowIndex: U.number(fromRowIndex, {"money":true}),
+            fromRowIndex: U.number(fromRowIndex+1, {"money":true}),
             toRowIndex: U.number(toRowIndex, {"money":true}),
             totalElements: U.number(totalElements, {"money":true})
         }));
