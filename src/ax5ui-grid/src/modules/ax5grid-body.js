@@ -659,6 +659,7 @@
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
                     break;
                 }
+
                 originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
 
                 columnSelect.focusClear.call(this);
@@ -833,6 +834,12 @@
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
                     break;
+                }
+                if(!focusedColumn){
+                    focusedColumn = {
+                        rowIndex: 0,
+                        colIndex: 0
+                    }
                 }
                 originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
 

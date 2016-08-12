@@ -742,6 +742,11 @@
              * @returns {ax5grid}
              */
             this.addRow = function(_row, _dindex){
+                GRID.data.add.call(this, _row, _dindex);
+                alignGrid.call(this);
+                GRID.body.repaint.call(this, "reset");
+                GRID.body.moveFocus.call(this, "END");
+                GRID.scroller.resize.call(this);
                 return this;
             };
 
@@ -751,6 +756,11 @@
              * @returns {ax5grid}
              */
             this.removeRow = function(_dindex){
+                GRID.data.remove.call(this, _dindex);
+                alignGrid.call(this);
+                GRID.body.repaint.call(this, "reset");
+                GRID.body.moveFocus.call(this, "END");
+                GRID.scroller.resize.call(this);
                 return this;
             };
 

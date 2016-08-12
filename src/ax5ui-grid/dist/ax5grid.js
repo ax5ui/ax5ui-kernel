@@ -738,6 +738,11 @@
              * @returns {ax5grid}
              */
             this.addRow = function (_row, _dindex) {
+                GRID.data.add.call(this, _row, _dindex);
+                alignGrid.call(this);
+                GRID.body.repaint.call(this, "reset");
+                GRID.body.moveFocus.call(this, "END");
+                GRID.scroller.resize.call(this);
                 return this;
             };
 
@@ -747,6 +752,11 @@
              * @returns {ax5grid}
              */
             this.removeRow = function (_dindex) {
+                GRID.data.remove.call(this, _dindex);
+                alignGrid.call(this);
+                GRID.body.repaint.call(this, "reset");
+                GRID.body.moveFocus.call(this, "END");
+                GRID.scroller.resize.call(this);
                 return this;
             };
 
@@ -1420,6 +1430,7 @@
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
                     break;
                 }
+
                 originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
 
                 columnSelect.focusClear.call(this);
@@ -1584,6 +1595,12 @@
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
                     break;
                 }
+                if (!focusedColumn) {
+                    focusedColumn = {
+                        rowIndex: 0,
+                        colIndex: 0
+                    };
+                }
                 originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
 
                 columnSelect.focusClear.call(this);
@@ -1709,6 +1726,48 @@
 
     var get = function get() {};
 
+    var add = function add(_row, _dindex) {
+        var processor = {
+            "first": function first() {
+                this.data = [].concat(_row).concat(this.data);
+            },
+            "last": function last() {
+                this.data = this.data.concat([].concat(_row));
+            }
+        };
+
+        if (typeof _dindex === "undefined") _dindex = "last";
+        if (_dindex in processor) {
+            processor[_dindex].call(this, _row);
+        } else {
+            if (!U.isNumber(_dindex)) {
+                throw 'invalid argument _dindex';
+            }
+            //
+            this.data.splice(_dindex, [].concat(_row));
+        }
+
+        this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.data.length ? this.data.length : this.config.frozenRowIndex;
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        GRID.page.navigationUpdate.call(this);
+        return this;
+    };
+
+    var remove = function remove(_dindex) {
+        var processor = {
+            "first": function first() {
+                //this.data = [].concat(_row).concat(this.data);
+            },
+            "last": function last() {
+                //this.data = this.data.concat([].concat(_row));
+            }
+        };
+
+        if (typeof _dindex === "undefined") _dindex = "last";
+    };
+
+    var update = function update() {};
+
     var setValue = function setValue() {};
 
     var select = function select(dindex, selected) {
@@ -1725,7 +1784,10 @@
         set: set,
         get: get,
         setValue: setValue,
-        select: select
+        select: select,
+        add: add,
+        remove: remove,
+        update: update
     };
 })();
 // ax5.ui.grid.header

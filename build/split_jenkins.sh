@@ -14,3 +14,4 @@ git subsplit publish --heads="master" --no-tags src/ax5ui-grid:git@github.com:ax
 git subsplit publish --heads="master" --no-tags src/ax5ui-media-viewer:git@github.com:ax5ui/ax5ui-media-viewer.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-combobox:git@github.com:ax5ui/ax5ui-combobox.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-layout:git@github.com:ax5ui/ax5ui-layout.git
+rm -rf .subsplit/

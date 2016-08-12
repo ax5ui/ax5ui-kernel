@@ -28,6 +28,51 @@
 
     };
 
+    var add = function(_row, _dindex){
+        var processor = {
+            "first": function(){
+                this.data = [].concat(_row).concat(this.data);
+            },
+            "last": function(){
+                this.data = this.data.concat([].concat(_row));
+            }
+        };
+
+        if(typeof _dindex === "undefined") _dindex = "last";
+        if(_dindex in processor){
+            processor[_dindex].call(this, _row);
+        }else{
+            if(!U.isNumber(_dindex)){
+                throw 'invalid argument _dindex';
+            }
+            //
+            this.data.splice(_dindex, [].concat(_row))
+        }
+
+        this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.data.length) ? this.data.length : this.config.frozenRowIndex;
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        GRID.page.navigationUpdate.call(this);
+        return this;
+    };
+
+    var remove = function(_dindex){
+        var processor = {
+            "first": function(){
+                //this.data = [].concat(_row).concat(this.data);
+            },
+            "last": function(){
+                //this.data = this.data.concat([].concat(_row));
+            }
+        };
+
+        if(typeof _dindex === "undefined") _dindex = "last";
+
+    };
+
+    var update = function(){
+
+    };
+
     var setValue = function(){
 
     };
@@ -46,7 +91,10 @@
         set: set,
         get: get,
         setValue: setValue,
-        select: select
+        select: select,
+        add: add,
+        remove: remove,
+        update: update
     };
 
 })();

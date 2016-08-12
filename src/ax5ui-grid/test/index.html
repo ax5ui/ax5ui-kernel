@@ -29,6 +29,11 @@
     <button class="btn btn-default" data-set-height="800">높이조절(800px)</button>
     <button class="btn btn-default" data-set-height="100%">높이조절(100%)</button>
 </div>
+<div style="padding: 10px;">
+    <button class="btn btn-default" data-grid-control="row-add">row add</button>
+    <button class="btn btn-default" data-grid-control="row-remove">row remove</button>
+    <button class="btn btn-default" data-grid-control="row-update">row update</button>
+</div>
 
 <div style="height: 10px;"></div>
 
@@ -85,7 +90,7 @@
         setData: function (_pageNo) {
             var _my_pageNo = (_pageNo || 0) + 1;
             var list = [];
-            for (var a = 0, l = 100; a < l; a++) {
+            for (var a = 0, l = 5; a < l; a++) {
                 list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": "필드D값"});
             }
             firstGrid.setData({
@@ -117,6 +122,20 @@
                 $("#grid-parent").css({height: "auto"});
             }
             firstGrid.setHeight(height);
+        });
+
+        $('[data-grid-control]').click(function () {
+            switch(this.getAttribute("data-grid-control")){
+                case "row-add":
+                    firstGrid.addRow({a: "추가된 컬럼", b: "추가된 필드", c: "추가된 블라블라", c1: "???", c2: "!@#$", "d": "추가된 필드D값"});
+                    break;
+                case "row-remove":
+                    firstGrid.removeRow();
+                    break;
+                case "row-update":
+                    firstGrid.updateRow();
+                    break;
+            }
         });
 
     });
