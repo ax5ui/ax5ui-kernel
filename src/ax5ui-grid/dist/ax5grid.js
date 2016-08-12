@@ -731,6 +731,62 @@
                 return this;
             };
 
+            /**
+             * @method ax5grid.addRow
+             * @param {Object} _row
+             * @param {Number|String} [_dindex=last]
+             * @returns {ax5grid}
+             */
+            this.addRow = function (_row, _dindex) {
+                return this;
+            };
+
+            /**
+             * @method ax5grid.removeRow
+             * @param {Number|String} [_dindex=last]
+             * @returns {ax5grid}
+             */
+            this.removeRow = function (_dindex) {
+                return this;
+            };
+
+            /**
+             * @method ax5grid.updateRow
+             * @param {Object} _row
+             * @param {Number} _dindex
+             * @returns {ax5grid}
+             */
+            this.updateRow = function (_row, _dindex) {
+                return this;
+            };
+
+            /**
+             * @method ax5grid.addColumn
+             * @param {Object} _column
+             * @param {Number|String} [_cindex=last]
+             * @returns {ax5grid}
+             */
+            this.addColumn = function (_column, _cindex) {
+                return this;
+            };
+            /**
+             * @method ax5grid.removeCloumn
+             * @param {Number|String} [_cindex=last]
+             * @returns {ax5grid}
+             */
+            this.removeColumn = function (_cindex) {
+                return this;
+            };
+            /**
+             * @method ax5grid.updateColumn
+             * @param {Object} _column
+             * @param {Number} _cindex
+             * @returns {ax5grid}
+             */
+            this.updateColumn = function (_column, _cindex) {
+                return this;
+            };
+
             // 클래스 생성자
             this.main = function () {
                 UI.grid_instance = UI.grid_instance || [];
@@ -756,6 +812,7 @@
 // todo : setStatus : loading, empty, etcs
 
 // todo : row add / remove / update
+// todo : column add / remove / update
 // todo : cell inline edit
 
 // todo : column resize
