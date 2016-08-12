@@ -771,6 +771,10 @@
              * @returns {ax5grid}
              */
             this.updateRow = function(_row, _dindex){
+                GRID.data.update.call(this, _row, _dindex);
+                GRID.body.repaint.call(this, "reset");
+                GRID.body.moveFocus.call(this, _dindex);
+                GRID.scroller.resize.call(this);
                 return this;
             };
 

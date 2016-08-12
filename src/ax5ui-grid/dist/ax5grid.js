@@ -767,6 +767,10 @@
              * @returns {ax5grid}
              */
             this.updateRow = function (_row, _dindex) {
+                GRID.data.update.call(this, _row, _dindex);
+                GRID.body.repaint.call(this, "reset");
+                GRID.body.moveFocus.call(this, _dindex);
+                GRID.scroller.resize.call(this);
                 return this;
             };
 
@@ -1780,7 +1784,13 @@
         return this;
     };
 
-    var update = function update() {};
+    var update = function update(_row, _dindex) {
+        if (!U.isNumber(_dindex)) {
+            throw 'invalid argument _dindex';
+        }
+        //
+        this.data.splice(_dindex, 1, _row);
+    };
 
     var setValue = function setValue() {};
 

@@ -82,8 +82,12 @@
         return this;
     };
 
-    var update = function () {
-
+    var update = function (_row, _dindex) {
+        if (!U.isNumber(_dindex)) {
+            throw 'invalid argument _dindex';
+        }
+        //
+        this.data.splice(_dindex, 1, _row);
     };
 
     var setValue = function () {
