@@ -10,10 +10,10 @@
 
     var set = function (data) {
 
-        if(U.isArray(data)){
+        if (U.isArray(data)) {
             this.page = null;
             this.data = U.deepCopy(data);
-        }else if("page" in data){
+        } else if ("page" in data) {
             this.page = jQuery.extend({}, data.page);
             this.data = U.deepCopy(data.list);
         }
@@ -28,21 +28,21 @@
 
     };
 
-    var add = function(_row, _dindex){
+    var add = function (_row, _dindex) {
         var processor = {
-            "first": function(){
+            "first": function () {
                 this.data = [].concat(_row).concat(this.data);
             },
-            "last": function(){
+            "last": function () {
                 this.data = this.data.concat([].concat(_row));
             }
         };
 
-        if(typeof _dindex === "undefined") _dindex = "last";
-        if(_dindex in processor){
+        if (typeof _dindex === "undefined") _dindex = "last";
+        if (_dindex in processor) {
             processor[_dindex].call(this, _row);
-        }else{
-            if(!U.isNumber(_dindex)){
+        } else {
+            if (!U.isNumber(_dindex)) {
                 throw 'invalid argument _dindex';
             }
             //
@@ -55,32 +55,45 @@
         return this;
     };
 
-    var remove = function(_dindex){
+    var remove = function (_dindex) {
         var processor = {
-            "first": function(){
-                //this.data = [].concat(_row).concat(this.data);
+            "first": function () {
+                this.data.splice(_dindex, 1);
             },
-            "last": function(){
-                //this.data = this.data.concat([].concat(_row));
+            "last": function () {
+                this.data.splice(this.data.length - 1, 1);
             }
         };
 
-        if(typeof _dindex === "undefined") _dindex = "last";
+        if (typeof _dindex === "undefined") _dindex = "last";
+        if (_dindex in processor) {
+            processor[_dindex].call(this, _dindex);
+        } else {
+            if (!U.isNumber(_dindex)) {
+                throw 'invalid argument _dindex';
+            }
+            //
+            this.data.splice(_dindex, 1);
+        }
+
+        this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.data.length) ? this.data.length : this.config.frozenRowIndex;
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        GRID.page.navigationUpdate.call(this);
+        return this;
+    };
+
+    var update = function () {
 
     };
 
-    var update = function(){
+    var setValue = function () {
 
     };
 
-    var setValue = function(){
-
-    };
-
-    var select = function(dindex, selected){
-        if(typeof selected === "undefined") {
+    var select = function (dindex, selected) {
+        if (typeof selected === "undefined") {
             this.data[dindex][this.config.columnKeys.selected] = !this.data[dindex][this.config.columnKeys.selected];
-        }else{
+        } else {
             this.data[dindex][this.config.columnKeys.selected] = selected;
         }
         return this.data[dindex][this.config.columnKeys.selected];

@@ -1756,14 +1756,28 @@
     var remove = function remove(_dindex) {
         var processor = {
             "first": function first() {
-                //this.data = [].concat(_row).concat(this.data);
+                this.data.splice(_dindex, 1);
             },
             "last": function last() {
-                //this.data = this.data.concat([].concat(_row));
+                this.data.splice(this.data.length - 1, 1);
             }
         };
 
         if (typeof _dindex === "undefined") _dindex = "last";
+        if (_dindex in processor) {
+            processor[_dindex].call(this, _dindex);
+        } else {
+            if (!U.isNumber(_dindex)) {
+                throw 'invalid argument _dindex';
+            }
+            //
+            this.data.splice(_dindex, 1);
+        }
+
+        this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.data.length ? this.data.length : this.config.frozenRowIndex;
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        GRID.page.navigationUpdate.call(this);
+        return this;
     };
 
     var update = function update() {};
