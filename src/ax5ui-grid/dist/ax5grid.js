@@ -801,6 +801,24 @@
                 return this;
             };
 
+            /**
+             * @method ax5grid.select
+             * @param {Number||Object} _selectObject
+             * @param {Number} _selectObject.index - index of row
+             * @param {Number} _selectObject.rowIndex - rowIndex of columns
+             * @param {Number} _selectObject.conIndex - colIndex of columns
+             * @returns {ax5grid}
+             */
+            this.select = function (_selectObject) {
+                if (U.isNumber(_selectObject)) {
+                    var dindex = _selectObject;
+                    GRID.data.select.call(this, dindex);
+                    GRID.body.updateRowState.call(this, ["selected"], dindex);
+                }
+
+                return this;
+            };
+
             // 클래스 생성자
             this.main = function () {
                 UI.grid_instance = UI.grid_instance || [];
@@ -825,7 +843,8 @@
 // todo : paging -- ok
 // todo : setStatus : loading, empty, etcs
 
-// todo : row add / remove / update
+// todo : row add / remove / update -- ok
+// todo : body.onClick / select -- ok
 // todo : column add / remove / update
 // todo : cell inline edit
 
@@ -1024,12 +1043,28 @@
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function () {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
-                "default": function _default(column) {},
-                "rowSelector": function rowSelector(column) {
-                    GRID.data.select.call(self, column.dindex);
-                    updateRowState.call(self, ["selected"], column.dindex);
+                "default": function _default(_column) {
+                    var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                    var that = {
+                        self: self,
+                        page: self.page,
+                        data: self.data,
+                        dindex: _column.dindex,
+                        rowIndex: _column.rowIndex,
+                        colIndex: _column.colIndex,
+                        column: column,
+                        value: self.data[_column.dindex][column.key]
+                    };
+
+                    if (self.config.body.onClick) {
+                        self.config.body.onClick.call(that);
+                    }
                 },
-                "lineNumber": function lineNumber(column) {}
+                "rowSelector": function rowSelector(_column) {
+                    GRID.data.select.call(self, _column.dindex);
+                    updateRowState.call(self, ["selected"], _column.dindex);
+                },
+                "lineNumber": function lineNumber(_column) {}
             };
 
             //console.log();
@@ -1045,9 +1080,11 @@
                 targetClick[attr]({
                     panelName: panelName,
                     attr: attr,
-                    row: row, col: col,
+                    row: row,
+                    col: col,
                     dindex: dindex,
-                    rowIndex: rowIndex, colIndex: colIndex
+                    rowIndex: rowIndex,
+                    colIndex: colIndex
                 });
             }
         });
@@ -1184,6 +1221,7 @@
 
         return table;
     };
+
     var makeBodyRowMap = function makeBodyRowMap(table) {
         var map = {};
         table.rows.forEach(function (row) {

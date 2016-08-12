@@ -54,6 +54,8 @@
             }
         }
     }
+    [data-ax5grid-column-attr="lineNumber"] {
+    }
     [data-ax5grid-selected="true"] {
         .checkBox {
             &:after {
@@ -136,6 +138,14 @@
                         white-space: normal;
                     }
                 }
+
+                @if ($container == "header") {
+                    box-shadow: inset 1px 1px 0px 0px #fff;
+                    &[data-ax5grid-column-row="null"] {
+                        box-shadow: none;
+                    }
+                }
+
             }
             @include gridColumn();
         }
@@ -159,6 +169,7 @@
                 tr {
                     td {
                         text-align: center;
+                        box-shadow: inset 1px 1px 0px 0px #fff;
                     }
                 }
             }
@@ -168,14 +179,14 @@
         &[data-ax5grid-panel="top-left-body"],
         &[data-ax5grid-panel="left-body"],
         &[data-ax5grid-panel="bottom-left-body"] {
-            border-right: 1px solid darken(#ccc, 10%); /// frozen Line color
+            border-right: 1px solid darken(#ccc, 5%); /// frozen Line color
         }
 
         &[data-ax5grid-panel="top-aside-body"],
         &[data-ax5grid-panel="top-left-body"],
         &[data-ax5grid-panel="top-body"],
         &[data-ax5grid-panel="top-right-body"] {
-            border-bottom: 1px solid darken(#ccc, 10%); /// frozen Line color
+            border-bottom: 1px solid darken(#ccc, 5%); /// frozen Line color
         }
 
         [data-ax5grid-panel-scroll] {

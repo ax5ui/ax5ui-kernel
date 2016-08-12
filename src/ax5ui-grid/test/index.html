@@ -20,7 +20,7 @@
 <body style="padding: 20px;">
 
 <div style="border:1px solid #0a68b4;position: relative;" id="grid-parent">
-<div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 400px;"></div>
+    <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 400px;"></div>
 </div>
 
 <div style="padding: 10px;">
@@ -48,14 +48,18 @@
                 frozenColumnIndex: 2,
                 frozenRowIndex: 0,
                 showLineNumber: true,
-                showRowSelector: false,
+                showRowSelector: true,
                 lineNumberColumnWidth: 40,
                 rowSelectorColumnWidth: 28,
                 header: {
                     columnHeight: 28
                 },
                 body: {
-                    columnHeight: 28
+                    columnHeight: 28,
+                    onClick: function () {
+                        // console.log(this);
+                        this.self.select(this.dindex);
+                    }
                 },
                 page: {
                     navigationItemCount: 9,
@@ -74,7 +78,7 @@
                     {key: "a", label: "필드A", width: 80},
                     {key: "b", label: "필드B"},
                     {
-                        label: "필드C", columns: [
+                        key: "a", label: "필드C", columns: [
                         {key: "c1", label: "페이지번호"}, {key: "c2", label: "필드C-2"}
                     ]
                     },
@@ -116,16 +120,16 @@
 
         $('[data-set-height]').click(function () {
             var height = this.getAttribute("data-set-height");
-            if(height == "100%"){
+            if (height == "100%") {
                 $("#grid-parent").css({height: 500});
-            }else{
+            } else {
                 $("#grid-parent").css({height: "auto"});
             }
             firstGrid.setHeight(height);
         });
 
         $('[data-grid-control]').click(function () {
-            switch(this.getAttribute("data-grid-control")){
+            switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
                     firstGrid.addRow({a: "추가된 컬럼", b: "추가된 필드", c: "추가된 블라블라", c1: "???", c2: "!@#$", "d": "추가된 필드D값"});
                     break;

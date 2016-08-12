@@ -216,14 +216,28 @@
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function () {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
-                "default": function (column) {
+                "default": function (_column) {
+                    var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                    var that = {
+                        self: self,
+                        page: self.page,
+                        data: self.data,
+                        dindex: _column.dindex,
+                        rowIndex: _column.rowIndex,
+                        colIndex: _column.colIndex,
+                        column: column,
+                        value: self.data[_column.dindex][column.key]
+                    };
 
+                    if (self.config.body.onClick) {
+                        self.config.body.onClick.call(that);
+                    }
                 },
-                "rowSelector": function (column) {
-                    GRID.data.select.call(self, column.dindex);
-                    updateRowState.call(self, ["selected"], column.dindex);
+                "rowSelector": function (_column) {
+                    GRID.data.select.call(self, _column.dindex);
+                    updateRowState.call(self, ["selected"], _column.dindex);
                 },
-                "lineNumber": function (column) {
+                "lineNumber": function (_column) {
 
                 }
             };
@@ -241,9 +255,11 @@
                 targetClick[attr]({
                     panelName: panelName,
                     attr: attr,
-                    row: row, col: col,
+                    row: row,
+                    col: col,
                     dindex: dindex,
-                    rowIndex: rowIndex, colIndex: colIndex
+                    rowIndex: rowIndex,
+                    colIndex: colIndex
                 });
             }
         });
@@ -387,6 +403,7 @@
 
         return table;
     };
+
     var makeBodyRowMap = function (table) {
         var map = {};
         table.rows.forEach(function (row) {
@@ -400,7 +417,7 @@
     var repaint = function (_reset) {
         var cfg = this.config;
         var data = this.data;
-        if(_reset){
+        if (_reset) {
             this.xvar.paintStartRowIndex = undefined;
         }
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
@@ -825,7 +842,7 @@
 
 
             },
-            "INDEX": function (_dindex){
+            "INDEX": function (_dindex) {
 
                 var focusedColumn;
                 var originalColumn;
@@ -835,7 +852,7 @@
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
                     break;
                 }
-                if(!focusedColumn){
+                if (!focusedColumn) {
                     focusedColumn = {
                         rowIndex: 0,
                         colIndex: 0
@@ -847,7 +864,7 @@
                 columnSelect.clear.call(this);
 
 
-                if(_dindex == "end"){
+                if (_dindex == "end") {
                     _dindex = this.data.length - 1;
                 }
 
