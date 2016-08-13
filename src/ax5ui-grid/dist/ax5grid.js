@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.7"
+        version: "0.0.8"
     }, function () {
         /**
          * @class ax5grid
@@ -227,7 +227,7 @@
                 return this;
             },
                 initColumns = function initColumns(columns) {
-                this.columns = U.deepCopy(columns);
+                if (columns) this.columns = U.deepCopy(columns);
                 this.headerTable = makeHeaderTable.call(this, this.columns);
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex > this.columns.length ? this.columns.length : cfg.frozenColumnIndex;
 
@@ -781,9 +781,51 @@
              * @param {Number|String} [_cindex=last]
              * @returns {ax5grid}
              */
-            this.addColumn = function (_column, _cindex) {
-                return this;
-            };
+            this.addColumn = function () {
+
+                var processor = {
+                    "first": function first(_column) {
+                        this.columns = [].concat(_column).concat(this.columns);
+                    },
+                    "last": function last(_column) {
+                        this.columns = this.data.concat([].concat(_column));
+                    }
+                };
+
+                return function (_column, _cindex) {
+                    if (typeof _cindex === "undefined") _cindex = "last";
+                    if (_cindex in processor) {
+                        processor[_cindex].call(this, _column);
+                    } else {
+                        if (!U.isNumber(_cindex)) {
+                            throw 'invalid argument _cindex';
+                        }
+                        this.columns.splice(_cindex, [].concat(_column));
+                    }
+
+                    initColumns.call(this);
+                    resetColGroupWidth.call(this);
+
+                    // 그리드의 각 요소의 크기를 맞춤니다.
+                    alignGrid.call(this, true);
+
+                    // columns의 데이터로 header데이터를 만들고
+                    GRID.header.init.call(this);
+                    // header를 출력합니다.
+                    GRID.header.repaint.call(this);
+
+                    // columns의 데이터로 body데이터를 만들고
+                    GRID.body.init.call(this);
+                    // body를 출력합니다.
+                    GRID.body.repaint.call(this);
+
+                    // scroller
+                    GRID.scroller.init.call(this);
+                    GRID.scroller.resize.call(this);
+
+                    return this;
+                };
+            }();
             /**
              * @method ax5grid.removeCloumn
              * @param {Number|String} [_cindex=last]
@@ -850,7 +892,7 @@
 // todo : setStatus : loading, empty, etcs
 
 // todo : row add / remove / update -- ok
-// todo : body.onClick / select -- ok & multipleSelect : TF
+// todo : body.onClick / select -- ok & multipleSelect : TF -- ok
 // todo : column add / remove / update
 // todo : cell inline edit
 
@@ -1981,11 +2023,13 @@
 
                     SS.push(function () {
                         var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
+                        return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                        /*
                         if (col.multiLine) {
                             return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
                         } else {
-                            return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
-                        }
+                         }
+                        */
                     }(), col.label || "&nbsp;", '</span>');
 
                     SS.push('</td>');
