@@ -36,6 +36,7 @@
                 footSum: false,
                 showLineNumber: false,
                 showRowSelector: false,
+                multipleSelect: false,
 
                 height: 400,
                 columnMinWidth: 100,
@@ -812,6 +813,11 @@
             this.select = function (_selectObject) {
                 if (U.isNumber(_selectObject)) {
                     var dindex = _selectObject;
+
+                    if (!this.config.multipleSelect) {
+                        GRID.body.updateRowState.call(this, ["selectedClear"]);
+                        GRID.data.clearSelect.call(this);
+                    }
                     GRID.data.select.call(this, dindex);
                     GRID.body.updateRowState.call(this, ["selected"], dindex);
                 }
@@ -844,7 +850,7 @@
 // todo : setStatus : loading, empty, etcs
 
 // todo : row add / remove / update -- ok
-// todo : body.onClick / select -- ok
+// todo : body.onClick / select -- ok & multipleSelect : TF
 // todo : column add / remove / update
 // todo : cell inline edit
 
@@ -1019,9 +1025,21 @@
                 while (i--) {
                     this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').attr("data-ax5grid-selected", this.data[dindex][cfg.columnKeys.selected]);
                 }
+            },
+            "selectedClear": function selectedClear() {
+                var si = this.selectedDataIndexs.length;
+                while (si--) {
+                    var dindex = this.selectedDataIndexs[si];
+                    var i = this.$.livePanelKeys.length;
+                    while (i--) {
+                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').attr("data-ax5grid-selected", false);
+                        this.data[dindex][cfg.columnKeys.selected] = false;
+                    }
+                }
             }
         };
         states.forEach(function (state) {
+            if (!processor[state]) throw 'invaild state name';
             processor[state].call(self, dindex, data);
         });
     };
@@ -1751,13 +1769,27 @@
     var init = function init() {};
 
     var set = function set(data) {
+        var self = this;
+        var initData = function initData(_list) {
+            // selected 데이터 초기화
+            self.selectedDataIndexs = [];
+            var i = _list.length;
+            var returnList = [];
+            while (i--) {
+                if (_list[i][self.config.columnKeys.selected]) {
+                    self.selectedDataIndexs.push(i);
+                }
+                returnList.push(jQuery.extend({}, _list[i]));
+            }
+            return returnList;
+        };
 
         if (U.isArray(data)) {
             this.page = null;
-            this.data = U.deepCopy(data);
+            this.data = initData(data);
         } else if ("page" in data) {
             this.page = jQuery.extend({}, data.page);
-            this.data = U.deepCopy(data.list);
+            this.data = initData(data.list);
         }
 
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.data.length ? this.data.length : this.config.frozenRowIndex;
@@ -1832,11 +1864,19 @@
 
     var setValue = function setValue() {};
 
+    var clearSelect = function clearSelect() {
+        this.selectedDataIndexs = [];
+    };
+
     var select = function select(dindex, selected) {
         if (typeof selected === "undefined") {
-            this.data[dindex][this.config.columnKeys.selected] = !this.data[dindex][this.config.columnKeys.selected];
+            if (this.data[dindex][this.config.columnKeys.selected] = !this.data[dindex][this.config.columnKeys.selected]) {
+                this.selectedDataIndexs.push(dindex);
+            }
         } else {
-            this.data[dindex][this.config.columnKeys.selected] = selected;
+            if (this.data[dindex][this.config.columnKeys.selected] = selected) {
+                this.selectedDataIndexs.push(dindex);
+            }
         }
         return this.data[dindex][this.config.columnKeys.selected];
     };
@@ -1846,6 +1886,7 @@
         set: set,
         get: get,
         setValue: setValue,
+        clearSelect: clearSelect,
         select: select,
         add: add,
         remove: remove,

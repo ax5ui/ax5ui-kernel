@@ -192,9 +192,23 @@
                         .find('[data-ax5grid-tr-data-index="' + dindex + '"]')
                         .attr("data-ax5grid-selected", this.data[dindex][cfg.columnKeys.selected]);
                 }
+            },
+            "selectedClear": function(){
+                var si = this.selectedDataIndexs.length;
+                while(si--){
+                    var dindex = this.selectedDataIndexs[si];
+                    var i = this.$.livePanelKeys.length;
+                    while (i--) {
+                        this.$.panel[this.$.livePanelKeys[i]]
+                            .find('[data-ax5grid-tr-data-index="' + dindex + '"]')
+                            .attr("data-ax5grid-selected", false);
+                        this.data[dindex][cfg.columnKeys.selected] = false;
+                    }
+                }
             }
         };
         states.forEach(function (state) {
+            if(!processor[state]) throw 'invaild state name';
             processor[state].call(self, dindex, data);
         });
     };

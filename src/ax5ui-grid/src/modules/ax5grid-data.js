@@ -9,13 +9,27 @@
     };
 
     var set = function (data) {
+        var self = this;
+        var initData = function (_list) {
+            // selected 데이터 초기화
+            self.selectedDataIndexs = [];
+            var i = _list.length;
+            var returnList = [];
+            while (i--) {
+                if (_list[i][self.config.columnKeys.selected]) {
+                    self.selectedDataIndexs.push(i);
+                }
+                returnList.push(jQuery.extend({}, _list[i]));
+            }
+            return returnList;
+        };
 
         if (U.isArray(data)) {
             this.page = null;
-            this.data = U.deepCopy(data);
+            this.data = initData(data);
         } else if ("page" in data) {
             this.page = jQuery.extend({}, data.page);
-            this.data = U.deepCopy(data.list);
+            this.data = initData(data.list);
         }
 
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.data.length) ? this.data.length : this.config.frozenRowIndex;
@@ -94,20 +108,30 @@
 
     };
 
+    var clearSelect = function(){
+        this.selectedDataIndexs = [];
+    };
+
     var select = function (dindex, selected) {
         if (typeof selected === "undefined") {
-            this.data[dindex][this.config.columnKeys.selected] = !this.data[dindex][this.config.columnKeys.selected];
+            if(this.data[dindex][this.config.columnKeys.selected] = !this.data[dindex][this.config.columnKeys.selected]){
+                this.selectedDataIndexs.push(dindex);
+            }
         } else {
-            this.data[dindex][this.config.columnKeys.selected] = selected;
+            if(this.data[dindex][this.config.columnKeys.selected] = selected){
+                this.selectedDataIndexs.push(dindex);
+            }
         }
         return this.data[dindex][this.config.columnKeys.selected];
     };
+
 
     GRID.data = {
         init: init,
         set: set,
         get: get,
         setValue: setValue,
+        clearSelect: clearSelect,
         select: select,
         add: add,
         remove: remove,

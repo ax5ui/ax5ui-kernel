@@ -34,6 +34,11 @@
     <button class="btn btn-default" data-grid-control="row-remove">row remove</button>
     <button class="btn btn-default" data-grid-control="row-update">row update</button>
 </div>
+<div style="padding: 10px;">
+    <button class="btn btn-default" data-grid-control="column-add">column add</button>
+    <button class="btn btn-default" data-grid-control="column-remove">column remove</button>
+    <button class="btn btn-default" data-grid-control="column-update">column update</button>
+</div>
 
 <div style="height: 10px;"></div>
 
@@ -49,6 +54,7 @@
                 frozenRowIndex: 0,
                 showLineNumber: true,
                 showRowSelector: true,
+                multipleSelect: true,
                 lineNumberColumnWidth: 40,
                 rowSelectorColumnWidth: 28,
                 header: {
@@ -138,6 +144,16 @@
                     break;
                 case "row-update":
                     firstGrid.updateRow({a: "변경된 컬럼", b: "변경된 필드", c: "변경된 블라블라", c1: "???", c2: "!@#$", "d": "변경된 필드D값"}, 5);
+                    break;
+
+                case "column-add":
+                    firstGrid.addColumn();
+                    break;
+                case "column-remove":
+
+                    break;
+                case "column-update":
+
                     break;
             }
         });

@@ -35,6 +35,7 @@
                 footSum: false,
                 showLineNumber: false,
                 showRowSelector: false,
+                multipleSelect: false,
 
                 height: 400,
                 columnMinWidth: 100,
@@ -816,6 +817,11 @@
             this.select = function(_selectObject){
                 if(U.isNumber(_selectObject)){
                     var dindex = _selectObject;
+
+                    if(!this.config.multipleSelect) {
+                        GRID.body.updateRowState.call(this, ["selectedClear"]);
+                        GRID.data.clearSelect.call(this);
+                    }
                     GRID.data.select.call(this, dindex);
                     GRID.body.updateRowState.call(this, ["selected"], dindex);
                 }
@@ -849,7 +855,7 @@
 // todo : setStatus : loading, empty, etcs
 
 // todo : row add / remove / update -- ok
-// todo : body.onClick / select -- ok
+// todo : body.onClick / select -- ok & multipleSelect : TF
 // todo : column add / remove / update
 // todo : cell inline edit
 
