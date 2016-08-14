@@ -2,6 +2,8 @@
 (function () {
 
     var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
      * @param table
@@ -51,7 +53,7 @@
 
     var getMousePosition = function (e) {
         var mouseObj, originalEvent = (e.originalEvent) ? e.originalEvent : e;
-            mouseObj = ('changedTouches' in originalEvent) ? originalEvent.changedTouches[0] : originalEvent;
+        mouseObj = ('changedTouches' in originalEvent) ? originalEvent.changedTouches[0] : originalEvent;
         // clientX, Y 쓰면 스크롤에서 문제 발생
         return {
             clientX: mouseObj.pageX,
@@ -65,10 +67,204 @@
         "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
     };
 
+    var makeHeaderTable = function (columns) {
+        var columns = U.deepCopy(columns);
+        var cfg = this.config;
+        var table = {
+            rows: []
+        };
+        var colIndex = 0;
+        var maekRows = function (_columns, depth, parentField) {
+            var row = {cols: []};
+            var i = 0, l = _columns.length;
+
+            for (; i < l; i++) {
+                var field = _columns[i];
+                var colspan = 1;
+
+                if (!field.hidden) {
+                    field.colspan = 1;
+                    field.rowspan = 1;
+
+                    field.rowIndex = depth;
+                    field.colIndex = (function () {
+                        if (!parentField) {
+                            return colIndex++;
+                        } else {
+                            colIndex = parentField.colIndex + i + 1;
+                            return parentField.colIndex + i;
+                        }
+                    })();
+
+                    row.cols.push(field);
+
+                    if ('columns' in field) {
+                        colspan = maekRows(field.columns, depth + 1, field);
+                    } else {
+                        field.width = ('width' in field) ? field.width : cfg.columnMinWidth;
+                    }
+                    field.colspan = colspan;
+                } else {
+
+                }
+            }
+
+            if (row.cols.length > 0) {
+                if (!table.rows[depth]) {
+                    table.rows[depth] = {cols: []};
+                }
+                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                return (row.cols.length - 1) + colspan;
+            } else {
+                return colspan;
+            }
+
+        };
+        maekRows(columns, 0);
+
+        // set rowspan
+        for (var r = 0, rl = table.rows.length; r < rl; r++) {
+            for (var c = 0, cl = table.rows[r].cols.length; c < cl; c++) {
+                if (!('columns' in table.rows[r].cols[c])) {
+                    table.rows[r].cols[c].rowspan = rl - r;
+                }
+            }
+        }
+
+        return table;
+    };
+
+    var makeBodyRowTable = function (columns) {
+        var columns = U.deepCopy(columns);
+        var table = {
+            rows: []
+        };
+        var colIndex = 0;
+        var maekRows = function (_columns, depth, parentField) {
+            var row = {cols: []};
+            var i = 0, l = _columns.length;
+
+            var selfMakeRow = function (__columns) {
+                var i = 0, l = __columns.length;
+                for (; i < l; i++) {
+                    var field = __columns[i];
+                    var colspan = 1;
+
+                    if (!field.hidden) {
+
+                        if ('key' in field) {
+                            field.colspan = 1;
+                            field.rowspan = 1;
+
+                            field.rowIndex = depth;
+                            field.colIndex = (function () {
+                                if (!parentField) {
+                                    return colIndex++;
+                                } else {
+                                    colIndex = parentField.colIndex + i + 1;
+                                    return parentField.colIndex + i;
+                                }
+                            })();
+
+                            row.cols.push(field);
+                            if ('columns' in field) {
+                                colspan = maekRows(field.columns, depth + 1, field);
+                            }
+                            field.colspan = colspan;
+                        }
+                        else {
+                            if ('columns' in field) {
+                                selfMakeRow(field.columns, depth);
+                            }
+                        }
+                    } else {
+
+                    }
+                }
+            };
+
+            for (; i < l; i++) {
+                var field = _columns[i];
+                var colspan = 1;
+
+                if (!field.hidden) {
+
+                    if ('key' in field) {
+                        field.colspan = 1;
+                        field.rowspan = 1;
+
+                        field.rowIndex = depth;
+                        field.colIndex = (function () {
+                            if (!parentField) {
+                                return colIndex++;
+                            } else {
+                                colIndex = parentField.colIndex + i + 1;
+                                return parentField.colIndex + i;
+                            }
+                        })();
+
+                        row.cols.push(field);
+                        if ('columns' in field) {
+                            colspan = maekRows(field.columns, depth + 1, field);
+                        }
+                        field.colspan = colspan;
+                    }
+                    else {
+                        if ('columns' in field) {
+                            selfMakeRow(field.columns, depth);
+                        }
+                    }
+                } else {
+
+                }
+            }
+
+            if (row.cols.length > 0) {
+                if (!table.rows[depth]) {
+                    table.rows[depth] = {cols: []};
+                }
+                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                return (row.cols.length - 1) + colspan;
+            } else {
+                return colspan;
+            }
+
+        };
+        maekRows(columns, 0);
+
+        (function (table) {
+            // set rowspan
+            for (var r = 0, rl = table.rows.length; r < rl; r++) {
+                var row = table.rows[r];
+                for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                    var col = row.cols[c];
+                    if (!('columns' in col)) {
+                        col.rowspan = rl - r;
+                    }
+                }
+            }
+        })(table);
+
+        return table;
+    };
+
+    var makeBodyRowMap = function (table) {
+        var map = {};
+        table.rows.forEach(function (row) {
+            row.cols.forEach(function (col) {
+                map[col.rowIndex + "_" + col.colIndex] = jQuery.extend({}, col);
+            });
+        });
+        return map;
+    };
+
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
         getMousePosition: getMousePosition,
-        ENM: ENM
+        ENM: ENM,
+        makeHeaderTable: makeHeaderTable,
+        makeBodyRowTable: makeBodyRowTable,
+        makeBodyRowMap: makeBodyRowMap
     };
 
 })();

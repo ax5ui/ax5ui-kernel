@@ -83,7 +83,6 @@
             this.leftBodyRowData = {};
             this.bodyRowData = {};
             this.rightBodyRowData = {};
-            this.bodyRowTable = {};
             this.bodyRowMap = {};
 
             cfg = this.config;
@@ -95,72 +94,6 @@
                     this.onStateChanged.call(that, that);
                 }
                 return true;
-            },
-                makeHeaderTable = function makeHeaderTable(columns) {
-                var table = {
-                    rows: []
-                };
-                var colIndex = 0;
-                var maekRows = function maekRows(_columns, depth, parentField) {
-                    var row = { cols: [] };
-                    var i = 0,
-                        l = _columns.length;
-
-                    for (; i < l; i++) {
-                        var field = _columns[i];
-                        var colspan = 1;
-
-                        if (!field.hidden) {
-                            field.colspan = 1;
-                            field.rowspan = 1;
-
-                            field.rowIndex = depth;
-                            field.colIndex = function () {
-                                if (!parentField) {
-                                    return colIndex++;
-                                } else {
-                                    colIndex = parentField.colIndex + i + 1;
-                                    return parentField.colIndex + i;
-                                }
-                            }();
-
-                            row.cols.push(field);
-
-                            if ('columns' in field) {
-                                colspan = maekRows(field.columns, depth + 1, field);
-                            } else {
-                                field.width = 'width' in field ? field.width : cfg.columnMinWidth;
-                            }
-                            field.colspan = colspan;
-                        } else {}
-                    }
-
-                    if (row.cols.length > 0) {
-                        if (!table.rows[depth]) {
-                            table.rows[depth] = { cols: [] };
-                        }
-                        table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
-                        return row.cols.length - 1 + colspan;
-                    } else {
-                        return colspan;
-                    }
-                };
-                maekRows(columns, 0);
-
-                (function () {
-                    // set rowspan
-                    for (var r = 0, rl = table.rows.length; r < rl; r++) {
-                        var row = table.rows[r];
-                        for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                            var col = row.cols[c];
-                            if (!('columns' in col)) {
-                                col.rowspan = rl - r;
-                            }
-                        }
-                    }
-                })();
-
-                return table;
             },
                 initGrid = function initGrid() {
                 // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
@@ -227,9 +160,15 @@
                 return this;
             },
                 initColumns = function initColumns(columns) {
-                if (columns) this.columns = U.deepCopy(columns);
-                this.headerTable = makeHeaderTable.call(this, this.columns);
+                this.columns = U.deepCopy(columns);
+                this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
+
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex > this.columns.length ? this.columns.length : cfg.frozenColumnIndex;
+
+                this.bodyRowTable = GRID.util.makeBodyRowTable.call(this, this.columns);
+                this.bodyRowMap = GRID.util.makeBodyRowMap.call(this, this.bodyRowTable);
+                // 바디에 표현될 한줄의 높이를 계산합니다.
+                this.xvar.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
 
                 var colGroupMap = {};
                 for (var r = 0, rl = this.headerTable.rows.length; r < rl; r++) {
@@ -245,6 +184,14 @@
                 }
 
                 return this;
+            },
+                onResetColumns = function onResetColumns() {
+                initColumns.call(this, this.config.columns);
+                resetColGroupWidth.call(this);
+                alignGrid.call(this, true);
+                GRID.header.repaint.call(this);
+                GRID.body.repaint.call(this, true);
+                GRID.scroller.resize.call(this);
             },
                 resetColGroupWidth = function resetColGroupWidth() {
                 /// !! 그리드 target의 크기가 변경되면 이 함수를 호출하려 this.colGroup의 _width 값을 재 계산 하여야 함. [tom]
@@ -769,6 +716,7 @@
              */
             this.updateRow = function (_row, _dindex) {
                 GRID.data.update.call(this, _row, _dindex);
+                alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
                 GRID.body.moveFocus.call(this, _dindex);
                 GRID.scroller.resize.call(this);
@@ -782,17 +730,17 @@
              * @returns {ax5grid}
              */
             this.addColumn = function () {
-
                 var processor = {
                     "first": function first(_column) {
-                        this.columns = [].concat(_column).concat(this.columns);
+                        this.config.columns = [].concat(_column).concat(this.config.columns);
                     },
                     "last": function last(_column) {
-                        this.columns = this.data.concat([].concat(_column));
+                        this.config.columns = this.config.columns.concat([].concat(_column));
                     }
                 };
 
                 return function (_column, _cindex) {
+                    if (typeof _column === "undefined") throw '_column must not be null';
                     if (typeof _cindex === "undefined") _cindex = "last";
                     if (_cindex in processor) {
                         processor[_cindex].call(this, _column);
@@ -800,29 +748,9 @@
                         if (!U.isNumber(_cindex)) {
                             throw 'invalid argument _cindex';
                         }
-                        this.columns.splice(_cindex, [].concat(_column));
+                        this.config.columns.splice(_cindex, [].concat(_column));
                     }
-
-                    initColumns.call(this);
-                    resetColGroupWidth.call(this);
-
-                    // 그리드의 각 요소의 크기를 맞춤니다.
-                    alignGrid.call(this, true);
-
-                    // columns의 데이터로 header데이터를 만들고
-                    GRID.header.init.call(this);
-                    // header를 출력합니다.
-                    GRID.header.repaint.call(this);
-
-                    // columns의 데이터로 body데이터를 만들고
-                    GRID.body.init.call(this);
-                    // body를 출력합니다.
-                    GRID.body.repaint.call(this);
-
-                    // scroller
-                    GRID.scroller.init.call(this);
-                    GRID.scroller.resize.call(this);
-
+                    onResetColumns.call(this); // 컬럼이 변경되었을 때.
                     return this;
                 };
             }();
@@ -831,9 +759,31 @@
              * @param {Number|String} [_cindex=last]
              * @returns {ax5grid}
              */
-            this.removeColumn = function (_cindex) {
-                return this;
-            };
+            this.removeColumn = function () {
+                var processor = {
+                    "first": function first(_cindex) {
+                        this.config.columns.splice(_cindex, 1);
+                    },
+                    "last": function last() {
+                        this.config.columns.splice(this.config.columns.length - 1, 1);
+                    }
+                };
+                return function (_cindex) {
+                    if (typeof _cindex === "undefined") _cindex = "last";
+                    if (_cindex in processor) {
+                        processor[_cindex].call(this, _cindex);
+                    } else {
+                        if (!U.isNumber(_cindex)) {
+                            throw 'invalid argument _cindex';
+                        }
+                        //
+                        this.config.columns.splice(_cindex, 1);
+                    }
+                    onResetColumns.call(this); // 컬럼이 변경되었을 때.
+                    return this;
+                };
+            }();
+
             /**
              * @method ax5grid.updateColumn
              * @param {Object} _column
@@ -841,6 +791,12 @@
              * @returns {ax5grid}
              */
             this.updateColumn = function (_column, _cindex) {
+                if (!U.isNumber(_cindex)) {
+                    throw 'invalid argument _cindex';
+                }
+                //
+                this.config.columns.splice(_cindex, 1, _column);
+                onResetColumns.call(this); // 컬럼이 변경되었을 때.
                 return this;
             };
 
@@ -890,16 +846,14 @@
 // todo : page -- ok
 // todo : paging -- ok
 // todo : setStatus : loading, empty, etcs
-
 // todo : row add / remove / update -- ok
 // todo : body.onClick / select -- ok & multipleSelect : TF -- ok
-// todo : column add / remove / update
-// todo : cell inline edit
+// todo : column add / remove / update -- ok
 
+// todo : cell inline edit
 // todo : column resize
 // todo : column reorder
 // todo : cell formatter
-
 // todo : sort & filter
 // todo : body menu
 
@@ -1088,17 +1042,6 @@
 
     var init = function init() {
         var self = this;
-        // 바디 초기화
-        this.bodyRowTable = {};
-        this.leftBodyRowData = {};
-        this.bodyRowData = {};
-        this.rightBodyRowData = {};
-
-        this.bodyRowTable = makeBodyRowTable.call(this, this.columns);
-        this.bodyRowMap = makeBodyRowMap.call(this, this.bodyRowTable);
-
-        // 바디에 표현될 한줄의 높이를 계산합니다.
-        this.xvar.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
 
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function () {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
@@ -1172,124 +1115,6 @@
             U.stopEvent(e);
             return false;
         });
-    };
-
-    var makeBodyRowTable = function makeBodyRowTable(columns) {
-        var table = {
-            rows: []
-        };
-        var colIndex = 0;
-        var maekRows = function maekRows(_columns, depth, parentField) {
-            var row = { cols: [] };
-            var i = 0,
-                l = _columns.length;
-
-            var selfMakeRow = function selfMakeRow(__columns) {
-                var i = 0,
-                    l = __columns.length;
-                for (; i < l; i++) {
-                    var field = __columns[i];
-                    var colspan = 1;
-
-                    if (!field.hidden) {
-
-                        if ('key' in field) {
-                            field.colspan = 1;
-                            field.rowspan = 1;
-
-                            field.rowIndex = depth;
-                            field.colIndex = function () {
-                                if (!parentField) {
-                                    return colIndex++;
-                                } else {
-                                    colIndex = parentField.colIndex + i + 1;
-                                    return parentField.colIndex + i;
-                                }
-                            }();
-
-                            row.cols.push(field);
-                            if ('columns' in field) {
-                                colspan = maekRows(field.columns, depth + 1, field);
-                            }
-                            field.colspan = colspan;
-                        } else {
-                            if ('columns' in field) {
-                                selfMakeRow(field.columns, depth);
-                            }
-                        }
-                    } else {}
-                }
-            };
-
-            for (; i < l; i++) {
-                var field = _columns[i];
-                var colspan = 1;
-
-                if (!field.hidden) {
-
-                    if ('key' in field) {
-                        field.colspan = 1;
-                        field.rowspan = 1;
-
-                        field.rowIndex = depth;
-                        field.colIndex = function () {
-                            if (!parentField) {
-                                return colIndex++;
-                            } else {
-                                colIndex = parentField.colIndex + i + 1;
-                                return parentField.colIndex + i;
-                            }
-                        }();
-
-                        row.cols.push(field);
-                        if ('columns' in field) {
-                            colspan = maekRows(field.columns, depth + 1, field);
-                        }
-                        field.colspan = colspan;
-                    } else {
-                        if ('columns' in field) {
-                            selfMakeRow(field.columns, depth);
-                        }
-                    }
-                } else {}
-            }
-
-            if (row.cols.length > 0) {
-                if (!table.rows[depth]) {
-                    table.rows[depth] = { cols: [] };
-                }
-                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
-                return row.cols.length - 1 + colspan;
-            } else {
-                return colspan;
-            }
-        };
-        maekRows(columns, 0);
-
-        (function () {
-            // set rowspan
-            for (var r = 0, rl = table.rows.length; r < rl; r++) {
-                var row = table.rows[r];
-                for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                    var col = row.cols[c];
-                    if (!('columns' in col)) {
-                        col.rowspan = rl - r;
-                    }
-                }
-            }
-        })();
-
-        return table;
-    };
-
-    var makeBodyRowMap = function makeBodyRowMap(table) {
-        var map = {};
-        table.rows.forEach(function (row) {
-            row.cols.forEach(function (col) {
-                map[col.rowIndex + "_" + col.colIndex] = jQuery.extend({}, col);
-            });
-        });
-        return map;
     };
 
     var repaint = function repaint(_reset) {
@@ -2653,6 +2478,8 @@
 (function () {
 
     var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
      * @param table
@@ -2717,9 +2544,196 @@
         "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
     };
 
+    var makeHeaderTable = function makeHeaderTable(columns) {
+        var columns = U.deepCopy(columns);
+        var cfg = this.config;
+        var table = {
+            rows: []
+        };
+        var colIndex = 0;
+        var maekRows = function maekRows(_columns, depth, parentField) {
+            var row = { cols: [] };
+            var i = 0,
+                l = _columns.length;
+
+            for (; i < l; i++) {
+                var field = _columns[i];
+                var colspan = 1;
+
+                if (!field.hidden) {
+                    field.colspan = 1;
+                    field.rowspan = 1;
+
+                    field.rowIndex = depth;
+                    field.colIndex = function () {
+                        if (!parentField) {
+                            return colIndex++;
+                        } else {
+                            colIndex = parentField.colIndex + i + 1;
+                            return parentField.colIndex + i;
+                        }
+                    }();
+
+                    row.cols.push(field);
+
+                    if ('columns' in field) {
+                        colspan = maekRows(field.columns, depth + 1, field);
+                    } else {
+                        field.width = 'width' in field ? field.width : cfg.columnMinWidth;
+                    }
+                    field.colspan = colspan;
+                } else {}
+            }
+
+            if (row.cols.length > 0) {
+                if (!table.rows[depth]) {
+                    table.rows[depth] = { cols: [] };
+                }
+                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                return row.cols.length - 1 + colspan;
+            } else {
+                return colspan;
+            }
+        };
+        maekRows(columns, 0);
+
+        // set rowspan
+        for (var r = 0, rl = table.rows.length; r < rl; r++) {
+            for (var c = 0, cl = table.rows[r].cols.length; c < cl; c++) {
+                if (!('columns' in table.rows[r].cols[c])) {
+                    table.rows[r].cols[c].rowspan = rl - r;
+                }
+            }
+        }
+
+        return table;
+    };
+
+    var makeBodyRowTable = function makeBodyRowTable(columns) {
+        var columns = U.deepCopy(columns);
+        var table = {
+            rows: []
+        };
+        var colIndex = 0;
+        var maekRows = function maekRows(_columns, depth, parentField) {
+            var row = { cols: [] };
+            var i = 0,
+                l = _columns.length;
+
+            var selfMakeRow = function selfMakeRow(__columns) {
+                var i = 0,
+                    l = __columns.length;
+                for (; i < l; i++) {
+                    var field = __columns[i];
+                    var colspan = 1;
+
+                    if (!field.hidden) {
+
+                        if ('key' in field) {
+                            field.colspan = 1;
+                            field.rowspan = 1;
+
+                            field.rowIndex = depth;
+                            field.colIndex = function () {
+                                if (!parentField) {
+                                    return colIndex++;
+                                } else {
+                                    colIndex = parentField.colIndex + i + 1;
+                                    return parentField.colIndex + i;
+                                }
+                            }();
+
+                            row.cols.push(field);
+                            if ('columns' in field) {
+                                colspan = maekRows(field.columns, depth + 1, field);
+                            }
+                            field.colspan = colspan;
+                        } else {
+                            if ('columns' in field) {
+                                selfMakeRow(field.columns, depth);
+                            }
+                        }
+                    } else {}
+                }
+            };
+
+            for (; i < l; i++) {
+                var field = _columns[i];
+                var colspan = 1;
+
+                if (!field.hidden) {
+
+                    if ('key' in field) {
+                        field.colspan = 1;
+                        field.rowspan = 1;
+
+                        field.rowIndex = depth;
+                        field.colIndex = function () {
+                            if (!parentField) {
+                                return colIndex++;
+                            } else {
+                                colIndex = parentField.colIndex + i + 1;
+                                return parentField.colIndex + i;
+                            }
+                        }();
+
+                        row.cols.push(field);
+                        if ('columns' in field) {
+                            colspan = maekRows(field.columns, depth + 1, field);
+                        }
+                        field.colspan = colspan;
+                    } else {
+                        if ('columns' in field) {
+                            selfMakeRow(field.columns, depth);
+                        }
+                    }
+                } else {}
+            }
+
+            if (row.cols.length > 0) {
+                if (!table.rows[depth]) {
+                    table.rows[depth] = { cols: [] };
+                }
+                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                return row.cols.length - 1 + colspan;
+            } else {
+                return colspan;
+            }
+        };
+        maekRows(columns, 0);
+
+        (function (table) {
+            // set rowspan
+            for (var r = 0, rl = table.rows.length; r < rl; r++) {
+                var row = table.rows[r];
+                for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                    var col = row.cols[c];
+                    if (!('columns' in col)) {
+                        col.rowspan = rl - r;
+                    }
+                }
+            }
+        })(table);
+
+        return table;
+    };
+
+    var makeBodyRowMap = function makeBodyRowMap(table) {
+        var map = {};
+        table.rows.forEach(function (row) {
+            row.cols.forEach(function (col) {
+                map[col.rowIndex + "_" + col.colIndex] = jQuery.extend({}, col);
+            });
+        });
+        return map;
+    };
+
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
         getMousePosition: getMousePosition,
-        ENM: ENM
+        ENM: ENM,
+        makeHeaderTable: makeHeaderTable,
+        makeBodyRowTable: makeBodyRowTable,
+        makeBodyRowMap: makeBodyRowMap
     };
 })();

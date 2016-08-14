@@ -82,7 +82,6 @@
             this.leftBodyRowData = {};
             this.bodyRowData = {};
             this.rightBodyRowData = {};
-            this.bodyRowTable = {};
             this.bodyRowMap = {};
 
             cfg = this.config;
@@ -96,74 +95,6 @@
                         this.onStateChanged.call(that, that);
                     }
                     return true;
-                },
-                makeHeaderTable = function (columns) {
-                    var table = {
-                        rows: []
-                    };
-                    var colIndex = 0;
-                    var maekRows = function (_columns, depth, parentField) {
-                        var row = {cols: []};
-                        var i = 0, l = _columns.length;
-
-                        for (; i < l; i++) {
-                            var field = _columns[i];
-                            var colspan = 1;
-
-                            if (!field.hidden) {
-                                field.colspan = 1;
-                                field.rowspan = 1;
-
-                                field.rowIndex = depth;
-                                field.colIndex = (function () {
-                                    if (!parentField) {
-                                        return colIndex++;
-                                    } else {
-                                        colIndex = parentField.colIndex + i + 1;
-                                        return parentField.colIndex + i;
-                                    }
-                                })();
-
-                                row.cols.push(field);
-
-                                if ('columns' in field) {
-                                    colspan = maekRows(field.columns, depth + 1, field);
-                                } else {
-                                    field.width = ('width' in field) ? field.width : cfg.columnMinWidth;
-                                }
-                                field.colspan = colspan;
-                            } else {
-
-                            }
-                        }
-
-                        if (row.cols.length > 0) {
-                            if (!table.rows[depth]) {
-                                table.rows[depth] = {cols: []};
-                            }
-                            table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
-                            return (row.cols.length - 1) + colspan;
-                        } else {
-                            return colspan;
-                        }
-
-                    };
-                    maekRows(columns, 0);
-
-                    (function () {
-                        // set rowspan
-                        for (var r = 0, rl = table.rows.length; r < rl; r++) {
-                            var row = table.rows[r];
-                            for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                                var col = row.cols[c];
-                                if (!('columns' in col)) {
-                                    col.rowspan = rl - r;
-                                }
-                            }
-                        }
-                    })();
-
-                    return table;
                 },
                 initGrid = function () {
                     // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
@@ -230,9 +161,15 @@
                     return this;
                 },
                 initColumns = function (columns) {
-                    if(columns) this.columns = U.deepCopy(columns);
-                    this.headerTable = makeHeaderTable.call(this, this.columns);
+                    this.columns = U.deepCopy(columns);
+                    this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
+
                     this.xvar.frozenColumnIndex = (cfg.frozenColumnIndex > this.columns.length) ? this.columns.length : cfg.frozenColumnIndex;
+
+                    this.bodyRowTable = GRID.util.makeBodyRowTable.call(this, this.columns);
+                    this.bodyRowMap = GRID.util.makeBodyRowMap.call(this, this.bodyRowTable);
+                    // 바디에 표현될 한줄의 높이를 계산합니다.
+                    this.xvar.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
 
                     var colGroupMap = {};
                     for (var r = 0, rl = this.headerTable.rows.length; r < rl; r++) {
@@ -248,6 +185,14 @@
                     }
 
                     return this;
+                },
+                onResetColumns = function(){
+                    initColumns.call(this, this.config.columns);
+                    resetColGroupWidth.call(this);
+                    alignGrid.call(this, true);
+                    GRID.header.repaint.call(this);
+                    GRID.body.repaint.call(this, true);
+                    GRID.scroller.resize.call(this);
                 },
                 resetColGroupWidth = function () {
                     /// !! 그리드 target의 크기가 변경되면 이 함수를 호출하려 this.colGroup의 _width 값을 재 계산 하여야 함. [tom]
@@ -400,9 +345,9 @@
                         } else if (containerType === "header") {
                             css["height"] = headerHeight;
                         } else if (containerType === "page") {
-                            if(pageHeight == 0){
+                            if (pageHeight == 0) {
                                 isHide = true;
-                            }else {
+                            } else {
                                 css["height"] = pageHeight;
                             }
                         }
@@ -625,10 +570,10 @@
                     "KEY_RIGHT": function () {
                         GRID.body.moveFocus.call(this, "RIGHT");
                     },
-                    "KEY_HOME" : function (){
+                    "KEY_HOME": function () {
                         GRID.body.moveFocus.call(this, "HOME");
                     },
-                    "KEY_END" : function (){
+                    "KEY_END": function () {
                         GRID.body.moveFocus.call(this, "END");
                     }
                 };
@@ -701,7 +646,7 @@
             this.setData = function (data) {
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
-                GRID.body.scrollTo.call(this, {top:0});
+                GRID.body.scrollTo.call(this, {top: 0});
                 GRID.body.repaint.call(this);
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
@@ -713,10 +658,10 @@
              * @param {Number} _height
              * @returns {ax5grid}
              */
-            this.setHeight = function(_height){
+            this.setHeight = function (_height) {
                 //console.log(this.$target);
 
-                if(_height == "100%"){
+                if (_height == "100%") {
                     _height = this.$target.offsetParent().innerHeight();
                 }
                 this.$target.css({height: _height});
@@ -731,7 +676,7 @@
              * @method ax5grid.align
              * @returns {ax5grid}
              */
-            this.align = function(){
+            this.align = function () {
                 alignGrid.call(this);
                 return this;
             };
@@ -742,7 +687,7 @@
              * @param {Number|String} [_dindex=last]
              * @returns {ax5grid}
              */
-            this.addRow = function(_row, _dindex){
+            this.addRow = function (_row, _dindex) {
                 GRID.data.add.call(this, _row, _dindex);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
@@ -756,7 +701,7 @@
              * @param {Number|String} [_dindex=last]
              * @returns {ax5grid}
              */
-            this.removeRow = function(_dindex){
+            this.removeRow = function (_dindex) {
                 GRID.data.remove.call(this, _dindex);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
@@ -771,8 +716,9 @@
              * @param {Number} _dindex
              * @returns {ax5grid}
              */
-            this.updateRow = function(_row, _dindex){
+            this.updateRow = function (_row, _dindex) {
                 GRID.data.update.call(this, _row, _dindex);
+                alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
                 GRID.body.moveFocus.call(this, _dindex);
                 GRID.scroller.resize.call(this);
@@ -785,18 +731,18 @@
              * @param {Number|String} [_cindex=last]
              * @returns {ax5grid}
              */
-            this.addColumn = (function(){
-
+            this.addColumn = (function () {
                 var processor = {
                     "first": function (_column) {
-                        this.columns = [].concat(_column).concat(this.columns);
+                        this.config.columns = [].concat(_column).concat(this.config.columns);
                     },
                     "last": function (_column) {
-                        this.columns = this.data.concat([].concat(_column));
+                        this.config.columns = this.config.columns.concat([].concat(_column));
                     }
                 };
 
-                return function(_column, _cindex){
+                return function (_column, _cindex) {
+                    if (typeof _column === "undefined") throw '_column must not be null';
                     if (typeof _cindex === "undefined") _cindex = "last";
                     if (_cindex in processor) {
                         processor[_cindex].call(this, _column);
@@ -804,30 +750,9 @@
                         if (!U.isNumber(_cindex)) {
                             throw 'invalid argument _cindex';
                         }
-                        this.columns.splice(_cindex, [].concat(_column))
+                        this.config.columns.splice(_cindex, [].concat(_column))
                     }
-
-
-                    initColumns.call(this);
-                    resetColGroupWidth.call(this);
-
-                    // 그리드의 각 요소의 크기를 맞춤니다.
-                    alignGrid.call(this, true);
-
-                    // columns의 데이터로 header데이터를 만들고
-                    GRID.header.init.call(this);
-                    // header를 출력합니다.
-                    GRID.header.repaint.call(this);
-
-                    // columns의 데이터로 body데이터를 만들고
-                    GRID.body.init.call(this);
-                    // body를 출력합니다.
-                    GRID.body.repaint.call(this);
-
-                    // scroller
-                    GRID.scroller.init.call(this);
-                    GRID.scroller.resize.call(this);
-
+                    onResetColumns.call(this); // 컬럼이 변경되었을 때.
                     return this;
                 }
             })();
@@ -836,16 +761,44 @@
              * @param {Number|String} [_cindex=last]
              * @returns {ax5grid}
              */
-            this.removeColumn = function(_cindex){
-                return this;
-            };
+            this.removeColumn = (function() {
+                var processor = {
+                    "first": function (_cindex) {
+                        this.config.columns.splice(_cindex, 1);
+                    },
+                    "last": function () {
+                        this.config.columns.splice(this.config.columns.length - 1, 1);
+                    }
+                };
+                return function (_cindex) {
+                    if (typeof _cindex === "undefined") _cindex = "last";
+                    if (_cindex in processor) {
+                        processor[_cindex].call(this, _cindex);
+                    } else {
+                        if (!U.isNumber(_cindex)) {
+                            throw 'invalid argument _cindex';
+                        }
+                        //
+                        this.config.columns.splice(_cindex, 1);
+                    }
+                    onResetColumns.call(this); // 컬럼이 변경되었을 때.
+                    return this;
+                }
+            })();
+
             /**
              * @method ax5grid.updateColumn
              * @param {Object} _column
              * @param {Number} _cindex
              * @returns {ax5grid}
              */
-            this.updateColumn = function(_column, _cindex){
+            this.updateColumn = function (_column, _cindex) {
+                if (!U.isNumber(_cindex)) {
+                    throw 'invalid argument _cindex';
+                }
+                //
+                this.config.columns.splice(_cindex, 1, _column);
+                onResetColumns.call(this); // 컬럼이 변경되었을 때.
                 return this;
             };
 
@@ -857,11 +810,11 @@
              * @param {Number} _selectObject.conIndex - colIndex of columns
              * @returns {ax5grid}
              */
-            this.select = function(_selectObject){
-                if(U.isNumber(_selectObject)){
+            this.select = function (_selectObject) {
+                if (U.isNumber(_selectObject)) {
                     var dindex = _selectObject;
 
-                    if(!this.config.multipleSelect) {
+                    if (!this.config.multipleSelect) {
                         GRID.body.updateRowState.call(this, ["selectedClear"]);
                         GRID.data.clearSelect.call(this);
                     }
@@ -896,16 +849,14 @@
 // todo : page -- ok
 // todo : paging -- ok
 // todo : setStatus : loading, empty, etcs
-
 // todo : row add / remove / update -- ok
 // todo : body.onClick / select -- ok & multipleSelect : TF -- ok
-// todo : column add / remove / update
-// todo : cell inline edit
+// todo : column add / remove / update -- ok
 
+// todo : cell inline edit
 // todo : column resize
 // todo : column reorder
 // todo : cell formatter
-
 // todo : sort & filter
 // todo : body menu
 

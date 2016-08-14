@@ -147,13 +147,13 @@
                     break;
 
                 case "column-add":
-                    firstGrid.addColumn();
+                    firstGrid.addColumn({key: "b", label: "필드B"});
                     break;
                 case "column-remove":
-
+                    firstGrid.removeColumn();
                     break;
                 case "column-update":
-
+                    firstGrid.updateColumn({key: "b", label: "필드B"}, 0);
                     break;
             }
         });
