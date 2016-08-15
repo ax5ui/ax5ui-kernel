@@ -46,6 +46,10 @@
 <script>
     var firstGrid = new ax5.ui.grid();
 
+    ax5.ui.grid.formatter["myType"] = function(){
+        return "myType" + this.value;
+    };
+
     var gridView = {
         initView: function () {
             firstGrid.setConfig({
@@ -81,7 +85,11 @@
                     }
                 },
                 columns: [
-                    {key: "a", label: "필드A", width: 80},
+                    {
+                        key: "a", label: "필드A", width: 80, formatter: function () {
+                        return this.value + ": 가공";
+                    }
+                    },
                     {key: "b", label: "필드B"},
                     {
                         key: undefined, label: "필드C", columns: [
@@ -89,10 +97,10 @@
                     ]
                     },
                     {key: "c", label: "필드C", multiLine: false},
-                    {key: "d", label: "필드D"},
+                    {key: "d", label: "필드D", formatter: "money"},
                     {key: "c1", label: "페이지번호", width: 80},
                     {key: "a", label: "필드A", width: 80},
-                    {key: "a", label: "필드A", width: 80}
+                    {key: "a", label: "필드A", width: 80, formatter: "myType"}
                 ]
             });
             return this;
@@ -101,7 +109,7 @@
             var _my_pageNo = (_pageNo || 0) + 1;
             var list = [];
             for (var a = 0, l = 5; a < l; a++) {
-                list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": "필드D값"});
+                list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": 1234123});
             }
             firstGrid.setData({
                 list: list,

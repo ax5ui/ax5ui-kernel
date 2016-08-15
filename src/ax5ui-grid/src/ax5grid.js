@@ -853,10 +853,11 @@
 // todo : body.onClick / select -- ok & multipleSelect : TF -- ok
 // todo : column add / remove / update -- ok
 
+// todo : cell formatter -- ok
 // todo : cell inline edit
 // todo : column resize
 // todo : column reorder
-// todo : cell formatter
+
 // todo : sort & filter
 // todo : body menu
 

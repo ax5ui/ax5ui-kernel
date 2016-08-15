@@ -850,10 +850,11 @@
 // todo : body.onClick / select -- ok & multipleSelect : TF -- ok
 // todo : column add / remove / update -- ok
 
+// todo : cell formatter -- ok
 // todo : cell inline edit
 // todo : column resize
 // todo : column reorder
-// todo : cell formatter
+
 // todo : sort & filter
 // todo : body menu
 
@@ -1197,13 +1198,31 @@
                 }
             }();
 
-            var getFieldValue = function getFieldValue(data, index, key) {
-                if (key === "__d-index__") {
-                    return index + 1;
-                } else if (key === "__d-checkbox__") {
+            var getFieldValue = function getFieldValue(_data, _index, _key, _formatter) {
+                if (_key === "__d-index__") {
+                    return _index + 1;
+                } else if (_key === "__d-checkbox__") {
                     return '<div class="checkBox"></div>';
                 } else {
-                    return data[key] || "&nbsp;";
+                    if (_formatter) {
+                        if (U.isFunction(_formatter)) {
+                            return _formatter.call({
+                                key: _key,
+                                value: _data[_key],
+                                item: _data,
+                                list: data
+                            });
+                        } else {
+                            return GRID.formatter[_formatter].call({
+                                key: _key,
+                                value: _data[_key],
+                                item: _data,
+                                list: data
+                            });
+                        }
+                    } else {
+                        return _data[_key] || "&nbsp;";
+                    }
                 }
             };
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
@@ -1253,7 +1272,7 @@
                             } else {
                                 return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                             }
-                        }(), getFieldValue.call(this, _data[di], di, col.key), '</span>');
+                        }(), getFieldValue.call(this, _data[di], di, col.key, col.formatter), '</span>');
 
                         SS.push('</td>');
                     }
@@ -1758,6 +1777,25 @@
         add: add,
         remove: remove,
         update: update
+    };
+})();
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+// ax5.ui.grid.page
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+    var money = function money() {
+        return U.number(this.value, { "money": true });
+    };
+
+    GRID.formatter = {
+        money: money
     };
 })();
 // ax5.ui.grid.header
