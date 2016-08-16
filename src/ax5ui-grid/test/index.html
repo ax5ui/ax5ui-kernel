@@ -46,7 +46,7 @@
 <script>
     var firstGrid = new ax5.ui.grid();
 
-    ax5.ui.grid.formatter["myType"] = function(){
+    ax5.ui.grid.formatter["myType"] = function () {
         return "myType" + this.value;
     };
 
@@ -86,9 +86,13 @@
                 },
                 columns: [
                     {
-                        key: "a", label: "필드A", width: 80, formatter: function () {
-                        return this.value + ": 가공";
-                    }
+                        key: "a", label: "필드A", width: 80,
+                        formatter: function () {
+                            return this.value + ": 가공";
+                        },
+                        styleClass: function(){
+                            return "ABC";
+                        }
                     },
                     {key: "b", label: "필드B"},
                     {

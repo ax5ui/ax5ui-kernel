@@ -359,7 +359,7 @@
             var di, dl;
             var tri, trl;
             var ci, cl;
-            var col, cellHeight, tdCSS_class;
+            var col, cellHeight;
             var isScrolled = (function () {
                 // repaint 함수가 스크롤되는지 여부
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
@@ -372,7 +372,6 @@
                     return true;
                 }
             })();
-
             var getFieldValue = function (_data, _index, _key, _formatter) {
                 if (_key === "__d-index__") {
                     return _index + 1;
@@ -382,26 +381,25 @@
                 }
                 else {
                     if (_formatter) {
+                        var that = {
+                            key: _key,
+                            value: _data[_key],
+                            item: _data,
+                            index: _index,
+                            list: data
+                        };
                         if (U.isFunction(_formatter)) {
-                            return _formatter.call({
-                                key: _key,
-                                value: _data[_key],
-                                item: _data,
-                                list: data
-                            });
+                            return _formatter.call(that);
                         } else {
-                            return GRID.formatter[_formatter].call({
-                                key: _key,
-                                value: _data[_key],
-                                item: _data,
-                                list: data
-                            });
+                            return GRID.formatter[_formatter].call(that);
                         }
                     } else {
                         return _data[_key] || "&nbsp;";
                     }
                 }
             };
+
+
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -424,12 +422,6 @@
                     for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                         col = _bodyRow.rows[tri].cols[ci];
                         cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
-                        tdCSS_class = "";
-                        if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
-                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
-
-                        if (_colGroup[col.colIndex] && _colGroup[col.colIndex].CSSClass) tdCSS_class += _colGroup[col.colIndex].CSSClass + " ";
-                        if (col.CSSClass) tdCSS_class += col.CSSClass + " ";
 
                         SS.push('<td ',
                             'data-ax5grid-panel-name="' + _elTargetKey + '" ',
@@ -449,8 +441,26 @@
                                 }
                                 return attrs;
                             })(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]),
-                            'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ',
-                            'class="' + tdCSS_class + '" ',
+                            'colspan="' + col.colspan + '" ',
+                            'rowspan="' + col.rowspan + '" ',
+                            'class="' + (function () {
+                                var tdCSS_class = "";
+                                if (col.styleClass) {
+                                    if(U.isFunction(col.styleClass)){
+                                        tdCSS_class += col.styleClass.call({
+                                                column: col,
+                                                key: col.key,
+                                                item: _data[di],
+                                                index: di
+                                            }) + " ";
+                                    }else{
+                                        tdCSS_class += col.styleClass + " ";
+                                    }
+                                }
+                                if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                                if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                                return tdCSS_class;
+                            }).call(this) + '" ',
                             'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                         SS.push((function () {

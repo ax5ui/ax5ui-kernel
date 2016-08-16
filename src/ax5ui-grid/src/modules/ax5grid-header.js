@@ -16,10 +16,10 @@
         var dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
         var asideHeaderData = this.asideHeaderData = (function (dataTable) {
             var colGroup = [];
-            var data = {rows:[]};
+            var data = {rows: []};
             for (var i = 0, l = dataTable.rows.length; i < l; i++) {
-                data.rows[i] = {cols:[]};
-                if(i === 0){
+                data.rows[i] = {cols: []};
+                if (i === 0) {
                     var col = {
                         label: "",
                         colspan: 1,
@@ -74,40 +74,53 @@
             for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
                 var trCSS_class = "";
 
-                    SS.push('<tr class="' + trCSS_class + '">');
-                    for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
-                        var col = _bodyRow.rows[tri].cols[ci];
-                        var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
-                        var tdCSS_class = "";
-                        if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
-                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
-                        SS.push('<td ',
-                            'data-ax5grid-column-row="' + tri + '" ',
-                            'data-ax5grid-column-col="' + ci + '" ',
-                            'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ',
-                            'class="' + tdCSS_class + '" ',
-                            'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+                SS.push('<tr class="' + trCSS_class + '">');
+                for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    var col = _bodyRow.rows[tri].cols[ci];
+                    var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
 
-                        SS.push((function () {
-                            var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth);
-                            return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
-                            /*
-                            if (col.multiLine) {
-                                return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                            } else {
-
-                            }
-                            */
-                        })(), (col.label || "&nbsp;"), '</span>');
-
-                        SS.push('</td>');
-                    }
                     SS.push('<td ',
-                        'data-ax5grid-column-row="null" ',
-                        'data-ax5grid-column-col="null" ',
-                        'style="height: ' + (cfg.header.columnHeight) + 'px;min-height: 1px;" ',
-                        '></td>');
-                    SS.push('</tr>');
+                        'data-ax5grid-column-row="' + tri + '" ',
+                        'data-ax5grid-column-col="' + ci + '" ',
+                        'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ',
+                        'class="' + (function () {
+                            var tdCSS_class = "";
+                            if (col.styleClass) {
+                                if (U.isFunction(col.styleClass)) {
+                                    tdCSS_class += col.styleClass.call({
+                                            column: col,
+                                            key: col.key
+                                        }) + " ";
+                                } else {
+                                    tdCSS_class += col.styleClass + " ";
+                                }
+                            }
+                            if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
+                            if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                            return tdCSS_class;
+                        }).call(this) + '" ',
+                        'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                    SS.push((function () {
+                        var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth);
+                        return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                        /*
+                         if (col.multiLine) {
+                         return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                         } else {
+
+                         }
+                         */
+                    })(), (col.label || "&nbsp;"), '</span>');
+
+                    SS.push('</td>');
+                }
+                SS.push('<td ',
+                    'data-ax5grid-column-row="null" ',
+                    'data-ax5grid-column-col="null" ',
+                    'style="height: ' + (cfg.header.columnHeight) + 'px;min-height: 1px;" ',
+                    '></td>');
+                SS.push('</tr>');
 
             }
             SS.push('</table>');
