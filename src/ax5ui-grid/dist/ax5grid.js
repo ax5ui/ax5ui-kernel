@@ -1252,24 +1252,24 @@
                                 attrs += 'data-ax5grid-column-selected="true" ';
                             }
                             return attrs;
-                        }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function () {
+                        }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
                             var tdCSS_class = "";
-                            if (col.styleClass) {
-                                if (U.isFunction(col.styleClass)) {
-                                    tdCSS_class += col.styleClass.call({
-                                        column: col,
-                                        key: col.key,
+                            if (_col.styleClass) {
+                                if (U.isFunction(_col.styleClass)) {
+                                    tdCSS_class += _col.styleClass.call({
+                                        column: _col,
+                                        key: _col.key,
                                         item: _data[di],
                                         index: di
                                     }) + " ";
                                 } else {
-                                    tdCSS_class += col.styleClass + " ";
+                                    tdCSS_class += _col.styleClass + " ";
                                 }
                             }
                             if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
                             if (ci == cl - 1) tdCSS_class += "isLastColumn ";
                             return tdCSS_class;
-                        }.call(this) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+                        }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                         SS.push(function () {
                             var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
@@ -1880,39 +1880,34 @@
 
             for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
                 var trCSS_class = "";
-
                 SS.push('<tr class="' + trCSS_class + '">');
                 for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                     var col = _bodyRow.rows[tri].cols[ci];
                     var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
 
-                    SS.push('<td ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + function () {
+                    SS.push('<td ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
                         var tdCSS_class = "";
-                        if (col.styleClass) {
-                            if (U.isFunction(col.styleClass)) {
-                                tdCSS_class += col.styleClass.call({
-                                    column: col,
-                                    key: col.key
+                        if (_col.styleClass) {
+                            if (U.isFunction(_col.styleClass)) {
+                                tdCSS_class += _col.styleClass.call({
+                                    column: _col,
+                                    key: _col.key
                                 }) + " ";
                             } else {
-                                tdCSS_class += col.styleClass + " ";
+                                tdCSS_class += _col.styleClass + " ";
                             }
                         }
                         if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
                         if (ci == cl - 1) tdCSS_class += "isLastColumn ";
                         return tdCSS_class;
-                    }.call(this) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+                    }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                     SS.push(function () {
                         var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
                         return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
-                        /*
-                         if (col.multiLine) {
-                         return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                         } else {
-                          }
-                         */
                     }(), col.label || "&nbsp;", '</span>');
+
+                    SS.push('<div data-ax5grid-column-resizer=""></div>');
 
                     SS.push('</td>');
                 }

@@ -443,24 +443,24 @@
                             })(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]),
                             'colspan="' + col.colspan + '" ',
                             'rowspan="' + col.rowspan + '" ',
-                            'class="' + (function () {
+                            'class="' + (function (_col) {
                                 var tdCSS_class = "";
-                                if (col.styleClass) {
-                                    if(U.isFunction(col.styleClass)){
-                                        tdCSS_class += col.styleClass.call({
-                                                column: col,
-                                                key: col.key,
+                                if (_col.styleClass) {
+                                    if(U.isFunction(_col.styleClass)){
+                                        tdCSS_class += _col.styleClass.call({
+                                                column: _col,
+                                                key: _col.key,
                                                 item: _data[di],
                                                 index: di
                                             }) + " ";
                                     }else{
-                                        tdCSS_class += col.styleClass + " ";
+                                        tdCSS_class += _col.styleClass + " ";
                                     }
                                 }
                                 if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
                                 if (ci == cl - 1) tdCSS_class += "isLastColumn ";
                                 return tdCSS_class;
-                            }).call(this) + '" ',
+                            }).call(this, col) + '" ',
                             'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                         SS.push((function () {

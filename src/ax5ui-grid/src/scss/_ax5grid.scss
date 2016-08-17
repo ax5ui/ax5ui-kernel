@@ -101,6 +101,15 @@
             white-space: normal;
         }
     }
+
+    [data-ax5grid-column-resizer] {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 3px;
+        height: 100%;
+        background: #ff3300;
+    }
 }
 
 @mixin gridRowBackground() {
@@ -121,11 +130,11 @@
     }
     &[data-ax5grid-selected="true"] {
         background: lighten(#b1d7fe, 10%);
-        td{
+        td {
             //color: #fff;
             //box-shadow: inset 1px 1px 0px 0px #fff;
             &[data-ax5grid-column-attr="rowSelector"],
-            &[data-ax5grid-column-attr="lineNumber"]{
+            &[data-ax5grid-column-attr="lineNumber"] {
                 box-shadow: none;
             }
             &[data-ax5grid-column-attr="rowSelector"] {
