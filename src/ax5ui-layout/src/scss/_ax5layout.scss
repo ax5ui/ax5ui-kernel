@@ -58,7 +58,8 @@ $dock-panel-splitter-background: #ccc;
         position: absolute;
         border: 0px none;
         z-index: 2;
-        overflow: auto;
+        overflow: hidden;
+
         &.dock-panel-top {
             left: 0px;
             top: 0px;
@@ -84,7 +85,6 @@ $dock-panel-splitter-background: #ccc;
             top: 0px;
             width: 100%;
             height: 100%;
-            background: #fff;
             z-index: 1;
         }
     }
@@ -92,8 +92,8 @@ $dock-panel-splitter-background: #ccc;
         position: absolute;
         border: 0px none;
         z-index: 2;
-        overflow: auto;
-        //background: #eee;
+        overflow: hidden;
+
         &.split-panel-vertical{
             width: 100%;
         }
@@ -143,6 +143,9 @@ $dock-panel-splitter-background: #ccc;
     top: 0px;
     background: #ee868b;
     z-index: 10;
+    overflow: hidden;
+    padding: 0;
+    marign: 0;
 
     &.panel-top {
         cursor: ns-resize;
