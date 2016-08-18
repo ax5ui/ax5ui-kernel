@@ -83,6 +83,9 @@
             this.bodyRowData = {};
             this.rightBodyRowData = {};
             this.bodyRowMap = {};
+            this.leftHeaderData = {};
+            this.headerData = {};
+            this.rightHeaderData = {};
 
             cfg = this.config;
 

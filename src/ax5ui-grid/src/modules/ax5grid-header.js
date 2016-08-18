@@ -6,9 +6,33 @@
 
     var init = function () {
         // 헤더 초기화
-        this.leftHeaderData = {};
-        this.headerData = {};
-        this.rightHeaderData = {};
+
+
+        this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
+            var findError = false;
+            var target = U.findParentNode(e.target, function(target){
+                if(U.isString(target.getAttribute("data-ax5grid-column-resizer"))){
+                    findError = true;
+                    return true;
+                }else if(target.getAttribute("data-ax5grid-column-attr")){
+                    return true;
+                }else{
+                    return false;
+                }
+            });
+
+            if(target && !findError) {
+                console.log(target);
+            }
+        });
+        this.$["container"]["header"]
+            .on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
+                console.log(this);
+            })
+            .on("dragstart", function (e) {
+                U.stopEvent(e);
+                return false;
+            });
     };
 
     var repaint = function () {
@@ -79,9 +103,11 @@
                     var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
 
                     SS.push('<td ',
+                        'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
                         'data-ax5grid-column-row="' + tri + '" ',
                         'data-ax5grid-column-col="' + ci + '" ',
-                        'colspan="' + col.colspan + '" rowspan="' + col.rowspan + '" ',
+                        'colspan="' + col.colspan + '" ',
+                        'rowspan="' + col.rowspan + '" ',
                         'class="' + (function (_col) {
                             var tdCSS_class = "";
                             if (_col.styleClass) {
@@ -105,7 +131,9 @@
                         return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                     })(), (col.label || "&nbsp;"), '</span>');
 
-                    SS.push('<div data-ax5grid-column-resizer=""></div>');
+                    if(col.colIndex != null) {
+                        SS.push('<div data-ax5grid-column-resizer="' + col.colIndex + '"></div>');
+                    }
 
                     SS.push('</td>');
                 }

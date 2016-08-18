@@ -104,11 +104,12 @@
 
     [data-ax5grid-column-resizer] {
         position: absolute;
-        right: 0;
+        right: 0px;
         top: 0;
-        width: 3px;
+        width: 4px;
         height: 100%;
-        //background: #ff3300;
+        background: #ff3300;
+        cursor: col-resize;
     }
 }
 
