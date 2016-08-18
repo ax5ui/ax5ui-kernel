@@ -505,6 +505,12 @@ console.log(ax5.util.snakeCase("aBc"));
 ```
 ---
 
+## ax5.util.setDigit
+```js
+ax5.util.setDigit(1, 2);
+> "01"
+```
+
 # Number
 
 ## ax5.util.number
