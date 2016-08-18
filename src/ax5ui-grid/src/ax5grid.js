@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.8"
+        version: "0.0.10"
     }, (function () {
         /**
          * @class ax5grid
@@ -37,7 +37,7 @@
                 showRowSelector: false,
                 multipleSelect: false,
 
-                height: 400,
+                height: 0,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
                 rowSelectorColumnWidth: 25,
@@ -156,7 +156,7 @@
                         }
                     };
 
-                    this.$["container"]["root"].css({height: cfg.height});
+                    this.$["container"]["root"].css({height: this.gridConfig.height});
 
                     return this;
                 },
@@ -452,12 +452,14 @@
                 this.onClick = cfg.onClick;
 
                 var grid = this.gridConfig = jQuery.extend(true, {}, cfg, config);
-
                 if (!grid.target) {
                     console.log(ax5.info.getError("ax5grid", "401", "init"));
                     return this;
                 }
                 this.$target = jQuery(grid.target);
+                if(!this.gridConfig.height){
+                    this.gridConfig.height = this.$target.height();
+                }
 
                 if (!this.id) this.id = this.$target.data("data-ax5grid-id");
                 if (!this.id) {
