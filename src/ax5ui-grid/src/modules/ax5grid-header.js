@@ -4,30 +4,61 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
+    var columnResizer = {
+        "on": function (resizer) {
+            var self = this;
+
+            console.log(resizer);
+            
+            jQuery(document.body)
+                .bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
+                    //var css = getScrollerPosition[type](e);
+                    var mouseObj = GRID.util.getMousePosition(e);
+                    self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+
+                    console.log(self.xvar.__da);
+                })
+                .bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
+                    columnResizer.off.call(self);
+                    U.stopEvent(e);
+                })
+                .bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
+                    columnResizer.off.call(self);
+                    U.stopEvent(e);
+                });
+
+            jQuery(document.body)
+                .attr('unselectable', 'on')
+                .css('user-select', 'none')
+                .on('selectstart', false);
+        },
+        "off": function () {
+
+            jQuery(document.body)
+                .unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId)
+                .unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId)
+                .unbind("mouseleave.ax5grid-" + this.instanceId);
+
+            jQuery(document.body)
+                .removeAttr('unselectable')
+                .css('user-select', 'auto')
+                .off('selectstart');
+        }
+    };
+
     var init = function () {
         // 헤더 초기화
-
+        var self = this;
 
         this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            var findError = false;
-            var target = U.findParentNode(e.target, function(target){
-                if(U.isString(target.getAttribute("data-ax5grid-column-resizer"))){
-                    findError = true;
-                    return true;
-                }else if(target.getAttribute("data-ax5grid-column-attr")){
-                    return true;
-                }else{
-                    return false;
-                }
-            });
-
-            if(target && !findError) {
-                console.log(target);
-            }
+            console.log(this);
+            /// column click
         });
         this.$["container"]["header"]
             .on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
-                console.log(this);
+                self.xvar.mousePosition = GRID.util.getMousePosition(e);
+                columnResizer.on.call(self, this);
+                U.stopEvent(e);
             })
             .on("dragstart", function (e) {
                 U.stopEvent(e);
@@ -131,10 +162,6 @@
                         return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                     })(), (col.label || "&nbsp;"), '</span>');
 
-                    if(col.colIndex != null) {
-                        SS.push('<div data-ax5grid-column-resizer="' + col.colIndex + '"></div>');
-                    }
-
                     SS.push('</td>');
                 }
                 SS.push('<td ',
@@ -145,8 +172,22 @@
                 SS.push('</tr>');
             }
             SS.push('</table>');
-
             _elTarget.html(SS.join(''));
+
+            /// append column-resizer
+            (function () {
+                var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth;
+                var resizerLeft = 0;
+                var RR = [];
+                for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                    if (!U.isNothing(_colGroup[cgi].colIndex)) {
+                        //_colGroup[cgi]._width
+                        resizerLeft += _colGroup[cgi]._width;
+                        RR.push('<div data-ax5grid-column-resizer="' + _colGroup[cgi].colIndex + '" style="height:' + resizerHeight + 'px;left: ' + (resizerLeft - 4) + 'px;"  />');
+                    }
+                }
+                _elTarget.append(RR);
+            }).call(this);
 
             return tableWidth;
         };

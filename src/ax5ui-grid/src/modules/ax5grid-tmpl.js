@@ -56,6 +56,8 @@
                 </div>
                 <div data-ax5grid-scroller="corner"></div>
             </div>
+            <div data-ax5grid-resizer="vertical"></div>
+            <div data-ax5grid-resizer="horizontal"></div>
         </div>`;
 
     var page_navigation =

@@ -101,16 +101,6 @@
             white-space: normal;
         }
     }
-
-    [data-ax5grid-column-resizer] {
-        position: absolute;
-        right: 0px;
-        top: 0;
-        width: 4px;
-        height: 100%;
-        background: #ff3300;
-        cursor: col-resize;
-    }
 }
 
 @mixin gridRowBackground() {
@@ -266,6 +256,17 @@
             border: 0px none;
             border-bottom: 1px solid #ccc;
             @include gridPanel("header");
+
+            [data-ax5grid-column-resizer] {
+                position: absolute;
+                left: 0px;
+                top: 0;
+                width: 4px;
+                height: 100%;
+                background: #ff3300;
+                opacity: 0.5;
+                cursor: col-resize;
+            }
         }
 
         [data-ax5grid-container="body"] {
