@@ -213,6 +213,9 @@
                 _elTarget.append(RR);
             }).call(this);
 
+            /// append column-sorter
+            /// append column-filter
+
             return tableWidth;
         };
 

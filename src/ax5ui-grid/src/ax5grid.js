@@ -880,7 +880,7 @@
 // todo : cell formatter -- ok
 // todo : column resize -- ok
 
-// todo : sort & filter
+// todo : sortable & filter
 // todo : body menu
 // todo : cell inline edit
 
