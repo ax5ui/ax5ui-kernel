@@ -810,6 +810,22 @@
             };
 
             /**
+             * @method ax5grid.updateColumnWidth
+             * @param _width
+             * @param _cindex
+             */
+            this.updateColumnWidth = function (_width, _cindex) {
+                this.colGroup[this.xvar.columnResizerIndex]._width = _width;
+
+                // 컬럼너비 변경사항 적용.
+                GRID.header.repaint.call(this);
+                GRID.body.repaint.call(this, true);
+                GRID.scroller.resize.call(this);
+                alignGrid.call(this);
+                return this;
+            };
+
+            /**
              * @method ax5grid.select
              * @param {Number||Object} _selectObject
              * @param {Number} _selectObject.index - index of row
@@ -1863,7 +1879,8 @@
         "off": function off() {
             this.$["resizer"]["horizontal"].removeClass("live");
             this.xvar.columnResizerLived = false;
-            console.log(this.xvar.__da, this.xvar.columnResizerIndex);
+            this.updateColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');

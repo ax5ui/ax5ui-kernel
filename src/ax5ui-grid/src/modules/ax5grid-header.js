@@ -55,7 +55,8 @@
         "off": function () {
             this.$["resizer"]["horizontal"].removeClass("live");
             this.xvar.columnResizerLived = false;
-            console.log(this.xvar.__da, this.xvar.columnResizerIndex);
+            this.updateColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+
             jQuery(document.body)
                 .unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId)
                 .unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId)

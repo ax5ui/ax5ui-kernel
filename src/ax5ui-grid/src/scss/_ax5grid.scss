@@ -230,9 +230,9 @@
     }
 }
 
-@mixin resizer($type: "horizontal"){
+@mixin resizer($type: "horizontal") {
     display: none;
-    &.live{
+    &.live {
         display: block;
         position: absolute;
         top: 0;
@@ -249,7 +249,6 @@
             width: 2px;
             cursor: col-resize;
         }
-
 
     }
 }
@@ -287,9 +286,11 @@
                 top: 0;
                 width: 4px;
                 height: 100%;
-                //background: #ff3300;
-                //opacity: 0.5;
                 cursor: col-resize;
+                &:hover {
+                    background: #ff3300;
+                    opacity: 0.5;
+                }
             }
         }
 
@@ -422,10 +423,10 @@
             }
         }
 
-        [data-ax5grid-resizer="horizontal"]{
+        [data-ax5grid-resizer="horizontal"] {
             @include resizer("horizontal");
         }
-        [data-ax5grid-resizer="vertical"]{
+        [data-ax5grid-resizer="vertical"] {
             @include resizer("vertical");
         }
     }
