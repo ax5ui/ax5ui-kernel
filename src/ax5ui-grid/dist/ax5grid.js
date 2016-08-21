@@ -875,11 +875,13 @@
 // todo : body.onClick / select -- ok & multipleSelect : TF -- ok
 // todo : column add / remove / update -- ok
 // todo : cell formatter -- ok
-// todo : column resize
-// todo : column reorder
+// todo : column resize -- ok
+
 // todo : sort & filter
 // todo : body menu
 // todo : cell inline edit
+
+// todo : column reorder
 
 // ax5.ui.grid.body
 (function () {
