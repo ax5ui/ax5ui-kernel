@@ -230,6 +230,30 @@
     }
 }
 
+@mixin resizer($type: "horizontal"){
+    display: none;
+    &.live{
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #ff3300;
+        opacity: 0.5;
+
+        @if ($type == "vertical") {
+            height: 2px;
+            width: 100%;
+            cursor: row-resize;
+        } @else {
+            height: 100%;
+            width: 2px;
+            cursor: col-resize;
+        }
+
+
+    }
+}
+
 // body
 [data-ax5grid] {
     [data-ax5grid-container="root"] {
@@ -263,8 +287,8 @@
                 top: 0;
                 width: 4px;
                 height: 100%;
-                background: #ff3300;
-                opacity: 0.5;
+                //background: #ff3300;
+                //opacity: 0.5;
                 cursor: col-resize;
             }
         }
@@ -396,6 +420,13 @@
                 border-top: 1px solid #ccc;
                 border-left: 1px solid #ccc;
             }
+        }
+
+        [data-ax5grid-resizer="horizontal"]{
+            @include resizer("horizontal");
+        }
+        [data-ax5grid-resizer="vertical"]{
+            @include resizer("vertical");
         }
     }
 }

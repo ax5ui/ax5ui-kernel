@@ -155,6 +155,10 @@
                     },
                     "form": {
                         "clipboard": this.$target.find('[data-ax5grid-form="clipboard"]')
+                    },
+                    "resizer": {
+                        "vertical": this.$target.find('[data-ax5grid-resizer="vertical"]'),
+                        "horizontal": this.$target.find('[data-ax5grid-resizer="horizontal"]')
                     }
                 };
 
@@ -1815,30 +1819,51 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
-    var columnResizer = {
-        "on": function on(resizer) {
+    var columnResizerEvent = {
+        "on": function on(_columnResizer, _colIndex) {
             var self = this;
-
-            console.log(resizer);
+            var $columnResizer = $(_columnResizer);
+            var columnResizerPositionLeft = $columnResizer.offset().left;
+            var gridTargetOffsetLeft = self.$["container"]["root"].offset().left;
+            self.xvar.columnResizerIndex = _colIndex;
+            var resizeRange = {
+                min: -self.colGroup[_colIndex]._width + 2,
+                max: self.colGroup[_colIndex + 1] ? self.colGroup[_colIndex + 1]._width : self.$["container"]["root"].width() - 2
+            };
+            //console.log(resizeRange);
 
             jQuery(document.body).bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
                 //var css = getScrollerPosition[type](e);
                 var mouseObj = GRID.util.getMousePosition(e);
                 self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
 
-                console.log(self.xvar.__da);
+                if (resizeRange.min > self.xvar.__da) {
+                    self.xvar.__da = resizeRange.min;
+                } else if (resizeRange.max < self.xvar.__da) {
+                    self.xvar.__da = resizeRange.max;
+                }
+
+                if (!self.xvar.columnResizerLived) {
+                    self.$["resizer"]["horizontal"].addClass("live");
+                }
+                self.xvar.columnResizerLived = true;
+                self.$["resizer"]["horizontal"].css({
+                    left: columnResizerPositionLeft + self.xvar.__da - gridTargetOffsetLeft
+                });
             }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
-                columnResizer.off.call(self);
+                columnResizerEvent.off.call(self);
                 U.stopEvent(e);
             }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
-                columnResizer.off.call(self);
+                columnResizerEvent.off.call(self);
                 U.stopEvent(e);
             });
 
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
-
+            this.$["resizer"]["horizontal"].removeClass("live");
+            this.xvar.columnResizerLived = false;
+            console.log(this.xvar.__da, this.xvar.columnResizerIndex);
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
@@ -1854,8 +1879,9 @@
             /// column click
         });
         this.$["container"]["header"].on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
+            var colIndex = this.getAttribute("data-ax5grid-column-resizer");
             self.xvar.mousePosition = GRID.util.getMousePosition(e);
-            columnResizer.on.call(self, this);
+            columnResizerEvent.on.call(self, this, Number(colIndex));
             U.stopEvent(e);
         }).on("dragstart", function (e) {
             U.stopEvent(e);

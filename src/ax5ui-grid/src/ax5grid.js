@@ -156,6 +156,10 @@
                         },
                         "form": {
                             "clipboard": this.$target.find('[data-ax5grid-form="clipboard"]')
+                        },
+                        "resizer": {
+                            "vertical": this.$target.find('[data-ax5grid-resizer="vertical"]'),
+                            "horizontal": this.$target.find('[data-ax5grid-resizer="horizontal"]')
                         }
                     };
 
