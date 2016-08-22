@@ -42,6 +42,7 @@
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
                 rowSelectorColumnWidth: 25,
+                sortable: false,
 
                 header: {
                     columnHeight: 25,
@@ -877,7 +878,7 @@
 // todo : cell formatter -- ok
 // todo : column resize -- ok
 
-// todo : sort & filter
+// todo : sortable & filter
 // todo : body menu
 // todo : cell inline edit
 
@@ -1998,6 +1999,13 @@
                         return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                     }(), col.label || "&nbsp;", '</span>');
 
+                    if (cfg.sortable && col.sortable != false) {
+                        SS.push('<div data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-value="" />');
+                    }
+                    if (cfg.enableFilter) {
+                        SS.push('<div data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
+                    }
+
                     SS.push('</td>');
                 }
                 SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'style="height: ' + cfg.header.columnHeight + 'px;min-height: 1px;" ', '></td>');
@@ -2010,15 +2018,16 @@
             (function () {
                 var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth;
                 var resizerLeft = 0;
-                var RR = [];
+                var AS = [];
                 for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
-                    if (!U.isNothing(_colGroup[cgi].colIndex)) {
+                    var col = _colGroup[cgi];
+                    if (!U.isNothing(col.colIndex)) {
                         //_colGroup[cgi]._width
-                        resizerLeft += _colGroup[cgi]._width;
-                        RR.push('<div data-ax5grid-column-resizer="' + _colGroup[cgi].colIndex + '" style="height:' + resizerHeight + 'px;left: ' + (resizerLeft - 4) + 'px;"  />');
+                        resizerLeft += col._width;
+                        AS.push('<div data-ax5grid-column-resizer="' + col.colIndex + '" style="height:' + resizerHeight + 'px;left: ' + (resizerLeft - 4) + 'px;"  />');
                     }
                 }
-                _elTarget.append(RR);
+                _elTarget.append(AS);
             }).call(this);
 
             return tableWidth;

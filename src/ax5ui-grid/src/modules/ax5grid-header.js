@@ -186,6 +186,14 @@
                         return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                     })(), (col.label || "&nbsp;"), '</span>');
 
+
+                    if(cfg.sortable && col.sortable != false){
+                        SS.push('<div data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-value="" />');
+                    }
+                    if(cfg.enableFilter){
+                        SS.push('<div data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
+                    }
+
                     SS.push('</td>');
                 }
                 SS.push('<td ',
@@ -202,19 +210,18 @@
             (function () {
                 var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth;
                 var resizerLeft = 0;
-                var RR = [];
+                var AS = [];
                 for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
-                    if (!U.isNothing(_colGroup[cgi].colIndex)) {
+                    var col = _colGroup[cgi];
+                    if (!U.isNothing(col.colIndex)) {
                         //_colGroup[cgi]._width
-                        resizerLeft += _colGroup[cgi]._width;
-                        RR.push('<div data-ax5grid-column-resizer="' + _colGroup[cgi].colIndex + '" style="height:' + resizerHeight + 'px;left: ' + (resizerLeft - 4) + 'px;"  />');
+                        resizerLeft += col._width;
+                        AS.push('<div data-ax5grid-column-resizer="' + col.colIndex + '" style="height:' + resizerHeight + 'px;left: ' + (resizerLeft - 4) + 'px;"  />');
                     }
                 }
-                _elTarget.append(RR);
+                _elTarget.append(AS);
             }).call(this);
 
-            /// append column-sorter
-            /// append column-filter
 
             return tableWidth;
         };

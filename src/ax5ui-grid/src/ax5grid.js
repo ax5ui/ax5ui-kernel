@@ -41,6 +41,7 @@
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
                 rowSelectorColumnWidth: 25,
+                sortable: false,
 
                 header: {
                     columnHeight: 25,

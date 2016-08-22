@@ -282,7 +282,7 @@
 
             [data-ax5grid-column-resizer] {
                 position: absolute;
-                left: 0px;
+                right: 0;
                 top: 0;
                 width: 4px;
                 height: 100%;
@@ -291,6 +291,41 @@
                     background: #ff3300;
                     opacity: 0.5;
                 }
+            }
+            [data-ax5grid-column-sort]{
+                $sort-size: 10px;
+
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 10px;
+                height: 10px;
+                cursor: pointer;
+
+
+            }
+            [data-ax5grid-column-filter]{
+                $filter-size: 10px;
+
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 10px;
+                height: 10px;
+                cursor: pointer;
+
+                &:before{
+                    content: '';
+                    width: 0px;
+                    height: 0px;
+                    display: inline-block;
+                    border-left: $filter-size/2 solid transparent;
+                    border-right: $filter-size/2 solid transparent;
+                    border-top: ($filter-size) solid #000;
+                    background: transparent;
+                    opacity: 1;
+                }
+
             }
         }
 
