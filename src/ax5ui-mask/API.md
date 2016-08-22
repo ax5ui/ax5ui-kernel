@@ -47,7 +47,7 @@ var mask = new ax5.ui.mask({
 ```
 ---
 
-## open
+## open([config])
 ```js
 var mask = new ax5.ui.mask();
 
@@ -64,7 +64,7 @@ mask.open({
 ```
 ---
 
-## close
+## close([delay])
 ```js
 var mask = new ax5.ui.mask();
 
