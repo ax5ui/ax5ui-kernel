@@ -11,6 +11,7 @@
     left: 0px;
     top: 0px;
     overflow: hidden;
+    box-sizing: content-box;
 }
 
 @mixin ax-modal-section() {
