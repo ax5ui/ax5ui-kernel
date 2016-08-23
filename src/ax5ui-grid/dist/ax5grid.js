@@ -32,8 +32,6 @@
                 // 틀고정 속성
                 frozenColumnIndex: 0,
                 frozenRowIndex: 0,
-                rightSum: false,
-                footSum: false,
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: false,
@@ -54,6 +52,8 @@
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
+                rightSum: false,
+                footSum: false,
                 page: {
                     height: 25,
                     display: true,
@@ -447,6 +447,36 @@
              * Preferences of grid UI
              * @method ax5grid.setConfig
              * @param {Object} config - 클래스 속성값
+             * @param {Element} config.target
+             * @param {Number} [config.frozenColumnIndex=0]
+             * @param {Number} [config.frozenRowIndex=0]
+             * @param {Boolean} [config.showLineNumber=false]
+             * @param {Boolean} [config.showRowSelector=false]
+             * @param {Boolean} [config.multipleSelect=false]
+             * @param {Number} [config.columnMinWidth=100]
+             * @param {Number} [config.lineNumberColumnWidth=30]
+             * @param {Number} [config.rowSelectorColumnWidth=25]
+             * @param {Boolean} [config.sortable=false]
+             * @param {Boolean} [config.multiSort=false]
+             * @param {Boolean} [config.remoteSort=false]
+             * @param {Object} [config.header]
+             * @param {Number} [config.header.columnHeight=25]
+             * @param {Number} [config.header.columnPadding=3]
+             * @param {Number} [config.header.columnBorderWidth=1]
+             * @param {Object} [config.body]
+             * @param {Number} [config.body.columnHeight=25]
+             * @param {Number} [config.body.columnPadding=3]
+             * @param {Number} [config.body.columnBorderWidth=1]
+             * @param {Object} [config.page]
+             * @param {Number} [config.page.height=25]
+             * @param {Boolean} [config.page.display=true]
+             * @param {Number} [config.page.navigationItemCount=5]
+             * @param {Object} [config.scroller]
+             * @param {Number} [config.scroller.size=15]
+             * @param {Number} [config.scroller.barMinSize=15]
+             * @param {Object} [config.columnKeys]
+             * @param {String} [config.columnKeys.selected="_SELECTED"]
+             * @param {Object} config.columns
              * @returns {ax5grid}
              * @example
              * ```
@@ -764,6 +794,7 @@
                     return this;
                 };
             }();
+
             /**
              * @method ax5grid.removeCloumn
              * @param {Number|String} [_cindex=last]
@@ -811,11 +842,11 @@
             };
 
             /**
-             * @method ax5grid.updateColumnWidth
+             * @method ax5grid.setColumnWidth
              * @param _width
              * @param _cindex
              */
-            this.updateColumnWidth = function (_width, _cindex) {
+            this.setColumnWidth = function (_width, _cindex) {
                 this.colGroup[this.xvar.columnResizerIndex]._width = _width;
 
                 // 컬럼너비 변경사항 적용.
@@ -824,6 +855,25 @@
                 GRID.scroller.resize.call(this);
                 alignGrid.call(this);
                 return this;
+            };
+
+            /**
+             * @method ax5grid.setColumnSort
+             * @param sortInfo
+             * @returns {ax5grid}
+             */
+            this.setColumnSort = function (sortInfo) {
+                console.log(this.colGroup);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.getColumnSort
+             * @returns {Object} sortInfo
+             */
+            this.getColumnSort = function () {
+
+                return {};
             };
 
             /**
@@ -1882,7 +1932,7 @@
         "off": function off() {
             this.$["resizer"]["horizontal"].removeClass("live");
             this.xvar.columnResizerLived = false;
-            this.updateColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+            this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
 
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
@@ -1895,8 +1945,15 @@
         var self = this;
 
         this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            console.log(this);
-            /// column click
+            var colIndex = this.getAttribute("data-ax5grid-column-colindex");
+            var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
+            var col = self.colGroup[colIndex];
+            if (col) {
+                if (self.config.sortable || col.sortable) {
+                    console.log(col.sort);
+                    // todo : sort 처리중
+                }
+            }
         });
         this.$["container"]["header"].on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
             var colIndex = this.getAttribute("data-ax5grid-column-resizer");
@@ -1977,7 +2034,7 @@
                     var col = _bodyRow.rows[tri].cols[ci];
                     var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
 
-                    SS.push('<td ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                    SS.push('<td ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-colindex="' + col.colIndex + '" ', 'data-ax5grid-column-rowindex="' + col.rowIndex + '" ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
                         var tdCSS_class = "";
                         if (_col.styleClass) {
                             if (U.isFunction(_col.styleClass)) {

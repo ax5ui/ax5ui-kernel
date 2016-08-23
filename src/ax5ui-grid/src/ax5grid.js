@@ -31,8 +31,6 @@
                 // 틀고정 속성
                 frozenColumnIndex: 0,
                 frozenRowIndex: 0,
-                rightSum: false,
-                footSum: false,
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: false,
@@ -53,6 +51,8 @@
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
+                rightSum: false,
+                footSum: false,
                 page: {
                     height: 25,
                     display: true,
@@ -194,7 +194,7 @@
 
                     return this;
                 },
-                onResetColumns = function(){
+                onResetColumns = function () {
                     initColumns.call(this, this.config.columns);
                     resetColGroupWidth.call(this);
                     alignGrid.call(this, true);
@@ -450,6 +450,36 @@
              * Preferences of grid UI
              * @method ax5grid.setConfig
              * @param {Object} config - 클래스 속성값
+             * @param {Element} config.target
+             * @param {Number} [config.frozenColumnIndex=0]
+             * @param {Number} [config.frozenRowIndex=0]
+             * @param {Boolean} [config.showLineNumber=false]
+             * @param {Boolean} [config.showRowSelector=false]
+             * @param {Boolean} [config.multipleSelect=false]
+             * @param {Number} [config.columnMinWidth=100]
+             * @param {Number} [config.lineNumberColumnWidth=30]
+             * @param {Number} [config.rowSelectorColumnWidth=25]
+             * @param {Boolean} [config.sortable=false]
+             * @param {Boolean} [config.multiSort=false]
+             * @param {Boolean} [config.remoteSort=false]
+             * @param {Object} [config.header]
+             * @param {Number} [config.header.columnHeight=25]
+             * @param {Number} [config.header.columnPadding=3]
+             * @param {Number} [config.header.columnBorderWidth=1]
+             * @param {Object} [config.body]
+             * @param {Number} [config.body.columnHeight=25]
+             * @param {Number} [config.body.columnPadding=3]
+             * @param {Number} [config.body.columnBorderWidth=1]
+             * @param {Object} [config.page]
+             * @param {Number} [config.page.height=25]
+             * @param {Boolean} [config.page.display=true]
+             * @param {Number} [config.page.navigationItemCount=5]
+             * @param {Object} [config.scroller]
+             * @param {Number} [config.scroller.size=15]
+             * @param {Number} [config.scroller.barMinSize=15]
+             * @param {Object} [config.columnKeys]
+             * @param {String} [config.columnKeys.selected="_SELECTED"]
+             * @param {Object} config.columns
              * @returns {ax5grid}
              * @example
              * ```
@@ -465,7 +495,7 @@
                     return this;
                 }
                 this.$target = jQuery(grid.target);
-                if(!this.gridConfig.height){
+                if (!this.gridConfig.height) {
                     this.gridConfig.height = this.$target.height();
                 }
 
@@ -766,12 +796,13 @@
                     return this;
                 }
             })();
+
             /**
              * @method ax5grid.removeCloumn
              * @param {Number|String} [_cindex=last]
              * @returns {ax5grid}
              */
-            this.removeColumn = (function() {
+            this.removeColumn = (function () {
                 var processor = {
                     "first": function (_cindex) {
                         this.config.columns.splice(_cindex, 1);
@@ -813,11 +844,11 @@
             };
 
             /**
-             * @method ax5grid.updateColumnWidth
+             * @method ax5grid.setColumnWidth
              * @param _width
              * @param _cindex
              */
-            this.updateColumnWidth = function(_width, _cindex){
+            this.setColumnWidth = function (_width, _cindex) {
                 this.colGroup[this.xvar.columnResizerIndex]._width = _width;
 
                 // 컬럼너비 변경사항 적용.
@@ -827,6 +858,25 @@
                 alignGrid.call(this);
                 return this;
             };
+
+            /**
+             * @method ax5grid.setColumnSort
+             * @param sortInfo
+             * @returns {ax5grid}
+             */
+            this.setColumnSort = function (sortInfo) {
+                console.log(this.colGroup);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.getColumnSort
+             * @returns {Object} sortInfo
+             */
+            this.getColumnSort = function () {
+
+                return {}
+            }
 
             /**
              * @method ax5grid.select

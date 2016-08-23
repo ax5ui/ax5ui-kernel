@@ -55,7 +55,7 @@
         "off": function () {
             this.$["resizer"]["horizontal"].removeClass("live");
             this.xvar.columnResizerLived = false;
-            this.updateColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+            this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
 
             jQuery(document.body)
                 .unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId)
@@ -74,8 +74,15 @@
         var self = this;
 
         this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            console.log(this);
-            /// column click
+            var colIndex = this.getAttribute("data-ax5grid-column-colindex");
+            var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
+            var col = self.colGroup[colIndex];
+            if(col) {
+                if (self.config.sortable || col.sortable) {
+                    console.log(col.sort);
+                    // todo : sort 처리중
+                }
+            }
         });
         this.$["container"]["header"]
             .on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
@@ -161,6 +168,8 @@
                         'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
                         'data-ax5grid-column-row="' + tri + '" ',
                         'data-ax5grid-column-col="' + ci + '" ',
+                        'data-ax5grid-column-colindex="' + col.colIndex + '" ',
+                        'data-ax5grid-column-rowindex="' + col.rowIndex + '" ',
                         'colspan="' + col.colspan + '" ',
                         'rowspan="' + col.rowspan + '" ',
                         'class="' + (function (_col) {

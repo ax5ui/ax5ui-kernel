@@ -25,7 +25,11 @@
     }
 
     @if ($container == "header") {
+        cursor: pointer;
         box-shadow: inset 1px 1px 0px 0px #fff;
+        &:hover{
+            background: #eee;
+        }
         &[data-ax5grid-column-row="null"] {
             box-shadow: none;
         }
