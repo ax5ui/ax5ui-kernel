@@ -2000,7 +2000,7 @@
                     }(), function () {
                         var _SS = "";
                         if (!U.isNothing(col.colIndex) && cfg.sortable || col.sortable) {
-                            _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-value="" />';
+                            _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="" />';
                         }
                         return _SS;
                     }(), col.label || "&nbsp;", '</span>');

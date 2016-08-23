@@ -330,6 +330,27 @@
                     @include sort-arrow(10px, 2.5, 2.2, #000, 0.3, "down");
                 }
 
+                &[data-ax5grid-column-sort-order="asc"] {
+                    &:before {
+                        top: 2px;
+                        left: 0;
+                        @include sort-arrow(12px, 2.5, 2.0, #000, 0.8, "up");
+                    }
+                    &:after {
+                        display: none;
+                    }
+                }
+                &[data-ax5grid-column-sort-order="desc"] {
+                    &:before {
+                        display: none;
+                    }
+                    &:after {
+                        bottom: 2px;
+                        left: 0;
+                        @include sort-arrow(12px, 2.5, 2.0, #000, 0.8, "down");
+                    }
+                }
+
             }
             [data-ax5grid-column-filter] {
                 $filter-size: 10px;
