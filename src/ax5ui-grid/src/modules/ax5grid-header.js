@@ -184,14 +184,18 @@
                     SS.push((function () {
                         var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth);
                         return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                    })(), (function () {
+                        var _SS = "";
+                        if (!U.isNothing(col.colIndex) && cfg.sortable || col.sortable) {
+                            _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-value="" />';
+                        }
+                        return _SS;
                     })(), (col.label || "&nbsp;"), '</span>');
 
-
-                    if(cfg.sortable && col.sortable != false){
-                        SS.push('<div data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-value="" />');
-                    }
-                    if(cfg.enableFilter){
-                        SS.push('<div data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
+                    if (!U.isNothing(col.colIndex)) {
+                        if (cfg.enableFilter) {
+                            SS.push('<span data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
+                        }
                     }
 
                     SS.push('</td>');

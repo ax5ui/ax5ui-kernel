@@ -84,6 +84,7 @@
                         gridView.setData(this.page.selectPage);
                     }
                 },
+                sortable: true,
                 columns: [
                     {
                         key: "a",
@@ -95,7 +96,7 @@
                         styleClass: function(){
                             return "ABC";
                         },
-                        sortable: true,
+
                         enableFilter: true
                     },
                     {key: "b", label: "필드B"},

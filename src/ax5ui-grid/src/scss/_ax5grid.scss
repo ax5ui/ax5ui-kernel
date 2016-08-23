@@ -292,19 +292,46 @@
                     opacity: 0.5;
                 }
             }
-            [data-ax5grid-column-sort]{
+            [data-ax5grid-column-sort] {
                 $sort-size: 10px;
 
-                position: absolute;
-                right: 0;
-                top: 0;
+                position: relative;
+                //right: 0;
+                //top: 2px;
                 width: 10px;
                 height: 10px;
-                cursor: pointer;
+                display: inline-block;
 
+                @mixin sort-arrow($arrow-size, $ratio-0, $ratio-1, $arrow-color, $opacity, $direction) {
+                    position: absolute;
+                    content: ' ';
+                    width: 0;
+                    height: 0;
+                    display: inline-block;
+                    border-left: $arrow-size/$ratio-0 solid transparent;
+                    border-right: $arrow-size/$ratio-0 solid transparent;
+                    @if ($direction == "up") {
+                        border-bottom: ($arrow-size)/$ratio-1 solid $arrow-color;
+                    } @else {
+                        border-top: ($arrow-size)/2.2 solid $arrow-color;
+                    }
+                    background: transparent;
+                    opacity: $opacity;
+                }
+
+                &:before {
+                    top: 0;
+                    left: 0;
+                    @include sort-arrow(10px, 2.5, 2.2, #000, 0.3, "up");
+                }
+                &:after {
+                    bottom: 0;
+                    left: 0;
+                    @include sort-arrow(10px, 2.5, 2.2, #000, 0.3, "down");
+                }
 
             }
-            [data-ax5grid-column-filter]{
+            [data-ax5grid-column-filter] {
                 $filter-size: 10px;
 
                 position: absolute;
@@ -314,10 +341,10 @@
                 height: 10px;
                 cursor: pointer;
 
-                &:before{
-                    content: '';
-                    width: 0px;
-                    height: 0px;
+                &:before {
+                    content: ' ';
+                    width: 0;
+                    height: 0;
                     display: inline-block;
                     border-left: $filter-size/2 solid transparent;
                     border-right: $filter-size/2 solid transparent;
