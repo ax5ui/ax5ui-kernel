@@ -119,8 +119,9 @@
             var _my_pageNo = (_pageNo || 0) + 1;
             var list = [];
             for (var a = 0, l = 5; a < l; a++) {
-                list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": 1234123});
+                list.push({a: a + " 컬럼", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": 1234123});
             }
+
             firstGrid.setData({
                 list: list,
                 page: {

@@ -260,11 +260,13 @@
 
     var scrollTo = function (css) {
         this.$.panel["header-scroll"].css(css);
+        return this;
     };
 
     var toggleSort = function (_key) {
         var sortOrder = "";
         var sortInfo = {};
+        var seq = 0;
         for (var i = 0, l = this.colGroup.length; i < l; i++) {
             //console.log(this.colGroup[i]);
             if (this.colGroup[i].key == _key) {
@@ -284,47 +286,37 @@
             }
 
             if (typeof this.colGroup[i].sort !== "undefined") {
-                sortInfo[this.colGroup[i].key] = this.colGroup[i].sort;
+                if (!sortInfo[this.colGroup[i].key]) {
+                    sortInfo[this.colGroup[i].key] = {
+                        seq: seq++,
+                        orderBy: this.colGroup[i].sort
+                    };
+                }
             }
         }
 
-        //console.log(sortInfo);
-        setSort.call(this, sortInfo);
+        this.sortInfo = sortInfo;
+        this.setColumnSort();
+        return this;
     };
 
-    var setSort = function (_sortInfo) {
-
-
-        repaint.call(this);
-        return this;
-
-        var self = this;
-        var cfg = this.config;
-        var livePanels = [];
-        if (cfg.frozenColumnIndex > 0) livePanels.push(this.$.panel["left-header"]);
-        livePanels.push(this.$.panel["header-scroll"]);
-        if (cfg.rightSum) {
-
-        }
-
-        livePanels.forEach(function (_panel) {
-            for (var k in _sortInfo) {
-                if (typeof _sortInfo[k] === "undefined") {
-                    _panel.find('td[data-ax5grid-column-key="' + k + '"] [data-ax5grid-column-sort]').removeAttr("data-ax5grid-column-sort-order");
-                }
-                else {
-                    _panel.find('td[data-ax5grid-column-key="' + k + '"] [data-ax5grid-column-sort]').attr("data-ax5grid-column-sort-order", _sortInfo[k]);
+    var applySortStatus = function(_sortInfo){
+        for (var i = 0, l = this.colGroup.length; i < l; i++) {
+            for(var _key in _sortInfo){
+                if (this.colGroup[i].key == _key) {
+                    this.colGroup[i].sort = _sortInfo[_key].orderBy;
                 }
             }
-        });
+        }
+        return this;
     };
 
     GRID.header = {
         init: init,
         repaint: repaint,
         scrollTo: scrollTo,
-        setSort: setSort,
-        toggleSort: toggleSort
+        toggleSort: toggleSort,
+        applySortStatus: applySortStatus
     };
 
 })();

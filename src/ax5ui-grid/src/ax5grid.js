@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.10"
+        version: "0.0.11"
     }, (function () {
         /**
          * @class ax5grid
@@ -75,7 +75,7 @@
             // 그리드 데이터셋
             this.columns = []; // config.columns에서 복제된 오브젝트
             this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
-            this.data = []; // 그리드의 데이터
+            this.list = []; // 그리드의 데이터
             this.page = {}; // 그리드의 페이지 정보
             this.focusedColumn = {};
             this.selectedColumn = {};
@@ -258,7 +258,7 @@
 
                     // 데이터의 길이가 body보다 높을때. 수직 스크롤러 활성화
                     var verticalScrollerWidth = (function () {
-                        return ((CT_HEIGHT - headerHeight - pageHeight) < this.data.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
+                        return ((CT_HEIGHT - headerHeight - pageHeight) < this.list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
                     }).call(this);
 
                     // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
@@ -442,6 +442,15 @@
                     scrollerDisplayProcess.call(this, this.$["scroller"]["corner"], verticalScrollerWidth, horizontalScrollerHeight, "corner");
 
                     panelDisplayProcess.call(this, this.$["container"]["page"], "", "", "page");
+                },
+                sortColumns = function (_sortInfo) {
+                    
+                    console.log(_sortInfo);
+                    
+                    GRID.header.repaint.call(this);
+                    GRID.data.sort.call(this, _sortInfo);
+                    GRID.body.repaint.call(this, true);
+                    GRID.scroller.resize.call(this);
                 };
 
             /// private end
@@ -653,7 +662,7 @@
                         }
                         var originalColumn = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
                         if (originalColumn) {
-                            copyTextArray[_di].push(this.data[_column.dindex][originalColumn.key]);
+                            copyTextArray[_di].push(this.list[_column.dindex][originalColumn.key]);
                         } else {
                             copyTextArray[_di].push("");
                         }
@@ -860,23 +869,34 @@
             };
 
             /**
-             * @method ax5grid.setColumnSort
-             * @param sortInfo
-             * @returns {ax5grid}
-             */
-            this.setColumnSort = function (sortInfo) {
-                console.log(this.colGroup);
-                return this;
-            };
-
-            /**
              * @method ax5grid.getColumnSort
              * @returns {Object} sortInfo
              */
             this.getColumnSort = function () {
 
                 return {}
-            }
+            };
+
+            /**
+             * @method ax5grid.setColumnSort
+             * @param {Object} sortInfo
+             * @param {Object} sortInfo.key
+             * @param {Number} sortInfo.key.seq - seq of sortOrder
+             * @param {String} sortInfo.key.orderBy - "desc"|"asc"
+             * @returns {ax5grid}
+             * ```js
+             * ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
+             * ```
+             */
+            this.setColumnSort = function (_sortInfo) {
+                if (typeof _sortInfo !== "undefined") {
+                    this.sortInfo = _sortInfo;
+                    GRID.header.applySortStatus.call(this, _sortInfo);
+                }
+
+                sortColumns.call(this, this.sortInfo);
+                return this;
+            };
 
             /**
              * @method ax5grid.select
