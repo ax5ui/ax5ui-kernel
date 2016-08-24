@@ -276,6 +276,7 @@
         }
 
         [data-ax5grid-container="header"] {
+            @include user-select(none);
             @include gridBoxModal();
             position: relative;
             overflow: hidden;

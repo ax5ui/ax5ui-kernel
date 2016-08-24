@@ -1902,7 +1902,6 @@
             //console.log(resizeRange);
 
             jQuery(document.body).bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
-                //var css = getScrollerPosition[type](e);
                 var mouseObj = GRID.util.getMousePosition(e);
                 self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
 
@@ -1945,13 +1944,14 @@
         var self = this;
 
         this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
+            var key = this.getAttribute("data-ax5grid-column-key");
             var colIndex = this.getAttribute("data-ax5grid-column-colindex");
             var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
             var col = self.colGroup[colIndex];
-            if (col) {
+            if (key && col) {
                 if (self.config.sortable || col.sortable) {
-                    console.log(col.sort);
-                    // todo : sort 처리중
+                    //console.log(col.sort, col.key);
+                    toggleSort.call(self, col.key);
                 }
             }
         });
@@ -1968,6 +1968,7 @@
 
     var repaint = function repaint() {
         var cfg = this.config;
+        var colGroup = this.colGroup;
         var dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
         var asideHeaderData = this.asideHeaderData = function (dataTable) {
             var colGroup = [];
@@ -2012,8 +2013,8 @@
         var headerData = this.headerData = dividedHeaderObj.rightData;
 
         // this.asideColGroup : asideHeaderData에서 처리 함.
-        this.leftHeaderColGroup = this.colGroup.slice(0, this.config.frozenColumnIndex);
-        this.headerColGroup = this.colGroup.slice(this.config.frozenColumnIndex);
+        this.leftHeaderColGroup = colGroup.slice(0, this.config.frozenColumnIndex);
+        this.headerColGroup = colGroup.slice(this.config.frozenColumnIndex);
 
         var repaintHeader = function repaintHeader(_elTarget, _colGroup, _bodyRow) {
             var tableWidth = 0;
@@ -2034,7 +2035,9 @@
                     var col = _bodyRow.rows[tri].cols[ci];
                     var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
 
-                    SS.push('<td ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-colindex="' + col.colIndex + '" ', 'data-ax5grid-column-rowindex="' + col.rowIndex + '" ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                    SS.push('<td ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', function () {
+                        return typeof col.key !== "undefined" ? 'data-ax5grid-column-key="' + col.key + '" ' : '';
+                    }(), 'data-ax5grid-column-colindex="' + col.colIndex + '" ', 'data-ax5grid-column-rowindex="' + col.rowIndex + '" ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
                         var tdCSS_class = "";
                         if (_col.styleClass) {
                             if (U.isFunction(_col.styleClass)) {
@@ -2056,14 +2059,15 @@
                         return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                     }(), function () {
                         var _SS = "";
-                        if (!U.isNothing(col.colIndex) && cfg.sortable || col.sortable) {
-                            _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="" />';
+                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && cfg.sortable || col.sortable) {
+                            _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[col.colIndex].sort || "") + '" />';
                         }
                         return _SS;
                     }(), col.label || "&nbsp;", '</span>');
 
                     if (!U.isNothing(col.colIndex)) {
                         if (cfg.enableFilter) {
+
                             SS.push('<span data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
                         }
                     }
@@ -2111,10 +2115,63 @@
         this.$.panel["header-scroll"].css(css);
     };
 
+    var toggleSort = function toggleSort(_key) {
+        var sortOrder = "";
+        var sortInfo = {};
+        for (var i = 0, l = this.colGroup.length; i < l; i++) {
+            //console.log(this.colGroup[i]);
+            if (this.colGroup[i].key == _key) {
+                if (sortOrder == "") {
+                    if (typeof this.colGroup[i].sort === "undefined") {
+                        sortOrder = "desc";
+                    } else if (this.colGroup[i].sort === "desc") {
+                        sortOrder = "asc";
+                    } else {
+                        sortOrder = undefined;
+                    }
+                }
+
+                this.colGroup[i].sort = sortOrder;
+            }
+
+            if (typeof this.colGroup[i].sort !== "undefined") {
+                sortInfo[this.colGroup[i].key] = this.colGroup[i].sort;
+            }
+        }
+
+        //console.log(sortInfo);
+        setSort.call(this, sortInfo);
+    };
+
+    var setSort = function setSort(_sortInfo) {
+
+        repaint.call(this);
+        return this;
+
+        var self = this;
+        var cfg = this.config;
+        var livePanels = [];
+        if (cfg.frozenColumnIndex > 0) livePanels.push(this.$.panel["left-header"]);
+        livePanels.push(this.$.panel["header-scroll"]);
+        if (cfg.rightSum) {}
+
+        livePanels.forEach(function (_panel) {
+            for (var k in _sortInfo) {
+                if (typeof _sortInfo[k] === "undefined") {
+                    _panel.find('td[data-ax5grid-column-key="' + k + '"] [data-ax5grid-column-sort]').removeAttr("data-ax5grid-column-sort-order");
+                } else {
+                    _panel.find('td[data-ax5grid-column-key="' + k + '"] [data-ax5grid-column-sort]').attr("data-ax5grid-column-sort-order", _sortInfo[k]);
+                }
+            }
+        });
+    };
+
     GRID.header = {
         init: init,
         repaint: repaint,
-        scrollTo: scrollTo
+        scrollTo: scrollTo,
+        setSort: setSort,
+        toggleSort: toggleSort
     };
 })();
 // ax5.ui.grid.page
