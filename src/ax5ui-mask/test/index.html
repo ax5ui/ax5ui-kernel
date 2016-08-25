@@ -21,15 +21,15 @@
         window.mask = new ax5.ui.mask();
         $("#mask-open").click(function(){
             mask.open({
-                position: "fixed",
-                target: $("#user-content").get(0),
+                //position: "fixed",
+                //target: $("#user-content").get(0),
                 onClick: function(){
                     console.log(this);
                 }
             });
         });
         $("#mask-close").click(function(){
-            mask.close(1000);
+            mask.close();
         });
     });
 </script>
