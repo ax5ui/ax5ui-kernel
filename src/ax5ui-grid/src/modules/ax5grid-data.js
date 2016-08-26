@@ -129,6 +129,7 @@
     var sort = function (_sortInfo) {
         var self = this;
         var sortInfoArray = [];
+
         for (var k in _sortInfo) {
             sortInfoArray[_sortInfo[k].seq] = {key: k, order: _sortInfo[k].orderBy};
         }
@@ -136,12 +137,21 @@
             return typeof this !== "undefined";
         });
 
-        var l = sortInfoArray.length;
+        var i = 0, l = sortInfoArray.length, _a_val, _b_val;
+
         this.list.sort(function (_a, _b) {
-            for (var i = 0; i < l; i++) {
-                if (_a[sortInfoArray[i].key] < _b[sortInfoArray[i].key]) {
+            i = 0;
+            for (; i < l; i++) {
+                _a_val = _a[sortInfoArray[i].key];
+                _b_val = _b[sortInfoArray[i].key];
+                if (typeof _a_val !== typeof _b_val) {
+                    _a_val = '' + _a_val;
+                    _b_val = '' + _b_val;
+                }
+
+                if (_a_val < _b_val) {
                     return (sortInfoArray[i].order === "asc") ? -1 : 1;
-                } else if (_a[sortInfoArray[i].key] > _b[sortInfoArray[i].key]) {
+                } else if (_a_val > _b_val) {
                     return (sortInfoArray[i].order === "asc") ? 1 : -1;
                 }
             }

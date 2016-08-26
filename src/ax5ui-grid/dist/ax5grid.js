@@ -1,5 +1,7 @@
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 // ax5.ui.grid
 (function () {
 
@@ -78,6 +80,7 @@
             this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
             this.list = []; // 그리드의 데이터
             this.page = {}; // 그리드의 페이지 정보
+            this.sortInfo = {};
             this.focusedColumn = {};
             this.selectedColumn = {};
             this.bodyRowTable = {};
@@ -441,9 +444,6 @@
                 panelDisplayProcess.call(this, this.$["container"]["page"], "", "", "page");
             },
                 sortColumns = function sortColumns(_sortInfo) {
-
-                console.log(_sortInfo);
-
                 GRID.header.repaint.call(this);
                 GRID.data.sort.call(this, _sortInfo);
                 GRID.body.repaint.call(this, true);
@@ -948,7 +948,8 @@
 // todo : cell formatter -- ok
 // todo : column resize -- ok
 
-// todo : sortable & filter
+// todo : sortable -- ok
+// todo : filter
 // todo : body menu
 // todo : cell inline edit
 
@@ -1876,6 +1877,7 @@
     var sort = function sort(_sortInfo) {
         var self = this;
         var sortInfoArray = [];
+
         for (var k in _sortInfo) {
             sortInfoArray[_sortInfo[k].seq] = { key: k, order: _sortInfo[k].orderBy };
         }
@@ -1883,12 +1885,24 @@
             return typeof this !== "undefined";
         });
 
-        var l = sortInfoArray.length;
+        var i = 0,
+            l = sortInfoArray.length,
+            _a_val,
+            _b_val;
+
         this.list.sort(function (_a, _b) {
-            for (var i = 0; i < l; i++) {
-                if (_a[sortInfoArray[i].key] < _b[sortInfoArray[i].key]) {
+            i = 0;
+            for (; i < l; i++) {
+                _a_val = _a[sortInfoArray[i].key];
+                _b_val = _b[sortInfoArray[i].key];
+                if ((typeof _a_val === "undefined" ? "undefined" : _typeof(_a_val)) !== (typeof _b_val === "undefined" ? "undefined" : _typeof(_b_val))) {
+                    _a_val = '' + _a_val;
+                    _b_val = '' + _b_val;
+                }
+
+                if (_a_val < _b_val) {
                     return sortInfoArray[i].order === "asc" ? -1 : 1;
-                } else if (_a[sortInfoArray[i].key] > _b[sortInfoArray[i].key]) {
+                } else if (_a_val > _b_val) {
                     return sortInfoArray[i].order === "asc" ? 1 : -1;
                 }
             }

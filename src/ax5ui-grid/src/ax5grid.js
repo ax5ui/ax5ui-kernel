@@ -77,6 +77,7 @@
             this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
             this.list = []; // 그리드의 데이터
             this.page = {}; // 그리드의 페이지 정보
+            this.sortInfo = {};
             this.focusedColumn = {};
             this.selectedColumn = {};
             this.bodyRowTable = {};
@@ -444,9 +445,6 @@
                     panelDisplayProcess.call(this, this.$["container"]["page"], "", "", "page");
                 },
                 sortColumns = function (_sortInfo) {
-                    
-                    console.log(_sortInfo);
-                    
                     GRID.header.repaint.call(this);
                     GRID.data.sort.call(this, _sortInfo);
                     GRID.body.repaint.call(this, true);
@@ -951,7 +949,8 @@
 // todo : cell formatter -- ok
 // todo : column resize -- ok
 
-// todo : sortable & filter
+// todo : sortable -- ok
+// todo : filter
 // todo : body menu
 // todo : cell inline edit
 
