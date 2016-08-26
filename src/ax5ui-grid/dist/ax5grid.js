@@ -231,8 +231,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             },
                 initFootSum = function initFootSum(footSum) {
-                this.footSum = footSum;
-                this.footSumTagle = GRID.util.makeFootSumTable.call(this, this.footSum);
+                if (U.isArray(footSum)) {
+                    this.footSum = footSum;
+                    this.footSumTagle = GRID.util.makeFootSumTable.call(this, this.footSum);
+                } else {
+                    this.footSum = [];
+                    this.footSumTagle = [];
+                }
             },
                 alignGrid = function alignGrid(isFirst) {
                 // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
@@ -270,21 +275,26 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var pageHeight = cfg.page.display ? cfg.page.height : 0;
 
                 // 데이터의 길이가 body보다 높을때. 수직 스크롤러 활성화
-                var verticalScrollerWidth = function () {
-                    return CT_HEIGHT - headerHeight - pageHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
-                }.call(this);
+                var verticalScrollerWidth, horizontalScrollerHeight;
 
-                // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
-                var horizontalScrollerHeight = function () {
-                    var totalColGroupWidth = 0;
-                    // aside 빼고 너비
-                    // 수직 스크롤이 있으면 또 빼고 비교
-                    var bodyWidth = CT_WIDTH - asidePanelWidth - verticalScrollerWidth;
-                    for (var i = 0, l = this.colGroup.length; i < l; i++) {
-                        totalColGroupWidth += this.colGroup[i]._width;
+                (function () {
+                    verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
+                    // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
+                    horizontalScrollerHeight = function () {
+                        var totalColGroupWidth = 0;
+                        // aside 빼고 너비
+                        // 수직 스크롤이 있으면 또 빼고 비교
+                        var bodyWidth = CT_WIDTH - asidePanelWidth - verticalScrollerWidth;
+                        for (var i = 0, l = this.colGroup.length; i < l; i++) {
+                            totalColGroupWidth += this.colGroup[i]._width;
+                        }
+                        return totalColGroupWidth > bodyWidth ? this.config.scroller.size : 0;
+                    }.call(this);
+
+                    if (horizontalScrollerHeight > 0) {
+                        verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - horizontalScrollerHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
                     }
-                    return totalColGroupWidth > bodyWidth ? this.config.scroller.size : 0;
-                }.call(this);
+                }).call(this);
 
                 // 수평 너비 결정
                 CT_INNER_WIDTH = CT_WIDTH - verticalScrollerWidth;
