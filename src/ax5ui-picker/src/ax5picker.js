@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.3"
+        version: "0.7.4"
     }, (function () {
         /**
          * @class ax5picker
@@ -588,9 +588,11 @@
                                 {value: "9", shiftValue: "("},
                                 {value: "0", shiftValue: ")"},
                                 {value: "-", shiftValue: "_"},
-                                {value: "=", shiftValue: "+"}
+                                {value: "=", shiftValue: "+"},
+                                {label: "C", fn: "clear"}
                             ],
                             [
+
                                 {value: "q", shiftValue: "Q"},
                                 {value: "w", shiftValue: "W"},
                                 {value: "e", shiftValue: "E"},
@@ -606,6 +608,7 @@
                                 {value: "\\", shiftValue: "|"}
                             ],
                             [
+                                {label: "delete", fn: "back"},
                                 {value: "a", shiftValue: "A"},
                                 {value: "s", shiftValue: "S"},
                                 {value: "d", shiftValue: "D"},
@@ -617,6 +620,8 @@
                                 {value: "l", shiftValue: "L"},
                                 {value: ";", shiftValue: ":"},
                                 {value: "'", shiftValue: "\""}
+
+
                             ],
                             [
                                 {label: "shift", fn: "shift"},
@@ -629,7 +634,8 @@
                                 {value: "m", shiftValue: "M"},
                                 {value: ",", shiftValue: "<"},
                                 {value: ".", shiftValue: ">"},
-                                {value: "/", shiftValue: "?"}
+                                {value: "/", shiftValue: "?"},
+                                {label: "close", fn: "close"}
                             ]
                         ];
                         var specialArray = [
@@ -680,18 +686,23 @@
                                 var _input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : jQuery(item.$target.find('input[type]').get(idx));
                                 var val = _input.val();
 
-                                if (act == "back") {
-                                    _input.val(val.substring(0, val.length - 1));
-                                }
-                                else if (act == "clear") {
-                                    _input.val('');
-                                }
-                                else if (act == "shift") {
-                                    toggleShift();
-                                    return false;
-                                }
-                                else {
-                                    _input.val(val + act);
+                                switch (act){
+                                    case "back":
+                                        _input.val(val.substring(0, val.length - 1));
+                                        break;
+                                    case "clear":
+                                        _input.val('');
+                                        break;
+                                    case "shift":
+                                        toggleShift();
+                                        return false;
+                                        break;
+                                    case "close":
+                                        self.close();
+                                        return false;
+                                        break;
+                                    default:
+                                        _input.val(val + act);
                                 }
 
                                 onStateChanged.call(this, item, {
