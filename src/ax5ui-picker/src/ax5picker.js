@@ -537,7 +537,7 @@
 
                             po.push('<div style="clear:both;"></div>');
 
-                            $(this).html(po.join('')).find('[data-secure-num-value]').click(function () {
+                            $(this).html(po.join('')).on("click", '[data-secure-num-value]', function () {
                                 var act = this.getAttribute("data-secure-num-value");
                                 var _input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : jQuery(item.$target.find('input[type]').get(idx));
                                 var val = _input.val();
@@ -574,96 +574,100 @@
                         html.push('<div style="clear:both;"></div>');
                         item.pickerContent.html(html.join(''));
 
-                        // secure-num bind
-                        item.pickerContent.find('[data-keyboard-target]').each(function () {
-                            var idx = this.getAttribute("data-keyboard-target"),
-                                po = [];
+                        var keyArray = [
+                            [
+                                {value: "1", shiftValue: "!"},
+                                {value: "2", shiftValue: "@"},
+                                {value: "3", shiftValue: "#"},
+                                {value: "4", shiftValue: "$"},
+                                {value: "5", shiftValue: "%"},
+                                {value: "6", shiftValue: "^"},
+                                {value: "7", shiftValue: "&"},
+                                {value: "8", shiftValue: "*"},
+                                {value: "9", shiftValue: "("},
+                                {value: "0", shiftValue: ")"},
+                                {value: "-", shiftValue: "_"},
+                                {value: "=", shiftValue: "+"}
+                            ],
+                            [
+                                {value: "q", shiftValue: "Q"},
+                                {value: "w", shiftValue: "W"},
+                                {value: "e", shiftValue: "E"},
+                                {value: "r", shiftValue: "R"},
+                                {value: "t", shiftValue: "T"},
+                                {value: "y", shiftValue: "Y"},
+                                {value: "u", shiftValue: "U"},
+                                {value: "i", shiftValue: "I"},
+                                {value: "o", shiftValue: "O"},
+                                {value: "p", shiftValue: "P"},
+                                {value: "[", shiftValue: "{"},
+                                {value: "]", shiftValue: "}"},
+                                {value: "\\", shiftValue: "|"}
+                            ],
+                            [
+                                {value: "a", shiftValue: "A"},
+                                {value: "s", shiftValue: "S"},
+                                {value: "d", shiftValue: "D"},
+                                {value: "f", shiftValue: "F"},
+                                {value: "g", shiftValue: "G"},
+                                {value: "h", shiftValue: "H"},
+                                {value: "j", shiftValue: "J"},
+                                {value: "k", shiftValue: "K"},
+                                {value: "l", shiftValue: "L"},
+                                {value: ";", shiftValue: ":"},
+                                {value: "'", shiftValue: "\""}
+                            ],
+                            [
+                                {label: "shift", fn: "shift"},
+                                {value:"z", shiftValue:"Z"},
+                                {value:"x", shiftValue:"X"},
+                                {value:"c", shiftValue:"C"},
+                                {value:"v", shiftValue:"V"},
+                                {value:"b", shiftValue:"B"},
+                                {value:"n", shiftValue:"N"},
+                                {value:"m", shiftValue:"M"},
+                                {value:",", shiftValue:"<"},
+                                {value:".", shiftValue:">"},
+                                {value:"/", shiftValue:"?"}
+                            ]
+                        ];
+                        var specialArray = [
+                            {label: "&#x02190", fn: "back"}, {label: "C", fn: "clear"}
+                        ];
 
-                            var keyArray = [
-                                [
-                                    {value: "1", shiftValue: "!"},
-                                    {value: "2", shiftValue: "@"},
-                                    {value: "3", shiftValue: "#"},
-                                    {value: "4", shiftValue: "$"},
-                                    {value: "5", shiftValue: "%"},
-                                    {value: "6", shiftValue: "^"},
-                                    {value: "7", shiftValue: "&"},
-                                    {value: "8", shiftValue: "*"},
-                                    {value: "9", shiftValue: "("},
-                                    {value: "0", shiftValue: ")"},
-                                    {value: "-", shiftValue: "_"},
-                                    {value: "=", shiftValue: "+"}
-                                ],
-                                [
-                                    {value: "q", shiftValue: "Q"},
-                                    {value: "w", shiftValue: "W"},
-                                    {value: "e", shiftValue: "E"},
-                                    {value: "r", shiftValue: "R"},
-                                    {value: "t", shiftValue: "T"},
-                                    {value: "y", shiftValue: "Y"},
-                                    {value: "u", shiftValue: "U"},
-                                    {value: "i", shiftValue: "I"},
-                                    {value: "o", shiftValue: "O"},
-                                    {value: "p", shiftValue: "P"},
-                                    {value: "[", shiftValue: "{"},
-                                    {value: "]", shiftValue: "}"},
-                                    {value: "\\", shiftValue: "|"}
-                                ],
-                                [
-                                    {value: "a", shiftValue: "A"},
-                                    {value: "s", shiftValue: "S"},
-                                    {value: "d", shiftValue: "D"},
-                                    {value: "f", shiftValue: "F"},
-                                    {value: "g", shiftValue: "G"},
-                                    {value: "h", shiftValue: "H"},
-                                    {value: "j", shiftValue: "J"},
-                                    {value: "k", shiftValue: "K"},
-                                    {value: "l", shiftValue: "L"},
-                                    {value: ";", shiftValue: ":"},
-                                    {value: "'", shiftValue: "\""}
-                                ],
-                                [
-                                    {value:"z", shiftValue:"Z"},
-                                    {value:"x", shiftValue:"X"},
-                                    {value:"c", shiftValue:"C"},
-                                    {value:"v", shiftValue:"V"},
-                                    {value:"b", shiftValue:"B"},
-                                    {value:"n", shiftValue:"N"},
-                                    {value:"m", shiftValue:"M"},
-                                    {value:",", shiftValue:"<"},
-                                    {value:".", shiftValue:">"},
-                                    {value:"/", shiftValue:"?"}
-                                ]
-                            ];
-
-                            var specialArray = [
-                                {label: "&#x02190", fn: "back"}, {label: "C", fn: "clear"}
-                            ];
-
+                        var getKeyBoard = function(isShiftKey){
+                            var po = [];
                             keyArray.forEach(function (row) {
                                 row.forEach(function(n){
+
+                                    var keyValue, keyLabel;
+                                    if(n.fn){
+                                        keyValue = n.fn;
+                                        keyLabel = n.label;
+                                    }else{
+                                        keyLabel = keyValue = ((isShiftKey) ? n.shiftValue: n.value);
+                                    }
+
                                     po.push('<div style="float:left;' + item.content.config.btnWrapStyle + '">');
-                                    po.push('<button class="btn btn-default btn-' + item.content.config.btnTheme + '" '
-                                        + 'style="' + item.content.config.btnStyle + '" data-keyboard-value="' + n.value + '">' + n.value + '</button>');
+                                        po.push('<button class="btn btn-default btn-' + item.content.config.btnTheme + '" '
+                                            + 'style="' + item.content.config.btnStyle + '" data-keyboard-value="' + keyValue + '">' + keyLabel + '</button>');
                                     po.push('</div>');
                                 });
                                 po.push('<div style="clear:both;"></div>');
                             });
+                            return po.join('');
+                        };
 
-                            /*
-
-
-                             specialArray.forEach(function (n) {
-                             po.push('<div style="float:left;' + item.content.config.btnWrapStyle + '">');
-                             po.push('<button class="btn btn-default btn-' + item.content.config.specialBtnTheme + '" '
-                             + 'style="' + item.content.config.btnStyle + '" data-keyboard-value="' + n.fn + '">' + n.label + '</button>');
-                             po.push('</div>');
-                             });
-                             */
-
-                            po.push('<div style="clear:both;"></div>');
-
-                            $(this).html(po.join('')).find('[data-keyboard-value]').click(function () {
+                        // secure-num bind
+                        item.pickerContent.find('[data-keyboard-target]').each(function () {
+                            var idx = this.getAttribute("data-keyboard-target");
+                            var $this = $(this);
+                            var isShiftKey = false;
+                            var toggleShift = function(){
+                                isShiftKey = !isShiftKey;
+                                $this.html(getKeyBoard(isShiftKey));
+                            };
+                            $this.html(getKeyBoard(isShiftKey)).on("click", '[data-keyboard-value]', function () {
                                 var act = this.getAttribute("data-keyboard-value");
                                 var _input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : jQuery(item.$target.find('input[type]').get(idx));
                                 var val = _input.val();
@@ -673,6 +677,10 @@
                                 }
                                 else if (act == "clear") {
                                     _input.val('');
+                                }
+                                else if (act == "shift") {
+                                    toggleShift();
+                                    return false;
                                 }
                                 else {
                                     _input.val(val + act);
