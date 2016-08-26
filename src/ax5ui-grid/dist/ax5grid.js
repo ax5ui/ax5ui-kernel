@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.0.11"
+        version: "0.0.12"
     }, function () {
         /**
          * @class ax5grid
