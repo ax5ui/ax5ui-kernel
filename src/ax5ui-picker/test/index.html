@@ -17,7 +17,7 @@
     <script src="bower_components/ax5ui-formatter/dist/ax5formatter.js"></script>
     <script src="../dist/ax5picker.js"></script>
 </head>
-<body style="padding: 100px;">
+<body style="padding: 0px;">
 
 <!--http://bootstrap-datepicker.readthedocs.org/en/latest/-->
 <!--http://www.sitepoint.com/pure-css3-speech-bubbles/-->
@@ -48,7 +48,13 @@
 
 <h1>Keyboard</h1>
 <div class="form-group">
-    <input type="text" data-ax-path="keyboard" class="form-control" placeholder="" readonly="readonly"/>
+    <input type="text" class="form-control" data-ax5picker="keyboard" placeholder="">
+</div>
+<div class="form-group">
+    <div class="col-sm-3">
+        <input type="text" data-ax-path="keyboard" class="form-control" placeholder="" readonly="readonly"/>
+
+    </div>
 </div>
 
 
@@ -220,6 +226,31 @@
             else if (this.getAttribute("data-ax5picker") == "secure-num") {
 
             }
+            else if (this.getAttribute("data-ax5picker") == "keyboard") {
+                picker.bind({
+                    target: this,
+                    direction: "top",
+                    content: {
+                        width: 550,
+                        margin: 10,
+                        type: 'keyboard',
+                        config: {
+                            btnWrapStyle: "padding:2px;",
+                            btnStyle: "width: 35px;",
+                            btnTheme: "primary",
+                            specialBtnWrapStyle: "padding:2px;",
+                            specialBtnStyle: "",
+                            specialBtnTheme: " "
+                        }
+                    },
+                    onStateChanged: function () {
+                        //console.log(this);
+                        //if (this.value && this.value.length > 3) {
+                        //    picker.close();
+                        //}
+                    }
+                });
+            }
 
         });
 
@@ -263,13 +294,10 @@
                     specialBtnWrapStyle: "padding:2px;",
                     specialBtnStyle: "",
                     specialBtnTheme: " "
-                },
-                formatter: {
-                    pattern: 'number'
                 }
             },
             onStateChanged: function () {
-                console.log(this);
+                //console.log(this);
                 //if (this.value && this.value.length > 3) {
                 //    picker.close();
                 //}

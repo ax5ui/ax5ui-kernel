@@ -206,29 +206,45 @@
                 if (append) {
                     this.activePicker.addClass("direction-" + item.direction);
                 }
-                this.activePicker.css(function () {
+
+                var pickerDim = {
+                    width: this.activePicker.outerWidth(),
+                    height: this.activePicker.outerHeight()
+                };
+                var positionCSS = function () {
                     if (item.direction == "top") {
                         return {
-                            left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
+                            left: pos.left + dim.width / 2 - pickerDim.width / 2,
                             top: pos.top + dim.height + 12
                         };
                     } else if (item.direction == "bottom") {
                         return {
-                            left: pos.left + dim.width / 2 - this.activePicker.outerWidth() / 2,
-                            top: pos.top - this.activePicker.outerHeight() - 12
+                            left: pos.left + dim.width / 2 - pickerDim.width / 2,
+                            top: pos.top - pickerDim.height - 12
                         };
                     } else if (item.direction == "left") {
                         return {
                             left: pos.left + dim.width + 12,
-                            top: pos.top - dim.height / 2
+                            top: pos.top - pickerDim.height / 2 + dim.height / 2
                         };
                     } else if (item.direction == "right") {
                         return {
-                            left: pos.left - this.activePicker.outerWidth() - 12,
-                            top: pos.top - dim.height / 2
+                            left: pos.left - pickerDim.width - 12,
+                            top: pos.top - pickerDim.height / 2 + dim.height / 2
                         };
                     }
-                }.call(this));
+                }();
+
+                if (positionCSS.left < 0) {
+                    if (item.direction == "top") {
+                        var arrowMoveLeft = positionCSS.left;
+                        positionCSS.left = 12;
+                        var newArrowLeft = this.activePickerArrow.position() + arrowMoveLeft;
+                        this.activePickerArrow.css({ left: 20 });
+                    }
+                }
+                // todo : arrow move
+                this.activePicker.css(positionCSS);
             },
                 onBodyClick = function onBodyClick(e, target) {
                 if (!this.activePicker) return this;
@@ -554,11 +570,11 @@
                                 isShiftKey = !isShiftKey;
                                 $this.html(getKeyBoard(isShiftKey));
                             };
-                            $this.html(getKeyBoard(isShiftKey)).on("click", '[data-keyboard-value]', function () {
+                            $this.html(getKeyBoard(isShiftKey)).on("mousedown", '[data-keyboard-value]', function () {
                                 var act = this.getAttribute("data-keyboard-value");
                                 var _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(idx));
                                 var val = _input.val();
-
+                                console.log(val);
                                 switch (act) {
                                     case "back":
                                         _input.val(val.substring(0, val.length - 1));
@@ -575,6 +591,9 @@
                                         return false;
                                         break;
                                     default:
+
+                                        console.log(val + act);
+
                                         _input.val(val + act);
                                 }
 
@@ -611,6 +630,7 @@
                     }
 
                     this.activePicker = jQuery(ax5.mustache.render(getTmpl.call(this, item, queIdx), item));
+                    this.activePickerArrow = this.activePicker.find(".ax-picker-arrow");
                     this.activePickerQueueIndex = queIdx;
                     item.pickerContent = this.activePicker.find('[data-picker-els="content"]');
 
@@ -732,3 +752,5 @@ jQuery.fn.ax5picker = function () {
         return this;
     };
 }();
+
+// todo : picker realign
