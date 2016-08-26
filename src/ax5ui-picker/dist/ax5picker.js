@@ -126,6 +126,20 @@
 
                         config = null;
                         inputLength = null;
+                    },
+                    'keyboard': function keyboard(queIdx) {
+                        var item = this.queue[queIdx],
+                            config = {},
+                            inputLength = item.$target.find('input[type="text"]').length;
+
+                        config = {
+                            inputLength: inputLength || 1
+                        };
+
+                        this.queue[queIdx] = jQuery.extend(true, config, item);
+
+                        config = null;
+                        inputLength = null;
                     }
                 };
 
@@ -166,7 +180,7 @@
                 };
             }(),
                 getTmpl = function getTmpl(queIdx) {
-                return "\n                <div class=\"ax5-ui-picker {{theme}}\" id=\"{{id}}\" data-picker-els=\"root\">\n                    {{#title}}\n                        <div class=\"ax-picker-heading\">{{title}}</div>\n                    {{/title}}\n                    <div class=\"ax-picker-body\">\n                        <div class=\"ax-picker-content\" data-picker-els=\"content\" style=\"width:{{contentWidth}}px;\"></div>\n                        {{#btns}}\n                            <div class=\"ax-picker-buttons\">\n                            {{#btns}}\n                                {{#@each}}\n                                <button data-picker-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                                {{/@each}}\n                            {{/btns}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    <div class=\"ax-picker-arrow\"></div>\n                </div>\n                ";
+                return "\n                    <div class=\"ax5-ui-picker {{theme}}\" id=\"{{id}}\" data-picker-els=\"root\">\n                        {{#title}}\n                            <div class=\"ax-picker-heading\">{{title}}</div>\n                        {{/title}}\n                        <div class=\"ax-picker-body\">\n                            <div class=\"ax-picker-content\" data-picker-els=\"content\" style=\"width:{{contentWidth}}px;\"></div>\n                            {{#btns}}\n                                <div class=\"ax-picker-buttons\">\n                                {{#btns}}\n                                    {{#@each}}\n                                    <button data-picker-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                                    {{/@each}}\n                                {{/btns}}\n                                </div>\n                            {{/btns}}\n                        </div>\n                        <div class=\"ax-picker-arrow\"></div>\n                    </div>\n                    ";
             },
                 alignPicker = function alignPicker(append) {
                 if (!this.activePicker) return this;
@@ -488,6 +502,67 @@
                                 });
                             });
                         });
+                    },
+                    'keyboard': function keyboard(queIdx) {
+                        var item = this.queue[queIdx];
+                        var html = [];
+                        for (var i = 0; i < item.inputLength; i++) {
+                            html.push('<div ' + 'style="width:' + U.cssNumber(item.content.width) + ';float:left;" ' + 'class="ax-picker-content-box" ' + 'data-keyboard-target="' + i + '"></div>');
+                            if (i < item.inputLength - 1) html.push('<div style="width:' + item.content.margin + 'px;float:left;height: 5px;"></div>');
+                        }
+                        html.push('<div style="clear:both;"></div>');
+                        item.pickerContent.html(html.join(''));
+
+                        // secure-num bind
+                        item.pickerContent.find('[data-keyboard-target]').each(function () {
+                            var idx = this.getAttribute("data-keyboard-target"),
+                                po = [];
+
+                            var keyArray = [[{ value: "1", shiftValue: "!" }, { value: "2", shiftValue: "@" }, { value: "3", shiftValue: "#" }, { value: "4", shiftValue: "$" }, { value: "5", shiftValue: "%" }, { value: "6", shiftValue: "^" }, { value: "7", shiftValue: "&" }, { value: "8", shiftValue: "*" }, { value: "9", shiftValue: "(" }, { value: "0", shiftValue: ")" }, { value: "-", shiftValue: "_" }, { value: "=", shiftValue: "+" }], [{ value: "q", shiftValue: "Q" }, { value: "w", shiftValue: "W" }, { value: "e", shiftValue: "E" }, { value: "r", shiftValue: "R" }, { value: "t", shiftValue: "T" }, { value: "y", shiftValue: "Y" }, { value: "u", shiftValue: "U" }, { value: "i", shiftValue: "I" }, { value: "o", shiftValue: "O" }, { value: "p", shiftValue: "P" }, { value: "[", shiftValue: "{" }, { value: "]", shiftValue: "}" }, { value: "\\", shiftValue: "|" }], [{ value: "a", shiftValue: "A" }, { value: "s", shiftValue: "S" }, { value: "d", shiftValue: "D" }, { value: "f", shiftValue: "F" }, { value: "g", shiftValue: "G" }, { value: "h", shiftValue: "H" }, { value: "j", shiftValue: "J" }, { value: "k", shiftValue: "K" }, { value: "l", shiftValue: "L" }, { value: ";", shiftValue: ":" }, { value: "'", shiftValue: "\"" }], [{ value: "z", shiftValue: "Z" }, { value: "x", shiftValue: "X" }, { value: "c", shiftValue: "C" }, { value: "v", shiftValue: "V" }, { value: "b", shiftValue: "B" }, { value: "n", shiftValue: "N" }, { value: "m", shiftValue: "M" }, { value: ",", shiftValue: "<" }, { value: ".", shiftValue: ">" }, { value: "/", shiftValue: "?" }]];
+
+                            var specialArray = [{ label: "&#x02190", fn: "back" }, { label: "C", fn: "clear" }];
+
+                            keyArray.forEach(function (row) {
+                                row.forEach(function (n) {
+                                    po.push('<div style="float:left;' + item.content.config.btnWrapStyle + '">');
+                                    po.push('<button class="btn btn-default btn-' + item.content.config.btnTheme + '" ' + 'style="' + item.content.config.btnStyle + '" data-keyboard-value="' + n.value + '">' + n.value + '</button>');
+                                    po.push('</div>');
+                                });
+                                po.push('<div style="clear:both;"></div>');
+                            });
+
+                            /*
+                               specialArray.forEach(function (n) {
+                             po.push('<div style="float:left;' + item.content.config.btnWrapStyle + '">');
+                             po.push('<button class="btn btn-default btn-' + item.content.config.specialBtnTheme + '" '
+                             + 'style="' + item.content.config.btnStyle + '" data-keyboard-value="' + n.fn + '">' + n.label + '</button>');
+                             po.push('</div>');
+                             });
+                             */
+
+                            po.push('<div style="clear:both;"></div>');
+
+                            $(this).html(po.join('')).find('[data-keyboard-value]').click(function () {
+                                var act = this.getAttribute("data-keyboard-value");
+                                var _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(idx));
+                                var val = _input.val();
+
+                                if (act == "back") {
+                                    _input.val(val.substring(0, val.length - 1));
+                                } else if (act == "clear") {
+                                    _input.val('');
+                                } else {
+                                    _input.val(val + act);
+                                }
+
+                                onStateChanged.call(this, item, {
+                                    self: self,
+                                    state: "changeValue",
+                                    item: item,
+                                    value: _input.val()
+                                });
+                            });
+                        });
                     }
                 };
 
@@ -523,11 +598,8 @@
                             item.pickerContent.html(html);
                         });
                     } else {
-                        for (var key in pickerContent) {
-                            if (item.content.type == key) {
-                                pickerContent[key].call(this, queIdx);
-                                break;
-                            }
+                        if (item.content.type in pickerContent) {
+                            pickerContent[item.content.type].call(this, queIdx);
                         }
                     }
 
