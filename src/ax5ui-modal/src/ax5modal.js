@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "0.7.4"
+        version: "0.7.5"
     }, (function () {
         /**
          * @class ax5modal
@@ -104,9 +104,6 @@
                     `;
                 },
                 getContent = function (modalId, opts) {
-                    
-                    console.log(opts);
-                    
                     var
                         data = {
                             modalId: modalId,

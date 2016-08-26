@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-modal",
-	"version": "0.7.4",
+	"version": "0.7.5",
 	"description": "A modal plugin that works with Bootstrap & jQuery",
 	"license": "LGPLv3",
 	"repository": {
