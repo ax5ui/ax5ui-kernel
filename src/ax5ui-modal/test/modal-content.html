@@ -8,52 +8,9 @@
     <script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"></script>
     <script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-grid/master/dist/ax5grid.min.js"></script>
 </head>
-<body>
+<body style="background: #000;">
 
-<div data-ax5grid="first-grid" data-ax5grid-config="{}" style="height: 400px;"></div>
 
-<script type="text/javascript">
-    var firstGrid = new ax5.ui.grid();
-
-    $(document.body).ready(function () {
-
-        firstGrid.setConfig({
-            target: $('[data-ax5grid="first-grid"]'),
-            frozenColumnIndex: 0,
-            frozenRowIndex: 0,
-            showLineNumber: true,
-            showRowSelector: true,
-            lineNumberColumnWidth: 40,
-            rowSelectorColumnWidth: 25,
-            header: {
-                columnHeight: 25
-            },
-            body: {
-                columnHeight: 25
-            },
-            columns: [
-                {key: "a", label: "필드A", width: 80},
-                {key: "b", label: "필드B"},
-                {
-                    key:"a", label: "필드C", columns: [
-                    {key: "c1", label: "필드C-1"},{key: "c2", label: "필드C-2"}
-                ]
-                },
-                {key: "c", label: "필드C", width: 150, multiLine: true},
-                {key: "d", label: "필드D"},
-                {key: "c1", label: "필드D", width: 80},
-                {key: "a", label: "필드A", width: 80},
-                {key: "a", label: "필드A", width: 150}
-            ]
-        });
-
-        var list = [];
-        for (var a = 0, l = 9999; a < l; a++) {
-            list.push({a: "컬럼 테스트", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: 1, c2: "!@#$", "d": "필드D값"});
-        }
-        firstGrid.setData(list);
-    });
-</script>
 
 </body>
 </html>

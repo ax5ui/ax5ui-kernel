@@ -42,7 +42,14 @@
         @include flex(1);
         position: relative;
         iframe {
-            border: 0px none;
+            border: 0 none;
+        }
+
+        .fadeIn{
+            @include animation(ax-modal-fade-in $ax5modal-easing-time-open $ease-out-back forwards);
+        }
+        .fadeOut{
+            @include animation(ax-modal-fade-out $ax5modal-easing-time-open $ease-out-back forwards);
         }
     }
 }
@@ -65,11 +72,12 @@
 @include keyframes(ax-modal) {
     0% {
         opacity: 0.0;
-        @include transform(translateY(20%));
+        //@include transform(translateY(20%));
+        @include transform(scale(0.8));
     }
     100% {
         opacity: 1.0;
-        @include transform(translateY(0));
+        @include transform(scale(1.0));
     }
     /*
     0% {
@@ -194,6 +202,24 @@
     }
     100% {
         @include transform(translateY(100%));
+    }
+}
+
+@include keyframes(ax-modal-fade-in){
+    0% {
+        opacity: 0.0;
+    }
+    100% {
+        opacity: 1.0;
+    }
+}
+
+@include keyframes(ax-modal-fade-out){
+    0% {
+        opacity: 1.0;
+    }
+    100% {
+        opacity: 0.0;
     }
 }
 

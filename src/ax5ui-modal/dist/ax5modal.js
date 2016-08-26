@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "0.7.3"
+        version: "0.7.4"
     }, function () {
         /**
          * @class ax5modal
@@ -68,16 +68,20 @@
                 return true;
             },
                 getContentTmpl = function getContentTmpl() {
-                return " \n                    <div id=\"{{modalId}}\" data-modal-els=\"root\" class=\"ax5modal {{theme}} {{fullscreen}}\" style=\"{{styles}}\">\n                        {{#header}}\n                        <div class=\"ax-modal-header\" data-modal-els=\"header\">\n                            {{{title}}}\n                            {{#btns}}\n                                <div class=\"ax-modal-header-addon\">\n                                {{#@each}}\n                                <a tabindex=\"-1\" data-modal-header-btn=\"{{@key}}\" class=\"{{@value.theme}}\">{{{@value.label}}}</a>\n                                {{/@each}}\n                                </div>\n                            {{/btns}}\n                        </div>\n                        {{/header}}\n                        <div class=\"ax-modal-body\" data-modal-els=\"body\">\n                        {{#iframe}}\n                            <div data-modal-els=\"iframe-wrap\" style=\"-webkit-overflow-scrolling: touch; overflow: auto;position: relative;\">\n                            <iframe name=\"{{modalId}}-frame\" src=\"\" width=\"100%\" height=\"100%\" frameborder=\"0\" data-modal-els=\"iframe\" style=\"position: absolute;left:0;top:0;\"></iframe>\n                            </div>\n                            <form name=\"{{modalId}}-form\" data-modal-els=\"iframe-form\">\n                            <input type=\"hidden\" name=\"modalId\" value=\"{{modalId}}\" />\n                            {{#param}}\n                            {{#@each}}\n                            <input type=\"hidden\" name=\"{{@key}}\" value=\"{{@value}}\" />\n                            {{/@each}}\n                            {{/param}}\n                            </form>\n                        {{/iframe}}\n                        </div>\n                    </div>\n                    ";
+                return " \n                    <div id=\"{{modalId}}\" data-modal-els=\"root\" class=\"ax5modal {{theme}} {{fullscreen}}\" style=\"{{styles}}\">\n                        {{#header}}\n                        <div class=\"ax-modal-header\" data-modal-els=\"header\">\n                            {{{title}}}\n                            {{#btns}}\n                                <div class=\"ax-modal-header-addon\">\n                                {{#@each}}\n                                <a tabindex=\"-1\" data-modal-header-btn=\"{{@key}}\" class=\"{{@value.theme}}\">{{{@value.label}}}</a>\n                                {{/@each}}\n                                </div>\n                            {{/btns}}\n                        </div>\n                        {{/header}}\n                        <div class=\"ax-modal-body\" data-modal-els=\"body\">\n                        {{#iframe}}\n                        \n                            <div data-modal-els=\"iframe-wrap\" style=\"-webkit-overflow-scrolling: touch; overflow: auto;position: relative;\">\n                                <table data-modal-els=\"iframe-loading\" style=\"width:100%;height:100%;\"><tr><td style=\"text-align: center;vertical-align: middle\">{{{iframeLoadingMsg}}}</td></tr></table>\n                                <iframe name=\"{{modalId}}-frame\" src=\"\" width=\"100%\" height=\"100%\" frameborder=\"0\" data-modal-els=\"iframe\" style=\"display:none;position: absolute;left:0;top:0;\"></iframe>\n                            </div>\n                            <form name=\"{{modalId}}-form\" data-modal-els=\"iframe-form\">\n                            <input type=\"hidden\" name=\"modalId\" value=\"{{modalId}}\" />\n                            {{#param}}\n                            {{#@each}}\n                            <input type=\"hidden\" name=\"{{@key}}\" value=\"{{@value}}\" />\n                            {{/@each}}\n                            {{/param}}\n                            </form>\n                        {{/iframe}}\n                        </div>\n                    </div>\n                    ";
             },
                 getContent = function getContent(modalId, opts) {
+
+                console.log(opts);
+
                 var data = {
                     modalId: modalId,
                     theme: opts.theme,
                     header: opts.header,
                     fullScreen: opts.fullScreen ? "fullscreen" : "",
                     styles: [],
-                    iframe: opts.iframe
+                    iframe: opts.iframe,
+                    iframeLoadingMsg: opts.iframeLoadingMsg
                 };
 
                 if (opts.zIndex) {
@@ -106,6 +110,7 @@
                     this.$["iframe-wrap"] = this.activeModal.find('[data-modal-els="iframe-wrap"]');
                     this.$["iframe"] = this.activeModal.find('[data-modal-els="iframe"]');
                     this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
+                    this.$["iframe-loading"] = this.activeModal.find('[data-modal-els="iframe-loading"]');
                 }
 
                 //- position 정렬
@@ -122,7 +127,6 @@
                 };
 
                 if (opts.iframe) {
-
                     this.$["iframe-wrap"].css({ height: opts.height });
                     this.$["iframe"].css({ height: opts.height });
 
@@ -132,8 +136,15 @@
                     this.$["iframe-form"].attr({ "action": opts.iframe.url });
                     this.$["iframe"].on("load", function () {
                         that.state = "load";
+                        if (opts.iframeLoadingMsg) {
+                            this.$["iframe-loading"].hide();
+                            this.$["iframe"].show().addClass("fadeIn");
+                        }
                         onStateChanged.call(this, opts, that);
                     }.bind(this));
+                    if (!opts.iframeLoadingMsg) {
+                        this.$["iframe"].show();
+                    }
                     this.$["iframe-form"].submit();
                 }
 
@@ -366,7 +377,7 @@
 
             /**
              * @method ax5modal.minimize
-             * @returns {axClass}
+             * @returns {ax5modal}
              */
             this.minimize = function () {
 
@@ -390,7 +401,7 @@
 
             /**
              * @method ax5modal.maximize
-             * @returns {axClass}
+             * @returns {ax5modal}
              */
             this.maximize = function () {
                 var opts = self.modalConfig;
