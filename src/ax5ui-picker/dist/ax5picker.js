@@ -513,27 +513,34 @@
                         html.push('<div style="clear:both;"></div>');
                         item.pickerContent.html(html.join(''));
 
-                        var keyArray = [[{ value: "1", shiftValue: "!" }, { value: "2", shiftValue: "@" }, { value: "3", shiftValue: "#" }, { value: "4", shiftValue: "$" }, { value: "5", shiftValue: "%" }, { value: "6", shiftValue: "^" }, { value: "7", shiftValue: "&" }, { value: "8", shiftValue: "*" }, { value: "9", shiftValue: "(" }, { value: "0", shiftValue: ")" }, { value: "-", shiftValue: "_" }, { value: "=", shiftValue: "+" }], [{ value: "q", shiftValue: "Q" }, { value: "w", shiftValue: "W" }, { value: "e", shiftValue: "E" }, { value: "r", shiftValue: "R" }, { value: "t", shiftValue: "T" }, { value: "y", shiftValue: "Y" }, { value: "u", shiftValue: "U" }, { value: "i", shiftValue: "I" }, { value: "o", shiftValue: "O" }, { value: "p", shiftValue: "P" }, { value: "[", shiftValue: "{" }, { value: "]", shiftValue: "}" }, { value: "\\", shiftValue: "|" }], [{ value: "a", shiftValue: "A" }, { value: "s", shiftValue: "S" }, { value: "d", shiftValue: "D" }, { value: "f", shiftValue: "F" }, { value: "g", shiftValue: "G" }, { value: "h", shiftValue: "H" }, { value: "j", shiftValue: "J" }, { value: "k", shiftValue: "K" }, { value: "l", shiftValue: "L" }, { value: ";", shiftValue: ":" }, { value: "'", shiftValue: "\"" }], [{ label: "shift", fn: "shift" }, { value: "z", shiftValue: "Z" }, { value: "x", shiftValue: "X" }, { value: "c", shiftValue: "C" }, { value: "v", shiftValue: "V" }, { value: "b", shiftValue: "B" }, { value: "n", shiftValue: "N" }, { value: "m", shiftValue: "M" }, { value: ",", shiftValue: "<" }, { value: ".", shiftValue: ">" }, { value: "/", shiftValue: "?" }]];
+                        var keyArray = [[{ value: "`", shiftValue: "~" }, { value: "1", shiftValue: "!" }, { value: "2", shiftValue: "@" }, { value: "3", shiftValue: "#" }, { value: "4", shiftValue: "$" }, { value: "5", shiftValue: "%" }, { value: "6", shiftValue: "^" }, { value: "7", shiftValue: "&" }, { value: "8", shiftValue: "*" }, { value: "9", shiftValue: "(" }, { value: "0", shiftValue: ")" }, { value: "-", shiftValue: "_" }, { value: "=", shiftValue: "+" }], [{ value: "q", shiftValue: "Q" }, { value: "w", shiftValue: "W" }, { value: "e", shiftValue: "E" }, { value: "r", shiftValue: "R" }, { value: "t", shiftValue: "T" }, { value: "y", shiftValue: "Y" }, { value: "u", shiftValue: "U" }, { value: "i", shiftValue: "I" }, { value: "o", shiftValue: "O" }, { value: "p", shiftValue: "P" }, { value: "[", shiftValue: "{" }, { value: "]", shiftValue: "}" }, { value: "\\", shiftValue: "|" }], [{ value: "a", shiftValue: "A" }, { value: "s", shiftValue: "S" }, { value: "d", shiftValue: "D" }, { value: "f", shiftValue: "F" }, { value: "g", shiftValue: "G" }, { value: "h", shiftValue: "H" }, { value: "j", shiftValue: "J" }, { value: "k", shiftValue: "K" }, { value: "l", shiftValue: "L" }, { value: ";", shiftValue: ":" }, { value: "'", shiftValue: "\"" }], [{ label: "shift", fn: "shift" }, { value: "z", shiftValue: "Z" }, { value: "x", shiftValue: "X" }, { value: "c", shiftValue: "C" }, { value: "v", shiftValue: "V" }, { value: "b", shiftValue: "B" }, { value: "n", shiftValue: "N" }, { value: "m", shiftValue: "M" }, { value: ",", shiftValue: "<" }, { value: ".", shiftValue: ">" }, { value: "/", shiftValue: "?" }]];
                         var specialArray = [{ label: "&#x02190", fn: "back" }, { label: "C", fn: "clear" }];
 
                         var getKeyBoard = function getKeyBoard(isShiftKey) {
                             var po = [];
                             keyArray.forEach(function (row) {
+                                po.push('<div style="display: table;margin:0 auto;">');
                                 row.forEach(function (n) {
 
-                                    var keyValue, keyLabel;
+                                    var keyValue, keyLabel, btnWrapStyle, btnTheme, btnStyle;
                                     if (n.fn) {
                                         keyValue = n.fn;
                                         keyLabel = n.label;
+                                        btnWrapStyle = item.content.config.specialBtnWrapStyle;
+                                        btnTheme = item.content.config.specialBtnTheme;
+                                        btnStyle = item.content.config.specialBtnStyle;
                                     } else {
                                         keyLabel = keyValue = isShiftKey ? n.shiftValue : n.value;
+                                        btnWrapStyle = item.content.config.btnWrapStyle;
+                                        btnTheme = item.content.config.btnTheme;
+                                        btnStyle = item.content.config.btnStyle;
                                     }
 
-                                    po.push('<div style="float:left;' + item.content.config.btnWrapStyle + '">');
-                                    po.push('<button class="btn btn-default btn-' + item.content.config.btnTheme + '" ' + 'style="' + item.content.config.btnStyle + '" data-keyboard-value="' + keyValue + '">' + keyLabel + '</button>');
+                                    po.push('<div style="display: table-cell;' + btnWrapStyle + '">');
+                                    po.push('<button class="btn btn-default btn-' + btnTheme + '" ' + 'style="' + btnStyle + '" data-keyboard-value="' + keyValue + '">' + keyLabel + '</button>');
                                     po.push('</div>');
                                 });
-                                po.push('<div style="clear:both;"></div>');
+                                po.push('</div>');
                             });
                             return po.join('');
                         };

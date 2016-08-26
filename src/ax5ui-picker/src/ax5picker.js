@@ -576,6 +576,7 @@
 
                         var keyArray = [
                             [
+                                {value: "`", shiftValue: "~"},
                                 {value: "1", shiftValue: "!"},
                                 {value: "2", shiftValue: "@"},
                                 {value: "3", shiftValue: "#"},
@@ -619,41 +620,48 @@
                             ],
                             [
                                 {label: "shift", fn: "shift"},
-                                {value:"z", shiftValue:"Z"},
-                                {value:"x", shiftValue:"X"},
-                                {value:"c", shiftValue:"C"},
-                                {value:"v", shiftValue:"V"},
-                                {value:"b", shiftValue:"B"},
-                                {value:"n", shiftValue:"N"},
-                                {value:"m", shiftValue:"M"},
-                                {value:",", shiftValue:"<"},
-                                {value:".", shiftValue:">"},
-                                {value:"/", shiftValue:"?"}
+                                {value: "z", shiftValue: "Z"},
+                                {value: "x", shiftValue: "X"},
+                                {value: "c", shiftValue: "C"},
+                                {value: "v", shiftValue: "V"},
+                                {value: "b", shiftValue: "B"},
+                                {value: "n", shiftValue: "N"},
+                                {value: "m", shiftValue: "M"},
+                                {value: ",", shiftValue: "<"},
+                                {value: ".", shiftValue: ">"},
+                                {value: "/", shiftValue: "?"}
                             ]
                         ];
                         var specialArray = [
                             {label: "&#x02190", fn: "back"}, {label: "C", fn: "clear"}
                         ];
 
-                        var getKeyBoard = function(isShiftKey){
+                        var getKeyBoard = function (isShiftKey) {
                             var po = [];
                             keyArray.forEach(function (row) {
-                                row.forEach(function(n){
+                                po.push('<div style="display: table;margin:0 auto;">');
+                                row.forEach(function (n) {
 
-                                    var keyValue, keyLabel;
-                                    if(n.fn){
+                                    var keyValue, keyLabel, btnWrapStyle, btnTheme, btnStyle;
+                                    if (n.fn) {
                                         keyValue = n.fn;
                                         keyLabel = n.label;
-                                    }else{
-                                        keyLabel = keyValue = ((isShiftKey) ? n.shiftValue: n.value);
+                                        btnWrapStyle = item.content.config.specialBtnWrapStyle;
+                                        btnTheme = item.content.config.specialBtnTheme;
+                                        btnStyle = item.content.config.specialBtnStyle;
+                                    } else {
+                                        keyLabel = keyValue = ((isShiftKey) ? n.shiftValue : n.value);
+                                        btnWrapStyle = item.content.config.btnWrapStyle;
+                                        btnTheme = item.content.config.btnTheme;
+                                        btnStyle = item.content.config.btnStyle;
                                     }
 
-                                    po.push('<div style="float:left;' + item.content.config.btnWrapStyle + '">');
-                                        po.push('<button class="btn btn-default btn-' + item.content.config.btnTheme + '" '
-                                            + 'style="' + item.content.config.btnStyle + '" data-keyboard-value="' + keyValue + '">' + keyLabel + '</button>');
+                                    po.push('<div style="display: table-cell;' + btnWrapStyle + '">');
+                                    po.push('<button class="btn btn-default btn-' + btnTheme + '" '
+                                        + 'style="' + btnStyle + '" data-keyboard-value="' + keyValue + '">' + keyLabel + '</button>');
                                     po.push('</div>');
                                 });
-                                po.push('<div style="clear:both;"></div>');
+                                po.push('</div>');
                             });
                             return po.join('');
                         };
@@ -663,7 +671,7 @@
                             var idx = this.getAttribute("data-keyboard-target");
                             var $this = $(this);
                             var isShiftKey = false;
-                            var toggleShift = function(){
+                            var toggleShift = function () {
                                 isShiftKey = !isShiftKey;
                                 $this.html(getKeyBoard(isShiftKey));
                             };
