@@ -1,10 +1,4 @@
-/*
- * Copyright (c) 2016. tom@axisj.com
- * - github.com/thomasjang
- * - www.axisj.com
- */
-
-// ax5.ui.grid.page
+// ax5.ui.grid.formatter
 (function () {
 
     var GRID = ax5.ui.grid;

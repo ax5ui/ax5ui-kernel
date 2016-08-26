@@ -75,6 +75,7 @@
             // 그리드 데이터셋
             this.columns = []; // config.columns에서 복제된 오브젝트
             this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
+            this.footSum = [];
             this.list = []; // 그리드의 데이터
             this.page = {}; // 그리드의 페이지 정보
             this.sortInfo = {};
@@ -228,6 +229,10 @@
                         }
                     }
                 },
+                initFootSum = function (footSum) {
+                    this.footSum = footSum;
+                    this.footSumTagle = GRID.util.makeFootSumTable.call(this, this.footSum);
+                },
                 alignGrid = function (isFirst) {
                     // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
                     var CT_WIDTH = this.$["container"]["root"].width();
@@ -241,6 +246,7 @@
                         if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
                         return width;
                     })();
+
                     var frozenPanelWidth = cfg.frozenPanelWidth = (function (colGroup, endIndex) {
                         var width = 0;
                         for (var i = 0, l = endIndex; i < l; i++) {
@@ -248,11 +254,16 @@
                         }
                         return width;
                     })(this.colGroup, cfg.frozenColumnIndex);
+
                     var rightPanelWidth = 0; // todo : 우측 함계컬럼 넘비 계산
+
                     var frozenRowHeight = (function (bodyTrHeight) {
                         return cfg.frozenRowIndex * bodyTrHeight;
-                    })(this.xvar.bodyTrHeight); // todo : 고정행 높이 계산하기
-                    var footSumHeight = 0;
+                    })(this.xvar.bodyTrHeight);
+
+                    var footSumHeight = (function (bodyTrHeight) {
+                        return this.footSum.length * bodyTrHeight;
+                    }).call(this, this.xvar.bodyTrHeight);
 
                     var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
                     var pageHeight = (cfg.page.display) ? cfg.page.height : 0;
@@ -526,6 +537,9 @@
                 // columns데이터를 분석하여 미리 처리해야하는 데이터를 정리합니다.
                 initColumns.call(this, grid.columns);
                 resetColGroupWidth.call(this);
+
+                // footSum데이터를 분석하여 미리 처리해야 하는 데이터를 정리
+                initFootSum.call(this, grid.footSum);
 
                 // 그리드의 각 요소의 크기를 맞춤니다.
                 alignGrid.call(this, true);
@@ -950,10 +964,12 @@
 // todo : column resize -- ok
 
 // todo : sortable -- ok
-// todo : filter
-// todo : body menu
+// todo : grid footsum
+// todo : grid body group
 // todo : cell inline edit
 
+// todo : filter
+// todo : body menu
 // todo : column reorder
 
 

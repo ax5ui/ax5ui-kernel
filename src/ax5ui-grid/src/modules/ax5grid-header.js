@@ -267,8 +267,9 @@
         var sortOrder = "";
         var sortInfo = {};
         var seq = 0;
+
+
         for (var i = 0, l = this.colGroup.length; i < l; i++) {
-            //console.log(this.colGroup[i]);
             if (this.colGroup[i].key == _key) {
                 if (sortOrder == "") {
                     if (typeof this.colGroup[i].sort === "undefined") {
@@ -281,8 +282,9 @@
                         sortOrder = undefined;
                     }
                 }
-
                 this.colGroup[i].sort = sortOrder;
+            } else if (!this.config.multiSort) {
+                this.colGroup[i].sort = undefined;
             }
 
             if (typeof this.colGroup[i].sort !== "undefined") {
@@ -300,9 +302,9 @@
         return this;
     };
 
-    var applySortStatus = function(_sortInfo){
+    var applySortStatus = function (_sortInfo) {
         for (var i = 0, l = this.colGroup.length; i < l; i++) {
-            for(var _key in _sortInfo){
+            for (var _key in _sortInfo) {
                 if (this.colGroup[i].key == _key) {
                     this.colGroup[i].sort = _sortInfo[_key].orderBy;
                 }

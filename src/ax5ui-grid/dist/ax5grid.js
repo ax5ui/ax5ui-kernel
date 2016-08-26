@@ -78,6 +78,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             // 그리드 데이터셋
             this.columns = []; // config.columns에서 복제된 오브젝트
             this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
+            this.footSum = [];
             this.list = []; // 그리드의 데이터
             this.page = {}; // 그리드의 페이지 정보
             this.sortInfo = {};
@@ -229,6 +230,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }
             },
+                initFootSum = function initFootSum(footSum) {
+                this.footSum = footSum;
+                this.footSumTagle = GRID.util.makeFootSumTable.call(this, this.footSum);
+            },
                 alignGrid = function alignGrid(isFirst) {
                 // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
                 var CT_WIDTH = this.$["container"]["root"].width();
@@ -242,6 +247,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
                     return width;
                 }();
+
                 var frozenPanelWidth = cfg.frozenPanelWidth = function (colGroup, endIndex) {
                     var width = 0;
                     for (var i = 0, l = endIndex; i < l; i++) {
@@ -249,11 +255,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                     return width;
                 }(this.colGroup, cfg.frozenColumnIndex);
+
                 var rightPanelWidth = 0; // todo : 우측 함계컬럼 넘비 계산
+
                 var frozenRowHeight = function (bodyTrHeight) {
                     return cfg.frozenRowIndex * bodyTrHeight;
-                }(this.xvar.bodyTrHeight); // todo : 고정행 높이 계산하기
-                var footSumHeight = 0;
+                }(this.xvar.bodyTrHeight);
+
+                var footSumHeight = function (bodyTrHeight) {
+                    return this.footSum.length * bodyTrHeight;
+                }.call(this, this.xvar.bodyTrHeight);
 
                 var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
                 var pageHeight = cfg.page.display ? cfg.page.height : 0;
@@ -525,6 +536,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // columns데이터를 분석하여 미리 처리해야하는 데이터를 정리합니다.
                 initColumns.call(this, grid.columns);
                 resetColGroupWidth.call(this);
+
+                // footSum데이터를 분석하여 미리 처리해야 하는 데이터를 정리
+                initFootSum.call(this, grid.footSum);
 
                 // 그리드의 각 요소의 크기를 맞춤니다.
                 alignGrid.call(this, true);
@@ -949,10 +963,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // todo : column resize -- ok
 
 // todo : sortable -- ok
-// todo : filter
-// todo : body menu
+// todo : grid footsum
+// todo : grid body group
 // todo : cell inline edit
 
+// todo : filter
+// todo : body menu
 // todo : column reorder
 
 // ax5.ui.grid.body
@@ -1751,6 +1767,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 })();
 
+// ax5.ui.grid.collector
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+    var sum = function sum() {
+        //return U.number(this.value, {"money":true});
+    };
+    var avg = function avg() {
+        //return U.number(this.value, {"money":true});
+    };
+
+    GRID.collector = {
+        sum: sum,
+        avg: avg
+    };
+})();
 // ax5.ui.grid.layout
 (function () {
 
@@ -1927,13 +1960,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         sort: sort
     };
 })();
-/*
- * Copyright (c) 2016. tom@axisj.com
- * - github.com/thomasjang
- * - www.axisj.com
- */
-
-// ax5.ui.grid.page
+// ax5.ui.grid.formatter
 (function () {
 
     var GRID = ax5.ui.grid;
@@ -2184,8 +2211,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var sortOrder = "";
         var sortInfo = {};
         var seq = 0;
+
         for (var i = 0, l = this.colGroup.length; i < l; i++) {
-            //console.log(this.colGroup[i]);
             if (this.colGroup[i].key == _key) {
                 if (sortOrder == "") {
                     if (typeof this.colGroup[i].sort === "undefined") {
@@ -2196,8 +2223,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         sortOrder = undefined;
                     }
                 }
-
                 this.colGroup[i].sort = sortOrder;
+            } else if (!this.config.multiSort) {
+                this.colGroup[i].sort = undefined;
             }
 
             if (typeof this.colGroup[i].sort !== "undefined") {
@@ -3071,12 +3099,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return map;
     };
 
+    var makeFootSumTable = function makeFootSumTable(footSum) {
+        var table = {
+            rows: []
+        };
+        var colIndex = 0;
+
+        return table;
+    };
+
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
         getMousePosition: getMousePosition,
         ENM: ENM,
         makeHeaderTable: makeHeaderTable,
         makeBodyRowTable: makeBodyRowTable,
-        makeBodyRowMap: makeBodyRowMap
+        makeBodyRowMap: makeBodyRowMap,
+        makeFootSumTable: makeFootSumTable
     };
 })();

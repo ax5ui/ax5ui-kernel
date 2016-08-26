@@ -258,13 +258,24 @@
         return map;
     };
 
+    var makeFootSumTable = function (footSum) {
+        var table = {
+            rows: []
+        };
+        var colIndex = 0;
+
+
+        return table;
+    };
+
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
         getMousePosition: getMousePosition,
         ENM: ENM,
         makeHeaderTable: makeHeaderTable,
         makeBodyRowTable: makeBodyRowTable,
-        makeBodyRowMap: makeBodyRowMap
+        makeBodyRowMap: makeBodyRowMap,
+        makeFootSumTable: makeFootSumTable
     };
 
 })();

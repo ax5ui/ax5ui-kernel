@@ -61,6 +61,9 @@
                 multipleSelect: true,
                 lineNumberColumnWidth: 40,
                 rowSelectorColumnWidth: 28,
+                sortable: true, // 모든 컬럼에 정렬 아이콘 표시
+                multiSort: false, // 다중 정렬 여부
+                remoteSort: false, // remoteSort에 함수를 sortable 컬럼이 클릭되었을때 실행 setColumnSort를 직접 구현. (remoteSort를 사용하면 헤더에 정렬 상태만 표시 하고 데이터 정렬은 처리 안함)
                 header: {
                     columnHeight: 28
                 },
@@ -84,9 +87,12 @@
                         gridView.setData(this.page.selectPage);
                     }
                 },
-                sortable: true, // 모든 컬럼에 정렬 아이콘 표시
-                multiSort: true, // 다중 정렬 여부
-                remoteSort: false, // remoteSort에 함수를 sortable 컬럼이 클릭되었을때 실행 setColumnSort를 직접 구현. (remoteSort를 사용하면 헤더에 정렬 상태만 표시 하고 데이터 정렬은 처리 안함)
+                footSum: [[
+                    {label: "합계", colspan: 2},
+                    {key: "c1", collector: "sum"},
+                    {key: "c2", collector: "sum"}
+                ]],
+
                 columns: [
                     {
                         key: "a",
@@ -119,7 +125,7 @@
             var _my_pageNo = (_pageNo || 0) + 1;
             var list = [];
             for (var a = 0, l = 10; a < l; a++) {
-                list.push({a: a + " 컬럼", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": (10-a) % 3, "d2": (10-a) % 2 });
+                list.push({a: a + " 컬럼", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": (10 - a) % 3, "d2": (10 - a) % 2});
             }
 
             firstGrid.setData({

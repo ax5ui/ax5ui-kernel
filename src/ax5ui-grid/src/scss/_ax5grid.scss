@@ -206,6 +206,13 @@
             border-bottom: 1px solid darken(#ccc, 5%); /// frozen Line color
         }
 
+        &[data-ax5grid-panel="bottom-aside-body"],
+        &[data-ax5grid-panel="bottom-left-body"],
+        &[data-ax5grid-panel="bottom-body"],
+        &[data-ax5grid-panel="bottom-right-body"] {
+            border-top: 1px solid darken(#ccc, 5%); /// footSum Line color
+        }
+
         [data-ax5grid-panel-scroll] {
             position: absolute;
             left: 0;
