@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.5"
+        version: "0.7.6"
     }, (function () {
         /**
          * @class ax5picker
@@ -215,7 +215,7 @@
                     if (!this.activePicker) return this;
 
                     var
-                        $window = $(window),
+                        $window = jQuery(window), $body = jQuery(document.body),
                         item = this.queue[this.activePickerQueueIndex],
                         pos = {}, positionMargin = 12,
                         dim = {}, pickerDim = {}, 
@@ -229,12 +229,12 @@
                         height: item.$target.outerHeight()
                     };
                     pickerDim = {
-                        winWidth: $window.width(),
-                        winHeight: $window.height(),
+                        winWidth: Math.max($window.width(), $body.width()),
+                        winHeight: Math.max($window.height(), $body.height()),
                         width: this.activePicker.outerWidth(),
                         height: this.activePicker.outerHeight()
                     };
-                    
+
                     // picker css(width, left, top) & direction 결정
                     if (!item.direction || item.direction === "" || item.direction === "auto") {
                         // set direction

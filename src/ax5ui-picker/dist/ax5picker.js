@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.5"
+        version: "0.7.6"
     }, function () {
         /**
          * @class ax5picker
@@ -185,7 +185,8 @@
                 alignPicker = function alignPicker(append) {
                 if (!this.activePicker) return this;
 
-                var $window = $(window),
+                var $window = jQuery(window),
+                    $body = jQuery(document.body),
                     item = this.queue[this.activePickerQueueIndex],
                     pos = {},
                     positionMargin = 12,
@@ -201,8 +202,8 @@
                     height: item.$target.outerHeight()
                 };
                 pickerDim = {
-                    winWidth: $window.width(),
-                    winHeight: $window.height(),
+                    winWidth: Math.max($window.width(), $body.width()),
+                    winHeight: Math.max($window.height(), $body.height()),
                     width: this.activePicker.outerWidth(),
                     height: this.activePicker.outerHeight()
                 };
