@@ -92,6 +92,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.leftHeaderData = {};
             this.headerData = {};
             this.rightHeaderData = {};
+            this.footSumTable = {};
 
             cfg = this.config;
 
@@ -233,10 +234,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 initFootSum = function initFootSum(footSum) {
                 if (U.isArray(footSum)) {
                     this.footSum = footSum;
-                    this.footSumTagle = GRID.util.makeFootSumTable.call(this, this.footSum);
+                    this.footSumTable = GRID.util.makeFootSumTable.call(this, this.footSum);
                 } else {
                     this.footSum = [];
-                    this.footSumTagle = [];
+                    this.footSumTable = [];
                 }
             },
                 alignGrid = function alignGrid(isFirst) {
@@ -278,7 +279,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var verticalScrollerWidth, horizontalScrollerHeight;
 
                 (function () {
-                    verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
+                    verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
                     // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
                     horizontalScrollerHeight = function () {
                         var totalColGroupWidth = 0;
@@ -715,13 +716,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @returns {ax5grid}
              */
             this.setData = function (data) {
-
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
-
                 GRID.body.scrollTo.call(this, { top: 0 });
                 return this;
             };
@@ -1322,7 +1321,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     return true;
                 }
             }();
+
             var getFieldValue = function getFieldValue(_list, _index, _key, _formatter) {
+                if (_elTargetKey === "bottom-aside-body") {
+                    return "&nbsp;";
+                }
                 if (_key === "__d-index__") {
                     return _index + 1;
                 } else if (_key === "__d-checkbox__") {
@@ -3117,6 +3120,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             rows: []
         };
         var colIndex = 0;
+
+        console.log(this.bodyRowTable);
+        console.log(this.columns);
+
+        for (var r = 0, rl = footSum.length; r < rl; r++) {
+            var footSumRow = footSum[r];
+            table.rows[r] = { cols: [] };
+            for (var c = 0, cl = this.columns.length; c < cl; c++) {}
+        }
 
         return table;
     };

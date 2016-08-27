@@ -264,6 +264,16 @@
         };
         var colIndex = 0;
 
+        console.log(this.bodyRowTable);
+        console.log(this.columns);
+        
+        for (var r = 0, rl = footSum.length; r < rl; r++) {
+            var footSumRow = footSum[r];
+            table.rows[r] = {cols:[]};
+            for(var c = 0, cl = this.columns.length;c<cl;c++){
+
+            }
+        }
 
         return table;
     };

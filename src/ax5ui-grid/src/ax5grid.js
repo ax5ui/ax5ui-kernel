@@ -89,6 +89,7 @@
             this.leftHeaderData = {};
             this.headerData = {};
             this.rightHeaderData = {};
+            this.footSumTable = {};
 
             cfg = this.config;
 
@@ -232,10 +233,10 @@
                 initFootSum = function (footSum) {
                     if(U.isArray(footSum)) {
                         this.footSum = footSum;
-                        this.footSumTagle = GRID.util.makeFootSumTable.call(this, this.footSum);
+                        this.footSumTable = GRID.util.makeFootSumTable.call(this, this.footSum);
                     }else{
                         this.footSum = [];
-                        this.footSumTagle = [];
+                        this.footSumTable = [];
                     }
                 },
                 alignGrid = function (isFirst) {
@@ -277,7 +278,7 @@
                     var verticalScrollerWidth, horizontalScrollerHeight;
 
                     (function(){
-                        verticalScrollerWidth = ((CT_HEIGHT - headerHeight - pageHeight) < this.list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
+                        verticalScrollerWidth = ((CT_HEIGHT - headerHeight - pageHeight - footSumHeight) < this.list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
                         // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
                         horizontalScrollerHeight = (function () {
                             var totalColGroupWidth = 0;
@@ -716,13 +717,11 @@
              * @returns {ax5grid}
              */
             this.setData = function (data) {
-
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
-
                 GRID.body.scrollTo.call(this, {top: 0});
                 return this;
             };

@@ -372,7 +372,11 @@
                     return true;
                 }
             })();
+
             var getFieldValue = function (_list, _index, _key, _formatter) {
+                if(_elTargetKey === "bottom-aside-body"){
+                    return "&nbsp;";
+                }
                 if (_key === "__d-index__") {
                     return _index + 1;
                 }
