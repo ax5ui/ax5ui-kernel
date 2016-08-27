@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.6"
+        version: "0.7.7"
     }, (function () {
         /**
          * @class ax5picker
@@ -141,6 +141,20 @@
 
                             config = null;
                             inputLength = null;
+                        },
+                        'numpad': function (queIdx) {
+                            var item = this.queue[queIdx],
+                                config = {},
+                                inputLength = item.$target.find('input[type="text"]').length;
+
+                            config = {
+                                inputLength: inputLength || 1
+                            };
+
+                            this.queue[queIdx] = jQuery.extend(true, config, item);
+
+                            config = null;
+                            inputLength = null;
                         }
                     };
 
@@ -218,7 +232,7 @@
                         $window = jQuery(window), $body = jQuery(document.body),
                         item = this.queue[this.activePickerQueueIndex],
                         pos = {}, positionMargin = 12,
-                        dim = {}, pickerDim = {}, 
+                        dim = {}, pickerDim = {},
                         pickerDirection;
 
                     if (append) jQuery(document.body).append(this.activePicker);
@@ -239,12 +253,12 @@
                     if (!item.direction || item.direction === "" || item.direction === "auto") {
                         // set direction
                         pickerDirection = "top";
-                        if(pos.top - pickerDim.height - positionMargin < 0){
+                        if (pos.top - pickerDim.height - positionMargin < 0) {
                             pickerDirection = "top";
-                        }else if(pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight){
+                        } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
                             pickerDirection = "bottom";
                         }
-                    }else{
+                    } else {
                         pickerDirection = item.direction;
                     }
 
@@ -252,7 +266,7 @@
                         this.activePicker
                             .addClass("direction-" + pickerDirection);
                     }
-                    
+
                     var positionCSS = (function () {
                         var css = {left: 0, top: 0};
                         switch (pickerDirection) {
@@ -711,7 +725,7 @@
                                 var act = this.getAttribute("data-keyboard-value");
                                 var _input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : jQuery(item.$target.find('input[type]').get(idx));
                                 var val = _input.val();
-                                console.log(val);
+
                                 switch (act) {
                                     case "back":
                                         _input.val(val.substring(0, val.length - 1));
@@ -728,15 +742,110 @@
                                         return false;
                                         break;
                                     default:
-
-                                        console.log(val + act);
-
                                         _input.val(val + act);
                                 }
 
                                 onStateChanged.call(this, item, {
                                     self: self,
                                     state: "changeValue",
+                                    item: item,
+                                    value: _input.val()
+                                });
+                            });
+                        });
+                    },
+                    'numpad': function (queIdx) {
+                        var item = this.queue[queIdx];
+                        var html = [];
+                        for (var i = 0; i < item.inputLength; i++) {
+                            html.push('<div '
+                                + 'style="width:' + U.cssNumber(item.content.width) + ';float:left;" '
+                                + 'class="ax-picker-content-box" '
+                                + 'data-numpad-target="' + i + '"></div>');
+                            if (i < item.inputLength - 1) html.push('<div style="width:' + item.content.margin + 'px;float:left;height: 5px;"></div>');
+                        }
+                        html.push('<div style="clear:both;"></div>');
+                        item.pickerContent.html(html.join(''));
+
+                        // secure-num bind
+                        item.pickerContent.find('[data-numpad-target]').each(function () {
+                            var idx = this.getAttribute("data-numpad-target"),
+                                po = [];
+
+                            var keyArray = item.content.config.keyArray || [
+                                    {value: "7"},
+                                    {value: "8"},
+                                    {value: "9"},
+                                    {label: "BS", fn: "back"},
+                                    {value: "4"},
+                                    {value: "5"},
+                                    {value: "6"},
+                                    {label: "CLS", fn: "clear"},
+                                    {value: "1"},
+                                    {value: "2"},
+                                    {value: "3"},
+                                    {value: ""},
+                                    {value: "."},
+                                    {value: "0"},
+                                    {value: ""},
+                                    {label: "OK", fn: "enter"}
+                                ];
+
+                            keyArray.forEach(function (n) {
+                                var keyValue, keyLabel, btnWrapStyle, btnTheme, btnStyle;
+
+                                if (n.fn) {
+                                    keyValue = n.fn;
+                                    keyLabel = n.label;
+                                    btnTheme = item.content.config.specialBtnTheme;
+                                    btnWrapStyle = item.content.config.specialBtnWrapStyle;
+                                    btnStyle = item.content.config.specialBtnStyle;
+                                } else {
+                                    keyLabel = keyValue = n.value;
+                                    btnTheme = (keyValue) ? item.content.config.btnTheme : "";
+                                    btnWrapStyle = item.content.config.btnWrapStyle;
+                                    btnStyle = item.content.config.btnStyle;
+                                }
+
+                                po.push('<div style="float:left;' + btnWrapStyle + '">');
+                                po.push('<button class="btn btn-default btn-' + btnTheme + '" '
+                                    + 'style="' + btnStyle + '" data-numpad-value="' + keyValue + '">' + (keyLabel || "&nbsp;") + '</button>');
+                                po.push('</div>');
+                            });
+
+                            po.push('<div style="clear:both;"></div>');
+
+                            $(this).html(po.join('')).on("mousedown", '[data-numpad-value]', function () {
+                                var act = this.getAttribute("data-numpad-value");
+                                var _input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : jQuery(item.$target.find('input[type]').get(idx));
+                                var val = _input.val();
+                                var state = "";
+
+                                switch (act) {
+                                    case "back":
+                                        state = "changeValue";
+                                        _input.val(val.substring(0, val.length - 1));
+                                        break;
+                                    case "clear":
+                                        state = "changeValue";
+                                        _input.val('');
+                                        break;
+                                    case "enter":
+                                        self.close(item, "enter");
+                                        return false;
+                                        break;
+                                    case "close":
+                                        self.close();
+                                        return false;
+                                        break;
+                                    default:
+                                        state = "changeValue";
+                                        _input.val(val + act);
+                                }
+
+                                onStateChanged.call(this, item, {
+                                    self: self,
+                                    state: state,
                                     item: item,
                                     value: _input.val()
                                 });
@@ -821,7 +930,7 @@
              * @method ax5picker.close
              * @returns {ax5picker} this
              */
-            this.close = function (item) {
+            this.close = function (item, state) {
                 if (this.closeTimer) clearTimeout(this.closeTimer);
                 if (!this.activePicker) return this;
 
@@ -839,7 +948,7 @@
 
                     onStateChanged.call(this, item, {
                         self: this,
-                        state: "close"
+                        state: state || "close"
                     });
 
                 }).bind(this), cfg.animateTime);

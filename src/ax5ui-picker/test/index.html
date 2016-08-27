@@ -47,15 +47,18 @@
 </div>
 
 <h1>Keyboard</h1>
-<div class="form-group" style="position: absolute;right:0px;bottom:0px;">
+<div class="form-group">
     <input type="text" class="form-control" data-ax5picker="keyboard" placeholder="">
+
 </div>
 <div class="form-group">
-    <div class="col-sm-3">
-        <input type="text" data-ax-path="keyboard" class="form-control" placeholder="" readonly="readonly"/>
-    </div>
+    <input type="text" data-ax-path="keyboard" class="form-control" placeholder="" readonly="readonly"/>
 </div>
 
+<h1>Numpad</h1>
+<div class="form-group">
+    <input type="text" data-ax-path="numpad" class="form-control" placeholder="" />
+</div>
 
 <h1>Custom</h1>
 <div class="form-group">
@@ -300,6 +303,50 @@
                 //if (this.value && this.value.length > 3) {
                 //    picker.close();
                 //}
+            }
+        });
+
+        picker.bind({
+            target: $('[data-ax-path="numpad"]'),
+            direction: "auto",
+            content: {
+                width: 200,
+                margin: 10,
+                type: 'numpad',
+                config: {
+                    btnWrapStyle: "padding:3px;width:25%;",
+                    btnStyle: "width:100%",
+                    btnTheme: "primary",
+                    specialBtnWrapStyle: "padding:3px;width:25%;",
+                    specialBtnStyle: "width:100%;padding-left:0px;padding-right:0px;",
+                    specialBtnTheme: ""
+                    /*
+                    keyArray: [
+                        {value: "7"},
+                        {value: "8"},
+                        {value: "9"},
+                        {label: "BS", fn: "back"},
+                        {value: "4"},
+                        {value: "5"},
+                        {value: "6"},
+                        {value: "-"},
+                        {value: "1"},
+                        {value: "2"},
+                        {value: "3"},
+                        {value: ""},
+                        {value: "."},
+                        {value: "0"},
+                        {value: ""},
+                        {label: "OK", fn: "close"}
+                    ]
+                    */
+                },
+                formatter: {
+                    pattern: 'number'
+                }
+            },
+            onStateChanged: function () {
+                console.log(this);
             }
         });
     });
