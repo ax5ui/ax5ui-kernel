@@ -157,9 +157,9 @@
 
                             if (_items && _items.length > 0) {
 
-                                $this = $(this);
+                                $this = jQuery(this);
                                 offset = $this.offset();
-                                scrollTop = cfg.position == "fixed" ? $(document).scrollTop() : 0;
+                                scrollTop = cfg.position == "fixed" ? jQuery(document).scrollTop() : 0;
                                 childOpt = {
                                     '@parent': {
                                         left: offset.left,
@@ -298,8 +298,8 @@
             },
                 align = function align(activeMenu, data) {
                 //console.log(data['@parent']);
-                var $window = $(window),
-                    $document = $(document),
+                var $window = jQuery(window),
+                    $document = jQuery(document),
                     wh = cfg.position == "fixed" ? $window.height() : $document.height(),
                     ww = $window.width(),
                     h = activeMenu.outerHeight(),
@@ -457,11 +457,11 @@
                 };
 
                 var popUpChildMenu = function popUpChildMenu(target, opt) {
-                    var $target = $(target),
+                    var $target = jQuery(target),
                         offset = $target.offset(),
                         height = $target.outerHeight(),
                         index = Number(target.getAttribute("data-menu-item-index")),
-                        scrollTop = cfg.position == "fixed" ? $(document).scrollTop() : 0;
+                        scrollTop = cfg.position == "fixed" ? jQuery(document).scrollTop() : 0;
 
                     if (self.menuBar.openedIndex == index) return false;
 
