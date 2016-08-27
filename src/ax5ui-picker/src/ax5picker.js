@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.7"
+        version: "0.7.8"
     }, (function () {
         /**
          * @class ax5picker
@@ -629,10 +629,9 @@
                                 {value: "0", shiftValue: ")"},
                                 {value: "-", shiftValue: "_"},
                                 {value: "=", shiftValue: "+"},
-                                {label: "C", fn: "clear"}
+                                {label: "&#x02190", fn: "back"}
                             ],
                             [
-
                                 {value: "q", shiftValue: "Q"},
                                 {value: "w", shiftValue: "W"},
                                 {value: "e", shiftValue: "E"},
@@ -648,7 +647,7 @@
                                 {value: "\\", shiftValue: "|"}
                             ],
                             [
-                                {label: "delete", fn: "back"},
+                                {label: "Clear", fn: "clear"},
                                 {value: "a", shiftValue: "A"},
                                 {value: "s", shiftValue: "S"},
                                 {value: "d", shiftValue: "D"},
@@ -664,7 +663,7 @@
 
                             ],
                             [
-                                {label: "shift", fn: "shift"},
+                                {label: "Shift", fn: "shift"},
                                 {value: "z", shiftValue: "Z"},
                                 {value: "x", shiftValue: "X"},
                                 {value: "c", shiftValue: "C"},
@@ -675,7 +674,7 @@
                                 {value: ",", shiftValue: "<"},
                                 {value: ".", shiftValue: ">"},
                                 {value: "/", shiftValue: "?"},
-                                {label: "close", fn: "close"}
+                                {label: "Close", fn: "close"}
                             ]
                         ];
                         var specialArray = [
