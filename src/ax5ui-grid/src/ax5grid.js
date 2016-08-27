@@ -291,7 +291,7 @@
                         }).call(this);
 
                         if(horizontalScrollerHeight > 0){
-                            verticalScrollerWidth = ((CT_HEIGHT - headerHeight - pageHeight - horizontalScrollerHeight) < this.list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
+                            verticalScrollerWidth = ((CT_HEIGHT - headerHeight - pageHeight - footSumHeight - horizontalScrollerHeight) < this.list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
                         }
                     }).call(this);
 
@@ -716,12 +716,14 @@
              * @returns {ax5grid}
              */
             this.setData = function (data) {
+
                 GRID.data.set.call(this, data);
                 alignGrid.call(this);
-                GRID.body.scrollTo.call(this, {top: 0});
                 GRID.body.repaint.call(this);
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
+
+                GRID.body.scrollTo.call(this, {top: 0});
                 return this;
             };
 

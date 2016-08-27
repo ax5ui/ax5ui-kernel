@@ -87,6 +87,11 @@
                         gridView.setData(this.page.selectPage);
                     }
                 },
+                footSum: [[
+                    {label: "합계", colspan: 2},
+                    {key: "c1", collector: "sum"},
+                    {key: "c2", collector: "sum"}
+                ]],
 
                 columns: [
                     {
@@ -123,7 +128,6 @@
                 list.push({a: a + " 컬럼", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": (10 - a) % 3, "d2": (10 - a) % 2});
             }
 
-            /*
             firstGrid.setData({
                 list: list,
                 page: {
@@ -133,9 +137,8 @@
                     totalPages: 100
                 }
             });
-            */
 
-            firstGrid.setData(list);
+            //firstGrid.setData(list);
 
             return this;
         }

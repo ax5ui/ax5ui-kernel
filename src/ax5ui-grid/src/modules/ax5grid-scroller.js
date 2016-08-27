@@ -32,6 +32,7 @@
     };
     var convertScrollBarPosition = {
         "vertical": function (_top, _var) {
+
             var type = "vertical";
             var _content_height = _var._content_height - _var._panel_height;
             var _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight;
@@ -39,7 +40,7 @@
 
             if (-top > _scroller_height) {
                 top = -_scroller_height;
-
+                
                 var scrollPositon = convertScrollPosition[type].call(this, {top: -top}, {
                     _content_width: _var._content_width,
                     _content_height: _var._content_height,
@@ -439,6 +440,7 @@
             _content_width = this.xvar.scrollContentWidth,
             verticalScrollBarHeight = _panel_height * _vertical_scroller_height / _content_height,
             horizontalScrollBarWidth = _panel_width * _horizontal_scroller_width / _content_width;
+
 
         if (verticalScrollBarHeight < this.config.scroller.barMinSize) verticalScrollBarHeight = this.config.scroller.barMinSize;
         if (horizontalScrollBarWidth < this.config.scroller.barMinSize) horizontalScrollBarWidth = this.config.scroller.barMinSize;
