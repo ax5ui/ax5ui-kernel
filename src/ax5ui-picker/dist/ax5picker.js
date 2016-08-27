@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.4"
+        version: "0.7.5"
     }, function () {
         /**
          * @class ax5picker
@@ -185,9 +185,13 @@
                 alignPicker = function alignPicker(append) {
                 if (!this.activePicker) return this;
 
-                var item = this.queue[this.activePickerQueueIndex],
+                var $window = $(window),
+                    item = this.queue[this.activePickerQueueIndex],
                     pos = {},
-                    dim = {};
+                    positionMargin = 12,
+                    dim = {},
+                    pickerDim = {},
+                    pickerDirection;
 
                 if (append) jQuery(document.body).append(this.activePicker);
 
@@ -196,54 +200,65 @@
                     width: item.$target.outerWidth(),
                     height: item.$target.outerHeight()
                 };
+                pickerDim = {
+                    winWidth: $window.width(),
+                    winHeight: $window.height(),
+                    width: this.activePicker.outerWidth(),
+                    height: this.activePicker.outerHeight()
+                };
 
                 // picker css(width, left, top) & direction 결정
                 if (!item.direction || item.direction === "" || item.direction === "auto") {
                     // set direction
-                    item.direction = "top";
+                    pickerDirection = "top";
+                    if (pos.top - pickerDim.height - positionMargin < 0) {
+                        pickerDirection = "top";
+                    } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                        pickerDirection = "bottom";
+                    }
+                } else {
+                    pickerDirection = item.direction;
                 }
 
                 if (append) {
-                    this.activePicker.addClass("direction-" + item.direction);
+                    this.activePicker.addClass("direction-" + pickerDirection);
                 }
 
-                var pickerDim = {
-                    width: this.activePicker.outerWidth(),
-                    height: this.activePicker.outerHeight()
-                };
                 var positionCSS = function () {
-                    if (item.direction == "top") {
-                        return {
-                            left: pos.left + dim.width / 2 - pickerDim.width / 2,
-                            top: pos.top + dim.height + 12
-                        };
-                    } else if (item.direction == "bottom") {
-                        return {
-                            left: pos.left + dim.width / 2 - pickerDim.width / 2,
-                            top: pos.top - pickerDim.height - 12
-                        };
-                    } else if (item.direction == "left") {
-                        return {
-                            left: pos.left + dim.width + 12,
-                            top: pos.top - pickerDim.height / 2 + dim.height / 2
-                        };
-                    } else if (item.direction == "right") {
-                        return {
-                            left: pos.left - pickerDim.width - 12,
-                            top: pos.top - pickerDim.height / 2 + dim.height / 2
-                        };
+                    var css = { left: 0, top: 0 };
+                    switch (pickerDirection) {
+                        case "top":
+                            css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
+                            css.top = pos.top + dim.height + positionMargin;
+                            break;
+                        case "bottom":
+                            css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
+                            css.top = pos.top - pickerDim.height - positionMargin;
+                            break;
+                        case "left":
+                            css.left = pos.left + dim.width + positionMargin;
+                            css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
+                            break;
+                        case "right":
+                            css.left = pos.left - pickerDim.width - positionMargin;
+                            css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
+                            break;
                     }
+                    return css;
                 }();
 
-                if (positionCSS.left < 0) {
-                    if (item.direction == "top") {
-                        var arrowMoveLeft = positionCSS.left;
-                        positionCSS.left = 12;
-                        var newArrowLeft = this.activePickerArrow.position() + arrowMoveLeft;
-                        this.activePickerArrow.css({ left: 20 });
+                (function () {
+                    if (pickerDirection == "top" || pickerDirection == "bottom") {
+                        if (positionCSS.left < 0) {
+                            positionCSS.left = positionMargin;
+                            this.activePickerArrow.css({ left: pos.left + dim.width / 2 - positionCSS.left });
+                        } else if (positionCSS.left + pickerDim.width > pickerDim.winWidth) {
+                            positionCSS.left = pickerDim.winWidth - pickerDim.width - positionMargin;
+                            this.activePickerArrow.css({ left: pos.left + dim.width / 2 - positionCSS.left });
+                        }
                     }
-                }
-                // todo : arrow move
+                }).call(this);
+
                 this.activePicker.css(positionCSS);
             },
                 onBodyClick = function onBodyClick(e, target) {

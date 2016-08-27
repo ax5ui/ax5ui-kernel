@@ -47,13 +47,12 @@
 </div>
 
 <h1>Keyboard</h1>
-<div class="form-group">
+<div class="form-group" style="position: absolute;right:0px;bottom:0px;">
     <input type="text" class="form-control" data-ax5picker="keyboard" placeholder="">
 </div>
 <div class="form-group">
     <div class="col-sm-3">
         <input type="text" data-ax-path="keyboard" class="form-control" placeholder="" readonly="readonly"/>
-
     </div>
 </div>
 
@@ -229,7 +228,7 @@
             else if (this.getAttribute("data-ax5picker") == "keyboard") {
                 picker.bind({
                     target: this,
-                    direction: "top",
+                    direction: "auto",
                     content: {
                         width: 550,
                         margin: 10,
@@ -282,7 +281,7 @@
 
         picker.bind({
             target: $('[data-ax-path="keyboard"]'),
-            direction: "top",
+            direction: "auto",
             content: {
                 width: 550,
                 margin: 10,
