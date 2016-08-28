@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.0.12"
+        version: "0.0.13"
     }, function () {
         /**
          * @class ax5grid
@@ -45,11 +45,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 sortable: false,
 
                 header: {
+                    align: false,
                     columnHeight: 25,
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
                 body: {
+                    align: false,
                     columnHeight: 25,
                     columnPadding: 3,
                     columnBorderWidth: 1
@@ -93,6 +95,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.headerData = {};
             this.rightHeaderData = {};
             this.footSumTable = {};
+            this.needToPaintSum = true;
 
             cfg = this.config;
 
@@ -1309,6 +1312,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var bodyRowData = this.bodyRowData;
         var leftFootSumData = this.leftFootSumData;
         var footSumData = this.footSumData;
+        var bodyAlign = cfg.body.align;
         var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
         this.$.livePanelKeys = [];
@@ -1327,7 +1331,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var di, dl;
             var tri, trl;
             var ci, cl;
-            var col, cellHeight;
+            var col, cellHeight, colAlign;
             var isScrolled = function () {
                 // repaint 함수가 스크롤되는지 여부
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
@@ -1387,6 +1391,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                         col = _bodyRow.rows[tri].cols[ci];
                         cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                        colAlign = col.align || bodyAlign;
 
                         SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
                             var attrs = "";
@@ -1416,14 +1421,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             return tdCSS_class;
                         }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
-                        SS.push(function () {
+                        SS.push(function (_cellHeight) {
                             var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                            if (col.multiLine) {
-                                return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                            } else {
-                                return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                            if (!col.multiLine) {
+                                _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                             }
-                        }(), getFieldValue.call(this, _list[di], di, col.key, col.formatter), '</span>');
+
+                            return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        }(cellHeight), getFieldValue.call(this, _list[di], di, col.key, col.formatter), '</span>');
 
                         SS.push('</td>');
                     }
@@ -1453,7 +1458,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var di, dl;
             var tri, trl;
             var ci, cl;
-            var col, cellHeight;
+            var col, cellHeight, colAlign;
             var isScrolled = function () {
                 // repaint 함수가 스크롤되는지 여부
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
@@ -1514,6 +1519,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                     col = _bodyRow.rows[tri].cols[ci];
                     cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                    colAlign = col.align || bodyAlign;
 
                     SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + tri + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
                         var attrs = "";
@@ -1542,14 +1548,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         return tdCSS_class;
                     }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
-                    SS.push(function () {
+                    SS.push(function (_cellHeight) {
                         var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                        if (col.multiLine) {
-                            return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                        } else {
-                            return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                        if (!col.multiLine) {
+                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                         }
-                    }(), getFieldValue.call(this, _list, col.key, col.label, col.collector, col.formatter), '</span>');
+
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                    }(cellHeight), getFieldValue.call(this, _list, col.key, col.label, col.collector, col.formatter), '</span>');
 
                     SS.push('</td>');
                 }
@@ -1593,7 +1599,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, scrollConfig);
 
-            if (cfg.footSum) {
+            if (cfg.footSum && this.needToPaintSum) {
                 // 바닥 요약
                 repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
             }
@@ -1607,7 +1613,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, scrollConfig);
 
-        if (cfg.footSum) {
+        if (cfg.footSum && this.needToPaintSum) {
             // 바닥 요약
             repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
         }
@@ -1622,7 +1628,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.xvar.paintStartRowIndex = paintStartRowIndex;
         this.xvar.paintRowCount = paintRowCount;
         this.xvar.dataRowCount = list.length;
-
+        this.needToPaintSum = false;
         GRID.page.statusUpdate.call(this);
     };
 
@@ -1638,7 +1644,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (this.xvar.frozenRowIndex > 0 && "left" in css) {
             this.$.panel["top-body-scroll"].css({ left: css.left });
         }
+
         this.$.panel["body-scroll"].css(css);
+
+        if (cfg.footSum && "left" in css) {
+            this.$.panel["bottom-body-scroll"].css({ left: css.left });
+        }
 
         if (!noRepaint && "top" in css) {
             repaint.call(this);
@@ -1991,6 +2002,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.list = initData(data.list);
         }
 
+        this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
@@ -2020,6 +2032,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.list.splice(_dindex, [].concat(_row));
         }
 
+        this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
@@ -2047,6 +2060,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.list.splice(_dindex, 1);
         }
 
+        this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
@@ -2058,6 +2072,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             throw 'invalid argument _dindex';
         }
         //
+        this.needToPaintSum = true;
         this.list.splice(_dindex, 1, _row);
     };
 
@@ -2276,6 +2291,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }.call(this, this.headerTable);
         var leftHeaderData = this.leftHeaderData = dividedHeaderObj.leftData;
         var headerData = this.headerData = dividedHeaderObj.rightData;
+        var headerAlign = cfg.header.align;
 
         // this.asideColGroup : asideHeaderData에서 처리 함.
         this.leftHeaderColGroup = colGroup.slice(0, this.config.frozenColumnIndex);
@@ -2299,7 +2315,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                     var col = _bodyRow.rows[tri].cols[ci];
                     var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
-
+                    var colAlign = headerAlign || col.align;
                     SS.push('<td ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', function () {
                         return typeof col.key !== "undefined" ? 'data-ax5grid-column-key="' + col.key + '" ' : '';
                     }(), 'data-ax5grid-column-colindex="' + col.colIndex + '" ', 'data-ax5grid-column-rowindex="' + col.rowIndex + '" ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
@@ -2321,7 +2337,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     SS.push(function () {
                         var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
-                        return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                        return '<span data-ax5grid-cellHolder="" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                     }(), function () {
                         var _SS = "";
                         if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && cfg.sortable || col.sortable) {
@@ -3284,15 +3300,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             table.rows[r] = { cols: [] };
             var addC = 0;
             for (var c = 0, cl = footSumRow.length; c < cl; c++) {
+                if (addC > this.columns.length) break;
                 var colspan = footSumRow[c].colspan || 1;
                 if (footSumRow[c].label || footSumRow[c].key) {
                     table.rows[r].cols.push({
                         colspan: colspan,
                         rowspan: 1,
                         colIndex: addC,
+                        align: footSumRow[c].align,
                         label: footSumRow[c].label,
                         key: footSumRow[c].key,
-                        collector: footSumRow[c].collector
+                        collector: footSumRow[c].collector,
+                        formatter: footSumRow[c].formatter
                     });
                 } else {
                     table.rows[r].cols.push({
@@ -3304,8 +3323,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
                 addC += colspan;
             }
+            addC -= 1;
             if (addC < this.columns.length) {
-                for (var c = addC - 1; c < this.columns.length; c++) {
+                for (var c = addC; c < this.columns.length; c++) {
                     table.rows[r].cols.push({
                         colIndex: c + 1,
                         colspan: 1,

@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.12"
+        version: "0.0.13"
     }, (function () {
         /**
          * @class ax5grid
@@ -42,11 +42,13 @@
                 sortable: false,
 
                 header: {
+                    align: false,
                     columnHeight: 25,
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
                 body: {
+                    align: false,
                     columnHeight: 25,
                     columnPadding: 3,
                     columnBorderWidth: 1
@@ -90,6 +92,7 @@
             this.headerData = {};
             this.rightHeaderData = {};
             this.footSumTable = {};
+            this.needToPaintSum = true;
 
             cfg = this.config;
 

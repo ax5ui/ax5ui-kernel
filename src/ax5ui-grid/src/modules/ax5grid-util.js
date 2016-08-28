@@ -268,15 +268,18 @@
             table.rows[r] = {cols: []};
             var addC = 0;
             for (var c = 0, cl = footSumRow.length; c < cl; c++) {
+                if(addC > this.columns.length) break;
                 var colspan = footSumRow[c].colspan || 1;
                 if (footSumRow[c].label || footSumRow[c].key) {
                     table.rows[r].cols.push({
                         colspan: colspan,
                         rowspan: 1,
                         colIndex: addC,
+                        align: footSumRow[c].align,
                         label: footSumRow[c].label,
                         key: footSumRow[c].key,
-                        collector: footSumRow[c].collector
+                        collector: footSumRow[c].collector,
+                        formatter: footSumRow[c].formatter
                     });
                 } else {
                     table.rows[r].cols.push({
@@ -288,8 +291,9 @@
                 }
                 addC += colspan;
             }
+            addC -= 1;
             if (addC < this.columns.length) {
-                for (var c = addC - 1; c < this.columns.length; c++) {
+                for (var c = addC; c < this.columns.length; c++) {
                     table.rows[r].cols.push({
                         colIndex: (c + 1),
                         colspan: 1,

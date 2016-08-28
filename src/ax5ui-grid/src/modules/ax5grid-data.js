@@ -32,6 +32,7 @@
             this.list = initData(data.list);
         }
 
+        this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
@@ -63,6 +64,7 @@
             this.list.splice(_dindex, [].concat(_row))
         }
 
+        this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
@@ -90,6 +92,7 @@
             this.list.splice(_dindex, 1);
         }
 
+        this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
@@ -101,6 +104,7 @@
             throw 'invalid argument _dindex';
         }
         //
+        this.needToPaintSum = true;
         this.list.splice(_dindex, 1, _row);
     };
 

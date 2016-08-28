@@ -98,9 +98,18 @@
         text-overflow: ellipsis;
 
         @if ($container == "header") {
-            text-align: center;
+            //text-align: center;
         }
 
+        &[data-ax5grid-text-align="left"]{
+            text-align: left;
+        }
+        &[data-ax5grid-text-align="center"]{
+            text-align: center;
+        }
+        &[data-ax5grid-text-align="right"]{
+            text-align: right;
+        }
         &[data-ax5grid-cellHolder="multiLine"] {
             white-space: normal;
         }
@@ -212,6 +221,13 @@
         &[data-ax5grid-panel="bottom-right-body"] {
             border-top: 1px solid darken(#ccc, 5%); /// footSum Line color
         }
+
+        &[data-ax5grid-panel="bottom-left-body"],
+        &[data-ax5grid-panel="bottom-body"],
+        &[data-ax5grid-panel="bottom-right-body"] {
+            background: #ffffe7;
+        }
+
 
         [data-ax5grid-panel-scroll] {
             position: absolute;

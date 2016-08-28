@@ -360,6 +360,7 @@
         var bodyRowData = this.bodyRowData;
         var leftFootSumData = this.leftFootSumData;
         var footSumData = this.footSumData;
+        var bodyAlign = cfg.body.align;
         var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
         this.$.livePanelKeys = [];
@@ -378,7 +379,7 @@
             var di, dl;
             var tri, trl;
             var ci, cl;
-            var col, cellHeight;
+            var col, cellHeight, colAlign;
             var isScrolled = (function () {
                 // repaint 함수가 스크롤되는지 여부
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
@@ -441,6 +442,7 @@
                     for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                         col = _bodyRow.rows[tri].cols[ci];
                         cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                        colAlign = col.align || bodyAlign;
 
                         SS.push('<td ',
                             'data-ax5grid-panel-name="' + _elTargetKey + '" ',
@@ -482,14 +484,17 @@
                             }).call(this, col) + '" ',
                             'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
-                        SS.push((function () {
+                        SS.push((function (_cellHeight) {
                             var lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
-                            if (col.multiLine) {
-                                return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                            } else {
-                                return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                            if (!col.multiLine) {
+                                _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                             }
-                        })(), getFieldValue.call(this, _list[di], di, col.key, col.formatter), '</span>');
+
+                            return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
+                                ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
+                                '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+
+                        })(cellHeight), getFieldValue.call(this, _list[di], di, col.key, col.formatter), '</span>');
 
                         SS.push('</td>');
                     }
@@ -525,7 +530,7 @@
             var di, dl;
             var tri, trl;
             var ci, cl;
-            var col, cellHeight;
+            var col, cellHeight, colAlign;
             var isScrolled = (function () {
                 // repaint 함수가 스크롤되는지 여부
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
@@ -540,7 +545,7 @@
             })();
 
             var getFieldValue = function (_list, _key, _label, _collector, _formatter) {
-                if(typeof _key === "undefined"){
+                if (typeof _key === "undefined") {
                     return _label;
                 }
                 else if (_key === "__d-index__" || _key === "__d-checkbox__") {
@@ -559,14 +564,14 @@
                             value = GRID.collector[_collector].call(that);
                         }
 
-                        if(_formatter){
+                        if (_formatter) {
                             that.value = value;
                             if (U.isFunction(_formatter)) {
                                 return _collector.call(that);
                             } else {
                                 return GRID.formatter[_formatter].call(that);
                             }
-                        }else{
+                        } else {
                             return value;
                         }
 
@@ -590,6 +595,7 @@
                 for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                     col = _bodyRow.rows[tri].cols[ci];
                     cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                    colAlign = col.align || bodyAlign;
 
                     SS.push('<td ',
                         'data-ax5grid-panel-name="' + _elTargetKey + '" ',
@@ -629,14 +635,17 @@
                         }).call(this, col) + '" ',
                         'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
-                    SS.push((function () {
+                    SS.push((function (_cellHeight) {
                         var lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
-                        if (col.multiLine) {
-                            return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                        } else {
-                            return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                        if (!col.multiLine) {
+                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                         }
-                    })(), getFieldValue.call(this, _list, col.key, col.label, col.collector, col.formatter), '</span>');
+
+                        return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
+                            ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
+                            '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+
+                    })(cellHeight), getFieldValue.call(this, _list, col.key, col.label, col.collector, col.formatter), '</span>');
 
                     SS.push('</td>');
                 }
@@ -685,7 +694,7 @@
 
             repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, scrollConfig);
 
-            if (cfg.footSum) {
+            if (cfg.footSum && this.needToPaintSum) {
                 // 바닥 요약
                 repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
             }
@@ -699,7 +708,7 @@
 
         repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, scrollConfig);
 
-        if (cfg.footSum) {
+        if (cfg.footSum && this.needToPaintSum) {
             // 바닥 요약
             repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
         }
@@ -714,7 +723,7 @@
         this.xvar.paintStartRowIndex = paintStartRowIndex;
         this.xvar.paintRowCount = paintRowCount;
         this.xvar.dataRowCount = list.length;
-
+        this.needToPaintSum = false;
         GRID.page.statusUpdate.call(this);
     };
 
@@ -730,7 +739,12 @@
         if (this.xvar.frozenRowIndex > 0 && "left" in css) {
             this.$.panel["top-body-scroll"].css({left: css.left});
         }
+
         this.$.panel["body-scroll"].css(css);
+
+        if (cfg.footSum && "left" in css) {
+            this.$.panel["bottom-body-scroll"].css({left: css.left});
+        }
 
         if (!noRepaint && "top" in css) {
             repaint.call(this);

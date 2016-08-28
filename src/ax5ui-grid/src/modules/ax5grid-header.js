@@ -140,6 +140,7 @@
         }).call(this, this.headerTable);
         var leftHeaderData = this.leftHeaderData = dividedHeaderObj.leftData;
         var headerData = this.headerData = dividedHeaderObj.rightData;
+        var headerAlign = cfg.header.align;
 
         // this.asideColGroup : asideHeaderData에서 처리 함.
         this.leftHeaderColGroup = colGroup.slice(0, this.config.frozenColumnIndex);
@@ -163,7 +164,7 @@
                 for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                     var col = _bodyRow.rows[tri].cols[ci];
                     var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
-
+                    var colAlign = headerAlign || col.align;
                     SS.push('<td ',
                         'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
                         'data-ax5grid-column-row="' + tri + '" ',
@@ -195,7 +196,9 @@
 
                     SS.push((function () {
                         var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth);
-                        return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                        return '<span data-ax5grid-cellHolder="" ' +
+                            ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
+                            ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                     })(), (function () {
                         var _SS = "";
                         if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && cfg.sortable || col.sortable) {
