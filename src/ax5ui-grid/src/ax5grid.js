@@ -236,7 +236,7 @@
                         this.footSumTable = GRID.util.makeFootSumTable.call(this, this.footSum);
                     }else{
                         this.footSum = [];
-                        this.footSumTable = [];
+                        this.footSumTable = {};
                     }
                 },
                 alignGrid = function (isFirst) {

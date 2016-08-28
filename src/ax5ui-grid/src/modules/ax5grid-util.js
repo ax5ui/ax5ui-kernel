@@ -262,19 +262,43 @@
         var table = {
             rows: []
         };
-        var colIndex = 0;
 
-        console.log(this.bodyRowTable);
-        console.log(this.columns);
-        
         for (var r = 0, rl = footSum.length; r < rl; r++) {
             var footSumRow = footSum[r];
-            table.rows[r] = {cols:[]};
-            for(var c = 0, cl = this.columns.length;c<cl;c++){
-
+            table.rows[r] = {cols: []};
+            var addC = 0;
+            for (var c = 0, cl = footSumRow.length; c < cl; c++) {
+                var colspan = footSumRow[c].colspan || 1;
+                if (footSumRow[c].label || footSumRow[c].key) {
+                    table.rows[r].cols.push({
+                        colspan: colspan,
+                        rowspan: 1,
+                        colIndex: addC,
+                        label: footSumRow[c].label,
+                        key: footSumRow[c].key,
+                        collector: footSumRow[c].collector
+                    });
+                } else {
+                    table.rows[r].cols.push({
+                        colIndex: addC,
+                        colspan: colspan,
+                        rowspan: 1,
+                        label: "&nbsp;",
+                    });
+                }
+                addC += colspan;
+            }
+            if (addC < this.columns.length) {
+                for (var c = addC - 1; c < this.columns.length; c++) {
+                    table.rows[r].cols.push({
+                        colIndex: (c + 1),
+                        colspan: 1,
+                        rowspan: 1,
+                        label: "&nbsp;",
+                    });
+                }
             }
         }
-
         return table;
     };
 

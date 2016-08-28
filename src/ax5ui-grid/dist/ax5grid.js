@@ -237,7 +237,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     this.footSumTable = GRID.util.makeFootSumTable.call(this, this.footSum);
                 } else {
                     this.footSum = [];
-                    this.footSumTable = [];
+                    this.footSumTable = {};
                 }
             },
                 alignGrid = function alignGrid(isFirst) {
@@ -1240,19 +1240,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             U.stopEvent(e);
             return false;
         });
+
+        resetFrozenColumn.call(this);
     };
 
-    var repaint = function repaint(_reset) {
+    var resetFrozenColumn = function resetFrozenColumn() {
         var cfg = this.config;
-        var list = this.list;
-        if (_reset) {
-            this.xvar.paintStartRowIndex = undefined;
-        }
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
-        if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
-        var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
         var dividedBodyRowObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.xvar.frozenColumnIndex);
-        var asideBodyRowData = this.asideBodyRowData = function (dataTable) {
+        this.asideBodyRowData = function (dataTable) {
             var data = { rows: [] };
             for (var i = 0, l = dataTable.rows.length; i < l; i++) {
                 data.rows[i] = { cols: [] };
@@ -1288,8 +1283,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             return data;
         }.call(this, this.bodyRowTable);
-        var leftBodyRowData = this.leftBodyRowData = dividedBodyRowObj.leftData;
-        var bodyRowData = this.bodyRowData = dividedBodyRowObj.rightData;
+        this.leftBodyRowData = dividedBodyRowObj.leftData;
+        this.bodyRowData = dividedBodyRowObj.rightData;
+        this.leftFootSumData = {};
+        this.footSumData = {};
+        if (this.config.footSum) {
+            var dividedFootSumObj = GRID.util.divideTableByFrozenColumnIndex(this.footSumTable, this.xvar.frozenColumnIndex);
+            this.leftFootSumData = dividedFootSumObj.leftData;
+            this.footSumData = dividedFootSumObj.rightData;
+        }
+    };
+
+    var repaint = function repaint(_reset) {
+        var cfg = this.config;
+        var list = this.list;
+        if (_reset) {
+            resetFrozenColumn.call(this);
+            this.xvar.paintStartRowIndex = undefined;
+        }
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
+        var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
+        var asideBodyRowData = this.asideBodyRowData;
+        var leftBodyRowData = this.leftBodyRowData;
+        var bodyRowData = this.bodyRowData;
+        var leftFootSumData = this.leftFootSumData;
+        var footSumData = this.footSumData;
         var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
         this.$.livePanelKeys = [];
@@ -1454,7 +1473,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
             repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, scrollConfig);
 
-            if (cfg.footSum) {}
+            if (cfg.footSum) {
+                repaintBody.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+            }
         }
 
         // body
@@ -1463,7 +1484,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             repaintBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, list.slice(0, this.xvar.frozenRowIndex));
         }
         repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, scrollConfig);
-        if (cfg.footSum) {}
+        if (cfg.footSum) {
+            repaintBody.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+        }
+
+        //todo : repaintBody 에서 footSum 데이터 예외처리
 
         // right
         if (cfg.rightSum) {
@@ -3119,17 +3144,43 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var table = {
             rows: []
         };
-        var colIndex = 0;
-
-        console.log(this.bodyRowTable);
-        console.log(this.columns);
 
         for (var r = 0, rl = footSum.length; r < rl; r++) {
             var footSumRow = footSum[r];
             table.rows[r] = { cols: [] };
-            for (var c = 0, cl = this.columns.length; c < cl; c++) {}
+            var addC = 0;
+            for (var c = 0, cl = footSumRow.length; c < cl; c++) {
+                var colspan = footSumRow[c].colspan || 1;
+                if (footSumRow[c].label || footSumRow[c].key) {
+                    table.rows[r].cols.push({
+                        colspan: colspan,
+                        rowspan: 1,
+                        colIndex: addC,
+                        label: footSumRow[c].label,
+                        key: footSumRow[c].key,
+                        collector: footSumRow[c].collector
+                    });
+                } else {
+                    table.rows[r].cols.push({
+                        colIndex: addC,
+                        colspan: colspan,
+                        rowspan: 1,
+                        label: "&nbsp;"
+                    });
+                }
+                addC += colspan;
+            }
+            if (addC < this.columns.length) {
+                for (var c = addC - 1; c < this.columns.length; c++) {
+                    table.rows[r].cols.push({
+                        colIndex: c + 1,
+                        colspan: 1,
+                        rowspan: 1,
+                        label: "&nbsp;"
+                    });
+                }
+            }
         }
-
         return table;
     };
 
