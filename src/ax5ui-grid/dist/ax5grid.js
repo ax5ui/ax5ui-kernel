@@ -1342,9 +1342,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }();
 
             var getFieldValue = function getFieldValue(_list, _index, _key, _formatter) {
-                if (_elTargetKey === "bottom-aside-body") {
-                    return "&nbsp;";
-                }
                 if (_key === "__d-index__") {
                     return _index + 1;
                 } else if (_key === "__d-checkbox__") {
@@ -1354,7 +1351,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         var that = {
                             key: _key,
                             value: _list[_key],
-                            item: _list,
                             index: _index,
                             list: list
                         };
@@ -1444,6 +1440,129 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
+        var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
+            var _elTarget = this.$.panel[_elTargetKey];
+
+            if (!isFirstPaint && !_scrollConfig) {
+                this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
+                return false;
+            }
+
+            var SS = [];
+            var cgi, cgl;
+            var di, dl;
+            var tri, trl;
+            var ci, cl;
+            var col, cellHeight;
+            var isScrolled = function () {
+                // repaint 함수가 스크롤되는지 여부
+                if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
+                    _scrollConfig = {
+                        paintStartRowIndex: 0,
+                        paintRowCount: _list.length
+                    };
+                    return false;
+                } else {
+                    return true;
+                }
+            }();
+
+            var getFieldValue = function getFieldValue(_list, _key, _label, _collector, _formatter) {
+                if (typeof _key === "undefined") {
+                    return _label;
+                } else if (_key === "__d-index__" || _key === "__d-checkbox__") {
+                    return '&nbsp;';
+                } else {
+                    if (_collector) {
+                        var that = {
+                            key: _key,
+                            list: _list
+                        };
+                        var value;
+                        if (U.isFunction(_collector)) {
+                            value = _collector.call(that);
+                        } else {
+                            value = GRID.collector[_collector].call(that);
+                        }
+
+                        if (_formatter) {
+                            that.value = value;
+                            if (U.isFunction(_formatter)) {
+                                return _collector.call(that);
+                            } else {
+                                return GRID.formatter[_formatter].call(that);
+                            }
+                        } else {
+                            return value;
+                        }
+                    } else {
+                        return "&nbsp;";
+                    }
+                }
+            };
+
+            SS.push('<table border="0" cellpadding="0" cellspacing="0">');
+            SS.push('<colgroup>');
+            for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
+            }
+            SS.push('<col  />');
+            SS.push('</colgroup>');
+
+            for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                SS.push('<tr class="tr-sum">');
+                for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    col = _bodyRow.rows[tri].cols[ci];
+                    cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+
+                    SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + tri + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
+                        var attrs = "";
+                        if (_focusedColumn) {
+                            attrs += 'data-ax5grid-column-focused="true" ';
+                        }
+                        if (_selectedColumn) {
+                            attrs += 'data-ax5grid-column-selected="true" ';
+                        }
+                        return attrs;
+                    }(this.focusedColumn["sum_" + col.colIndex + "_" + tri], this.selectedColumn["sum_" + col.colIndex + "_" + tri]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                        var tdCSS_class = "";
+                        if (_col.styleClass) {
+                            if (U.isFunction(_col.styleClass)) {
+                                tdCSS_class += _col.styleClass.call({
+                                    column: _col,
+                                    key: _col.key,
+                                    isFootSum: true
+                                }) + " ";
+                            } else {
+                                tdCSS_class += _col.styleClass + " ";
+                            }
+                        }
+                        if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                        return tdCSS_class;
+                    }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                    SS.push(function () {
+                        var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                        if (col.multiLine) {
+                            return '<span data-ax5grid-cellHolder="multiLine" style="height:' + cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        } else {
+                            return '<span data-ax5grid-cellHolder="" style="height: ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                        }
+                    }(), getFieldValue.call(this, _list, col.key, col.label, col.collector, col.formatter), '</span>');
+
+                    SS.push('</td>');
+                }
+                SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                SS.push('</tr>');
+            }
+
+            SS.push('</table>');
+
+            _elTarget.html(SS.join(''));
+            this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
+            return true;
+        };
         var scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
             paintRowCount: paintRowCount,
@@ -1460,8 +1579,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             repaintBody.call(this, "aside-body-scroll", this.asideColGroup, asideBodyRowData, list, scrollConfig);
 
             if (cfg.footSum) {
-                // 바닥 합계
-                repaintBody.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, list);
+                // 바닥 요약
+                //repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, list);
             }
         }
 
@@ -1471,10 +1590,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // 상단 행고정
                 repaintBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, list.slice(0, this.xvar.frozenRowIndex));
             }
+
             repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, scrollConfig);
 
             if (cfg.footSum) {
-                repaintBody.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+                // 바닥 요약
+                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
             }
         }
 
@@ -1483,9 +1604,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             // 상단 행고정
             repaintBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, list.slice(0, this.xvar.frozenRowIndex));
         }
+
         repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, scrollConfig);
+
         if (cfg.footSum) {
-            repaintBody.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+            // 바닥 요약
+            repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
         }
 
         //todo : repaintBody 에서 footSum 데이터 예외처리
@@ -1813,10 +1937,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var GRID = ax5.ui.grid;
     var U = ax5.util;
     var sum = function sum() {
-        //return U.number(this.value, {"money":true});
+        var value = 0;
+        var i = this.list.length;
+        while (i--) {
+            value += U.number(this.list[i][this.key]);
+        }
+        return value;
     };
     var avg = function avg() {
-        //return U.number(this.value, {"money":true});
+        var value = 0;
+        var i = this.list.length;
+        while (i--) {
+            value += U.number(this.list[i][this.key]);
+        }
+        return U.number(value / (this.list.length || 1), { "round": 2 });
     };
 
     GRID.collector = {

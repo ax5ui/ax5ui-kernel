@@ -90,8 +90,15 @@
                 footSum: [[
                     {label: "합계", colspan: 2},
                     {key: "c1", collector: "sum"},
-                    {key: "c2", collector: "sum"}
-                ]],
+                    {key: "c1", collector: "avg"},
+                    {key: "c1", collector: "sum"}
+                ],
+                    [
+                        {label: "합계", colspan: 2},
+                        {key: "c1", collector: "sum"},
+                        {key: "c1", collector: "avg"},
+                        {key: "c1", collector: "sum"}
+                    ]],
 
                 columns: [
                     {
@@ -125,7 +132,7 @@
             var _my_pageNo = (_pageNo || 0) + 1;
             var list = [];
             for (var a = 0, l = 10; a < l; a++) {
-                list.push({a: a + " 컬럼", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo, c2: "!@#$", "d": (10 - a) % 3, "d2": (10 - a) % 2});
+                list.push({a: a + " 컬럼", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo * 10, c2: "!@#$", "d": (10 - a) % 3, "d2": (10 - a) % 2});
             }
 
             firstGrid.setData({
@@ -163,13 +170,13 @@
         $('[data-grid-control]').click(function () {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    firstGrid.addRow({a: "추가된 컬럼", b: "추가된 필드", c: "추가된 블라블라", c1: "???", c2: "!@#$", "d": "추가된 필드D값"});
+                    firstGrid.addRow({a: "추가된 컬럼", b: "추가된 필드", c: "추가된 블라블라", c1: 120, c2: "!@#$", "d": "추가된 필드D값"});
                     break;
                 case "row-remove":
                     firstGrid.removeRow();
                     break;
                 case "row-update":
-                    firstGrid.updateRow({a: "변경된 컬럼", b: "변경된 필드", c: "변경된 블라블라", c1: "???", c2: "!@#$", "d": "변경된 필드D값"}, 5);
+                    firstGrid.updateRow({a: "변경된 컬럼", b: "변경된 필드", c: "변경된 블라블라", c1: 1200, c2: "!@#$", "d": "변경된 필드D값"}, 5);
                     break;
 
                 case "column-add":
