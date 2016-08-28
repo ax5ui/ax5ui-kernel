@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.13"
+        version: "0.0.14"
     }, (function () {
         /**
          * @class ax5grid
@@ -979,7 +979,7 @@
 // todo : column resize -- ok
 
 // todo : sortable -- ok
-// todo : grid footsum
+// todo : grid footsum -- ok, footsum area cell selected
 // todo : grid body group
 // todo : cell inline edit
 

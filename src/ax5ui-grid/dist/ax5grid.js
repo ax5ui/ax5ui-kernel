@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.0.13"
+        version: "0.0.14"
     }, function () {
         /**
          * @class ax5grid
@@ -977,7 +977,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // todo : column resize -- ok
 
 // todo : sortable -- ok
-// todo : grid footsum
+// todo : grid footsum -- ok, footsum area cell selected
 // todo : grid body group
 // todo : cell inline edit
 
@@ -1179,12 +1179,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     var that = {
                         self: self,
                         page: self.page,
-                        data: self.data,
+                        list: self.list,
                         dindex: _column.dindex,
                         rowIndex: _column.rowIndex,
                         colIndex: _column.colIndex,
                         column: column,
-                        value: self.data[_column.dindex][column.key]
+                        value: self.list[_column.dindex][column.key]
                     };
 
                     if (self.config.body.onClick) {
@@ -1559,7 +1559,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     SS.push('</td>');
                 }
-                SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-column-attr="' + "sum" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
                 SS.push('</tr>');
             }
 
@@ -3307,6 +3307,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         colspan: colspan,
                         rowspan: 1,
                         colIndex: addC,
+                        columnAttr: "sum",
                         align: footSumRow[c].align,
                         label: footSumRow[c].label,
                         key: footSumRow[c].key,

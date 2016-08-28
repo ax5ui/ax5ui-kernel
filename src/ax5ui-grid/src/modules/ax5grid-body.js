@@ -224,12 +224,12 @@
                     var that = {
                         self: self,
                         page: self.page,
-                        data: self.data,
+                        list: self.list,
                         dindex: _column.dindex,
                         rowIndex: _column.rowIndex,
                         colIndex: _column.colIndex,
                         column: column,
-                        value: self.data[_column.dindex][column.key]
+                        value: self.list[_column.dindex][column.key]
                     };
 
                     if (self.config.body.onClick) {
@@ -652,7 +652,7 @@
                 SS.push('<td ',
                     'data-ax5grid-column-row="null" ',
                     'data-ax5grid-column-col="null" ',
-                    'data-ax5grid-column-attr="' + ("default") + '" ',
+                    'data-ax5grid-column-attr="' + ("sum") + '" ',
                     'style="height: ' + (cfg.body.columnHeight) + 'px;min-height: 1px;" ',
                     '></td>');
                 SS.push('</tr>');

@@ -275,6 +275,7 @@
                         colspan: colspan,
                         rowspan: 1,
                         colIndex: addC,
+                        columnAttr: "sum",
                         align: footSumRow[c].align,
                         label: footSumRow[c].label,
                         key: footSumRow[c].key,
