@@ -8,6 +8,20 @@
 
     };
 
+    var clearGroupingData = function(_list){
+        var i = 0, l = _list.length;
+        var returnList = [];
+        for (; i < l; i++) {
+            if (_list[i] && !("__groupingList" in _list[i])) {
+                if (_list[i][this.config.columnKeys.selected]) {
+                    this.selectedDataIndexs.push(i);
+                }
+                returnList.push(_list[i]);
+            }
+        }
+        return returnList;
+    };
+
     var initData = function (_list) {
         this.selectedDataIndexs = [];
         var i = 0, l = _list.length;
@@ -36,7 +50,7 @@
                     list: []
                 }
             });
-            var gi = 0, gl = groupingKeys.length, compareString, addGrouping = false, appendRow = [], ari;
+            var gi = 0, gl = groupingKeys.length, compareString, appendRow = [], ari;
 
             for (; i < l + 1; i++) {
                 gi = 0;
@@ -62,8 +76,7 @@
 
                 ari = appendRow.length;
                 while (ari--) {
-                    //console.log(appendRow[ari]);
-                    returnList.push({__groupingList: appendRow[ari].list})
+                    returnList.push({__groupingList: appendRow[ari].list, __groupingBy:{ keys: appendRow[ari].keys, labels: appendRow[ari].labels }});
                 }
 
                 if (_list[i]) {
@@ -135,6 +148,10 @@
             this.list.splice(_dindex, [].concat(_row))
         }
 
+        if (this.config.body.grouping) {
+            this.list = initData.call(this, clearGroupingData.call(this, this.list));
+        }
+
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
@@ -148,7 +165,17 @@
                 this.list.splice(_dindex, 1);
             },
             "last": function () {
-                this.list.splice(this.list.length - 1, 1);
+                var lastIndex = this.list.length - 1;
+                if (this.config.body.grouping && lastIndex > 0) {
+                    while(lastIndex){
+                        if("__groupingList" in this.list[lastIndex]){
+                            lastIndex--;
+                        }else{
+                            break;
+                        }
+                    }
+                }
+                this.list.splice(lastIndex, 1);
             }
         };
 
@@ -161,6 +188,10 @@
             }
             //
             this.list.splice(_dindex, 1);
+        }
+
+        if (this.config.body.grouping) {
+            this.list = initData.call(this, clearGroupingData.call(this, this.list));
         }
 
         this.needToPaintSum = true;
@@ -177,6 +208,10 @@
         //
         this.needToPaintSum = true;
         this.list.splice(_dindex, 1, _row);
+
+        if (this.config.body.grouping) {
+            this.list = initData.call(this, clearGroupingData.call(this, this.list));
+        }
     };
 
     var setValue = function () {
@@ -217,6 +252,9 @@
 
         list.sort(function (_a, _b) {
             i = 0;
+            if(_a.__groupingList || _a.__groupingList){
+                return 0;
+            }
             for (; i < l; i++) {
                 _a_val = _a[sortInfoArray[i].key];
                 _b_val = _b[sortInfoArray[i].key];
@@ -254,7 +292,8 @@
         add: add,
         remove: remove,
         update: update,
-        sort: sort
+        sort: sort,
+        clearGroupingData: clearGroupingData
     };
 
 })();

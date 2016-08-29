@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.14"
+        version: "0.0.15"
     }, (function () {
         /**
          * @class ax5grid
@@ -220,6 +220,11 @@
                 onResetColumns = function () {
                     initColumns.call(this, this.config.columns);
                     resetColGroupWidth.call(this);
+                    if (this.config.footSum) {
+                        initFootSum.call(this, this.config.footSum);
+                        this.needToPaintSum = true;
+                    }
+                    if (this.config.body.grouping) initBodyGroup.call(this, this.config.body.grouping);
                     alignGrid.call(this, true);
                     GRID.header.repaint.call(this);
                     GRID.body.repaint.call(this, true);
@@ -816,7 +821,7 @@
                 GRID.data.add.call(this, _row, _dindex);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
-                GRID.body.moveFocus.call(this, "END");
+                GRID.body.moveFocus.call(this, (this.config.body.grouping) ? "START" : "END");
                 GRID.scroller.resize.call(this);
                 return this;
             };
@@ -830,7 +835,7 @@
                 GRID.data.remove.call(this, _dindex);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
-                GRID.body.moveFocus.call(this, "END");
+                GRID.body.moveFocus.call(this, (this.config.body.grouping) ? "START" : "END");
                 GRID.scroller.resize.call(this);
                 return this;
             };
@@ -845,7 +850,7 @@
                 GRID.data.update.call(this, _row, _dindex);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
-                GRID.body.moveFocus.call(this, _dindex);
+                GRID.body.moveFocus.call(this, (this.config.body.grouping) ? "START" : _dindex);
                 GRID.scroller.resize.call(this);
                 return this;
             };
@@ -1028,8 +1033,9 @@
 // todo : column resize -- ok
 
 // todo : sortable -- ok
-// todo : grid footsum -- ok, footsum area cell selected
-// todo : grid body group
+// todo : grid footsum -- ok, footsum area cell selected -- ok
+// todo : grid body group -- ok, 그룹핑 된 상태에서 정렬 예외처리 -- ok, 그룹핑 된상태에서 데이터 추가/수정/삭제 -- ok, 그룹핑 된 row 셀렉트 문제.
+
 // todo : cell inline edit
 
 // todo : filter

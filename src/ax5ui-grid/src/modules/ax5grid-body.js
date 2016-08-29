@@ -336,6 +336,48 @@
         }).call(this, this.bodyRowTable);
         this.leftBodyRowData = dividedBodyRowObj.leftData;
         this.bodyRowData = dividedBodyRowObj.rightData;
+
+        if (cfg.body.grouping) {
+            var dividedBodyGroupingObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyGroupingTable, this.xvar.frozenColumnIndex);
+            this.asideBodyGroupingData = (function (dataTable) {
+                var data = {rows: []};
+                for (var i = 0, l = dataTable.rows.length; i < l; i++) {
+                    data.rows[i] = {cols: []};
+                    if (i === 0) {
+                        var col = {
+                            label: "",
+                            colspan: 1,
+                            rowspan: dataTable.rows.length,
+                            colIndex: null
+                        }, _col = {};
+
+                        if (cfg.showLineNumber) {
+                            _col = jQuery.extend({}, col, {
+                                width: cfg.lineNumberColumnWidth,
+                                _width: cfg.lineNumberColumnWidth,
+                                columnAttr: "lineNumber",
+                                label: "&nbsp;", key: "__d-index__"
+                            });
+                            data.rows[i].cols.push(_col);
+                        }
+                        if (cfg.showRowSelector) {
+                            _col = jQuery.extend({}, col, {
+                                width: cfg.rowSelectorColumnWidth,
+                                _width: cfg.rowSelectorColumnWidth,
+                                columnAttr: "rowSelector",
+                                label: "", key: "__d-checkbox__"
+                            });
+                            data.rows[i].cols.push(_col);
+                        }
+                    }
+                }
+
+                return data;
+            }).call(this, this.bodyGroupingTable);
+            this.leftBodyGroupingData = dividedBodyGroupingObj.leftData;
+            this.bodyGroupingData = dividedBodyGroupingObj.rightData;
+        }
+
         this.leftFootSumData = {};
         this.footSumData = {};
         if (this.config.footSum) {
@@ -360,13 +402,16 @@
         var bodyRowData = this.bodyRowData;
         var leftFootSumData = this.leftFootSumData;
         var footSumData = this.footSumData;
+        var asideBodyGroupingData = this.asideBodyGroupingData;
+        var leftBodyGroupingData = this.leftBodyGroupingData;
+        var bodyGroupingData = this.bodyGroupingData;
         var bodyAlign = cfg.body.align;
         var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
         this.$.livePanelKeys = [];
 
         // body-scroll 의 포지션에 의존적이므로..
-        var repaintBody = function (_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
+        var repaintBody = function (_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
             var _elTarget = this.$.panel[_elTargetKey];
 
             if (!isFirstPaint && !_scrollConfig) {
@@ -393,7 +438,7 @@
                 }
             })();
 
-            var getFieldValue = function (_list, _index, _key, _formatter) {
+            var getFieldValue = function (_item, _index, _key, _formatter) {
                 if (_key === "__d-index__") {
                     return _index + 1;
                 }
@@ -404,10 +449,10 @@
                     if (_formatter) {
                         var that = {
                             key: _key,
-                            value: _list[_key],
+                            value: _item[_key],
                             index: _index,
-                            item: list[_index],
-                            list: list
+                            item: _item,
+                            list: _list
                         };
                         if (U.isFunction(_formatter)) {
                             return _formatter.call(that);
@@ -415,7 +460,57 @@
                             return GRID.formatter[_formatter].call(that);
                         }
                     } else {
-                        return _list[_key] || "&nbsp;";
+                        return _item[_key] || "&nbsp;";
+                    }
+                }
+            };
+            var getGroupingValue = function(_item, _index, _col, _key, _label, _collector, _formatter){
+                var value, that;
+
+                if (typeof _key === "undefined") {
+                    that = {
+                        key: _key,
+                        list: _item.__groupingList,
+                        groupBy: _item.__groupingBy
+                    };
+                    if(U.isFunction(_label)){
+                        value = _label.call(that);
+                    }else{
+                        value = _label;
+                    }
+                    return value;
+                }
+                else if (_key === "__d-index__") {
+                    return _index + 1;
+                }
+                else if (_key === "__d-checkbox__") {
+                    return '&nbsp;';
+                }
+                else {
+                    if (_collector) {
+                        that = {
+                            key: _key,
+                            list: _item.__groupingList
+                        };
+                        if (U.isFunction(_collector)) {
+                            value = _collector.call(that);
+                        } else {
+                            value = GRID.collector[_collector].call(that);
+                        }
+                        _item[_key] = value;
+
+                        if (_formatter) {
+                            that.value = value;
+                            if (U.isFunction(_formatter)) {
+                                return _collector.call(that);
+                            } else {
+                                return GRID.formatter[_formatter].call(that);
+                            }
+                        } else {
+                            return value;
+                        }
+                    } else {
+                        return "&nbsp;";
                     }
                 }
             };
@@ -437,11 +532,25 @@
                 }
                 return len;
             })(); di < dl; di++) {
-                for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
 
-                    SS.push('<tr class="tr-' + (di % 4) + '" data-ax5grid-tr-data-index="' + di + '" data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '">');
-                    for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
-                        col = _bodyRow.rows[tri].cols[ci];
+                var isGroupingRow = false;
+                var rowTable;
+
+                if(_groupRow && "__groupingList" in _list[di]){
+                    rowTable = _groupRow;
+                    isGroupingRow = true;
+                }else{
+                    rowTable = _bodyRow;
+                }
+
+                for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+
+                    SS.push('<tr class="tr-' + (di % 4) + '"',
+                        (isGroupingRow) ? ' data-ax5grid-grouping-tr="true"' : '',
+                        ' data-ax5grid-tr-data-index="' + di + '"',
+                        ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '">');
+                    for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                        col = rowTable.rows[tri].cols[ci];
                         cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
                         colAlign = col.align || bodyAlign;
 
@@ -495,7 +604,7 @@
                                 ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
                                 '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
 
-                        })(cellHeight), getFieldValue.call(this, _list[di], di, col.key, col.formatter), '</span>');
+                        })(cellHeight), (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col, col.key, col.label, col.collector, col.formatter) : getFieldValue.call(this, _list[di], di, col.key, col.formatter), '</span>');
 
                         SS.push('</td>');
                     }
@@ -528,22 +637,9 @@
 
             var SS = [];
             var cgi, cgl;
-            var di, dl;
             var tri, trl;
             var ci, cl;
             var col, cellHeight, colAlign;
-            var isScrolled = (function () {
-                // repaint 함수가 스크롤되는지 여부
-                if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
-                    _scrollConfig = {
-                        paintStartRowIndex: 0,
-                        paintRowCount: _list.length
-                    };
-                    return false;
-                } else {
-                    return true;
-                }
-            })();
 
             var getFieldValue = function (_list, _key, _label, _collector, _formatter) {
                 if (typeof _key === "undefined") {
@@ -675,14 +771,14 @@
         if (cfg.asidePanelWidth > 0) {
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                repaintBody.call(this, "top-aside-body", this.asideColGroup, asideBodyRowData, list.slice(0, this.xvar.frozenRowIndex));
+                repaintBody.call(this, "top-aside-body", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
             }
 
-            repaintBody.call(this, "aside-body-scroll", this.asideColGroup, asideBodyRowData, list, scrollConfig);
+            repaintBody.call(this, "aside-body-scroll", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list, scrollConfig);
 
             if (cfg.footSum) {
-                // 바닥 요약
-                //repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, list);
+                // 바닥 요약 (footSum에 대한 aside 사용안함)
+                //repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, list);
             }
         }
 
@@ -690,10 +786,10 @@
         if (this.xvar.frozenColumnIndex > 0) {
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                repaintBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, list.slice(0, this.xvar.frozenRowIndex));
+                repaintBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
             }
 
-            repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, scrollConfig);
+            repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list, scrollConfig);
 
             if (cfg.footSum && this.needToPaintSum) {
                 // 바닥 요약
@@ -704,10 +800,10 @@
         // body
         if (this.xvar.frozenRowIndex > 0) {
             // 상단 행고정
-            repaintBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, list.slice(0, this.xvar.frozenRowIndex));
+            repaintBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
         }
 
-        repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, scrollConfig);
+        repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
 
         if (cfg.footSum && this.needToPaintSum) {
             // 바닥 요약

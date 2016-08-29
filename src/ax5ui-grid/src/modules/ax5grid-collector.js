@@ -7,17 +7,22 @@
         var value = 0;
         var i = this.list.length;
         while (i--) {
-            value += U.number(this.list[i][this.key]);
+            if(!("__groupingList" in this.list[i])) {
+                value += U.number(this.list[i][this.key]);
+            }
         }
         return value;
     };
     var avg = function () {
         var value = 0;
-        var i = this.list.length;
+        var i = this.list.length, listLength = 0;
         while (i--) {
-            value += U.number(this.list[i][this.key]);
+            if(!("__groupingList" in this.list[i])) {
+                value += U.number(this.list[i][this.key]);
+                listLength++;
+            }
         }
-        return U.number(value / (this.list.length || 1), {"round": 2});
+        return U.number(value / (listLength || 1), {"round": 2});
     };
 
     GRID.collector = {

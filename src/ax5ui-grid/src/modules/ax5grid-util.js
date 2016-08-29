@@ -322,8 +322,9 @@
                 table.rows[r].cols.push({
                     colspan: colspan,
                     rowspan: 1,
+                    rowIndex: 0,
                     colIndex: addC,
-                    columnAttr: "sum",
+                    columnAttr: "default",
                     align: _bodyGroupingColumns[c].align,
                     label: _bodyGroupingColumns[c].label,
                     key: _bodyGroupingColumns[c].key,
@@ -332,6 +333,7 @@
                 });
             } else {
                 table.rows[r].cols.push({
+                    rowIndex: 0,
                     colIndex: addC,
                     colspan: colspan,
                     rowspan: 1,
@@ -344,6 +346,7 @@
         if (addC < this.columns.length + 1) {
             for (var c = addC; c < this.columns.length + 1; c++) {
                 table.rows[r].cols.push({
+                    rowIndex: 0,
                     colIndex: (c + 1),
                     colspan: 1,
                     rowspan: 1,

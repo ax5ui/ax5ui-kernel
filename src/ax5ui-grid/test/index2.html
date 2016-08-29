@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2016. tom@axisj.com
+  ~ - github.com/thomasjang
+  ~ - www.axisj.com
+  -->
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -83,6 +89,20 @@
                     onClick: function () {
                         // console.log(this);
                         this.self.select(this.dindex);
+                    },
+                    grouping: {
+                        by: ["a", "b"],
+                        columns: [
+                            {
+                                label: function () {
+                                    return this.groupBy.labels.join(", ") + " 합계";
+                                }, colspan: 2
+                            },
+                            {key: "price", collector: "avg", formatter: "money", align: "right"},
+                            {key: "amount", collector: "sum", formatter: "money", align: "right"},
+                            {key: "cost", collector: "sum", formatter: "money", align: "right"},
+                            {label: "~~~", colspan: 3}
+                        ]
                     }
                 },
                 page: {
