@@ -54,7 +54,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     align: false,
                     columnHeight: 25,
                     columnPadding: 3,
-                    columnBorderWidth: 1
+                    columnBorderWidth: 1,
+                    grouping: false
                 },
                 rightSum: false,
                 footSum: false,
@@ -67,7 +68,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     size: 15,
                     barMinSize: 15
                 },
-
                 columnKeys: {
                     selected: '_SELECTED'
                 }
@@ -80,30 +80,46 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             // 그리드 데이터셋
             this.columns = []; // config.columns에서 복제된 오브젝트
             this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
-            this.footSum = [];
+            this.footSumColumns = [];
+            this.bodyGrouping = {};
+
             this.list = []; // 그리드의 데이터
             this.page = {}; // 그리드의 페이지 정보
-            this.sortInfo = {};
-            this.focusedColumn = {};
-            this.selectedColumn = {};
+            this.sortInfo = {}; // 그리드의 헤더 정렬 정보
+            this.focusedColumn = {}; // 그리드 바디의 포커스된 셀 정보
+            this.selectedColumn = {}; // 그리드 바디의 선택된 셀 정보
+
+            // header
+            this.headerTable = {};
+            this.leftHeaderData = {};
+            this.headerData = {};
+            this.rightHeaderData = {};
+
+            // body
             this.bodyRowTable = {};
             this.leftBodyRowData = {};
             this.bodyRowData = {};
             this.rightBodyRowData = {};
             this.bodyRowMap = {};
-            this.leftHeaderData = {};
-            this.headerData = {};
-            this.rightHeaderData = {};
-            this.footSumTable = {};
-            this.needToPaintSum = true;
+
+            this.bodyGroupingTable = {};
+            this.leftBodyGroupingData = {};
+            this.bodyGroupingData = {};
+            this.rightBodyGroupingData = {};
+
+            // footSum
+            this.footSumTable = {}; // footSum의 출력레이아웃
+            this.leftFootSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 왼쪽
+            this.footSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 오른쪽
+            this.needToPaintSum = true; // 데이터 셋이 변경되어 summary 변경 필요여부
 
             cfg = this.config;
 
-            var onStateChanged = function onStateChanged(opts, that) {
-                if (opts && opts.onStateChanged) {
-                    opts.onStateChanged.call(that, that);
+            var onStateChanged = function onStateChanged(_opts, _that) {
+                if (_opts && _opts.onStateChanged) {
+                    _opts.onStateChanged.call(_that, _that);
                 } else if (this.onStateChanged) {
-                    this.onStateChanged.call(that, that);
+                    this.onStateChanged.call(_that, _that);
                 }
                 return true;
             },
@@ -175,8 +191,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 return this;
             },
-                initColumns = function initColumns(columns) {
-                this.columns = U.deepCopy(columns);
+                initColumns = function initColumns(_columns) {
+                this.columns = U.deepCopy(_columns);
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
 
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex > this.columns.length ? this.columns.length : cfg.frozenColumnIndex;
@@ -234,16 +250,45 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }
             },
-                initFootSum = function initFootSum(footSum) {
-                if (U.isArray(footSum)) {
-                    this.footSum = footSum;
-                    this.footSumTable = GRID.util.makeFootSumTable.call(this, this.footSum);
+                initFootSum = function initFootSum(_footSum) {
+                if (U.isArray(_footSum)) {
+                    this.footSumTable = GRID.util.makeFootSumTable.call(this, this.footSumColumns = _footSum);
                 } else {
-                    this.footSum = [];
+                    this.footSumColumns = [];
                     this.footSumTable = {};
                 }
             },
-                alignGrid = function alignGrid(isFirst) {
+                initBodyGroup = function initBodyGroup(_grouping) {
+                var grouping = jQuery.extend({}, _grouping);
+                if ("by" in grouping && "columns" in grouping) {
+
+                    this.bodyGrouping = {
+                        by: grouping.by,
+                        columns: grouping.columns
+                    };
+                    this.bodyGroupingTable = GRID.util.makeBodyGroupingTable.call(this, this.bodyGrouping.columns);
+                    this.sortInfo = function () {
+                        var sortInfo = {};
+                        for (var k = 0, kl = this.bodyGrouping.by.length; k < kl; k++) {
+                            sortInfo[this.bodyGrouping.by[k]] = {
+                                orderBy: "asc",
+                                seq: k,
+                                fixed: true
+                            };
+                            for (var c = 0, cl = this.colGroup.length; c < cl; c++) {
+                                if (this.colGroup[c].key === this.bodyGrouping.by[k]) {
+                                    this.colGroup[c].sort = "asc";
+                                    this.colGroup[c].sortFixed = true;
+                                }
+                            }
+                        }
+                        return sortInfo;
+                    }.call(this);
+                } else {
+                    cfg.body.grouping = false;
+                }
+            },
+                alignGrid = function alignGrid(_isFirst) {
                 // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
                 var CT_WIDTH = this.$["container"]["root"].width();
                 var CT_HEIGHT = this.$["container"]["root"].height();
@@ -272,7 +317,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }(this.xvar.bodyTrHeight);
 
                 var footSumHeight = function (bodyTrHeight) {
-                    return this.footSum.length * bodyTrHeight;
+                    return this.footSumColumns.length * bodyTrHeight;
                 }.call(this, this.xvar.bodyTrHeight);
 
                 var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
@@ -516,11 +561,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ```
              * ```
              */
-            this.init = function (config) {
+            this.init = function (_config) {
                 this.onStateChanged = cfg.onStateChanged;
                 this.onClick = cfg.onClick;
 
-                var grid = this.gridConfig = jQuery.extend(true, {}, cfg, config);
+                var grid = this.gridConfig = jQuery.extend(true, {}, cfg, _config);
                 if (!grid.target) {
                     console.log(ax5.info.getError("ax5grid", "401", "init"));
                     return this;
@@ -551,8 +596,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 initColumns.call(this, grid.columns);
                 resetColGroupWidth.call(this);
 
-                // footSum데이터를 분석하여 미리 처리해야 하는 데이터를 정리
-                initFootSum.call(this, grid.footSum);
+                // footSum 데이터를 분석하여 미리 처리해야 하는 데이터를 정리
+                if (grid.footSum) initFootSum.call(this, grid.footSum);
+
+                // bodyGrouping 데이터를 분석하여 미리 처리해야 하는 데이터를 정리
+                if (grid.body.grouping) initBodyGroup.call(this, grid.body.grouping);
 
                 // 그리드의 각 요소의 크기를 맞춤니다.
                 alignGrid.call(this, true);
@@ -718,8 +766,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Array} data
              * @returns {ax5grid}
              */
-            this.setData = function (data) {
-                GRID.data.set.call(this, data);
+            this.setData = function (_data) {
+                GRID.data.set.call(this, _data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
                 GRID.scroller.resize.call(this);
@@ -1356,6 +1404,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             key: _key,
                             value: _list[_key],
                             index: _index,
+                            item: list[_index],
                             list: list
                         };
                         if (U.isFunction(_formatter)) {
@@ -1977,35 +2026,108 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var init = function init() {};
 
+    var initData = function initData(_list) {
+        this.selectedDataIndexs = [];
+        var i = 0,
+            l = _list.length;
+        var returnList = [];
+
+        if (this.config.body.grouping) {
+            // 데이터 그룹핑 해야 하면.
+            //this.bodyGrouping.by
+            // 1. sortInfo에 grouping.by 로 정렬되게함.
+            var sortInfo = {};
+            for (var k = 0, kl = this.bodyGrouping.by.length; k < kl; k++) {
+                sortInfo[this.bodyGrouping.by[k]] = {
+                    orderBy: "asc",
+                    seq: k
+                };
+            }
+            // 2. sortInfo로 list 정렬
+            _list = sort.call(this, sortInfo, _list);
+            // 3. grouping.by로 grouping.columns 열 삽입
+
+            var groupingKeys = U.map(this.bodyGrouping.by, function () {
+                return {
+                    key: this,
+                    compareString: "",
+                    grouping: false,
+                    list: []
+                };
+            });
+            var gi = 0,
+                gl = groupingKeys.length,
+                compareString,
+                addGrouping = false,
+                appendRow = [],
+                ari;
+
+            for (; i < l + 1; i++) {
+                gi = 0;
+
+                compareString = "";
+                appendRow = [];
+                for (; gi < gl; gi++) {
+                    if (_list[i]) {
+                        compareString += "$|$" + _list[i][groupingKeys[gi].key];
+                    }
+                    if (i > 0 && compareString != groupingKeys[gi].compareString) {
+                        var appendRowItem = { keys: [], labels: [], list: groupingKeys[gi].list };
+                        for (var ki = 0; ki < gi + 1; ki++) {
+                            appendRowItem.keys.push(groupingKeys[ki].key);
+                            appendRowItem.labels.push(_list[i - 1][groupingKeys[ki].key]);
+                        }
+                        appendRow.push(appendRowItem);
+                        groupingKeys[gi].list = [];
+                    }
+                    groupingKeys[gi].list.push(_list[i]);
+                    groupingKeys[gi].compareString = compareString;
+                }
+
+                ari = appendRow.length;
+                while (ari--) {
+                    //console.log(appendRow[ari]);
+                    returnList.push({ __groupingList: appendRow[ari].list });
+                }
+
+                if (_list[i]) {
+                    if (_list[i][this.config.columnKeys.selected]) {
+                        this.selectedDataIndexs.push(i);
+                    }
+                    returnList.push(_list[i]);
+                }
+            }
+        } else {
+            for (; i < l; i++) {
+                if (_list[i]) {
+                    if (_list[i][this.config.columnKeys.selected]) {
+                        this.selectedDataIndexs.push(i);
+                    }
+                    returnList.push(_list[i]);
+                }
+            }
+        }
+
+        return returnList;
+    };
+
     var set = function set(data) {
         var self = this;
-        var initData = function initData(_list) {
-            // selected 데이터 초기화
-            self.selectedDataIndexs = [];
-            var i = 0,
-                l = _list.length;
-            var returnList = [];
-            for (; i < l; i++) {
-                if (_list[i][self.config.columnKeys.selected]) {
-                    self.selectedDataIndexs.push(i);
-                }
-                returnList.push(jQuery.extend({}, _list[i]));
-            }
-            return returnList;
-        };
 
         if (U.isArray(data)) {
             this.page = null;
-            this.list = initData(data);
+            this.list = initData.call(this, data);
         } else if ("page" in data) {
             this.page = jQuery.extend({}, data.page);
-            this.list = initData(data.list);
+            this.list = initData.call(this, data.list);
         }
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
+
+        if (this.config.body.grouping) {}
         return this;
     };
 
@@ -2096,8 +2218,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return this.list[_dindex][cfg.columnKeys.selected];
     };
 
-    var sort = function sort(_sortInfo) {
+    var sort = function sort(_sortInfo, _list) {
         var self = this;
+        var list = _list || this.list;
         var sortInfoArray = [];
 
         for (var k in _sortInfo) {
@@ -2112,7 +2235,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             _a_val,
             _b_val;
 
-        this.list.sort(function (_a, _b) {
+        list.sort(function (_a, _b) {
             i = 0;
             for (; i < l; i++) {
                 _a_val = _a[sortInfoArray[i].key];
@@ -2130,10 +2253,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         });
 
-        this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
-        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
-        GRID.page.navigationUpdate.call(this);
-        return this;
+        if (_list) {
+            return list;
+        } else {
+            this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
+            this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+            GRID.page.navigationUpdate.call(this);
+            return this;
+        }
     };
 
     GRID.data = {
@@ -2230,8 +2357,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var col = self.colGroup[colIndex];
             if (key && col) {
                 if (self.config.sortable || col.sortable) {
-                    //console.log(col.sort, col.key);
-                    toggleSort.call(self, col.key);
+                    if (!col.sortFixed) toggleSort.call(self, col.key);
                 }
             }
         });
@@ -2348,7 +2474,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     if (!U.isNothing(col.colIndex)) {
                         if (cfg.enableFilter) {
-
                             SS.push('<span data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
                         }
                     }
@@ -2402,6 +2527,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var sortInfo = {};
         var seq = 0;
 
+        for (var k in this.sortInfo) {
+            if (this.sortInfo[k].fixed) {
+                sortInfo[k] = this.sortInfo[k];
+                seq++;
+            }
+        }
+
         for (var i = 0, l = this.colGroup.length; i < l; i++) {
             if (this.colGroup[i].key == _key) {
                 if (sortOrder == "") {
@@ -2428,8 +2560,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
 
-        this.sortInfo = sortInfo;
-        this.setColumnSort();
+        this.setColumnSort(sortInfo);
         return this;
     };
 
@@ -3044,15 +3175,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
-     * @param table
-     * @param frozenColumnIndex
+     * @param _table
+     * @param _frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
-    var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(table, frozenColumnIndex) {
+    var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(_table, _frozenColumnIndex) {
         var tempTable_l = { rows: [] };
         var tempTable_r = { rows: [] };
-        for (var r = 0, rl = table.rows.length; r < rl; r++) {
-            var row = table.rows[r];
+        for (var r = 0, rl = _table.rows.length; r < rl; r++) {
+            var row = _table.rows[r];
 
             tempTable_l.rows[r] = { cols: [] };
             tempTable_r.rows[r] = { cols: [] };
@@ -3062,15 +3193,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var colStartIndex = col.colIndex,
                     colEndIndex = col.colIndex + col.colspan;
 
-                if (colStartIndex < frozenColumnIndex) {
-                    if (colEndIndex <= frozenColumnIndex) {
+                if (colStartIndex < _frozenColumnIndex) {
+                    if (colEndIndex <= _frozenColumnIndex) {
                         // 좌측편에 변형없이 추가
                         tempTable_l.rows[r].cols.push(col);
                     } else {
                         var leftCol = jQuery.extend({}, col);
                         var rightCol = jQuery.extend({}, leftCol);
-                        leftCol.colspan = frozenColumnIndex - leftCol.colIndex;
-                        rightCol.colIndex = frozenColumnIndex;
+                        leftCol.colspan = _frozenColumnIndex - leftCol.colIndex;
+                        rightCol.colIndex = _frozenColumnIndex;
                         rightCol.colspan = col.colspan - leftCol.colspan;
 
                         tempTable_l.rows[r].cols.push(leftCol);
@@ -3106,8 +3237,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
     };
 
-    var makeHeaderTable = function makeHeaderTable(columns) {
-        var columns = U.deepCopy(columns);
+    var makeHeaderTable = function makeHeaderTable(_columns) {
+        var columns = U.deepCopy(_columns);
         var cfg = this.config;
         var table = {
             rows: []
@@ -3171,8 +3302,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return table;
     };
 
-    var makeBodyRowTable = function makeBodyRowTable(columns) {
-        var columns = U.deepCopy(columns);
+    var makeBodyRowTable = function makeBodyRowTable(_columns) {
+        var columns = U.deepCopy(_columns);
         var table = {
             rows: []
         };
@@ -3280,9 +3411,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return table;
     };
 
-    var makeBodyRowMap = function makeBodyRowMap(table) {
+    var makeBodyRowMap = function makeBodyRowMap(_table) {
         var map = {};
-        table.rows.forEach(function (row) {
+        _table.rows.forEach(function (row) {
             row.cols.forEach(function (col) {
                 map[col.rowIndex + "_" + col.colIndex] = jQuery.extend({}, col);
             });
@@ -3290,13 +3421,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return map;
     };
 
-    var makeFootSumTable = function makeFootSumTable(footSum) {
+    var makeFootSumTable = function makeFootSumTable(_footSumColumns) {
         var table = {
             rows: []
         };
 
-        for (var r = 0, rl = footSum.length; r < rl; r++) {
-            var footSumRow = footSum[r];
+        for (var r = 0, rl = _footSumColumns.length; r < rl; r++) {
+            var footSumRow = _footSumColumns[r];
             table.rows[r] = { cols: [] };
             var addC = 0;
             for (var c = 0, cl = footSumRow.length; c < cl; c++) {
@@ -3325,8 +3456,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 addC += colspan;
             }
             addC -= 1;
-            if (addC < this.columns.length) {
-                for (var c = addC; c < this.columns.length; c++) {
+            if (addC < this.columns.length + 1) {
+                for (var c = addC; c < this.columns.length + 1; c++) {
                     table.rows[r].cols.push({
                         colIndex: c + 1,
                         colspan: 1,
@@ -3339,6 +3470,54 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return table;
     };
 
+    var makeBodyGroupingTable = function makeBodyGroupingTable(_bodyGroupingColumns) {
+        var table = {
+            rows: []
+        };
+
+        var r = 0;
+        table.rows[r] = { cols: [] };
+        var addC = 0;
+        for (var c = 0, cl = _bodyGroupingColumns.length; c < cl; c++) {
+            if (addC > this.columns.length) break;
+            var colspan = _bodyGroupingColumns[c].colspan || 1;
+            if (_bodyGroupingColumns[c].label || _bodyGroupingColumns[c].key) {
+                table.rows[r].cols.push({
+                    colspan: colspan,
+                    rowspan: 1,
+                    colIndex: addC,
+                    columnAttr: "sum",
+                    align: _bodyGroupingColumns[c].align,
+                    label: _bodyGroupingColumns[c].label,
+                    key: _bodyGroupingColumns[c].key,
+                    collector: _bodyGroupingColumns[c].collector,
+                    formatter: _bodyGroupingColumns[c].formatter
+                });
+            } else {
+                table.rows[r].cols.push({
+                    colIndex: addC,
+                    colspan: colspan,
+                    rowspan: 1,
+                    label: "&nbsp;"
+                });
+            }
+            addC += colspan;
+        }
+        addC -= 1;
+        if (addC < this.columns.length + 1) {
+            for (var c = addC; c < this.columns.length + 1; c++) {
+                table.rows[r].cols.push({
+                    colIndex: c + 1,
+                    colspan: 1,
+                    rowspan: 1,
+                    label: "&nbsp;"
+                });
+            }
+        }
+
+        return table;
+    };
+
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
         getMousePosition: getMousePosition,
@@ -3346,6 +3525,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         makeHeaderTable: makeHeaderTable,
         makeBodyRowTable: makeBodyRowTable,
         makeBodyRowMap: makeBodyRowMap,
-        makeFootSumTable: makeFootSumTable
+        makeFootSumTable: makeFootSumTable,
+        makeBodyGroupingTable: makeBodyGroupingTable
     };
 })();

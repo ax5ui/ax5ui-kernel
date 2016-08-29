@@ -6,15 +6,15 @@
 
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
-     * @param table
-     * @param frozenColumnIndex
+     * @param _table
+     * @param _frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
-    var divideTableByFrozenColumnIndex = function (table, frozenColumnIndex) {
+    var divideTableByFrozenColumnIndex = function (_table, _frozenColumnIndex) {
         var tempTable_l = {rows: []};
         var tempTable_r = {rows: []};
-        for (var r = 0, rl = table.rows.length; r < rl; r++) {
-            var row = table.rows[r];
+        for (var r = 0, rl = _table.rows.length; r < rl; r++) {
+            var row = _table.rows[r];
 
             tempTable_l.rows[r] = {cols: []};
             tempTable_r.rows[r] = {cols: []};
@@ -23,15 +23,15 @@
                 var col = jQuery.extend({}, row.cols[c]);
                 var colStartIndex = col.colIndex, colEndIndex = col.colIndex + col.colspan;
 
-                if (colStartIndex < frozenColumnIndex) {
-                    if (colEndIndex <= frozenColumnIndex) {
+                if (colStartIndex < _frozenColumnIndex) {
+                    if (colEndIndex <= _frozenColumnIndex) {
                         // 좌측편에 변형없이 추가
                         tempTable_l.rows[r].cols.push(col);
                     } else {
                         var leftCol = jQuery.extend({}, col);
                         var rightCol = jQuery.extend({}, leftCol);
-                        leftCol.colspan = frozenColumnIndex - leftCol.colIndex;
-                        rightCol.colIndex = frozenColumnIndex;
+                        leftCol.colspan = _frozenColumnIndex - leftCol.colIndex;
+                        rightCol.colIndex = _frozenColumnIndex;
                         rightCol.colspan = col.colspan - leftCol.colspan;
 
                         tempTable_l.rows[r].cols.push(leftCol);
@@ -67,8 +67,8 @@
         "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
     };
 
-    var makeHeaderTable = function (columns) {
-        var columns = U.deepCopy(columns);
+    var makeHeaderTable = function (_columns) {
+        var columns = U.deepCopy(_columns);
         var cfg = this.config;
         var table = {
             rows: []
@@ -134,8 +134,8 @@
         return table;
     };
 
-    var makeBodyRowTable = function (columns) {
-        var columns = U.deepCopy(columns);
+    var makeBodyRowTable = function (_columns) {
+        var columns = U.deepCopy(_columns);
         var table = {
             rows: []
         };
@@ -248,9 +248,9 @@
         return table;
     };
 
-    var makeBodyRowMap = function (table) {
+    var makeBodyRowMap = function (_table) {
         var map = {};
-        table.rows.forEach(function (row) {
+        _table.rows.forEach(function (row) {
             row.cols.forEach(function (col) {
                 map[col.rowIndex + "_" + col.colIndex] = jQuery.extend({}, col);
             });
@@ -258,17 +258,17 @@
         return map;
     };
 
-    var makeFootSumTable = function (footSum) {
+    var makeFootSumTable = function (_footSumColumns) {
         var table = {
             rows: []
         };
 
-        for (var r = 0, rl = footSum.length; r < rl; r++) {
-            var footSumRow = footSum[r];
+        for (var r = 0, rl = _footSumColumns.length; r < rl; r++) {
+            var footSumRow = _footSumColumns[r];
             table.rows[r] = {cols: []};
             var addC = 0;
             for (var c = 0, cl = footSumRow.length; c < cl; c++) {
-                if(addC > this.columns.length) break;
+                if (addC > this.columns.length) break;
                 var colspan = footSumRow[c].colspan || 1;
                 if (footSumRow[c].label || footSumRow[c].key) {
                     table.rows[r].cols.push({
@@ -293,8 +293,8 @@
                 addC += colspan;
             }
             addC -= 1;
-            if (addC < this.columns.length) {
-                for (var c = addC; c < this.columns.length; c++) {
+            if (addC < this.columns.length + 1) {
+                for (var c = addC; c < this.columns.length + 1; c++) {
                     table.rows[r].cols.push({
                         colIndex: (c + 1),
                         colspan: 1,
@@ -307,6 +307,54 @@
         return table;
     };
 
+    var makeBodyGroupingTable = function (_bodyGroupingColumns) {
+        var table = {
+            rows: []
+        };
+
+        var r = 0;
+        table.rows[r] = {cols: []};
+        var addC = 0;
+        for (var c = 0, cl = _bodyGroupingColumns.length; c < cl; c++) {
+            if (addC > this.columns.length) break;
+            var colspan = _bodyGroupingColumns[c].colspan || 1;
+            if (_bodyGroupingColumns[c].label || _bodyGroupingColumns[c].key) {
+                table.rows[r].cols.push({
+                    colspan: colspan,
+                    rowspan: 1,
+                    colIndex: addC,
+                    columnAttr: "sum",
+                    align: _bodyGroupingColumns[c].align,
+                    label: _bodyGroupingColumns[c].label,
+                    key: _bodyGroupingColumns[c].key,
+                    collector: _bodyGroupingColumns[c].collector,
+                    formatter: _bodyGroupingColumns[c].formatter
+                });
+            } else {
+                table.rows[r].cols.push({
+                    colIndex: addC,
+                    colspan: colspan,
+                    rowspan: 1,
+                    label: "&nbsp;",
+                });
+            }
+            addC += colspan;
+        }
+        addC -= 1;
+        if (addC < this.columns.length + 1) {
+            for (var c = addC; c < this.columns.length + 1; c++) {
+                table.rows[r].cols.push({
+                    colIndex: (c + 1),
+                    colspan: 1,
+                    rowspan: 1,
+                    label: "&nbsp;",
+                });
+            }
+        }
+
+        return table;
+    };
+
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
         getMousePosition: getMousePosition,
@@ -314,7 +362,8 @@
         makeHeaderTable: makeHeaderTable,
         makeBodyRowTable: makeBodyRowTable,
         makeBodyRowMap: makeBodyRowMap,
-        makeFootSumTable: makeFootSumTable
+        makeFootSumTable: makeFootSumTable,
+        makeBodyGroupingTable: makeBodyGroupingTable
     };
 
 })();

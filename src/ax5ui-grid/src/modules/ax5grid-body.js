@@ -406,6 +406,7 @@
                             key: _key,
                             value: _list[_key],
                             index: _index,
+                            item: list[_index],
                             list: list
                         };
                         if (U.isFunction(_formatter)) {

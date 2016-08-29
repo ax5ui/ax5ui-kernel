@@ -8,34 +8,105 @@
 
     };
 
+    var initData = function (_list) {
+        this.selectedDataIndexs = [];
+        var i = 0, l = _list.length;
+        var returnList = [];
+
+        if (this.config.body.grouping) {
+            // 데이터 그룹핑 해야 하면.
+            //this.bodyGrouping.by
+            // 1. sortInfo에 grouping.by 로 정렬되게함.
+            var sortInfo = {};
+            for (var k = 0, kl = this.bodyGrouping.by.length; k < kl; k++) {
+                sortInfo[this.bodyGrouping.by[k]] = {
+                    orderBy: "asc",
+                    seq: k
+                }
+            }
+            // 2. sortInfo로 list 정렬
+            _list = sort.call(this, sortInfo, _list);
+            // 3. grouping.by로 grouping.columns 열 삽입
+
+            var groupingKeys = U.map(this.bodyGrouping.by, function () {
+                return {
+                    key: this,
+                    compareString: "",
+                    grouping: false,
+                    list: []
+                }
+            });
+            var gi = 0, gl = groupingKeys.length, compareString, addGrouping = false, appendRow = [], ari;
+
+            for (; i < l + 1; i++) {
+                gi = 0;
+
+                compareString = "";
+                appendRow = [];
+                for (; gi < gl; gi++) {
+                    if (_list[i]) {
+                        compareString += "$|$" + _list[i][groupingKeys[gi].key];
+                    }
+                    if (i > 0 && compareString != groupingKeys[gi].compareString) {
+                        var appendRowItem = {keys:[], labels:[], list: groupingKeys[gi].list};
+                        for(var ki =0;ki<gi+1;ki++){
+                            appendRowItem.keys.push(groupingKeys[ki].key);
+                            appendRowItem.labels.push(_list[i - 1][groupingKeys[ki].key]);
+                        }
+                        appendRow.push(appendRowItem);
+                        groupingKeys[gi].list = [];
+                    }
+                    groupingKeys[gi].list.push(_list[i]);
+                    groupingKeys[gi].compareString = compareString;
+                }
+
+                ari = appendRow.length;
+                while (ari--) {
+                    //console.log(appendRow[ari]);
+                    returnList.push({__groupingList: appendRow[ari].list})
+                }
+
+                if (_list[i]) {
+                    if (_list[i][this.config.columnKeys.selected]) {
+                        this.selectedDataIndexs.push(i);
+                    }
+                    returnList.push(_list[i]);
+                }
+            }
+        }
+        else {
+            for (; i < l; i++) {
+                if (_list[i]) {
+                    if (_list[i][this.config.columnKeys.selected]) {
+                        this.selectedDataIndexs.push(i);
+                    }
+                    returnList.push(_list[i]);
+                }
+            }
+        }
+
+        return returnList;
+    };
+
     var set = function (data) {
         var self = this;
-        var initData = function (_list) {
-            // selected 데이터 초기화
-            self.selectedDataIndexs = [];
-            var i = 0, l = _list.length;
-            var returnList = [];
-            for (; i < l; i++) {
-                if (_list[i][self.config.columnKeys.selected]) {
-                    self.selectedDataIndexs.push(i);
-                }
-                returnList.push(jQuery.extend({}, _list[i]));
-            }
-            return returnList;
-        };
 
         if (U.isArray(data)) {
             this.page = null;
-            this.list = initData(data);
+            this.list = initData.call(this, data);
         } else if ("page" in data) {
             this.page = jQuery.extend({}, data.page);
-            this.list = initData(data.list);
+            this.list = initData.call(this, data.list);
         }
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
+
+        if (this.config.body.grouping) {
+
+        }
         return this;
     };
 
@@ -130,8 +201,9 @@
         return this.list[_dindex][cfg.columnKeys.selected];
     };
 
-    var sort = function (_sortInfo) {
+    var sort = function (_sortInfo, _list) {
         var self = this;
+        var list = _list || this.list;
         var sortInfoArray = [];
 
         for (var k in _sortInfo) {
@@ -143,7 +215,7 @@
 
         var i = 0, l = sortInfoArray.length, _a_val, _b_val;
 
-        this.list.sort(function (_a, _b) {
+        list.sort(function (_a, _b) {
             i = 0;
             for (; i < l; i++) {
                 _a_val = _a[sortInfoArray[i].key];
@@ -161,10 +233,15 @@
             }
         });
 
-        this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
-        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
-        GRID.page.navigationUpdate.call(this);
-        return this;
+        if (_list) {
+            return list;
+        } else {
+            this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
+            this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+            GRID.page.navigationUpdate.call(this);
+            return this;
+        }
+
     };
 
     GRID.data = {

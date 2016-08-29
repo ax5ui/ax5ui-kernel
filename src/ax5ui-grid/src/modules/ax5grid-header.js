@@ -78,8 +78,7 @@
             var col = self.colGroup[colIndex];
             if (key && col) {
                 if (self.config.sortable || col.sortable) {
-                    //console.log(col.sort, col.key);
-                    toggleSort.call(self, col.key);
+                    if(!col.sortFixed) toggleSort.call(self, col.key);
                 }
             }
         });
@@ -209,8 +208,6 @@
 
                     if (!U.isNothing(col.colIndex)) {
                         if (cfg.enableFilter) {
-
-
                             SS.push('<span data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
                         }
                     }
@@ -271,7 +268,13 @@
         var sortInfo = {};
         var seq = 0;
 
-
+        for(var k in this.sortInfo){
+            if(this.sortInfo[k].fixed){
+                sortInfo[k] = this.sortInfo[k];
+                seq++;
+            }
+        }
+        
         for (var i = 0, l = this.colGroup.length; i < l; i++) {
             if (this.colGroup[i].key == _key) {
                 if (sortOrder == "") {
@@ -300,8 +303,7 @@
             }
         }
 
-        this.sortInfo = sortInfo;
-        this.setColumnSort();
+        this.setColumnSort(sortInfo);
         return this;
     };
 

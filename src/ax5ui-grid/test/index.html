@@ -50,6 +50,15 @@
         return "myType" + (this.value || "");
     };
 
+    var sampleData = [
+        {a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
+        {a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
+        {a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
+        {a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
+        {a: "A", b: "B01", price: 1400, amount: 5, cost: 7000, saleDt: "2016-08-29", customer: "황세진", saleType: "D"},
+        {a: "A", b: "A01", price: 1500, amount: 2, cost: 3000, saleDt: "2016-08-26", customer: "이서연", saleType: "A"}
+    ];
+
     var gridView = {
         initView: function () {
             firstGrid.setConfig({
@@ -69,11 +78,23 @@
                     columnHeight: 28
                 },
                 body: {
-                    align: false,
+                    align: "center",
                     columnHeight: 28,
                     onClick: function () {
                         // console.log(this);
                         this.self.select(this.dindex);
+                    },
+                    grouping: {
+                        by: ["a", "b"],
+                        columns: [
+                            {
+                                label: function () {
+                                    return this.value.a + " 합계"
+                                }, colspan: 2
+                            },
+                            {},
+                            {key: "c1", collector: "sum", formatter: "money", align: "right"}
+                        ]
                     }
                 },
                 page: {
@@ -85,7 +106,6 @@
                     nextIcon: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
                     lastIcon: '<i class="fa fa-step-forward" aria-hidden="true"></i>',
                     onChange: function () {
-                        //console.log(this.page.selectPage);
                         gridView.setData(this.page.selectPage);
                     }
                 },
@@ -94,48 +114,36 @@
                         key: "a",
                         label: "필드A",
                         width: 80,
-                        formatter: function () {
-                            return this.value + ": 가공";
-                        },
                         styleClass: function () {
                             return "ABC";
                         },
-                        enableFilter: true
+                        enableFilter: true,
+                        align: "center"
                     },
                     {key: "b", label: "필드B", align: "center"},
                     {
                         key: undefined, label: "필드C", columns: [
-                        {key: "c1", label: "페이지번호"}, {key: "c2", label: "필드C-2"}
+                        {key: "price", label: "단가", formatter: "money", align: "right"},
+                        {key: "amount", label: "수량", formatter: "money", align: "right"},
+                        {key: "cost", label: "금액", align: "right", formatter: "money"}
                     ]
                     },
-                    {key: "c", label: "필드C", multiLine: false},
-                    {key: "d", label: "필드D", formatter: "money"},
-                    {key: "c1", label: "페이지번호", width: 80, align: "right", formatter: "money"},
-                    {key: "c2", label: "필드A", width: 80},
-                    {key: "d2", label: "필드A", width: 80, formatter: "myType"}
+                    {key: "saleDt", label: "판매일자", align: "center"},
+                    {key: "customer", label: "고객명"},
+                    {key: "saleType", label: "판매타입"}
                 ],
                 footSum: [[
-                    {label: "합계", colspan: 2},
-                    {},
-                    {},
-                    {},
-                    {},
-                    {key: "c1", collector: "sum", formatter: "money", align: "right"},
-                    {key: "c1", collector: "avg", formatter: "money", align: "right"},
-                    {key: "c1", collector: "sum", formatter: "money", align: "right"}
+                    {label: "합계", colspan: 2, align: "center"},
+                    {key: "price", collector: "avg", formatter: "money", align: "right"},
+                    {key: "amount", collector: "sum", formatter: "money", align: "right"},
+                    {key: "cost", collector: "sum", formatter: "money", align: "right"}
                 ]]
             });
             return this;
         },
         setData: function (_pageNo) {
-            var _my_pageNo = (_pageNo || 0) + 1;
-            var list = [];
-            for (var a = 0, l = 10; a < l; a++) {
-                list.push({a: a + " 컬럼", b: "필드 B 값", c: "그룹 블라 블라 블라블라그룹 블라 블라 블라블라그룹 블라 블라 블라블라", c1: _my_pageNo * 10, c2: "!@#$", "d": (10 - a) % 3, "d2": (10 - a) % 2});
-            }
-
             firstGrid.setData({
-                list: list,
+                list: sampleData,
                 page: {
                     currentPage: _pageNo || 0,
                     pageSize: 50,
@@ -169,13 +177,13 @@
         $('[data-grid-control]').click(function () {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    firstGrid.addRow({a: "추가된 컬럼", b: "추가된 필드", c: "추가된 블라블라", c1: 120, c2: "!@#$", "d": "추가된 필드D값"});
+                    firstGrid.addRow(sampleData[ (Math.floor(Math.random() * sampleData.length)) ]);
                     break;
                 case "row-remove":
                     firstGrid.removeRow();
                     break;
                 case "row-update":
-                    firstGrid.updateRow({a: "변경된 컬럼", b: "변경된 필드", c: "변경된 블라블라", c1: 1200, c2: "!@#$", "d": "변경된 필드D값"}, 5);
+                    firstGrid.updateRow($.extend({}, firstGrid.list[1], {price: 100, amount: 100, cost: 10000}), 1);
                     break;
 
                 case "column-add":
