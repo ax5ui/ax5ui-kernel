@@ -311,7 +311,20 @@
                         if (opts.getPatternValue) {
                             return opts.getPatternValue.call(opts, {event: e, $input: opts.$input, value: val});
                         }
-                    }
+                    },
+                    "credit": function (opts, optIdx, e, val, eType) {
+                        val = val.replace(/\D/g, "").substring(0, 16);
+
+                        var regExpPattern3 = /^([0-9]{4})\-?([0-9]{4})?\-?([0-9]{4})?\-?([0-9]{4})?/,
+                        returnValue = val.replace(regExpPattern3, function (a, b) {
+                          var nval = [arguments[1]];
+                          if (arguments[2]) nval.push(arguments[2]);
+                          if (arguments[3]) nval.push(arguments[3]);
+                          if (arguments[4]) nval.push(arguments[4]);
+                          return nval.join("-");
+                        });
+                        return returnValue;
+                      }
                 },
                 formatterEvent = {
                     'focus': function (opts, optIdx, e) {
