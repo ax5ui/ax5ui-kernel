@@ -17,6 +17,9 @@
                 }
             }
             self.focusedColumn = {};
+            if(this.isInlineEditing){
+                inlineEdit.deActive.call(this);
+            }
         },
         clear: function () {
             var self = this;
@@ -239,6 +242,47 @@
                 "rowSelector": function (_column) {
                     GRID.data.select.call(self, _column.dindex);
                     updateRowState.call(self, ["selected"], _column.dindex);
+                },
+                "lineNumber": function (_column) {
+
+                }
+            };
+
+            panelName = this.getAttribute("data-ax5grid-panel-name");
+            attr = this.getAttribute("data-ax5grid-column-attr");
+            row = Number(this.getAttribute("data-ax5grid-column-row"));
+            col = Number(this.getAttribute("data-ax5grid-column-col"));
+            rowIndex = Number(this.getAttribute("data-ax5grid-column-rowIndex"));
+            colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
+            dindex = Number(this.getAttribute("data-ax5grid-data-index"));
+
+            if (attr in targetClick) {
+                targetClick[attr]({
+                    panelName: panelName,
+                    attr: attr,
+                    row: row,
+                    col: col,
+                    dindex: dindex,
+                    rowIndex: rowIndex,
+                    colIndex: colIndex
+                });
+            }
+        });
+        this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
+            var panelName, attr, row, col, dindex, rowIndex, colIndex;
+            var targetClick = {
+                "default": function (_column) {
+                    var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                    var value = "";
+                    if (column) {
+                        if (!self.list[dindex].__isGrouping) {
+                            value = self.list[dindex][column.key];
+                        }
+                    }
+                    GRID.body.inlineEdit.active.call(self, self.focusedColumn, e, value);
+                },
+                "rowSelector": function (_column) {
+
                 },
                 "lineNumber": function (_column) {
 
@@ -1143,10 +1187,13 @@
     };
 
     var inlineEdit = {
-        active: function (_focusedColumn, _e) {
+        active: function (_focusedColumn, _e, _initValue) {
             var dindex, colIndex, rowIndex, panelName, colspan;
-            var initValue = (_e) ? _e.key || "" : "";
             var editor;
+            var getIinlineEditor = function(_editor){
+                return jQuery('<input type="text" data-ax5grid-editor="' + (_editor.type || "text") + '" value="'+_initValue+'" >');
+            };
+
             for (var key in _focusedColumn) {
                 colIndex = _focusedColumn[key].colIndex;
                 if (!(editor = this.colGroup[colIndex].editor)) return this;
@@ -1154,29 +1201,30 @@
                 rowIndex = _focusedColumn[key].rowIndex;
                 panelName = _focusedColumn[key].panelName;
                 colspan = _focusedColumn[key].colspan;
-                this.editingColumnPath = key.split(/_/g);
+                this.editingColumn = _focusedColumn[key];
                 this.isInlineEditing = true;
             }
-            if (this.editingColumnPath) {
+            if (this.isInlineEditing) {
+                this.$inlineEditor = getIinlineEditor.call(this, editor);
                 this.$["panel"][panelName]
                     .find('[data-ax5grid-tr-data-index="' + dindex + '"]')
                     .find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]')
                     .find('[data-ax5grid-cellholder]')
-                    .append('<input type="text" data-ax5grid-editor="' + (editor.type || "text") + '" >');
+                    .append(this.$inlineEditor);
+
+                this.$inlineEditor.focus();
             }
         },
         update: function () {
 
         },
         deActive: function () {
-            this.isInlineEditing = true;
-            this.editingColumnPath = false;
-        }
-    };
-
-    var inlineEditor = {
-        active: function () {
-
+            console.log(this.editingColumn.dindex, this.$inlineEditor.val());
+            // todo : 데이터 업데이트를 어떻게 할 것인가?
+            this.$inlineEditor.remove();
+            this.$inlineEditor = null;
+            this.isInlineEditing = false;
+            this.editingColumn = false;
         }
     };
 
