@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.0.17"
+        version: "0.0.18"
     }, function () {
         /**
          * @class ax5grid
@@ -535,37 +535,42 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             /**
              * Preferences of grid UI
              * @method ax5grid.setConfig
-             * @param {Object} config - 클래스 속성값
-             * @param {Element} config.target
-             * @param {Number} [config.frozenColumnIndex=0]
-             * @param {Number} [config.frozenRowIndex=0]
-             * @param {Boolean} [config.showLineNumber=false]
-             * @param {Boolean} [config.showRowSelector=false]
-             * @param {Boolean} [config.multipleSelect=false]
-             * @param {Number} [config.columnMinWidth=100]
-             * @param {Number} [config.lineNumberColumnWidth=30]
-             * @param {Number} [config.rowSelectorColumnWidth=25]
-             * @param {Boolean} [config.sortable=false]
-             * @param {Boolean} [config.multiSort=false]
-             * @param {Boolean} [config.remoteSort=false]
-             * @param {Object} [config.header]
-             * @param {Number} [config.header.columnHeight=25]
-             * @param {Number} [config.header.columnPadding=3]
-             * @param {Number} [config.header.columnBorderWidth=1]
-             * @param {Object} [config.body]
-             * @param {Number} [config.body.columnHeight=25]
-             * @param {Number} [config.body.columnPadding=3]
-             * @param {Number} [config.body.columnBorderWidth=1]
-             * @param {Object} [config.page]
-             * @param {Number} [config.page.height=25]
-             * @param {Boolean} [config.page.display=true]
-             * @param {Number} [config.page.navigationItemCount=5]
-             * @param {Object} [config.scroller]
-             * @param {Number} [config.scroller.size=15]
-             * @param {Number} [config.scroller.barMinSize=15]
-             * @param {Object} [config.columnKeys]
-             * @param {String} [config.columnKeys.selected="_SELECTED"]
-             * @param {Object} config.columns
+             * @param {Object} _config - 클래스 속성값
+             * @param {Element} _config.target
+             * @param {Number} [_config.frozenColumnIndex=0]
+             * @param {Number} [_config.frozenRowIndex=0]
+             * @param {Boolean} [_config.showLineNumber=false]
+             * @param {Boolean} [_config.showRowSelector=false]
+             * @param {Boolean} [_config.multipleSelect=false]
+             * @param {Number} [_config.columnMinWidth=100]
+             * @param {Number} [_config.lineNumberColumnWidth=30]
+             * @param {Number} [_config.rowSelectorColumnWidth=25]
+             * @param {Boolean} [_config.sortable=false]
+             * @param {Boolean} [_config.multiSort=false]
+             * @param {Boolean} [_config.remoteSort=false]
+             * @param {Object} [_config.header]
+             * @param {String} [_config.header.align]
+             * @param {Number} [_config.header.columnHeight=25]
+             * @param {Number} [_config.header.columnPadding=3]
+             * @param {Number} [_config.header.columnBorderWidth=1]
+             * @param {Object} [_config.body]
+             * @param {String} [_config.body.align]
+             * @param {Number} [_config.body.columnHeight=25]
+             * @param {Number} [_config.body.columnPadding=3]
+             * @param {Number} [_config.body.columnBorderWidth=1]
+             * @param {Object} [_config.body.grouping]
+             * @param {Array} [_config.body.grouping.by] - list grouping keys
+             * @param {Array} [_config.body.grouping.columns] - list grouping columns
+             * @param {Object} [_config.page]
+             * @param {Number} [_config.page.height=25]
+             * @param {Boolean} [_config.page.display=true]
+             * @param {Number} [_config.page.navigationItemCount=5]
+             * @param {Object} [_config.scroller]
+             * @param {Number} [_config.scroller.size=15]
+             * @param {Number} [_config.scroller.barMinSize=15]
+             * @param {Object} [_config.columnKeys]
+             * @param {String} [_config.columnKeys.selected="_SELECTED"]
+             * @param {Object} _config.columns
              * @returns {ax5grid}
              * @example
              * ```
@@ -686,7 +691,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             /**
              * @method ax5grid.keyDown
              * @param {String} keyName
-             * @param {Event||Object} data
+             * @param {Event|Object} data
              * @return {ax5grid}
              */
             this.keyDown = function () {
@@ -778,7 +783,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             /**
              * @method ax5grid.setData
-             * @param {Array} data
+             * @param {Array} _data
              * @returns {ax5grid}
              */
             this.setData = function (_data) {
@@ -970,10 +975,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             /**
              * @method ax5grid.setColumnSort
-             * @param {Object} sortInfo
-             * @param {Object} sortInfo.key
-             * @param {Number} sortInfo.key.seq - seq of sortOrder
-             * @param {String} sortInfo.key.orderBy - "desc"|"asc"
+             * @param {Object} _sortInfo
+             * @param {Object} _sortInfo.key
+             * @param {Number} _sortInfo.key.seq - seq of sortOrder
+             * @param {String} _sortInfo.key.orderBy - "desc"|"asc"
              * @returns {ax5grid}
              * ```js
              * ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
@@ -991,7 +996,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             /**
              * @method ax5grid.select
-             * @param {Number||Object} _selectObject
+             * @param {Number|Object} _selectObject
              * @param {Number} _selectObject.index - index of row
              * @param {Number} _selectObject.rowIndex - rowIndex of columns
              * @param {Number} _selectObject.conIndex - colIndex of columns
@@ -1041,13 +1046,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // todo : column add / remove / update -- ok
 // todo : cell formatter -- ok
 // todo : column resize -- ok
-
 // todo : sortable -- ok
 // todo : grid footsum -- ok, footsum area cell selected -- ok
 // todo : grid body group -- ok, 그룹핑 된 상태에서 정렬 예외처리 -- ok, 그룹핑 된상태에서 데이터 추가/수정/삭제 -- ok, 그룹핑 된 row 셀렉트 문제. -- ok
 
 // todo : cell inline edit
-
 // todo : filter
 // todo : body menu
 // todo : column reorder
