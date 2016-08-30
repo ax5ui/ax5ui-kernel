@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.0.15"
+        version: "0.0.16"
     }, function () {
         /**
          * @class ax5grid
@@ -520,7 +520,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             },
                 sortColumns = function sortColumns(_sortInfo) {
                 GRID.header.repaint.call(this);
-                GRID.data.sort.call(this, _sortInfo);
+
+                if (this.config.body.grouping) {
+                    this.list = GRID.data.initData.call(this, GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list)));
+                } else {
+                    this.list = GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list));
+                }
                 GRID.body.repaint.call(this, true);
                 GRID.scroller.resize.call(this);
             };
@@ -938,11 +943,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              */
             this.setColumnWidth = function (_width, _cindex) {
                 this.colGroup[this.xvar.columnResizerIndex]._width = _width;
+                this.needToPaintSum = true;
 
                 // 컬럼너비 변경사항 적용.
                 GRID.header.repaint.call(this);
                 GRID.body.repaint.call(this, true);
                 GRID.scroller.resize.call(this);
+
                 alignGrid.call(this);
                 return this;
             };
@@ -973,7 +980,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     GRID.header.applySortStatus.call(this, _sortInfo);
                 }
 
-                sortColumns.call(this, this.sortInfo);
+                sortColumns.call(this, _sortInfo || this.sortInfo);
                 return this;
             };
 
@@ -1537,7 +1544,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var isGroupingRow = false;
                 var rowTable;
 
-                if (_groupRow && "__groupingList" in _list[di]) {
+                if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
                     isGroupingRow = true;
                 } else {
@@ -2134,11 +2141,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             l = _list.length;
         var returnList = [];
         for (; i < l; i++) {
-            if (_list[i] && !("__groupingList" in _list[i])) {
+            if (_list[i] && !_list[i]["__isGrouping"]) {
                 if (_list[i][this.config.columnKeys.selected]) {
                     this.selectedDataIndexs.push(i);
                 }
-                returnList.push(_list[i]);
+                returnList.push(jQuery.extend({}, _list[i]));
             }
         }
         return returnList;
@@ -2151,20 +2158,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var returnList = [];
 
         if (this.config.body.grouping) {
-            // 데이터 그룹핑 해야 하면.
-            //this.bodyGrouping.by
-            // 1. sortInfo에 grouping.by 로 정렬되게함.
-            var sortInfo = {};
-            for (var k = 0, kl = this.bodyGrouping.by.length; k < kl; k++) {
-                sortInfo[this.bodyGrouping.by[k]] = {
-                    orderBy: "asc",
-                    seq: k
-                };
-            }
-            // 2. sortInfo로 list 정렬
-            _list = sort.call(this, sortInfo, _list);
-            // 3. grouping.by로 grouping.columns 열 삽입
-
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
                 return {
                     key: this,
@@ -2178,7 +2171,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 compareString,
                 appendRow = [],
                 ari;
-
             for (; i < l + 1; i++) {
                 gi = 0;
 
@@ -2203,7 +2195,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 ari = appendRow.length;
                 while (ari--) {
-                    returnList.push({ __groupingList: appendRow[ari].list, __groupingBy: { keys: appendRow[ari].keys, labels: appendRow[ari].labels } });
+                    returnList.push({ __isGrouping: true, __groupingList: appendRow[ari].list, __groupingBy: { keys: appendRow[ari].keys, labels: appendRow[ari].labels } });
                 }
 
                 if (_list[i]) {
@@ -2232,10 +2224,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         if (U.isArray(data)) {
             this.page = null;
-            this.list = initData.call(this, data);
+            this.list = initData.call(this, Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
         } else if ("page" in data) {
             this.page = jQuery.extend({}, data.page);
-            this.list = initData.call(this, data.list);
+            this.list = initData.call(this, Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
         }
 
         this.needToPaintSum = true;
@@ -2250,12 +2242,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var get = function get() {};
 
     var add = function add(_row, _dindex) {
+        var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
         var processor = {
             "first": function first() {
-                this.list = [].concat(_row).concat(this.list);
+                list = [].concat(_row).concat(list);
             },
             "last": function last() {
-                this.list = this.list.concat([].concat(_row));
+                list = list.concat([].concat(_row));
             }
         };
 
@@ -2267,12 +2260,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 throw 'invalid argument _dindex';
             }
             //
-            this.list.splice(_dindex, [].concat(_row));
+            list = list.splice(_dindex, [].concat(_row));
         }
 
         if (this.config.body.grouping) {
-            this.list = initData.call(this, clearGroupingData.call(this, this.list));
+            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        } else if (Object.keys(this.sortInfo).length) {
+            list = sort.call(this, this.sortInfo, list);
         }
+
+        this.list = list;
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
@@ -2282,22 +2279,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var remove = function remove(_dindex) {
+        var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
         var processor = {
             "first": function first() {
-                this.list.splice(_dindex, 1);
+                list.splice(_dindex, 1);
             },
             "last": function last() {
-                var lastIndex = this.list.length - 1;
-                if (this.config.body.grouping && lastIndex > 0) {
-                    while (lastIndex) {
-                        if ("__groupingList" in this.list[lastIndex]) {
-                            lastIndex--;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                this.list.splice(lastIndex, 1);
+                var lastIndex = list.length - 1;
+                list.splice(lastIndex, 1);
             }
         };
 
@@ -2309,12 +2298,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 throw 'invalid argument _dindex';
             }
             //
-            this.list.splice(_dindex, 1);
+            list.splice(_dindex, 1);
         }
 
         if (this.config.body.grouping) {
-            this.list = initData.call(this, clearGroupingData.call(this, this.list));
+            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        } else if (Object.keys(this.sortInfo).length) {
+            list = sort.call(this, this.sortInfo, list);
         }
+
+        this.list = list;
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
@@ -2375,9 +2368,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         list.sort(function (_a, _b) {
             i = 0;
-            if (_a.__groupingList || _a.__groupingList) {
-                return 0;
-            }
+
             for (; i < l; i++) {
                 _a_val = _a[sortInfoArray[i].key];
                 _b_val = _b[sortInfoArray[i].key];
@@ -2415,6 +2406,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         remove: remove,
         update: update,
         sort: sort,
+        initData: initData,
         clearGroupingData: clearGroupingData
     };
 })();

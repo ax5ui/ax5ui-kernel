@@ -50,6 +50,10 @@
         return "myType" + (this.value || "");
     };
 
+    ax5.ui.grid.collector["myType"] = function () {
+        return "myType" + (this.value || "");
+    };
+
     var sampleData = [
         {a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
         {a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
@@ -120,12 +124,14 @@
                     {key: "customer", label: "고객명"},
                     {key: "saleType", label: "판매타입"}
                 ],
-                footSum: [[
-                    {label: "전체 합계", colspan: 2, align: "center"},
-                    {key: "price", collector: "avg", formatter: "money", align: "right"},
-                    {key: "amount", collector: "sum", formatter: "money", align: "right"},
-                    {key: "cost", collector: "sum", formatter: "money", align: "right"}
-                ]]
+                footSum: [
+                    [
+                        {label: "전체 합계", colspan: 2, align: "center"},
+                        {key: "price", collector: "avg", formatter: "money", align: "right"},
+                        {key: "amount", collector: "sum", formatter: "money", align: "right"},
+                        {key: "cost", collector: "sum", formatter: "money", align: "right"}
+                    ]
+                ]
             });
             return this;
         },
@@ -165,7 +171,7 @@
         $('[data-grid-control]').click(function () {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    firstGrid.addRow(sampleData[ (Math.floor(Math.random() * sampleData.length)) ]);
+                    firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))]);
                     break;
                 case "row-remove":
                     firstGrid.removeRow();

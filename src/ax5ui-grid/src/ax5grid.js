@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.15"
+        version: "0.0.16"
     }, (function () {
         /**
          * @class ax5grid
@@ -265,14 +265,14 @@
                 },
                 initBodyGroup = function (_grouping) {
                     var grouping = jQuery.extend({}, _grouping);
-                    if("by" in grouping && "columns" in grouping) {
+                    if ("by" in grouping && "columns" in grouping) {
 
                         this.bodyGrouping = {
                             by: grouping.by,
                             columns: grouping.columns
                         };
                         this.bodyGroupingTable = GRID.util.makeBodyGroupingTable.call(this, this.bodyGrouping.columns);
-                        this.sortInfo = (function(){
+                        this.sortInfo = (function () {
                             var sortInfo = {};
                             for (var k = 0, kl = this.bodyGrouping.by.length; k < kl; k++) {
                                 sortInfo[this.bodyGrouping.by[k]] = {
@@ -280,8 +280,8 @@
                                     seq: k,
                                     fixed: true
                                 };
-                                for(var c = 0, cl = this.colGroup.length; c < cl;c++){
-                                    if(this.colGroup[c].key === this.bodyGrouping.by[k]){
+                                for (var c = 0, cl = this.colGroup.length; c < cl; c++) {
+                                    if (this.colGroup[c].key === this.bodyGrouping.by[k]) {
                                         this.colGroup[c].sort = "asc";
                                         this.colGroup[c].sortFixed = true;
                                     }
@@ -289,7 +289,7 @@
                             }
                             return sortInfo;
                         }).call(this);
-                    }else{
+                    } else {
                         cfg.body.grouping = false;
                     }
                 },
@@ -523,7 +523,24 @@
                 },
                 sortColumns = function (_sortInfo) {
                     GRID.header.repaint.call(this);
-                    GRID.data.sort.call(this, _sortInfo);
+
+                    if (this.config.body.grouping) {
+                        this.list = GRID.data.initData.call(this,
+                            GRID.data.sort.call(this,
+                                _sortInfo,
+                                GRID.data.clearGroupingData.call(this,
+                                    this.list
+                                )
+                            )
+                        );
+                    }
+                    else {
+                        this.list = GRID.data.sort.call(this, _sortInfo,
+                            GRID.data.clearGroupingData.call(this,
+                                this.list
+                            )
+                        );
+                    }
                     GRID.body.repaint.call(this, true);
                     GRID.scroller.resize.call(this);
                 };
@@ -940,11 +957,13 @@
              */
             this.setColumnWidth = function (_width, _cindex) {
                 this.colGroup[this.xvar.columnResizerIndex]._width = _width;
+                this.needToPaintSum = true;
 
                 // 컬럼너비 변경사항 적용.
                 GRID.header.repaint.call(this);
                 GRID.body.repaint.call(this, true);
                 GRID.scroller.resize.call(this);
+
                 alignGrid.call(this);
                 return this;
             };
@@ -975,7 +994,7 @@
                     GRID.header.applySortStatus.call(this, _sortInfo);
                 }
 
-                sortColumns.call(this, this.sortInfo);
+                sortColumns.call(this, _sortInfo || this.sortInfo);
                 return this;
             };
 

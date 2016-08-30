@@ -536,7 +536,7 @@
                 var isGroupingRow = false;
                 var rowTable;
 
-                if(_groupRow && "__groupingList" in _list[di]){
+                if(_groupRow && "__isGrouping" in _list[di]){
                     rowTable = _groupRow;
                     isGroupingRow = true;
                 }else{

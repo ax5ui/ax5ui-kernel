@@ -8,15 +8,15 @@
 
     };
 
-    var clearGroupingData = function(_list){
+    var clearGroupingData = function (_list) {
         var i = 0, l = _list.length;
         var returnList = [];
         for (; i < l; i++) {
-            if (_list[i] && !("__groupingList" in _list[i])) {
+            if (_list[i] && !_list[i]["__isGrouping"]) {
                 if (_list[i][this.config.columnKeys.selected]) {
                     this.selectedDataIndexs.push(i);
                 }
-                returnList.push(_list[i]);
+                returnList.push(jQuery.extend({}, _list[i]));
             }
         }
         return returnList;
@@ -28,20 +28,6 @@
         var returnList = [];
 
         if (this.config.body.grouping) {
-            // 데이터 그룹핑 해야 하면.
-            //this.bodyGrouping.by
-            // 1. sortInfo에 grouping.by 로 정렬되게함.
-            var sortInfo = {};
-            for (var k = 0, kl = this.bodyGrouping.by.length; k < kl; k++) {
-                sortInfo[this.bodyGrouping.by[k]] = {
-                    orderBy: "asc",
-                    seq: k
-                }
-            }
-            // 2. sortInfo로 list 정렬
-            _list = sort.call(this, sortInfo, _list);
-            // 3. grouping.by로 grouping.columns 열 삽입
-
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
                 return {
                     key: this,
@@ -51,7 +37,6 @@
                 }
             });
             var gi = 0, gl = groupingKeys.length, compareString, appendRow = [], ari;
-
             for (; i < l + 1; i++) {
                 gi = 0;
 
@@ -62,8 +47,8 @@
                         compareString += "$|$" + _list[i][groupingKeys[gi].key];
                     }
                     if (i > 0 && compareString != groupingKeys[gi].compareString) {
-                        var appendRowItem = {keys:[], labels:[], list: groupingKeys[gi].list};
-                        for(var ki =0;ki<gi+1;ki++){
+                        var appendRowItem = {keys: [], labels: [], list: groupingKeys[gi].list};
+                        for (var ki = 0; ki < gi + 1; ki++) {
                             appendRowItem.keys.push(groupingKeys[ki].key);
                             appendRowItem.labels.push(_list[i - 1][groupingKeys[ki].key]);
                         }
@@ -76,7 +61,7 @@
 
                 ari = appendRow.length;
                 while (ari--) {
-                    returnList.push({__groupingList: appendRow[ari].list, __groupingBy:{ keys: appendRow[ari].keys, labels: appendRow[ari].labels }});
+                    returnList.push({__isGrouping: true, __groupingList: appendRow[ari].list, __groupingBy: {keys: appendRow[ari].keys, labels: appendRow[ari].labels}});
                 }
 
                 if (_list[i]) {
@@ -106,10 +91,14 @@
 
         if (U.isArray(data)) {
             this.page = null;
-            this.list = initData.call(this, data);
+            this.list = initData.call(this,
+                (Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data) : data
+            );
         } else if ("page" in data) {
             this.page = jQuery.extend({}, data.page);
-            this.list = initData.call(this, data.list);
+            this.list = initData.call(this,
+                (Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data.list) : data.list
+            );
         }
 
         this.needToPaintSum = true;
@@ -128,12 +117,13 @@
     };
 
     var add = function (_row, _dindex) {
+        var list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
         var processor = {
             "first": function () {
-                this.list = [].concat(_row).concat(this.list);
+                list = [].concat(_row).concat(list);
             },
             "last": function () {
-                this.list = this.list.concat([].concat(_row));
+                list = list.concat([].concat(_row));
             }
         };
 
@@ -145,12 +135,24 @@
                 throw 'invalid argument _dindex';
             }
             //
-            this.list.splice(_dindex, [].concat(_row))
+            list = list.splice(_dindex, [].concat(_row));
         }
 
         if (this.config.body.grouping) {
-            this.list = initData.call(this, clearGroupingData.call(this, this.list));
+            list = initData.call(this,
+                sort.call(this,
+                    this.sortInfo,
+                    list
+                )
+            );
+        } else if (Object.keys(this.sortInfo).length) {
+            list = sort.call(this,
+                this.sortInfo,
+                list
+            );
         }
+
+        this.list = list;
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
@@ -160,22 +162,14 @@
     };
 
     var remove = function (_dindex) {
+        var list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
         var processor = {
             "first": function () {
-                this.list.splice(_dindex, 1);
+                list.splice(_dindex, 1);
             },
             "last": function () {
-                var lastIndex = this.list.length - 1;
-                if (this.config.body.grouping && lastIndex > 0) {
-                    while(lastIndex){
-                        if("__groupingList" in this.list[lastIndex]){
-                            lastIndex--;
-                        }else{
-                            break;
-                        }
-                    }
-                }
-                this.list.splice(lastIndex, 1);
+                var lastIndex = list.length - 1;
+                list.splice(lastIndex, 1);
             }
         };
 
@@ -187,12 +181,24 @@
                 throw 'invalid argument _dindex';
             }
             //
-            this.list.splice(_dindex, 1);
+            list.splice(_dindex, 1);
         }
 
         if (this.config.body.grouping) {
-            this.list = initData.call(this, clearGroupingData.call(this, this.list));
+            list = initData.call(this,
+                sort.call(this,
+                    this.sortInfo,
+                    list
+                )
+            );
+        } else if (Object.keys(this.sortInfo).length) {
+            list = sort.call(this,
+                this.sortInfo,
+                list
+            );
         }
+
+        this.list = list;
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
@@ -252,9 +258,7 @@
 
         list.sort(function (_a, _b) {
             i = 0;
-            if(_a.__groupingList || _a.__groupingList){
-                return 0;
-            }
+
             for (; i < l; i++) {
                 _a_val = _a[sortInfoArray[i].key];
                 _b_val = _b[sortInfoArray[i].key];
@@ -293,6 +297,7 @@
         remove: remove,
         update: update,
         sort: sort,
+        initData: initData,
         clearGroupingData: clearGroupingData
     };
 
