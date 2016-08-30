@@ -88,6 +88,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.sortInfo = {}; // 그리드의 헤더 정렬 정보
             this.focusedColumn = {}; // 그리드 바디의 포커스된 셀 정보
             this.selectedColumn = {}; // 그리드 바디의 선택된 셀 정보
+            this.isInlineEditing = false;
+            this.editingColumnPath = false;
 
             // header
             this.headerTable = {};
@@ -660,16 +662,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     "40": "KEY_DOWN"
                 };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
-                    if (self.focused) {
+                    if (self.focused && !self.isInlineEditing) {
                         if (e.metaKey || e.ctrlKey) {
                             if (e.which == 67) {
                                 // c
-                                //console.log("copy");
                                 self.copySelect();
                             }
                         } else {
                             if (ctrlKeys[e.which]) {
                                 self.keyDown(ctrlKeys[e.which], e);
+                            } else {
+                                if (Object.keys(self.focusedColumn).length) {
+                                    self.keyDown("INLINE_EDIT", e.originalEvent);
+                                }
                             }
                         }
                     }
@@ -690,8 +695,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             /**
              * @method ax5grid.keyDown
-             * @param {String} keyName
-             * @param {Event|Object} data
+             * @param {String} _keyName
+             * @param {Event|Object} _data
              * @return {ax5grid}
              */
             this.keyDown = function () {
@@ -713,6 +718,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     },
                     "KEY_END": function KEY_END() {
                         GRID.body.moveFocus.call(this, "END");
+                    },
+                    "INLINE_EDIT": function INLINE_EDIT(_data) {
+                        GRID.body.inlineEdit.active.call(this, this.focusedColumn, _data);
                     }
                 };
                 return function (_act, _data) {
@@ -980,6 +988,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Number} _sortInfo.key.seq - seq of sortOrder
              * @param {String} _sortInfo.key.orderBy - "desc"|"asc"
              * @returns {ax5grid}
+             * @example
              * ```js
              * ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
              * ```
@@ -1268,7 +1277,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 "lineNumber": function lineNumber(_column) {}
             };
 
-            //console.log();
             panelName = this.getAttribute("data-ax5grid-panel-name");
             attr = this.getAttribute("data-ax5grid-column-attr");
             row = Number(this.getAttribute("data-ax5grid-column-row"));
@@ -2095,13 +2103,44 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
+    var inlineEdit = {
+        active: function active(_focusedColumn, _e) {
+            var dindex, colIndex, rowIndex, panelName, colspan;
+            var initValue = _e ? _e.key || "" : "";
+            var editor;
+            for (var key in _focusedColumn) {
+                colIndex = _focusedColumn[key].colIndex;
+                if (!(editor = this.colGroup[colIndex].editor)) return this;
+                dindex = _focusedColumn[key].dindex;
+                rowIndex = _focusedColumn[key].rowIndex;
+                panelName = _focusedColumn[key].panelName;
+                colspan = _focusedColumn[key].colspan;
+                this.editingColumnPath = key.split(/_/g);
+                this.isInlineEditing = true;
+            }
+            if (this.editingColumnPath) {
+                this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]').append('<input type="text" data-ax5grid-editor="' + (editor.type || "text") + '" >');
+            }
+        },
+        update: function update() {},
+        deActive: function deActive() {
+            this.isInlineEditing = true;
+            this.editingColumnPath = false;
+        }
+    };
+
+    var inlineEditor = {
+        active: function active() {}
+    };
+
     GRID.body = {
         init: init,
         repaint: repaint,
         updateRowState: updateRowState,
         scrollTo: scrollTo,
         blur: blur,
-        moveFocus: moveFocus
+        moveFocus: moveFocus,
+        inlineEdit: inlineEdit
     };
 })();
 

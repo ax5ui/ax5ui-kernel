@@ -192,9 +192,6 @@ align grid size
 
 ### ax5grid.setColumnSort(_sortInfo) ⇒ <code>[ax5grid](#ax5grid)</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
-**Returns**: <code>[ax5grid](#ax5grid)</code> - ```js
-ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
-```  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -203,6 +200,10 @@ ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
 | _sortInfo.key.seq | <code>Number</code> | seq of sortOrder |
 | _sortInfo.key.orderBy | <code>String</code> | "desc"|"asc" |
 
+**Example**  
+```js
+ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
+```
 <a name="ax5grid.select"></a>
 
 ### ax5grid.select(_selectObject) ⇒ <code>[ax5grid](#ax5grid)</code>

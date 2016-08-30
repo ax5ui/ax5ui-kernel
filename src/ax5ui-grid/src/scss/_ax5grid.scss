@@ -113,6 +113,14 @@
         &[data-ax5grid-cellHolder="multiLine"] {
             white-space: normal;
         }
+
+        input[data-ax5grid-editor]{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
     }
 }
 

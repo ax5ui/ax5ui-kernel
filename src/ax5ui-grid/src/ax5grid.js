@@ -85,6 +85,8 @@
             this.sortInfo = {}; // 그리드의 헤더 정렬 정보
             this.focusedColumn = {}; // 그리드 바디의 포커스된 셀 정보
             this.selectedColumn = {}; // 그리드 바디의 선택된 셀 정보
+            this.isInlineEditing = false;
+            this.editingColumnPath = false;
 
             // header
             this.headerTable = {};
@@ -675,15 +677,18 @@
                     "40": "KEY_DOWN"
                 };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
-                    if (self.focused) {
+                    if (self.focused && !self.isInlineEditing) {
                         if (e.metaKey || e.ctrlKey) {
                             if (e.which == 67) { // c
-                                //console.log("copy");
                                 self.copySelect();
                             }
                         } else {
                             if (ctrlKeys[e.which]) {
                                 self.keyDown(ctrlKeys[e.which], e);
+                            } else {
+                                if (Object.keys(self.focusedColumn).length) {
+                                    self.keyDown("INLINE_EDIT", e.originalEvent);
+                                }
                             }
                         }
                     }
@@ -704,8 +709,8 @@
 
             /**
              * @method ax5grid.keyDown
-             * @param {String} keyName
-             * @param {Event|Object} data
+             * @param {String} _keyName
+             * @param {Event|Object} _data
              * @return {ax5grid}
              */
             this.keyDown = (function () {
@@ -727,6 +732,9 @@
                     },
                     "KEY_END": function () {
                         GRID.body.moveFocus.call(this, "END");
+                    },
+                    "INLINE_EDIT": function (_data) {
+                        GRID.body.inlineEdit.active.call(this, this.focusedColumn, _data);
                     }
                 };
                 return function (_act, _data) {
@@ -766,9 +774,9 @@
                         }
                         var originalColumn = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
                         if (originalColumn) {
-                            if(this.list[_column.dindex].__isGrouping) {
+                            if (this.list[_column.dindex].__isGrouping) {
                                 copyTextArray[_di].push(this.list[_column.dindex][_column.colIndex]);
-                            }else {
+                            } else {
                                 copyTextArray[_di].push(this.list[_column.dindex][originalColumn.key]);
                             }
                         } else {
@@ -994,6 +1002,7 @@
              * @param {Number} _sortInfo.key.seq - seq of sortOrder
              * @param {String} _sortInfo.key.orderBy - "desc"|"asc"
              * @returns {ax5grid}
+             * @example
              * ```js
              * ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
              * ```

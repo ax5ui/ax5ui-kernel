@@ -245,7 +245,6 @@
                 }
             };
 
-            //console.log();
             panelName = this.getAttribute("data-ax5grid-panel-name");
             attr = this.getAttribute("data-ax5grid-column-attr");
             row = Number(this.getAttribute("data-ax5grid-column-row"));
@@ -464,7 +463,7 @@
                     }
                 }
             };
-            var getGroupingValue = function(_item, _index, _col, _key, _label, _collector, _formatter){
+            var getGroupingValue = function (_item, _index, _col, _key, _label, _collector, _formatter) {
                 var value, that;
 
                 if (typeof _key === "undefined") {
@@ -473,9 +472,9 @@
                         list: _item.__groupingList,
                         groupBy: _item.__groupingBy
                     };
-                    if(U.isFunction(_label)){
+                    if (U.isFunction(_label)) {
                         value = _label.call(that);
-                    }else{
+                    } else {
                         value = _label;
                     }
                     _item[_col.colIndex] = value;
@@ -537,10 +536,10 @@
                 var isGroupingRow = false;
                 var rowTable;
 
-                if(_groupRow && "__isGrouping" in _list[di]){
+                if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
                     isGroupingRow = true;
-                }else{
+                } else {
                     rowTable = _bodyRow;
                 }
 
@@ -1143,12 +1142,51 @@
 
     };
 
+    var inlineEdit = {
+        active: function (_focusedColumn, _e) {
+            var dindex, colIndex, rowIndex, panelName, colspan;
+            var initValue = (_e) ? _e.key || "" : "";
+            var editor;
+            for (var key in _focusedColumn) {
+                colIndex = _focusedColumn[key].colIndex;
+                if (!(editor = this.colGroup[colIndex].editor)) return this;
+                dindex = _focusedColumn[key].dindex;
+                rowIndex = _focusedColumn[key].rowIndex;
+                panelName = _focusedColumn[key].panelName;
+                colspan = _focusedColumn[key].colspan;
+                this.editingColumnPath = key.split(/_/g);
+                this.isInlineEditing = true;
+            }
+            if (this.editingColumnPath) {
+                this.$["panel"][panelName]
+                    .find('[data-ax5grid-tr-data-index="' + dindex + '"]')
+                    .find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]')
+                    .find('[data-ax5grid-cellholder]')
+                    .append('<input type="text" data-ax5grid-editor="' + (editor.type || "text") + '" >');
+            }
+        },
+        update: function () {
+
+        },
+        deActive: function () {
+            this.isInlineEditing = true;
+            this.editingColumnPath = false;
+        }
+    };
+
+    var inlineEditor = {
+        active: function () {
+
+        }
+    };
+
     GRID.body = {
         init: init,
         repaint: repaint,
         updateRowState: updateRowState,
         scrollTo: scrollTo,
         blur: blur,
-        moveFocus: moveFocus
+        moveFocus: moveFocus,
+        inlineEdit: inlineEdit
     };
 })();
