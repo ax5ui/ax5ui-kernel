@@ -230,6 +230,9 @@
 
     var select = function (_dindex, _selected) {
         var cfg = this.config;
+
+        if(this.list[_dindex].__isGrouping) return false;
+
         if (typeof _selected === "undefined") {
             if (this.list[_dindex][cfg.columnKeys.selected] = !this.list[_dindex][cfg.columnKeys.selected]) {
                 this.selectedDataIndexs.push(_dindex);

@@ -1019,6 +1019,7 @@
                         GRID.body.updateRowState.call(this, ["selectedClear"]);
                         GRID.data.clearSelect.call(this);
                     }
+
                     GRID.data.select.call(this, dindex);
                     GRID.body.updateRowState.call(this, ["selected"], dindex);
                 }
@@ -1058,7 +1059,7 @@
 
 // todo : sortable -- ok
 // todo : grid footsum -- ok, footsum area cell selected -- ok
-// todo : grid body group -- ok, 그룹핑 된 상태에서 정렬 예외처리 -- ok, 그룹핑 된상태에서 데이터 추가/수정/삭제 -- ok, 그룹핑 된 row 셀렉트 문제.
+// todo : grid body group -- ok, 그룹핑 된 상태에서 정렬 예외처리 -- ok, 그룹핑 된상태에서 데이터 추가/수정/삭제 -- ok, 그룹핑 된 row 셀렉트 문제. -- ok
 
 // todo : cell inline edit
 
