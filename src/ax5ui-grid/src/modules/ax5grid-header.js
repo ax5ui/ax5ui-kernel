@@ -93,13 +93,14 @@
                 U.stopEvent(e);
                 return false;
             });
+
+        resetFrozenColumn.call(this);
     };
 
-    var repaint = function () {
+    var resetFrozenColumn = function(){
         var cfg = this.config;
-        var colGroup = this.colGroup;
         var dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
-        var asideHeaderData = this.asideHeaderData = (function (dataTable) {
+        this.asideHeaderData = (function (dataTable) {
             var colGroup = [];
             var data = {rows: []};
             for (var i = 0, l = dataTable.rows.length; i < l; i++) {
@@ -137,8 +138,20 @@
             this.asideColGroup = colGroup;
             return data;
         }).call(this, this.headerTable);
-        var leftHeaderData = this.leftHeaderData = dividedHeaderObj.leftData;
-        var headerData = this.headerData = dividedHeaderObj.rightData;
+        this.leftHeaderData = dividedHeaderObj.leftData;
+        this.headerData = dividedHeaderObj.rightData;
+    };
+
+    var repaint = function (_reset) {
+        var cfg = this.config;
+        var colGroup = this.colGroup;
+        if (_reset) {
+            resetFrozenColumn.call(this);
+            this.xvar.paintStartRowIndex = undefined;
+        }
+        var asideHeaderData = this.asideHeaderData;
+        var leftHeaderData = this.leftHeaderData;
+        var headerData = this.headerData;
         var headerAlign = cfg.header.align;
 
         // this.asideColGroup : asideHeaderData에서 처리 함.

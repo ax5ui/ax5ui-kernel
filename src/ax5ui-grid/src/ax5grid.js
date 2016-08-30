@@ -86,7 +86,7 @@
             this.focusedColumn = {}; // 그리드 바디의 포커스된 셀 정보
             this.selectedColumn = {}; // 그리드 바디의 선택된 셀 정보
             this.isInlineEditing = false;
-            this.editingColumnPath = false;
+            this.inlineEditing = {};
 
             // header
             this.headerTable = {};
@@ -228,7 +228,7 @@
                     }
                     if (this.config.body.grouping) initBodyGroup.call(this, this.config.body.grouping);
                     alignGrid.call(this, true);
-                    GRID.header.repaint.call(this);
+                    GRID.header.repaint.call(this, true);
                     GRID.body.repaint.call(this, true);
                     GRID.scroller.resize.call(this);
                 },
