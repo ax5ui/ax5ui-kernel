@@ -478,6 +478,7 @@
                     }else{
                         value = _label;
                     }
+                    _item[_col.colIndex] = value;
                     return value;
                 }
                 else if (_key === "__d-index__") {
@@ -497,7 +498,7 @@
                         } else {
                             value = GRID.collector[_collector].call(that);
                         }
-                        _item[_key] = value;
+                        _item[_col.colIndex] = value;
 
                         if (_formatter) {
                             that.value = value;

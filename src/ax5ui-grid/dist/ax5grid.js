@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.0.16"
+        version: "0.0.17"
     }, function () {
         /**
          * @class ax5grid
@@ -730,6 +730,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var _di = 0;
                 for (var c in this.selectedColumn) {
                     var _column = this.selectedColumn[c];
+
                     if (_column) {
                         if (typeof _dindex === "undefined") {
                             _dindex = _column.dindex;
@@ -746,7 +747,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                         var originalColumn = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
                         if (originalColumn) {
-                            copyTextArray[_di].push(this.list[_column.dindex][originalColumn.key]);
+                            if (this.list[_column.dindex].__isGrouping) {
+                                copyTextArray[_di].push(this.list[_column.dindex][_column.colIndex]);
+                            } else {
+                                copyTextArray[_di].push(this.list[_column.dindex][originalColumn.key]);
+                            }
                         } else {
                             copyTextArray[_di].push("");
                         }
@@ -1490,6 +1495,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     } else {
                         value = _label;
                     }
+                    _item[_col.colIndex] = value;
                     return value;
                 } else if (_key === "__d-index__") {
                     return _index + 1;
@@ -1506,7 +1512,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         } else {
                             value = GRID.collector[_collector].call(that);
                         }
-                        _item[_key] = value;
+                        _item[_col.colIndex] = value;
 
                         if (_formatter) {
                             that.value = value;

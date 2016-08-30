@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.16"
+        version: "0.0.17"
     }, (function () {
         /**
          * @class ax5grid
@@ -744,6 +744,7 @@
                 var _di = 0;
                 for (var c in this.selectedColumn) {
                     var _column = this.selectedColumn[c];
+
                     if (_column) {
                         if (typeof _dindex === "undefined") {
                             _dindex = _column.dindex;
@@ -760,7 +761,11 @@
                         }
                         var originalColumn = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
                         if (originalColumn) {
-                            copyTextArray[_di].push(this.list[_column.dindex][originalColumn.key]);
+                            if(this.list[_column.dindex].__isGrouping) {
+                                copyTextArray[_di].push(this.list[_column.dindex][_column.colIndex]);
+                            }else {
+                                copyTextArray[_di].push(this.list[_column.dindex][originalColumn.key]);
+                            }
                         } else {
                             copyTextArray[_di].push("");
                         }
