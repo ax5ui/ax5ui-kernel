@@ -701,7 +701,7 @@
                         'data-ax5grid-column-col="' + ci + '" ',
                         'data-ax5grid-column-rowIndex="' + tri + '" ',
                         'data-ax5grid-column-colIndex="' + col.colIndex + '" ',
-                        'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
+                        'data-ax5grid-column-attr="' + (col.columnAttr || "sum") + '" ',
                         (function (_focusedColumn, _selectedColumn) {
                             var attrs = "";
                             if (_focusedColumn) {
