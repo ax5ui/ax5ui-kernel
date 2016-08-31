@@ -677,16 +677,22 @@
                     "40": "KEY_DOWN"
                 };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
-                    if (self.focused && !self.isInlineEditing) {
+                    if (self.focused) {
                         if (e.metaKey || e.ctrlKey) {
                             if (e.which == 67) { // c
                                 self.copySelect();
                             }
                         } else {
-                            if (ctrlKeys[e.which]) {
-                                self.keyDown(ctrlKeys[e.which], e);
-                            } else {
-                                if (Object.keys(self.focusedColumn).length) {
+                            if(self.isInlineEditing){
+                                if (e.which == ax5.info.eventKeys.ESC) {
+                                    self.keyDown("ESC", e.originalEvent);
+                                }
+                            }else{
+                                if (ctrlKeys[e.which]) {
+                                    self.keyDown(ctrlKeys[e.which], e.originalEvent);
+                                } else if (e.which == ax5.info.eventKeys.ESC) {
+
+                                } else if (Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
                             }
@@ -735,6 +741,10 @@
                     },
                     "INLINE_EDIT": function (_data) {
                         GRID.body.inlineEdit.active.call(this, this.focusedColumn, _data);
+                    },
+                    "ESC": function (_data) {
+                        //console.log("ESC");
+                        GRID.body.inlineEdit.deActive.call(this, "CANCEL");
                     }
                 };
                 return function (_act, _data) {

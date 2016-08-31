@@ -662,17 +662,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     "40": "KEY_DOWN"
                 };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
-                    if (self.focused && !self.isInlineEditing) {
+                    if (self.focused) {
                         if (e.metaKey || e.ctrlKey) {
                             if (e.which == 67) {
                                 // c
                                 self.copySelect();
                             }
                         } else {
-                            if (ctrlKeys[e.which]) {
-                                self.keyDown(ctrlKeys[e.which], e);
+                            if (self.isInlineEditing) {
+                                if (e.which == ax5.info.eventKeys.ESC) {
+                                    self.keyDown("ESC", e.originalEvent);
+                                }
                             } else {
-                                if (Object.keys(self.focusedColumn).length) {
+                                if (ctrlKeys[e.which]) {
+                                    self.keyDown(ctrlKeys[e.which], e.originalEvent);
+                                } else if (e.which == ax5.info.eventKeys.ESC) {} else if (Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
                             }
@@ -721,6 +725,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     },
                     "INLINE_EDIT": function INLINE_EDIT(_data) {
                         GRID.body.inlineEdit.active.call(this, this.focusedColumn, _data);
+                    },
+                    "ESC": function ESC(_data) {
+                        //console.log("ESC");
+                        GRID.body.inlineEdit.deActive.call(this, "CANCEL");
                     }
                 };
                 return function (_act, _data) {
@@ -2156,13 +2164,48 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
+    var inlineEditor = {
+        getHtml: function getHtml(_editor) {
+            var processor = {
+                "text": function text(_editor) {
+                    return '<input type="text" data-ax5grid-editor="text" value="" >';
+                },
+                "calendar": function calendar(_editor) {
+                    return '<input type="text" data-ax5grid-editor="calendar" value="" >';
+                },
+                "combobox": function combobox(_editor) {},
+                "select": function select(_editor) {
+                    return '<select data-ax5grid-editor="calendar"></select>';
+                },
+                "checkbox": function checkbox(_editor) {
+                    return '<div data-ax5grid-editor="checkBox" data-ax5grid-checked="false"></div>';
+                }
+            };
+
+            if (_editor.type in processor) {
+                return processor[_editor.type].call(this, _editor);
+            } else {
+                return processor["text"].call(this, _editor);
+            }
+        },
+        init: function init(_editor, _$parent) {
+            var elHtml = inlineEditor.getHtml.call(this, _editor);
+            var $el;
+            if (_$parent) {
+                _$parent.append($el = jQuery(elHtml));
+                return $el;
+            } else {
+                return elHtml;
+            }
+        },
+        bindUI: function bindUI() {},
+        remove: function remove() {}
+    };
+
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
             var dindex, colIndex, rowIndex, panelName, colspan;
             var editor;
-            var getIinlineEditor = function getIinlineEditor(_editor) {
-                return jQuery('<input type="text" data-ax5grid-editor="' + (_editor.type || "text") + '" value="' + (_initValue || "") + '" >');
-            };
 
             this.inlineEditing = {};
 
@@ -2180,25 +2223,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.isInlineEditing = true;
             }
             if (this.isInlineEditing) {
-                this.inlineEditing.$inlineEditor = getIinlineEditor.call(this, editor);
                 this.inlineEditing.$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
 
-                this.inlineEditing.$inlineEditorCell.append(this.inlineEditing.$inlineEditor);
-                this.inlineEditing.$inlineEditor.focus();
+                this.inlineEditing.$inlineEditor = inlineEditor.init.call(this, editor, this.inlineEditing.$inlineEditorCell);
+                this.inlineEditing.$inlineEditor.val(_initValue || "").focus().select();
             }
         },
-        deActive: function deActive() {
+        deActive: function deActive(isCancel) {
             // console.log(this.inlineEditing.column.dindex, this.inlineEditing.$inlineEditor.val());
             // todo : 데이터 업데이트를 어떻게 할 것인가? ~ 잘되는 건가??
+            var dindex = this.inlineEditing.column.dindex;
+            var rowIndex = this.inlineEditing.column.rowIndex;
+            var colIndex = this.inlineEditing.column.colIndex;
             var column = this.bodyRowMap[this.inlineEditing.column.rowIndex + "_" + this.inlineEditing.column.colIndex];
-            this.inlineEditing.$inlineEditorCell.html(getFieldValue(this.list, this.list[this.inlineEditing.column.dindex], this.inlineEditing.column.dindex, column.key, column.formatter, this.inlineEditing.$inlineEditor.val()));
+            var newValue = this.inlineEditing.$inlineEditor.val();
+
+            if (!isCancel && GRID.data.setValue.call(this, dindex, column.key, newValue)) {
+                this.inlineEditing.$inlineEditorCell.html(getFieldValue(this.list, this.list[dindex], dindex, column.key, column.formatter, newValue));
+            }
 
             this.isInlineEditing = false;
             this.inlineEditing.$inlineEditor.remove();
             this.inlineEditing.$inlineEditor = null;
             this.inlineEditing.$inlineEditorCell = null;
             this.inlineEditing = false;
-        }
+        },
+        cancel: function cancel() {}
     };
 
     GRID.body = {
@@ -2446,7 +2496,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var setValue = function setValue() {};
+    var setValue = function setValue(_dindex, _key, _value) {
+
+        return this.list[_dindex][_key] = _value;
+    };
 
     var clearSelect = function clearSelect() {
         this.selectedDataIndexs = [];

@@ -220,8 +220,9 @@
         }
     };
 
-    var setValue = function () {
+    var setValue = function (_dindex, _key, _value) {
 
+        return this.list[_dindex][_key] = _value;
     };
 
     var clearSelect = function () {
