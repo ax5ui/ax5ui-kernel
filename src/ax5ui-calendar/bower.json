@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-calendar",
-	"version": "0.8.8",
+	"version": "0.8.9",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
 	],
@@ -18,7 +18,7 @@
 	],
 	"dependencies": {
 		"jquery": "^1.11.0",
-		"ax5core": ">=1.1.0",
+		"ax5core": ">=1.2.0",
 		"bootstrap": "^3.3.6"
 	},
 	"license": "LGPLv3",
