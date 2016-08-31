@@ -75,7 +75,7 @@
                 .attr('data-ax5grid-column-selected', "true");
 
             if (this.isInlineEditing) {
-                inlineEdit.deActive.call(this);
+                GRID.body.inlineEdit.deActive.call(this, "RETURN");
             }
         },
         update: function (column) {
@@ -260,7 +260,7 @@
                         value: self.list[_column.dindex][column.key]
                     };
 
-                    if (column.editor && column.editor.type == "checkbox") {
+                    if (column.editor && column.editor.type == "checkbox") { // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
                         var value = self.list[_column.dindex][column.key];
 
                         var checked = (value == false || value == "false" || value < "1") ? "true" : "false";
@@ -478,13 +478,15 @@
             return '<div class="checkBox"></div>';
         }
         else {
-            if (_col.editor && (function (_editor, _type) {
-                    _type = (_editor.type || "text");
-                    return (_type == "checkbox");
+            if (_col.editor && (function (_editor) {
+                    if (_editor.type in GRID.inlineEditor) {
+                        return (GRID.inlineEditor[_editor.type].editMode == "inline");
+                    }
+                    return false;
                 })(_col.editor)) {
 
                 // print editor
-                return inlineEditor.getHtml.call(this, _col.editor, _value || _item[_key]);
+                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value || _item[_key]);
             }
             if (_col.formatter) {
                 var that = {
@@ -1235,115 +1237,6 @@
 
     };
 
-    var inlineEditor = {
-        getHtml: function (_editor, _value) {
-            var processor = {
-                "text": function (_editor) {
-                    return '<input type="text" data-ax5grid-editor="text" value="" >';
-                },
-                "money": function (_editor) {
-                    return '<input type="text" data-ax5grid-editor="money" value="" >';
-                },
-                "number": function (_editor) {
-                    return '<input type="text" data-ax5grid-editor="number" value="" >';
-                },
-                "calendar": function (_editor) {
-                    return '<input type="text" data-ax5grid-editor="calendar" value="" >';
-                },
-                "combobox": function (_editor) {
-                    return '<select data-ax5grid-editor="combobox"></select>';
-                },
-                "select": function (_editor) {
-                    var eConfig = {
-                        columnKeys: {
-                            optionValue: "value", optionText: "text"
-                        }
-                    };
-                    jQuery.extend(true, eConfig, _editor.config);
-
-                    var po = [];
-                    po.push('<select data-ax5grid-editor="select">');
-                    for (var oi = 0, ol = eConfig.options.length; oi < ol; oi++) {
-                        po.push('<option value="' + eConfig.options[oi][eConfig.columnKeys.optionValue] + '">',
-                            eConfig.options[oi][eConfig.columnKeys.optionText],
-                            '</option>');
-                    }
-                    po.push('</select>');
-                    return po.join('');
-                },
-                "checkbox": function (_editor, _value) {
-                    var lineHeight = (this.config.body.columnHeight - this.config.body.columnPadding * 2 - this.config.body.columnBorderWidth);
-                    var checked = (_value == false || _value == "false" || _value < "1") ? "false" : "true";
-                    var eConfig = {
-                        marginTop: 2,
-                        height: lineHeight - 4
-                    };
-                    jQuery.extend(true, eConfig, _editor.config);
-                    eConfig.marginTop = (lineHeight - eConfig.height) / 2;
-
-                    return '<div data-ax5grid-editor="checkbox" data-ax5grid-checked="' + checked + '" style="height:' + eConfig.height + 'px;width:' + eConfig.height + 'px;margin-top:' + eConfig.marginTop + 'px;"></div>';
-                }
-            };
-
-            if (_editor.type in processor) {
-                return processor[_editor.type].call(this, _editor, _value);
-            } else {
-                return processor["text"].call(this, _editor, _value);
-            }
-        },
-        init: function (_editor, _$parent) {
-            var elHtml = inlineEditor.getHtml.call(this, _editor);
-            var $el;
-            if (_$parent) {
-                _$parent.append($el = jQuery(elHtml));
-                inlineEditor.bindUI.call(this, $el, _editor, _$parent);
-                return $el;
-            } else {
-                return elHtml;
-            }
-        },
-        bindUI: function (_$el, _editor, _$parent) {
-            var processor = {
-                "money": function () {
-                    _$el.data("binded-ax5ui", "ax5formater");
-                    _$el.ax5formatter({
-                        pattern: "money"
-                    });
-                },
-                "number": function () {
-                    _$el.data("binded-ax5ui", "ax5formater");
-                    _$el.ax5formatter({
-                        pattern: "number"
-                    });
-                },
-                "calendar": function (){
-                    var self = this;
-                    _$el.data("binded-ax5ui", "ax5picker");
-                    _$el.ax5picker({
-                        direction: "auto",
-                        content: {
-                            type: 'date',
-                            formatter: {
-                                pattern: 'date'
-                            }
-                        },
-                        onStateChanged: function(){
-                            if(this.state == "close"){
-                                inlineEdit.deActive.call(self, "RETURN");
-                            }
-                        }
-                    });
-                }
-            };
-            if (_editor.type in processor) {
-                processor[_editor.type].call(this);
-            }
-        },
-        remove: function () {
-
-        }
-    };
-
     var inlineEdit = {
         active: function (_focusedColumn, _e, _initValue) {
             var dindex, colIndex, rowIndex, panelName, colspan;
@@ -1357,8 +1250,9 @@
                 if (!(editor = this.colGroup[colIndex].editor)) return this;
                 // 조건에 맞지 않는 에디팅 타입이면 반응 없음.
                 if (!(function (_editor, _type) {
-                        _type = (_editor.type || "text");
-                        return (_type == "text" || _type == "money" || _type == "number" || _type == "calendar" || _type == "select" || _type == "combobox");
+                        if (_editor.type in GRID.inlineEditor) {
+                            return (GRID.inlineEditor[_editor.type].editMode == "popup");
+                        }
                     })(editor)) {
                     return this;
                 }
@@ -1394,8 +1288,7 @@
                     .find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]')
                     .find('[data-ax5grid-cellholder]');
 
-                this.inlineEditing.$inlineEditor = inlineEditor.init.call(this, editor, this.inlineEditing.$inlineEditorCell);
-
+                this.inlineEditing.$inlineEditor = GRID.inlineEditor[editor.type].init(this, editor, this.inlineEditing.$inlineEditorCell);
                 this.inlineEditing.$inlineEditor
                     .val(initValue)
                     .focus()
@@ -1407,6 +1300,8 @@
         deActive: function (_msg) {
             // console.log(this.inlineEditing.column.dindex, this.inlineEditing.$inlineEditor.val());
             // todo : 데이터 업데이트를 어떻게 할 것인가? ~ 잘되는 건가??
+            if(!this.inlineEditing) return this;
+            
             var dindex = this.inlineEditing.column.dindex;
             var rowIndex = this.inlineEditing.column.rowIndex;
             var colIndex = this.inlineEditing.column.colIndex;
@@ -1433,10 +1328,10 @@
                         // this.inlineEditing.$inlineEditorCell.html(getFieldValue(this.list, this.list[_dindex], _dindex, _column, _newValue));
                     }
                 },
-                "__clear": function(){
+                "__clear": function () {
                     this.isInlineEditing = false;
                     var bindedAx5ui = this.inlineEditing.$inlineEditor.data("binded-ax5ui");
-                    if(bindedAx5ui == "ax5picker"){
+                    if (bindedAx5ui == "ax5picker") {
                         this.inlineEditing.$inlineEditor.ax5picker("close");
                     }
 
@@ -1447,9 +1342,9 @@
                 }
             };
 
-            if(_msg in action) {
+            if (_msg in action) {
                 action[_msg || "RETURN"].call(this, dindex, column, newValue);
-            }else{
+            } else {
                 action["__clear"].call(this);
             }
         },
