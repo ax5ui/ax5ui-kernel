@@ -460,10 +460,10 @@
                         var calendarConfig = {
                             displayDate: new Date(),
                             control: {
-                                left: '<i class="fa fa-chevron-left"></i>',
-                                yearTmpl: '%s',
-                                monthTmpl: '%s',
-                                right: '<i class="fa fa-chevron-right"></i>',
+                                left: ax5.def.leftArrow || '&#x02190',
+                                yearTmpl: ax5.def.yearTmpl || '%s',
+                                monthTmpl: ax5.def.monthTmpl || '%s',
+                                right: ax5.def.rightArrow || '&#x02192',
                                 yearFirst: true
                             }
                         };
