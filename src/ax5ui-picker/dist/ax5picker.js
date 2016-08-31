@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.9"
+        version: "0.7.10"
     }, function () {
         /**
          * @class ax5picker
@@ -834,13 +834,13 @@ jQuery.fn.ax5picker = function () {
 
             switch (methodName) {
                 case "open":
-                    return ax5.ui.select_instance.open(this);
+                    return ax5.ui.picker_instance.open(this);
                     break;
                 case "close":
-                    return ax5.ui.select_instance.close(this);
+                    return ax5.ui.picker_instance.close(this);
                     break;
                 case "setValue":
-                    return ax5.ui.select_instance.setContentValue(this, arguments[1], arguments[2]);
+                    return ax5.ui.picker_instance.setContentValue(this, arguments[1], arguments[2]);
                     break;
                 default:
                     return this;
