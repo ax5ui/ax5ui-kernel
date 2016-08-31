@@ -25,6 +25,9 @@
 <!--https://css-tricks.com/clipping-masking-css/-->
 
 <h1>Date</h1>
+
+<input type="text" class="form-control" data-picker-date="" placeholder="yyyy/mm/dd"/>
+
 <div class="form-group" data-ax5picker="date">
     <div class="input-group">
         <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
@@ -69,6 +72,16 @@
     // todo : picker align 기능 추가
 
     $(document.body).ready(function () {
+
+        $('[data-picker-date]').ax5picker({
+            direction: "auto",
+            content: {
+                type: 'date',
+                formatter: {
+                    pattern: 'date'
+                }
+            }
+        });
 
         /*
          $('[data-ax5picker="date"]').ax5picker({

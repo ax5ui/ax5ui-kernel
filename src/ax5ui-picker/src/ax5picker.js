@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.8"
+        version: "0.7.9"
     }, (function () {
         /**
          * @class ax5picker
@@ -62,10 +62,10 @@
                     };
 
                     var pickerType = {
-                        '@fn': function (queIdx) {
+                        '@fn': function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 config = {},
-                                inputLength = item.$target.find('input[type="text"]').length;
+                                inputLength = _input.length;
 
                             config = {
                                 inputLength: inputLength || 1
@@ -82,7 +82,7 @@
                             config = null;
                             inputLength = null;
                         },
-                        'date': function (queIdx) {
+                        'date': function (queIdx, _input) {
                             // 1. 이벤트 바인딩
                             // 2. ui 준비
 
@@ -90,7 +90,7 @@
                                 contentWidth = (item.content) ? item.content.width || 270 : 270,
                                 contentMargin = (item.content) ? item.content.margin || 5 : 5,
                                 config = {},
-                                inputLength = item.$target.find('input[type="text"]').length;
+                                inputLength = _input.length;
 
                             config = {
                                 contentWidth: (contentWidth * inputLength) + ((inputLength - 1) * contentMargin),
@@ -114,10 +114,10 @@
                             config = null;
                             inputLength = null;
                         },
-                        'secure-num': function (queIdx) {
+                        'secure-num': function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 config = {},
-                                inputLength = item.$target.find('input[type="text"]').length;
+                                inputLength = _input.length;
 
                             config = {
                                 inputLength: inputLength || 1
@@ -128,10 +128,10 @@
                             config = null;
                             inputLength = null;
                         },
-                        'keyboard': function (queIdx) {
+                        'keyboard': function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 config = {},
-                                inputLength = item.$target.find('input[type="text"]').length;
+                                inputLength = _input.length;
 
                             config = {
                                 inputLength: inputLength || 1
@@ -142,10 +142,10 @@
                             config = null;
                             inputLength = null;
                         },
-                        'numpad': function (queIdx) {
+                        'numpad': function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 config = {},
-                                inputLength = item.$target.find('input[type="text"]').length;
+                                inputLength = _input.length;
 
                             config = {
                                 inputLength: inputLength || 1
@@ -160,28 +160,30 @@
 
                     return function (queIdx) {
                         var item = this.queue[queIdx],
-                            _input;
+                            input;
 
                         if (!item.content) {
                             console.log(ax5.info.getError("ax5picker", "501", "bind"));
                             return this;
                         }
 
+                        input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : item.$target.find('input[type]');
+
                         // 함수타입
                         if (U.isFunction(item.content)) {
-                            pickerType["@fn"].call(this, queIdx);
+                            pickerType["@fn"].call(this, queIdx, input);
                         }
                         else {
                             for (var key in pickerType) {
                                 if (item.content.type == key) {
-                                    pickerType[key].call(this, queIdx);
+                                    pickerType[key].call(this, queIdx, input);
                                     break;
                                 }
                             }
                         }
 
-                        _input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : item.$target.find('input[type]');
-                        _input
+
+                        input
                             .unbind('focus.ax5picker')
                             .unbind('click.ax5picker')
                             .bind('focus.ax5picker', pickerEvent.focus.bind(this, queIdx))
@@ -193,10 +195,10 @@
                             .bind('click.ax5picker', pickerEvent.click.bind(this, queIdx));
 
                         if (item.content.formatter && ax5.ui.formatter) {
-                            _input.ax5formatter(item.content.formatter);
+                            input.ax5formatter(item.content.formatter);
                         }
 
-                        _input = null;
+                        input = null;
                         item = null;
                         queIdx = null;
                         return this;
@@ -506,6 +508,7 @@
                                 yearFirst: true
                             }
                         };
+                        var input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : item.$target.find('input[type]');
 
                         // calendar bind
                         item.pickerContent.find('[data-calendar-target]').each(function () {
@@ -513,7 +516,7 @@
                             // calendarConfig extend ~
                             var
                                 idx = this.getAttribute("data-calendar-target"),
-                                dValue = item.$target.find('input[type]').get(idx).value,
+                                dValue = input.get(idx).value,
                                 d = ax5.util.date(dValue)
                                 ;
 
