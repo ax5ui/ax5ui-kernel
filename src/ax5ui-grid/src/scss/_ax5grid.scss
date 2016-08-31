@@ -27,7 +27,7 @@
     @if ($container == "header") {
         cursor: pointer;
         box-shadow: inset 1px 1px 0px 0px #fff;
-        &:hover{
+        &:hover {
             background: #eee;
         }
         &[data-ax5grid-column-row="null"] {
@@ -101,26 +101,69 @@
             //text-align: center;
         }
 
-        &[data-ax5grid-text-align="left"]{
+        &[data-ax5grid-text-align="left"] {
             text-align: left;
         }
-        &[data-ax5grid-text-align="center"]{
+        &[data-ax5grid-text-align="center"] {
             text-align: center;
         }
-        &[data-ax5grid-text-align="right"]{
+        &[data-ax5grid-text-align="right"] {
             text-align: right;
         }
         &[data-ax5grid-cellHolder="multiLine"] {
             white-space: normal;
         }
 
-        input[data-ax5grid-editor]{
+        input[data-ax5grid-editor] {
             position: absolute;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
+            border: 0px none;
+            background: #fff;
         }
+        select[data-ax5grid-editor] {
+            position: absolute;
+            display: block;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 0px none;
+            background: #fff;
+        }
+
+        [data-ax5grid-editor="checkbox"] {
+            $ax5grid-row-selector-checkbox-size: 8px;
+            $ax5grid-row-selector-size: 10px;
+            display: inline-block;
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            @include ax-background(top, #FFFFFF, #F0F0F0);
+            height: 100%;
+            &:after {
+                content: '';
+                width: 60%;
+                height: 40%;
+                position: absolute;
+                top: 20%;
+                right: 20%;
+                border: 0.2em solid #000;
+                border-top: none;
+                border-right: none;
+                background: transparent;
+                opacity: 0.0;
+                @include transform(rotate(-50deg));
+            }
+            &[data-ax5grid-checked="true"]{
+                &:after{
+                    opacity: 1.0;
+                }
+            }
+        }
+
     }
 }
 
@@ -140,7 +183,7 @@
     &.hover {
         background: lighten(#cce2f3, 5%);
     }
-    &[data-ax5grid-grouping-tr="true"]{
+    &[data-ax5grid-grouping-tr="true"] {
         background: #ffffe7;
     }
     &[data-ax5grid-selected="true"] {
@@ -239,7 +282,6 @@
         &[data-ax5grid-panel="bottom-right-body"] {
             background: #ffe7e2;
         }
-
 
         [data-ax5grid-panel-scroll] {
             position: absolute;

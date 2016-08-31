@@ -13,14 +13,21 @@
 
     <title>GRID</title>
 
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-mask/dist/ax5mask.css"/>
     <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-calendar/dist/ax5calendar.css"/>
+    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-picker/dist/ax5picker.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5grid.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
+    <script src="bower_components/ax5ui-formatter/dist/ax5formatter.min.js"></script>
+    <script src="bower_components/ax5ui-calendar/dist/ax5calendar.min.js"></script>
+    <script src="bower_components/ax5ui-picker/dist/ax5picker.min.js"></script>
     <script src="../dist/ax5grid.js"></script>
 </head>
 <body style="padding: 20px;">
@@ -52,17 +59,20 @@
 <script>
     var firstGrid = new ax5.ui.grid();
 
+    ax5.def.leftArrow = "<<";
+    ax5.def.rightArrow = ">>";
+
     ax5.ui.grid.formatter["myType"] = function () {
         return "myType" + (this.value || "");
     };
 
     var sampleData = [
-        {a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
-        {a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
-        {a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
-        {a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
-        {a: "A", b: "B01", price: 1400, amount: 5, cost: 7000, saleDt: "2016-08-29", customer: "황세진", saleType: "D"},
-        {a: "A", b: "A01", price: 1500, amount: 2, cost: 3000, saleDt: "2016-08-26", customer: "이서연", saleType: "A"}
+        {a: "A", b: "A01", price: 1000, amount: 12, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: false},
+        {a: "A", b: "B01", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: true},
+        {a: "A", b: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: true},
+        {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: true},
+        {a: "A", b: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: true},
+        {a: "A", b: "A01", price: 1500, amount: 2, saleDt: "2016-08-26", customer: "이서연", saleType: "A", isChecked: true}
     ];
 
     var gridView = {
@@ -100,7 +110,15 @@
                             },
                             {key: "price", collector: "avg", formatter: "money", align: "right"},
                             {key: "amount", collector: "sum", formatter: "money", align: "right"},
-                            {key: "cost", collector: "sum", formatter: "money", align: "right"},
+                            {
+                                key: "cost", collector: function () {
+                                    var value = 0;
+                                    this.list.forEach(function (n) {
+                                        if (!n.__isGrouping) value += (n.price * n.amount);
+                                    });
+                                    return ax5.util.number(value, {"money": 1});
+                            }, align: "right"
+                            },
                             {label: "~~~", colspan: 3}
                         ]
                     }
@@ -133,38 +151,61 @@
                     {
                         key: undefined,
                         label: "필드C", columns: [
-                            {key: "price", label: "단가", formatter: "money", align: "right", editor: {type: "text"}},
-                            {key: "amount", label: "수량", formatter: "money", align: "right", editor: {type: "text"}},
-                            {key: "cost", label: "금액", align: "right", formatter: "money", editor: {type: "text"}}
-                        ]
+                        {key: "price", label: "단가", align: "right", formatter: "money", editor: {type: "money"}},
+                        {key: "amount", label: "수량", align: "right", formatter: "money", editor: {type: "money"}},
+                        {
+                            key: "cost", label: "금액", align: "right", formatter: function () {
+                                return ax5.util.number(this.item.price * this.item.amount, {"money": true});
+                            }
+                        }
+                    ]
                     },
                     {
                         key: "saleDt", label: "판매일자", align: "center", editor: {
-                            type: "calendar", config: {}
-                        }
+                        type: "calendar", config: {}
+                    }
                     },
                     {
-                        key: "customer", label: "고객명", editor: {
-                            type: "combobox", config: {}
-                        }
+                        key: "customer", label: "고객명", editor: {}
                     },
                     {
                         key: "saleType", label: "판매타입", editor: {
-                            type: "select", config: {}
-                        }
-                    },
-                    {
-                        key: "isChecked", label: "체크박스", editor: {
-                            type: "checkbox"
+                        type: "select", config: {
+                            columnKeys: {
+                                optionValue: "CD", optionText: "NM"
+                            },
+                            options: [
+                                {CD: "A", NM: "A: String"},
+                                {CD: "B", NM: "B: Number"},
+                                {CD: "C", NM: "C: substr"},
+                                {CD: "D", NM: "D: substring"}
+                            ]
                         }
                     }
+                    },
+                    {
+                        key: "isChecked", label: "체크박스", width: 50, sortable: false, editor: {
+                        type: "checkbox", config: {
+                            height: 17
+                        }
+                    }
+                    }
                 ],
-                footSum: [[
-                    {label: "전체 합계", colspan: 2, align: "center"},
-                    {key: "price", collector: "avg", formatter: "money", align: "right"},
-                    {key: "amount", collector: "sum", formatter: "money", align: "right"},
-                    {key: "cost", collector: "sum", formatter: "money", align: "right"}
-                ]]
+                footSum: [
+                    [
+                        {label: "전체 합계", colspan: 2, align: "center"},
+                        {key: "price", collector: "avg", formatter: "money", align: "right"},
+                        {key: "amount", collector: "sum", formatter: "money", align: "right"},
+                        {
+                            key: "cost", collector: function () {
+                                var value = 0;
+                                this.list.forEach(function (n) {
+                                    if (!n.__isGrouping) value += (n.price * n.amount);
+                                });
+                                return ax5.util.number(value, {"money": 1});
+                        }, align: "right"
+                        }
+                    ]]
             });
             return this;
         },

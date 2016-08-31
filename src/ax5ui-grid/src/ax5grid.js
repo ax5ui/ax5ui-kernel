@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.0.18"
+        version: "0.1.0"
     }, (function () {
         /**
          * @class ax5grid
@@ -687,11 +687,16 @@
                                 if (e.which == ax5.info.eventKeys.ESC) {
                                     self.keyDown("ESC", e.originalEvent);
                                 }
+                                else if (e.which == ax5.info.eventKeys.RETURN) {
+                                    self.keyDown("RETURN", e.originalEvent);
+                                }
                             }else{
                                 if (ctrlKeys[e.which]) {
                                     self.keyDown(ctrlKeys[e.which], e.originalEvent);
                                 } else if (e.which == ax5.info.eventKeys.ESC) {
 
+                                }else if (e.which == ax5.info.eventKeys.RETURN) {
+                                    self.keyDown("RETURN", e.originalEvent);
                                 } else if (Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
@@ -739,12 +744,18 @@
                     "KEY_END": function () {
                         GRID.body.moveFocus.call(this, "END");
                     },
-                    "INLINE_EDIT": function (_data) {
-                        GRID.body.inlineEdit.active.call(this, this.focusedColumn, _data);
+                    "INLINE_EDIT": function (_e) {
+                        GRID.body.inlineEdit.active.call(this, this.focusedColumn, _e);
+                        if(!/[0-9a-zA-Z]/.test(_e.key)) {
+                            U.stopEvent(_e);
+                        }
                     },
-                    "ESC": function (_data) {
+                    "ESC": function (_e) {
                         //console.log("ESC");
-                        GRID.body.inlineEdit.deActive.call(this, "CANCEL");
+                        GRID.body.inlineEdit.keydown.call(this, "ESC");
+                    },
+                    "RETURN": function(_e){
+                        GRID.body.inlineEdit.keydown.call(this, "RETURN");
                     }
                 };
                 return function (_act, _data) {

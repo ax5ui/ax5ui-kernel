@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.0.18"
+        version: "0.1.0"
     }, function () {
         /**
          * @class ax5grid
@@ -672,11 +672,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             if (self.isInlineEditing) {
                                 if (e.which == ax5.info.eventKeys.ESC) {
                                     self.keyDown("ESC", e.originalEvent);
+                                } else if (e.which == ax5.info.eventKeys.RETURN) {
+                                    self.keyDown("RETURN", e.originalEvent);
                                 }
                             } else {
                                 if (ctrlKeys[e.which]) {
                                     self.keyDown(ctrlKeys[e.which], e.originalEvent);
-                                } else if (e.which == ax5.info.eventKeys.ESC) {} else if (Object.keys(self.focusedColumn).length) {
+                                } else if (e.which == ax5.info.eventKeys.ESC) {} else if (e.which == ax5.info.eventKeys.RETURN) {
+                                    self.keyDown("RETURN", e.originalEvent);
+                                } else if (Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
                             }
@@ -723,12 +727,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     "KEY_END": function KEY_END() {
                         GRID.body.moveFocus.call(this, "END");
                     },
-                    "INLINE_EDIT": function INLINE_EDIT(_data) {
-                        GRID.body.inlineEdit.active.call(this, this.focusedColumn, _data);
+                    "INLINE_EDIT": function INLINE_EDIT(_e) {
+                        GRID.body.inlineEdit.active.call(this, this.focusedColumn, _e);
+                        if (!/[0-9a-zA-Z]/.test(_e.key)) {
+                            U.stopEvent(_e);
+                        }
                     },
-                    "ESC": function ESC(_data) {
+                    "ESC": function ESC(_e) {
                         //console.log("ESC");
-                        GRID.body.inlineEdit.deActive.call(this, "CANCEL");
+                        GRID.body.inlineEdit.keydown.call(this, "ESC");
+                    },
+                    "RETURN": function RETURN(_e) {
+                        GRID.body.inlineEdit.keydown.call(this, "RETURN");
                     }
                 };
                 return function (_act, _data) {
@@ -1234,15 +1244,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var updateRowState = function updateRowState(states, dindex, data) {
+    var updateRowState = function updateRowState(_states, _dindex, _data) {
         var self = this;
         var cfg = this.config;
 
         var processor = {
-            "selected": function selected(dindex) {
+            "selected": function selected(_dindex) {
                 var i = this.$.livePanelKeys.length;
                 while (i--) {
-                    this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').attr("data-ax5grid-selected", this.list[dindex][cfg.columnKeys.selected]);
+                    this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').attr("data-ax5grid-selected", this.list[_dindex][cfg.columnKeys.selected]);
                 }
             },
             "selectedClear": function selectedClear() {
@@ -1255,11 +1265,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         this.list[dindex][cfg.columnKeys.selected] = false;
                     }
                 }
+            },
+            "cellChecked": function cellChecked(_dindex, _data) {
+                var key = _data.key;
+                var rowIndex = _data.rowIndex;
+                var colIndex = _data.colIndex;
+
+                var panelName = function () {
+                    var _panels = [];
+                    if (this.xvar.frozenRowIndex > _dindex) _panels.push("top");
+                    if (this.xvar.frozenColumnIndex > colIndex) _panels.push("left");
+                    _panels.push("body");
+                    if (_panels[0] !== "top") _panels.push("scroll");
+                    return _panels.join("-");
+                }.call(this);
+
+                this.$.panel[panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowIndex="' + rowIndex + '"][data-ax5grid-column-colIndex="' + colIndex + '"]').find('[data-ax5grid-editor="checkbox"]').attr("data-ax5grid-checked", '' + this.list[_dindex][key]);
             }
         };
-        states.forEach(function (state) {
-            if (!processor[state]) throw 'invaild state name';
-            processor[state].call(self, dindex, data);
+        _states.forEach(function (_state) {
+            if (!processor[_state]) throw 'invaild state name';
+            processor[_state].call(self, _dindex, _data);
         });
     };
 
@@ -1282,8 +1308,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         value: self.list[_column.dindex][column.key]
                     };
 
-                    if (self.config.body.onClick) {
-                        self.config.body.onClick.call(that);
+                    if (column.editor && column.editor.type == "checkbox") {
+                        var value = self.list[_column.dindex][column.key];
+
+                        var checked = value == false || value == "false" || value < "1" ? "true" : "false";
+                        GRID.data.setValue.call(self, _column.dindex, column.key, checked);
+                        updateRowState.call(self, ["cellChecked"], _column.dindex, {
+                            key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex
+                        });
+                    } else {
+                        if (self.config.body.onClick) {
+                            self.config.body.onClick.call(that);
+                        }
                     }
                 },
                 "rowSelector": function rowSelector(_column) {
@@ -1475,13 +1511,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var getFieldValue = function getFieldValue(_list, _item, _index, _key, _formatter, _value) {
+    var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value) {
+        var _key = _col.key;
         if (_key === "__d-index__") {
             return _index + 1;
         } else if (_key === "__d-checkbox__") {
             return '<div class="checkBox"></div>';
         } else {
-            if (_formatter) {
+            if (_col.editor && function (_editor, _type) {
+                _type = _editor.type || "text";
+                return _type == "checkbox";
+            }(_col.editor)) {
+
+                // print editor
+                return inlineEditor.getHtml.call(this, _col.editor, _value || _item[_key]);
+            }
+            if (_col.formatter) {
                 var that = {
                     key: _key,
                     value: _value || _item[_key],
@@ -1489,10 +1534,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     item: _item,
                     list: _list
                 };
-                if (U.isFunction(_formatter)) {
-                    return _formatter.call(that);
+                if (U.isFunction(_col.formatter)) {
+                    return _col.formatter.call(that);
                 } else {
-                    return GRID.formatter[_formatter].call(that);
+                    return GRID.formatter[_col.formatter].call(that);
                 }
             } else {
                 return _value || _item[_key] || "&nbsp;";
@@ -1500,8 +1545,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var getGroupingValue = function getGroupingValue(_item, _index, _col, _key, _label, _collector, _formatter) {
-        var value, that;
+    var getGroupingValue = function getGroupingValue(_item, _index, _col) {
+        var value,
+            that,
+            _key = _col.key,
+            _label = _col.label;
 
         if (typeof _key === "undefined") {
             that = {
@@ -1521,24 +1569,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         } else if (_key === "__d-checkbox__") {
             return '&nbsp;';
         } else {
-            if (_collector) {
+            if (_col.collector) {
                 that = {
                     key: _key,
                     list: _item.__groupingList
                 };
-                if (U.isFunction(_collector)) {
-                    value = _collector.call(that);
+                if (U.isFunction(_col.collector)) {
+                    value = _col.collector.call(that);
                 } else {
-                    value = GRID.collector[_collector].call(that);
+                    value = GRID.collector[_col.collector].call(that);
                 }
                 _item[_col.colIndex] = value;
 
-                if (_formatter) {
+                if (_col.formatter) {
                     that.value = value;
-                    if (U.isFunction(_formatter)) {
-                        return _collector.call(that);
+                    if (U.isFunction(_col.formatter)) {
+                        return _col.collector.call(that);
                     } else {
-                        return GRID.formatter[_formatter].call(that);
+                        return GRID.formatter[_col.formatter].call(that);
                     }
                 } else {
                     return value;
@@ -1549,30 +1597,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var getSumFieldValue = function getSumFieldValue(_list, _key, _label, _collector, _formatter) {
+    var getSumFieldValue = function getSumFieldValue(_list, _col) {
+        var _key = _col.key,
+            _label = _col.label;
+        //, _collector, _formatter
         if (typeof _key === "undefined") {
             return _label;
         } else if (_key === "__d-index__" || _key === "__d-checkbox__") {
             return '&nbsp;';
         } else {
-            if (_collector) {
+            if (_col.collector) {
                 var that = {
                     key: _key,
                     list: _list
                 };
                 var value;
-                if (U.isFunction(_collector)) {
-                    value = _collector.call(that);
+                if (U.isFunction(_col.collector)) {
+                    value = _col.collector.call(that);
                 } else {
-                    value = GRID.collector[_collector].call(that);
+                    value = GRID.collector[_col.collector].call(that);
                 }
 
-                if (_formatter) {
+                if (_col.formatter) {
                     that.value = value;
-                    if (U.isFunction(_formatter)) {
-                        return _collector.call(that);
+                    if (U.isFunction(_col.formatter)) {
+                        return _col.collector.call(that);
                     } else {
-                        return GRID.formatter[_formatter].call(that);
+                        return GRID.formatter[_col.formatter].call(that);
                     }
                 } else {
                     return value;
@@ -1704,7 +1755,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             }
 
                             return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                        }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col, col.key, col.label, col.collector, col.formatter) : getFieldValue.call(this, _list, _list[di], di, col.key, col.formatter), '</span>');
+                        }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
 
                         SS.push('</td>');
                     }
@@ -1784,7 +1835,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
 
                         return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                    }(cellHeight), getSumFieldValue.call(this, _list, col.key, col.label, col.collector, col.formatter), '</span>');
+                    }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
                     SS.push('</td>');
                 }
@@ -1944,16 +1995,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
 
                 focusedColumn.panelName = function () {
-                    var _panels = [],
-                        panelName = "";
-
+                    var _panels = [];
                     if (this.xvar.frozenRowIndex > focusedColumn.dindex) _panels.push("top");
                     if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
                     _panels.push("body");
                     if (_panels[0] !== "top") _panels.push("scroll");
-                    panelName = _panels.join("-");
-
-                    return panelName;
+                    return _panels.join("-");
                 }.call(this);
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
@@ -1969,7 +2016,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }).call(this);
 
-                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.rowIndex + "_" + focusedColumn.colIndex] = focusedColumn;
+                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
                 this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
             },
             "LR": function LR(_dx) {
@@ -2034,7 +2081,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
                 (function () {}).call(this);
 
-                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.rowIndex + "_" + focusedColumn.colIndex] = focusedColumn;
+                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
 
                 var $column = this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
 
@@ -2128,10 +2175,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }).call(this);
 
-                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.rowIndex + "_" + focusedColumn.colIndex] = focusedColumn;
+                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
                 this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
             }
         };
+
         var processor = {
             "UP": function UP() {
                 focus["UD"].call(this, -1);
@@ -2165,27 +2213,57 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var inlineEditor = {
-        getHtml: function getHtml(_editor) {
+        getHtml: function getHtml(_editor, _value) {
             var processor = {
                 "text": function text(_editor) {
                     return '<input type="text" data-ax5grid-editor="text" value="" >';
                 },
+                "money": function money(_editor) {
+                    return '<input type="text" data-ax5grid-editor="money" value="" >';
+                },
+                "number": function number(_editor) {
+                    return '<input type="text" data-ax5grid-editor="number" value="" >';
+                },
                 "calendar": function calendar(_editor) {
                     return '<input type="text" data-ax5grid-editor="calendar" value="" >';
                 },
-                "combobox": function combobox(_editor) {},
-                "select": function select(_editor) {
-                    return '<select data-ax5grid-editor="calendar"></select>';
+                "combobox": function combobox(_editor) {
+                    return '<select data-ax5grid-editor="combobox"></select>';
                 },
-                "checkbox": function checkbox(_editor) {
-                    return '<div data-ax5grid-editor="checkBox" data-ax5grid-checked="false"></div>';
+                "select": function select(_editor) {
+                    var eConfig = {
+                        columnKeys: {
+                            optionValue: "value", optionText: "text"
+                        }
+                    };
+                    jQuery.extend(true, eConfig, _editor.config);
+
+                    var po = [];
+                    po.push('<select data-ax5grid-editor="select">');
+                    for (var oi = 0, ol = eConfig.options.length; oi < ol; oi++) {
+                        po.push('<option value="' + eConfig.options[oi][eConfig.columnKeys.optionValue] + '">', eConfig.options[oi][eConfig.columnKeys.optionText], '</option>');
+                    }
+                    po.push('</select>');
+                    return po.join('');
+                },
+                "checkbox": function checkbox(_editor, _value) {
+                    var lineHeight = this.config.body.columnHeight - this.config.body.columnPadding * 2 - this.config.body.columnBorderWidth;
+                    var checked = _value == false || _value == "false" || _value < "1" ? "false" : "true";
+                    var eConfig = {
+                        marginTop: 2,
+                        height: lineHeight - 4
+                    };
+                    jQuery.extend(true, eConfig, _editor.config);
+                    eConfig.marginTop = (lineHeight - eConfig.height) / 2;
+
+                    return '<div data-ax5grid-editor="checkbox" data-ax5grid-checked="' + checked + '" style="height:' + eConfig.height + 'px;width:' + eConfig.height + 'px;margin-top:' + eConfig.marginTop + 'px;"></div>';
                 }
             };
 
             if (_editor.type in processor) {
-                return processor[_editor.type].call(this, _editor);
+                return processor[_editor.type].call(this, _editor, _value);
             } else {
-                return processor["text"].call(this, _editor);
+                return processor["text"].call(this, _editor, _value);
             }
         },
         init: function init(_editor, _$parent) {
@@ -2193,12 +2271,49 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var $el;
             if (_$parent) {
                 _$parent.append($el = jQuery(elHtml));
+                inlineEditor.bindUI.call(this, $el, _editor, _$parent);
                 return $el;
             } else {
                 return elHtml;
             }
         },
-        bindUI: function bindUI() {},
+        bindUI: function bindUI(_$el, _editor, _$parent) {
+            var processor = {
+                "money": function money() {
+                    _$el.data("binded-ax5ui", "ax5formater");
+                    _$el.ax5formatter({
+                        pattern: "money"
+                    });
+                },
+                "number": function number() {
+                    _$el.data("binded-ax5ui", "ax5formater");
+                    _$el.ax5formatter({
+                        pattern: "number"
+                    });
+                },
+                "calendar": function calendar() {
+                    var self = this;
+                    _$el.data("binded-ax5ui", "ax5picker");
+                    _$el.ax5picker({
+                        direction: "auto",
+                        content: {
+                            type: 'date',
+                            formatter: {
+                                pattern: 'date'
+                            }
+                        },
+                        onStateChanged: function onStateChanged() {
+                            if (this.state == "close") {
+                                inlineEdit.deActive.call(self, "RETURN");
+                            }
+                        }
+                    });
+                }
+            };
+            if (_editor.type in processor) {
+                processor[_editor.type].call(this);
+            }
+        },
         remove: function remove() {}
     };
 
@@ -2211,11 +2326,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             for (var key in _focusedColumn) {
                 colIndex = _focusedColumn[key].colIndex;
+                // 인라인 에디팅을 멈춰야 하는 경우 조건
                 if (!(editor = this.colGroup[colIndex].editor)) return this;
+                // 조건에 맞지 않는 에디팅 타입이면 반응 없음.
+                if (!function (_editor, _type) {
+                    _type = _editor.type || "text";
+                    return _type == "text" || _type == "money" || _type == "number" || _type == "calendar" || _type == "select" || _type == "combobox";
+                }(editor)) {
+                    return this;
+                }
+
                 dindex = _focusedColumn[key].dindex;
                 rowIndex = _focusedColumn[key].rowIndex;
                 panelName = _focusedColumn[key].panelName;
                 colspan = _focusedColumn[key].colspan;
+
+                if (this.list[dindex].__isGrouping) {
+                    return false;
+                }
+
                 this.inlineEditing = {
                     columnKey: key,
                     column: _focusedColumn[key]
@@ -2223,32 +2352,99 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.isInlineEditing = true;
             }
             if (this.isInlineEditing) {
+
+                var initValue = function (__value, __editor) {
+                    if (__editor.type == "money") {
+                        return U.number(__value, { "money": true });
+                    } else {
+                        return __value || "";
+                    }
+                }.call(this, _initValue, editor);
+
                 this.inlineEditing.$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
 
                 this.inlineEditing.$inlineEditor = inlineEditor.init.call(this, editor, this.inlineEditing.$inlineEditorCell);
-                this.inlineEditing.$inlineEditor.val(_initValue || "").focus().select();
+
+                this.inlineEditing.$inlineEditor.val(initValue).focus().select();
+
+                return true;
             }
         },
-        deActive: function deActive(isCancel) {
+        deActive: function deActive(_msg) {
             // console.log(this.inlineEditing.column.dindex, this.inlineEditing.$inlineEditor.val());
             // todo : 데이터 업데이트를 어떻게 할 것인가? ~ 잘되는 건가??
             var dindex = this.inlineEditing.column.dindex;
             var rowIndex = this.inlineEditing.column.rowIndex;
             var colIndex = this.inlineEditing.column.colIndex;
             var column = this.bodyRowMap[this.inlineEditing.column.rowIndex + "_" + this.inlineEditing.column.colIndex];
-            var newValue = this.inlineEditing.$inlineEditor.val();
+            var newValue = function (__value, __editor) {
+                if (__editor.type == "money") {
+                    return U.number(__value);
+                } else {
+                    return __value;
+                }
+            }.call(this, this.inlineEditing.$inlineEditor.val(), column.editor);
 
-            if (!isCancel && GRID.data.setValue.call(this, dindex, column.key, newValue)) {
-                this.inlineEditing.$inlineEditorCell.html(getFieldValue(this.list, this.list[dindex], dindex, column.key, column.formatter, newValue));
+            var action = {
+                "CANCEL": function CANCEL(_dindex, _column, _newValue) {
+                    action["__clear"].call(this);
+                },
+                "RETURN": function RETURN(_dindex, _column, _newValue) {
+                    if (GRID.data.setValue.call(this, _dindex, _column.key, _newValue)) {
+                        action["__clear"].call(this);
+                        GRID.body.repaint.call(this, true);
+                        // 한칸씩 바꿀 수도 있지 않을까? 고려할 게 많아져서 어렵겠다. footSum도 변경 해줘야 하고, body.grouping도 변경 해줘야 하는데
+                        // this.inlineEditing.$inlineEditorCell.html(getFieldValue(this.list, this.list[_dindex], _dindex, _column, _newValue));
+                    }
+                },
+                "__clear": function __clear() {
+                    this.isInlineEditing = false;
+                    var bindedAx5ui = this.inlineEditing.$inlineEditor.data("binded-ax5ui");
+                    if (bindedAx5ui == "ax5picker") {
+                        this.inlineEditing.$inlineEditor.ax5picker("close");
+                    }
+
+                    this.inlineEditing.$inlineEditor.remove();
+                    this.inlineEditing.$inlineEditor = null;
+                    this.inlineEditing.$inlineEditorCell = null;
+                    this.inlineEditing = false;
+                }
+            };
+
+            if (_msg in action) {
+                action[_msg || "RETURN"].call(this, dindex, column, newValue);
+            } else {
+                action["__clear"].call(this);
             }
-
-            this.isInlineEditing = false;
-            this.inlineEditing.$inlineEditor.remove();
-            this.inlineEditing.$inlineEditor = null;
-            this.inlineEditing.$inlineEditorCell = null;
-            this.inlineEditing = false;
         },
-        cancel: function cancel() {}
+        keydown: function keydown(key) {
+            var processor = {
+                "ESC": function ESC() {
+                    inlineEdit.deActive.call(this, "CANCEL");
+                },
+                "RETURN": function RETURN() {
+                    if (this.isInlineEditing) {
+                        inlineEdit.deActive.call(this, "RETURN");
+                    } else {
+                        for (var k in this.focusedColumn) {
+                            var _column = this.focusedColumn[k];
+                            var column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                            var dindex = _column.dindex;
+                            var value = "";
+                            if (column) {
+                                if (!this.list[dindex].__isGrouping) {
+                                    value = this.list[dindex][column.key];
+                                }
+                            }
+                            GRID.body.inlineEdit.active.call(this, this.focusedColumn, null, value);
+                        }
+                    }
+                }
+            };
+            if (key in processor) {
+                processor[key].call(this, key);
+            }
+        }
     };
 
     GRID.body = {
@@ -2497,7 +2693,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var setValue = function setValue(_dindex, _key, _value) {
-
+        this.needToPaintSum = true;
         return this.list[_dindex][_key] = _value;
     };
 
@@ -2538,18 +2734,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             l = sortInfoArray.length,
             _a_val,
             _b_val;
-
         list.sort(function (_a, _b) {
-            i = 0;
-
-            for (; i < l; i++) {
+            for (i = 0; i < l; i++) {
                 _a_val = _a[sortInfoArray[i].key];
                 _b_val = _b[sortInfoArray[i].key];
                 if ((typeof _a_val === "undefined" ? "undefined" : _typeof(_a_val)) !== (typeof _b_val === "undefined" ? "undefined" : _typeof(_b_val))) {
                     _a_val = '' + _a_val;
                     _b_val = '' + _b_val;
                 }
-
                 if (_a_val < _b_val) {
                     return sortInfoArray[i].order === "asc" ? -1 : 1;
                 } else if (_a_val > _b_val) {
@@ -2663,7 +2855,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
             var col = self.colGroup[colIndex];
             if (key && col) {
-                if (self.config.sortable || col.sortable) {
+                if (col.sortable !== false && self.config.sortable !== false) {
                     if (!col.sortFixed) toggleSort.call(self, col.key);
                 }
             }
@@ -2786,7 +2978,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         return '<span data-ax5grid-cellHolder="" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                     }(), function () {
                         var _SS = "";
-                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && cfg.sortable || col.sortable) {
+                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && cfg.sortable !== false && col.sortable !== false) {
                             _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[col.colIndex].sort || "") + '" />';
                         }
                         return _SS;
