@@ -85,6 +85,11 @@ ax5.ui = (function () {
         var classStore = (config.classStore) ? config.classStore : ax5.ui;
         if (!classStore)  throw 'invalid classStore';
 
+        // make ui definition variable
+        ax5.def[config.className] = {
+            version: config.version
+        };
+
         var factory = function (cls, arg) {
             switch (arg.length) {
                 case 0:
