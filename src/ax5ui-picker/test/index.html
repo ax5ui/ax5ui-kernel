@@ -60,7 +60,7 @@
 
 <h1>Numpad</h1>
 <div class="form-group">
-    <input type="text" data-ax-path="numpad" class="form-control" placeholder="" />
+    <input type="text" data-ax-path="numpad" class="form-control" placeholder=""/>
 </div>
 
 <h1>Custom</h1>
@@ -71,21 +71,12 @@
 <script>
     // todo : picker align 기능 추가
 
-    ax5.def.leftArrow = "<<";
-    ax5.def.rightArrow = ">>";
+    ax5.def.picker.date_leftArrow = '<i class="fa fa-chevron-left"></i>';
+    ax5.def.picker.date_yearTmpl = '%s';
+    ax5.def.picker.date_monthTmpl = '%s';
+    ax5.def.picker.date_rightArrow = '<i class="fa fa-chevron-right"></i>';
 
     $(document.body).ready(function () {
-
-        $('[data-picker-date]').ax5picker({
-            direction: "auto",
-            content: {
-                type: 'date',
-                formatter: {
-                    pattern: 'date'
-                }
-            }
-        });
-
         /*
          $('[data-ax5picker="date"]').ax5picker({
          direction: "top",
@@ -166,6 +157,18 @@
          console.log(this);
          };
          */
+
+
+        picker.bind({
+            target: $('[data-picker-date]'),
+            direction: "auto",
+            content: {
+                type: 'date',
+                formatter: {
+                    pattern: 'date'
+                }
+            }
+        });
 
         $('[data-ax5picker]').each(function (idx) {
 
@@ -337,25 +340,25 @@
                     specialBtnStyle: "width:100%;padding-left:0px;padding-right:0px;",
                     specialBtnTheme: ""
                     /*
-                    keyArray: [
-                        {value: "7"},
-                        {value: "8"},
-                        {value: "9"},
-                        {label: "BS", fn: "back"},
-                        {value: "4"},
-                        {value: "5"},
-                        {value: "6"},
-                        {value: "-"},
-                        {value: "1"},
-                        {value: "2"},
-                        {value: "3"},
-                        {value: ""},
-                        {value: "."},
-                        {value: "0"},
-                        {value: ""},
-                        {label: "OK", fn: "close"}
-                    ]
-                    */
+                     keyArray: [
+                     {value: "7"},
+                     {value: "8"},
+                     {value: "9"},
+                     {label: "BS", fn: "back"},
+                     {value: "4"},
+                     {value: "5"},
+                     {value: "6"},
+                     {value: "-"},
+                     {value: "1"},
+                     {value: "2"},
+                     {value: "3"},
+                     {value: ""},
+                     {value: "."},
+                     {value: "0"},
+                     {value: ""},
+                     {label: "OK", fn: "close"}
+                     ]
+                     */
                 },
                 formatter: {
                     pattern: 'number'

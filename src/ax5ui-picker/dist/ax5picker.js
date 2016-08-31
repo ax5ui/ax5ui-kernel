@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.10"
+        version: "0.7.11"
     }, function () {
         /**
          * @class ax5picker
@@ -460,10 +460,10 @@
                         var calendarConfig = {
                             displayDate: new Date(),
                             control: {
-                                left: ax5.def.leftArrow || '&#x02190',
-                                yearTmpl: ax5.def.yearTmpl || '%s',
-                                monthTmpl: ax5.def.monthTmpl || '%s',
-                                right: ax5.def.rightArrow || '&#x02192',
+                                left: ax5.def.picker.date_leftArrow || '&#x02190',
+                                yearTmpl: ax5.def.picker.date_yearTmpl || '%s',
+                                monthTmpl: ax5.def.picker.date_monthTmpl || '%s',
+                                right: ax5.def.picker.date_rightArrow || '&#x02192',
                                 yearFirst: true
                             }
                         };
