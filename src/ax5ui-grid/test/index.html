@@ -19,8 +19,8 @@
 </head>
 <body style="padding: 20px;">
 
-<div style="border:1px solid #0a68b4;position: relative;height:400px;" id="grid-parent">
-    <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 100%;"></div>
+<div style="position: relative;height:400px;" id="grid-parent">
+    <div data-ax5grid="first-grid" data-ax5grid-config='{showLineNumber: true, showRowSelector: true}' style="height: 100%;"></div>
 </div>
 
 <div style="padding: 10px;">
@@ -40,9 +40,6 @@
     <button class="btn btn-default" data-grid-control="column-update">column update</button>
 </div>
 
-<div style="height: 10px;"></div>
-
-<TEXTAREA ID="holdtext" STYLE="position:absolute;top:-1000px;"></TEXTAREA>
 <script>
     var firstGrid = new ax5.ui.grid();
 
@@ -67,40 +64,6 @@
         initView: function () {
             firstGrid.setConfig({
                 target: $('[data-ax5grid="first-grid"]'),
-                frozenColumnIndex: 2,
-                frozenRowIndex: 0,
-                showLineNumber: true,
-                showRowSelector: true,
-                multipleSelect: true,
-                lineNumberColumnWidth: 40,
-                rowSelectorColumnWidth: 28,
-                sortable: true, // 모든 컬럼에 정렬 아이콘 표시
-                multiSort: false, // 다중 정렬 여부
-                remoteSort: false, // remoteSort에 함수를 sortable 컬럼이 클릭되었을때 실행 setColumnSort를 직접 구현. (remoteSort를 사용하면 헤더에 정렬 상태만 표시 하고 데이터 정렬은 처리 안함)
-                header: {
-                    align: "center",
-                    columnHeight: 28
-                },
-                body: {
-                    align: "center",
-                    columnHeight: 28,
-                    onClick: function () {
-                        // console.log(this);
-                        this.self.select(this.dindex);
-                    }
-                },
-                page: {
-                    navigationItemCount: 9,
-                    height: 30,
-                    display: true,
-                    firstIcon: '<i class="fa fa-step-backward" aria-hidden="true"></i>',
-                    prevIcon: '<i class="fa fa-caret-left" aria-hidden="true"></i>',
-                    nextIcon: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
-                    lastIcon: '<i class="fa fa-step-forward" aria-hidden="true"></i>',
-                    onChange: function () {
-                        gridView.setData(this.page.selectPage);
-                    }
-                },
                 columns: [
                     {
                         key: "a",
@@ -123,19 +86,12 @@
                     {key: "saleDt", label: "판매일자", align: "center"},
                     {key: "customer", label: "고객명"},
                     {key: "saleType", label: "판매타입"}
-                ],
-                footSum: [
-                    [
-                        {label: "전체 합계", colspan: 2, align: "center"},
-                        {key: "price", collector: "avg", formatter: "money", align: "right"},
-                        {key: "amount", collector: "sum", formatter: "money", align: "right"},
-                        {key: "cost", collector: "sum", formatter: "money", align: "right"}
-                    ]
                 ]
             });
             return this;
         },
         setData: function (_pageNo) {
+            /*
             firstGrid.setData({
                 list: sampleData,
                 page: {
@@ -145,8 +101,8 @@
                     totalPages: 100
                 }
             });
-
-            //firstGrid.setData(list);
+*/
+            firstGrid.setData(sampleData);
 
             return this;
         }

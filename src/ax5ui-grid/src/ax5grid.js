@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.0"
+        version: "0.2.1"
     }, (function () {
         /**
          * @class ax5grid
@@ -38,18 +38,18 @@
                 height: 0,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
-                rowSelectorColumnWidth: 25,
+                rowSelectorColumnWidth: 26,
                 sortable: false,
 
                 header: {
                     align: false,
-                    columnHeight: 25,
+                    columnHeight: 26,
                     columnPadding: 3,
                     columnBorderWidth: 1
                 },
                 body: {
                     align: false,
-                    columnHeight: 25,
+                    columnHeight: 26,
                     columnPadding: 3,
                     columnBorderWidth: 1,
                     grouping: false
@@ -189,7 +189,7 @@
                         }
                     };
 
-                    this.$["container"]["root"].css({height: this.gridConfig.height});
+                    this.$["container"]["root"].css({height: this.config.height});
 
                     return this;
                 },
@@ -304,11 +304,12 @@
 
                     var asidePanelWidth = cfg.asidePanelWidth = (function () {
                         var width = 0;
+                        
                         if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
                         if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
                         return width;
                     })();
-
+                    
                     var frozenPanelWidth = cfg.frozenPanelWidth = (function (colGroup, endIndex) {
                         var width = 0;
                         for (var i = 0, l = endIndex; i < l; i++) {
@@ -400,6 +401,7 @@
                         }
 
                         if (isHide) {
+                            panel.hide();
                             // 프로세스 중지
                             return this;
                         }
@@ -597,14 +599,25 @@
                 this.onStateChanged = cfg.onStateChanged;
                 this.onClick = cfg.onClick;
 
-                var grid = this.gridConfig = jQuery.extend(true, {}, cfg, _config);
-                if (!grid.target) {
+                cfg = jQuery.extend(true, {}, cfg, _config);
+                if (!cfg.target) {
                     console.log(ax5.info.getError("ax5grid", "401", "init"));
                     return this;
                 }
-                this.$target = jQuery(grid.target);
-                if (!this.gridConfig.height) {
-                    this.gridConfig.height = this.$target.height();
+
+                this.$target = jQuery(cfg.target);
+
+                // target attribute data
+                (function (data) {
+                    if (U.isObject(data) && !data.error) {
+                        cfg = jQuery.extend(true, cfg, data);
+                    }
+                }).call(this, U.parseJson(this.$target.attr("data-ax5grid-config"), true));
+
+                var grid = this.config = cfg;
+
+                if (!this.config.height) {
+                    this.config.height = this.$target.height();
                 }
 
                 if (!this.id) this.id = this.$target.data("data-ax5grid-id");
@@ -612,13 +625,6 @@
                     this.id = 'ax5grid-' + ax5.getGuid();
                     this.$target.data("data-ax5grid-id", grid.id);
                 }
-
-                // target attribute data
-                (function (data) {
-                    if (U.isObject(data) && !data.error) {
-                        grid = jQuery.extend(true, grid, data);
-                    }
-                })(U.parseJson(this.$target.attr("data-ax5grid-config"), true));
 
                 ///========
                 // 그리드를 그리기 위한 가장 기초적인 작업 뼈대와 틀을 준비합니다. 이 메소드는 초기화 시 한번만 호출 되게 됩니다.
@@ -693,6 +699,7 @@
                             }else{
                                 if (ctrlKeys[e.which]) {
                                     self.keyDown(ctrlKeys[e.which], e.originalEvent);
+                                    U.stopEvent(e);
                                 } else if (e.which == ax5.info.eventKeys.ESC) {
 
                                 }else if (e.which == ax5.info.eventKeys.RETURN) {

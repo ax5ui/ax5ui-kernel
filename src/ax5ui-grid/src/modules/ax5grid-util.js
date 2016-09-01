@@ -358,6 +358,28 @@
         return table;
     };
 
+    var findPanelByColumnIndex = function (_dindex, _colIndex, _rowIndex) {
+        var _containerPanelName;
+        var _isScrollPanel = false;
+        var _panels = [];
+
+        if (this.xvar.frozenRowIndex > _dindex) _panels.push("top");
+        if (this.xvar.frozenColumnIndex > _colIndex) _panels.push("left");
+        _panels.push("body");
+
+        if (this.xvar.frozenColumnIndex <= _colIndex || this.xvar.frozenRowIndex <= _dindex) {
+            _containerPanelName = _panels.join("-");
+            _panels.push("scroll");
+            _isScrollPanel = true;
+        }
+
+        return {
+            panelName: _panels.join("-"),
+            containerPanelName : _containerPanelName,
+            isScrollPanel: _isScrollPanel
+        }
+    };
+
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
         getMousePosition: getMousePosition,
@@ -366,7 +388,8 @@
         makeBodyRowTable: makeBodyRowTable,
         makeBodyRowMap: makeBodyRowMap,
         makeFootSumTable: makeFootSumTable,
-        makeBodyGroupingTable: makeBodyGroupingTable
+        makeBodyGroupingTable: makeBodyGroupingTable,
+        findPanelByColumnIndex: findPanelByColumnIndex
     };
 
 })();

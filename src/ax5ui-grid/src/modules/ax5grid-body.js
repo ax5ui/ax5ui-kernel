@@ -502,7 +502,10 @@
                     return GRID.formatter[_col.formatter].call(that);
                 }
             } else {
-                return _value || _item[_key] || "&nbsp;";
+                var returnValue = "&nbsp;";
+                if(typeof _value !== "undefined") returnValue = _value;
+                if(typeof _item[_key] !== "undefined") returnValue = _item[_key];
+                return returnValue;
             }
         }
     };
@@ -964,7 +967,6 @@
                 }
 
                 originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
-
                 columnSelect.focusClear.call(this);
                 columnSelect.clear.call(this);
 
@@ -1002,19 +1004,13 @@
                     while_i++;
                 }
 
-                focusedColumn.panelName = (function () {
-                    var _panels = [];
-                    if (this.xvar.frozenRowIndex > focusedColumn.dindex) _panels.push("top");
-                    if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
-                    _panels.push("body");
-                    if (_panels[0] !== "top") _panels.push("scroll");
-                    return _panels.join("-");
-                }).call(this);
+                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
                 (function () {
                     if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
-                        if (focusedColumn.dindex < this.xvar.paintStartRowIndex) {
+                        if (focusedColumn.dindex <= this.xvar.paintStartRowIndex) {
                             scrollTo.call(this, {top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight});
                             GRID.scroller.resize.call(this);
                         }
@@ -1072,28 +1068,11 @@
                     while_i++;
                 }
 
-                focusedColumn.panelName = (function () {
-                    var _panels = [], panelName = "";
+                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
 
-                    if (this.xvar.frozenRowIndex > focusedColumn.dindex) _panels.push("top");
-                    if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
-                    _panels.push("body");
-                    if (_panels[0] !== "top") {
-                        if (this.xvar.frozenColumnIndex <= focusedColumn.colIndex) {
-                            containerPanelName = _panels.join("-");
-                            isScrollPanel = true;
-                        }
-                        _panels.push("scroll");
-                    }
-                    panelName = _panels.join("-");
-
-                    return panelName;
-                }).call(this);
-
-                // 포커스 컬럼의 위치에 따라 스크롤 처리.
-                (function () {
-
-                }).call(this);
+                focusedColumn.panelName = nPanelInfo.panelName;
+                containerPanelName = nPanelInfo.containerPanelName;
+                isScrollPanel = nPanelInfo.isScrollPanel;
 
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
 
@@ -1102,7 +1081,9 @@
                     .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]')
                     .attr('data-ax5grid-column-focused', "true");
 
-                if (isScrollPanel) {// 스크롤 패널 이라면~
+
+                
+                if ($column && isScrollPanel) {// 스크롤 패널 이라면~
                     var newLeft = (function () {
                         if ($column.position().left + $column.outerWidth() > Math.abs(this.$.panel[focusedColumn.panelName].position().left) + this.$.panel[containerPanelName].width()) {
                             return $column.position().left + $column.outerWidth() - this.$.panel[containerPanelName].width();
@@ -1168,18 +1149,8 @@
                     while_i++;
                 }
 
-                focusedColumn.panelName = (function () {
-                    var _panels = [],
-                        panelName = "";
-
-                    if (this.xvar.frozenRowIndex > focusedColumn.dindex) _panels.push("top");
-                    if (this.xvar.frozenColumnIndex > focusedColumn.colIndex) _panels.push("left");
-                    _panels.push("body");
-                    if (_panels[0] !== "top") _panels.push("scroll");
-                    panelName = _panels.join("-");
-
-                    return panelName;
-                }).call(this);
+                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
                 (function () {

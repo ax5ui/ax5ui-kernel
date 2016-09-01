@@ -3,7 +3,6 @@
 
     var GRID = ax5.ui.grid;
 
-
     var edit_text = {
         editMode: "popup",
         getHtml: function (_root, _editor) {
@@ -19,6 +18,7 @@
 
         }
     };
+
     var edit_money = {
         editMode: "popup",
         getHtml: function (_root, _editor) {
@@ -37,6 +37,7 @@
             });
         }
     };
+
     var edit_number = {
         editMode: "popup",
         getHtml: function (_root, _editor) {
@@ -55,6 +56,7 @@
             });
         }
     };
+
     var edit_date = {
         editMode: "popup",
         getHtml: function (_root, _editor) {
@@ -85,6 +87,7 @@
             });
         }
     };
+
     var edit_select = {
         editMode: "popup",
         getHtml: function (_root, _editor) {
@@ -120,6 +123,7 @@
             */
         }
     };
+
     var edit_checkbox = {
         editMode: "inline",
         getHtml: function (_root, _editor, _value) {
