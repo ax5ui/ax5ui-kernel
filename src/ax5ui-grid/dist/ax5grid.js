@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.1"
+        version: "0.2.2"
     }, function () {
         /**
          * @class ax5grid
@@ -66,7 +66,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 },
                 scroller: {
                     size: 15,
-                    barMinSize: 15
+                    barMinSize: 15,
+                    trackPadding: 4
                 },
                 columnKeys: {
                     selected: '_SELECTED'
@@ -3322,7 +3323,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var self = this,
                 trackOffset = track.offset(),
                 barBox = {
-                width: bar.width(), height: bar.height()
+                width: bar.outerWidth(), height: bar.outerHeight()
             },
                 trackBox = {
                 width: track.innerWidth(), height: track.innerHeight()
@@ -3333,8 +3334,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _panel_width = self.$["panel"]["body"].width(),
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
-                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].height(),
-                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].width(),
+                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].outerHeight(),
+                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].outerWidth(),
                 getScrollerPosition = {
                 "vertical": function vertical(e) {
                     var mouseObj = GRID.util.getMousePosition(e);
@@ -3380,7 +3381,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var self = this,
                 barOffset = bar.position(),
                 barBox = {
-                width: bar.width(), height: bar.height()
+                width: bar.outerWidth(), height: bar.outerHeight()
             },
                 trackBox = {
                 width: track.innerWidth(), height: track.innerHeight()
@@ -3391,8 +3392,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _panel_width = self.$["panel"]["body"].width(),
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
-                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].height(),
-                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].width(),
+                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].outerHeight(),
+                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].outerWidth(),
                 getScrollerPosition = {
                 "vertical": function vertical(e) {
                     var mouseObj = GRID.util.getMousePosition(e);
@@ -3569,7 +3570,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var init = function init() {
         var self = this;
         //this.config.scroller.size
-        var margin = 4;
+        var margin = this.config.scroller.trackPadding;
 
         this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
         this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });

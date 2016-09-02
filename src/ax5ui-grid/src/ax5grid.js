@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.1"
+        version: "0.2.2"
     }, (function () {
         /**
          * @class ax5grid
@@ -63,7 +63,8 @@
                 },
                 scroller: {
                     size: 15,
-                    barMinSize: 15
+                    barMinSize: 15,
+                    trackPadding: 4
                 },
                 columnKeys: {
                     selected: '_SELECTED'
