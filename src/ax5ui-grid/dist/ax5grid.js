@@ -2734,7 +2734,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
             var col = self.colGroup[colIndex];
             if (key && col) {
-                if (col.sortable === true || self.config.sortable === true) {
+                if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
                     if (!col.sortFixed) toggleSort.call(self, col.key);
                 }
             }
@@ -2858,7 +2858,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }(), function () {
                         var _SS = "";
 
-                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && (cfg.sortable === true || col.sortable === true)) {
+                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && (cfg.sortable === true || col.sortable === true) && col.sortable !== false) {
                             _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[col.colIndex].sort || "") + '" />';
                         }
                         return _SS;

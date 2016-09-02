@@ -76,7 +76,7 @@
                 multipleSelect: true,
                 lineNumberColumnWidth: 40,
                 rowSelectorColumnWidth: 28,
-                //sortable: true, // 모든 컬럼에 정렬 아이콘 표시
+                sortable: true, // 모든 컬럼에 정렬 아이콘 표시
                 multiSort: false, // 다중 정렬 여부
                 remoteSort: false, // remoteSort에 함수를 sortable 컬럼이 클릭되었을때 실행 setColumnSort를 직접 구현. (remoteSort를 사용하면 헤더에 정렬 상태만 표시 하고 데이터 정렬은 처리 안함)
                 header: {
@@ -137,15 +137,16 @@
                     ]
                     },
                     {key: "saleDt", label: "판매일자", align: "center"},
-                    {key: "customer", label: "고객명", sortable:true},
+                    {key: "customer", label: "고객명", sortable: false},
                     {key: "saleType", label: "판매타입"}
                 ],
-                footSum: [[
-                    {label: "전체 합계", colspan: 2, align: "center"},
-                    {key: "price", collector: "avg", formatter: "money", align: "right"},
-                    {key: "amount", collector: "sum", formatter: "money", align: "right"},
-                    {key: "cost", collector: "sum", formatter: "money", align: "right"}
-                ]]
+                footSum: [
+                    [
+                        {label: "전체 합계", colspan: 2, align: "center"},
+                        {key: "price", collector: "avg", formatter: "money", align: "right"},
+                        {key: "amount", collector: "sum", formatter: "money", align: "right"},
+                        {key: "cost", collector: "sum", formatter: "money", align: "right"}
+                    ]]
             });
             return this;
         },
@@ -185,7 +186,7 @@
         $('[data-grid-control]').click(function () {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    firstGrid.addRow($.extend({}, sampleData[ (Math.floor(Math.random() * sampleData.length)) ], true), "first");
+                    firstGrid.addRow($.extend({}, sampleData[(Math.floor(Math.random() * sampleData.length))], true), "first");
                     break;
                 case "row-remove":
                     firstGrid.removeRow();
