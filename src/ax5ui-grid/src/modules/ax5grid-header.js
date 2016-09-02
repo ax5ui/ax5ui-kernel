@@ -77,7 +77,7 @@
             var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
             var col = self.colGroup[colIndex];
             if (key && col) {
-                if (col.sortable !== false && self.config.sortable !== false) {
+                if (col.sortable === true || self.config.sortable === true) {
                     if(!col.sortFixed) toggleSort.call(self, col.key);
                 }
             }
@@ -213,7 +213,8 @@
                             ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
                     })(), (function () {
                         var _SS = "";
-                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && (cfg.sortable !== false && col.sortable !== false)) {
+
+                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && (cfg.sortable === true || col.sortable === true)) {
                             _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[col.colIndex].sort || "") + '" />';
                         }
                         return _SS;

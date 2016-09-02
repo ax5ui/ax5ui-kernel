@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.2"
+        version: "0.2.3"
     }, (function () {
         /**
          * @class ax5grid
@@ -39,7 +39,7 @@
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
                 rowSelectorColumnWidth: 26,
-                sortable: false,
+                sortable: undefined,
 
                 header: {
                     align: false,
