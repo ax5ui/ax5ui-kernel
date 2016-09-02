@@ -7,7 +7,7 @@
 * [ax5grid](#ax5grid)
     * [.setConfig(_config)](#ax5grid.setConfig) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.align()](#ax5grid.align) ⇒ <code>[ax5grid](#ax5grid)</code>
-    * [.keyDown(keyName, data)](#ax5grid.keyDown) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.keyDown(_keyName, _data)](#ax5grid.keyDown) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.copySelect()](#ax5grid.copySelect) ⇒ <code>Boolean</code>
     * [.setData(_data)](#ax5grid.setData) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.setHeight(_height)](#ax5grid.setHeight) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -65,6 +65,7 @@ Preferences of grid UI
 | [_config.scroller] | <code>Object</code> |  |  |
 | [_config.scroller.size] | <code>Number</code> | <code>15</code> |  |
 | [_config.scroller.barMinSize] | <code>Number</code> | <code>15</code> |  |
+| [_config.scroller.trackPadding] | <code>Number</code> | <code>4</code> |  |
 | [_config.columnKeys] | <code>Object</code> |  |  |
 | [_config.columnKeys.selected] | <code>String</code> | <code>&quot;_SELECTED&quot;</code> |  |
 | _config.columns | <code>Object</code> |  |  |
@@ -80,13 +81,13 @@ align grid size
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 <a name="ax5grid.keyDown"></a>
 
-### ax5grid.keyDown(keyName, data) ⇒ <code>[ax5grid](#ax5grid)</code>
+### ax5grid.keyDown(_keyName, _data) ⇒ <code>[ax5grid](#ax5grid)</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 
 | Param | Type |
 | --- | --- |
-| keyName | <code>String</code> | 
-| data | <code>Event</code> &#124; <code>Object</code> | 
+| _keyName | <code>String</code> | 
+| _data | <code>Event</code> &#124; <code>Object</code> | 
 
 <a name="ax5grid.copySelect"></a>
 

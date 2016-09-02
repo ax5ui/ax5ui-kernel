@@ -573,6 +573,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Object} [_config.scroller]
              * @param {Number} [_config.scroller.size=15]
              * @param {Number} [_config.scroller.barMinSize=15]
+             * @param {Number} [_config.scroller.trackPadding=4]
              * @param {Object} [_config.columnKeys]
              * @param {String} [_config.columnKeys.selected="_SELECTED"]
              * @param {Object} _config.columns
