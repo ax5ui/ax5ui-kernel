@@ -11,7 +11,7 @@
 }
 
 @mixin menu-variant($text-color, $border-color, $heading-bg-color, $item-bg, $item-color, $item-hover-bg, $item-hover-color) {
-    @include ax-background($ax5menu-bg);
+    @include ax-background($item-bg);
     border: $ax5menu-inner-border;
     border-color: $border-color;
     border-radius: $ax5menu-border-radius;
