@@ -692,14 +692,17 @@
                     this.queue[childQueIdx].parentQueIdx = queIdx;
                 };
 /// private end
-
             /**
              * Preferences of layout UI
              * @method ax5layout.setConfig
              * @param {Object} config - 클래스 속성값
+             * @param {Number} [config.animateTime=250]
+             * @param {Object} [config.splitter]
+             * @param {Number} [config.splitter.size=4]
+             * @param {Boolean} [config.autoResize=true]
              * @returns {ax5layout}
              * @example
-             * ```
+             * ```js
              * ```
              */
             this.init = function () {
@@ -717,6 +720,9 @@
              * @param {String} [item.theme]
              * @param {Element} item.target
              * @param {Object[]} item.options
+             * @param {Object} [item.splitter]
+             * @param {Number} [item.splitter.size=4]
+             * @param {Boolean} [item.autoResize=true]
              * @returns {ax5layout}
              */
             this.bind = function (item) {
