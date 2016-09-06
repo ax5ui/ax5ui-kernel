@@ -4,24 +4,6 @@
  * - www.axisj.com
  */
 
-// themes
-$border-colors: (
-        default: $ax5layout-default-border-color,
-        primary: $ax5layout-primary-border-color,
-        success: $ax5layout-success-border-color,
-        info: $ax5layout-info-border-color,
-        warning: $ax5layout-warning-border-color,
-        danger: $ax5layout-danger-border-color
-);
-$font-colors: (
-        default: $ax5layout-default-font-color,
-        primary: $ax5layout-primary-font-color,
-        success: $ax5layout-success-font-color,
-        info: $ax5layout-info-font-color,
-        warning: $ax5layout-warning-font-color,
-        danger: $ax5layout-danger-font-color
-);
-
 @include keyframes(ax-layout) {
     from {
         @include transform(translateY(-10%) scaleY(0.0));
@@ -48,7 +30,7 @@ $font-colors: (
 
 }
 
-$dock-panel-splitter-background: #ccc;
+
 
 /// layout-display
 [data-ax5layout] {
@@ -101,6 +83,16 @@ $dock-panel-splitter-background: #ccc;
         }
         &.split-panel-horizontal{
             height: 100%;
+        }
+
+        &[data-split-panel-wrap="scroll"]{
+            overflow: auto;
+        }
+        &[data-split-panel-wrap="scroll-x"]{
+            overflow-x: auto;
+        }
+        &[data-split-panel-wrap="scroll-y"]{
+            overflow-y: auto;
         }
     }
     > [data-splitter]{

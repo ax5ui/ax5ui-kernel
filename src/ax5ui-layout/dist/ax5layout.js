@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "layout",
-        version: "0.2.4"
+        version: "0.2.5"
     }, function () {
         /**
          * @class ax5layout
@@ -68,11 +68,11 @@
                 }
             },
                 getDockPanelOuterSize = {
-                "width": function width(panel) {
-                    return panel ? panel.__width + (panel.split ? cfg.splitter.size : 0) : 0;
+                "width": function width(item, panel) {
+                    return panel ? panel.__width + (panel.split ? item.splitter.size : 0) : 0;
                 },
-                "height": function height(panel) {
-                    return panel ? panel.__height + (panel.split ? cfg.splitter.size : 0) : 0;
+                "height": function height(item, panel) {
+                    return panel ? panel.__height + (panel.split ? item.splitter.size : 0) : 0;
                 }
             },
                 alignLayout = function () {
@@ -80,7 +80,7 @@
                     "split": {
                         "vertical": function vertical(item, panel, panelIndex) {
                             if (panel.splitter) {
-                                panel.__height = cfg.splitter.size;
+                                panel.__height = panel.splitter.size;
                             } else {
                                 if (panelIndex == item.splitPanel.length - 1) {
                                     if (item.splitPanel.asteriskLength == 0) {
@@ -101,7 +101,7 @@
                         },
                         "horizontal": function horizontal(item, panel, panelIndex) {
                             if (panel.splitter) {
-                                panel.__width = cfg.splitter.size;
+                                panel.__width = panel.splitter.size;
                             } else {
                                 if (panelIndex == item.splitPanel.length - 1) {
                                     if (item.splitPanel.asteriskLength == 0) {
@@ -126,13 +126,13 @@
                     "top": function top(item, panel) {
                         panel.$target.css({ height: panel.__height || 0 });
                         if (panel.split) {
-                            panel.$splitter.css({ height: cfg.splitter.size, top: panel.__height || 0 });
+                            panel.$splitter.css({ height: item.splitter.size, top: panel.__height || 0 });
                         }
                     },
                     "bottom": function bottom(item, panel) {
                         panel.$target.css({ height: panel.__height || 0 });
                         if (panel.split) {
-                            panel.$splitter.css({ height: cfg.splitter.size, bottom: panel.__height || 0 });
+                            panel.$splitter.css({ height: item.splitter.size, bottom: panel.__height || 0 });
                         }
                     },
                     "left": function left(item, panel) {
@@ -145,21 +145,21 @@
                             css.height -= item.dockPanel.top.__height;
                             css.top = item.dockPanel.top.__height;
                             if (item.dockPanel.top.split) {
-                                css.height -= cfg.splitter.size;
-                                css.top += cfg.splitter.size;
+                                css.height -= item.splitter.size;
+                                css.top += item.splitter.size;
                             }
                         }
                         if (item.dockPanel.bottom) {
                             css.height -= item.dockPanel.bottom.__height;
                             if (item.dockPanel.bottom.split) {
-                                css.height -= cfg.splitter.size;
+                                css.height -= item.splitter.size;
                             }
                         }
 
                         panel.$target.css(css);
 
                         if (panel.split) {
-                            panel.$splitter.css({ width: cfg.splitter.size, height: css.height, top: css.top, left: css.width });
+                            panel.$splitter.css({ width: item.splitter.size, height: css.height, top: css.top, left: css.width });
                         }
                     },
                     "right": function right(item, panel) {
@@ -172,21 +172,21 @@
                             css.height -= item.dockPanel.top.__height;
                             css.top = item.dockPanel.top.__height;
                             if (item.dockPanel.top.split) {
-                                css.height -= cfg.splitter.size;
-                                css.top += cfg.splitter.size;
+                                css.height -= item.splitter.size;
+                                css.top += item.splitter.size;
                             }
                         }
                         if (item.dockPanel.bottom) {
                             css.height -= item.dockPanel.bottom.__height;
                             if (item.dockPanel.bottom.split) {
-                                css.height -= cfg.splitter.size;
+                                css.height -= item.splitter.size;
                             }
                         }
 
                         panel.$target.css(css);
 
                         if (panel.split) {
-                            panel.$splitter.css({ width: cfg.splitter.size, height: css.height, top: css.top, right: css.width });
+                            panel.$splitter.css({ width: item.splitter.size, height: css.height, top: css.top, right: css.width });
                         }
                     },
                     "center": function center(item, panel) {
@@ -199,28 +199,28 @@
                             css.height -= item.dockPanel.top.__height || 0;
                             css.top = item.dockPanel.top.__height || 0;
                             if (item.dockPanel.top.split) {
-                                css.height -= cfg.splitter.size;
-                                css.top += cfg.splitter.size;
+                                css.height -= item.splitter.size;
+                                css.top += item.splitter.size;
                             }
                         }
                         if (item.dockPanel.bottom) {
                             css.height -= item.dockPanel.bottom.__height || 0;
                             if (item.dockPanel.bottom.split) {
-                                css.height -= cfg.splitter.size;
+                                css.height -= item.splitter.size;
                             }
                         }
                         if (item.dockPanel.left) {
                             css.width -= item.dockPanel.left.__width || 0;
                             css.left = item.dockPanel.left.__width || 0;
                             if (item.dockPanel.left.split) {
-                                css.width -= cfg.splitter.size;
-                                css.left += cfg.splitter.size;
+                                css.width -= item.splitter.size;
+                                css.left += item.splitter.size;
                             }
                         }
                         if (item.dockPanel.right) {
                             css.width -= item.dockPanel.right.__width || 0;
                             if (item.dockPanel.right.split) {
-                                css.width -= cfg.splitter.size;
+                                css.width -= item.splitter.size;
                             }
                         }
 
@@ -230,11 +230,11 @@
                         // 레이아웃의 최소 너비 높이를 주어 레이아웃 덕패널이 겹치는 일이 없게 합니다
                         if (css.width < minWidth) {
                             css.width = minWidth;
-                            item.$target.css({ minWidth: minWidth + getDockPanelOuterSize["width"](item.dockPanel.left) + getDockPanelOuterSize["width"](item.dockPanel.right) });
+                            item.$target.css({ minWidth: minWidth + getDockPanelOuterSize["width"](item.dockPanel.left, item.splitter.size) + getDockPanelOuterSize["width"](item.dockPanel.right, item.splitter.size) });
                         }
                         if (css.height < minHeight) {
                             css.height = minHeight;
-                            item.$target.css({ minHeight: minHeight + getDockPanelOuterSize["height"](item.dockPanel.top) + getDockPanelOuterSize["height"](item.dockPanel.bottom) });
+                            item.$target.css({ minHeight: minHeight + getDockPanelOuterSize["height"](item.dockPanel.top, item.splitter.size) + getDockPanelOuterSize["height"](item.dockPanel.bottom, item.splitter.size) });
                         }
 
                         panel.$target.css(css);
@@ -244,7 +244,7 @@
                             var css = {};
                             var prevPosition = panelIndex ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
                             if (panel.splitter) {
-                                css.height = cfg.splitter.size;
+                                css.height = item.splitter.size;
                             } else {
                                 if (panel.height == "*" && (typeof panel.__height === "undefined" || windowResize)) {
                                     // 남은 전체 공간을 사용
@@ -263,7 +263,7 @@
                             var prevPosition = panelIndex ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
 
                             if (panel.splitter) {
-                                css.width = cfg.splitter.size;
+                                css.width = item.splitter.size;
                             } else {
                                 if (panel.width == "*" && (typeof panel.__width === "undefined" || windowResize)) {
                                     // 남은 전체 공간을 사용
@@ -358,7 +358,7 @@
 
                             panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
                             var minWidth = panel.minWidth || 0;
-                            var maxWidth = panel.maxWidth || item.targetDimension.width - getDockPanelOuterSize["width"](item.dockPanel.left) - getDockPanelOuterSize["width"](item.dockPanel.right);
+                            var maxWidth = panel.maxWidth || item.targetDimension.width - getDockPanelOuterSize["width"](item, item.dockPanel.left) - getDockPanelOuterSize["width"](item, item.dockPanel.right);
 
                             if (panel.__width + panel.__da < minWidth) {
                                 panel.__da = -panel.__width + minWidth;
@@ -372,7 +372,7 @@
 
                             panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
                             var minWidth = panel.minWidth || 0;
-                            var maxWidth = panel.maxWidth || item.targetDimension.width - getDockPanelOuterSize["width"](item.dockPanel.left) - getDockPanelOuterSize["width"](item.dockPanel.right);
+                            var maxWidth = panel.maxWidth || item.targetDimension.width - getDockPanelOuterSize["width"](item, item.dockPanel.left) - getDockPanelOuterSize["width"](item, item.dockPanel.right);
 
                             if (panel.__width - panel.__da < minWidth) {
                                 panel.__da = panel.__width - minWidth;
@@ -386,7 +386,7 @@
 
                             panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
                             var minHeight = panel.minHeight || 0;
-                            var maxHeight = panel.maxHeight || item.targetDimension.height - getDockPanelOuterSize["height"](item.dockPanel.top) - getDockPanelOuterSize["height"](item.dockPanel.bottom);
+                            var maxHeight = panel.maxHeight || item.targetDimension.height - getDockPanelOuterSize["height"](item, item.dockPanel.top) - getDockPanelOuterSize["height"](item, item.dockPanel.bottom);
 
                             if (panel.__height + panel.__da < minHeight) {
                                 panel.__da = -panel.__height + minHeight;
@@ -400,7 +400,7 @@
 
                             panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
                             var minHeight = panel.minHeight || 0;
-                            var maxHeight = panel.maxHeight || item.targetDimension.height - getDockPanelOuterSize["height"](item.dockPanel.top) - getDockPanelOuterSize["height"](item.dockPanel.bottom);
+                            var maxHeight = panel.maxHeight || item.targetDimension.height - getDockPanelOuterSize["height"](item, item.dockPanel.top) - getDockPanelOuterSize["height"](item, item.dockPanel.bottom);
 
                             if (panel.__height - panel.__da < minHeight) {
                                 panel.__da = panel.__height - minHeight;
@@ -545,7 +545,6 @@
                                 if (panelInfo.split = panelInfo.split && panelInfo.split.toString() == "true") {
                                     panelInfo.$splitter = jQuery('<div data-splitter="" class="dock-panel-' + panelInfo.dock + '"></div>');
                                     panelInfo.$splitter.bind(ENM["mousedown"], function (e) {
-                                        // console.log(e.clientX);
                                         panelInfo.mousePosition = getMousePosition(e);
                                         resizeSplitter.on.call(self, queIdx, panelInfo, panelInfo.$splitter);
                                     }).bind("dragstart", function (e) {

@@ -38,6 +38,9 @@
     // todo : panel show & hide
     jQuery(document.body).ready(function () {
         jQuery('[data-ax5layout="ax1"]').ax5layout({
+            splitter: {
+                size: 10
+            },
             autoResize: false,
             onResize: function () {
                 //console.log(this.$target);
