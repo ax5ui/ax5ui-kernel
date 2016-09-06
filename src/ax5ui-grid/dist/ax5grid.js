@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.3"
+        version: "0.2.4"
     }, function () {
         /**
          * @class ax5grid
@@ -847,15 +847,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
                 GRID.scroller.resize.call(this);
-                return this;
-            };
-
-            /**
-             * @method ax5grid.align
-             * @returns {ax5grid}
-             */
-            this.align = function () {
-                alignGrid.call(this);
                 return this;
             };
 
@@ -3657,6 +3648,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }),
             height: verticalScrollBarHeight
         });
+
+        //console.log(horizontalScrollBarWidth);
+
         this.$["scroller"]["horizontal-bar"].css({
             left: convertScrollBarPosition.horizontal.call(this, this.$.panel["body-scroll"].position().left, {
                 _content_width: _content_width,

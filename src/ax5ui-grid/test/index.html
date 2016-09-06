@@ -40,6 +40,10 @@
     <button class="btn btn-default" data-grid-control="column-update">column update</button>
 </div>
 
+<div style="padding: 10px;">
+    <button class="btn btn-default" data-grid-control="width-resize">width resize</button>
+</div>
+
 <script>
     var firstGrid = new ax5.ui.grid();
 
@@ -92,16 +96,16 @@
         },
         setData: function (_pageNo) {
             /*
-            firstGrid.setData({
-                list: sampleData,
-                page: {
-                    currentPage: _pageNo || 0,
-                    pageSize: 50,
-                    totalElements: 500,
-                    totalPages: 100
-                }
-            });
-*/
+             firstGrid.setData({
+             list: sampleData,
+             page: {
+             currentPage: _pageNo || 0,
+             pageSize: 50,
+             totalElements: 500,
+             totalPages: 100
+             }
+             });
+             */
             firstGrid.setData(sampleData);
 
             return this;
@@ -144,6 +148,14 @@
                     break;
                 case "column-update":
                     firstGrid.updateColumn({key: "b", label: "필드B"}, 0);
+                    break;
+                case "width-resize":
+
+                    $("#grid-parent").css({width: 400});
+                    ax5.ui.grid_instance.forEach(function (g) {
+                        g.align();
+                    });
+
                     break;
             }
         });

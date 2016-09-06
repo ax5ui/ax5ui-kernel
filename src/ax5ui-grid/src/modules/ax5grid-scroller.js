@@ -458,6 +458,9 @@
             }),
             height: verticalScrollBarHeight
         });
+        
+        //console.log(horizontalScrollBarWidth);
+        
         this.$["scroller"]["horizontal-bar"].css({
             left: convertScrollBarPosition.horizontal.call(this, this.$.panel["body-scroll"].position().left, {
                 _content_width: _content_width,

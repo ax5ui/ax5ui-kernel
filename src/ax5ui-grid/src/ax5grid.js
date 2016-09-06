@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.3"
+        version: "0.2.4"
     }, (function () {
         /**
          * @class ax5grid
@@ -305,12 +305,12 @@
 
                     var asidePanelWidth = cfg.asidePanelWidth = (function () {
                         var width = 0;
-                        
+
                         if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
                         if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
                         return width;
                     })();
-                    
+
                     var frozenPanelWidth = cfg.frozenPanelWidth = (function (colGroup, endIndex) {
                         var width = 0;
                         for (var i = 0, l = endIndex; i < l; i++) {
@@ -691,20 +691,20 @@
                                 self.copySelect();
                             }
                         } else {
-                            if(self.isInlineEditing){
+                            if (self.isInlineEditing) {
                                 if (e.which == ax5.info.eventKeys.ESC) {
                                     self.keyDown("ESC", e.originalEvent);
                                 }
                                 else if (e.which == ax5.info.eventKeys.RETURN) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 }
-                            }else{
+                            } else {
                                 if (ctrlKeys[e.which]) {
                                     self.keyDown(ctrlKeys[e.which], e.originalEvent);
                                     U.stopEvent(e);
                                 } else if (e.which == ax5.info.eventKeys.ESC) {
 
-                                }else if (e.which == ax5.info.eventKeys.RETURN) {
+                                } else if (e.which == ax5.info.eventKeys.RETURN) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 } else if (Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
@@ -755,7 +755,7 @@
                     },
                     "INLINE_EDIT": function (_e) {
                         GRID.body.inlineEdit.active.call(this, this.focusedColumn, _e);
-                        if(!/[0-9a-zA-Z]/.test(_e.key)) {
+                        if (!/[0-9a-zA-Z]/.test(_e.key)) {
                             U.stopEvent(_e);
                         }
                     },
@@ -763,7 +763,7 @@
                         //console.log("ESC");
                         GRID.body.inlineEdit.keydown.call(this, "ESC");
                     },
-                    "RETURN": function(_e){
+                    "RETURN": function (_e) {
                         GRID.body.inlineEdit.keydown.call(this, "RETURN");
                     }
                 };
@@ -864,15 +864,6 @@
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
                 GRID.scroller.resize.call(this);
-                return this;
-            };
-
-            /**
-             * @method ax5grid.align
-             * @returns {ax5grid}
-             */
-            this.align = function () {
-                alignGrid.call(this);
                 return this;
             };
 
