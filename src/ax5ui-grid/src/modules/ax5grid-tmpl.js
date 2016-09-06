@@ -62,6 +62,7 @@
 
     var page_navigation =
         `<div data-ax5grid-page-navigation="holder">
+            {{#hasPage}}
             <div data-ax5grid-page-navigation="cell">    
                 {{#firstIcon}}<button data-ax5grid-page-move="first">{{{firstIcon}}}</button>{{/firstIcon}}
                 <button data-ax5grid-page-move="prev">{{{prevIcon}}}</button>
@@ -75,6 +76,7 @@
                 <button data-ax5grid-page-move="next">{{{nextIcon}}}</button>
                 {{#lastIcon}}<button data-ax5grid-page-move="last">{{{lastIcon}}}</button>{{/lastIcon}}
             </div>
+            {{/hasPage}}
         </div>`;
 
     var page_status =

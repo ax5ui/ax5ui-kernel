@@ -48,6 +48,7 @@
         var self = this;
         if (this.page) {
             var page = {
+                hasPage: false,
                 currentPage: this.page.currentPage,
                 pageSize: this.page.pageSize,
                 totalElements: this.page.totalElements,
@@ -58,6 +59,7 @@
                 lastIcon: this.config.page.lastIcon,
             };
             var navigationItemCount = this.config.page.navigationItemCount;
+
 
             page["@paging"] = (function () {
                 var returns = [];
@@ -81,6 +83,10 @@
                 }
                 return returns;
             })();
+
+            if(page["@paging"].length > 0){
+                page.hasPage = true;
+            }
 
             this.$["page"]["navigation"].html(GRID.tmpl.get("page_navigation", page));
             this.$["page"]["navigation"].find("[data-ax5grid-page-move]").on("click", function () {
