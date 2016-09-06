@@ -93,6 +93,8 @@ $dock-panel-splitter-background: #ccc;
         border: 0px none;
         z-index: 2;
         overflow: hidden;
+        width: 100%;
+        height: 100%;
 
         &.split-panel-vertical{
             width: 100%;
