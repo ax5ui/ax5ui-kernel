@@ -22,7 +22,6 @@
                 self = this,
                 cfg;
 
-
             this.instanceId = ax5.getGuid();
             this.config = {
                 id: 'ax5-dialog-' + this.instanceId,
