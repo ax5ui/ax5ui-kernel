@@ -15,7 +15,7 @@ AX5UI theme of the system is made of SCSS code, has been designed as a final pro
 SCSS variables within the code structure and is designed to be compatible with Bootstrap SCSS architecture, was developed and tested to optimize the use of CSS classes and input windows in structures such as Bootstrap.
 
 ### AX5UI
-AX5UI is a software design and development experience with the development of AXISJ.
+AX5UI is a software that has been designed and developed with the development experience of AXISJ.
 It had the idea while offering numerous UI library users have tried to put in AX5UI.
 - How you can, or will be able to shorten the development time of developers?
 - How can, I wonder developers can happily development?
