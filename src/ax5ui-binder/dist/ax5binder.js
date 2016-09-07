@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "binder",
-        version: "0.0.1"
+        version: "0.1.0"
     }, function () {
 
         /**
@@ -684,7 +684,7 @@
                 var list = Function("", "return this[" + get_real_path(dataPath) + "];").call(this.model);
 
                 target.find('[data-ax-repeat-click]').unbind("click.axbinder").bind("click.axbinder", function (e) {
-                    var target = axf.get_event_target(e.target, function (el) {
+                    var target = ax5.util.findParentNode(e.target, function (el) {
                         return el.getAttribute("data-ax-repeat-click");
                     });
                     if (target) {
