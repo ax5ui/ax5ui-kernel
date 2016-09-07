@@ -244,6 +244,14 @@
     var init = function () {
         var self = this;
 
+        this.$["container"]["root"].on("click", function(e){
+            var target = U.findParentNode(e.target, function(_target){
+                return _target.getAttribute("data-ax5grid-column-attr");
+            });
+            if(!target){
+                GRID.body.blur.call(self);
+            }
+        });
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function () {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {

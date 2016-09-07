@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.5"
+        version: "0.2.6"
     }, function () {
         /**
          * @class ax5grid
@@ -1292,6 +1292,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var init = function init() {
         var self = this;
 
+        this.$["container"]["root"].on("click", function (e) {
+            var target = U.findParentNode(e.target, function (_target) {
+                return _target.getAttribute("data-ax5grid-column-attr");
+            });
+            if (!target) {
+                GRID.body.blur.call(self);
+            }
+        });
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function () {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
@@ -2729,6 +2737,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (!col.sortFixed) toggleSort.call(self, col.key);
                 }
             }
+            GRID.body.blur.call(self);
         });
         this.$["container"]["header"].on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
             var colIndex = this.getAttribute("data-ax5grid-column-resizer");

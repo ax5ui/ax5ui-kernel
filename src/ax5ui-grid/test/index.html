@@ -50,6 +50,9 @@
     ax5.ui.grid.formatter["myType"] = function () {
         return "myType" + (this.value || "");
     };
+    ax5.ui.grid.formatter["capital"] = function(){
+        return (''+this.value).toUpperCase();
+    }
 
     ax5.ui.grid.collector["myType"] = function () {
         return "myType" + (this.value || "");
@@ -84,7 +87,7 @@
                         key: undefined, label: "필드C", columns: [
                         {key: "price", label: "단가", formatter: "money", align: "right"},
                         {key: "amount", label: "수량", formatter: "money", align: "right"},
-                        {key: "cost", label: "금액", align: "right", formatter: "money"}
+                        {key: "cost", label: "금액", align: "right", formatter: "capital"}
                     ]
                     },
                     {key: "saleDt", label: "판매일자", align: "center"},

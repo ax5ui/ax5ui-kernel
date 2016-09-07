@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.5"
+        version: "0.2.6"
     }, (function () {
         /**
          * @class ax5grid

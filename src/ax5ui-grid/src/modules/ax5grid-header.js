@@ -81,6 +81,7 @@
                     if(!col.sortFixed) toggleSort.call(self, col.key);
                 }
             }
+            GRID.body.blur.call(self);
         });
         this.$["container"]["header"]
             .on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
