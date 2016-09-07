@@ -133,6 +133,14 @@ var PATHS = {
         dest: "src/ax5ui-layout/dist",
         scss: "ax5layout.scss",
         js: "ax5layout"
+    },
+    "ax5ui-binder": {
+        isPlugin: true,
+        root: "src/ax5ui-binder",
+        src: "src/ax5ui-binder/src",
+        dest: "src/ax5ui-binder/dist",
+        scss: "ax5binder.scss",
+        js: "ax5binder"
     }
 };
 
