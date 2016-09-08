@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "layout",
-        version: "0.2.5"
+        version: "0.2.7"
     }, function () {
         /**
          * @class ax5layout
@@ -515,6 +515,36 @@
                     jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
                 }
             },
+                tabControl = {
+                "open": function open(queIdx, layout, panelIndex) {
+                    //console.log(panel);
+                    if (layout.activePanelIndex != panelIndex) {
+                        layout.tabPanel[panelIndex].active = true;
+                        layout.tabPanel[layout.activePanelIndex].active = false;
+                        layout.$target.find('[data-tab-panel-label="' + panelIndex + '"]').attr("data-tab-active", "true");
+                        layout.$target.find('[data-tab-panel-label="' + layout.activePanelIndex + '"]').removeAttr("data-tab-active");
+                        layout.tabPanel[panelIndex].$target.attr("data-tab-active", "true");
+                        layout.tabPanel[layout.activePanelIndex].$target.removeAttr("data-tab-active");
+                        layout.activePanelIndex = panelIndex;
+
+                        if (layout.onOpenTab) {
+                            var that = {
+                                '$target': layout.$target,
+                                name: layout.name,
+                                id: layout.id,
+                                layout: layout.layout,
+                                activePanelIndex: layout.activePanelIndex,
+                                activePanel: layout.tabPanel[layout.activePanelIndex],
+                                tabPanel: layout.tabPanel
+                            };
+                            layout.onOpenTab.call(that);
+                        }
+                    }
+                }
+            },
+                getTabLabesTmpl = function getTabLabesTmpl() {
+                return "\n<div data-tab-panel-label-holder=\"{{id}}\">\n    <div data-tab-panel-label-border=\"{{id}}\"></div>\n    <div data-tab-panel-label-table=\"{{id}}\">\n        <div data-tab-panel-aside=\"left\"></div>\n    {{#tabPanel}}\n        <div data-tab-panel-label=\"{{panelIndex}}\" data-tab-active=\"{{active}}\">\n            <div data-tab-label=\"{{panelIndex}}\">{{{label}}}</div>\n        </div>\n    {{/tabPanel}}\n        <div data-tab-panel-aside=\"right\"></div>\n    </div>\n</div>\n";
+            },
                 bindLayoutTarget = function () {
                 var getPixel = function getPixel(size, parentSize) {
                     if (size == "*") {
@@ -601,6 +631,49 @@
                             }
 
                             item.splitPanel.push(panelInfo);
+                        });
+                    },
+                    "tab-panel": function tabPanel(queIdx) {
+                        var item = this.queue[queIdx];
+
+                        var hasActivePanel = false;
+                        var activePanelIndex = -1;
+                        item.tabPanel = [];
+                        item.$target.find('>[data-tab-panel]').each(function (ELIndex) {
+                            var panelInfo = {};
+                            (function (data) {
+                                if (U.isObject(data) && !data.error) {
+                                    panelInfo = jQuery.extend(true, panelInfo, data);
+                                }
+                            })(U.parseJson(this.getAttribute("data-tab-panel"), true));
+
+                            if (hasActivePanel) {
+                                panelInfo.active = false;
+                            }
+
+                            panelInfo.$target = jQuery(this);
+
+                            if (panelInfo.active) {
+                                hasActivePanel = true;
+                                activePanelIndex = ELIndex;
+                                panelInfo.$target.attr("data-tab-active", "true");
+                            }
+
+                            panelInfo.panelIndex = ELIndex;
+                            item.tabPanel.push(panelInfo);
+                        });
+
+                        if (!hasActivePanel) {
+                            item.tabPanel[0].active = true;
+                            item.tabPanel[0].$target.attr("data-tab-active", "true");
+                            item.activePanelIndex = 0;
+                        }
+
+                        // make tabLabel
+                        item.$target.append(jQuery(ax5.mustache.render(getTabLabesTmpl.call(this, queIdx), item)));
+                        item.$target.on("click", '[data-tab-panel-label]', function (e) {
+                            var index = this.getAttribute("data-tab-panel-label");
+                            tabControl.open.call(self, queIdx, item, index);
                         });
                     }
                 };
@@ -829,6 +902,25 @@
 
             this.hide = function () {};
 
+            /**
+             * @method ax5layout.tabOpen
+             * @param boundID
+             * @param tabIndex
+             * @returns {ax5.ui.ax5layout}
+             */
+            this.tabOpen = function () {
+                return function (boundID, tabIndex) {
+                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
+                    if (queIdx === -1) {
+                        console.log(ax5.info.getError("ax5layout", "402", "tabOpen"));
+                        return;
+                    }
+
+                    tabControl.open.call(this, queIdx, this.queue[queIdx], tabIndex);
+                    return this;
+                };
+            }();
+
             /// 클래스 생성자
             this.main = function () {
                 if (arguments && U.isObject(arguments[0])) {
@@ -879,7 +971,9 @@ jQuery.fn.ax5layout = function () {
                 case "onResize":
                     return ax5.ui.layout_instance.onResize(this, arguments[1]);
                     break;
-
+                case "tabOpen":
+                    return ax5.ui.layout_instance.tabOpen(this, arguments[1]);
+                    break;
                 default:
                     return this;
             }

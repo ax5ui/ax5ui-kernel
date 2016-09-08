@@ -5,7 +5,7 @@
 
     UI.addClass({
         className: "layout",
-        version: "0.2.5"
+        version  : "0.2.7"
     }, (function () {
         /**
          * @class ax5layout
@@ -22,7 +22,7 @@
                 ENM = {
                     "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
                     "mousemove": (ax5.info.supportTouch) ? "touchmove" : "mousemove",
-                    "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
+                    "mouseup"  : (ax5.info.supportTouch) ? "touchend" : "mouseup"
                 },
                 getMousePosition = function (e) {
                     var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
@@ -34,12 +34,12 @@
 
             this.instanceId = ax5.getGuid();
             this.config = {
-                theme: 'default',
+                theme      : 'default',
                 animateTime: 250,
-                splitter: {
+                splitter   : {
                     size: 4
                 },
-                autoResize: true
+                autoResize : true
             };
             this.queue = [];
 
@@ -68,7 +68,7 @@
                     }
                 },
                 getDockPanelOuterSize = {
-                    "width": function (item, panel) {
+                    "width" : function (item, panel) {
                         return (panel ? panel.__width + ((panel.split) ? item.splitter.size : 0) : 0);
                     },
                     "height": function (item, panel) {
@@ -78,7 +78,7 @@
                 alignLayout = (function () {
                     var beforeSetCSS = {
                         "split": {
-                            "vertical": function (item, panel, panelIndex) {
+                            "vertical"  : function (item, panel, panelIndex) {
                                 if (panel.splitter) {
                                     panel.__height = panel.splitter.size;
                                 }
@@ -128,7 +128,7 @@
                         }
                     };
                     var setCSS = {
-                        "top": function (item, panel) {
+                        "top"   : function (item, panel) {
                             panel.$target.css({height: panel.__height || 0});
                             if (panel.split) {
                                 panel.$splitter.css({height: item.splitter.size, top: (panel.__height || 0)});
@@ -140,9 +140,9 @@
                                 panel.$splitter.css({height: item.splitter.size, bottom: (panel.__height || 0)});
                             }
                         },
-                        "left": function (item, panel) {
+                        "left"  : function (item, panel) {
                             var css = {
-                                width: panel.__width || 0,
+                                width : panel.__width || 0,
                                 height: item.targetDimension.height
                             };
 
@@ -167,9 +167,9 @@
                                 panel.$splitter.css({width: item.splitter.size, height: css.height, top: css.top, left: css.width});
                             }
                         },
-                        "right": function (item, panel) {
+                        "right" : function (item, panel) {
                             var css = {
-                                width: panel.__width || 0,
+                                width : panel.__width || 0,
                                 height: item.targetDimension.height
                             };
 
@@ -196,7 +196,7 @@
                         },
                         "center": function (item, panel) {
                             var css = {
-                                width: item.targetDimension.width,
+                                width : item.targetDimension.width,
                                 height: item.targetDimension.height
                             };
 
@@ -244,8 +244,8 @@
 
                             panel.$target.css(css);
                         },
-                        "split": {
-                            "vertical": function (item, panel, panelIndex, withoutAsteriskSize, windowResize) {
+                        "split" : {
+                            "vertical"  : function (item, panel, panelIndex, withoutAsteriskSize, windowResize) {
                                 var css = {};
                                 var prevPosition = (panelIndex) ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
                                 if (panel.splitter) {
@@ -290,7 +290,7 @@
                         }
                     };
                     var layoutProcessor = {
-                        "dock-panel": function (item) {
+                        "dock-panel" : function (item) {
                             for (var panel in item.dockPanel) {
                                 if (item.dockPanel[panel].$target && item.dockPanel[panel].$target.get(0)) {
                                     if (panel in setCSS) {
@@ -337,7 +337,7 @@
                         // 레이아웃 타겟의 CSS속성을 미리 저장해 둡니다. 왜? 패널별로 크기 계산 할 때 쓰려고
                         item.targetDimension = {
                             height: item.$target.innerHeight(),
-                            width: item.$target.innerWidth()
+                            width : item.$target.innerWidth()
                         };
 
                         if (item.layout in layoutProcessor) {
@@ -357,14 +357,14 @@
                     }
                 })(),
                 resizeSplitter = {
-                    "on": function (queIdx, panel, $splitter) {
+                    "on" : function (queIdx, panel, $splitter) {
                         var item = this.queue[queIdx];
                         var splitterOffset = $splitter.position();
                         var splitterBox = {
                             width: $splitter.width(), height: $splitter.height()
                         };
                         var getResizerPosition = {
-                            "left": function (e) {
+                            "left"  : function (e) {
                                 var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
 
                                 panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
@@ -379,7 +379,7 @@
                                 }
                                 return {left: panel.$splitter.position().left + panel.__da};
                             },
-                            "right": function (e) {
+                            "right" : function (e) {
                                 var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
 
                                 panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
@@ -394,7 +394,7 @@
                                 }
                                 return {left: panel.$splitter.position().left + panel.__da};
                             },
-                            "top": function (e) {
+                            "top"   : function (e) {
                                 var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
 
                                 panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
@@ -424,7 +424,7 @@
                                 }
                                 return {top: panel.$splitter.position().top + panel.__da};
                             },
-                            "split": function (e) {
+                            "split" : function (e) {
                                 var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
 
                                 if (item.oriental == "vertical") {
@@ -472,9 +472,9 @@
 
                                     self.resizer = jQuery('<div class="ax5layout-resizer panel-' + (panel.resizerType) + '" ondragstart="return false;"></div>');
                                     self.resizer.css({
-                                        left: splitterOffset.left,
-                                        top: splitterOffset.top,
-                                        width: splitterBox.width,
+                                        left  : splitterOffset.left,
+                                        top   : splitterOffset.top,
+                                        width : splitterBox.width,
                                         height: splitterBox.height
                                     });
                                     item.$target.append(self.resizer);
@@ -497,14 +497,14 @@
                     "off": function (queIdx, panel, $splitter) {
                         var item = this.queue[queIdx];
                         var setPanelSize = {
-                            "dock-panel": {
-                                "left": function (queIdx, panel) {
+                            "dock-panel" : {
+                                "left"  : function (queIdx, panel) {
                                     panel.__width += panel.__da;
                                 },
-                                "right": function () {
+                                "right" : function () {
                                     panel.__width -= panel.__da;
                                 },
-                                "top": function () {
+                                "top"   : function () {
                                     panel.__height += panel.__da;
                                 },
                                 "bottom": function () {
@@ -526,7 +526,7 @@
                                     }
                                 }
                             },
-                            "tab-panel": {}
+                            "tab-panel"  : {}
                         };
 
                         if (self.resizer) {
@@ -548,6 +548,50 @@
 
                     }
                 },
+                tabControl = {
+                    "open": function (queIdx, layout, panelIndex) {
+                        //console.log(panel);
+                        if (layout.activePanelIndex != panelIndex) {
+                            layout.tabPanel[panelIndex].active = true;
+                            layout.tabPanel[layout.activePanelIndex].active = false;
+                            layout.$target.find('[data-tab-panel-label="' + panelIndex + '"]').attr("data-tab-active", "true");
+                            layout.$target.find('[data-tab-panel-label="' + layout.activePanelIndex + '"]').removeAttr("data-tab-active");
+                            layout.tabPanel[panelIndex].$target.attr("data-tab-active", "true");
+                            layout.tabPanel[layout.activePanelIndex].$target.removeAttr("data-tab-active");
+                            layout.activePanelIndex = panelIndex;
+
+                            if (layout.onOpenTab) {
+                                var that = {
+                                    '$target'       : layout.$target,
+                                    name            : layout.name,
+                                    id              : layout.id,
+                                    layout          : layout.layout,
+                                    activePanelIndex: layout.activePanelIndex,
+                                    activePanel     : layout.tabPanel[layout.activePanelIndex],
+                                    tabPanel        : layout.tabPanel
+                                };
+                                layout.onOpenTab.call(that);
+                            }
+                        }
+                    }
+                },
+
+                getTabLabesTmpl = function () {
+                    return `
+<div data-tab-panel-label-holder="{{id}}">
+    <div data-tab-panel-label-border="{{id}}"></div>
+    <div data-tab-panel-label-table="{{id}}">
+        <div data-tab-panel-aside="left"></div>
+    {{#tabPanel}}
+        <div data-tab-panel-label="{{panelIndex}}" data-tab-active="{{active}}">
+            <div data-tab-label="{{panelIndex}}">{{{label}}}</div>
+        </div>
+    {{/tabPanel}}
+        <div data-tab-panel-aside="right"></div>
+    </div>
+</div>
+`;
+                },
                 bindLayoutTarget = (function () {
                     var getPixel = function (size, parentSize) {
                         if (size == "*") {
@@ -561,7 +605,7 @@
                         }
                     };
                     var applyLayout = {
-                        "dock-panel": function (queIdx) {
+                        "dock-panel" : function (queIdx) {
                             var item = this.queue[queIdx];
                             item.dockPanel = {};
                             item.$target.find('>[data-dock-panel]').each(function () {
@@ -645,6 +689,49 @@
 
                                 item.splitPanel.push(panelInfo);
                             });
+                        },
+                        "tab-panel"  : function (queIdx) {
+                            var item = this.queue[queIdx];
+
+                            var hasActivePanel = false;
+                            var activePanelIndex = -1;
+                            item.tabPanel = [];
+                            item.$target.find('>[data-tab-panel]').each(function (ELIndex) {
+                                var panelInfo = {};
+                                (function (data) {
+                                    if (U.isObject(data) && !data.error) {
+                                        panelInfo = jQuery.extend(true, panelInfo, data);
+                                    }
+                                })(U.parseJson(this.getAttribute("data-tab-panel"), true));
+
+                                if (hasActivePanel) {
+                                    panelInfo.active = false;
+                                }
+
+                                panelInfo.$target = jQuery(this);
+
+                                if (panelInfo.active) {
+                                    hasActivePanel = true;
+                                    activePanelIndex = ELIndex;
+                                    panelInfo.$target.attr("data-tab-active", "true");
+                                }
+
+                                panelInfo.panelIndex = ELIndex;
+                                item.tabPanel.push(panelInfo);
+                            });
+
+                            if (!hasActivePanel) {
+                                item.tabPanel[0].active = true;
+                                item.tabPanel[0].$target.attr("data-tab-active", "true");
+                                item.activePanelIndex = 0;
+                            }
+
+                            // make tabLabel
+                            item.$target.append(jQuery(ax5.mustache.render(getTabLabesTmpl.call(this, queIdx), item)));
+                            item.$target.on("click", '[data-tab-panel-label]', function (e) {
+                                var index = this.getAttribute("data-tab-panel-label");
+                                tabControl.open.call(self, queIdx, item, index);
+                            });
                         }
                     };
 
@@ -655,7 +742,7 @@
                         // 레이아웃 타겟의 CSS속성을 미리 저장해 둡니다. 왜? 패널별로 크기 계산 할 때 쓰려고
                         item.targetDimension = {
                             height: item.$target.innerHeight(),
-                            width: item.$target.innerWidth()
+                            width : item.$target.innerWidth()
                         };
 
                         // 부모 컨테이너가 ax5layout인지 판단 필요.
@@ -817,7 +904,7 @@
             this.resize = (function () {
 
                 var resizeLayoutPanel = {
-                    "dock-panel": function (item, resizeOption) {
+                    "dock-panel" : function (item, resizeOption) {
                         ["top", "bottom", "left", "right"].forEach(function (dock) {
                             if (resizeOption[dock] && item.dockPanel[dock]) {
                                 if (dock == "top" || dock == "bottom") {
@@ -832,7 +919,7 @@
                     "split-panel": function () {
 
                     },
-                    "tab-panel": function () {
+                    "tab-panel"  : function () {
 
                     }
                 };
@@ -854,7 +941,7 @@
             this.reset = (function () {
 
                 var resetLayoutPanel = {
-                    "dock-panel": function (item) {
+                    "dock-panel" : function (item) {
                         ["top", "bottom", "left", "right"].forEach(function (dock) {
                             if (item.dockPanel[dock]) {
                                 if (dock == "top" || dock == "bottom") {
@@ -869,7 +956,7 @@
                     "split-panel": function () {
 
                     },
-                    "tab-panel": function () {
+                    "tab-panel"  : function () {
 
                     }
                 };
@@ -892,6 +979,24 @@
 
             };
 
+            /**
+             * @method ax5layout.tabOpen
+             * @param boundID
+             * @param tabIndex
+             * @returns {ax5.ui.ax5layout}
+             */
+            this.tabOpen = (function () {
+                return function (boundID, tabIndex) {
+                    var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
+                    if (queIdx === -1) {
+                        console.log(ax5.info.getError("ax5layout", "402", "tabOpen"));
+                        return;
+                    }
+
+                    tabControl.open.call(this, queIdx, this.queue[queIdx], tabIndex);
+                    return this;
+                }
+            })();
 
             /// 클래스 생성자
             this.main = (function () {
@@ -944,7 +1049,9 @@ jQuery.fn.ax5layout = (function () {
                 case "onResize":
                     return ax5.ui.layout_instance.onResize(this, arguments[1]);
                     break;
-
+                case "tabOpen":
+                    return ax5.ui.layout_instance.tabOpen(this, arguments[1]);
+                    break;
                 default:
                     return this;
             }
