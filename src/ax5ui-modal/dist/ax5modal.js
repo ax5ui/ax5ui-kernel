@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "0.7.5"
+        version: "0.7.6"
     }, function () {
         /**
          * @class ax5modal
@@ -441,7 +441,18 @@
             };
 
             /**
-             * @mothod ax5modal.align
+             * @method ax5modal.setModalConfig
+             * @param _config
+             * @returns {ax5.ui.ax5modal}
+             */
+            this.setModalConfig = function (_config) {
+                self.modalConfig = jQuery.extend({}, self.modalConfig, _config);
+                this.align();
+                return this;
+            };
+
+            /**
+             * @method ax5modal.align
              * @param position
              * @param e
              * @returns {ax5modal}
@@ -457,7 +468,15 @@
                         height: opts.height
                     };
 
-                    if (opts.fullScreen) {
+                    var fullScreen = function (_fullScreen) {
+                        if (typeof _fullScreen === "undefined") {
+                            return false;
+                        } else if (U.isFunction(_fullScreen)) {
+                            return _fullScreen();
+                        }
+                    }(opts.fullScreen);
+
+                    if (fullScreen) {
                         if (opts.header) this.$.header.hide();
                         box.width = jQuery(window).width();
                         box.height = jQuery(window).height();

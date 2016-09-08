@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "0.7.5"
+        version  : "0.7.6"
     }, (function () {
         /**
          * @class ax5modal
@@ -24,7 +24,7 @@
                 ENM = {
                     "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
                     "mousemove": (ax5.info.supportTouch) ? "touchmove" : "mousemove",
-                    "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
+                    "mouseup"  : (ax5.info.supportTouch) ? "touchend" : "mouseup"
                 },
                 getMousePosition = function (e) {
                     var mouseObj = e;
@@ -39,19 +39,19 @@
 
             this.instanceId = ax5.getGuid();
             this.config = {
-                id: 'ax5-modal-' + this.instanceId,
-                position: {
-                    left: "center",
-                    top: "middle",
+                id              : 'ax5-modal-' + this.instanceId,
+                position        : {
+                    left  : "center",
+                    top   : "middle",
                     margin: 10
                 },
                 minimizePosition: "bottom-right",
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
-                theme: 'default',
-                width: 300,
-                height: 400,
-                closeToEsc: true,
-                animateTime: 250
+                clickEventName  : "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
+                theme           : 'default',
+                width           : 300,
+                height          : 400,
+                closeToEsc      : true,
+                animateTime     : 250
             };
             this.activeModal = null;
             this.$ = {}; // UI inside of the jQuery object store
@@ -106,12 +106,12 @@
                 getContent = function (modalId, opts) {
                     var
                         data = {
-                            modalId: modalId,
-                            theme: opts.theme,
-                            header: opts.header,
-                            fullScreen: (opts.fullScreen ? "fullscreen" : ""),
-                            styles: [],
-                            iframe: opts.iframe,
+                            modalId         : modalId,
+                            theme           : opts.theme,
+                            header          : opts.header,
+                            fullScreen      : (opts.fullScreen ? "fullscreen" : ""),
+                            styles          : [],
+                            iframe          : opts.iframe,
                             iframeLoadingMsg: opts.iframeLoadingMsg
                         };
 
@@ -132,9 +132,9 @@
 
                     // 파트수집
                     this.$ = {
-                        "root": this.activeModal.find('[data-modal-els="root"]'),
+                        "root"  : this.activeModal.find('[data-modal-els="root"]'),
                         "header": this.activeModal.find('[data-modal-els="header"]'),
-                        "body": this.activeModal.find('[data-modal-els="body"]')
+                        "body"  : this.activeModal.find('[data-modal-els="body"]')
                     };
 
                     if (opts.iframe) {
@@ -148,13 +148,13 @@
                     this.align();
 
                     that = {
-                        self: this,
-                        id: opts.id,
-                        theme: opts.theme,
-                        width: opts.width,
+                        self  : this,
+                        id    : opts.id,
+                        theme : opts.theme,
+                        width : opts.width,
                         height: opts.height,
-                        state: "open",
-                        $: this.$
+                        state : "open",
+                        $     : this.$
                     };
 
                     if (opts.iframe) {
@@ -167,13 +167,13 @@
                         this.$["iframe-form"].attr({"action": opts.iframe.url});
                         this.$["iframe"].on("load", (function () {
                             that.state = "load";
-                            if(opts.iframeLoadingMsg) {
+                            if (opts.iframeLoadingMsg) {
                                 this.$["iframe-loading"].hide();
                                 this.$["iframe"].show().addClass("fadeIn");
                             }
                             onStateChanged.call(this, opts, that);
                         }).bind(this));
-                        if(!opts.iframeLoadingMsg) {
+                        if (!opts.iframeLoadingMsg) {
                             this.$["iframe"].show();
                         }
                         this.$["iframe-form"].submit();
@@ -220,10 +220,10 @@
                         k = target.getAttribute("data-modal-header-btn");
 
                         that = {
-                            self: this,
+                            self         : this,
                             key: k, value: opts.header.btns[k],
-                            dialogId: opts.id,
-                            btnTarget: target
+                            dialogId     : opts.id,
+                            btnTarget    : target
                         };
 
                         if (opts.header.btns[k].onClick) {
@@ -243,16 +243,16 @@
                     }
                 },
                 alignProcessor = {
-                    "top-left": function () {
+                    "top-left"     : function () {
                         this.align({left: "left", top: "top"});
                     },
-                    "top-right": function () {
+                    "top-right"    : function () {
                         this.align({left: "right", top: "top"});
                     },
-                    "bottom-left": function () {
+                    "bottom-left"  : function () {
                         this.align({left: "left", top: "bottom"});
                     },
-                    "bottom-right": function () {
+                    "bottom-right" : function () {
                         this.align({left: "right", top: "bottom"});
                     },
                     "center-middle": function () {
@@ -260,13 +260,13 @@
                     }
                 },
                 moveModal = {
-                    "on": function () {
+                    "on" : function () {
                         var modalOffset = this.activeModal.position();
                         var modalBox = {
                             width: this.activeModal.outerWidth(), height: this.activeModal.outerHeight()
                         };
                         var windowBox = {
-                            width: jQuery(window).width(),
+                            width : jQuery(window).width(),
                             height: jQuery(window).height()
                         };
                         var getResizerPosition = function (e) {
@@ -278,23 +278,23 @@
                             var minY = 0;
                             var maxY = windowBox.height - modalBox.height;
 
-                            if(minX > modalOffset.left + self.__dx){
+                            if (minX > modalOffset.left + self.__dx) {
                                 self.__dx = -modalOffset.left;
                             }
-                            else if(maxX < modalOffset.left + self.__dx){
+                            else if (maxX < modalOffset.left + self.__dx) {
                                 self.__dx = (maxX) - modalOffset.left;
                             }
 
-                            if(minY > modalOffset.top + self.__dy){
+                            if (minY > modalOffset.top + self.__dy) {
                                 self.__dy = -modalOffset.top;
                             }
-                            else if(maxY < modalOffset.top + self.__dy){
+                            else if (maxY < modalOffset.top + self.__dy) {
                                 self.__dy = (maxY) - modalOffset.top;
                             }
 
                             return {
                                 left: modalOffset.left + self.__dx + $(document).scrollLeft(),
-                                top: modalOffset.top + self.__dy + $(document).scrollTop()
+                                top : modalOffset.top + self.__dy + $(document).scrollTop()
                             };
                         };
 
@@ -308,9 +308,9 @@
                                     self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
                                     self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
                                     self.resizer.css({
-                                        left: modalOffset.left,
-                                        top: modalOffset.top,
-                                        width: modalBox.width,
+                                        left  : modalOffset.left,
+                                        top   : modalOffset.top,
+                                        width : modalBox.width,
                                         height: modalBox.height
                                     });
                                     jQuery(document.body)
@@ -417,7 +417,7 @@
                         this.activeModal.remove();
                         this.activeModal = null;
                         onStateChanged.call(this, opts, {
-                            self: this,
+                            self : this,
                             state: "close"
                         });
                     }).bind(this), cfg.animateTime);
@@ -441,7 +441,7 @@
                     alignProcessor[minimizePosition].call(this);
 
                     onStateChanged.call(this, opts, {
-                        self: this,
+                        self : this,
                         state: "minimize"
                     });
 
@@ -463,7 +463,7 @@
 
                     this.align({left: "center", top: "middle"});
                     onStateChanged.call(this, opts, {
-                        self: this,
+                        self : this,
                         state: "restore"
                     });
                 }
@@ -494,7 +494,18 @@
             };
 
             /**
-             * @mothod ax5modal.align
+             * @method ax5modal.setModalConfig
+             * @param _config
+             * @returns {ax5.ui.ax5modal}
+             */
+            this.setModalConfig = function (_config) {
+                self.modalConfig = jQuery.extend({}, self.modalConfig, _config);
+                this.align();
+                return this;
+            };
+
+            /**
+             * @method ax5modal.align
              * @param position
              * @param e
              * @returns {ax5modal}
@@ -506,12 +517,19 @@
 
                     var opts = self.modalConfig,
                         box = {
-                            width: opts.width,
+                            width : opts.width,
                             height: opts.height
                         };
 
+                    var fullScreen = (function(_fullScreen){
+                        if(typeof _fullScreen === "undefined"){
+                            return false;
+                        }else if(U.isFunction(_fullScreen)){
+                            return _fullScreen();
+                        }
+                    })(opts.fullScreen);
 
-                    if (opts.fullScreen) {
+                    if (fullScreen) {
                         if (opts.header) this.$.header.hide();
                         box.width = jQuery(window).width();
                         box.height = jQuery(window).height();
@@ -576,7 +594,7 @@
                 if (arguments && U.isObject(arguments[0])) {
                     this.setConfig(arguments[0]);
                 }
-                
+
             }).apply(this, arguments);
         };
         return ax5modal;

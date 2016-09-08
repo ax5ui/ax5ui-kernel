@@ -17,6 +17,7 @@
 
 <button class="btn btn-danger" id="modal-open">Modal open</button>
 <button class="btn btn-danger" id="modal-close">Modal close</button>
+<button class="btn btn-danger" id="modal-full">Modal opend full</button>
 
 <div style="height: 1000px;"></div>
 
@@ -24,6 +25,7 @@
     // todo : move handle 구현, minimize 구현
     // 1. title 속성 추가 하자
     var modal = new ax5.ui.modal({
+
         iframeLoadingMsg: '<i class="fa fa-spinner fa-5x fa-spin" aria-hidden="true"></i>',
         header: {
             title: "MODAL TITLE",
@@ -60,6 +62,9 @@
             modal.open({
                 width: 800,
                 height: 600,
+                fullScreen: function(){
+                    return ($(window).width() < 600);
+                },
                 iframe: {
                     method: "get",
                     url: "http://chequer-app:2017/html/login.html",
@@ -69,6 +74,9 @@
         });
         $("#modal-close").click(function () {
             modal.close();
+        });
+        $("#modal-full").click(function () {
+            modal.setModalConfig({fullScreen:true});
         });
     });
 </script>
