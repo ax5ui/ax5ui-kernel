@@ -380,6 +380,16 @@
         }
     };
 
+    var getRealPathForDataItem = function (_dataPath) {
+        var path = [];
+        var _path = [].concat(_dataPath.split(/[\.\[\]]/g));
+        _path.forEach(function (n) {
+            if (n !== "") path.push(n);
+        });
+        _path = null;
+        return "'" + path.join("']['") + "'";
+    };
+
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
         getMousePosition: getMousePosition,
@@ -389,7 +399,8 @@
         makeBodyRowMap: makeBodyRowMap,
         makeFootSumTable: makeFootSumTable,
         makeBodyGroupingTable: makeBodyGroupingTable,
-        findPanelByColumnIndex: findPanelByColumnIndex
+        findPanelByColumnIndex: findPanelByColumnIndex,
+        getRealPathForDataItem: getRealPathForDataItem
     };
 
 })();

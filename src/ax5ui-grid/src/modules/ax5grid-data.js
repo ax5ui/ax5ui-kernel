@@ -113,7 +113,10 @@
     };
 
     var get = function () {
-
+        return {
+            list: this.list,
+            page: this.page
+        };
     };
 
     var add = function (_row, _dindex) {
@@ -222,7 +225,19 @@
 
     var setValue = function (_dindex, _key, _value) {
         this.needToPaintSum = true;
-        return this.list[_dindex][_key] = _value;
+        if(/[\.\[\]]/.test(_key)) {
+            (Function("val", "this[" + GRID.util.getRealPathForDataItem(_key) + "] = val;")).call(this.list[_dindex], _value);
+        }else{
+            this.list[_dindex][_key] = _value;
+        }
+        return _value;
+    };
+    var getValue = function (_dindex, _key) {
+        if(/[\.\[\]]/.test(_key)) {
+            return (Function("", "return this[" + GRID.util.getRealPathForDataItem(_key) + "];")).call(this.list[_dindex]);
+        }else{
+            return this.list[_dindex][_key];
+        }
     };
 
     var clearSelect = function () {
@@ -291,6 +306,7 @@
         set: set,
         get: get,
         setValue: setValue,
+        getValue: getValue,
         clearSelect: clearSelect,
         select: select,
         add: add,

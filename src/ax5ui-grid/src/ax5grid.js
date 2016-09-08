@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.7"
+        version: "0.2.8"
     }, (function () {
         /**
          * @class ax5grid
@@ -703,6 +703,7 @@
                         } else {
                             if (self.isInlineEditing) {
                                 if (e.which == ax5.info.eventKeys.ESC) {
+                                    console.log("ESC");
                                     self.keyDown("ESC", e.originalEvent);
                                 }
                                 else if (e.which == ax5.info.eventKeys.RETURN) {

@@ -267,8 +267,7 @@
                     };
 
                     if (column.editor && column.editor.type == "checkbox") { // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
-                        var value = self.list[_column.dindex][column.key];
-
+                        var value = GRID.data.getValue.call(this, _column.dindex, column.key);
                         var checked = (value == false || value == "false" || value < "1") ? "true" : "false";
                         GRID.data.setValue.call(self, _column.dindex, column.key, checked);
                         updateRowState.call(self, ["cellChecked"], _column.dindex, {
@@ -307,7 +306,6 @@
                     rowIndex: rowIndex,
                     colIndex: colIndex
                 });
-                U.stopEvent(e);
             }
         });
         this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
@@ -322,7 +320,7 @@
                     var value = "";
                     if (column) {
                         if (!self.list[dindex].__isGrouping) {
-                            value = self.list[dindex][column.key];
+                            value = GRID.data.getValue.call(self, dindex, column.key);
                         }
                     }
                     GRID.body.inlineEdit.active.call(self, self.focusedColumn, e, value);
@@ -500,7 +498,7 @@
                 var that = {
                     key: _key,
                     value: _value || _item[_key],
-                    index: _index,
+                    dindex: _index,
                     item: _item,
                     list: _list
                 };
@@ -511,8 +509,12 @@
                 }
             } else {
                 var returnValue = "&nbsp;";
-                if(typeof _value !== "undefined") returnValue = _value;
-                if(typeof _item[_key] !== "undefined") returnValue = _item[_key];
+                if(typeof _value !== "undefined") {
+                    returnValue = _value;
+                }else{
+                    _value = GRID.data.getValue.call(this, _index, _key);
+                    if(typeof _value !== "undefined") returnValue = _value;
+                }
                 return returnValue;
             }
         }
@@ -1305,6 +1307,8 @@
                         GRID.body.repaint.call(this, true);
                         // 한칸씩 바꿀 수도 있지 않을까? 고려할 게 많아져서 어렵겠다. footSum도 변경 해줘야 하고, body.grouping도 변경 해줘야 하는데
                         // this.inlineEditing.$inlineEditorCell.html(getFieldValue(this.list, this.list[_dindex], _dindex, _column, _newValue));
+                    }else{
+                        action["__clear"].call(this);
                     }
                 },
                 "__clear": function () {
@@ -1343,7 +1347,7 @@
                             var value = "";
                             if (column) {
                                 if (!this.list[dindex].__isGrouping) {
-                                    value = this.list[dindex][column.key];
+                                    value = GRID.data.getValue.call(this, dindex, column.key);
                                 }
                             }
                             GRID.body.inlineEdit.active.call(this, this.focusedColumn, null, value);
