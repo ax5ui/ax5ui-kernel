@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.8"
+        version: "0.2.9"
     }, function () {
         /**
          * @class ax5grid
@@ -1547,12 +1547,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }(_col.editor)) {
 
                 // print editor
-                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value || _item[_key]);
+                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value || GRID.data.getValue.call(this, _index, _key));
             }
             if (_col.formatter) {
                 var that = {
                     key: _key,
-                    value: _value || _item[_key],
+                    value: _value || GRID.data.getValue.call(this, _index, _key),
                     dindex: _index,
                     item: _item,
                     list: _list

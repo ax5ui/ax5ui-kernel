@@ -5,7 +5,7 @@
 
     UI.addClass({
         className: "formatter",
-        version  : "0.5.4"
+        version  : "0.5.5"
     }, (function () {
         var TODAY = new Date();
         var setSelectionRange = function (input, pos) {
@@ -296,8 +296,12 @@
                     },
                     "phone" : function (opts, optIdx, e, val, eType) {
                         val = val.replace(/\D/g, "");
-                        var regExpPattern3 = /^([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/,
-                            returnValue = val.replace(regExpPattern3, function (a, b) {
+                        var regExpPattern3 = /^([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
+                        if(val.substr(0,2) == "02"){
+                            regExpPattern3 = /^([0-9]{2})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
+                        }
+
+                        var returnValue = val.replace(regExpPattern3, function (a, b) {
                                 var nval = [arguments[1]];
                                 if (arguments[2]) nval.push(arguments[2]);
                                 if (arguments[3]) nval.push(arguments[3]);
