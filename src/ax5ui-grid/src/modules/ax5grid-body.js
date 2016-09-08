@@ -150,7 +150,7 @@
             columnSelect.init.call(self, cell);
 
             this.$["container"]["body"]
-                .on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function () {
+                .on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function (e) {
                     if (this.getAttribute("data-ax5grid-column-rowIndex")) {
                         columnSelect.update.call(self, {
                             panelName: this.getAttribute("data-ax5grid-panel-name"),
@@ -159,6 +159,7 @@
                             colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                             colspan: Number(this.getAttribute("colspan"))
                         });
+                        U.stopEvent(e);
                     }
                 })
                 .on("mouseup.ax5grid-" + this.instanceId, function () {
@@ -244,15 +245,12 @@
     var init = function () {
         var self = this;
 
+        /*
         this.$["container"]["root"].on("click", function(e){
-            var target = U.findParentNode(e.target, function(_target){
-                return _target.getAttribute("data-ax5grid-column-attr");
-            });
-            if(!target){
-                GRID.body.blur.call(self);
-            }
+
         });
-        this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function () {
+        */
+        this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function (e) {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
                 "default": function (_column) {
@@ -309,6 +307,7 @@
                     rowIndex: rowIndex,
                     colIndex: colIndex
                 });
+                U.stopEvent(e);
             }
         });
         this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
@@ -376,6 +375,7 @@
                         colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                         colspan: Number(this.getAttribute("colspan"))
                     });
+                    U.stopEvent(e);
                 }
             })
             .on("dragstart", function (e) {

@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.6"
+        version: "0.2.7"
     }, function () {
         /**
          * @class ax5grid
@@ -650,13 +650,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }.bind(this));
 
                 jQuery(document.body).on("click.ax5grid-" + this.instanceId, function (e) {
-                    var target = U.findParentNode(e.target, { "data-ax5grid-container": "root" });
+                    var imEl = false;
+                    var target = U.findParentNode(e.target, function (_target) {
+                        if (!U.isNothing(_target.getAttribute("data-ax5grid-data-index"))) {
+                            imEl = true;
+                        }
+                        return _target.getAttribute("data-ax5grid-container");
+                    });
+
                     if (target) {
                         self.focused = true;
+                        if (!imEl) {
+                            // GRID.body.blur.call(self);
+                        }
                     } else {
-                        self.focused = false;
-                        GRID.body.blur.call(self);
-                    }
+                            self.focused = false;
+                            GRID.body.blur.call(self);
+                        }
                 });
 
                 var ctrlKeys = {
@@ -687,7 +697,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                 if (ctrlKeys[e.which]) {
                                     self.keyDown(ctrlKeys[e.which], e.originalEvent);
                                     U.stopEvent(e);
-                                } else if (e.which == ax5.info.eventKeys.ESC) {} else if (e.which == ax5.info.eventKeys.RETURN) {
+                                } else if (e.which == ax5.info.eventKeys.ESC) {
+                                    if (self.focused) {
+                                        GRID.body.blur.call(self);
+                                    }
+                                } else if (e.which == ax5.info.eventKeys.RETURN) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 } else if (Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
@@ -1218,7 +1232,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var self = this;
             columnSelect.init.call(self, cell);
 
-            this.$["container"]["body"].on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function () {
+            this.$["container"]["body"].on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function (e) {
                 if (this.getAttribute("data-ax5grid-column-rowIndex")) {
                     columnSelect.update.call(self, {
                         panelName: this.getAttribute("data-ax5grid-panel-name"),
@@ -1227,6 +1241,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                         colspan: Number(this.getAttribute("colspan"))
                     });
+                    U.stopEvent(e);
                 }
             }).on("mouseup.ax5grid-" + this.instanceId, function () {
                 columnSelector.off.call(self);
@@ -1292,15 +1307,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var init = function init() {
         var self = this;
 
-        this.$["container"]["root"].on("click", function (e) {
-            var target = U.findParentNode(e.target, function (_target) {
-                return _target.getAttribute("data-ax5grid-column-attr");
-            });
-            if (!target) {
-                GRID.body.blur.call(self);
-            }
-        });
-        this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function () {
+        /*
+        this.$["container"]["root"].on("click", function(e){
+         });
+        */
+        this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function (e) {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
                 "default": function _default(_column) {
@@ -1356,6 +1367,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     rowIndex: rowIndex,
                     colIndex: colIndex
                 });
+                U.stopEvent(e);
             }
         });
         this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
@@ -1418,6 +1430,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                     colspan: Number(this.getAttribute("colspan"))
                 });
+                U.stopEvent(e);
             }
         }).on("dragstart", function (e) {
             U.stopEvent(e);

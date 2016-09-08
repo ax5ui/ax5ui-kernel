@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.6"
+        version: "0.2.7"
     }, (function () {
         /**
          * @class ax5grid
@@ -665,9 +665,19 @@
                 }).bind(this));
 
                 jQuery(document.body).on("click.ax5grid-" + this.instanceId, function (e) {
-                    var target = U.findParentNode(e.target, {"data-ax5grid-container": "root"});
+                    var imEl = false;
+                    var target = U.findParentNode(e.target, function (_target) {
+                        if(!U.isNothing(_target.getAttribute("data-ax5grid-data-index"))){
+                            imEl = true;
+                        }
+                        return _target.getAttribute("data-ax5grid-container");
+                    });
+
                     if (target) {
                         self.focused = true;
+                        if(!imEl){
+                            // GRID.body.blur.call(self);
+                        }
                     } else {
                         self.focused = false;
                         GRID.body.blur.call(self);
@@ -703,7 +713,9 @@
                                     self.keyDown(ctrlKeys[e.which], e.originalEvent);
                                     U.stopEvent(e);
                                 } else if (e.which == ax5.info.eventKeys.ESC) {
-
+                                    if(self.focused){
+                                        GRID.body.blur.call(self);
+                                    }
                                 } else if (e.which == ax5.info.eventKeys.RETURN) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 } else if (Object.keys(self.focusedColumn).length) {
