@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "modal",
-        version  : "0.7.6"
+        version  : "0.7.7"
     }, (function () {
         /**
          * @class ax5modal
@@ -414,8 +414,10 @@
                     jQuery(window).unbind("resize.ax-modal");
 
                     setTimeout((function () {
-                        this.activeModal.remove();
-                        this.activeModal = null;
+                        if(this.activeModal) {
+                            this.activeModal.remove();
+                            this.activeModal = null;
+                        }
                         onStateChanged.call(this, opts, {
                             self : this,
                             state: "close"
@@ -532,16 +534,12 @@
                     if (fullScreen) {
                         if (opts.header) this.$.header.hide();
                         box.width = jQuery(window).width();
-                        box.height = jQuery(window).height();
+                        box.height = opts.height;
                         box.left = 0;
                         box.top = 0;
-
-                        if (opts.iframe) {
-                            this.$["iframe-wrap"].css({height: box.height});
-                            this.$["iframe"].css({height: box.height});
-                        }
                     }
                     else {
+                        if (opts.header) this.$.header.show();
                         if (position) {
                             jQuery.extend(true, opts.position, position);
                         }
@@ -577,10 +575,16 @@
                         else {
                             box.top = opts.position.top || 0;
                         }
-
+                        if(box.left < 0) box.left = 0;
+                        if(box.top < 0) box.top = 0;
                     }
 
                     this.activeModal.css(box);
+
+                    if (opts.iframe) {
+                        this.$["iframe-wrap"].css({height: box.height});
+                        this.$["iframe"].css({height: box.height});
+                    }
                     return this;
                 };
             })();

@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "dialog",
-        version: "0.8.4"
+        version: "0.8.5"
     }, function () {
         /**
          * @class ax5dialog
@@ -143,6 +143,9 @@
                     box.left = opts.position.left || 0;
                     box.top = opts.position.top || 0;
                 }
+                if (box.left < 0) box.left = 0;
+                if (box.top < 0) box.top = 0;
+
                 this.activeDialog.css(box);
 
                 opts = null;
