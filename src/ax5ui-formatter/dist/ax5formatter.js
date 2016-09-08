@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "formatter",
-        version: "0.5.3"
+        version: "0.5.4"
     }, function () {
         var TODAY = new Date();
         var setSelectionRange = function setSelectionRange(input, pos) {
@@ -31,7 +31,7 @@
         };
 
         /**
-         * @class ax5.ui.formatter
+         * @class ax5formatter
          * @classdesc
          * @author tom@axisj.com
          * @example
@@ -356,7 +356,7 @@
                         setSelectionRange(elem, elemFocusPosition + newValue.length - beforeValue.length);
                     }
                 },
-                'blur': function blur(opts, optIdx, e) {
+                'blur': function blur(opts, optIdx, e, _force) {
                     var elem = opts.$input.get(0),
                         beforeValue,
                         newValue;
@@ -365,8 +365,13 @@
 
                     beforeValue = elem.value;
                     newValue = getPatternValue[opts.pattern] ? getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value, 'blur') : beforeValue;
-                    if (newValue != beforeValue) {
-                        opts.$input.val(newValue).trigger("change");
+
+                    if (_force) {
+                        opts.$input.val(newValue);
+                    } else {
+                        if (newValue != beforeValue) {
+                            opts.$input.val(newValue).trigger("change");
+                        }
                     }
                 }
             },
@@ -398,7 +403,6 @@
                         break;
                     }
                 }
-
                 opts.$input.unbind('focus.ax5formatter').bind('focus.ax5formatter', formatterEvent.focus.bind(this, this.queue[optIdx], optIdx));
 
                 opts.$input.unbind('keydown.ax5formatter').bind('keydown.ax5formatter', formatterEvent.keydown.bind(this, this.queue[optIdx], optIdx));
@@ -410,11 +414,25 @@
                 formatterEvent.blur.call(this, this.queue[optIdx], optIdx);
 
                 return this;
+            },
+                getQueIdx = function getQueIdx(boundID) {
+                if (!U.isString(boundID)) {
+                    boundID = jQuery(boundID).data("data-formatter");
+                }
+                /*
+                 if (!U.isString(boundID)) {
+                 console.log(ax5.info.getError("ax5formatter", "402", "getQueIdx"));
+                 return;
+                 }
+                 */
+                return U.search(this.queue, function () {
+                    return this.id == boundID;
+                });
             };
 
             /**
              * Preferences of formatter UI
-             * @method ax5.ui.formatter.setConfig
+             * @method ax5formatter.setConfig
              * @param {Object} config - 클래스 속성값
              * @returns {ax5.ui.formatter}
              * @example
@@ -472,6 +490,31 @@
                 return this;
             };
 
+            /**
+             * formatter value 를 다시 적용합니다.
+             * @method ax5formatter.formatting
+             * @returns {ax5formatter}
+             * @example
+             * ```js
+             * $('[data-ax5formatter="time"]').ax5formatter("formatting"); // 하나만
+             * $('[data-ax5formatter]').ax5formatter("formatting"); // 모두
+             * ```
+             */
+            this.formatting = function (boundID) {
+                var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
+                if (queIdx === -1) {
+                    var i = this.queue.length;
+                    while (i--) {
+                        formatterEvent.blur.call(this, this.queue[i], i, null, true);
+                    }
+                } else {
+                    formatterEvent.blur.call(this, this.queue[queIdx], queIdx, null, true);
+                }
+                return this;
+            };
+
+            this.unbind = function () {};
+
             // 클래스 생성자
             this.main = function () {
                 if (arguments && U.isObject(arguments[0])) {
@@ -487,14 +530,31 @@ ax5.ui.formatter_instance = new ax5.ui.formatter();
 
 $.fn.ax5formatter = function () {
     return function (config) {
-        if (typeof config == "undefined") config = {};
-        $.each(this, function () {
-            var defaultConfig = {
-                target: this
-            };
-            config = $.extend(true, config, defaultConfig);
-            ax5.ui.formatter_instance.bind(config);
-        });
+        if (ax5.util.isString(arguments[0])) {
+            var methodName = arguments[0];
+
+            switch (methodName) {
+                case "formatting":
+                    return ax5.ui.formatter_instance.formatting(this);
+                    break;
+
+                case "unbind":
+                    return ax5.ui.formatter_instance.unbind(this);
+                    break;
+
+                default:
+                    return this;
+            }
+        } else {
+            if (typeof config == "undefined") config = {};
+            jQuery.each(this, function () {
+                var defaultConfig = {
+                    target: this
+                };
+                config = jQuery.extend({}, config, defaultConfig);
+                ax5.ui.formatter_instance.bind(config);
+            });
+        }
         return this;
     };
 }();

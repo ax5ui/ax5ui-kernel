@@ -5,7 +5,7 @@
 
     UI.addClass({
         className: "formatter",
-        version: "0.5.3"
+        version  : "0.5.4"
     }, (function () {
         var TODAY = new Date();
         var setSelectionRange = function (input, pos) {
@@ -31,7 +31,7 @@
         };
 
         /**
-         * @class ax5.ui.formatter
+         * @class ax5formatter
          * @classdesc
          * @author tom@axisj.com
          * @example
@@ -57,28 +57,28 @@
 
             var
                 ctrlKeys = {
-                    "18": "KEY_ALT",
-                    "8": "KEY_BACKSPACE",
-                    "17": "KEY_CONTROL",
-                    "46": "KEY_DELETE",
-                    "40": "KEY_DOWN",
-                    "35": "KEY_END",
+                    "18" : "KEY_ALT",
+                    "8"  : "KEY_BACKSPACE",
+                    "17" : "KEY_CONTROL",
+                    "46" : "KEY_DELETE",
+                    "40" : "KEY_DOWN",
+                    "35" : "KEY_END",
                     "187": "KEY_EQUAL",
-                    "27": "KEY_ESC",
-                    "36": "KEY_HOME",
-                    "45": "KEY_INSERT",
-                    "37": "KEY_LEFT",
+                    "27" : "KEY_ESC",
+                    "36" : "KEY_HOME",
+                    "45" : "KEY_INSERT",
+                    "37" : "KEY_LEFT",
                     "189": "KEY_MINUS",
-                    "34": "KEY_PAGEDOWN",
-                    "33": "KEY_PAGEUP",
+                    "34" : "KEY_PAGEDOWN",
+                    "33" : "KEY_PAGEUP",
                     // "190": "KEY_PERIOD",
-                    "13": "KEY_RETURN",
-                    "39": "KEY_RIGHT",
-                    "16": "KEY_SHIFT",
+                    "13" : "KEY_RETURN",
+                    "39" : "KEY_RIGHT",
+                    "16" : "KEY_SHIFT",
                     // "32": "KEY_SPACE",
-                    "9": "KEY_TAB",
-                    "38": "KEY_UP",
-                    "91": "KEY_WINDOW"
+                    "9"  : "KEY_TAB",
+                    "38" : "KEY_UP",
+                    "91" : "KEY_WINDOW"
                     //"107" : "NUMPAD_ADD",
                     //"194" : "NUMPAD_COMMA",
                     //"110" : "NUMPAD_DECIMAL",
@@ -88,11 +88,11 @@
                     //"109" : "NUMPAD_SUBTRACT"
                 },
                 numKeys = {
-                    '48': 1, '49': 1, '50': 1, '51': 1, '52': 1, '53': 1, '54': 1, '55': 1, '56': 1, '57': 1,
+                    '48'                                                                                       : 1, '49'                                                                              : 1, '50': 1, '51': 1, '52': 1, '53': 1, '54': 1, '55': 1, '56'               : 1, '57': 1,
                     '96': 1, '97': 1, '98': 1, '99': 1, '100': 1, '101': 1, '102': 1, '103': 1, '104': 1, '105': 1
                 },
                 setEnterableKeyCodes = {
-                    "money": function (opts, optIdx) {
+                    "money" : function (opts, optIdx) {
                         var enterableKeyCodes = {
                             '188': ','
                         };
@@ -112,25 +112,25 @@
                         };
                         opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                     },
-                    "date": function (opts, optIdx) {
+                    "date"  : function (opts, optIdx) {
                         var enterableKeyCodes = {
                             '189': '-', '191': '/'
                         };
                         opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                     },
-                    "time": function (opts, optIdx) {
+                    "time"  : function (opts, optIdx) {
                         var enterableKeyCodes = {
                             '186': ':'
                         };
                         opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                     },
-                    "bizno": function (opts, optIdx) {
+                    "bizno" : function (opts, optIdx) {
                         var enterableKeyCodes = {
                             '189': '-'
                         };
                         opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
                     },
-                    "phone": function (opts, optIdx) {
+                    "phone" : function (opts, optIdx) {
                         var enterableKeyCodes = {
                             '189': '-', '188': ','
                         };
@@ -146,7 +146,7 @@
                     }
                 },
                 getPatternValue = {
-                    "money": function (opts, optIdx, e, val, eType) {
+                    "money" : function (opts, optIdx, e, val, eType) {
                         var
                             val = val.replace(/[^0-9^\.^\-]/g, ""),
                             regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
@@ -194,7 +194,7 @@
 
                         return returnValue;
                     },
-                    "date": function (opts, optIdx, e, val, eType) {
+                    "date"  : function (opts, optIdx, e, val, eType) {
                         val = val.replace(/\D/g, "");
                         if (val == "") return val;
                         var regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
@@ -266,7 +266,7 @@
 
                         return returnValue;
                     },
-                    "time": function (opts, optIdx, e, val, eType) {
+                    "time"  : function (opts, optIdx, e, val, eType) {
                         val = val.replace(/\D/g, "");
                         var regExpPattern = /^([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
 
@@ -282,7 +282,7 @@
 
                         return returnValue;
                     },
-                    "bizno": function (opts, optIdx, e, val, eType) {
+                    "bizno" : function (opts, optIdx, e, val, eType) {
                         val = val.replace(/\D/g, "");
                         var regExpPattern = /^([0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,5})?.*$/,
                             returnValue = val.replace(regExpPattern, function (a, b) {
@@ -294,7 +294,7 @@
 
                         return returnValue;
                     },
-                    "phone": function (opts, optIdx, e, val, eType) {
+                    "phone" : function (opts, optIdx, e, val, eType) {
                         val = val.replace(/\D/g, "");
                         var regExpPattern3 = /^([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/,
                             returnValue = val.replace(regExpPattern3, function (a, b) {
@@ -316,18 +316,18 @@
                         val = val.replace(/\D/g, "").substring(0, 16);
 
                         var regExpPattern3 = /^([0-9]{4})\-?([0-9]{4})?\-?([0-9]{4})?\-?([0-9]{4})?/,
-                        returnValue = val.replace(regExpPattern3, function (a, b) {
-                          var nval = [arguments[1]];
-                          if (arguments[2]) nval.push(arguments[2]);
-                          if (arguments[3]) nval.push(arguments[3]);
-                          if (arguments[4]) nval.push(arguments[4]);
-                          return nval.join("-");
-                        });
+                            returnValue = val.replace(regExpPattern3, function (a, b) {
+                                var nval = [arguments[1]];
+                                if (arguments[2]) nval.push(arguments[2]);
+                                if (arguments[3]) nval.push(arguments[3]);
+                                if (arguments[4]) nval.push(arguments[4]);
+                                return nval.join("-");
+                            });
                         return returnValue;
-                      }
+                    }
                 },
                 formatterEvent = {
-                    'focus': function (opts, optIdx, e) {
+                    'focus'  : function (opts, optIdx, e) {
                         if (!opts.$input.data("__originValue__")) opts.$input.data("__originValue__", opts.$input.val());
                     },
                     /* 키 다운 이벤트에서 입력할 수 없는 키 입력을 방어 */
@@ -346,7 +346,7 @@
                         if (isStop) ax5.util.stopEvent(e);
                     },
                     /* 키 업 이벤트에서 패턴을 적용 */
-                    'keyup': function (opts, optIdx, e) {
+                    'keyup'  : function (opts, optIdx, e) {
                         var elem = opts.$input.get(0),
                             elemFocusPosition,
                             beforeValue,
@@ -375,7 +375,7 @@
                             setSelectionRange(elem, elemFocusPosition + newValue.length - beforeValue.length);
                         }
                     },
-                    'blur': function (opts, optIdx, e) {
+                    'blur'   : function (opts, optIdx, e, _force) {
                         var elem = opts.$input.get(0),
                             beforeValue,
                             newValue
@@ -385,8 +385,13 @@
 
                         beforeValue = elem.value;
                         newValue = (getPatternValue[opts.pattern]) ? getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value, 'blur') : beforeValue;
-                        if (newValue != beforeValue) {
-                            opts.$input.val(newValue).trigger("change");
+
+                        if (_force) {
+                            opts.$input.val(newValue);
+                        } else {
+                            if (newValue != beforeValue) {
+                                opts.$input.val(newValue).trigger("change");
+                            }
                         }
                     }
                 },
@@ -422,7 +427,6 @@
                             break;
                         }
                     }
-
                     opts.$input
                         .unbind('focus.ax5formatter')
                         .bind('focus.ax5formatter', formatterEvent.focus.bind(this, this.queue[optIdx], optIdx));
@@ -443,11 +447,25 @@
 
                     return this;
 
+                },
+                getQueIdx = function (boundID) {
+                    if (!U.isString(boundID)) {
+                        boundID = jQuery(boundID).data("data-formatter");
+                    }
+                    /*
+                     if (!U.isString(boundID)) {
+                     console.log(ax5.info.getError("ax5formatter", "402", "getQueIdx"));
+                     return;
+                     }
+                     */
+                    return U.search(this.queue, function () {
+                        return this.id == boundID;
+                    });
                 };
 
             /**
              * Preferences of formatter UI
-             * @method ax5.ui.formatter.setConfig
+             * @method ax5formatter.setConfig
              * @param {Object} config - 클래스 속성값
              * @returns {ax5.ui.formatter}
              * @example
@@ -510,6 +528,33 @@
                 return this;
             };
 
+            /**
+             * formatter value 를 다시 적용합니다.
+             * @method ax5formatter.formatting
+             * @returns {ax5formatter}
+             * @example
+             * ```js
+             * $('[data-ax5formatter="time"]').ax5formatter("formatting"); // 하나만
+             * $('[data-ax5formatter]').ax5formatter("formatting"); // 모두
+             * ```
+             */
+            this.formatting = function (boundID) {
+                var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
+                if (queIdx === -1) {
+                    var i = this.queue.length;
+                    while (i--) {
+                        formatterEvent.blur.call(this, this.queue[i], i, null, true);
+                    }
+                } else {
+                    formatterEvent.blur.call(this, this.queue[queIdx], queIdx, null, true);
+                }
+                return this;
+            };
+
+            this.unbind = function () {
+
+            };
+
             // 클래스 생성자
             this.main = (function () {
                 if (arguments && U.isObject(arguments[0])) {
@@ -526,14 +571,32 @@ ax5.ui.formatter_instance = new ax5.ui.formatter();
 
 $.fn.ax5formatter = (function () {
     return function (config) {
-        if (typeof config == "undefined") config = {};
-        $.each(this, function () {
-            var defaultConfig = {
-                target: this
-            };
-            config = $.extend(true, config, defaultConfig);
-            ax5.ui.formatter_instance.bind(config);
-        });
+        if (ax5.util.isString(arguments[0])) {
+            var methodName = arguments[0];
+
+            switch (methodName) {
+                case "formatting":
+                    return ax5.ui.formatter_instance.formatting(this);
+                    break;
+
+                case "unbind":
+                    return ax5.ui.formatter_instance.unbind(this);
+                    break;
+
+                default:
+                    return this;
+            }
+        }
+        else {
+            if (typeof config == "undefined") config = {};
+            jQuery.each(this, function () {
+                var defaultConfig = {
+                    target: this
+                };
+                config = jQuery.extend({}, config, defaultConfig);
+                ax5.ui.formatter_instance.bind(config);
+            });
+        }
         return this;
     }
 })();

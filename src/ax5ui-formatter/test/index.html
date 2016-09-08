@@ -75,6 +75,9 @@
 <script type="text/javascript">
 
     $('[data-ax5formatter]').ax5formatter();
+
+    $('[data-ax5formatter="time"]').val("1231232");
+
     /*
     $('#ax5formatter-01').ax5formatter({
         pattern: "date"
@@ -113,6 +116,7 @@
      * }
      */
 
+    $('[data-ax5formatter="time"]').ax5formatter("formatting");
 </script>
 
 </body>
