@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "binder",
-        version: "0.1.0"
+        version: "0.1.1"
     }, function () {
 
         /**
@@ -581,7 +581,6 @@
                         }
 
                         el.checked = checked;
-                        console.log(el.checked);
                     } else {
                         el.value = value.join('');
                     }
