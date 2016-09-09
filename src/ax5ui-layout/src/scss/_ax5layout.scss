@@ -124,14 +124,13 @@
         left: 0;
         top: 0;
         z-index: 3;
-        border-top: 1px solid #D4D4D4;
-        border-bottom: 1px solid #D4D4D4;
+        border-top: $ax5layout-tab-panel-label-border-top;
+        border-bottom: $ax5layout-tab-panel-label-border-bottom;
         width: 100%;
         padding-top: $ax5layout-tab-panel-label-padding-top;
         height: $ax5layout-tab-panel-label-height;
+        @include ax-background(top, $ax5layout-tab-panel-label-bg-colors);
 
-        //padding-bottom: 3px;
-        @include ax-background(top, #E3E3E3, #E3E3E3);
         [data-tab-panel-label-border]{
             box-sizing: border-box;
             position: absolute;
@@ -139,8 +138,8 @@
             left:0;
             width: 100%;
             height: $ax5layout-tab-panel-label-height - $ax5layout-tab-panel-label-item-height - $ax5layout-tab-panel-label-padding-top - 1;
-            background: #fff;
-            border-top: 1px solid #D4D4D4;
+            background: $ax5layout-tab-panel-label-border-bg;
+            border-top: $ax5layout-tab-panel-label-border-bottom;
             z-index: 1;
         }
         [data-tab-panel-label-table] {
@@ -163,16 +162,16 @@
                     border-top: $ax5layout-tab-panel-label-item-border-top;
                     border-right: $ax5layout-tab-panel-label-item-border-right;
                     border-bottom: $ax5layout-tab-panel-label-item-border-bottom;
-                    background: #D6D6D6;
+                    @include ax-background(top, $ax5layout-tab-panel-label-item-bg-colors);
                     &:hover{
-                        background: #e3e3e3;
+                        @include ax-background(top, $ax5layout-tab-panel-label-item-hover-bg-colors);
                     }
                 }
 
                 &[data-tab-active="true"] {
                     [data-tab-label] {
-                        @include ax-background(top, #fff, #fff);
-                        border-bottom: 1px solid #fff;
+                        @include ax-background(top, $ax5layout-tab-panel-label-item-active-bg-colors);
+                        border-bottom: 1px solid $ax5layout-tab-panel-label-border-bg;
                     }
                 }
             }
