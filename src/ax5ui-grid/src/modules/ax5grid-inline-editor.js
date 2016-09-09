@@ -12,6 +12,9 @@
             var $el;
             _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
             this.bindUI(_root, $el, _editor, _$parent);
+            $el.on("blur", function(){
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            });
             return $el;
         },
         bindUI: function(_root, _$el, _editor, _$parent){
@@ -28,6 +31,9 @@
             var $el;
             _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
             this.bindUI(_root, $el, _editor, _$parent);
+            $el.on("blur", function(){
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            });
             return $el;
         },
         bindUI: function(_root, _$el, _editor, _$parent){
@@ -47,6 +53,9 @@
             var $el;
             _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
             this.bindUI(_root, $el, _editor, _$parent);
+            $el.on("blur", function(){
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            });
             return $el;
         },
         bindUI: function(_root, _$el, _editor, _$parent){
@@ -71,6 +80,7 @@
         bindUI: function(_root, _$el, _editor, _$parent){
             var self = _root;
             _$el.data("binded-ax5ui", "ax5picker");
+
             _$el.ax5picker({
                 direction: "auto",
                 content: {
@@ -80,7 +90,9 @@
                     }
                 },
                 onStateChanged: function () {
-                    if (this.state == "close") {
+                    if (this.state == "open") {
+                        this.self.activePicker.attr("data-ax5grid-inline-edit-picker", "date");
+                    }else if (this.state == "close") {
                         GRID.body.inlineEdit.deActive.call(self, "RETURN");
                     }
                 }
@@ -112,6 +124,9 @@
             var $el;
             _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
             this.bindUI(_root, $el, _editor, _$parent);
+            $el.on("blur", function(){
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            });
             return $el;
         },
         bindUI: function(_root, _$el, _editor, _$parent){

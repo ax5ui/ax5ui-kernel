@@ -28,9 +28,19 @@
                 theme         : 'default',
                 title         : '',
                 lang          : {
-                    "ok": "ok", "cancel": "cancel"
+                    "ok"    : "ok",
+                    "cancel": "cancel"
                 },
-                animateTime   : 250
+                animateTime   : 250,
+                calendar: {
+                    control: {
+                        left     : ax5.def.picker.date_leftArrow || '&#x02190',
+                        yearTmpl : ax5.def.picker.date_yearTmpl || '%s',
+                        monthTmpl: ax5.def.picker.date_monthTmpl || '%s',
+                        right    : ax5.def.picker.date_rightArrow || '&#x02192',
+                        yearFirst: true
+                    }
+                }
             };
             this.queue = [];
             this.activePicker = null;
@@ -307,7 +317,7 @@
                     var item = this.queue[this.activePickerQueueIndex];
 
                     if (append) jQuery(document.body).append(this.activePicker);
-                    setTimeout((function(){
+                    setTimeout((function () {
                         _alignPicker.call(this, item);
                     }).bind(this));
 
@@ -503,16 +513,7 @@
                         html.push('<div style="clear:both;"></div>');
                         item.pickerContent.html(html.join(''));
 
-                        var calendarConfig = {
-                            displayDate: (new Date()),
-                            control    : {
-                                left     : ax5.def.picker.date_leftArrow || '&#x02190',
-                                yearTmpl : ax5.def.picker.date_yearTmpl || '%s',
-                                monthTmpl: ax5.def.picker.date_monthTmpl || '%s',
-                                right    : ax5.def.picker.date_rightArrow || '&#x02192',
-                                yearFirst: true
-                            }
-                        };
+                        var calendarConfig = jQuery.extend({}, cfg.calendar, {displayDate:(new Date())});
                         var input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : item.$target.find('input[type]');
 
                         // calendar bind
@@ -977,6 +978,17 @@
 
 })();
 
+/**
+ * ax5.ui.picker_instance
+ * @type {ax5picker}
+ * @example
+ * ```js
+ * // picker 기본 속성을 변경해야 한다면
+ * ax5.ui.picker_instance.setConfig({
+ * });
+ *
+ * ```
+ */
 ax5.ui.picker_instance = new ax5.ui.picker();
 
 jQuery.fn.ax5picker = (function () {
@@ -1011,5 +1023,3 @@ jQuery.fn.ax5picker = (function () {
         return this;
     }
 })();
-
-// todo : picker realign

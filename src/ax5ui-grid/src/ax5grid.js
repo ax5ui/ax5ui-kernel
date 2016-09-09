@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.10"
+        version: "0.2.11"
     }, (function () {
         /**
          * @class ax5grid
@@ -665,19 +665,16 @@
                 }).bind(this));
 
                 jQuery(document.body).on("click.ax5grid-" + this.instanceId, function (e) {
-                    var imEl = false;
+                    var isPickerClick = false;
                     var target = U.findParentNode(e.target, function (_target) {
-                        if(!U.isNothing(_target.getAttribute("data-ax5grid-data-index"))){
-                            imEl = true;
+                        if(isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")){
+                            return true;
                         }
                         return _target.getAttribute("data-ax5grid-container");
                     });
 
                     if (target) {
                         self.focused = true;
-                        if(!imEl){
-                            // GRID.body.blur.call(self);
-                        }
                     } else {
                         self.focused = false;
                         GRID.body.blur.call(self);

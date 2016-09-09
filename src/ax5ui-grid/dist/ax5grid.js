@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.10"
+        version: "0.2.11"
     }, function () {
         /**
          * @class ax5grid
@@ -650,23 +650,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }.bind(this));
 
                 jQuery(document.body).on("click.ax5grid-" + this.instanceId, function (e) {
-                    var imEl = false;
+                    var isPickerClick = false;
                     var target = U.findParentNode(e.target, function (_target) {
-                        if (!U.isNothing(_target.getAttribute("data-ax5grid-data-index"))) {
-                            imEl = true;
+                        if (isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")) {
+                            return true;
                         }
                         return _target.getAttribute("data-ax5grid-container");
                     });
 
                     if (target) {
                         self.focused = true;
-                        if (!imEl) {
-                            // GRID.body.blur.call(self);
-                        }
                     } else {
-                            self.focused = false;
-                            GRID.body.blur.call(self);
-                        }
+                        self.focused = false;
+                        GRID.body.blur.call(self);
+                    }
                 });
 
                 var ctrlKeys = {
@@ -1309,9 +1306,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var self = this;
 
         /*
-        this.$["container"]["root"].on("click", function(e){
-         });
-        */
+         this.$["container"]["root"].on("click", function(e){
+          });
+         */
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function (e) {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
@@ -3030,6 +3027,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var $el;
             _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
             this.bindUI(_root, $el, _editor, _$parent);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            });
             return $el;
         },
         bindUI: function bindUI(_root, _$el, _editor, _$parent) {}
@@ -3044,6 +3044,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var $el;
             _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
             this.bindUI(_root, $el, _editor, _$parent);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            });
             return $el;
         },
         bindUI: function bindUI(_root, _$el, _editor, _$parent) {
@@ -3063,6 +3066,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var $el;
             _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
             this.bindUI(_root, $el, _editor, _$parent);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            });
             return $el;
         },
         bindUI: function bindUI(_root, _$el, _editor, _$parent) {
@@ -3087,6 +3093,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         bindUI: function bindUI(_root, _$el, _editor, _$parent) {
             var self = _root;
             _$el.data("binded-ax5ui", "ax5picker");
+
             _$el.ax5picker({
                 direction: "auto",
                 content: {
@@ -3096,7 +3103,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 },
                 onStateChanged: function onStateChanged() {
-                    if (this.state == "close") {
+                    if (this.state == "open") {
+                        this.self.activePicker.attr("data-ax5grid-inline-edit-picker", "date");
+                    } else if (this.state == "close") {
                         GRID.body.inlineEdit.deActive.call(self, "RETURN");
                     }
                 }
@@ -3126,6 +3135,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var $el;
             _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
             this.bindUI(_root, $el, _editor, _$parent);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            });
             return $el;
         },
         bindUI: function bindUI(_root, _$el, _editor, _$parent) {
