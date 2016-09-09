@@ -384,10 +384,10 @@
         var path = [];
         var _path = [].concat(_dataPath.split(/[\.\[\]]/g));
         _path.forEach(function (n) {
-            if (n !== "") path.push(n);
+            if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
         });
         _path = null;
-        return "'" + path.join("']['") + "'";
+        return path.join("");
     };
 
     GRID.util = {

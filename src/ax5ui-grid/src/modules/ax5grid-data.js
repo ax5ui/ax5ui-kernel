@@ -30,10 +30,10 @@
         if (this.config.body.grouping) {
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
                 return {
-                    key: this,
+                    key          : this,
                     compareString: "",
-                    grouping: false,
-                    list: []
+                    grouping     : false,
+                    list         : []
                 }
             });
             var gi = 0, gl = groupingKeys.length, compareString, appendRow = [], ari;
@@ -125,7 +125,7 @@
             "first": function () {
                 list = [].concat(_row).concat(list);
             },
-            "last": function () {
+            "last" : function () {
                 list = list.concat([].concat(_row));
             }
         };
@@ -170,7 +170,7 @@
             "first": function () {
                 list.splice(_dindex, 1);
             },
-            "last": function () {
+            "last" : function () {
                 var lastIndex = list.length - 1;
                 list.splice(lastIndex, 1);
             }
@@ -225,19 +225,28 @@
 
     var setValue = function (_dindex, _key, _value) {
         this.needToPaintSum = true;
-        if(/[\.\[\]]/.test(_key)) {
-            (Function("val", "this[" + GRID.util.getRealPathForDataItem(_key) + "] = val;")).call(this.list[_dindex], _value);
-        }else{
+        if (/[\.\[\]]/.test(_key)) {
+            try {
+                (Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;")).call(this.list[_dindex], _value);
+            } catch (e) {
+
+            }
+        } else {
             this.list[_dindex][_key] = _value;
         }
         return _value;
     };
-    var getValue = function (_dindex, _key) {
-        if(/[\.\[\]]/.test(_key)) {
-            return (Function("", "return this[" + GRID.util.getRealPathForDataItem(_key) + "];")).call(this.list[_dindex]);
-        }else{
-            return this.list[_dindex][_key];
+    var getValue = function (_dindex, _key, _value) {
+        if (/[\.\[\]]/.test(_key)) {
+            try {
+                _value = (Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";")).call(this.list[_dindex]);
+            } catch (e) {
+
+            }
+        } else {
+            _value = this.list[_dindex][_key];
         }
+        return _value;
     };
 
     var clearSelect = function () {
@@ -247,7 +256,7 @@
     var select = function (_dindex, _selected) {
         var cfg = this.config;
 
-        if(this.list[_dindex].__isGrouping) return false;
+        if (this.list[_dindex].__isGrouping) return false;
 
         if (typeof _selected === "undefined") {
             if (this.list[_dindex][cfg.columnKeys.selected] = !this.list[_dindex][cfg.columnKeys.selected]) {
@@ -302,18 +311,18 @@
     };
 
     GRID.data = {
-        init: init,
-        set: set,
-        get: get,
-        setValue: setValue,
-        getValue: getValue,
-        clearSelect: clearSelect,
-        select: select,
-        add: add,
-        remove: remove,
-        update: update,
-        sort: sort,
-        initData: initData,
+        init             : init,
+        set              : set,
+        get              : get,
+        setValue         : setValue,
+        getValue         : getValue,
+        clearSelect      : clearSelect,
+        select           : select,
+        add              : add,
+        remove           : remove,
+        update           : update,
+        sort             : sort,
+        initData         : initData,
         clearGroupingData: clearGroupingData
     };
 

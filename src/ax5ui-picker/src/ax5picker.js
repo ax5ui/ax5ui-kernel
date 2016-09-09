@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "0.7.11"
+        version  : "0.7.12"
     }, (function () {
         /**
          * @class ax5picker
@@ -25,12 +25,12 @@
             this.instanceId = ax5.getGuid();
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
-                theme: 'default',
-                title: '',
-                lang: {
+                theme         : 'default',
+                title         : '',
+                lang          : {
                     "ok": "ok", "cancel": "cancel"
                 },
-                animateTime: 250
+                animateTime   : 250
             };
             this.queue = [];
             this.activePicker = null;
@@ -62,7 +62,7 @@
                     };
 
                     var pickerType = {
-                        '@fn': function (queIdx, _input) {
+                        '@fn'       : function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 config = {},
                                 inputLength = _input.length;
@@ -82,7 +82,7 @@
                             config = null;
                             inputLength = null;
                         },
-                        'date': function (queIdx, _input) {
+                        'date'      : function (queIdx, _input) {
                             // 1. 이벤트 바인딩
                             // 2. ui 준비
 
@@ -94,11 +94,11 @@
 
                             config = {
                                 contentWidth: (contentWidth * inputLength) + ((inputLength - 1) * contentMargin),
-                                content: {
-                                    width: contentWidth,
+                                content     : {
+                                    width : contentWidth,
                                     margin: contentMargin
                                 },
-                                inputLength: inputLength || 1
+                                inputLength : inputLength || 1
                             };
 
                             if (inputLength > 1 && !item.btns) {
@@ -128,7 +128,7 @@
                             config = null;
                             inputLength = null;
                         },
-                        'keyboard': function (queIdx, _input) {
+                        'keyboard'  : function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 config = {},
                                 inputLength = _input.length;
@@ -142,7 +142,7 @@
                             config = null;
                             inputLength = null;
                         },
-                        'numpad': function (queIdx, _input) {
+                        'numpad'    : function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 config = {},
                                 inputLength = _input.length;
@@ -229,82 +229,88 @@
                 alignPicker = function (append) {
                     if (!this.activePicker) return this;
 
-                    var
-                        $window = jQuery(window), $body = jQuery(document.body),
-                        item = this.queue[this.activePickerQueueIndex],
-                        pos = {}, positionMargin = 12,
-                        dim = {}, pickerDim = {},
-                        pickerDirection;
+                    var _alignPicker = function (item) {
+                        var $window = jQuery(window), $body = jQuery(document.body);
+                        var pos = {}, positionMargin = 12,
+                            dim = {}, pickerDim = {},
+                            pickerDirection;
+
+                        pos = item.$target.offset();
+                        dim = {
+                            width : item.$target.outerWidth(),
+                            height: item.$target.outerHeight()
+                        };
+                        pickerDim = {
+                            winWidth : Math.max($window.width(), $body.width()),
+                            winHeight: Math.max($window.height(), $body.height()),
+                            width    : this.activePicker.outerWidth(),
+                            height   : this.activePicker.outerHeight()
+                        };
+
+                        // picker css(width, left, top) & direction 결정
+                        if (!item.direction || item.direction === "" || item.direction === "auto") {
+                            // set direction
+                            pickerDirection = "top";
+                            if (pos.top - pickerDim.height - positionMargin < 0) {
+                                pickerDirection = "top";
+                            } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                                pickerDirection = "bottom";
+                            }
+                        } else {
+                            pickerDirection = item.direction;
+                        }
+
+                        if (append) {
+                            this.activePicker
+                                .addClass("direction-" + pickerDirection);
+                        }
+
+                        var positionCSS = (function () {
+                            var css = {left: 0, top: 0};
+                            switch (pickerDirection) {
+                                case "top":
+                                    css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
+                                    css.top = pos.top + dim.height + positionMargin;
+                                    break;
+                                case "bottom":
+                                    css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
+                                    css.top = pos.top - pickerDim.height - positionMargin;
+                                    break;
+                                case "left":
+                                    css.left = pos.left + dim.width + positionMargin;
+                                    css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
+                                    break;
+                                case "right":
+                                    css.left = pos.left - pickerDim.width - positionMargin;
+                                    css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
+                                    break;
+                            }
+                            return css;
+                        })();
+
+                        (function () {
+                            if (pickerDirection == "top" || pickerDirection == "bottom") {
+                                if (positionCSS.left < 0) {
+                                    positionCSS.left = positionMargin;
+                                    this.activePickerArrow.css({left: (pos.left + dim.width / 2) - positionCSS.left});
+                                } else if (positionCSS.left + pickerDim.width > pickerDim.winWidth) {
+                                    positionCSS.left = pickerDim.winWidth - pickerDim.width - positionMargin;
+                                    this.activePickerArrow.css({left: (pos.left + dim.width / 2) - positionCSS.left});
+                                }
+                            }
+                        }).call(this);
+
+                        this.activePicker
+                            .css(positionCSS);
+                    };
+
+                    var item = this.queue[this.activePickerQueueIndex];
 
                     if (append) jQuery(document.body).append(this.activePicker);
+                    setTimeout((function(){
+                        _alignPicker.call(this, item);
+                    }).bind(this));
 
-                    pos = item.$target.offset();
-                    dim = {
-                        width: item.$target.outerWidth(),
-                        height: item.$target.outerHeight()
-                    };
-                    pickerDim = {
-                        winWidth: Math.max($window.width(), $body.width()),
-                        winHeight: Math.max($window.height(), $body.height()),
-                        width: this.activePicker.outerWidth(),
-                        height: this.activePicker.outerHeight()
-                    };
-
-                    // picker css(width, left, top) & direction 결정
-                    if (!item.direction || item.direction === "" || item.direction === "auto") {
-                        // set direction
-                        pickerDirection = "top";
-                        if (pos.top - pickerDim.height - positionMargin < 0) {
-                            pickerDirection = "top";
-                        } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
-                            pickerDirection = "bottom";
-                        }
-                    } else {
-                        pickerDirection = item.direction;
-                    }
-
-                    if (append) {
-                        this.activePicker
-                            .addClass("direction-" + pickerDirection);
-                    }
-
-                    var positionCSS = (function () {
-                        var css = {left: 0, top: 0};
-                        switch (pickerDirection) {
-                            case "top":
-                                css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
-                                css.top = pos.top + dim.height + positionMargin;
-                                break;
-                            case "bottom":
-                                css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
-                                css.top = pos.top - pickerDim.height - positionMargin;
-                                break;
-                            case "left":
-                                css.left = pos.left + dim.width + positionMargin;
-                                css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
-                                break;
-                            case "right":
-                                css.left = pos.left - pickerDim.width - positionMargin;
-                                css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
-                                break;
-                        }
-                        return css;
-                    })();
-
-                    (function () {
-                        if (pickerDirection == "top" || pickerDirection == "bottom") {
-                            if (positionCSS.left < 0) {
-                                positionCSS.left = positionMargin;
-                                this.activePickerArrow.css({left: (pos.left + dim.width / 2) - positionCSS.left});
-                            } else if (positionCSS.left + pickerDim.width > pickerDim.winWidth) {
-                                positionCSS.left = pickerDim.winWidth - pickerDim.width - positionMargin;
-                                this.activePickerArrow.css({left: (pos.left + dim.width / 2) - positionCSS.left});
-                            }
-                        }
-                    }).call(this);
-
-                    this.activePicker
-                        .css(positionCSS);
                 },
                 onBodyClick = function (e, target) {
                     if (!this.activePicker) return this;
@@ -347,10 +353,10 @@
 
                         if (item.btns && item.btns[k].onClick) {
                             let that = {
-                                key: k,
+                                key  : k,
                                 value: item.btns[k],
-                                self: this,
-                                item: item
+                                self : this,
+                                item : item
                             };
                             item.btns[k].onClick.call(that, k);
                         }
@@ -451,9 +457,9 @@
                     _input.val(val);
 
                     onStateChanged.call(this, item, {
-                        self: self,
+                        self : self,
                         state: "changeValue",
-                        item: item,
+                        item : item,
                         value: val
                     });
 
@@ -477,14 +483,14 @@
             this.open = (function () {
 
                 var pickerContent = {
-                    '@fn': function (queIdx, callBack) {
+                    '@fn'       : function (queIdx, callBack) {
                         var item = this.queue[queIdx];
                         item.content.call(item, function (html) {
                             callBack(html);
                         });
                         return true;
                     },
-                    'date': function (queIdx) {
+                    'date'      : function (queIdx) {
                         var item = this.queue[queIdx];
                         var html = [];
                         for (var i = 0; i < item.inputLength; i++) {
@@ -499,11 +505,11 @@
 
                         var calendarConfig = {
                             displayDate: (new Date()),
-                            control: {
-                                left: ax5.def.picker.date_leftArrow || '&#x02190',
-                                yearTmpl: ax5.def.picker.date_yearTmpl || '%s',
+                            control    : {
+                                left     : ax5.def.picker.date_leftArrow || '&#x02190',
+                                yearTmpl : ax5.def.picker.date_yearTmpl || '%s',
                                 monthTmpl: ax5.def.picker.date_monthTmpl || '%s',
-                                right: ax5.def.picker.date_rightArrow || '&#x02192',
+                                right    : ax5.def.picker.date_rightArrow || '&#x02192',
                                 yearFirst: true
                             }
                         };
@@ -595,15 +601,15 @@
                                 }
 
                                 onStateChanged.call(this, item, {
-                                    self: self,
+                                    self : self,
                                     state: "changeValue",
-                                    item: item,
+                                    item : item,
                                     value: _input.val()
                                 });
                             });
                         });
                     },
-                    'keyboard': function (queIdx) {
+                    'keyboard'  : function (queIdx) {
                         var item = this.queue[queIdx];
                         var html = [];
                         for (var i = 0; i < item.inputLength; i++) {
@@ -747,15 +753,15 @@
                                 }
 
                                 onStateChanged.call(this, item, {
-                                    self: self,
+                                    self : self,
                                     state: "changeValue",
-                                    item: item,
+                                    item : item,
                                     value: _input.val()
                                 });
                             });
                         });
                     },
-                    'numpad': function (queIdx) {
+                    'numpad'    : function (queIdx) {
                         var item = this.queue[queIdx];
                         var html = [];
                         for (var i = 0; i < item.inputLength; i++) {
@@ -845,9 +851,9 @@
                                 }
 
                                 onStateChanged.call(this, item, {
-                                    self: self,
+                                    self : self,
                                     state: state,
-                                    item: item,
+                                    item : item,
                                     value: _input.val()
                                 });
                             });
@@ -899,7 +905,9 @@
                         onBtnClick.call(this, e || window.event, queIdx);
                     }).bind(this));
 
+
                     alignPicker.call(this, "append");
+
                     jQuery(window).bind("resize.ax5picker", (function () {
                         alignPicker.call(this);
                     }).bind(this));
@@ -918,9 +926,9 @@
                     }).bind(this));
 
                     onStateChanged.call(this, item, {
-                        self: this,
+                        self : this,
                         state: "open",
-                        item: item
+                        item : item
                     });
 
                     return this;
@@ -948,7 +956,7 @@
                     this.activePickerQueueIndex = -1;
 
                     onStateChanged.call(this, item, {
-                        self: this,
+                        self : this,
                         state: state || "close"
                     });
 

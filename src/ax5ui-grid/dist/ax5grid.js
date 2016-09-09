@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.9"
+        version: "0.2.10"
     }, function () {
         /**
          * @class ax5grid
@@ -2596,18 +2596,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var setValue = function setValue(_dindex, _key, _value) {
         this.needToPaintSum = true;
         if (/[\.\[\]]/.test(_key)) {
-            Function("val", "this[" + GRID.util.getRealPathForDataItem(_key) + "] = val;").call(this.list[_dindex], _value);
+            try {
+                Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;").call(this.list[_dindex], _value);
+            } catch (e) {}
         } else {
             this.list[_dindex][_key] = _value;
         }
         return _value;
     };
-    var getValue = function getValue(_dindex, _key) {
+    var getValue = function getValue(_dindex, _key, _value) {
         if (/[\.\[\]]/.test(_key)) {
-            return Function("", "return this[" + GRID.util.getRealPathForDataItem(_key) + "];").call(this.list[_dindex]);
+            try {
+                _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(this.list[_dindex]);
+            } catch (e) {}
         } else {
-            return this.list[_dindex][_key];
+            _value = this.list[_dindex][_key];
         }
+        return _value;
     };
 
     var clearSelect = function clearSelect() {
@@ -4130,10 +4135,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var path = [];
         var _path = [].concat(_dataPath.split(/[\.\[\]]/g));
         _path.forEach(function (n) {
-            if (n !== "") path.push(n);
+            if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
         });
         _path = null;
-        return "'" + path.join("']['") + "'";
+        return path.join("");
     };
 
     GRID.util = {

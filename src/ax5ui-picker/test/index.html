@@ -28,7 +28,7 @@
 
 <input type="text" class="form-control" data-picker-date="" placeholder="yyyy/mm/dd"/>
 
-<div class="form-group" data-ax5picker="date">
+<div class="form-group" data-ax5picker="date" style="position:absolute;bottom: 100px;left: 0;">
     <div class="input-group">
         <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
         <span class="input-group-addon">~</span>
@@ -176,7 +176,6 @@
                 picker.bind({
                     id: "my-picker-" + idx,
                     target: this,
-                    direction: "top",
                     content: {
                         width: 270,
                         margin: 10,

@@ -30,9 +30,9 @@
     </h3>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">Name</label>
+        <label class="col-sm-2 control-label">Name *</label>
         <div class="col-sm-10">
-            <input type="text" name="input-text" data-ax-path="name" data-ax-validate="required" class="form-control"/>
+            <input type="text" name="input-text" data-ax-path="name" title="Name" data-ax-validate="required" class="form-control"/>
         </div>
     </div>
     <div class="form-group">
@@ -279,7 +279,7 @@
         pageStart: function () {
             this.form.init();
             $("#ax-btn-validate").click(function (){
-                fnObj.form.model.set("sex", "F");
+                // fnObj.form.model.set("sex", "F");
                 fnObj.form.validate();
             });
             $("#ax-btn-list-add").click(function () {
@@ -360,11 +360,13 @@
             validate: function () {
                 var rs = this.model.validate();
                 if(rs.error){
-                    alert("validate 실패");
+                    alert("validate 실패" + rs.error[0].jquery.attr("title"));
                     console.log(rs.error);
+
                     rs.error[0].jquery.focus();
                     return;
                 }
+                alert("ok");
             },
             print_json: function () {
                 var model = this.model.get();

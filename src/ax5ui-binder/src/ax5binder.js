@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "binder",
-        version  : "0.1.1"
+        version  : "0.2.0"
     }, (function () {
 
         /**
@@ -74,7 +74,15 @@
                 get_mix_path = function (dataPath, index, item_path) {
                     return dataPath + "[" + index + "]" + ((item_path == ".") ? "" : "." + item_path);
                 },
-                get_real_path = function (dataPath) {
+                get_real_path = function (_dataPath) {
+                    var path = [];
+                    var _path = [].concat(_dataPath.split(/[\.\[\]]/g));
+                    _path.forEach(function (n) {
+                        if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+                    });
+                    _path = null;
+                    return path.join("");
+                    /*
                     var path = [];
                     var _path = [].concat(dataPath.split(/[\.\[\]]/g));
 
@@ -83,6 +91,7 @@
                     });
                     _path = null;
                     return "'" + path.join("']['") + "'";
+                    */
                 };
 
             /**
@@ -124,7 +133,7 @@
             this.set = function (dataPath, value) {
                 var _this = this, obj_type, i, this_type;
 
-                (Function("val", "this[" + get_real_path(dataPath) + "] = val;")).call(this.model, value);
+                (Function("val", "this" + get_real_path(dataPath) + " = val;")).call(this.model, value);
                 obj_type = get_type(value);
 
                 if (obj_type == "object") {
@@ -163,7 +172,7 @@
                     return this.model;
                 }
                 else {
-                    return (Function("", "return this[" + get_real_path(dataPath) + "];")).call(this.model);
+                    return (Function("", "return this" + get_real_path(dataPath) + ";")).call(this.model);
                 }
             };
 
@@ -233,12 +242,12 @@
              * ```
              */
             this.add = function (dataPath, item) {
-                var list = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(this.model);
+                var list = (Function("", "return this" + get_real_path(dataPath) + ";")).call(this.model);
                 var tmpl = this.tmpl[dataPath];
                 item['@i'] = list.length;
                 item['@r'] = list.length;
                 item.__ADDED__ = true;
-                (Function("val", "this[" + get_real_path(dataPath) + "].push(val);")).call(this.model, item);
+                (Function("val", "this" + get_real_path(dataPath) + ".push(val);")).call(this.model, item);
 
                 // 다중 템플릿 처리
                 for (var t in tmpl) {
@@ -276,7 +285,7 @@
              * ```
              */
             this.remove = function (dataPath, index) {
-                var list = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(this.model);
+                var list = (Function("", "return this" + get_real_path(dataPath) + ";")).call(this.model);
                 var tmpl = this.tmpl[dataPath];
                 if (typeof index == "undefined") index = list.length - 1;
                 var remove_item = list[index];
@@ -320,7 +329,7 @@
              * ```
              */
             this.update = function (dataPath, index, item) {
-                var list = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(this.model);
+                var list = (Function("", "return this" + get_real_path(dataPath) + ";")).call(this.model);
                 var tmpl = this.tmpl[dataPath];
                 if (typeof index != "undefined" && item) list.splice(index, 1, item);
 
@@ -352,8 +361,8 @@
              * @param child_item
              */
             this.childAdd = function (dataPath, index, child_path, child_item) {
-                var _list = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(this.model);
-                var list = (Function("", "return this[" + get_real_path(dataPath) + "][" + index + "]." + child_path + ";")).call(this.model);
+                var _list = (Function("", "return this" + get_real_path(dataPath) + ";")).call(this.model);
+                var list = (Function("", "return this" + get_real_path(dataPath) + "[" + index + "]." + child_path + ";")).call(this.model);
                 child_item.__ADDED__ = true;
                 list.push(child_item);
                 this.update(dataPath, index, _list[index]);
@@ -367,8 +376,8 @@
              * @param child_index
              */
             this.childRemove = function (dataPath, index, child_path, child_index) {
-                var _list = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(this.model);
-                var list = (Function("", "return this[" + get_real_path(dataPath) + "][" + index + "]." + child_path + ";")).call(this.model);
+                var _list = (Function("", "return this" + get_real_path(dataPath) + ";")).call(this.model);
+                var list = (Function("", "return this" + get_real_path(dataPath) + "[" + index + "]." + child_path + ";")).call(this.model);
                 var remove_item = list[child_index];
                 if (remove_item.__ADDED__) {
                     list.splice(child_index, 1);
@@ -388,8 +397,8 @@
              * @param child_item
              */
             this.childUpdate = function (dataPath, index, child_path, child_index, child_item) {
-                var _list = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(this.model);
-                var list = (Function("", "return this[" + get_real_path(dataPath) + "][" + index + "]." + child_path + ";")).call(this.model);
+                var _list = (Function("", "return this" + get_real_path(dataPath) + ";")).call(this.model);
+                var list = (Function("", "return this" + get_real_path(dataPath) + "[" + index + "]." + child_path + ";")).call(this.model);
                 list[child_index] = child_item;
                 this.update(dataPath, index, _list[index]);
             };
@@ -404,7 +413,7 @@
              */
             this.childSet = function (dataPath, index, child_path, value) {
                 var _this = this, i;
-                (Function("val", "this[" + get_real_path(dataPath) + "][" + index + "]." + child_path + " = val;")).call(this.model, value);
+                (Function("val", "this" + get_real_path(dataPath) + "[" + index + "]." + child_path + " = val;")).call(this.model, value);
 
                 // apply data value to els
                 this.view_target.find('[data-ax-repeat="' + (dataPath) + '"]').find('[data-ax-repeat-i="' + index + '"]').find('[data-ax-item-path="' + child_path + '"]').each(function () {
@@ -443,7 +452,7 @@
 
                     var val;
                     try {
-                        val = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(_this.model);
+                        val = (Function("", "return this" + get_real_path(dataPath) + ";")).call(_this.model);
                     } catch (e) {
                         /**
                          * onerror를 선언 한 경우에만 에러 출력
@@ -491,7 +500,7 @@
                         new_value = [],
                         dom = $(e.target),
                         dataPath = dom.attr("data-ax-path"),
-                        origin_value = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(_this.model),
+                        origin_value = (Function("", "return this" + get_real_path(dataPath) + ";")).call(_this.model),
                         this_type = (this.type || "").toLowerCase(),
                         value_type = get_type(origin_value),
                         setAllow = true
@@ -537,14 +546,14 @@
                             origin_value = (this.checked) ? this.value : "";
                         }
 
-                        (Function("val", "this[" + get_real_path(dataPath) + "] = val;")).call(_this.model, origin_value);
+                        (Function("val", "this" + get_real_path(dataPath) + " = val;")).call(_this.model, origin_value);
                         _this.change(dataPath, {
                             el: this, jquery: dom, tagname: this.tagName.toLowerCase(), value: origin_value
                         });
                     }
                     else {
                         if (setAllow) {
-                            (Function("val", "this[" + get_real_path(dataPath) + "] = val;")).call(_this.model, this.value);
+                            (Function("val", "this" + get_real_path(dataPath) + " = val;")).call(_this.model, this.value);
                             _this.change(dataPath, {
                                 el: this, jquery: dom, tagname: this.tagName.toLowerCase(), value: this.value
                             });
@@ -624,10 +633,10 @@
                     if (!option_matched) {
                         if (options[0]) {
                             options[0].selected = true;
-                            (Function("val", "this[" + get_real_path(dataPath) + "] = val;")).call(this.model, options[0].value);
+                            (Function("val", "this" + get_real_path(dataPath) + " = val;")).call(this.model, options[0].value);
                         }
                         else {
-                            (Function("val", "this[" + get_real_path(dataPath) + "] = val;")).call(this.model, "");
+                            (Function("val", "this" + get_real_path(dataPath) + " = val;")).call(this.model, "");
                         }
                     }
 
@@ -675,7 +684,7 @@
             };
 
             this.print_tmpl = function (dataPath, tmpl, isInit) {
-                var list = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(this.model);
+                var list = (Function("", "return this" + get_real_path(dataPath) + ";")).call(this.model);
                 if (list && get_type(list) == "array") {
                     for (var i = 0, l = list.length; i < l; i++) {
                         var item = list[i];
@@ -706,7 +715,7 @@
 
             this.bind_event_tmpl = function (target, dataPath) {
                 var _this = this, index = target.attr("data-ax-repeat-i");
-                var list = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(this.model);
+                var list = (Function("", "return this" + get_real_path(dataPath) + ";")).call(this.model);
 
                 target.find('[data-ax-repeat-click]').unbind("click.axbinder").bind("click.axbinder", function (e) {
                     var target = ax5.util.findParentNode(e.target, function (el) {
@@ -860,7 +869,7 @@
                 this.view_target.find('[data-ax-path]').each(function () {
                     var dom = $(this), dataPath = dom.attr("data-ax-path"), is_validate = dom.attr("data-ax-validate");
                     if (is_validate) {
-                        var val = (Function("", "return this[" + get_real_path(dataPath) + "];")).call(_this.model);
+                        var val = (Function("", "return this" + get_real_path(dataPath) + ";")).call(_this.model);
                         if (typeof val === "undefined") val = "";
                         var _val = val.toString();
 
@@ -891,7 +900,7 @@
 
                     dom.find('[data-ax-validate]').each(function () {
                         var dom = $(this), is_validate = dom.attr("data-ax-validate"), item_path = dom.attr("data-ax-item-path");
-                        var val = (Function("", "return this[" + get_real_path(dataPath) + "][" + repeat_idx + "]." + item_path + ";")).call(_this.model);
+                        var val = (Function("", "return this" + get_real_path(dataPath) + "[" + repeat_idx + "]." + item_path + ";")).call(_this.model);
                         if (typeof val === "undefined") val = "";
                         var _val = val.toString();
 
