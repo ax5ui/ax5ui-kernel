@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "formatter",
-        version: "0.6.0"
+        version: "0.6.1"
     }, function () {
         var TODAY = new Date();
         var setSelectionRange = function setSelectionRange(input, pos) {
@@ -363,8 +363,8 @@ jQuery.fn.ax5formatter = function () {
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
         getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
-            var val = val.replace(/[^0-9^\.^\-]/g, ""),
-                regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
+            val = val.replace(/[^0-9^\.^\-]/g, "");
+            var regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
                 arrNumber = val.split('.'),
                 returnValue;
 
@@ -375,8 +375,8 @@ jQuery.fn.ax5formatter = function () {
             } while (regExpPattern.test(arrNumber[0]));
 
             if (arrNumber.length > 1) {
-                if (U.isNumber(opts.maxRound)) {
-                    returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
+                if (U.isNumber(_opts.maxRound)) {
+                    returnValue = arrNumber[0] + U.left(arrNumber[1], _opts.maxRound);
                 } else {
                     returnValue = arrNumber.join('');
                 }
@@ -401,8 +401,8 @@ jQuery.fn.ax5formatter = function () {
                 returnValue;
 
             if (arrNumber.length > 1) {
-                if (U.isNumber(opts.maxRound)) {
-                    returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
+                if (U.isNumber(_opts.maxRound)) {
+                    returnValue = arrNumber[0] + U.left(arrNumber[1], _opts.maxRound);
                 } else {
                     returnValue = arrNumber.join('');
                 }
@@ -421,12 +421,12 @@ jQuery.fn.ax5formatter = function () {
             };
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
-        getPatternValue: function getPatternValue(opts, optIdx, e, val, eType) {
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
             val = val.replace(/\D/g, "");
             if (val == "") return val;
             var regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
 
-            if (opts.patternArgument == "time") {
+            if (_opts.patternArgument == "time") {
                 regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})? ?([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
             }
 
@@ -468,7 +468,7 @@ jQuery.fn.ax5formatter = function () {
                 var nval = [inspectValue(arguments[1], "Y", eType)];
                 if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
                 if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
-                if (opts.patternArgument == "time") {
+                if (_opts.patternArgument == "time") {
                     if (arguments[4] || eType) nval.push(' ' + inspectValue(arguments[4], "h", eType));
                     if (arguments[5] || eType) nval.push(':' + inspectValue(arguments[5], "m", eType));
                     if (arguments[6] || eType) nval.push(':' + inspectValue(arguments[6], "s", eType));
@@ -481,7 +481,7 @@ jQuery.fn.ax5formatter = function () {
                     var nval = [inspectValue(returnValue, "Y", eType)];
                     nval.push('-' + inspectValue(0, "M", eType));
                     nval.push('-' + inspectValue(0, "D", eType, arguments));
-                    if (opts.patternArgument == "time") {
+                    if (_opts.patternArgument == "time") {
                         nval.push(' ' + inspectValue(0, "h", eType));
                         nval.push(':' + inspectValue(0, "m", eType));
                         nval.push(':' + inspectValue(0, "s", eType));
