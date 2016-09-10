@@ -32,7 +32,7 @@
                     "ok": "ok",
                     "cancel": "cancel"
                 },
-                animateTime: 250,
+                animateTime: 100,
                 calendar: {
                     control: {
                         left: ax5.def.picker.date_leftArrow || '&#x02190',
@@ -841,7 +841,7 @@
  * // picker 기본 속성을 변경해야 한다면
  * ax5.ui.picker_instance.setConfig({
  * });
- * 
+ *
  * ```
  */
 ax5.ui.picker_instance = new ax5.ui.picker();

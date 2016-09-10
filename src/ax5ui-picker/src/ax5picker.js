@@ -31,7 +31,7 @@
                     "ok"    : "ok",
                     "cancel": "cancel"
                 },
-                animateTime   : 250,
+                animateTime   : 100,
                 calendar: {
                     control: {
                         left     : ax5.def.picker.date_leftArrow || '&#x02190',

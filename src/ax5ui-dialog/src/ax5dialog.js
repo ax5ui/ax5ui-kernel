@@ -33,7 +33,7 @@
                 lang: {
                     "ok": "ok", "cancel": "cancel"
                 },
-                animateTime: 250
+                animateTime: 150
             };
             this.activeDialog = null;
             cfg = this.config;
