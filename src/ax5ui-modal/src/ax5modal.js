@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "modal",
-        version  : "0.7.7"
+        version  : "0.7.8"
     }, (function () {
         /**
          * @class ax5modal
@@ -88,7 +88,7 @@
                         
                             <div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">
                                 <table data-modal-els="iframe-loading" style="width:100%;height:100%;"><tr><td style="text-align: center;vertical-align: middle">{{{iframeLoadingMsg}}}</td></tr></table>
-                                <iframe name="{{modalId}}-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="display:none;position: absolute;left:0;top:0;"></iframe>
+                                <iframe name="{{modalId}}-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>
                             </div>
                             <form name="{{modalId}}-form" data-modal-els="iframe-form">
                             <input type="hidden" name="modalId" value="{{modalId}}" />
@@ -169,7 +169,6 @@
                             that.state = "load";
                             if (opts.iframeLoadingMsg) {
                                 this.$["iframe-loading"].hide();
-                                this.$["iframe"].show().addClass("fadeIn");
                             }
                             onStateChanged.call(this, opts, that);
                         }).bind(this));
