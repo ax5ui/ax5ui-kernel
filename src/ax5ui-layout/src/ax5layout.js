@@ -5,7 +5,7 @@
 
     UI.addClass({
         className: "layout",
-        version  : "0.2.8"
+        version  : "0.2.9"
     }, (function () {
         /**
          * @class ax5layout
@@ -550,7 +550,6 @@
                 },
                 tabControl = {
                     "open": function (queIdx, layout, panelIndex) {
-                        //console.log(panel);
                         if (layout.activePanelIndex != panelIndex) {
                             layout.tabPanel[panelIndex].active = true;
                             layout.tabPanel[layout.activePanelIndex].active = false;
@@ -710,9 +709,9 @@
 
                                 panelInfo.$target = jQuery(this);
 
-                                if (panelInfo.active) {
+                                if (panelInfo.active && panelInfo.active != "false") {
                                     hasActivePanel = true;
-                                    activePanelIndex = ELIndex;
+                                    item.activePanelIndex = ELIndex;
                                     panelInfo.$target.attr("data-tab-active", "true");
                                 }
 
