@@ -4,10 +4,11 @@
 (function () {
     var UI = ax5.ui;
     var U = ax5.util;
+    var FORMATTER;
 
     UI.addClass({
         className: "formatter",
-        version: "0.5.5"
+        version: "0.6.0"
     }, function () {
         var TODAY = new Date();
         var setSelectionRange = function setSelectionRange(input, pos) {
@@ -54,271 +55,7 @@
 
             cfg = this.config;
 
-            var ctrlKeys = {
-                "18": "KEY_ALT",
-                "8": "KEY_BACKSPACE",
-                "17": "KEY_CONTROL",
-                "46": "KEY_DELETE",
-                "40": "KEY_DOWN",
-                "35": "KEY_END",
-                "187": "KEY_EQUAL",
-                "27": "KEY_ESC",
-                "36": "KEY_HOME",
-                "45": "KEY_INSERT",
-                "37": "KEY_LEFT",
-                "189": "KEY_MINUS",
-                "34": "KEY_PAGEDOWN",
-                "33": "KEY_PAGEUP",
-                // "190": "KEY_PERIOD",
-                "13": "KEY_RETURN",
-                "39": "KEY_RIGHT",
-                "16": "KEY_SHIFT",
-                // "32": "KEY_SPACE",
-                "9": "KEY_TAB",
-                "38": "KEY_UP",
-                "91": "KEY_WINDOW"
-                //"107" : "NUMPAD_ADD",
-                //"194" : "NUMPAD_COMMA",
-                //"110" : "NUMPAD_DECIMAL",
-                //"111" : "NUMPAD_DIVIDE",
-                //"12" : "NUMPAD_EQUAL",
-                //"106" : "NUMPAD_MULTIPLY",
-                //"109" : "NUMPAD_SUBTRACT"
-            },
-                numKeys = {
-                '48': 1, '49': 1, '50': 1, '51': 1, '52': 1, '53': 1, '54': 1, '55': 1, '56': 1, '57': 1,
-                '96': 1, '97': 1, '98': 1, '99': 1, '100': 1, '101': 1, '102': 1, '103': 1, '104': 1, '105': 1
-            },
-                setEnterableKeyCodes = {
-                "money": function money(opts, optIdx) {
-                    var enterableKeyCodes = {
-                        '188': ','
-                    };
-
-                    if (opts.patternArgument == "int") {
-                        // 소수점 입력 안됨
-                    } else {
-                            enterableKeyCodes['190'] = "."; // 소수점 입력 허용
-                        }
-
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
-                },
-                "number": function number(opts, optIdx) {
-                    var enterableKeyCodes = {
-                        '190': '.'
-                    };
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
-                },
-                "date": function date(opts, optIdx) {
-                    var enterableKeyCodes = {
-                        '189': '-', '191': '/'
-                    };
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
-                },
-                "time": function time(opts, optIdx) {
-                    var enterableKeyCodes = {
-                        '186': ':'
-                    };
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
-                },
-                "bizno": function bizno(opts, optIdx) {
-                    var enterableKeyCodes = {
-                        '189': '-'
-                    };
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
-                },
-                "phone": function phone(opts, optIdx) {
-                    var enterableKeyCodes = {
-                        '189': '-', '188': ','
-                    };
-                    opts.enterableKeyCodes = $.extend(enterableKeyCodes, ctrlKeys, numKeys);
-                },
-                "custom": function custom(opts, optIdx) {
-                    if (opts.getEnterableKeyCodes) {
-                        opts.enterableKeyCodes = opts.getEnterableKeyCodes.call(opts, { $input: opts.$input });
-                    } else {
-                        opts.enterableKeyCodes = null;
-                    }
-                }
-            },
-                getPatternValue = {
-                "money": function money(opts, optIdx, e, val, eType) {
-                    var val = val.replace(/[^0-9^\.^\-]/g, ""),
-                        regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
-                        arrNumber = val.split('.'),
-                        returnValue;
-
-                    arrNumber[0] += '.';
-
-                    do {
-                        arrNumber[0] = arrNumber[0].replace(regExpPattern, '$1,$2');
-                    } while (regExpPattern.test(arrNumber[0]));
-
-                    if (arrNumber.length > 1) {
-                        if (U.isNumber(opts.maxRound)) {
-                            returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
-                        } else {
-                            returnValue = arrNumber.join('');
-                        }
-                    } else {
-                        returnValue = arrNumber[0].split('.')[0];
-                    }
-
-                    return returnValue;
-                },
-                "number": function number(opts, optIdx, e, val, eType) {
-                    val = val.replace(/[^0-9^\.^\-]/g, "");
-                    var arrNumber = val.split('.'),
-                        returnValue;
-
-                    if (arrNumber.length > 1) {
-                        if (U.isNumber(opts.maxRound)) {
-                            returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
-                        } else {
-                            returnValue = arrNumber.join('');
-                        }
-                    } else {
-                        returnValue = arrNumber[0].split('.')[0];
-                    }
-
-                    return returnValue;
-                },
-                "date": function date(opts, optIdx, e, val, eType) {
-                    val = val.replace(/\D/g, "");
-                    if (val == "") return val;
-                    var regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
-
-                    if (opts.patternArgument == "time") {
-                        regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})? ?([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
-                    }
-
-                    var matchedPattern = val.match(regExpPattern),
-                        returnValue = "",
-                        inspectValue = function inspectValue(val, format, inspect, data) {
-                        var _val = {
-                            'Y': function Y(v) {
-                                if (typeof v == "undefined") v = TODAY.getFullYear();
-                                if (v == '' || v == '0000') v = TODAY.getFullYear();
-                                return v.length < 4 ? U.setDigit(v, 4) : v;
-                            },
-                            'M': function M(v) {
-                                if (typeof v == "undefined") v = TODAY.getMonth() + 1;
-                                return v > 12 ? 12 : v == 0 ? '01' : U.setDigit(v, 2);
-                            },
-                            'D': function D(v) {
-                                if (typeof v == "undefined") v = TODAY.getDate() + 1;
-                                var dLen = U.daysOfMonth(data[1], data[2] - 1);
-                                return v > dLen ? dLen : v == 0 ? '01' : U.setDigit(v, 2);
-                            },
-                            'h': function h(v) {
-                                if (!v) v = 0;
-                                return v > 23 ? 23 : U.setDigit(v, 2);
-                            },
-                            'm': function m(v) {
-                                if (!v) v = 0;
-                                return v > 59 ? 59 : U.setDigit(v, 2);
-                            },
-                            's': function s(v) {
-                                if (!v) v = 0;
-                                return v > 59 ? 59 : U.setDigit(v, 2);
-                            }
-                        };
-                        return inspect ? _val[format](val) : val;
-                    };
-
-                    returnValue = val.replace(regExpPattern, function (a, b) {
-                        var nval = [inspectValue(arguments[1], "Y", eType)];
-                        if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
-                        if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
-                        if (opts.patternArgument == "time") {
-                            if (arguments[4] || eType) nval.push(' ' + inspectValue(arguments[4], "h", eType));
-                            if (arguments[5] || eType) nval.push(':' + inspectValue(arguments[5], "m", eType));
-                            if (arguments[6] || eType) nval.push(':' + inspectValue(arguments[6], "s", eType));
-                        }
-                        return nval.join('');
-                    });
-
-                    if (eType == 'blur' && !matchedPattern) {
-                        returnValue = function () {
-                            var nval = [inspectValue(returnValue, "Y", eType)];
-                            nval.push('-' + inspectValue(0, "M", eType));
-                            nval.push('-' + inspectValue(0, "D", eType, arguments));
-                            if (opts.patternArgument == "time") {
-                                nval.push(' ' + inspectValue(0, "h", eType));
-                                nval.push(':' + inspectValue(0, "m", eType));
-                                nval.push(':' + inspectValue(0, "s", eType));
-                            }
-                            return nval.join('');
-                        }();
-                    } else if (!matchedPattern) returnValue = returnValue.length > 4 ? U.left(returnValue, 4) : returnValue;
-
-                    return returnValue;
-                },
-                "time": function time(opts, optIdx, e, val, eType) {
-                    val = val.replace(/\D/g, "");
-                    var regExpPattern = /^([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
-
-                    var matchedPattern = val.match(regExpPattern),
-                        returnValue = val.replace(regExpPattern, function (a, b) {
-                        var nval = [arguments[1]];
-                        if (arguments[2]) nval.push(':' + arguments[2]);
-                        if (arguments[3]) nval.push(':' + arguments[3]);
-                        return nval.join('');
-                    });
-
-                    if (!matchedPattern) returnValue = returnValue.length > 2 ? U.left(returnValue, 2) : returnValue;
-
-                    return returnValue;
-                },
-                "bizno": function bizno(opts, optIdx, e, val, eType) {
-                    val = val.replace(/\D/g, "");
-                    var regExpPattern = /^([0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,5})?.*$/,
-                        returnValue = val.replace(regExpPattern, function (a, b) {
-                        var nval = [arguments[1]];
-                        if (arguments[2]) nval.push(arguments[2]);
-                        if (arguments[3]) nval.push(arguments[3]);
-                        return nval.join("-");
-                    });
-
-                    return returnValue;
-                },
-                "phone": function phone(opts, optIdx, e, val, eType) {
-                    val = val.replace(/\D/g, "");
-                    var regExpPattern3 = /^([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
-                    if (val.substr(0, 2) == "02") {
-                        regExpPattern3 = /^([0-9]{2})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
-                    }
-
-                    var returnValue = val.replace(regExpPattern3, function (a, b) {
-                        var nval = [arguments[1]];
-                        if (arguments[2]) nval.push(arguments[2]);
-                        if (arguments[3]) nval.push(arguments[3]);
-                        if (arguments[4]) nval.push(arguments[4]);
-                        if (arguments[5]) nval.push(arguments[5]);
-                        return nval.join("-");
-                    });
-                    return returnValue;
-                },
-                "custom": function custom(opts, optIdx, e, val, eType) {
-                    if (opts.getPatternValue) {
-                        return opts.getPatternValue.call(opts, { event: e, $input: opts.$input, value: val });
-                    }
-                },
-                "credit": function credit(opts, optIdx, e, val, eType) {
-                    val = val.replace(/\D/g, "").substring(0, 16);
-
-                    var regExpPattern3 = /^([0-9]{4})\-?([0-9]{4})?\-?([0-9]{4})?\-?([0-9]{4})?/,
-                        returnValue = val.replace(regExpPattern3, function (a, b) {
-                        var nval = [arguments[1]];
-                        if (arguments[2]) nval.push(arguments[2]);
-                        if (arguments[3]) nval.push(arguments[3]);
-                        if (arguments[4]) nval.push(arguments[4]);
-                        return nval.join("-");
-                    });
-                    return returnValue;
-                }
-            },
-                formatterEvent = {
+            var formatterEvent = {
                 'focus': function focus(opts, optIdx, e) {
                     if (!opts.$input.data("__originValue__")) opts.$input.data("__originValue__", opts.$input.val());
                 },
@@ -353,7 +90,11 @@
                     }
 
                     beforeValue = elem.value;
-                    newValue = getPatternValue[opts.pattern] ? getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value) : beforeValue;
+                    if (opts.pattern in FORMATTER.formatter) {
+                        newValue = FORMATTER.formatter[opts.pattern].getPatternValue.call(this, opts, optIdx, e, elem.value);
+                    } else {
+                        newValue = beforeValue;
+                    }
 
                     if (newValue != beforeValue) {
                         opts.$input.val(newValue).trigger("change");
@@ -368,7 +109,11 @@
                     opts.$input.removeData("__originValue__");
 
                     beforeValue = elem.value;
-                    newValue = getPatternValue[opts.pattern] ? getPatternValue[opts.pattern].call(this, opts, optIdx, e, elem.value, 'blur') : beforeValue;
+                    if (opts.pattern in FORMATTER.formatter) {
+                        newValue = FORMATTER.formatter[opts.pattern].getPatternValue.call(this, opts, optIdx, e, elem.value, 'blur');
+                    } else {
+                        newValue = beforeValue;
+                    }
 
                     if (_force) {
                         opts.$input.val(newValue);
@@ -401,12 +146,10 @@
                 opts.patternArgument = matched[1] || "";
 
                 // 함수타입
-                for (var key in setEnterableKeyCodes) {
-                    if (opts.pattern == key) {
-                        setEnterableKeyCodes[key].call(this, opts, optIdx);
-                        break;
-                    }
+                if (opts.pattern in FORMATTER.formatter) {
+                    opts.enterableKeyCodes = FORMATTER.formatter[opts.pattern].getEnterableKeyCodes.call(this, opts, optIdx);
                 }
+
                 opts.$input.unbind('focus.ax5formatter').bind('focus.ax5formatter', formatterEvent.focus.bind(this, this.queue[optIdx], optIdx));
 
                 opts.$input.unbind('keydown.ax5formatter').bind('keydown.ax5formatter', formatterEvent.keydown.bind(this, this.queue[optIdx], optIdx));
@@ -517,7 +260,9 @@
                 return this;
             };
 
-            this.unbind = function () {};
+            this.unbind = function () {
+                // 구현해야함.
+            };
 
             // 클래스 생성자
             this.main = function () {
@@ -528,11 +273,13 @@
         };
         return ax5formatter;
     }());
+
+    FORMATTER = ax5.ui.formatter;
 })();
 
 ax5.ui.formatter_instance = new ax5.ui.formatter();
 
-$.fn.ax5formatter = function () {
+jQuery.fn.ax5formatter = function () {
     return function (config) {
         if (ax5.util.isString(arguments[0])) {
             var methodName = arguments[0];
@@ -562,3 +309,310 @@ $.fn.ax5formatter = function () {
         return this;
     };
 }();
+
+// ax5.ui.formatter.formatter
+(function () {
+
+    var FORMATTER = ax5.ui.formatter;
+    var U = ax5.util;
+    var ctrlKeys = {
+        "18": "KEY_ALT",
+        "8": "KEY_BACKSPACE",
+        "17": "KEY_CONTROL",
+        "46": "KEY_DELETE",
+        "40": "KEY_DOWN",
+        "35": "KEY_END",
+        "187": "KEY_EQUAL",
+        "27": "KEY_ESC",
+        "36": "KEY_HOME",
+        "45": "KEY_INSERT",
+        "37": "KEY_LEFT",
+        "189": "KEY_MINUS",
+        "34": "KEY_PAGEDOWN",
+        "33": "KEY_PAGEUP",
+        // "190": "KEY_PERIOD",
+        "13": "KEY_RETURN",
+        "39": "KEY_RIGHT",
+        "16": "KEY_SHIFT",
+        // "32": "KEY_SPACE",
+        "9": "KEY_TAB",
+        "38": "KEY_UP",
+        "91": "KEY_WINDOW"
+        //"107" : "NUMPAD_ADD",
+        //"194" : "NUMPAD_COMMA",
+        //"110" : "NUMPAD_DECIMAL",
+        //"111" : "NUMPAD_DIVIDE",
+        //"12" : "NUMPAD_EQUAL",
+        //"106" : "NUMPAD_MULTIPLY",
+        //"109" : "NUMPAD_SUBTRACT"
+    };
+    var numKeys = {
+        '48': 1, '49': 1, '50': 1, '51': 1, '52': 1, '53': 1, '54': 1, '55': 1, '56': 1, '57': 1,
+        '96': 1, '97': 1, '98': 1, '99': 1, '100': 1, '101': 1, '102': 1, '103': 1, '104': 1, '105': 1
+    };
+    var pattern_money = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '188': ','
+            };
+            if (_opts.patternArgument == "int") {
+                // 소수점 입력 안됨
+            } else {
+                    enterableKeyCodes['190'] = "."; // 소수점 입력 허용
+                }
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            var val = val.replace(/[^0-9^\.^\-]/g, ""),
+                regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
+                arrNumber = val.split('.'),
+                returnValue;
+
+            arrNumber[0] += '.';
+
+            do {
+                arrNumber[0] = arrNumber[0].replace(regExpPattern, '$1,$2');
+            } while (regExpPattern.test(arrNumber[0]));
+
+            if (arrNumber.length > 1) {
+                if (U.isNumber(opts.maxRound)) {
+                    returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
+                } else {
+                    returnValue = arrNumber.join('');
+                }
+            } else {
+                returnValue = arrNumber[0].split('.')[0];
+            }
+
+            return returnValue;
+        }
+    };
+
+    var pattern_number = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '190': '.'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/[^0-9^\.^\-]/g, "");
+            var arrNumber = val.split('.'),
+                returnValue;
+
+            if (arrNumber.length > 1) {
+                if (U.isNumber(opts.maxRound)) {
+                    returnValue = arrNumber[0] + U.left(arrNumber[1], opts.maxRound);
+                } else {
+                    returnValue = arrNumber.join('');
+                }
+            } else {
+                returnValue = arrNumber[0].split('.')[0];
+            }
+
+            return returnValue;
+        }
+    };
+
+    var pattern_date = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '189': '-', '191': '/'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "");
+            if (val == "") return val;
+            var regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
+
+            if (opts.patternArgument == "time") {
+                regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})? ?([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
+            }
+
+            var matchedPattern = val.match(regExpPattern),
+                returnValue = "",
+                inspectValue = function inspectValue(val, format, inspect, data) {
+                var _val = {
+                    'Y': function Y(v) {
+                        if (typeof v == "undefined") v = TODAY.getFullYear();
+                        if (v == '' || v == '0000') v = TODAY.getFullYear();
+                        return v.length < 4 ? U.setDigit(v, 4) : v;
+                    },
+                    'M': function M(v) {
+                        if (typeof v == "undefined") v = TODAY.getMonth() + 1;
+                        return v > 12 ? 12 : v == 0 ? '01' : U.setDigit(v, 2);
+                    },
+                    'D': function D(v) {
+                        if (typeof v == "undefined") v = TODAY.getDate() + 1;
+                        var dLen = U.daysOfMonth(data[1], data[2] - 1);
+                        return v > dLen ? dLen : v == 0 ? '01' : U.setDigit(v, 2);
+                    },
+                    'h': function h(v) {
+                        if (!v) v = 0;
+                        return v > 23 ? 23 : U.setDigit(v, 2);
+                    },
+                    'm': function m(v) {
+                        if (!v) v = 0;
+                        return v > 59 ? 59 : U.setDigit(v, 2);
+                    },
+                    's': function s(v) {
+                        if (!v) v = 0;
+                        return v > 59 ? 59 : U.setDigit(v, 2);
+                    }
+                };
+                return inspect ? _val[format](val) : val;
+            };
+
+            returnValue = val.replace(regExpPattern, function (a, b) {
+                var nval = [inspectValue(arguments[1], "Y", eType)];
+                if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
+                if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
+                if (opts.patternArgument == "time") {
+                    if (arguments[4] || eType) nval.push(' ' + inspectValue(arguments[4], "h", eType));
+                    if (arguments[5] || eType) nval.push(':' + inspectValue(arguments[5], "m", eType));
+                    if (arguments[6] || eType) nval.push(':' + inspectValue(arguments[6], "s", eType));
+                }
+                return nval.join('');
+            });
+
+            if (eType == 'blur' && !matchedPattern) {
+                returnValue = function () {
+                    var nval = [inspectValue(returnValue, "Y", eType)];
+                    nval.push('-' + inspectValue(0, "M", eType));
+                    nval.push('-' + inspectValue(0, "D", eType, arguments));
+                    if (opts.patternArgument == "time") {
+                        nval.push(' ' + inspectValue(0, "h", eType));
+                        nval.push(':' + inspectValue(0, "m", eType));
+                        nval.push(':' + inspectValue(0, "s", eType));
+                    }
+                    return nval.join('');
+                }();
+            } else if (!matchedPattern) returnValue = returnValue.length > 4 ? U.left(returnValue, 4) : returnValue;
+
+            return returnValue;
+        }
+    };
+
+    var pattern_time = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '186': ':'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "");
+            var regExpPattern = /^([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
+
+            var matchedPattern = val.match(regExpPattern),
+                returnValue = val.replace(regExpPattern, function (a, b) {
+                var nval = [arguments[1]];
+                if (arguments[2]) nval.push(':' + arguments[2]);
+                if (arguments[3]) nval.push(':' + arguments[3]);
+                return nval.join('');
+            });
+
+            if (!matchedPattern) returnValue = returnValue.length > 2 ? U.left(returnValue, 2) : returnValue;
+
+            return returnValue;
+        }
+    };
+
+    var pattern_bizno = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '189': '-'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "");
+            var regExpPattern = /^([0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,5})?.*$/,
+                returnValue = val.replace(regExpPattern, function (a, b) {
+                var nval = [arguments[1]];
+                if (arguments[2]) nval.push(arguments[2]);
+                if (arguments[3]) nval.push(arguments[3]);
+                return nval.join("-");
+            });
+
+            return returnValue;
+        }
+    };
+
+    var pattern_phone = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '189': '-', '188': ','
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "");
+            var regExpPattern3 = /^([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
+            if (val.substr(0, 2) == "02") {
+                regExpPattern3 = /^([0-9]{2})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
+            }
+
+            var returnValue = val.replace(regExpPattern3, function (a, b) {
+                var nval = [arguments[1]];
+                if (arguments[2]) nval.push(arguments[2]);
+                if (arguments[3]) nval.push(arguments[3]);
+                if (arguments[4]) nval.push(arguments[4]);
+                if (arguments[5]) nval.push(arguments[5]);
+                return nval.join("-");
+            });
+            return returnValue;
+        }
+    };
+
+    var pattern_credit = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '189': '-'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "").substring(0, 16);
+
+            var regExpPattern3 = /^([0-9]{4})\-?([0-9]{4})?\-?([0-9]{4})?\-?([0-9]{4})?/,
+                returnValue = val.replace(regExpPattern3, function (a, b) {
+                var nval = [arguments[1]];
+                if (arguments[2]) nval.push(arguments[2]);
+                if (arguments[3]) nval.push(arguments[3]);
+                if (arguments[4]) nval.push(arguments[4]);
+                return nval.join("-");
+            });
+            return returnValue;
+        }
+    };
+
+    var pattern_custom = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            if (_opts.getEnterableKeyCodes) {
+                return _opts.getEnterableKeyCodes.call(_opts, { $input: _opts.$input });
+            } else {
+                return null;
+            }
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            if (_opts.getPatternValue) {
+                return _opts.getPatternValue.call(_opts, { event: e, $input: _opts.$input, value: val });
+            }
+        }
+    };
+
+    FORMATTER.formatter = {
+        ctrlKeys: ctrlKeys,
+        numKeys: numKeys,
+        money: pattern_money,
+        number: pattern_number,
+        date: pattern_date,
+        time: pattern_time,
+        bizno: pattern_bizno,
+        phone: pattern_phone,
+        credit: pattern_credit,
+        custom: pattern_custom
+    };
+})();
