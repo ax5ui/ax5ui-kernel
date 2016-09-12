@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.14"
+        version: "0.2.15"
     }, (function () {
         /**
          * @class ax5grid
@@ -889,6 +889,21 @@
              * @method ax5grid.setData
              * @param {Array} _data
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.setData({
+             *  list: [],
+             *  page: {
+             *      currentPage: 0,
+             *      pageSize: 50,
+             *      totalElements: 500,
+             *      totalPages: 100
+             *  }
+             * });
+             *
+             * // onlyList
+             * ax5Grid.setData([]);
+             * ```
              */
             this.setData = function (_data) {
                 GRID.data.set.call(this, _data);
@@ -902,8 +917,14 @@
 
             /**
              * @method ax5grid.getList
-             * @param _type
+             * @param {String} _type
              * @returns {Array}
+             * @example
+             * ```js
+             * ax5Grid.getList();
+             * ax5Grid.getList("modified");
+             * ax5Grid.getList("deleted");
+             * ```
              */
             this.getList = function (_type) {
                 return GRID.data.getList.call(this, _type);
@@ -913,6 +934,10 @@
              * @method ax5grid.setHeight
              * @param {Number} _height
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.setHeight(height);
+             * ```
              */
             this.setHeight = function (_height) {
                 //console.log(this.$target);
@@ -933,6 +958,10 @@
              * @param {Object} _row
              * @param {Number|String} [_dindex=last]
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.addRow($.extend({}, {...}), "first");
+             * ```
              */
             this.addRow = function (_row, _dindex) {
                 GRID.data.add.call(this, _row, _dindex);
@@ -947,6 +976,13 @@
              * @method ax5grid.removeRow
              * @param {Number|String} [_dindex=last]
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.removeRow();
+             * ax5Grid.removeRow("first");
+             * ax5Grid.removeRow("last");
+             * ax5Grid.removeRow(1);
+             * ```
              */
             this.removeRow = function (_dindex) {
                 GRID.data.remove.call(this, _dindex);
@@ -972,6 +1008,18 @@
                 return this;
             };
 
+            /**
+             * @method ax5grid.deleteRow
+             * @param {Number|String} _dindex
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.deleteRow("first");
+             * ax5Grid.deleteRow("last");
+             * ax5Grid.deleteRow(1);
+             * ax5Grid.deleteRow("selected");
+             * ```
+             */
             this.deleteRow = function (_dindex){
                 GRID.data.deleteRow.call(this, _dindex);
                 alignGrid.call(this);

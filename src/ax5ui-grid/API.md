@@ -10,11 +10,12 @@
     * [.keyDown(_keyName, _data)](#ax5grid.keyDown) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.copySelect()](#ax5grid.copySelect) ⇒ <code>Boolean</code>
     * [.setData(_data)](#ax5grid.setData) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.getList(_type)](#ax5grid.getList) ⇒ <code>Array</code>
     * [.setHeight(_height)](#ax5grid.setHeight) ⇒ <code>[ax5grid](#ax5grid)</code>
-    * [.align()](#ax5grid.align) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.addRow(_row, [_dindex])](#ax5grid.addRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.removeRow([_dindex])](#ax5grid.removeRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateRow(_row, _dindex)](#ax5grid.updateRow) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.deleteRow(_dindex)](#ax5grid.deleteRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.addColumn(_column, [_cindex])](#ax5grid.addColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.removeCloumn([_cindex])](#ax5grid.removeCloumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateColumn(_column, _cindex)](#ax5grid.updateColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -103,6 +104,36 @@ align grid size
 | --- | --- |
 | _data | <code>Array</code> | 
 
+**Example**  
+```js
+ax5Grid.setData({
+ list: [],
+ page: {
+     currentPage: 0,
+     pageSize: 50,
+     totalElements: 500,
+     totalPages: 100
+ }
+});
+
+// onlyList
+ax5Grid.setData([]);
+```
+<a name="ax5grid.getList"></a>
+
+### ax5grid.getList(_type) ⇒ <code>Array</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param | Type |
+| --- | --- |
+| _type | <code>String</code> | 
+
+**Example**  
+```js
+ax5Grid.getList();
+ax5Grid.getList("modified");
+ax5Grid.getList("deleted");
+```
 <a name="ax5grid.setHeight"></a>
 
 ### ax5grid.setHeight(_height) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -112,10 +143,10 @@ align grid size
 | --- | --- |
 | _height | <code>Number</code> | 
 
-<a name="ax5grid.align"></a>
-
-### ax5grid.align() ⇒ <code>[ax5grid](#ax5grid)</code>
-**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+**Example**  
+```js
+ax5Grid.setHeight(height);
+```
 <a name="ax5grid.addRow"></a>
 
 ### ax5grid.addRow(_row, [_dindex]) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -126,6 +157,10 @@ align grid size
 | _row | <code>Object</code> |  | 
 | [_dindex] | <code>Number</code> &#124; <code>String</code> | <code>last</code> | 
 
+**Example**  
+```js
+ax5Grid.addRow($.extend({}, {...}), "first");
+```
 <a name="ax5grid.removeRow"></a>
 
 ### ax5grid.removeRow([_dindex]) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -135,6 +170,13 @@ align grid size
 | --- | --- | --- |
 | [_dindex] | <code>Number</code> &#124; <code>String</code> | <code>last</code> | 
 
+**Example**  
+```js
+ax5Grid.removeRow();
+ax5Grid.removeRow("first");
+ax5Grid.removeRow("last");
+ax5Grid.removeRow(1);
+```
 <a name="ax5grid.updateRow"></a>
 
 ### ax5grid.updateRow(_row, _dindex) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -145,6 +187,22 @@ align grid size
 | _row | <code>Object</code> | 
 | _dindex | <code>Number</code> | 
 
+<a name="ax5grid.deleteRow"></a>
+
+### ax5grid.deleteRow(_dindex) ⇒ <code>[ax5grid](#ax5grid)</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param | Type |
+| --- | --- |
+| _dindex | <code>Number</code> &#124; <code>String</code> | 
+
+**Example**  
+```js
+ax5Grid.deleteRow("first");
+ax5Grid.deleteRow("last");
+ax5Grid.deleteRow(1);
+ax5Grid.deleteRow("selected");
+```
 <a name="ax5grid.addColumn"></a>
 
 ### ax5grid.addColumn(_column, [_cindex]) ⇒ <code>[ax5grid](#ax5grid)</code>
