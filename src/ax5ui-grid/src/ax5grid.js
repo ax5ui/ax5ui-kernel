@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.11"
+        version: "0.2.12"
     }, (function () {
         /**
          * @class ax5grid
@@ -667,7 +667,7 @@
                 jQuery(document.body).on("click.ax5grid-" + this.instanceId, function (e) {
                     var isPickerClick = false;
                     var target = U.findParentNode(e.target, function (_target) {
-                        if(isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")){
+                        if (isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")) {
                             return true;
                         }
                         return _target.getAttribute("data-ax5grid-container");
@@ -700,7 +700,6 @@
                         } else {
                             if (self.isInlineEditing) {
                                 if (e.which == ax5.info.eventKeys.ESC) {
-                                    console.log("ESC");
                                     self.keyDown("ESC", e.originalEvent);
                                 }
                                 else if (e.which == ax5.info.eventKeys.RETURN) {
@@ -711,12 +710,12 @@
                                     self.keyDown(ctrlKeys[e.which], e.originalEvent);
                                     U.stopEvent(e);
                                 } else if (e.which == ax5.info.eventKeys.ESC) {
-                                    if(self.focused){
+                                    if (self.focused) {
                                         GRID.body.blur.call(self);
                                     }
                                 } else if (e.which == ax5.info.eventKeys.RETURN) {
                                     self.keyDown("RETURN", e.originalEvent);
-                                } else if (Object.keys(self.focusedColumn).length) {
+                                } else if (e.which != ax5.info.eventKeys.SPACE && Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
                             }
@@ -770,11 +769,17 @@
                         }
                     },
                     "ESC": function (_e) {
-                        //console.log("ESC");
                         GRID.body.inlineEdit.keydown.call(this, "ESC");
                     },
                     "RETURN": function (_e) {
-                        GRID.body.inlineEdit.keydown.call(this, "RETURN");
+                        var activeEditLength = 0;
+                        for (var columnKey in this.inlineEditing) {
+                            activeEditLength++;
+                            GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey);
+                        }
+                        if (activeEditLength == 0) {
+                            GRID.body.inlineEdit.keydown.call(this, "RETURN");
+                        }
                     }
                 };
                 return function (_act, _data) {
@@ -1088,23 +1093,6 @@
     GRID = ax5.ui.grid;
 })();
 
-
-// todo : cell selected -- ok
-// todo : cell multi selected -- ok
-// todo : cell selected focus move by keyboard -- ok & scroll body -- ok
-// todo : clipboard copy -- ok
-// todo : page -- ok
-// todo : paging -- ok
-// todo : setStatus : loading, empty, etcs
-// todo : row add / remove / update -- ok
-// todo : body.onClick / select -- ok & multipleSelect : TF -- ok
-// todo : column add / remove / update -- ok
-// todo : cell formatter -- ok
-// todo : column resize -- ok
-// todo : sortable -- ok
-// todo : grid footsum -- ok, footsum area cell selected -- ok
-// todo : grid body group -- ok, 그룹핑 된 상태에서 정렬 예외처리 -- ok, 그룹핑 된상태에서 데이터 추가/수정/삭제 -- ok, 그룹핑 된 row 셀렉트 문제. -- ok
-// todo : cell inline edit -- ok
 
 // todo : filter
 // todo : body menu

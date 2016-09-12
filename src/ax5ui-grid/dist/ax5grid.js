@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.11"
+        version: "0.2.12"
     }, function () {
         /**
          * @class ax5grid
@@ -686,7 +686,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         } else {
                             if (self.isInlineEditing) {
                                 if (e.which == ax5.info.eventKeys.ESC) {
-                                    console.log("ESC");
                                     self.keyDown("ESC", e.originalEvent);
                                 } else if (e.which == ax5.info.eventKeys.RETURN) {
                                     self.keyDown("RETURN", e.originalEvent);
@@ -701,7 +700,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                     }
                                 } else if (e.which == ax5.info.eventKeys.RETURN) {
                                     self.keyDown("RETURN", e.originalEvent);
-                                } else if (Object.keys(self.focusedColumn).length) {
+                                } else if (e.which != ax5.info.eventKeys.SPACE && Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
                             }
@@ -755,11 +754,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     },
                     "ESC": function ESC(_e) {
-                        //console.log("ESC");
                         GRID.body.inlineEdit.keydown.call(this, "ESC");
                     },
                     "RETURN": function RETURN(_e) {
-                        GRID.body.inlineEdit.keydown.call(this, "RETURN");
+                        var activeEditLength = 0;
+                        for (var columnKey in this.inlineEditing) {
+                            activeEditLength++;
+                            GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey);
+                        }
+                        if (activeEditLength == 0) {
+                            GRID.body.inlineEdit.keydown.call(this, "RETURN");
+                        }
                     }
                 };
                 return function (_act, _data) {
@@ -1073,23 +1078,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
-// todo : cell selected -- ok
-// todo : cell multi selected -- ok
-// todo : cell selected focus move by keyboard -- ok & scroll body -- ok
-// todo : clipboard copy -- ok
-// todo : page -- ok
-// todo : paging -- ok
-// todo : setStatus : loading, empty, etcs
-// todo : row add / remove / update -- ok
-// todo : body.onClick / select -- ok & multipleSelect : TF -- ok
-// todo : column add / remove / update -- ok
-// todo : cell formatter -- ok
-// todo : column resize -- ok
-// todo : sortable -- ok
-// todo : grid footsum -- ok, footsum area cell selected -- ok
-// todo : grid body group -- ok, 그룹핑 된 상태에서 정렬 예외처리 -- ok, 그룹핑 된상태에서 데이터 추가/수정/삭제 -- ok, 그룹핑 된 row 셀렉트 문제. -- ok
-
-// todo : cell inline edit
 // todo : filter
 // todo : body menu
 // todo : column reorder
@@ -1123,9 +1111,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         },
         init: function init(column) {
             var self = this;
-
-            if (this.isInlineEditing && this.inlineEditing.columnKey == column.dindex + "_" + column.colIndex + "_" + column.rowIndex) {
-                return this;
+            if (this.isInlineEditing) {
+                for (var editKey in this.inlineEditing) {
+                    if (editKey == column.dindex + "_" + column.colIndex + "_" + column.rowIndex) {
+                        return this;
+                    }
+                }
             }
 
             // focus
@@ -1228,6 +1219,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var columnSelector = {
         "on": function on(cell) {
             var self = this;
+
+            if (this.inlineEditing[cell.dindex + "_" + cell.colIndex + "_" + cell.rowIndex]) {
+                return;
+            }
+
             columnSelect.init.call(self, cell);
 
             this.$["container"]["body"].on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function (e) {
@@ -1293,7 +1289,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     return _panels.join("-");
                 }.call(this);
 
-                this.$.panel[panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowIndex="' + rowIndex + '"][data-ax5grid-column-colIndex="' + colIndex + '"]').find('[data-ax5grid-editor="checkbox"]').attr("data-ax5grid-checked", '' + this.list[_dindex][key]);
+                this.$.panel[panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowIndex="' + rowIndex + '"][data-ax5grid-column-colIndex="' + colIndex + '"]').find('[data-ax5grid-editor="checkbox"]').attr("data-ax5grid-checked", '' + _data.checked);
             }
         };
         _states.forEach(function (_state) {
@@ -1305,10 +1301,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var init = function init() {
         var self = this;
 
-        /*
-         this.$["container"]["root"].on("click", function(e){
-          });
-         */
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function (e) {
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
@@ -1327,11 +1319,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     if (column.editor && column.editor.type == "checkbox") {
                         // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
-                        var value = GRID.data.getValue.call(this, _column.dindex, column.key);
-                        var checked = value == false || value == "false" || value < "1" ? "true" : "false";
-                        GRID.data.setValue.call(self, _column.dindex, column.key, checked);
+                        var value = GRID.data.getValue.call(self, _column.dindex, column.key);
+
+                        var checked, newValue;
+                        if (column.editor.config && column.editor.config.trueValue) {
+                            if (checked = !(value == column.editor.config.trueValue)) {
+                                newValue = column.editor.config.trueValue;
+                            } else {
+                                newValue = column.editor.config.falseValue;
+                            }
+                        } else {
+                            newValue = checked = value == false || value == "false" || value < "1" ? "true" : "false";
+                        }
+
+                        GRID.data.setValue.call(self, _column.dindex, column.key, newValue);
+
                         updateRowState.call(self, ["cellChecked"], _column.dindex, {
-                            key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex
+                            key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
+                            editorConfig: column.editor.config, checked: checked
                         });
                     } else {
                         if (self.config.body.onClick) {
@@ -1370,8 +1375,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var panelName, attr, row, col, dindex, rowIndex, colIndex;
             var targetClick = {
                 "default": function _default(_column) {
-                    if (this.isInlineEditing && this.inlineEditing.columnKey == _column.dindex + "_" + _column.colIndex + "_" + _column.rowIndex) {
-                        return this;
+
+                    if (this.isInlineEditing) {
+                        for (var columnKey in this.inlineEditing) {
+                            if (columnKey == _column.dindex + "_" + _column.colIndex + "_" + _column.rowIndex) {
+                                return this;
+                            }
+                        }
                     }
 
                     var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
@@ -1426,7 +1436,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                     colspan: Number(this.getAttribute("colspan"))
                 });
-                U.stopEvent(e);
             }
         }).on("dragstart", function (e) {
             U.stopEvent(e);
@@ -1700,7 +1709,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var ci, cl;
             var col, cellHeight, colAlign;
             var isScrolled = function () {
-                // repaint 함수가 스크롤되는지 여부
+                // 스크롤값이 변경되거나 처음 호출되었습니까?
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
                     _scrollConfig = {
                         paintStartRowIndex: 0,
@@ -1937,6 +1946,205 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.xvar.dataRowCount = list.length;
         this.needToPaintSum = false;
         GRID.page.statusUpdate.call(this);
+    };
+
+    var repaintCell = function repaintCell(_panelName, _dindex, _rowIndex, _colIndex, _newValue) {
+        var cfg = this.config;
+        var list = this.list;
+
+        var updateCell = this.$["panel"][_panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + _rowIndex + '"][data-ax5grid-column-colindex="' + _colIndex + '"]').find('[data-ax5grid-cellholder]');
+        var col = this.colGroup[_colIndex];
+        updateCell.html(getFieldValue.call(this, list, list[_dindex], _dindex, col));
+
+        /// ~~~~~~
+
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        var leftFootSumData = this.leftFootSumData;
+        var footSumData = this.footSumData;
+        var asideBodyGroupingData = this.asideBodyGroupingData;
+        var leftBodyGroupingData = this.leftBodyGroupingData;
+        var bodyGroupingData = this.bodyGroupingData;
+        var bodyAlign = cfg.body.align;
+        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+        var scrollConfig = {
+            paintStartRowIndex: paintStartRowIndex,
+            paintRowCount: paintRowCount,
+            bodyTrHeight: this.xvar.bodyTrHeight
+        };
+
+        var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
+            var _elTarget = this.$.panel[_elTargetKey];
+
+            var SS = [];
+            var cgi, cgl;
+            var tri, trl;
+            var ci, cl;
+            var col, cellHeight, colAlign;
+
+            SS.push('<table border="0" cellpadding="0" cellspacing="0">');
+            SS.push('<colgroup>');
+            for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
+            }
+            SS.push('<col  />');
+            SS.push('</colgroup>');
+
+            for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                SS.push('<tr class="tr-sum">');
+                for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    col = _bodyRow.rows[tri].cols[ci];
+                    cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                    colAlign = col.align || bodyAlign;
+
+                    SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + tri + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "sum") + '" ', function (_focusedColumn, _selectedColumn) {
+                        var attrs = "";
+                        if (_focusedColumn) {
+                            attrs += 'data-ax5grid-column-focused="true" ';
+                        }
+                        if (_selectedColumn) {
+                            attrs += 'data-ax5grid-column-selected="true" ';
+                        }
+                        return attrs;
+                    }(this.focusedColumn["sum_" + col.colIndex + "_" + tri], this.selectedColumn["sum_" + col.colIndex + "_" + tri]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                        var tdCSS_class = "";
+                        if (_col.styleClass) {
+                            if (U.isFunction(_col.styleClass)) {
+                                tdCSS_class += _col.styleClass.call({
+                                    column: _col,
+                                    key: _col.key,
+                                    isFootSum: true
+                                }) + " ";
+                            } else {
+                                tdCSS_class += _col.styleClass + " ";
+                            }
+                        }
+                        if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                        return tdCSS_class;
+                    }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                    SS.push(function (_cellHeight) {
+                        var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                        if (!col.multiLine) {
+                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                        }
+
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                    }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
+
+                    SS.push('</td>');
+                }
+                SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-column-attr="' + "sum" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                SS.push('</tr>');
+            }
+
+            SS.push('</table>');
+
+            _elTarget.html(SS.join(''));
+            return true;
+        };
+        var replaceTr = function replaceTr(_elTargetKey, _colGroup, _groupRow, _list, _scrollConfig) {
+            var _elTarget = this.$.panel[_elTargetKey];
+            var SS = [];
+            var cgi, cgl;
+            var di, dl;
+            var tri, trl;
+            var ci, cl;
+            var col, cellHeight, colAlign;
+            for (di = _scrollConfig.paintStartRowIndex, dl = function () {
+                var len;
+                len = _list.length;
+                if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
+                    len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
+                }
+                return len;
+            }(); di < dl; di++) {
+                if (_groupRow && "__isGrouping" in _list[di]) {
+                    var rowTable = _groupRow;
+                    SS = [];
+                    for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+                        for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                            col = rowTable.rows[tri].cols[ci];
+                            cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                            colAlign = col.align || bodyAlign;
+
+                            SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
+                                var attrs = "";
+                                if (_focusedColumn) {
+                                    attrs += 'data-ax5grid-column-focused="true" ';
+                                }
+                                if (_selectedColumn) {
+                                    attrs += 'data-ax5grid-column-selected="true" ';
+                                }
+                                return attrs;
+                            }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                                var tdCSS_class = "";
+                                if (_col.styleClass) {
+                                    if (U.isFunction(_col.styleClass)) {
+                                        tdCSS_class += _col.styleClass.call({
+                                            column: _col,
+                                            key: _col.key,
+                                            item: _list[di],
+                                            index: di
+                                        }) + " ";
+                                    } else {
+                                        tdCSS_class += _col.styleClass + " ";
+                                    }
+                                }
+                                if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                                if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                                return tdCSS_class;
+                            }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                            SS.push(function (_cellHeight) {
+                                var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                                if (!col.multiLine) {
+                                    _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                                }
+
+                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                            }(cellHeight), getGroupingValue.call(this, _list[di], di, col), '</span>');
+
+                            SS.push('</td>');
+                        }
+                        SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                    }
+                    _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').html(SS.join(''));
+                }
+            }
+        };
+
+        // body.grouping tr 다시 그리기..
+        if (cfg.body.grouping) {
+            // left
+            if (this.xvar.frozenColumnIndex > 0) {
+                if (this.xvar.frozenRowIndex > 0) {
+                    // 상단 행고정
+                    replaceTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                }
+                replaceTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
+            }
+
+            // body
+            if (this.xvar.frozenRowIndex > 0) {
+                // 상단 행고정
+                replaceTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+            }
+
+            replaceTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
+        }
+
+        if (this.xvar.frozenColumnIndex > 0) {
+            if (cfg.footSum && this.needToPaintSum) {
+                // 바닥 요약
+                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+            }
+        }
+
+        if (cfg.footSum && this.needToPaintSum) {
+            // 바닥 요약
+            repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+        }
     };
 
     var scrollTo = function scrollTo(css, noRepaint) {
@@ -2208,36 +2416,61 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
+            var self = this;
             var dindex, colIndex, rowIndex, panelName, colspan;
-            var editor;
+            var col, editor;
 
-            this.inlineEditing = {};
-
+            // this.inlineEditing = {};
             for (var key in _focusedColumn) {
+                panelName = _focusedColumn[key].panelName;
+                dindex = _focusedColumn[key].dindex;
                 colIndex = _focusedColumn[key].colIndex;
+                rowIndex = _focusedColumn[key].rowIndex;
+                colspan = _focusedColumn[key].colspan;
+
                 // 인라인 에디팅을 멈춰야 하는 경우 조건
-                if (!(editor = this.colGroup[colIndex].editor)) return this;
+                col = this.colGroup[colIndex];
+                if (!(editor = col.editor)) return this;
                 // 조건에 맞지 않는 에디팅 타입이면 반응 없음.
                 if (!function (_editor, _type) {
                     if (_editor.type in GRID.inlineEditor) {
                         return GRID.inlineEditor[_editor.type].editMode == "popup";
                     }
                 }(editor)) {
+                    // 체크 박스 타입이면 값 변경 시도
+                    if (editor.type == "checkbox") {
+                        var checked, newValue;
+                        if (editor.config && editor.config.trueValue) {
+                            if (checked = !(_initValue == editor.config.trueValue)) {
+                                newValue = editor.config.trueValue;
+                            } else {
+                                newValue = editor.config.falseValue;
+                            }
+                        } else {
+                            newValue = checked = _initValue == false || _initValue == "false" || _initValue < "1" ? "true" : "false";
+                        }
+
+                        GRID.data.setValue.call(self, dindex, col.key, newValue);
+
+                        updateRowState.call(self, ["cellChecked"], dindex, {
+                            key: col.key, rowIndex: rowIndex, colIndex: colIndex,
+                            editorConfig: col.editor.config, checked: checked
+                        });
+                    }
                     return this;
                 }
-
-                dindex = _focusedColumn[key].dindex;
-                rowIndex = _focusedColumn[key].rowIndex;
-                panelName = _focusedColumn[key].panelName;
-                colspan = _focusedColumn[key].colspan;
 
                 if (this.list[dindex].__isGrouping) {
                     return false;
                 }
-
-                this.inlineEditing = {
+                if (key in this.inlineEditing) {
+                    return false;
+                }
+                this.inlineEditing[key] = {
+                    panelName: panelName,
                     columnKey: key,
-                    column: _focusedColumn[key]
+                    column: _focusedColumn[key],
+                    useReturnToSave: GRID.inlineEditor[editor.type].useReturnToSave
                 };
                 this.isInlineEditing = true;
             }
@@ -2251,30 +2484,43 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }.call(this, _initValue, editor);
 
-                this.inlineEditing.$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+                this.inlineEditing[key].$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
 
-                this.inlineEditing.$inlineEditor = GRID.inlineEditor[editor.type].init(this, editor, this.inlineEditing.$inlineEditorCell);
-                this.inlineEditing.$inlineEditor.val(initValue).focus().select();
+                this.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(this, key, editor, this.inlineEditing[key].$inlineEditorCell, initValue);
 
                 return true;
             }
         },
-        deActive: function deActive(_msg) {
+        deActive: function deActive(_msg, _key, _value) {
             // console.log(this.inlineEditing.column.dindex, this.inlineEditing.$inlineEditor.val());
-            // todo : 데이터 업데이트를 어떻게 할 것인가? ~ 잘되는 건가??
-            if (!this.inlineEditing) return this;
+            if (!this.inlineEditing[_key]) return this;
 
-            var dindex = this.inlineEditing.column.dindex;
-            var rowIndex = this.inlineEditing.column.rowIndex;
-            var colIndex = this.inlineEditing.column.colIndex;
-            var column = this.bodyRowMap[this.inlineEditing.column.rowIndex + "_" + this.inlineEditing.column.colIndex];
+            var panelName = this.inlineEditing[_key].panelName;
+            var dindex = this.inlineEditing[_key].column.dindex;
+            var rowIndex = this.inlineEditing[_key].column.rowIndex;
+            var colIndex = this.inlineEditing[_key].column.colIndex;
+
+            var column = this.bodyRowMap[this.inlineEditing[_key].column.rowIndex + "_" + this.inlineEditing[_key].column.colIndex];
+            var editorValue = function ($inlineEditor) {
+                if (typeof _value === "undefined") {
+                    if ($inlineEditor.get(0).tagName == "SELECT" || $inlineEditor.get(0).tagName == "INPUT" || $inlineEditor.get(0).tagName == "TEXTAREA") {
+                        return $inlineEditor.val();
+                    } else {
+                        _msg = "CANCEL";
+                        return false;
+                    }
+                } else {
+                    return _value;
+                }
+            }(this.inlineEditing[_key].$inlineEditor);
+
             var newValue = function (__value, __editor) {
                 if (__editor.type == "money") {
                     return U.number(__value);
                 } else {
                     return __value;
                 }
-            }.call(this, this.inlineEditing.$inlineEditor.val(), column.editor);
+            }.call(this, editorValue, column.editor);
 
             var action = {
                 "CANCEL": function CANCEL(_dindex, _column, _newValue) {
@@ -2283,24 +2529,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 "RETURN": function RETURN(_dindex, _column, _newValue) {
                     if (GRID.data.setValue.call(this, _dindex, _column.key, _newValue)) {
                         action["__clear"].call(this);
-                        GRID.body.repaint.call(this, true);
-                        // 한칸씩 바꿀 수도 있지 않을까? 고려할 게 많아져서 어렵겠다. footSum도 변경 해줘야 하고, body.grouping도 변경 해줘야 하는데
-                        // this.inlineEditing.$inlineEditorCell.html(getFieldValue(this.list, this.list[_dindex], _dindex, _column, _newValue));
+                        GRID.body.repaintCell.call(this, panelName, dindex, rowIndex, colIndex, _newValue);
                     } else {
-                            action["__clear"].call(this);
-                        }
+                        action["__clear"].call(this);
+                    }
                 },
                 "__clear": function __clear() {
                     this.isInlineEditing = false;
-                    var bindedAx5ui = this.inlineEditing.$inlineEditor.data("binded-ax5ui");
+                    var bindedAx5ui = this.inlineEditing[_key].$inlineEditor.data("binded-ax5ui");
                     if (bindedAx5ui == "ax5picker") {
-                        this.inlineEditing.$inlineEditor.ax5picker("close");
+                        this.inlineEditing[_key].$inlineEditor.ax5picker("close");
+                    } else if (bindedAx5ui == "ax5select") {
+                        this.inlineEditing[_key].$inlineEditor.ax5select("close");
                     }
 
-                    this.inlineEditing.$inlineEditor.remove();
-                    this.inlineEditing.$inlineEditor = null;
-                    this.inlineEditing.$inlineEditorCell = null;
-                    this.inlineEditing = false;
+                    this.inlineEditing[_key].$inlineEditor.remove();
+                    this.inlineEditing[_key].$inlineEditor = null;
+                    this.inlineEditing[_key].$inlineEditorCell = null;
+                    this.inlineEditing[_key] = undefined;
+                    delete this.inlineEditing[_key]; // delete 지원안하는 브라우저 테스트..
                 }
             };
 
@@ -2310,14 +2557,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 action["__clear"].call(this);
             }
         },
-        keydown: function keydown(key) {
+        keydown: function keydown(key, columnKey) {
             var processor = {
                 "ESC": function ESC() {
-                    inlineEdit.deActive.call(this, "CANCEL");
+                    for (var columnKey in this.inlineEditing) {
+                        inlineEdit.deActive.call(this, "CANCEL", columnKey);
+                    }
                 },
                 "RETURN": function RETURN() {
                     if (this.isInlineEditing) {
-                        inlineEdit.deActive.call(this, "RETURN");
+                        if (this.inlineEditing[columnKey].useReturnToSave) {
+                            // todo : 네이밍 검증 할 필요있음.
+                            inlineEdit.deActive.call(this, "RETURN", columnKey);
+                        }
                     } else {
                         for (var k in this.focusedColumn) {
                             var _column = this.focusedColumn[k];
@@ -2334,6 +2586,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }
             };
+
             if (key in processor) {
                 processor[key].call(this, key);
             }
@@ -2343,6 +2596,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID.body = {
         init: init,
         repaint: repaint,
+        repaintCell: repaintCell,
         updateRowState: updateRowState,
         scrollTo: scrollTo,
         blur: blur,
@@ -3019,81 +3273,87 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var GRID = ax5.ui.grid;
 
     var edit_text = {
+        useReturnToSave: true,
         editMode: "popup",
-        getHtml: function getHtml(_root, _editor) {
-            return '<input type="text" data-ax5grid-editor="text" value="" >';
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="text" value="' + _value + '" >';
         },
-        init: function init(_root, _editor, _$parent) {
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
             $el.on("blur", function () {
-                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey);
             });
             return $el;
         },
-        bindUI: function bindUI(_root, _$el, _editor, _$parent) {}
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
+            _$el.focus().select();
+        }
     };
 
     var edit_money = {
+        useReturnToSave: true,
         editMode: "popup",
-        getHtml: function getHtml(_root, _editor) {
-            return '<input type="text" data-ax5grid-editor="money" value="" >';
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="money" value="' + _value + '" >';
         },
-        init: function init(_root, _editor, _$parent) {
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
             $el.on("blur", function () {
-                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey);
             });
             return $el;
         },
-        bindUI: function bindUI(_root, _$el, _editor, _$parent) {
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             _$el.data("binded-ax5ui", "ax5formater");
             _$el.ax5formatter({
                 pattern: "money"
             });
+            _$el.focus().select();
         }
     };
 
     var edit_number = {
         editMode: "popup",
-        getHtml: function getHtml(_root, _editor) {
-            return '<input type="text" data-ax5grid-editor="number" value="" >';
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="number" value="' + _value + '" >';
         },
-        init: function init(_root, _editor, _$parent) {
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
             $el.on("blur", function () {
-                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey);
             });
             return $el;
         },
-        bindUI: function bindUI(_root, _$el, _editor, _$parent) {
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             _$el.data("binded-ax5ui", "ax5formater");
             _$el.ax5formatter({
                 pattern: "number"
             });
+            _$el.focus().select();
         }
     };
 
     var edit_date = {
+        useReturnToSave: true,
         editMode: "popup",
-        getHtml: function getHtml(_root, _editor) {
-            return '<input type="text" data-ax5grid-editor="calendar" value="" >';
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="calendar" value="' + _value + '" >';
         },
-        init: function init(_root, _editor, _$parent) {
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
             return $el;
         },
-        bindUI: function bindUI(_root, _$el, _editor, _$parent) {
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             var self = _root;
             _$el.data("binded-ax5ui", "ax5picker");
-
             _$el.ax5picker({
                 direction: "auto",
                 content: {
@@ -3106,47 +3366,62 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (this.state == "open") {
                         this.self.activePicker.attr("data-ax5grid-inline-edit-picker", "date");
                     } else if (this.state == "close") {
-                        GRID.body.inlineEdit.deActive.call(self, "RETURN");
+                        GRID.body.inlineEdit.deActive.call(self, "RETURN", _columnKey);
                     }
                 }
             });
+            _$el.focus().select();
         }
     };
 
     var edit_select = {
+        useReturnToSave: false,
         editMode: "popup",
-        getHtml: function getHtml(_root, _editor) {
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            var po = [];
+            po.push('<div data-ax5select="ax5grid-editor" data-ax5select-config="{}">');
+            po.push('</div>');
+
+            return po.join('');
+        },
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
+            var $el;
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            return $el;
+        },
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             var eConfig = {
                 columnKeys: {
-                    optionValue: "value", optionText: "text"
+                    optionValue: "value",
+                    optionText: "text",
+                    optionSelected: "selected"
                 }
             };
             jQuery.extend(true, eConfig, _editor.config);
 
-            var po = [];
-            po.push('<select data-ax5grid-editor="select">');
-            for (var oi = 0, ol = eConfig.options.length; oi < ol; oi++) {
-                po.push('<option value="' + eConfig.options[oi][eConfig.columnKeys.optionValue] + '">', eConfig.options[oi][eConfig.columnKeys.optionText], '</option>');
-            }
-            po.push('</select>');
-            return po.join('');
-        },
-        init: function init(_root, _editor, _$parent) {
-            var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
-            $el.on("blur", function () {
-                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            eConfig.options.forEach(function (n) {
+                if (n[eConfig.columnKeys.optionValue] == _value) n[eConfig.columnKeys.optionSelected] = true;
             });
-            return $el;
-        },
-        bindUI: function bindUI(_root, _$el, _editor, _$parent) {
 
-            /*
-            _$el.on("change", function(){
-               console.log(this.value);
+            var self = _root;
+            _$el.data("binded-ax5ui", "ax5select");
+            _$el.ax5select({
+                columnKeys: eConfig.columnKeys,
+                options: eConfig.options,
+                onStateChanged: function onStateChanged() {
+                    if (this.state == "open") {
+                        this.self.activeSelectOptionGroup.attr("data-ax5grid-inline-edit-picker", "select");
+                    } else if (this.state == "changeValue") {
+                        GRID.body.inlineEdit.deActive.call(self, "RETURN", _columnKey, this.value[0][eConfig.columnKeys.optionValue]);
+                    } else if (this.state == "close") {
+                        GRID.body.inlineEdit.deActive.call(self, "ESC", _columnKey);
+                    }
+                }
             });
-            */
+            _$el.ax5select("open");
+            _$el.ax5select("setValue", _value);
+            _$el.find("a").focus();
         }
     };
 
@@ -3154,7 +3429,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         editMode: "inline",
         getHtml: function getHtml(_root, _editor, _value) {
             var lineHeight = _root.config.body.columnHeight - _root.config.body.columnPadding * 2 - _root.config.body.columnBorderWidth;
-            var checked = _value == false || _value == "false" || _value < "1" ? "false" : "true";
+            var checked;
+            if (_editor.config && _editor.config.trueValue) {
+                checked = _value == _editor.config.trueValue ? "true" : "false";
+            } else {
+                checked = _value == false || _value == "false" || _value < "1" ? "false" : "true";
+            }
+
             var eConfig = {
                 marginTop: 2,
                 height: lineHeight - 4

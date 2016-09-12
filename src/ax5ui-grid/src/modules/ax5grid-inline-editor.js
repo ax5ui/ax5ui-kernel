@@ -4,83 +4,87 @@
     var GRID = ax5.ui.grid;
 
     var edit_text = {
+        useReturnToSave: true,
         editMode: "popup",
-        getHtml: function (_root, _editor) {
-            return '<input type="text" data-ax5grid-editor="text" value="" >';
+        getHtml: function (_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="text" value="'+ _value +'" >';
         },
-        init: function (_root, _editor, _$parent) {
+        init: function (_root, _columnKey, _editor, _$parent, _value) {
             var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
-            $el.on("blur", function(){
-                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey);
             });
             return $el;
         },
-        bindUI: function(_root, _$el, _editor, _$parent){
-
+        bindUI: function (_root, _columnKey, _$el, _editor, _$parent, _value) {
+            _$el.focus().select();
         }
     };
 
     var edit_money = {
+        useReturnToSave: true,
         editMode: "popup",
-        getHtml: function (_root, _editor) {
-            return '<input type="text" data-ax5grid-editor="money" value="" >';
+        getHtml: function (_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="money" value="'+ _value +'" >';
         },
-        init: function (_root, _editor, _$parent) {
+        init: function (_root, _columnKey, _editor, _$parent, _value) {
             var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
-            $el.on("blur", function(){
-                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey);
             });
             return $el;
         },
-        bindUI: function(_root, _$el, _editor, _$parent){
+        bindUI: function (_root, _columnKey, _$el, _editor, _$parent, _value) {
             _$el.data("binded-ax5ui", "ax5formater");
             _$el.ax5formatter({
                 pattern: "money"
             });
+            _$el.focus().select();
         }
     };
 
     var edit_number = {
         editMode: "popup",
-        getHtml: function (_root, _editor) {
-            return '<input type="text" data-ax5grid-editor="number" value="" >';
+        getHtml: function (_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="number" value="'+ _value +'" >';
         },
-        init: function (_root, _editor, _$parent) {
+        init: function (_root, _columnKey, _editor, _$parent, _value) {
             var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
-            $el.on("blur", function(){
-                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey);
             });
             return $el;
         },
-        bindUI: function(_root, _$el, _editor, _$parent){
+        bindUI: function (_root, _columnKey, _$el, _editor, _$parent, _value) {
             _$el.data("binded-ax5ui", "ax5formater");
             _$el.ax5formatter({
                 pattern: "number"
             });
+            _$el.focus().select();
         }
     };
 
     var edit_date = {
+        useReturnToSave: true,
         editMode: "popup",
-        getHtml: function (_root, _editor) {
-            return '<input type="text" data-ax5grid-editor="calendar" value="" >';
+        getHtml: function (_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="calendar" value="'+ _value +'" >';
         },
-        init: function (_root, _editor, _$parent) {
+        init: function (_root, _columnKey, _editor, _$parent, _value) {
             var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
             return $el;
         },
-        bindUI: function(_root, _$el, _editor, _$parent){
+        bindUI: function (_root, _columnKey, _$el, _editor, _$parent, _value) {
             var self = _root;
             _$el.data("binded-ax5ui", "ax5picker");
-
             _$el.ax5picker({
                 direction: "auto",
                 content: {
@@ -92,50 +96,63 @@
                 onStateChanged: function () {
                     if (this.state == "open") {
                         this.self.activePicker.attr("data-ax5grid-inline-edit-picker", "date");
-                    }else if (this.state == "close") {
-                        GRID.body.inlineEdit.deActive.call(self, "RETURN");
+                    } else if (this.state == "close") {
+                        GRID.body.inlineEdit.deActive.call(self, "RETURN", _columnKey);
                     }
                 }
             });
+            _$el.focus().select();
         }
     };
 
     var edit_select = {
+        useReturnToSave: false,
         editMode: "popup",
-        getHtml: function (_root, _editor) {
+        getHtml: function (_root, _columnKey, _editor, _value) {
+            var po = [];
+            po.push('<div data-ax5select="ax5grid-editor" data-ax5select-config="{}">');
+            po.push('</div>');
+
+            return po.join('');
+        },
+        init: function (_root, _columnKey, _editor, _$parent, _value) {
+            var $el;
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            return $el;
+        },
+        bindUI: function (_root, _columnKey, _$el, _editor, _$parent, _value) {
             var eConfig = {
                 columnKeys: {
-                    optionValue: "value", optionText: "text"
+                    optionValue: "value",
+                    optionText: "text",
+                    optionSelected: "selected"
                 }
             };
             jQuery.extend(true, eConfig, _editor.config);
 
-            var po = [];
-            po.push('<select data-ax5grid-editor="select">');
-            for (var oi = 0, ol = eConfig.options.length; oi < ol; oi++) {
-                po.push('<option value="' + eConfig.options[oi][eConfig.columnKeys.optionValue] + '">',
-                    eConfig.options[oi][eConfig.columnKeys.optionText],
-                    '</option>');
-            }
-            po.push('</select>');
-            return po.join('');
-        },
-        init: function (_root, _editor, _$parent) {
-            var $el;
-            _$parent.append($el = jQuery(this.getHtml(_root, _editor)));
-            this.bindUI(_root, $el, _editor, _$parent);
-            $el.on("blur", function(){
-                GRID.body.inlineEdit.deActive.call(_root, "RETURN");
+            eConfig.options.forEach(function(n){
+               if(n[eConfig.columnKeys.optionValue] == _value) n[eConfig.columnKeys.optionSelected] = true;
             });
-            return $el;
-        },
-        bindUI: function(_root, _$el, _editor, _$parent){
 
-            /*
-            _$el.on("change", function(){
-               console.log(this.value);
+            var self = _root;
+            _$el.data("binded-ax5ui", "ax5select");
+            _$el.ax5select({
+                columnKeys: eConfig.columnKeys,
+                options: eConfig.options,
+                onStateChanged: function () {
+                    if (this.state == "open") {
+                        this.self.activeSelectOptionGroup.attr("data-ax5grid-inline-edit-picker", "select");
+                    } else if (this.state == "changeValue") {
+                        GRID.body.inlineEdit.deActive.call(self, "RETURN", _columnKey, this.value[0][eConfig.columnKeys.optionValue]);
+                    } else if (this.state == "close") {
+                        GRID.body.inlineEdit.deActive.call(self, "ESC", _columnKey);
+                    }
+                }
             });
-            */
+            _$el.ax5select("open");
+            _$el.ax5select("setValue", _value);
+            _$el.find("a").focus();
         }
     };
 
@@ -143,7 +160,13 @@
         editMode: "inline",
         getHtml: function (_root, _editor, _value) {
             var lineHeight = (_root.config.body.columnHeight - _root.config.body.columnPadding * 2 - _root.config.body.columnBorderWidth);
-            var checked = (_value == false || _value == "false" || _value < "1") ? "false" : "true";
+            var checked;
+            if (_editor.config && _editor.config.trueValue) {
+                checked = (_value == _editor.config.trueValue) ? "true" : "false";
+            } else {
+                checked = (_value == false || _value == "false" || _value < "1") ? "false" : "true";
+            }
+
             var eConfig = {
                 marginTop: 2,
                 height: lineHeight - 4

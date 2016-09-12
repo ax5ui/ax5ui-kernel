@@ -131,11 +131,11 @@
         height: $ax5layout-tab-panel-label-height;
         @include ax-background(top, $ax5layout-tab-panel-label-bg-colors);
 
-        [data-tab-panel-label-border]{
+        [data-tab-panel-label-border] {
             box-sizing: border-box;
             position: absolute;
             bottom: 0;
-            left:0;
+            left: 0;
             width: 100%;
             height: $ax5layout-tab-panel-label-height - $ax5layout-tab-panel-label-item-height - $ax5layout-tab-panel-label-padding-top - 1;
             background: $ax5layout-tab-panel-label-border-bg;
@@ -163,7 +163,7 @@
                     border-right: $ax5layout-tab-panel-label-item-border-right;
                     border-bottom: $ax5layout-tab-panel-label-item-border-bottom;
                     @include ax-background(top, $ax5layout-tab-panel-label-item-bg-colors);
-                    &:hover{
+                    &:hover {
                         @include ax-background(top, $ax5layout-tab-panel-label-item-hover-bg-colors);
                     }
                 }
@@ -175,12 +175,12 @@
                     }
                 }
             }
-            [data-tab-panel-aside="left"]{
+            [data-tab-panel-aside="left"] {
                 display: table-cell;
                 width: 5px;
                 border-right: 1px solid #D4D4D4;
             }
-            [data-tab-panel-aside="right"]{
+            [data-tab-panel-aside="right"] {
                 display: table-cell;
                 //width: 5px;
                 //border-right: 1px solid #D4D4D4;
@@ -201,20 +201,19 @@
         }
     }
 
-    [data-split-panel-wrap="scroll"] {
+    [data-split-panel-wrap] {
+        position: relative;
         width: 100%;
         height: 100%;
-        overflow: auto;
-    }
-    [data-split-panel-wrap="scroll-x"] {
-        width: 100%;
-        height: 100%;
-        overflow-x: auto;
-    }
-    [data-split-panel-wrap="scroll-y"] {
-        width: 100%;
-        height: 100%;
-        overflow-y: auto;
+        &[data-split-panel-wrap="scroll"] {
+            overflow: auto;
+        }
+        &[data-split-panel-wrap="scroll-x"] {
+            overflow-x: auto;
+        }
+        &[data-split-panel-wrap="scroll-y"] {
+            overflow-y: auto;
+        }
     }
 }
 
