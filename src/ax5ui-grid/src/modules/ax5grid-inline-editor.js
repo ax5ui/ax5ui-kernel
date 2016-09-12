@@ -48,6 +48,7 @@
     };
 
     var edit_number = {
+        useReturnToSave: true,
         editMode: "popup",
         getHtml: function (_root, _columnKey, _editor, _value) {
             return '<input type="text" data-ax5grid-editor="number" value="'+ _value +'" >';

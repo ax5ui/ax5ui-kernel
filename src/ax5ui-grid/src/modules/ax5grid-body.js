@@ -283,7 +283,7 @@
                         }
 
                         GRID.data.setValue.call(self, _column.dindex, column.key, newValue);
-                        
+
                         updateRowState.call(self, ["cellChecked"], _column.dindex, {
                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                             editorConfig: column.editor.config, checked: checked
@@ -1085,7 +1085,7 @@
                 }
                 return len;
             })(); di < dl; di++) {
-                if(_groupRow && "__isGrouping" in _list[di]){
+                if (_groupRow && "__isGrouping" in _list[di]) {
                     var rowTable = _groupRow;
                     SS = [];
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
@@ -1156,7 +1156,7 @@
                             'style="height: ' + (cfg.body.columnHeight) + 'px;min-height: 1px;" ',
                             '></td>');
                     }
-                    _elTarget.find('tr[data-ax5grid-tr-data-index="'+di+'"]').html(SS.join(''));
+                    _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').html(SS.join(''));
                 }
             }
         };
@@ -1231,6 +1231,7 @@
     var moveFocus = function (_position) {
         var focus = {
             "UD": function (_dy) {
+                var moveResult = true;
                 var focusedColumn;
                 var originalColumn;
                 var while_i;
@@ -1248,7 +1249,10 @@
                     if (focusedColumn.rowIndex + (originalColumn.rowspan - 1) + _dy > this.bodyRowTable.rows.length - 1) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
                         focusedColumn.rowIndex = 0;
-                        if (focusedColumn.dindex > this.list.length - 1) focusedColumn.dindex = this.list.length - 1;
+                        if (focusedColumn.dindex > this.list.length - 1) {
+                            focusedColumn.dindex = this.list.length - 1;
+                            moveResult = false;
+                        }
                     } else {
                         focusedColumn.rowIndex = focusedColumn.rowIndex + _dy;
                     }
@@ -1257,7 +1261,10 @@
                     if (focusedColumn.rowIndex + _dy < 0) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
                         focusedColumn.rowIndex = this.bodyRowTable.rows.length - 1;
-                        if (focusedColumn.dindex < 0) focusedColumn.dindex = 0;
+                        if (focusedColumn.dindex < 0) {
+                            focusedColumn.dindex = 0;
+                            moveResult = false;
+                        }
                     } else {
                         focusedColumn.rowIndex = focusedColumn.rowIndex + _dy;
                     }
@@ -1273,6 +1280,7 @@
 
                     if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
                         // find fail
+                        moveResult = false;
                         break;
                     }
                     while_i++;
@@ -1301,9 +1309,11 @@
                     .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]')
                     .attr('data-ax5grid-column-focused', "true");
 
+                return moveResult;
+
             },
             "LR": function (_dx) {
-
+                var moveResult = true;
                 var focusedColumn;
                 var originalColumn;
                 var while_i = 0;
@@ -1321,10 +1331,16 @@
 
                 if (_dx < 0) {
                     focusedColumn.colIndex = focusedColumn.colIndex + _dx;
-                    if (focusedColumn.colIndex < 0) focusedColumn.colIndex = 0;
+                    if (focusedColumn.colIndex < 0) {
+                        focusedColumn.colIndex = 0;
+                        moveResult = false;
+                    }
                 } else {
                     focusedColumn.colIndex = focusedColumn.colIndex + (originalColumn.colspan - 1) + _dx;
-                    if (focusedColumn.colIndex > this.colGroup.length - 1) focusedColumn.colIndex = this.colGroup.length - 1;
+                    if (focusedColumn.colIndex > this.colGroup.length - 1) {
+                        focusedColumn.colIndex = this.colGroup.length - 1;
+                        moveResult = false;
+                    }
                 }
 
                 if (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
@@ -1332,11 +1348,10 @@
                 }
                 while_i = 0;
                 while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
-
                     focusedColumn.colIndex--;
-
                     if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
                         // find fail
+                        moveResult = false;
                         break;
                     }
                     while_i++;
@@ -1376,10 +1391,10 @@
                     }
                 }
 
-
+                return moveResult;
             },
             "INDEX": function (_dindex) {
-
+                var moveResult = true;
                 var focusedColumn;
                 var originalColumn;
                 var while_i;
@@ -1444,41 +1459,40 @@
                     .find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]')
                     .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]')
                     .attr('data-ax5grid-column-focused', "true");
+
+                return moveResult;
             }
         };
 
         var processor = {
             "UP": function () {
-                focus["UD"].call(this, -1);
+                return focus["UD"].call(this, -1);
             },
             "DOWN": function () {
-                focus["UD"].call(this, 1);
+                return focus["UD"].call(this, 1);
             },
             "LEFT": function () {
-                focus["LR"].call(this, -1);
+                return focus["LR"].call(this, -1);
             },
             "RIGHT": function () {
-                focus["LR"].call(this, 1);
+                return focus["LR"].call(this, 1);
             },
             "HOME": function () {
-                focus["INDEX"].call(this, 0);
+                return focus["INDEX"].call(this, 0);
             },
             "END": function () {
-                focus["INDEX"].call(this, "end");
+                return focus["INDEX"].call(this, "end");
             },
             "position": function (_position) {
-                focus["INDEX"].call(this, _position);
+                return focus["INDEX"].call(this, _position);
             }
         };
 
         if (_position in processor) {
-            processor[_position].call(this);
-            return this;
+            return processor[_position].call(this);
         } else {
-            processor["position"].call(this, _position);
+            return processor["position"].call(this, _position);
         }
-
-
     };
 
     var inlineEdit = {
@@ -1505,7 +1519,7 @@
                         }
                     })(editor)) {
                     // 체크 박스 타입이면 값 변경 시도
-                    if(editor.type == "checkbox"){
+                    if (editor.type == "checkbox") {
                         var checked, newValue;
                         if (editor.config && editor.config.trueValue) {
                             if (checked = !(_initValue == editor.config.trueValue)) {
@@ -1526,7 +1540,18 @@
                     }
                     return this;
                 }
-
+                // editor disabled 체크
+                if (U.isFunction(editor.disabled)) {
+                    if (editor.disabled.call({
+                            list: this.list,
+                            dindex: dindex,
+                            item: this.list[dindex],
+                            key: col.key,
+                            value: _initValue
+                        })) {
+                        return this;
+                    }
+                }
 
 
                 if (this.list[dindex].__isGrouping) {
@@ -1640,7 +1665,7 @@
                 },
                 "RETURN": function () {
                     if (this.isInlineEditing) {
-                        if (this.inlineEditing[columnKey].useReturnToSave) { // todo : 네이밍 검증 할 필요있음.
+                        if (this.inlineEditing[columnKey] && this.inlineEditing[columnKey].useReturnToSave) { // todo : 네이밍 검증 할 필요있음.
                             inlineEdit.deActive.call(this, "RETURN", columnKey);
                         }
                     } else {

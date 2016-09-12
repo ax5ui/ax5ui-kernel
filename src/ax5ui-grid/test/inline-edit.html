@@ -47,6 +47,7 @@
 <div style="padding: 10px;">
     <button class="btn btn-default" data-grid-control="row-add">row add</button>
     <button class="btn btn-default" data-grid-control="row-remove">row remove</button>
+    <button class="btn btn-default" data-grid-control="row-delete">row delete</button>
     <button class="btn btn-default" data-grid-control="row-update">row update</button>
 </div>
 <div style="padding: 10px;">
@@ -147,14 +148,17 @@
                         },
                         enableFilter: true,
                         align: "center",
-                        editor: {type: "text"}
+                        editor: {type: "text", disabled: function(){
+                            // item, value
+                            return false;
+                        }}
                     },
                     {key: "b", label: "필드B", align: "center", editor: {type: "text"}},
                     {
                         key: undefined,
                         label: "필드C", columns: [
                         {key: "price", label: "단가", align: "right", formatter: "money", editor: {type: "money"}},
-                        {key: "amount", label: "수량", align: "right", formatter: "money", editor: {type: "money"}},
+                        {key: "amount", label: "수량", align: "right", formatter: "money", editor: {type: "number"}},
                         {
                             key: "cost", label: "금액", align: "right", formatter: function () {
                             return ax5.util.number(this.item.price * this.item.amount, {"money": true});
@@ -167,9 +171,7 @@
                         type: "date", config: {}
                     }
                     },
-                    {
-                        key: "customer", label: "고객명", editor: {}
-                    },
+
                     {
                         key: "saleType", label: "판매타입", editor: {
                         type: "select", config: {
@@ -189,6 +191,9 @@
                         key: "isChecked", label: "체크박스", width: 50, sortable: false, editor: {
                         type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
                     }
+                    },
+                    {
+                        key: "customer", label: "고객명", editor: {type:"text"}
                     }
                 ],
                 footSum: [
@@ -249,6 +254,9 @@
                     break;
                 case "row-remove":
                     firstGrid.removeRow();
+                    break;
+                case "row-delete":
+                    firstGrid.deleteRow("selected");
                     break;
                 case "row-update":
                     firstGrid.updateRow($.extend({}, firstGrid.list[1], {price: 100, amount: 100, cost: 10000}), 1);
