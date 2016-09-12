@@ -11,7 +11,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.13"
+        version: "0.2.14"
     }, function () {
         /**
          * @class ax5grid
@@ -690,6 +690,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             } else if (e.which == ax5.info.eventKeys.TAB) {
                                 self.keyDown("TAB", e.originalEvent);
                                 U.stopEvent(e);
+                            } else if (e.which == ax5.info.eventKeys.UP) {
+                                self.keyDown("RETURN", { shiftKey: true });
+                            } else if (e.which == ax5.info.eventKeys.DOWN) {
+                                self.keyDown("RETURN", {});
                             }
                         } else {
 
@@ -3027,7 +3031,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.list[_dindex][this.config.columnKeys.modified] = true;
             this.list[_dindex][_key] = _value;
         }
-        return _value;
+        return true;
     };
 
     var getValue = function getValue(_dindex, _key, _value) {

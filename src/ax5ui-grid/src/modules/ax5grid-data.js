@@ -339,7 +339,7 @@
             this.list[_dindex][this.config.columnKeys.modified] = true;
             this.list[_dindex][_key] = _value;
         }
-        return _value;
+        return true;
     };
 
     var getValue = function (_dindex, _key, _value) {

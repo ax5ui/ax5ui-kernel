@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.13"
+        version: "0.2.14"
     }, (function () {
         /**
          * @class ax5grid
@@ -707,6 +707,12 @@
                             else if (e.which == ax5.info.eventKeys.TAB) {
                                 self.keyDown("TAB", e.originalEvent);
                                 U.stopEvent(e);
+                            }
+                            else if (e.which == ax5.info.eventKeys.UP) {
+                                self.keyDown("RETURN", {shiftKey:true});
+                            }
+                            else if (e.which == ax5.info.eventKeys.DOWN) {
+                                self.keyDown("RETURN", {});
                             }
                         } else {
 
