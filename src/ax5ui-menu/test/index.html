@@ -75,9 +75,13 @@
                             role: ""
                             //accelerator: "CmdOrCtrl+A"
                         }
-                    ]
+                    ],
+                    filterType: "A"
                 },
-                {divide: true},
+                {
+                    divide: true,
+                    filterType: "A"
+                },
                 {
                     icon: '<i class="fa fa-mixcloud"></i>',
                     label: "Menu Parent 1",
@@ -108,7 +112,8 @@
                             role: ""
                             //accelerator: "CmdOrCtrl+A"
                         }
-                    ]
+                    ],
+                    filterType: "A"
                 },
                 {
                     check: {
@@ -172,11 +177,12 @@
             });
         };
 
-        attached();
+        //attached();
 
         $(document).bind("contextmenu", function (e) {
-            //menu.popup(e, {theme:"danger"});
-            menu.popup(e);
+            menu.popup(e, {theme:"danger", filter: function(){
+                return true;
+            }});
             ax5.util.stopEvent(e);
             // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
         });

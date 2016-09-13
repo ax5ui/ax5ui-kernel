@@ -5,7 +5,7 @@
 
     UI.addClass({
         className: "menu",
-        version: "0.6.4"
+        version: "0.6.5"
     }, (function () {
         /**
          * @class ax5.ui.menu
@@ -433,6 +433,8 @@
              * @method ax5.ui.menu.popup
              * @param {Event|Object} e - Event or Object
              * @param {Object} [opt]
+             * @param {String} [opt.theme]
+             * @param {Function} [opt.filter]
              * @returns {ax5.ui.menu} this
              */
             this.popup = (function () {
@@ -497,7 +499,24 @@
                     if (!e) return this;
                     opt = getOption[((typeof e.clientX == "undefined") ? "object" : "event")].call(this, e, opt);
                     updateTheme(opt.theme);
-                    popup.call(this, opt, cfg.items, 0); // 0 is seq of queue
+
+                    var items = [].concat(cfg.items);
+                    if (opt.filter) {
+                        var filteringItem = function (_items) {
+                            var arr = [];
+                            _items.forEach(function (n) {
+                                if (n.items && n.items.length > 0) {
+                                    n.items = filteringItem(n.items);
+                                }
+                                if (opt.filter.call(n)) {
+                                    arr.push(n);
+                                }
+                            });
+                            return arr;
+                        };
+                        items = filteringItem(items);
+                    }
+                    popup.call(this, opt, items, 0); // 0 is seq of queue
                     appEventAttach.call(this, true); // 이벤트 연결
 
                     e = null;
@@ -543,7 +562,7 @@
                         scrollTop = (cfg.position == "fixed") ? jQuery(document).scrollTop() : 0;
 
                     if (self.menuBar.openedIndex == index) {
-                        if(eType == "click") self.close();
+                        if (eType == "click") self.close();
                         return false;
                     }
 
