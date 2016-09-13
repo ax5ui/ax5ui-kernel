@@ -12,7 +12,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.2.2"
+        version: "0.2.3"
     }, (function () {
         /**
          * @class ax5combobox
@@ -405,11 +405,13 @@
 
                     this.queue[queIdx].onSearch.call({
                         self: this,
-                        item: this.queue[queIdx]
+                        item: this.queue[queIdx],
+                        searchWord: searchWord
                     }, (function (O) {
 
                         var data = {};
                         var item = this.queue[this.activecomboboxQueueIndex];
+                        if(!item) return false;
 
                         /// 현재 selected 검증후 처리
                         (function (item, O) {
@@ -916,7 +918,7 @@
                         }
                         else {
                             /// select > options 태그로 스크립트 options를 만들어주는 역할
-                            item.$select.get(0).options[0].selected = false;
+                            if(item.$select.get(0).options && item.$select.get(0).options.length) item.$select.get(0).options[0].selected = false;
                             elementOptions = U.toArray(item.$select.get(0).options);
 
                             // select option 스크립트 생성

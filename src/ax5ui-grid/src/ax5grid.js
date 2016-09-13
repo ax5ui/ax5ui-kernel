@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 // ax5.ui.grid
 (function () {
 
@@ -7,7 +13,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.15"
+        version: "0.2.16"
     }, (function () {
         /**
          * @class ax5grid

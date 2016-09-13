@@ -160,6 +160,7 @@
     var edit_checkbox = {
         editMode: "inline",
         getHtml: function (_root, _editor, _value) {
+
             var lineHeight = (_root.config.body.columnHeight - _root.config.body.columnPadding * 2 - _root.config.body.columnBorderWidth);
             var checked;
             if (_editor.config && _editor.config.trueValue) {

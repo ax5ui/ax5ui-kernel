@@ -510,8 +510,22 @@
                     return false;
                 })(_col.editor)) {
 
+                _value = _value || GRID.data.getValue.call(this, _index, _key);
+
+                if (U.isFunction(_col.editor.disabled)) {
+                    if (_col.editor.disabled.call({
+                            list: _list,
+                            dindex: _index,
+                            item: _list[_index],
+                            key: _key,
+                            value: _value
+                        })) {
+                        return _value;
+                    }
+                }
+
                 // print editor
-                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value || GRID.data.getValue.call(this, _index, _key));
+                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
             }
             if (_col.formatter) {
                 var that = {
@@ -1512,6 +1526,20 @@
                 // 인라인 에디팅을 멈춰야 하는 경우 조건
                 col = this.colGroup[colIndex];
                 if (!(editor = col.editor)) return this;
+
+                // editor disabled 체크
+                if (U.isFunction(editor.disabled)) {
+                    if (editor.disabled.call({
+                            list: this.list,
+                            dindex: dindex,
+                            item: this.list[dindex],
+                            key: col.key,
+                            value: _initValue
+                        })) {
+                        return this;
+                    }
+                }
+
                 // 조건에 맞지 않는 에디팅 타입이면 반응 없음.
                 if (!(function (_editor, _type) {
                         if (_editor.type in GRID.inlineEditor) {
@@ -1540,18 +1568,7 @@
                     }
                     return this;
                 }
-                // editor disabled 체크
-                if (U.isFunction(editor.disabled)) {
-                    if (editor.disabled.call({
-                            list: this.list,
-                            dindex: dindex,
-                            item: this.list[dindex],
-                            key: col.key,
-                            value: _initValue
-                        })) {
-                        return this;
-                    }
-                }
+
 
 
                 if (this.list[dindex].__isGrouping) {
