@@ -398,6 +398,9 @@
                     this.queue[queIdx].$displayLabel.trigger("focus");
                     U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
                 },
+                blurLabel = function(queIdx) {
+                    this.queue[queIdx].$displayLabel.trigger("blur");
+                },
                 onSearch = function (queIdx, searchWord) {
 
                     this.queue[queIdx].waitOptions = true;
@@ -1331,7 +1334,7 @@
                             U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
                         }
                     },
-                    'arr': function (queIdx, values, selected) {
+                    'arr': function (queIdx, values, selected, setValueType) {
                         values.forEach(function (value) {
                             if (U.isString(value) || U.isNumber(value)) {
                                 processor.value.call(self, queIdx, value, selected, "justSetValue");
@@ -1349,7 +1352,9 @@
                         syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
                         syncLabel.call(this, queIdx);
                         alignComboboxOptionGroup.call(this);
-                        U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                        if (typeof setValueType === "undefined" || setValueType !== "justSetValue") {
+                            U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                        }
                     },
                     'value': function (queIdx, value, selected, setValueType) {
                         var item = this.queue[queIdx];
@@ -1421,13 +1426,13 @@
                     }
                     else if (U.isArray(value)) {
                         processor.clear.call(this, queIdx);
-                        processor.arr.call(this, queIdx, (this.queue[queIdx].multiple || value.length == 0) ? value : [value[value.length - 1]], selected);
+                        processor.arr.call(this, queIdx, (this.queue[queIdx].multiple || value.length == 0) ? value : [value[value.length - 1]], selected, internal);
                     }
                     else if (U.isString(value) || U.isNumber(value)) {
                         if (typeof value !== "undefined" && value !== null && !this.queue[queIdx].multiple) {
                             clearSelected.call(this, queIdx);
                         }
-                        processor.value.call(this, queIdx, value, selected);
+                        processor.value.call(this, queIdx, value, selected, internal);
                         syncLabel.call(this, queIdx);
                     }
                     else {
@@ -1441,7 +1446,7 @@
                             }
                             for (var key in processor) {
                                 if (value[key]) {
-                                    processor[key].call(this, queIdx, value, selected);
+                                    processor[key].call(this, queIdx, value, selected, internal);
                                     break;
                                 }
                             }
@@ -1497,6 +1502,16 @@
                 }).bind(this), cfg.animateTime);
                 this.waitOptionsCallback = null;
                 return this;
+            };
+            
+            this.blur = function(boundID){
+                var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
+                if (queIdx === -1) {
+                    console.log(ax5.info.getError("ax5combobox", "402", "val"));
+                    return;
+                }
+
+                blurLabel.call(this, queIdx);
             };
 
             /**
@@ -1592,7 +1607,7 @@ jQuery.fn.ax5combobox = (function () {
                     return ax5.ui.combobox_instance.close(this);
                     break;
                 case "setValue":
-                    return ax5.ui.combobox_instance.val(this, arguments[1], arguments[2]);
+                    return ax5.ui.combobox_instance.val(this, arguments[1], arguments[2], arguments[3], arguments[4]||"justSetValue");
                     break;
                 case "getValue":
                     return ax5.ui.combobox_instance.val(this);
@@ -1603,6 +1618,8 @@ jQuery.fn.ax5combobox = (function () {
                 case "disable":
                     return ax5.ui.combobox_instance.disable(this);
                     break;
+                case "blur":
+                    return ax5.ui.combobox_instance.blur(this);
                 default:
                     return this;
             }

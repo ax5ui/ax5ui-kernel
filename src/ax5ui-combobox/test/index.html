@@ -78,6 +78,7 @@
             switch (act) {
                 case "setValue":
                     myCombo.val($('[data-ax5combobox="combo1"]'), ["string", "number", "새로운 문구"]);
+                    myCombo.blur($('[data-ax5combobox="combo1"]'));
                     break;
                 case "getValue":
                     console.log(myCombo.val($('[data-ax5combobox="combo1"]')));
@@ -131,6 +132,8 @@
             }
         });
 
+
+        //myCombo.open($('[data-ax5combobox="combo1"]'));
     });
 
 
