@@ -12,7 +12,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.2.3"
+        version: "0.2.4"
     }, (function () {
         /**
          * @class ax5combobox
@@ -32,6 +32,7 @@
             this.config = {
                 theme: 'default',
                 animateTime: 250,
+                removeIcon: '&#8855',
                 lang: {
                     noSelected: '',
                     noOptions: 'no options',
@@ -109,114 +110,117 @@
                 },
                 getOptionGroupTmpl = function (columnKeys) {
                     return `
-                <div class="ax5combobox-option-group {{theme}} {{size}}" data-ax5combobox-option-group="{{id}}">
-                    <div class="ax-combobox-body">
-                        <div class="ax-combobox-option-group-content" data-els="content"></div>
-                    </div>
-                    <div class="ax-combobox-arrow"></div> 
-                </div>
-                `;
+<div class="ax5combobox-option-group {{theme}} {{size}}" data-ax5combobox-option-group="{{id}}">
+    <div class="ax-combobox-body">
+        <div class="ax-combobox-option-group-content" data-els="content"></div>
+    </div>
+    <div class="ax-combobox-arrow"></div> 
+</div>
+`;
                 },
                 getTmpl = function () {
                     return `
-                <div class="form-control {{formSize}} ax5combobox-display {{theme}}" 
-                data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
-                    <div class="ax5combobox-display-table" data-els="display-table">
-                        <div data-ax5combobox-display="label-holder"> 
-                        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
-                        data-ax5combobox-display="label"
-                        contentEditable="true"
-                        spellcheck="false">{{{label}}}</a>
-                        </div>
-                        <div data-ax5combobox-display="addon"> 
-                            {{#multiple}}{{#reset}}
-                            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
-                            {{/reset}}{{/multiple}}
-                            {{#icons}}
-                            <span class="addon-icon-closed">{{clesed}}</span>
-                            <span class="addon-icon-opened">{{opened}}</span>
-                            {{/icons}}
-                            {{^icons}}
-                            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>
-                            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>
-                            {{/icons}}
-                        </div>
-                    </div>
-                </a>
-                `;
+<div class="form-control {{formSize}} ax5combobox-display {{theme}}" 
+data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
+    <div class="ax5combobox-display-table" data-els="display-table">
+        <div data-ax5combobox-display="label-holder"> 
+        <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
+        data-ax5combobox-display="label"
+        contentEditable="true"
+        spellcheck="false">{{{label}}}</a>
+        </div>
+        <div data-ax5combobox-display="addon"> 
+            {{#multiple}}{{#reset}}
+            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>
+            {{/reset}}{{/multiple}}
+            {{#icons}}
+            <span class="addon-icon-closed">{{clesed}}</span>
+            <span class="addon-icon-opened">{{opened}}</span>
+            {{/icons}}
+            {{^icons}}
+            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>
+            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>
+            {{/icons}}
+        </div>
+    </div>
+</a>
+`;
                 },
                 getSelectTmpl = function () {
                     return `
-                <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>
-                `;
+<select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>
+`;
                 },
                 getOptionsTmpl = function (columnKeys) {
                     return `
-                {{#waitOptions}}
-                    <div class="ax-combobox-option-item">
-                            <div class="ax-combobox-option-item-holder">
-                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">
-                                    {{{lang.loading}}}
-                                </span>
-                            </div>
-                        </div>
-                {{/waitOptions}}
-                {{^waitOptions}}
-                    {{#options}}
-                        {{#optgroup}}
-                            <div class="ax-combobox-option-group">
-                                <div class="ax-combobox-option-item-holder">
-                                    <span class="ax-combobox-option-group-label">
-                                        {{{.}}}
-                                    </span>
-                                </div>
-                                {{#options}}
-                                {{^hide}}
-                                <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" 
-                                data-option-value="{{${columnKeys.optionValue}}}" 
-                                {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
-                                    <div class="ax-combobox-option-item-holder">
-                                        {{#multiple}}
-                                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">
-                                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
-                                        </span>
-                                        {{/multiple}}
-                                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
-                                    </div>
-                                </div>
-                                {{/hide}}
-                                {{/options}}
-                            </div>                            
-                        {{/optgroup}}
-                        {{^optgroup}}
-                        {{^hide}}
-                        <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
-                            <div class="ax-combobox-option-item-holder">
-                                {{#multiple}}
-                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">
-                                    <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
-                                </span>
-                                {{/multiple}}
-                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
-                            </div>
-                        </div>
-                        {{/hide}}
-                        {{/optgroup}}
-                    {{/options}}
-                    {{^options}}
-                        <div class="ax-combobox-option-item">
-                            <div class="ax-combobox-option-item-holder">
-                                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">
-                                    {{{lang.noOptions}}}
-                                </span>
-                            </div>
-                        </div>
-                    {{/options}}
-                {{/waitOptions}}
-                `;
+{{#waitOptions}}
+    <div class="ax-combobox-option-item">
+            <div class="ax-combobox-option-item-holder">
+                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">
+                    {{{lang.loading}}}
+                </span>
+            </div>
+        </div>
+{{/waitOptions}}
+{{^waitOptions}}
+    {{#options}}
+        {{#optgroup}}
+            <div class="ax-combobox-option-group">
+                <div class="ax-combobox-option-item-holder">
+                    <span class="ax-combobox-option-group-label">
+                        {{{.}}}
+                    </span>
+                </div>
+                {{#options}}
+                {{^hide}}
+                <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" 
+                data-option-value="{{${columnKeys.optionValue}}}" 
+                {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
+                    <div class="ax-combobox-option-item-holder">
+                        {{#multiple}}
+                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">
+                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
+                        </span>
+                        {{/multiple}}
+                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
+                    </div>
+                </div>
+                {{/hide}}
+                {{/options}}
+            </div>                            
+        {{/optgroup}}
+        {{^optgroup}}
+        {{^hide}}
+        <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
+            <div class="ax-combobox-option-item-holder">
+                {{#multiple}}
+                <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">
+                    <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
+                </span>
+                {{/multiple}}
+                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
+            </div>
+        </div>
+        {{/hide}}
+        {{/optgroup}}
+    {{/options}}
+    {{^options}}
+        <div class="ax-combobox-option-item">
+            <div class="ax-combobox-option-item-holder">
+                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">
+                    {{{lang.noOptions}}}
+                </span>
+            </div>
+        </div>
+    {{/options}}
+{{/waitOptions}}
+`;
                 },
                 getLabelTmpl = function (columnKeys) {
-                    return `{{#selected}}<span tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">{{text}}</span>{{/selected}}`;
+                    return `{{#selected}}<div tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">
+<div data-ax5combobox-remove="true" data-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div>
+<span>{{text}}</span>
+</div>{{/selected}}`;
                 },
                 alignComboboxDisplay = function () {
                     var i = this.queue.length, w;
@@ -341,7 +345,7 @@
 
                     return this;
                 },
-                onBodyKeyup = function (e) {
+                onBodyKeyup = function (e) { // 옵션 선택 후 키업
                     if (e.keyCode == ax5.info.eventKeys.ESC) {
                         this.close();
                     }
@@ -375,6 +379,7 @@
                     data.options = item.options;
                     data.selected = item.selected;
                     data.hasSelected = (data.selected && data.selected.length > 0);
+                    data.removeIcon = item.removeIcon;
                     return ax5.mustache.render(getLabelTmpl.call(this, item.columnKeys), data) + "&nbsp;";
                 },
                 syncLabel = function (queIdx) {
@@ -398,7 +403,7 @@
                     this.queue[queIdx].$displayLabel.trigger("focus");
                     U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
                 },
-                blurLabel = function(queIdx) {
+                blurLabel = function (queIdx) {
                     this.queue[queIdx].$displayLabel.trigger("blur");
                 },
                 onSearch = function (queIdx, searchWord) {
@@ -414,7 +419,7 @@
 
                         var data = {};
                         var item = this.queue[this.activecomboboxQueueIndex];
-                        if(!item) return false;
+                        if (!item) return false;
 
                         /// 현재 selected 검증후 처리
                         (function (item, O) {
@@ -453,7 +458,7 @@
                     }).bind(this));
                 },
                 focusWord = function (queIdx, searchWord) {
-                    if(this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
+                    if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
                     var options = [], i = -1, l = this.queue[queIdx].indexedOptions.length - 1, n;
                     if (searchWord != "") {
                         var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
@@ -590,21 +595,16 @@
                                 }
                                 // optionGroup scroll check
 
-
                                 if (typeof direction !== "undefined") {
                                     // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
                                     // 방향이 있으면 라벨 값을 수정
                                     var childNodes = item.$displayLabel.get(0).childNodes;
                                     var lastNode = childNodes[childNodes.length - 1];
-                                    if (lastNode.nodeType != '1') {
-                                        lastNode = childNodes[childNodes.length - 2];
-                                    }
-                                    if (!lastNode) return this;
-
-                                    if (lastNode.getAttribute("data-ax5combobox-selected-text")) {
-
-                                    } else {
-                                        lastNode.innerHTML = "&nbsp;" + item.indexedOptions[_focusIndex].text;
+                                    if (lastNode && lastNode.nodeType == '3') {
+                                        lastNode.nodeValue = item.indexedOptions[_focusIndex].text;
+                                        U.selectRange(item.$displayLabel, "end");
+                                    } else if (lastNode && lastNode.nodeType == '1') {
+                                        jQuery(lastNode).after(item.indexedOptions[_focusIndex].text);
                                         U.selectRange(item.$displayLabel, "end");
                                     }
                                 }
@@ -614,18 +614,18 @@
                 },
                 bindComboboxTarget = (function () {
                     var debouncedFocusWord = U.debounce(function (queIdx) {
-                        if(this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
+                        if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
 
                         var values = [];
                         var searchWord = "";
                         var item = this.queue[queIdx];
                         var childNodes = item.$displayLabel.get(0).childNodes;
+
                         for (var i = 0, l = childNodes.length; i < l; i++) {
                             var node = childNodes[i];
+
                             if (node.nodeType in nodeTypeProcessor) {
-
                                 var value = nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node, true);
-
                                 if (typeof value === "undefined") {
                                     //
                                 }
@@ -649,7 +649,7 @@
                             this.val(item.id, null, undefined, "internal"); // clear value
                         }
                         else if (searchWord === false) {
-                            //this.val(item.id, null, undefined, "internal"); // clear value
+                            this.val(item.id, null, undefined, "internal"); // clear value
                             this.val(item.id, values, undefined, "internal"); // set Value
                             U.selectRange(item.$displayLabel, "end"); // label focus end
                         }
@@ -681,24 +681,35 @@
                             }
                         }
 
-                        if(typeof editingText !== "undefined"){
+                        if (typeof editingText !== "undefined") {
                             this.val(item.id, values, undefined, "internal"); // set Value
                         }
                     };
 
                     var comboboxEvent = {
                         'click': function (queIdx, e) {
-
+                            var clickEl;
                             var target = U.findParentNode(e.target, function (target) {
-                                if (target.getAttribute("data-selected-clear")) {
-                                    //clickEl = "clear";
+                                if (target.getAttribute("data-ax5combobox-remove")) {
+                                    clickEl = "optionItemRemove";
+                                    return true;
+                                }
+                                else if (target.getAttribute("data-selected-clear")) {
+                                    clickEl = "clear";
                                     return true;
                                 }
                             });
 
                             if (target) {
-                                // selected clear
-                                this.val(queIdx, {clear: true});
+                                if (clickEl === "optionItemRemove") {
+                                    var selectedIndex = target.getAttribute("data-ax5combobox-remove-index");
+                                    var option = this.queue[queIdx].selected[selectedIndex];
+                                    this.val(queIdx, {index: {gindex: option['@gindex'], index: option['@index']}}, false, true);
+                                    U.stopEvent(e);
+                                    return this;
+                                } else if (clickEl === "clear") {
+                                    this.val(queIdx, {clear: true});
+                                }
                             }
                             else {
                                 if (self.activecomboboxQueueIndex == queIdx) {
@@ -823,6 +834,7 @@
 
                         // combobox 태그에 대한 이벤트 감시
 
+
                         item.$displayLabel
                             .unbind("focus.ax5combobox")
                             .bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx))
@@ -834,6 +846,7 @@
                             .bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
 
                         // select 태그에 대한 change 이벤트 감시
+
                         item.$select
                             .unbind('change.ax5combobox')
                             .bind('change.ax5combobox', comboboxEvent.selectChange.bind(this, queIdx));
@@ -921,7 +934,7 @@
                         }
                         else {
                             /// select > options 태그로 스크립트 options를 만들어주는 역할
-                            if(item.$select.get(0).options && item.$select.get(0).options.length) item.$select.get(0).options[0].selected = false;
+                            if (item.$select.get(0).options && item.$select.get(0).options.length) item.$select.get(0).options[0].selected = false;
                             elementOptions = U.toArray(item.$select.get(0).options);
 
                             // select option 스크립트 생성
@@ -972,7 +985,6 @@
                     }
                 },
                 clearSelected = function (queIdx) {
-
                     this.queue[queIdx].options.forEach(function (n) {
                         if (n.optgroup) {
                             n.options.forEach(function (nn) {
@@ -987,7 +999,13 @@
 
             var nodeTypeProcessor = {
                 '1': function (queIdx, node, editable) {
-                    var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
+                    var textNode = node;
+                    //// 임시..
+                    if ($(node).find("span").get(0)) {
+                        textNode = $(node).find("span").get(0);
+                    }
+
+                    var text = (textNode.textContent || textNode.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
                     var item = this.queue[queIdx];
 
                     var selectedIndex, option;
@@ -1029,6 +1047,7 @@
                     }
                 },
                 '3': function (queIdx, node, editable) {
+
                     var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
                     var item = this.queue[queIdx];
 
@@ -1224,7 +1243,7 @@
                         // onExpand 인 경우 UI 대기모드 추가
                         data.waitOptions = true;
                     }
-                    data.options = U.filter(item.options, function(){
+                    data.options = U.filter(item.options, function () {
                         return !this.hide;
                     });
 
@@ -1310,20 +1329,27 @@
 
                         if (U.isString(value.index.gindex)) {
                             if (typeof item.options[value.index.gindex] !== "undefined") {
+
                                 item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected], selected);
-                                self.activecomboboxOptionGroup
-                                    .find('[data-option-group-index="' + value.index.gindex + '"][data-option-index="' + value.index.index + '"]')
-                                    .attr("data-option-Selected", item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected].toString());
+
+                                if(self.activecomboboxOptionGroup) {
+                                    self.activecomboboxOptionGroup
+                                        .find('[data-option-group-index="' + value.index.gindex + '"][data-option-index="' + value.index.index + '"]')
+                                        .attr("data-option-Selected", item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected].toString());
+                                }
                             }
                         }
                         else {
                             if (typeof item.options[value.index.index] !== "undefined") {
+
                                 item.options[value.index.index][item.columnKeys.optionSelected] =
                                     getSelected(item, item.options[value.index.index][item.columnKeys.optionSelected], selected);
 
-                                self.activecomboboxOptionGroup
-                                    .find('[data-option-index="' + value.index.index + '"]')
-                                    .attr("data-option-Selected", item.options[value.index.index][item.columnKeys.optionSelected].toString());
+                                if(self.activecomboboxOptionGroup) {
+                                    self.activecomboboxOptionGroup
+                                        .find('[data-option-index="' + value.index.index + '"]')
+                                        .attr("data-option-Selected", item.options[value.index.index][item.columnKeys.optionSelected].toString());
+                                }
                             }
                         }
 
@@ -1357,11 +1383,13 @@
                         }
                     },
                     'value': function (queIdx, value, selected, setValueType) {
+
                         var item = this.queue[queIdx];
                         var addOptions;
                         var optionIndex = U.search(item.options, function () {
-                            return this[item.columnKeys.optionValue] == value;
+                            return this[item.columnKeys.optionText] == value;
                         });
+
                         if (optionIndex > -1) {
                             item.options[optionIndex][item.columnKeys.optionSelected]
                                 = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
@@ -1386,9 +1414,6 @@
                             alignComboboxOptionGroup.call(this);
                             U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
                         }
-                    },
-                    'text': function (queIdx, value, selected, setValueType) {
-
                     },
                     'clear': function (queIdx) {
 
@@ -1420,6 +1445,8 @@
                         console.log(ax5.info.getError("ax5combobox", "402", "val"));
                         return;
                     }
+
+                    // console.log(boundID, value);
 
                     if (typeof value == "undefined") {
                         return this.queue[queIdx].selected;
@@ -1503,8 +1530,8 @@
                 this.waitOptionsCallback = null;
                 return this;
             };
-            
-            this.blur = function(boundID){
+
+            this.blur = function (boundID) {
                 var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                 if (queIdx === -1) {
                     console.log(ax5.info.getError("ax5combobox", "402", "val"));
@@ -1607,7 +1634,7 @@ jQuery.fn.ax5combobox = (function () {
                     return ax5.ui.combobox_instance.close(this);
                     break;
                 case "setValue":
-                    return ax5.ui.combobox_instance.val(this, arguments[1], arguments[2], arguments[3], arguments[4]||"justSetValue");
+                    return ax5.ui.combobox_instance.val(this, arguments[1], arguments[2], arguments[3], arguments[4] || "justSetValue");
                     break;
                 case "getValue":
                     return ax5.ui.combobox_instance.val(this);

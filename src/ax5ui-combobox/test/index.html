@@ -14,7 +14,7 @@
 </head>
 <body style="padding: 10px;">
 <div class="container">
-    <form name="forms" class="form-inline">
+    <form name="forms">
         <h1>form-group</h1>
 
         <div class="form-group">
@@ -68,7 +68,8 @@
 
 
     var myCombo = new ax5.ui.combobox({
-        theme: "danger"
+        theme: "danger",
+        removeIcon: '<i class="fa fa-times" aria-hidden="true"></i>'
     });
 
     $(document.body).ready(function () {
@@ -110,7 +111,7 @@
             target: $('[data-ax5combobox="combo1"]'),
             options: options,
             onStateChanged: function () {
-                //console.log(this);
+                console.log(this);
             }
         });
 

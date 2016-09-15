@@ -77,8 +77,7 @@
 
 @mixin ax5combobox-display-theme($base-color, $back-color, $theme-color) {
 
-
-    a{
+    a {
         color: $base-color;
     }
 
@@ -180,9 +179,9 @@
                     }
                 }
             }
-            .ax-combobox-option-group{
+            .ax-combobox-option-group {
 
-                .ax-combobox-option-item-holder{
+                .ax-combobox-option-item-holder {
 
                     .ax-combobox-option-group-label {
                         background: #eee;
@@ -284,9 +283,9 @@
                     }
                 }
             }
-            .ax-combobox-option-group{
+            .ax-combobox-option-group {
 
-                .ax-combobox-option-item-holder{
+                .ax-combobox-option-item-holder {
                     display: table;
                     position: relative;
                     border-collapse: separate;
@@ -370,35 +369,49 @@ $hover-types: (
             white-space: nowrap;
             overflow: hidden;
             padding: $ax5combobox-label-padding;
-            &:focus{
+            &:focus {
                 outline: none;
             }
             text-decoration: none;
-            &:hover{
+            &:hover {
                 text-decoration: none;
             }
-            &:after{
+            &:after {
                 content: ' ';
                 display: block;
                 clear: both;
             }
-            span{
-                display: block;
-                float: left;
-                background: transparent;
-                padding: 0px 3px;
-                border: 1px solid transparent;
-                border-radius: 0px;
-                margin: 1px 0px 1px -0.5em;
+            div {
+                &[data-ax5combobox-selected-label] {
+                    position: relative;
+                    display: block;
+                    float: left;
+                    background: transparent;
+                    padding: 0px 3px;
+                    border: 1px solid transparent;
+                    border-radius: 0px;
+                    margin: 1px 0px 1px -0.5em;
 
-                &[data-ax5combobox-selected-label]{
                     background: #eee;
                     border: 1px solid #ccc;
                     border-radius: 3px;
                     margin-left: 0px;
                     margin-right: 3px;
-                    &:first-child{
+
+                    &:first-child {
                         margin-left: 0px;
+                    }
+
+                    [data-ax5combobox-remove] {
+                        width: 15px;
+                        position: absolute;
+                        right: 0;
+                        &:hover {
+                            color: $brand-danger;
+                        }
+                    }
+                    span {
+                        padding-right: 15px;
                     }
                 }
             }
@@ -478,13 +491,13 @@ $hover-types: (
         }
     }
 
-    &.input-xs{
+    &.input-xs {
 
     }
-    &.input-sm{
+    &.input-sm {
 
     }
-    &.input-lg{
+    &.input-lg {
 
     }
 }

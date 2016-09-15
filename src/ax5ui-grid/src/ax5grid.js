@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.16"
+        version: "0.2.17"
     }, (function () {
         /**
          * @class ax5grid
@@ -735,6 +735,8 @@
                                         GRID.body.blur.call(self);
                                     }
                                 } else if (e.which == ax5.info.eventKeys.RETURN) {
+                                    self.keyDown("RETURN", e.originalEvent);
+                                } else if (e.which == ax5.info.eventKeys.TAB) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 } else if (e.which != ax5.info.eventKeys.SPACE && Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
