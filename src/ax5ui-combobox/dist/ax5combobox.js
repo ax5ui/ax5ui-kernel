@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.3.0"
+        version: "0.3.1"
     }, function () {
         /**
          * @class ax5combobox
@@ -763,12 +763,14 @@
                     }
 
                     if (typeof value !== "undefined") {
-                        onStateChanged.call(this, this.queue[queIdx], {
-                            self: this,
-                            item: this.queue[queIdx],
-                            state: "changeValue",
-                            value: this.queue[queIdx].selected
-                        });
+                        if (_option && !_option.noStateChange) {
+                            onStateChanged.call(this, this.queue[queIdx], {
+                                self: this,
+                                item: this.queue[queIdx],
+                                state: "changeValue",
+                                value: this.queue[queIdx].selected
+                            });
+                        }
                     }
 
                     boundID = null;
@@ -1231,6 +1233,7 @@
              * @method ax5combobox.setValue
              * @param {(jQueryObject|Element|Number)} _boundID
              * @param {(String|Array)} _value
+             * @param {Boolean} [_selected]
              * @return {ax5combobox}
              * @example
              * ```js
@@ -1238,7 +1241,7 @@
              * myCombo.setValue($('[data-ax5combobox="combo1"]'), ["1", "2"]);
              * ```
              */
-            this.setValue = function (_boundID, _value) {
+            this.setValue = function (_boundID, _value, _selected) {
                 var queIdx = U.isNumber(_boundID) ? _boundID : getQueIdx.call(this, _boundID);
                 if (queIdx === -1) {
                     console.log(ax5.info.getError("ax5combobox", "402", "val"));
@@ -1250,9 +1253,9 @@
                     var _values = U.map(_value, function () {
                         return { value: this };
                     });
-                    setOptionSelect.call(this, queIdx, _values, true);
+                    setOptionSelect.call(this, queIdx, _values, _selected || true, { noStateChange: true });
                 } else if (U.isString(_value) || U.isNumber(_value)) {
-                    setOptionSelect.call(this, queIdx, { value: _value }, true);
+                    setOptionSelect.call(this, queIdx, { value: _value }, _selected || true, { noStateChange: true });
                 }
                 blurLabel.call(this, queIdx);
 
@@ -1263,6 +1266,7 @@
              * @method ax5combobox.setText
              * @param {(jQueryObject|Element|Number)} _boundID
              * @param {(String|Array)} _text
+             * @param {Boolean} [_selected]
              * @returns {ax5combobox}
              * @example
              * ```js
@@ -1270,14 +1274,14 @@
              * myCombo.setText($('[data-ax5combobox="combo1"]'), ["substring", "search"]);
              * ```
              */
-            this.setText = function (_boundID, _text) {
+            this.setText = function (_boundID, _text, _selected) {
                 var queIdx = U.isNumber(_boundID) ? _boundID : getQueIdx.call(this, _boundID);
                 if (queIdx === -1) {
                     console.log(ax5.info.getError("ax5combobox", "402", "val"));
                     return;
                 }
                 clearSelected.call(this, queIdx);
-                setOptionSelect.call(this, queIdx, _text, true);
+                setOptionSelect.call(this, queIdx, _text, true, { noStateChange: true });
                 blurLabel.call(this, queIdx);
 
                 return this;
