@@ -32,7 +32,7 @@
             this.config = {
                 theme: 'default',
                 animateTime: 250,
-                removeIcon: '&#8855',
+                removeIcon: 'X',
                 lang: {
                     noSelected: '',
                     noOptions: 'no options',
