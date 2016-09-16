@@ -50,7 +50,10 @@
     </form>
 
     <button type="button" class="btn" data-btn="setValue">setValue</button>
-    <button type="button" class="btn" data-btn="getValue">getValue</button>
+    <button type="button" class="btn" data-btn="setValue2">setValue(array)</button>
+    <button type="button" class="btn" data-btn="setText">setText</button>
+    <button type="button" class="btn" data-btn="setText2">setText(array)</button>
+    <button type="button" class="btn" data-btn="getSelectedOption">getSelectedOption</button>
     <button type="button" class="btn" data-btn="setValueSelect">setValue to select</button>
     <button type="button" class="btn" data-btn="update">update options</button>
 </div>
@@ -78,11 +81,23 @@
             var act = this.getAttribute("data-btn");
             switch (act) {
                 case "setValue":
-                    myCombo.val($('[data-ax5combobox="combo1"]'), ["string", "number", "새로운 문구"]);
-                    myCombo.blur($('[data-ax5combobox="combo1"]'));
+                    myCombo.setValue($('[data-ax5combobox="combo1"]'), "1");
+                    //myCombo.blur($('[data-ax5combobox="combo1"]'));
                     break;
-                case "getValue":
-                    console.log(myCombo.val($('[data-ax5combobox="combo1"]')));
+                case "setValue2":
+                    myCombo.setValue($('[data-ax5combobox="combo1"]'), ["1", "2"]);
+                    //myCombo.blur($('[data-ax5combobox="combo1"]'));
+                    break;
+                case "setText":
+                    myCombo.setText($('[data-ax5combobox="combo1"]'), "string");
+                    //myCombo.blur($('[data-ax5combobox="combo1"]'));
+                    break;
+                case "setText2":
+                    myCombo.setText($('[data-ax5combobox="combo1"]'), ["substring", "search"]);
+                    //myCombo.blur($('[data-ax5combobox="combo1"]'));
+                    break;
+                case "getSelectedOption":
+                    console.log(myCombo.getSelectedOption($('[data-ax5combobox="combo1"]')));
                     console.log($(document.forms).serialize());
                     break;
                 case "setValueSelect":
