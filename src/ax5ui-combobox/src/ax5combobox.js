@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.3.1"
+        version: "0.3.2"
     }, (function () {
         /**
          * @class ax5combobox
@@ -949,7 +949,7 @@
                                     var selectedIndex = target.getAttribute("data-ax5combobox-remove-index");
                                     var option = this.queue[queIdx].selected[selectedIndex];
                                     setOptionSelect.call(this, queIdx, {index: {gindex: option['@gindex'], index: option['@index']}}, false, true);
-                                    focusLabel.call(this, this.activecomboboxQueueIndex);
+                                    focusLabel.call(this, queIdx);
                                     U.stopEvent(e);
                                     return this;
                                 } else if (clickEl === "clear") {
