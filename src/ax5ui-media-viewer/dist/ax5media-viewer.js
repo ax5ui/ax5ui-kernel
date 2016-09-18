@@ -1,6 +1,6 @@
 "use strict";
 
-// ax5.ui.media-viewer
+// ax5.ui.mediaViewer
 (function () {
 
     var UI = ax5.ui;

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2016. tom@axisj.com
+  ~ - github.com/thomasjang
+  ~ - www.axisj.com
+  -->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../dist/ax5uploader.css"/>
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/ax5core/dist/ax5core.js"></script>
+    <script src="../dist/ax5uploader.js"></script>
+</head>
+<body style="padding: 10px;">
+
+<div id="user-info-profileImageUrl"></div>
+
+<script>
+    var upload = new ax5.ui.uploader();
+    $(document.body).ready(function () {
+        upload.setConfig({
+            target: $("#user-info-profileImageUrl"),
+            file_types: "image/*",
+            empty_msg: "프로필 사진",
+            progress_theme: "basic",
+            upload_http: {
+                method: "POST",
+                url: "/api/v1/aws/s3/upload",
+                filename_param_key: "file",
+                data: {bucket: "gajago-user-profile", crop: true}
+            },
+            on_event: function (that) {
+                if (that.action == "fileselect") {
+                    //console.log(that.file);
+                }
+                else if (that.action == "uploaded") {
+                    //console.log(that);
+                    _root.form.profile_uploaded(that.file);
+                }
+                else if (that.action == "error") {
+                    alert(that.error.msg);
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
