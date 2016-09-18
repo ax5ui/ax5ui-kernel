@@ -1,11 +1,17 @@
+/*!
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 /// override bootstrap.form-control
 @mixin input-size($parent, $input-height) {
-    [data-ax5combobox] select[multiple]#{$parent} {
+    [data-ax5autocomplete] select[multiple]#{$parent} {
         height: $input-height;
     }
 }
 
-[data-ax5combobox] select[multiple].form-control {
+[data-ax5autocomplete] select[multiple].form-control {
     height: $input-height-base;
 }
 
@@ -13,13 +19,13 @@
 @include input-size('.input-lg', $input-height-large);
 
 .form-group-sm {
-    [data-ax5combobox] select[multiple].form-control {
+    [data-ax5autocomplete] select[multiple].form-control {
         height: $input-height-small;
     }
 }
 
 .form-group-lg {
-    [data-ax5combobox] select[multiple].form-control {
+    [data-ax5autocomplete] select[multiple].form-control {
         height: $input-height-large;
     }
 }
@@ -27,10 +33,10 @@
 .form-inline {
     @media (min-width: $screen-sm-min) {
         // Inline-block all the things for "inline"
-        [data-ax5combobox] {
+        [data-ax5autocomplete] {
             display: inline-block;
-            .ax5combobox-display {
-                .ax5combobox-display-table {
+            .ax5autocomplete-display {
+                .ax5autocomplete-display-table {
                     table-layout: auto;
                 }
             }
@@ -39,7 +45,7 @@
 }
 
 // select group
-[data-ax5combobox] {
+[data-ax5autocomplete] {
     position: relative;
     overflow: visible;
     display: block;
@@ -53,7 +59,7 @@
     }
 }
 
-@include keyframes(ax-combobox-option-group) {
+@include keyframes(ax-autocomplete-option-group) {
     from {
         @include transform(translateY(-10%));
         opacity: 0;
@@ -64,7 +70,7 @@
     }
 }
 
-@include keyframes(ax-combobox-option-group-destroy) {
+@include keyframes(ax-autocomplete-option-group-destroy) {
     from {
         @include transform(translateY(0%) scaleY(1.0));
         opacity: 1;
@@ -75,7 +81,7 @@
     }
 }
 
-@mixin ax5combobox-display-theme($base-color, $back-color, $theme-color) {
+@mixin ax5autocomplete-display-theme($base-color, $back-color, $theme-color) {
 
     a {
         color: $base-color;
@@ -88,21 +94,12 @@
             background: $back-color;
             text-decoration: none;
 
-            .ax5combobox-display-table {
+            .ax5autocomplete-display-table {
                 [data-ax5-select-display="label"] {
 
                 }
                 [data-ax5-select-display="addon"] {
-                    .addon-icon-closed {
-                        .addon-icon-arrow {
-                            border-top-color: $base-color;
-                        }
-                    }
-                    .addon-icon-opened {
-                        .addon-icon-arrow {
-                            border-bottom-color: $base-color;
-                        }
-                    }
+
                 }
             }
         }
@@ -112,14 +109,14 @@
     }
 }
 
-@mixin ax5combobox-option-group-theme($base-color, $back-color, $theme-color, $hover-type) {
+@mixin ax5autocomplete-option-group-theme($base-color, $back-color, $theme-color, $hover-type) {
     border-color: $theme-color;
     color: $base-color;
 
-    .ax-combobox-body {
+    .ax-autocomplete-body {
 
-        .ax-combobox-option-group-content {
-            .ax-combobox-option-item {
+        .ax-autocomplete-option-group-content {
+            .ax-autocomplete-option-item {
                 &:hover, &.hover {
                     @if nth($hover-type, 1) == "lighten" {
                         background: lighten($theme-color, 15%) !important;
@@ -129,9 +126,9 @@
                         color: darken($base-color, nth($hover-type, 2));
                     }
 
-                    .ax-combobox-option-item-holder {
-                        .ax-combobox-option-item-cell {
-                            &.ax-combobox-option-item-checkbox {
+                    .ax-autocomplete-option-item-holder {
+                        .ax-autocomplete-option-item-cell {
+                            &.ax-autocomplete-option-item-checkbox {
                                 .item-checkbox-wrap {
                                     &.useCheckBox {
                                         &:after {
@@ -144,7 +141,7 @@
                                     }
                                 }
                             }
-                            &.ax-combobox-option-item-label {
+                            &.ax-autocomplete-option-item-label {
                             }
                         }
                     }
@@ -158,9 +155,9 @@
                         color: darken($base-color, nth($hover-type, 2));
                     }
 
-                    .ax-combobox-option-item-holder {
-                        .ax-combobox-option-item-cell {
-                            &.ax-combobox-option-item-checkbox {
+                    .ax-autocomplete-option-item-holder {
+                        .ax-autocomplete-option-item-cell {
+                            &.ax-autocomplete-option-item-checkbox {
                                 .item-checkbox-wrap {
                                     &.useCheckBox {
                                         &:after {
@@ -173,24 +170,24 @@
                                     }
                                 }
                             }
-                            &.ax-combobox-option-item-label {
+                            &.ax-autocomplete-option-item-label {
                             }
                         }
                     }
                 }
             }
-            .ax-combobox-option-group {
+            .ax-autocomplete-option-group {
 
-                .ax-combobox-option-item-holder {
+                .ax-autocomplete-option-item-holder {
 
-                    .ax-combobox-option-group-label {
+                    .ax-autocomplete-option-group-label {
                         background: #eee;
                     }
                 }
             }
         }
 
-        .ax-combobox-option-group-buttons {
+        .ax-autocomplete-option-group-buttons {
             border-top: 1px solid;
             border-color: $theme-color;
         }
@@ -201,17 +198,17 @@
     }
 }
 
-@mixin ax5combobox-option-group-size($padding, $font-size) {
-    .ax-combobox-body {
-        padding: $ax5combobox-option-group-body-padding;
-        $ax5combobox-option-item-height: $font-size + 5;
-        $ax5combobox-option-item-checkbox-size: $font-size - 4;
-        .ax-combobox-option-group-content {
-            max-height: $ax5combobox-option-item-height * 10;
+@mixin ax5autocomplete-option-group-size($padding, $font-size) {
+    .ax-autocomplete-body {
+        padding: $ax5autocomplete-option-group-body-padding;
+        $ax5autocomplete-option-item-height: $font-size + 5;
+        $ax5autocomplete-option-item-checkbox-size: $font-size - 4;
+        .ax-autocomplete-option-group-content {
+            max-height: $ax5autocomplete-option-item-height * 10;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             position: relative;
-            .ax-combobox-option-item {
+            .ax-autocomplete-option-item {
                 padding: $padding;
                 text-align: left;
                 cursor: pointer;
@@ -221,26 +218,26 @@
                 overflow: hidden;
                 //table-layout: fixed;
 
-                .ax-combobox-option-item-holder {
+                .ax-autocomplete-option-item-holder {
                     display: table;
                     position: relative;
                     border-collapse: separate;
                     overflow: hidden;
                     //table-layout: fixed;
                     width: 100%;
-                    height: $ax5combobox-option-item-height;
+                    height: $ax5autocomplete-option-item-height;
 
-                    .ax-combobox-option-item-cell {
+                    .ax-autocomplete-option-item-cell {
                         box-sizing: border-box;
                         display: table-cell;
                         vertical-align: middle;
                         white-space: nowrap;
                         font-size: $font-size;
-                        line-height: $ax5combobox-option-item-height;
+                        line-height: $ax5autocomplete-option-item-height;
                         padding: 0px 0px 0px 0px;
                         @include user-select(none);
 
-                        &.ax-combobox-option-item-checkbox {
+                        &.ax-autocomplete-option-item-checkbox {
                             overflow: hidden;
                             width: $font-size;
                             text-align: center;
@@ -248,15 +245,15 @@
                                 position: relative;
                                 display: block;
                                 width: $font-size;
-                                height: $ax5combobox-option-item-height;
+                                height: $ax5autocomplete-option-item-height;
 
                                 &.useCheckBox {
                                     &:after {
                                         content: '';
-                                        width: $ax5combobox-option-item-checkbox-size;
-                                        height: $ax5combobox-option-item-checkbox-size / 2;
+                                        width: $ax5autocomplete-option-item-checkbox-size;
+                                        height: $ax5autocomplete-option-item-checkbox-size / 2;
                                         position: absolute;
-                                        top: ($ax5combobox-option-item-height) / 4;
+                                        top: ($ax5autocomplete-option-item-height) / 4;
                                         right: 0px;
                                         border: 2px solid #000;
                                         border-top: none;
@@ -268,39 +265,39 @@
                                 }
                             }
                         }
-                        &.ax-combobox-option-item-label {
-                            padding: $ax5combobox-label-padding;
-                            padding-right: $ax5combobox-option-item-checkbox-size;
+                        &.ax-autocomplete-option-item-label {
+                            padding: $ax5autocomplete-label-padding;
+                            padding-right: $ax5autocomplete-option-item-checkbox-size;
                         }
                     }
                 }
 
                 &[data-option-selected="true"] {
-                    .ax-combobox-option-item-holder .ax-combobox-option-item-cell.ax-combobox-option-item-checkbox .item-checkbox-wrap.useCheckBox {
+                    .ax-autocomplete-option-item-holder .ax-autocomplete-option-item-cell.ax-autocomplete-option-item-checkbox .item-checkbox-wrap.useCheckBox {
                         &:after {
                             opacity: 1;
                         }
                     }
                 }
             }
-            .ax-combobox-option-group {
+            .ax-autocomplete-option-group {
 
-                .ax-combobox-option-item-holder {
+                .ax-autocomplete-option-item-holder {
                     display: table;
                     position: relative;
                     border-collapse: separate;
                     overflow: hidden;
                     //table-layout: fixed;
                     width: 100%;
-                    height: $ax5combobox-option-item-height;
+                    height: $ax5autocomplete-option-item-height;
 
-                    .ax-combobox-option-group-label {
+                    .ax-autocomplete-option-group-label {
                         box-sizing: border-box;
                         display: table-cell;
                         vertical-align: middle;
                         white-space: nowrap;
                         font-size: $font-size;
-                        line-height: $ax5combobox-option-item-height;
+                        line-height: $ax5autocomplete-option-item-height;
 
                         padding: 5px 10px; // todo : theme 정리 나중에
                         @include user-select(none);
@@ -308,7 +305,7 @@
                 }
             }
         }
-        .ax-combobox-option-group-buttons {
+        .ax-autocomplete-option-group-buttons {
             text-align: center;
             padding: $padding;
         }
@@ -317,32 +314,32 @@
 
 // themes
 $base-colors: (
-        default: $ax5combobox-default-base-color,
-        primary: $ax5combobox-primary-base-color,
-        success: $ax5combobox-success-base-color,
-        info: $ax5combobox-info-base-color,
-        warning: $ax5combobox-warning-base-color,
-        danger: $ax5combobox-danger-base-color
+        default: $ax5autocomplete-default-base-color,
+        primary: $ax5autocomplete-primary-base-color,
+        success: $ax5autocomplete-success-base-color,
+        info: $ax5autocomplete-info-base-color,
+        warning: $ax5autocomplete-warning-base-color,
+        danger: $ax5autocomplete-danger-base-color
 );
 $theme-colors: (
-        default: $ax5combobox-default-theme-color,
-        primary: $ax5combobox-primary-theme-color,
-        success: $ax5combobox-success-theme-color,
-        info: $ax5combobox-info-theme-color,
-        warning: $ax5combobox-warning-theme-color,
-        danger: $ax5combobox-danger-theme-color
+        default: $ax5autocomplete-default-theme-color,
+        primary: $ax5autocomplete-primary-theme-color,
+        success: $ax5autocomplete-success-theme-color,
+        info: $ax5autocomplete-info-theme-color,
+        warning: $ax5autocomplete-warning-theme-color,
+        danger: $ax5autocomplete-danger-theme-color
 );
 $hover-types: (
-        default: $ax5combobox-default-hover-type,
-        primary: $ax5combobox-primary-hover-type,
-        success: $ax5combobox-success-hover-type,
-        info: $ax5combobox-info-hover-type,
-        warning: $ax5combobox-warning-hover-type,
-        danger: $ax5combobox-danger-hover-type
+        default: $ax5autocomplete-default-hover-type,
+        primary: $ax5autocomplete-primary-hover-type,
+        success: $ax5autocomplete-success-hover-type,
+        info: $ax5autocomplete-info-hover-type,
+        warning: $ax5autocomplete-warning-hover-type,
+        danger: $ax5autocomplete-danger-hover-type
 );
 
 /// select-display
-.ax5combobox-display {
+.ax5autocomplete-display {
     position: relative;
     z-index: 2;
     padding: 0px;
@@ -352,23 +349,23 @@ $hover-types: (
         text-decoration: none;
     }
 
-    .ax5combobox-display-table {
+    .ax5autocomplete-display-table {
         width: 100%;
         height: 100%;
         display: table;
         table-layout: fixed;
         border-collapse: collapse;
 
-        [data-ax5combobox-display="label-holder"] {
+        [data-ax5autocomplete-display="label-holder"] {
             display: table-cell;
             vertical-align: middle;
             padding: 0px 0px;
         }
-        [data-ax5combobox-display="label"] {
+        [data-ax5autocomplete-display="label"] {
             display: block;
             white-space: nowrap;
             overflow: hidden;
-            padding: $ax5combobox-label-padding;
+            padding: $ax5autocomplete-label-padding;
             &:focus {
                 outline: none;
             }
@@ -382,7 +379,7 @@ $hover-types: (
                 clear: both;
             }
             div {
-                &[data-ax5combobox-selected-label] {
+                &[data-ax5autocomplete-selected-label] {
                     position: relative;
                     display: block;
                     float: left;
@@ -402,7 +399,7 @@ $hover-types: (
                         margin-left: 0px;
                     }
 
-                    [data-ax5combobox-remove] {
+                    [data-ax5autocomplete-remove] {
                         width: 15px;
                         position: absolute;
                         right: 0;
@@ -416,78 +413,34 @@ $hover-types: (
                 }
             }
         }
-        [data-ax5combobox-display="addon"] {
+        [data-ax5autocomplete-display="addon"] {
             display: table-cell;
             vertical-align: middle;
-            width: $ax5combobox-addon-icon-height * 2 + $ax5combobox-addon-icon-padding-right;
+            width: $ax5autocomplete-addon-icon-height * 2 + $ax5autocomplete-addon-icon-padding-right;
             text-align: center;
 
             .addon-icon-reset {
                 display: none;
-            }
-            .addon-icon-closed {
-                display: block;
-            }
-            .addon-icon-opened {
-                display: none;
-            }
-            .addon-icon-closed {
-                width: $ax5combobox-addon-icon-height * 2 + $ax5combobox-addon-icon-padding-right;
-                text-align: left;
-                line-height: ($ax5combobox-addon-icon-height * 1.414);
-                .addon-icon-arrow {
-                    content: '';
-                    width: 0px;
-                    height: 0px;
-                    display: inline-block;
-                    border-left: $ax5combobox-addon-icon-height solid transparent;
-                    border-right: $ax5combobox-addon-icon-height solid transparent;
-                    border-top: ($ax5combobox-addon-icon-height * 1.414) solid $ax5combobox-addon-icon-color;
-                    background: transparent;
-                    opacity: 1;
-                }
-            }
-            .addon-icon-opened {
-                width: $ax5combobox-addon-icon-height * 2 + $ax5combobox-addon-icon-padding-right;
-                text-align: left;
-                line-height: ($ax5combobox-addon-icon-height * 1.414);
-                .addon-icon-arrow {
-                    content: '';
-                    width: 0px;
-                    height: 0px;
-                    display: inline-block;
-                    border-left: $ax5combobox-addon-icon-height solid transparent;
-                    border-right: $ax5combobox-addon-icon-height solid transparent;
-                    border-bottom: ($ax5combobox-addon-icon-height * 1.414) solid $ax5combobox-addon-icon-color;
-                    background: transparent;
-                    opacity: 1;
-                }
             }
         }
     }
 
     &[data-select-option-group-opened] {
         @include box-shadow(inset 1px 1px 3px rgba(0, 0, 0, 0.2));
-        .ax5combobox-display-table [data-ax5combobox-display="addon"] {
+        .ax5autocomplete-display-table [data-ax5autocomplete-display="addon"] {
             .addon-icon-reset {
                 display: block;
                 position: absolute;
-                right: $ax5combobox-addon-icon-height * 2 + $ax5combobox-addon-icon-padding-right * 2;
+                right: $ax5autocomplete-addon-icon-height * 2 + $ax5autocomplete-addon-icon-padding-right * 2;
                 top: 0px;
                 height: 100%;
-            }
-            .addon-icon-closed {
-                display: none;
-            }
-            .addon-icon-opened {
-                display: block;
             }
         }
     }
 
     @each $theme in $base-colors {
         &.#{nth($theme, 1)} {
-            @include ax5combobox-display-theme(map_get($base-colors, nth($theme, 1)), $ax5combobox-option-group-bg, map_get($theme-colors, nth($theme, 1)));
+            @include ax5autocomplete-display-theme(map_get($base-colors, nth($theme, 1)), $ax5autocomplete-option-group-bg, map_get($theme-colors, nth($theme, 1)));
         }
     }
 
@@ -503,23 +456,23 @@ $hover-types: (
 }
 
 /// select-option-group
-.ax5combobox-option-group {
+.ax5autocomplete-option-group {
     box-sizing: border-box;
-    z-index: $ax5combobox-option-group-z-index;
+    z-index: $ax5autocomplete-option-group-z-index;
     position: absolute;
     left: 0;
     top: 0;
-    border-radius: $ax5combobox-option-group-border-radius;
-    box-shadow: $ax5combobox-option-group-box-shadow;
-    border: $ax5combobox-option-group-inner-border;
+    border-radius: $ax5autocomplete-option-group-border-radius;
+    box-shadow: $ax5autocomplete-option-group-box-shadow;
+    border: $ax5autocomplete-option-group-inner-border;
     overflow: hidden;
-    @include ax-background($ax5combobox-option-group-bg);
-    @include animation(ax-combobox-option-group $ax5combobox-option-group-easing-time-open ease-out);
+    @include ax-background($ax5autocomplete-option-group-bg);
+    @include animation(ax-autocomplete-option-group $ax5autocomplete-option-group-easing-time-open ease-out);
     @include transform(translateZ(0));
     @include transform-origin(center top);
 
     &.destroy {
-        @include animation(ax-combobox-option-group-destroy $ax5combobox-option-group-easing-time-close $ease-in-back forwards);
+        @include animation(ax-autocomplete-option-group-destroy $ax5autocomplete-option-group-easing-time-close $ease-in-back forwards);
     }
     &.direction-top {
         @include transform-origin(center top);
@@ -530,18 +483,18 @@ $hover-types: (
 
     @each $theme in $base-colors {
         &.#{nth($theme, 1)} {
-            @include ax5combobox-option-group-theme(map_get($base-colors, nth($theme, 1)), $ax5combobox-option-group-bg, map_get($theme-colors, nth($theme, 1)), map_get($hover-types, nth($theme, 1)));
+            @include ax5autocomplete-option-group-theme(map_get($base-colors, nth($theme, 1)), $ax5autocomplete-option-group-bg, map_get($theme-colors, nth($theme, 1)), map_get($hover-types, nth($theme, 1)));
         }
     }
 
-    @include ax5combobox-option-group-size($ax5combobox-option-item-padding, $ax5combobox-option-item-font-size);
-    &.ax5combobox-option-group-lg {
-        @include ax5combobox-option-group-size($ax5combobox-option-item-padding-lg, $ax5combobox-option-item-font-size-lg);
+    @include ax5autocomplete-option-group-size($ax5autocomplete-option-item-padding, $ax5autocomplete-option-item-font-size);
+    &.ax5autocomplete-option-group-lg {
+        @include ax5autocomplete-option-group-size($ax5autocomplete-option-item-padding-lg, $ax5autocomplete-option-item-font-size-lg);
     }
-    &.ax5combobox-option-group-sm {
-        @include ax5combobox-option-group-size($ax5combobox-option-item-padding-sm, $ax5combobox-option-item-font-size-sm);
+    &.ax5autocomplete-option-group-sm {
+        @include ax5autocomplete-option-group-size($ax5autocomplete-option-item-padding-sm, $ax5autocomplete-option-item-font-size-sm);
     }
-    &.ax5combobox-option-group-xs {
-        @include ax5combobox-option-group-size($ax5combobox-option-item-padding-xs, $ax5combobox-option-item-font-size-xs);
+    &.ax5autocomplete-option-group-xs {
+        @include ax5autocomplete-option-group-size($ax5autocomplete-option-item-padding-xs, $ax5autocomplete-option-item-font-size-xs);
     }
 }

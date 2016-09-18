@@ -243,8 +243,8 @@
                         for (var i = 0, l = childNodes.length; i < l; i++) {
                             var node = childNodes[i];
                             // nodeType:1 - span, nodeType:3 - text
-                            if (node.nodeType in COMBOBOX.util.nodeTypeProcessor) {
-                                var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node);
+                            if (node.nodeType in AUTOCOMPLETE.util.nodeTypeProcessor) {
+                                var value = AUTOCOMPLETE.util.nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node);
                                 if (typeof value !== "undefined") values.push(value);
                             }
                         }
@@ -261,14 +261,14 @@
                     var data = {};
                     data.id = item.id;
                     data.theme = item.theme;
-                    data.size = "ax5combobox-option-group-" + item.size;
+                    data.size = "ax5autocomplete-option-group-" + item.size;
                     data.multiple = item.multiple;
                     data.lang = item.lang;
                     data.options = item.options;
                     data.selected = item.selected;
                     data.hasSelected = (data.selected && data.selected.length > 0);
                     data.removeIcon = item.removeIcon;
-                    return ax5.mustache.render(COMBOBOX.tmpl["label"].call(this, item.columnKeys), data) + "&nbsp;";
+                    return ax5.mustache.render(AUTOCOMPLETE.tmpl["label"].call(this, item.columnKeys), data) + "&nbsp;";
                 },
                 syncLabel = function (queIdx) {
                     var item = this.queue[queIdx], displayTableHeight;
@@ -327,7 +327,7 @@
 
                         /*
                          item.$display
-                         .find('[data-ax5combobox-display="label"]')
+                         .find('[data-ax5autocomplete-display="label"]')
                          .html(getLabel.call(this, this.activecomboboxQueueIndex));
                          */
                         item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
@@ -337,7 +337,7 @@
                         /// 템플릿에 전달할 오브젝트 선언
                         data.id = item.id;
                         data.theme = item.theme;
-                        data.size = "ax5combobox-option-group-" + item.size;
+                        data.size = "ax5autocomplete-option-group-" + item.size;
                         data.multiple = item.multiple;
                         data.lang = item.lang;
                         data.options = item.options;
@@ -610,12 +610,12 @@
                 })(),
                 getQueIdx = function (boundID) {
                     if (boundID instanceof jQuery) {
-                        boundID = boundID.data("data-ax5combobox-id");
+                        boundID = boundID.data("data-ax5autocomplete-id");
                     } else if (!U.isString(boundID)) {
-                        boundID = jQuery(boundID).data("data-ax5combobox-id");
+                        boundID = jQuery(boundID).data("data-ax5autocomplete-id");
                     }
                     if (!U.isString(boundID)) {
-                        console.log(ax5.info.getError("ax5combobox", "402", "getQueIdx"));
+                        console.log(ax5.info.getError("ax5autocomplete", "402", "getQueIdx"));
                         return;
                     }
                     return U.search(this.queue, function () {
@@ -777,7 +777,7 @@
                     return function (boundID, value, selected, _option) {
                         var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                         if (queIdx === -1) {
-                            console.log(ax5.info.getError("ax5combobox", "402", "val"));
+                            console.log(ax5.info.getError("ax5autocomplete", "402", "val"));
                             return;
                         }
 
@@ -835,9 +835,9 @@
 
             /**
              * Preferences of combobox UI
-             * @method ax5combobox.setConfig
+             * @method ax5autocomplete.setConfig
              * @param {Object} config - 클래스 속성값
-             * @returns {ax5combobox}
+             * @returns {ax5autocomplete}
              * @example
              * ```
              * ```
@@ -845,24 +845,24 @@
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
                 this.onChange = cfg.onChange;
-                jQuery(window).bind("resize.ax5combobox-display-" + this.instanceId, (function () {
+                jQuery(window).bind("resize.ax5autocomplete-display-" + this.instanceId, (function () {
                     alignComboboxDisplay.call(this);
                 }).bind(this));
             };
 
             /**
              * bind combobox
-             * @method ax5combobox.bind
+             * @method ax5autocomplete.bind
              * @param {Object} item
              * @param {String} [item.id]
              * @param {String} [item.theme]
              * @param {Boolean} [item.multiple]
              * @param {Element} item.target
              * @param {Object[]} item.options
-             * @returns {ax5combobox}
+             * @returns {ax5autocomplete}
              */
             this.bind = function (item) {
-                var bindComboboxTarget = (function () {
+                var bindAutocompleteTarget = (function () {
                     var debouncedFocusWord = U.debounce(function (queIdx) {
                         if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
 
@@ -874,14 +874,14 @@
                         for (var i = 0, l = childNodes.length; i < l; i++) {
                             var node = childNodes[i];
 
-                            if (node.nodeType in COMBOBOX.util.nodeTypeProcessor) {
-                                var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node, true);
+                            if (node.nodeType in AUTOCOMPLETE.util.nodeTypeProcessor) {
+                                var value = AUTOCOMPLETE.util.nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node, true);
                                 if (typeof value === "undefined") {
                                     //
                                 }
                                 else if (U.isString(value)) {
                                     searchWord = value;
-                                    if (node.nodeType == '1' && node.getAttribute("data-ax5combobox-selected-text")) {
+                                    if (node.nodeType == '1' && node.getAttribute("data-ax5autocomplete-selected-text")) {
                                         // 노드 타입인데 문자열이 리턴 되었다면 선택을 취소해야함.
                                         searchWord = false; // 검색을 수행하지 않고 값을 변경하자.
                                     }
@@ -916,8 +916,8 @@
 
                         for (var i = 0, l = childNodes.length; i < l; i++) {
                             var node = childNodes[i];
-                            if (node.nodeType in COMBOBOX.util.nodeTypeProcessor) {
-                                var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, queIdx, node, true);
+                            if (node.nodeType in AUTOCOMPLETE.util.nodeTypeProcessor) {
+                                var value = AUTOCOMPLETE.util.nodeTypeProcessor[node.nodeType].call(this, queIdx, node, true);
                                 if (typeof value === "undefined") {
                                     //
                                 }
@@ -936,11 +936,11 @@
                         }
                     };
 
-                    var comboboxEvent = {
+                    var autocompleteEvent = {
                         'click': function (queIdx, e) {
                             var clickEl;
                             var target = U.findParentNode(e.target, function (target) {
-                                if (target.getAttribute("data-ax5combobox-remove")) {
+                                if (target.getAttribute("data-ax5autocomplete-remove")) {
                                     clickEl = "optionItemRemove";
                                     return true;
                                 }
@@ -952,7 +952,7 @@
 
                             if (target) {
                                 if (clickEl === "optionItemRemove") {
-                                    var selectedIndex = target.getAttribute("data-ax5combobox-remove-index");
+                                    var selectedIndex = target.getAttribute("data-ax5autocomplete-remove-index");
                                     var option = this.queue[queIdx].selected[selectedIndex];
                                     setOptionSelect.call(this, queIdx, {index: {gindex: option['@gindex'], index: option['@index']}}, false, true);
                                     focusLabel.call(this, queIdx);
@@ -1043,9 +1043,9 @@
                                 return (item.size) ? "input-" + item.size : "";
                             })();
 
-                            item.$display = jQuery(ax5.mustache.render(COMBOBOX.tmpl["comboboxDisplay"].call(this, queIdx), data));
+                            item.$display = jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl["autocompleteDisplay"].call(this, queIdx), data));
                             item.$displayTable = item.$display.find('[data-els="display-table"]');
-                            item.$displayLabel = item.$display.find('[data-ax5combobox-display="label"]');
+                            item.$displayLabel = item.$display.find('[data-ax5autocomplete-display="label"]');
 
                             if (item.$target.find("select").get(0)) {
                                 item.$select = item.$target.find("select");
@@ -1060,7 +1060,7 @@
                                 }
                             }
                             else {
-                                item.$select = jQuery(ax5.mustache.render(COMBOBOX.tmpl["formSelect"].call(this, queIdx), data));
+                                item.$select = jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl["formSelect"].call(this, queIdx), data));
                                 item.$target.append(item.$select);
                             }
 
@@ -1080,27 +1080,27 @@
                         }
 
                         item.$display
-                            .unbind('click.ax5combobox')
-                            .bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
+                            .unbind('click.ax5autocomplete')
+                            .bind('click.ax5autocomplete', autocompleteEvent.click.bind(this, queIdx));
 
                         // combobox 태그에 대한 이벤트 감시
 
 
                         item.$displayLabel
-                            .unbind("focus.ax5combobox")
-                            .bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx))
-                            .unbind("blur.ax5combobox")
-                            .bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx))
-                            .unbind('keyup.ax5combobox')
-                            .bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx))
-                            .unbind("keydown.ax5combobox")
-                            .bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
+                            .unbind("focus.ax5autocomplete")
+                            .bind("focus.ax5autocomplete", autocompleteEvent.focus.bind(this, queIdx))
+                            .unbind("blur.ax5autocomplete")
+                            .bind("blur.ax5autocomplete", autocompleteEvent.blur.bind(this, queIdx))
+                            .unbind('keyup.ax5autocomplete')
+                            .bind('keyup.ax5autocomplete', autocompleteEvent.keyUp.bind(this, queIdx))
+                            .unbind("keydown.ax5autocomplete")
+                            .bind("keydown.ax5autocomplete", autocompleteEvent.keyDown.bind(this, queIdx));
 
                         // select 태그에 대한 change 이벤트 감시
 
                         item.$select
-                            .unbind('change.ax5combobox')
-                            .bind('change.ax5combobox', comboboxEvent.selectChange.bind(this, queIdx));
+                            .unbind('change.ax5autocomplete')
+                            .bind('change.ax5autocomplete', autocompleteEvent.selectChange.bind(this, queIdx));
 
                         data = null;
                         item = null;
@@ -1114,18 +1114,18 @@
 
                 item = jQuery.extend(true, comboboxConfig, cfg, item);
                 if (!item.target) {
-                    console.log(ax5.info.getError("ax5combobox", "401", "bind"));
+                    console.log(ax5.info.getError("ax5autocomplete", "401", "bind"));
                     return this;
                 }
 
                 item.$target = jQuery(item.target);
 
-                if (!item.id) item.id = item.$target.data("data-ax5combobox-id");
+                if (!item.id) item.id = item.$target.data("data-ax5autocomplete-id");
                 if (!item.id) {
-                    item.id = 'ax5combobox-' + ax5.getGuid();
-                    item.$target.data("data-ax5combobox-id", item.id);
+                    item.id = 'ax5autocomplete-' + ax5.getGuid();
+                    item.$target.data("data-ax5autocomplete-id", item.id);
                 }
-                item.name = item.$target.attr("data-ax5combobox");
+                item.name = item.$target.attr("data-ax5autocomplete");
                 if (item.options) {
                     item.options = JSON.parse(JSON.stringify(item.options));
                 }
@@ -1135,7 +1135,7 @@
                     if (U.isObject(data) && !data.error) {
                         item = jQuery.extend(true, item, data);
                     }
-                })(U.parseJson(item.$target.attr("data-ax5combobox-config"), true));
+                })(U.parseJson(item.$target.attr("data-ax5autocomplete-config"), true));
 
                 queIdx = U.search(this.queue, function () {
                     return this.id == item.id;
@@ -1143,11 +1143,11 @@
 
                 if (queIdx === -1) {
                     this.queue.push(item);
-                    bindComboboxTarget.call(this, this.queue.length - 1);
+                    bindAutocompleteTarget.call(this, this.queue.length - 1);
                 }
                 else {
                     this.queue[queIdx] = jQuery.extend(true, {}, this.queue[queIdx], item);
-                    bindComboboxTarget.call(this, queIdx);
+                    bindAutocompleteTarget.call(this, queIdx);
                 }
 
                 comboboxConfig = null;
@@ -1157,10 +1157,10 @@
 
             /**
              * open the optionBox of combobox
-             * @method ax5combobox.open
+             * @method ax5autocomplete.open
              * @param {(String|Number|Element)} boundID
              * @param {Number} [tryCount]
-             * @returns {ax5combobox}
+             * @returns {ax5autocomplete}
              */
             this.open = (function () {
                 var onExpand = function (item) {
@@ -1189,7 +1189,7 @@
                             })(item, O);
 
                             item.$display
-                                .find('[data-ax5combobox-display="label"]')
+                                .find('[data-ax5autocomplete-display="label"]')
                                 .html(getLabel.call(this, this.activecomboboxQueueIndex));
                             item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
 
@@ -1198,11 +1198,11 @@
                             /// 템플릿에 전달할 오브젝트 선언
                             data.id = item.id;
                             data.theme = item.theme;
-                            data.size = "ax5combobox-option-group-" + item.size;
+                            data.size = "ax5autocomplete-option-group-" + item.size;
                             data.multiple = item.multiple;
                             data.lang = item.lang;
                             data.options = item.options;
-                            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)));
+                            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl["options"].call(this, item.columnKeys), data)));
                         }
                     }).bind(this));
                 };
@@ -1241,7 +1241,7 @@
                     /// 템플릿에 전달할 오브젝트 선언
                     data.id = item.id;
                     data.theme = item.theme;
-                    data.size = "ax5combobox-option-group-" + item.size;
+                    data.size = "ax5autocomplete-option-group-" + item.size;
                     data.multiple = item.multiple;
 
                     data.lang = item.lang;
@@ -1255,12 +1255,12 @@
                         return !this.hide;
                     });
 
-                    this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(COMBOBOX.tmpl["optionGroup"].call(this, item.columnKeys), data));
-                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)));
+                    this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl["optionGroup"].call(this, item.columnKeys), data));
+                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl["options"].call(this, item.columnKeys), data)));
                     this.activecomboboxQueueIndex = queIdx;
 
                     alignComboboxOptionGroup.call(this, "append"); // alignComboboxOptionGroup 에서 body append
-                    jQuery(window).bind("resize.ax5combobox-" + this.instanceId, (function () {
+                    jQuery(window).bind("resize.ax5autocomplete-" + this.instanceId, (function () {
                         alignComboboxOptionGroup.call(this);
                     }).bind(this));
 
@@ -1274,13 +1274,13 @@
                         }
                     }
 
-                    jQuery(window).bind("keyup.ax5combobox-" + this.instanceId, (function (e) {
+                    jQuery(window).bind("keyup.ax5autocomplete-" + this.instanceId, (function (e) {
                         e = e || window.event;
                         onBodyKeyup.call(this, e);
                         U.stopEvent(e);
                     }).bind(this));
 
-                    jQuery(window).bind("click.ax5combobox-" + this.instanceId, (function (e) {
+                    jQuery(window).bind("click.ax5autocomplete-" + this.instanceId, (function (e) {
                         e = e || window.event;
                         onBodyClick.call(this, e);
                         U.stopEvent(e);
@@ -1306,9 +1306,9 @@
             })();
 
             /**
-             * @method ax5combobox.update
+             * @method ax5autocomplete.update
              * @param {(Object|String)} item
-             * @returns {ax5combobox}
+             * @returns {ax5autocomplete}
              */
             this.update = function (_item) {
                 this.bind(_item);
@@ -1316,21 +1316,21 @@
             };
 
             /**
-             * @method ax5combobox.setValue
+             * @method ax5autocomplete.setValue
              * @param {(jQueryObject|Element|Number)} _boundID
              * @param {(String|Array)} _value
              * @param {Boolean} [_selected]
-             * @return {ax5combobox}
+             * @return {ax5autocomplete}
              * @example
              * ```js
-             * myCombo.setValue($('[data-ax5combobox="combo1"]'), "1");
-             * myCombo.setValue($('[data-ax5combobox="combo1"]'), ["1", "2"]);
+             * myCombo.setValue($('[data-ax5autocomplete="combo1"]'), "1");
+             * myCombo.setValue($('[data-ax5autocomplete="combo1"]'), ["1", "2"]);
              * ```
              */
             this.setValue = function (_boundID, _value, _selected) {
                 var queIdx = (U.isNumber(_boundID)) ? _boundID : getQueIdx.call(this, _boundID);
                 if (queIdx === -1) {
-                    console.log(ax5.info.getError("ax5combobox", "402", "val"));
+                    console.log(ax5.info.getError("ax5autocomplete", "402", "val"));
                     return;
                 }
 
@@ -1350,21 +1350,21 @@
             };
 
             /**
-             * @method ax5combobox.setText
+             * @method ax5autocomplete.setText
              * @param {(jQueryObject|Element|Number)} _boundID
              * @param {(String|Array)} _text
              * @param {Boolean} [_selected]
-             * @returns {ax5combobox}
+             * @returns {ax5autocomplete}
              * @example
              * ```js
-             * myCombo.setText($('[data-ax5combobox="combo1"]'), "string");
-             * myCombo.setText($('[data-ax5combobox="combo1"]'), ["substring", "search"]);
+             * myCombo.setText($('[data-ax5autocomplete="combo1"]'), "string");
+             * myCombo.setText($('[data-ax5autocomplete="combo1"]'), ["substring", "search"]);
              * ```
              */
             this.setText = function (_boundID, _text, _selected) {
                 var queIdx = (U.isNumber(_boundID)) ? _boundID : getQueIdx.call(this, _boundID);
                 if (queIdx === -1) {
-                    console.log(ax5.info.getError("ax5combobox", "402", "val"));
+                    console.log(ax5.info.getError("ax5autocomplete", "402", "val"));
                     return;
                 }
                 clearSelected.call(this, queIdx);
@@ -1375,22 +1375,22 @@
             };
 
             /**
-             * @method ax5combobox.getSelectedOption
+             * @method ax5autocomplete.getSelectedOption
              * @param {(jQueryObject|Element|Number)} _boundID
              * @returns {Array}
              */
             this.getSelectedOption = function (_boundID) {
                 var queIdx = (U.isNumber(_boundID)) ? _boundID : getQueIdx.call(this, _boundID);
                 if (queIdx === -1) {
-                    console.log(ax5.info.getError("ax5combobox", "402", "val"));
+                    console.log(ax5.info.getError("ax5autocomplete", "402", "val"));
                     return;
                 }
                 return U.deepCopy(this.queue[queIdx].selected);
             };
 
             /**
-             * @method ax5combobox.close
-             * @returns {ax5combobox}
+             * @method ax5autocomplete.close
+             * @returns {ax5autocomplete}
              */
             this.close = function (item) {
                 if (this.closeTimer) clearTimeout(this.closeTimer);
@@ -1403,9 +1403,9 @@
                 this.activecomboboxOptionGroup.addClass("destroy");
 
                 jQuery(window)
-                    .unbind("resize.ax5combobox-" + this.instanceId)
-                    .unbind("click.ax5combobox-" + this.instanceId)
-                    .unbind("keyup.ax5combobox-" + this.instanceId);
+                    .unbind("resize.ax5autocomplete-" + this.instanceId)
+                    .unbind("click.ax5autocomplete-" + this.instanceId)
+                    .unbind("keyup.ax5autocomplete-" + this.instanceId);
 
                 this.closeTimer = setTimeout((function () {
                     if (this.activecomboboxOptionGroup) this.activecomboboxOptionGroup.remove();
@@ -1423,14 +1423,14 @@
             };
 
             /**
-             * @method ax5combobox.blur
+             * @method ax5autocomplete.blur
              * @param {(jQueryObject|Element|Number)} _boundID
-             * @returns {ax5combobox}
+             * @returns {ax5autocomplete}
              */
             this.blur = function (_boundID) {
                 var queIdx = (U.isNumber(_boundID)) ? _boundID : getQueIdx.call(this, _boundID);
                 if (queIdx === -1) {
-                    console.log(ax5.info.getError("ax5combobox", "402", "val"));
+                    console.log(ax5.info.getError("ax5autocomplete", "402", "val"));
                     return;
                 }
 
@@ -1439,9 +1439,9 @@
             };
 
             /**
-             * @method ax5combobox.enable
+             * @method ax5autocomplete.enable
              * @param {(jQueryObject|Element|Number)} _boundID
-             * @returns {ax5combobox}
+             * @returns {ax5autocomplete}
              */
             this.enable = function (_boundID) {
                 var queIdx = getQueIdx.call(this, _boundID);
@@ -1457,9 +1457,9 @@
             };
 
             /**
-             * @method ax5combobox.disable
+             * @method ax5autocomplete.disable
              * @param {(jQueryObject|Element|Number)} _boundID
-             * @returns {ax5combobox}
+             * @returns {ax5autocomplete}
              */
             this.disable = function (_boundID) {
                 var queIdx = getQueIdx.call(this, _boundID);
