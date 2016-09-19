@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.3.2"
+        version: "0.3.4"
     }, (function () {
         /**
          * @class ax5combobox
@@ -291,7 +291,7 @@
                 onSearch = function (queIdx, searchWord) {
 
                     this.queue[queIdx].waitOptions = true;
-                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx])));
+                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx])));
 
                     this.queue[queIdx].onSearch.call({
                         self: this,
@@ -318,12 +318,7 @@
                                 });
                             }
                         })(item, O);
-
-                        /*
-                         item.$display
-                         .find('[data-ax5combobox-display="label"]')
-                         .html(getLabel.call(this, this.activecomboboxQueueIndex));
-                         */
+                        
                         item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
 
                         alignComboboxDisplay.call(this);
@@ -335,13 +330,16 @@
                         data.multiple = item.multiple;
                         data.lang = item.lang;
                         data.options = item.options;
-                        this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                        this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, item.columnKeys), data)));
 
                     }).bind(this));
                 },
                 focusWord = function (queIdx, searchWord) {
                     if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
                     var options = [], i = -1, l = this.queue[queIdx].indexedOptions.length - 1, n;
+                    
+                    console.log(searchWord);
+                    
                     if (searchWord != "") {
                         var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
                         searchWord = searchWord.replace(regExp, "");
@@ -378,6 +376,7 @@
                             return a.optionsSort - b.optionsSort;
                         });
                     }
+                    
                     if (options && options.length > 0) {
                         focusMove.call(this, queIdx, undefined, options[0]['@findex']);
                     } else {
@@ -911,7 +910,7 @@
                         for (var i = 0, l = childNodes.length; i < l; i++) {
                             var node = childNodes[i];
                             if (node.nodeType in COMBOBOX.util.nodeTypeProcessor) {
-                                var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, queIdx, node, true);
+                                var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, queIdx, node, false);
                                 if (typeof value === "undefined") {
                                     //
                                 }
@@ -1006,8 +1005,6 @@
                             //console.log(e);
                         },
                         'blur': function (queIdx, e) {
-                            //console.log(e);
-                            //debouncedFocusWord.call(this, queIdx);
                             blurLabel.call(this, queIdx);
                             U.stopEvent(e);
                         },
