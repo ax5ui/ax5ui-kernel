@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.3.5"
+        version: "0.3.6"
     }, (function () {
         /**
          * @class ax5combobox
@@ -228,6 +228,7 @@
                 },
                 onBodyKeyup = function (e) { // 옵션 선택 후 키업
                     if (e.keyCode == ax5.info.eventKeys.ESC) {
+                        blurLabel.call(this, this.activecomboboxQueueIndex);
                         this.close();
                     }
                     else if (e.which == ax5.info.eventKeys.RETURN) {
@@ -1494,7 +1495,7 @@
  * @param [arguments]
  * @example
  * ```html
- * <div data-ax5combobox="combo1" data-ax5combobox-config='{
+ * <div data-ax5combobox="ax1" data-ax5combobox-config='{
  *  multiple: true,
  *  editable: true,
  *  size: "",
@@ -1502,7 +1503,7 @@
  *  }'></div>
  * <script>
  * jQuery('[data-ax5combobox="ax1"]').ax5combobox();
- * $('[data-ax5combobox="ax1"]').ax5combobox("getValue");
+ * $('[data-ax5combobox="ax1"]').ax5combobox("getSelectedOption");
  * $('[data-ax5combobox="ax1"]').ax5combobox("setValue", ["string", "number"]);
  * $('[data-ax5combobox="ax1"]').ax5combobox("enable");
  * $('[data-ax5combobox="ax1"]').ax5combobox("disable");

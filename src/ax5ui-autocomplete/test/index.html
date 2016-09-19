@@ -42,14 +42,7 @@
             multiple: true,
             size:""
         }'>
-                <select data-ax-path="ui3">
-                    <option value="1">장기영</option>
-                    <option value="2">이영희</option>
-                    <option value="3">황인서</option>
-                    <option value="4">장서우</option>
-                    <option value="5">이서연</option>
-                    <option value="6">황세진</option>
-                </select>
+                <select data-ax-path="ui3"></select>
             </div>
         </div>
 
@@ -100,11 +93,12 @@
             var act = this.getAttribute("data-btn");
             switch (act) {
                 case "setValue":
-                    myUI.setValue($('[data-ax5autocomplete="ui1"]'), {value:"test", text:"test"});
+                        myUI.setValue($('[data-ax5autocomplete="ui1"]'), {value:"test", text:"test"});
                     //myCombo.blur($('[data-ax5autocomplete="ui1"]'));
                     break;
                 case "setValue2":
-                    myUI.setValue($('[data-ax5autocomplete="ui1"]'), [{value:"test1", text:"test1"}, {value:"test2", text:"test2"}]);
+                    //myUI.setValue($('[data-ax5autocomplete="ui1"]'), [{value:"test1", text:"test1"}, {value:"test2", text:"test2"}]);
+                    myUI.setValue($('[data-ax5autocomplete="ui1"]'), null);
                     //myCombo.blur($('[data-ax5autocomplete="ui1"]'));
                     break;
                 case "setText":

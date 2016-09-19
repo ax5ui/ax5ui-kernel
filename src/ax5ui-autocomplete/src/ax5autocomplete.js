@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "autocomplete",
-        version: "0.0.2"
+        version: "0.0.3"
     }, (function () {
         /**
          * @class ax5autocomplete
@@ -65,7 +65,7 @@
                     "40": "KEY_DOWN",
                     "35": "KEY_END",
                     "187": "KEY_EQUAL",
-                    "27": "KEY_ESC",
+                    //"27": "KEY_ESC",
                     "36": "KEY_HOME",
                     "45": "KEY_INSERT",
                     "37": "KEY_LEFT",
@@ -73,7 +73,7 @@
                     "34": "KEY_PAGEDOWN",
                     "33": "KEY_PAGEUP",
                     // "190": "KEY_PERIOD",
-                    "13": "KEY_RETURN",
+                    //"13": "KEY_RETURN",
                     "39": "KEY_RIGHT",
                     "16": "KEY_SHIFT",
                     // "32": "KEY_SPACE",
@@ -234,6 +234,7 @@
                 },
                 onBodyKeyup = function (e) { // 옵션 선택 후 키업
                     if (e.keyCode == ax5.info.eventKeys.ESC) {
+                        blurLabel.call(this, this.activeautocompleteQueueIndex);
                         this.close();
                     }
                     else if (e.which == ax5.info.eventKeys.RETURN) {
@@ -424,7 +425,6 @@
                         item.optionFocusIndex = _focusIndex;
 
                         // 포커스 인덱스가 hide아이템을 만나면 hide 아이템이 안나올 때까지 루프를 순회 합니다.
-                        // todo : editable 로 추가된 options가 제거 되지 않으므로. 인덱스 검색을 좀 더 보강 해야함.
                         if (item.options[_focusIndex] && item.options[_focusIndex].hide) { // 옵션이 없는 값이 선택된 경우
                             if (typeof direction === "undefined") {
                                 return this;
@@ -471,17 +471,20 @@
                                 // optionGroup scroll check
 
                                 if (typeof direction !== "undefined") {
+                                    /*
                                     // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
                                     // 방향이 있으면 라벨 값을 수정
                                     var childNodes = item.$displayLabel.get(0).childNodes;
                                     var lastNode = childNodes[childNodes.length - 1];
                                     if (lastNode && lastNode.nodeType == '3') {
-                                        lastNode.nodeValue = item.options[_focusIndex].text;
+                                        //lastNode.nodeValue = item.options[_focusIndex].text;
                                         U.selectRange(item.$displayLabel, "end");
                                     } else if (lastNode && lastNode.nodeType == '1') {
-                                        jQuery(lastNode).after(item.options[_focusIndex].text);
+                                        //jQuery(lastNode).after(item.options[_focusIndex].text);
                                         U.selectRange(item.$displayLabel, "end");
                                     }
+                                    */
+                                    U.selectRange(item.$displayLabel, "end");
                                 }
                             }
                         }
@@ -523,7 +526,7 @@
                 setSelected = (function () {
                     var processor = {
                         'selectedIndex': function (queIdx, value, selected, setValueType) {
-// 할일이 없음.
+
                         },
                         'removeSelectedIndex': function (queIdx, value, selected, setValueType) {
                             var item = this.queue[queIdx], addOptions = {};
@@ -674,7 +677,6 @@
                                     }
                                     item.selected = newSelectedArray;
                                 }
-
                             }
                             else {
                                 // 새로운 값 추가
@@ -766,7 +768,7 @@
             /// private end
 
             /**
-             * Preferences of combobox UI
+             * Preferences of autocomplete UI
              * @method ax5autocomplete.setConfig
              * @param {Object} config - 클래스 속성값
              * @returns {ax5autocomplete}
@@ -914,7 +916,12 @@
                                 self.open(queIdx);
                                 U.stopEvent(e);
                             }
-                            debouncedFocusWord.call(this, queIdx);
+                            if (ctrlKeys[e.which]) {
+                                U.stopEvent(e);
+                            }else{
+                                debouncedFocusWord.call(this, queIdx);
+                            }
+
                         },
                         'keyDown': function (queIdx, e) {
                             if (e.which == ax5.info.eventKeys.ESC) {
@@ -1000,7 +1007,7 @@
                             .unbind('click.ax5autocomplete')
                             .bind('click.ax5autocomplete', autocompleteEvent.click.bind(this, queIdx));
 
-                        // combobox 태그에 대한 이벤트 감시
+                        // autocomplete 태그에 대한 이벤트 감시
 
 
                         item.$displayLabel
@@ -1074,7 +1081,7 @@
             };
 
             /**
-             * open the optionBox of combobox
+             * open the optionBox of autocomplete
              * @method ax5autocomplete.open
              * @param {(String|Number|Element)} boundID
              * @param {Number} [tryCount]
@@ -1086,7 +1093,7 @@
                     this.waitOptionsCallback = null;
 
                     /**
-                     * open combobox from the outside
+                     * open autocomplete from the outside
                      */
                     var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                     var item = this.queue[queIdx];
@@ -1121,7 +1128,7 @@
                     data.multiple = item.multiple;
 
                     data.lang = item.lang;
-                    item.$display.attr("data-combobox-option-group-opened", "true");
+                    item.$display.attr("data-autocomplete-option-group-opened", "true");
 
                     data.waitOptions = true;
                     data.options = [];
@@ -1172,28 +1179,18 @@
             })();
 
             /**
-             * @method ax5autocomplete.update
-             * @param {(Object|String)} item
-             * @returns {ax5autocomplete}
-             */
-            this.update = function (_item) {
-                this.bind(_item);
-                return this;
-            };
-
-            /**
              * @method ax5autocomplete.setValue
              * @param {(jQueryObject|Element|Number)} _boundID
              * @param {(String|Array)} _value
-             * @param {Boolean} [_selected]
              * @return {ax5autocomplete}
              * @example
              * ```js
-             * myCombo.setValue($('[data-ax5autocomplete="combo1"]'), "1");
-             * myCombo.setValue($('[data-ax5autocomplete="combo1"]'), ["1", "2"]);
+             * myAutocomplete.setValue($('[data-ax5autocomplete="autocomplete1"]'), {value:"test", text:"test"});
+             * myAutocomplete.setValue($('[data-ax5autocomplete="autocomplete1"]'), [{value:"test1", text:"test1"}, {value:"test2", text:"test2"}]);
+             * myAutocomplete.setValue($('[data-ax5autocomplete="autocomplete1"]'), null);
              * ```
              */
-            this.setValue = function (_boundID, _value, _selected) {
+            this.setValue = function (_boundID, _value) {
                 var queIdx = (U.isNumber(_boundID)) ? _boundID : getQueIdx.call(this, _boundID);
                 if (queIdx === -1) {
                     console.log(ax5.info.getError("ax5autocomplete", "402", "val"));
@@ -1206,11 +1203,11 @@
                     var _values = U.map(_value, function () {
                         return {value: this};
                     });
-                    setSelected.call(this, queIdx, _values, _selected || true, {noStateChange: true});
+                    setSelected.call(this, queIdx, _values, true, {noStateChange: true});
                 }
                 else if (U.isObject(_value)) {
                     console.log(_value);
-                    setSelected.call(this, queIdx, {value: _value}, _selected || true, {noStateChange: true});
+                    setSelected.call(this, queIdx, {value: _value}, true, {noStateChange: true});
                 }
                 blurLabel.call(this, queIdx);
 
@@ -1221,15 +1218,14 @@
              * @method ax5autocomplete.setText
              * @param {(jQueryObject|Element|Number)} _boundID
              * @param {(String|Array)} _text
-             * @param {Boolean} [_selected]
              * @returns {ax5autocomplete}
              * @example
              * ```js
-             * myCombo.setText($('[data-ax5autocomplete="combo1"]'), "string");
-             * myCombo.setText($('[data-ax5autocomplete="combo1"]'), ["substring", "search"]);
+             * myAutocomplete.setText($('[data-ax5autocomplete="autocomplete1"]'), "string");
+             * myAutocomplete.setText($('[data-ax5autocomplete="autocomplete1"]'), ["substring", "search"]);
              * ```
              */
-            this.setText = function (_boundID, _text, _selected) {
+            this.setText = function (_boundID, _text) {
                 var queIdx = (U.isNumber(_boundID)) ? _boundID : getQueIdx.call(this, _boundID);
                 if (queIdx === -1) {
                     console.log(ax5.info.getError("ax5autocomplete", "402", "val"));
@@ -1267,7 +1263,7 @@
 
                 item = this.queue[this.activeautocompleteQueueIndex];
                 item.optionFocusIndex = -1;
-                item.$display.removeAttr("data-combobox-option-group-opened").trigger("focus");
+                item.$display.removeAttr("data-autocomplete-option-group-opened").trigger("focus");
 
                 this.activeautocompleteOptionGroup.addClass("destroy");
 
@@ -1364,6 +1360,28 @@
  * @namespace jQueryExtends
  */
 
+/**
+ * @method jQueryExtends.ax5autocomplete
+ * @param {String} methodName
+ * @param [arguments]
+ * @param [arguments]
+ * @example
+ * ```html
+ * <div data-ax5autocomplete="ax1" data-ax5autocomplete-config='{
+ *  multiple: true,
+ *  editable: true,
+ *  size: "",
+ *  theme:""
+ *  }'></div>
+ * <script>
+ * jQuery('[data-ax5autocomplete="ax1"]').ax5autocomplete();
+ * $('[data-ax5autocomplete="ax1"]').ax5autocomplete("getSelectedOption");
+ * $('[data-ax5autocomplete="ax1"]').ax5autocomplete("setValue", {value:"test", text:"test"});
+ * $('[data-ax5autocomplete="ax1"]').ax5autocomplete("enable");
+ * $('[data-ax5autocomplete="ax1"]').ax5autocomplete("disable");
+ * </script>
+ * ```
+ */
 ax5.ui.autocomplete_instance = new ax5.ui.autocomplete();
 jQuery.fn.ax5autocomplete = (function () {
     return function (config) {
