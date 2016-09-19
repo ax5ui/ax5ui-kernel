@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "autocomplete",
-        version: "0.0.3"
+        version: "0.0.4"
     }, (function () {
         /**
          * @class ax5autocomplete
@@ -59,7 +59,7 @@
             var
                 ctrlKeys = {
                     "18": "KEY_ALT",
-                    "8": "KEY_BACKSPACE",
+                    //"8": "KEY_BACKSPACE",
                     "17": "KEY_CONTROL",
                     "46": "KEY_DELETE",
                     "40": "KEY_DOWN",
