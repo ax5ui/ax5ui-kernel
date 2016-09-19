@@ -8,7 +8,7 @@
         '1': function (queIdx, node, editable) {
             var cfg = this.config;
             var textNode = node;
-            //// 임시..
+
             if ($(node).find("span").get(0)) {
                 textNode = $(node).find("span").get(0);
             }
@@ -17,42 +17,30 @@
             var item = this.queue[queIdx];
 
             var selectedIndex, option;
-            if (item.selected && item.selected.length > 0 && node.getAttribute("data-ax5combobox-selected-text") == text) {
-                selectedIndex = node.getAttribute("data-ax5combobox-selected-label");
-                option = item.selected[selectedIndex];
-                return {
-                    index: {
-                        gindex: option["@gindex"],
-                        index: option["@index"],
-                        value: option[cfg.columnKeys.optionValue]
-                    }
-                };
-            }
-            else if (!node.getAttribute("data-ax5combobox-selected-text")) {
-                if (text != "") {
-                    if (!editable) {
 
-                    }
-
-                    var option;
-                    if (item.optionFocusIndex > -1 && (option = item.indexedOptions[item.optionFocusIndex]) && option[cfg.columnKeys.optionText].substr(0, text.length) === text) {
-                        return {
-                            index: {
-                                gindex: option["@gindex"],
-                                index: option["@index"],
-                                value: option[cfg.columnKeys.optionValue]
-                            }
+            if(item.selected && item.selected.length > 0){
+                if (node.getAttribute("data-ax5autocomplete-selected-text") == text) {
+                    selectedIndex = node.getAttribute("data-ax5autocomplete-selected-label");
+                    option = item.selected[selectedIndex];
+                    return {
+                        selectedIndex: {
+                            index: option["@index"],
+                            value: option[cfg.columnKeys.optionValue]
                         }
-                    } else {
-                        return (this.queue[queIdx].editable || editable) ? text : undefined;
-                    }
-                } else {
-                    return undefined;
+                    };
+                }
+                else {
+                    selectedIndex = node.getAttribute("data-ax5autocomplete-selected-label");
+                    option = item.selected[selectedIndex];
+                    return {
+                        removeSelectedIndex: {
+                            index: option["@index"],
+                            value: option[cfg.columnKeys.optionValue]
+                        }
+                    };
                 }
             }
-            else {
-                return text;
-            }
+
         },
         '3': function (queIdx, node, editable) {
             var cfg = this.config;
@@ -60,17 +48,21 @@
             var item = this.queue[queIdx];
 
             if (text != "") {
-                var $option;
-                if (item.optionFocusIndex > -1) $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
-                if (item.optionFocusIndex > -1 && $option.get(0) && $option.attr("data-option-value")) {
-                    return {
-                        index: {
-                            gindex: $option.attr("data-option-group-index"),
-                            index: $option.attr("data-option-index")
-                        }
-                    }
+                if (editable) {
+                    return text;
                 } else {
-                    return (item.editable || editable) ? text : undefined;
+                    var $option;
+                    if (item.optionFocusIndex > -1) $option = this.activeautocompleteOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
+                    if (item.optionFocusIndex > -1 && $option.get(0) && $option.attr("data-option-value")) {
+                        return {
+                            optionIndex: {
+                                gindex: $option.attr("data-option-group-index"),
+                                index: $option.attr("data-option-index")
+                            }
+                        }
+                    } else {
+                        return (item.editable) ? text : undefined;
+                    }
                 }
             } else {
                 return undefined;

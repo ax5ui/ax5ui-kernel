@@ -1,11 +1,11 @@
 {
-	"name": "ax5ui-combobox",
-	"version": "0.3.2",
-	"description": "A combobox plugin that works with Bootstrap & jQuery",
+	"name": "ax5ui-autocomplete",
+	"version": "0.0.2",
+	"description": "A autocomplete plugin that works with Bootstrap & jQuery",
 	"license": "LGPLv3",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/ax5ui/ax5ui-combobox"
+		"url": "git+https://github.com/ax5ui/ax5ui-autocomplete"
 	},
 	"author": {
 		"name": "Thomas Jang",
@@ -18,8 +18,8 @@
 		"ax5ui",
 		"plugin",
 		"bootstrap jQuery plugins",
-		"combobox",
-		"ax5ui-combobox",
+		"autocomplete",
+		"ax5ui-autocomplete",
 		"javascript ui"
 	],
 	"dependencies": {

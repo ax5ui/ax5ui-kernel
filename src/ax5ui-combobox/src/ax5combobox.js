@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.3.4"
+        version: "0.3.5"
     }, (function () {
         /**
          * @class ax5combobox
@@ -337,9 +337,9 @@
                 focusWord = function (queIdx, searchWord) {
                     if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
                     var options = [], i = -1, l = this.queue[queIdx].indexedOptions.length - 1, n;
-                    
+
                     console.log(searchWord);
-                    
+
                     if (searchWord != "") {
                         var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
                         searchWord = searchWord.replace(regExp, "");
@@ -756,7 +756,7 @@
                         'clear': function (queIdx) {
                             clearSelected.call(this, queIdx);
                             syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
-                            focusLabel.call(this, queIdx);
+                            //focusLabel.call(this, queIdx);
                             focusClear.call(this, queIdx);
 
                             if (this.activecomboboxOptionGroup) {
@@ -773,7 +773,7 @@
                             console.log(ax5.info.getError("ax5combobox", "402", "val"));
                             return;
                         }
-
+                        
                         if (typeof value == "undefined") {
                             throw "error not found value";
                         }
@@ -785,7 +785,7 @@
                             if (typeof value !== "undefined" && value !== null && !this.queue[queIdx].multiple) {
                                 clearSelected.call(this, queIdx);
                             }
-                            processor.text.call(this, queIdx, value, selected);
+                            processor.text.call(this, queIdx, value, selected, "justSetValue");
                             syncLabel.call(this, queIdx);
                         }
                         else {
@@ -799,12 +799,14 @@
                                 }
                                 for (var key in processor) {
                                     if (value[key]) {
-                                        processor[key].call(this, queIdx, value, selected);
+                                        processor[key].call(this, queIdx, value, selected, "justSetValue");
                                         break;
                                     }
                                 }
 
+                                syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
                                 syncLabel.call(this, queIdx);
+                                alignComboboxOptionGroup.call(this);
                             }
                         }
 
@@ -915,8 +917,8 @@
                                     //
                                 }
                                 else if (U.isString(value)) {
-                                    editingText = value;
-                                    values.push(value);
+                                    //editingText = value;
+                                    //values.push(value);
                                 }
                                 else {
                                     values.push(value);
@@ -924,9 +926,8 @@
                             }
                         }
 
-                        if (typeof editingText !== "undefined") {
-                            setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
-                        }
+                        //블러 이벤트명 작성중인 텍스트를 제외
+                        setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
                     };
 
                     var comboboxEvent = {

@@ -7,10 +7,10 @@
     var optionGroup = function (columnKeys) {
         return `
 <div class="ax5autocomplete-option-group {{theme}} {{size}}" data-ax5autocomplete-option-group="{{id}}">
-    <div class="ax-combobox-body">
-        <div class="ax-combobox-option-group-content" data-els="content"></div>
+    <div class="ax-autocomplete-body">
+        <div class="ax-autocomplete-option-group-content" data-els="content"></div>
     </div>
-    <div class="ax-combobox-arrow"></div> 
+    <div class="ax-autocomplete-arrow"></div> 
 </div>
 `;
     };
@@ -38,16 +38,25 @@ data-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceI
 
     var formSelect = function (columnKeys) {
         return `
-<select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>
+<select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" multiple="multiple"></select>
 `;
     };
+
+    var formSelectOptions = function (columnKeys) {
+        return `
+{{#selected}}
+<option value="{{${columnKeys.optionValue}}}" selected="true">{{${columnKeys.optionText}}}</option>
+{{/selected}}
+`;
+    };
+
 
     var options = function (columnKeys) {
         return `
 {{#waitOptions}}
-    <div class="ax-combobox-option-item">
-            <div class="ax-combobox-option-item-holder">
-                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">
+    <div class="ax-autocomplete-option-item">
+            <div class="ax-autocomplete-option-item-holder">
+                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">
                     {{{lang.loading}}}
                 </span>
             </div>
@@ -55,50 +64,18 @@ data-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceI
 {{/waitOptions}}
 {{^waitOptions}}
     {{#options}}
-        {{#optgroup}}
-            <div class="ax-combobox-option-group">
-                <div class="ax-combobox-option-item-holder">
-                    <span class="ax-combobox-option-group-label">
-                        {{{.}}}
-                    </span>
-                </div>
-                {{#options}}
-                {{^hide}}
-                <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" 
-                data-option-value="{{${columnKeys.optionValue}}}" 
-                {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
-                    <div class="ax-combobox-option-item-holder">
-                        {{#multiple}}
-                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">
-                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
-                        </span>
-                        {{/multiple}}
-                        <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
-                    </div>
-                </div>
-                {{/hide}}
-                {{/options}}
-            </div>                            
-        {{/optgroup}}
-        {{^optgroup}}
         {{^hide}}
-        <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
-            <div class="ax-combobox-option-item-holder">
-                {{#multiple}}
-                <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">
-                    <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>
-                </span>
-                {{/multiple}}
-                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{${columnKeys.optionText}}}</span>
+        <div class="ax-autocomplete-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{${columnKeys.optionValue}}}" {{#${columnKeys.optionSelected}}}data-option-selected="true"{{/${columnKeys.optionSelected}}}>
+            <div class="ax-autocomplete-option-item-holder">
+                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">{{${columnKeys.optionText}}}</span>
             </div>
         </div>
         {{/hide}}
-        {{/optgroup}}
     {{/options}}
     {{^options}}
-        <div class="ax-combobox-option-item">
-            <div class="ax-combobox-option-item-holder">
-                <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">
+        <div class="ax-autocomplete-option-item">
+            <div class="ax-autocomplete-option-item-holder">
+                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">
                     {{{lang.noOptions}}}
                 </span>
             </div>
@@ -109,15 +86,13 @@ data-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceI
     };
 
     var label = function (columnKeys) {
-        return `{{#selected}}<div tabindex="-1" data-ax5autocomplete-selected-label="{{@i}}" data-ax5autocomplete-selected-text="{{text}}">
-<div data-ax5autocomplete-remove="true" data-ax5autocomplete-remove-index="{{@i}}">{{{removeIcon}}}</div>
-<span>{{text}}</span>
-</div>{{/selected}}`;
+        return `{{#selected}}<div tabindex="-1" data-ax5autocomplete-selected-label="{{@i}}" data-ax5autocomplete-selected-text="{{text}}"><div data-ax5autocomplete-remove="true" data-ax5autocomplete-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}`;
     };
 
     AUTOCOMPLETE.tmpl = {
         "autocompleteDisplay": autocompleteDisplay,
         "formSelect": formSelect,
+        "formSelectOptions": formSelectOptions,
         "optionGroup": optionGroup,
         "options": options,
         "label": label

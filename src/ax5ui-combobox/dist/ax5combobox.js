@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.3.4"
+        version: "0.3.5"
     }, function () {
         /**
          * @class ax5combobox
@@ -715,7 +715,7 @@
                     'clear': function clear(queIdx) {
                         clearSelected.call(this, queIdx);
                         syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
-                        focusLabel.call(this, queIdx);
+                        //focusLabel.call(this, queIdx);
                         focusClear.call(this, queIdx);
 
                         if (this.activecomboboxOptionGroup) {
@@ -740,7 +740,7 @@
                         if (typeof value !== "undefined" && value !== null && !this.queue[queIdx].multiple) {
                             clearSelected.call(this, queIdx);
                         }
-                        processor.text.call(this, queIdx, value, selected);
+                        processor.text.call(this, queIdx, value, selected, "justSetValue");
                         syncLabel.call(this, queIdx);
                     } else {
                         if (value === null) {
@@ -752,12 +752,14 @@
                             }
                             for (var key in processor) {
                                 if (value[key]) {
-                                    processor[key].call(this, queIdx, value, selected);
+                                    processor[key].call(this, queIdx, value, selected, "justSetValue");
                                     break;
                                 }
                             }
 
+                            syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
                             syncLabel.call(this, queIdx);
+                            alignComboboxOptionGroup.call(this);
                         }
                     }
 
@@ -862,17 +864,16 @@
                                 if (typeof value === "undefined") {
                                     //
                                 } else if (U.isString(value)) {
-                                        editingText = value;
-                                        values.push(value);
+                                        //editingText = value;
+                                        //values.push(value);
                                     } else {
-                                        values.push(value);
-                                    }
+                                            values.push(value);
+                                        }
                             }
                         }
 
-                        if (typeof editingText !== "undefined") {
-                            setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
-                        }
+                        //블러 이벤트명 작성중인 텍스트를 제외
+                        setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
                     };
 
                     var comboboxEvent = {
