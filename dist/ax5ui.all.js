@@ -10400,8 +10400,8 @@ jQuery.fn.ax5select = function () {
                     formData.append(cfg.upload_http.filename_param_key, this.selected_file);
                     // 다른 처리 방법 적용 필요
                 } else {
-                        formData.append(cfg.upload_http.filename_param_key, this.selected_file);
-                    }
+                    formData.append(cfg.upload_http.filename_param_key, this.selected_file);
+                }
 
                 for (var k in cfg.upload_http.data) {
                     formData.append(k, cfg.upload_http.data[k]);
@@ -10891,9 +10891,9 @@ jQuery.fn.ax5select = function () {
                             _focusIndex = 0;
                             //_focusIndex = (direction > 0) ? 0 : item.optionItemLength - 1; // 맨 끝으로 보낼것인가 말 것인가.
                         } else {
-                                _focusIndex = _prevFocusIndex + direction;
-                                if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > item.optionItemLength - 1) _focusIndex = item.optionItemLength - 1;
-                            }
+                            _focusIndex = _prevFocusIndex + direction;
+                            if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > item.optionItemLength - 1) _focusIndex = item.optionItemLength - 1;
+                        }
                     }
 
                     item.optionFocusIndex = _focusIndex;
@@ -11313,28 +11313,28 @@ jQuery.fn.ax5select = function () {
                                 if (typeof value === "undefined") {
                                     //
                                 } else if (U.isString(value)) {
-                                        searchWord = value;
-                                        if (node.nodeType == '1' && node.getAttribute("data-ax5combobox-selected-text")) {
-                                            // 노드 타입인데 문자열이 리턴 되었다면 선택을 취소해야함.
-                                            searchWord = false; // 검색을 수행하지 않고 값을 변경하자.
-                                        } else {
-                                                values.push(value);
-                                            }
+                                    searchWord = value;
+                                    if (node.nodeType == '1' && node.getAttribute("data-ax5combobox-selected-text")) {
+                                        // 노드 타입인데 문자열이 리턴 되었다면 선택을 취소해야함.
+                                        searchWord = false; // 검색을 수행하지 않고 값을 변경하자.
                                     } else {
                                         values.push(value);
                                     }
+                                } else {
+                                    values.push(value);
+                                }
                             }
                         }
 
                         if (childNodes.length == 0) {
                             setOptionSelect.call(this, item.id, null, undefined, "internal"); // clear value
                         } else if (searchWord === false) {
-                                setOptionSelect.call(this, item.id, null, undefined, "internal"); // clear value
-                                setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
-                                U.selectRange(item.$displayLabel, "end"); // label focus end
-                            } else if (searchWord != "") {
-                                    focusWord.call(self, queIdx, searchWord);
-                                }
+                            setOptionSelect.call(this, item.id, null, undefined, "internal"); // clear value
+                            setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
+                            U.selectRange(item.$displayLabel, "end"); // label focus end
+                        } else if (searchWord != "") {
+                            focusWord.call(self, queIdx, searchWord);
+                        }
                     }, 150);
 
                     var blurLabel = function blurLabel(queIdx) {
@@ -11350,11 +11350,11 @@ jQuery.fn.ax5select = function () {
                                 if (typeof value === "undefined") {
                                     //
                                 } else if (U.isString(value)) {
-                                        //editingText = value;
-                                        //values.push(value);
-                                    } else {
-                                            values.push(value);
-                                        }
+                                    //editingText = value;
+                                    //values.push(value);
+                                } else {
+                                    values.push(value);
+                                }
                             }
                         }
 
@@ -13464,8 +13464,8 @@ jQuery.fn.ax5layout = function () {
                                     if (origin_value[i] == this.value) {
                                         //hasItemIndex = i;
                                     } else {
-                                            new_value.push(origin_value[i]);
-                                        }
+                                        new_value.push(origin_value[i]);
+                                    }
                                 }
                                 origin_value = new_value;
                             }
@@ -13717,8 +13717,8 @@ jQuery.fn.ax5layout = function () {
                                     if (origin_value[i] == this.value) {
                                         //hasItemIndex = i;
                                     } else {
-                                            new_value.push(origin_value[i]);
-                                        }
+                                        new_value.push(origin_value[i]);
+                                    }
                                 }
                                 origin_value = new_value;
                             }
@@ -14315,9 +14315,9 @@ jQuery.fn.ax5layout = function () {
                             _focusIndex = 0;
                             //_focusIndex = (direction > 0) ? 0 : item.optionItemLength - 1; // 맨 끝으로 보낼것인가 말 것인가.
                         } else {
-                                _focusIndex = _prevFocusIndex + direction;
-                                if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > item.optionItemLength - 1) _focusIndex = item.optionItemLength - 1;
-                            }
+                            _focusIndex = _prevFocusIndex + direction;
+                            if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > item.optionItemLength - 1) _focusIndex = item.optionItemLength - 1;
+                        }
                     }
 
                     item.optionFocusIndex = _focusIndex;
@@ -14685,25 +14685,25 @@ jQuery.fn.ax5layout = function () {
                                 if (typeof value === "undefined") {
                                     //
                                 } else if (U.isString(value)) {
-                                        searchWord = value;
-                                    } else {
-                                        if (value.removeSelectedIndex) {
-                                            resetSelected = true;
-                                        }
-                                        values.push(value);
+                                    searchWord = value;
+                                } else {
+                                    if (value.removeSelectedIndex) {
+                                        resetSelected = true;
                                     }
+                                    values.push(value);
+                                }
                             }
                         }
 
                         if (childNodes.length == 0) {
                             setSelected.call(this, item.id, null, undefined, "internal"); // clear value
                         } else if (searchWord != "") {
-                                onSearch.call(self, queIdx, searchWord);
-                            } else if (resetSelected) {
-                                setSelected.call(this, item.id, values, undefined, "internal"); // set Value
-                                U.selectRange(item.$displayLabel, "end"); // label focus end
-                                self.close();
-                            }
+                            onSearch.call(self, queIdx, searchWord);
+                        } else if (resetSelected) {
+                            setSelected.call(this, item.id, values, undefined, "internal"); // set Value
+                            U.selectRange(item.$displayLabel, "end"); // label focus end
+                            self.close();
+                        }
                     }, 150);
 
                     var blurLabel = function blurLabel(queIdx) {
@@ -14719,11 +14719,11 @@ jQuery.fn.ax5layout = function () {
                                 if (typeof value === "undefined") {
                                     //
                                 } else if (U.isString(value)) {
-                                        //editingText = value;
-                                        //values.push(value);
-                                    } else {
-                                            values.push(value);
-                                        }
+                                    //editingText = value;
+                                    //values.push(value);
+                                } else {
+                                    values.push(value);
+                                }
                             }
                         }
 
