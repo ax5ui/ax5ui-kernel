@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "mask",
-        version: "0.7.2"
+        version: "0.7.5"
     }, (function () {
         /**
          * @class ax5mask
@@ -21,6 +21,7 @@
             var self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 theme: '',
                 target: jQuery(document.body).get(0)
@@ -182,21 +183,33 @@
             /**
              * close mask
              * @method ax5mask.close
+             * @param {Number} [_delay=0]
              * @returns {ax5mask}
              * @example
              * ```
              * my_mask.close();
              * ```
              */
-            this.close = function () {
+            this.close = function (_delay) {
                 if (this.$mask) {
-                    this.$mask.remove();
-                    this.$target.removeClass("ax-masking");
+                    var _close = function(){
+                        this.status = "off";
+                        this.$mask.remove();
+                        this.$target.removeClass("ax-masking");
 
-                    onStateChanged.call(this, null, {
-                        self: this,
-                        state: "close"
-                    });
+                        onStateChanged.call(this, null, {
+                            self: this,
+                            state: "close"
+                        });
+                    };
+
+                    if(_delay) {
+                        setTimeout((function () {
+                            _close.call(this);
+                        }).bind(this), _delay);
+                    }else{
+                        _close.call(this);
+                    }
                 }
                 return this;
             };

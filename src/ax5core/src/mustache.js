@@ -523,9 +523,11 @@
 
         if (isArray(value)) {
             for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
-                value[j]['@i'] = j;
-                value[j]['@first'] = (j === 0);
-                buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
+                if(value[j]) {
+                    value[j]['@i'] = j;
+                    value[j]['@first'] = (j === 0);
+                    buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
+                }
             }
         }
         else if (typeof value === 'object' || typeof value === 'string' || typeof value === 'number') {

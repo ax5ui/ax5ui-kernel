@@ -59,6 +59,7 @@
     var dialog = new ax5.ui.dialog();
     var mask = new ax5.ui.mask();
     dialog.setConfig({
+        zIndex: 5000,
         onStateChanged: function () {
             if (this.state === "open") {
                 mask.open();

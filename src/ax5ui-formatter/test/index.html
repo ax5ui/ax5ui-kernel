@@ -65,11 +65,19 @@
         <input name="4" type="text" class="form-control" placeholder="" data-ax5formatter="date" value="20160122" />
     </div>
 </div>
-
+<div class="form-group" id="formatter-test">
+    <div class="input-group">
+        <span class="input-group-addon">Credit</span>
+        <input name="4" type="text" class="form-control" placeholder="" data-ax5formatter="credit" />
+    </div>
+</div>
 <!--https://css-tricks.com/snippets/javascript/javascript-keycodes/-->
 <script type="text/javascript">
 
     $('[data-ax5formatter]').ax5formatter();
+
+    $('[data-ax5formatter="time"]').val("1231232");
+
     /*
     $('#ax5formatter-01').ax5formatter({
         pattern: "date"
@@ -108,6 +116,7 @@
      * }
      */
 
+    $('[data-ax5formatter="time"]').ax5formatter("formatting");
 </script>
 
 </body>

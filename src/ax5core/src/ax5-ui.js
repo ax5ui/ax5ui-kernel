@@ -33,7 +33,7 @@ ax5.ui = (function () {
          * ```
          */
         this.setConfig = function (cfg, callInit) {
-            jQuery.extend(true, this.config, cfg, true);
+            jQuery.extend(true, this.config, cfg);
             if (typeof callInit == "undefined" || callInit === true) {
                 this.init();
             }
@@ -84,6 +84,11 @@ ax5.ui = (function () {
         if (!config || !config.className) throw 'invalid call';
         var classStore = (config.classStore) ? config.classStore : ax5.ui;
         if (!classStore)  throw 'invalid classStore';
+
+        // make ui definition variable
+        ax5.def[config.className] = {
+            version: config.version
+        };
 
         var factory = function (cls, arg) {
             switch (arg.length) {

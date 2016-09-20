@@ -18,6 +18,7 @@ myModal.set_config({
         top: "top|middle|bottom|Number", 
         margin: "Number"
     },
+    iframeLoadingMsg: "",
     iframe: {
         method: "get|post", 
         url: "String", 

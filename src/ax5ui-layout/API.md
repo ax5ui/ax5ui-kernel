@@ -17,7 +17,6 @@
 
 ## ax5layout
 **Kind**: global class  
-**Version**: 0.1.0  
 **Author:** tom@axisj.com  
 
 * [ax5layout](#ax5layout)
@@ -34,25 +33,32 @@ Preferences of layout UI
 
 **Kind**: static method of <code>[ax5layout](#ax5layout)</code>  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| config | <code>Object</code> | 클래스 속성값 |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| config | <code>Object</code> |  | 클래스 속성값 |
+| [config.animateTime] | <code>Number</code> | <code>250</code> |  |
+| [config.splitter] | <code>Object</code> |  |  |
+| [config.splitter.size] | <code>Number</code> | <code>4</code> |  |
+| [config.autoResize] | <code>Boolean</code> | <code>true</code> |  |
 
 **Example**  
-```
+```js
 ```
 <a name="ax5layout.bind"></a>
 
 ### ax5layout.bind(item) ⇒ <code>[ax5layout](#ax5layout)</code>
 **Kind**: static method of <code>[ax5layout](#ax5layout)</code>  
 
-| Param | Type |
-| --- | --- |
-| item | <code>Object</code> | 
-| [item.layout] | <code>String</code> | 
-| [item.theme] | <code>String</code> | 
-| item.target | <code>Element</code> | 
-| item.options | <code>Array.&lt;Object&gt;</code> | 
+| Param | Type | Default |
+| --- | --- | --- |
+| item | <code>Object</code> |  | 
+| [item.layout] | <code>String</code> |  | 
+| [item.theme] | <code>String</code> |  | 
+| item.target | <code>Element</code> |  | 
+| item.options | <code>Array.&lt;Object&gt;</code> |  | 
+| [item.splitter] | <code>Object</code> |  | 
+| [item.splitter.size] | <code>Number</code> | <code>4</code> | 
+| [item.autoResize] | <code>Boolean</code> | <code>true</code> | 
 
 <a name="ax5layout.align"></a>
 

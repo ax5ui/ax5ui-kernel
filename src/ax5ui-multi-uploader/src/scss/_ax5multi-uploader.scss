@@ -1,0 +1,56 @@
+.ax5-ui-single-uploader {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: table;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 0;
+
+    &.dragover {
+        .upload-preview {
+            background: #ccdaee;
+            &::before {
+                content: "Drop here"
+            }
+            .empty-msg {
+                display: none;
+            }
+        }
+    }
+    &.uploaded {
+        .upload-preview {
+            .empty-msg {
+                display: none;
+            }
+        }
+    }
+    .upload-preview {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        overflow: hidden;
+        @include user-select(none);
+        .upload-preview-img {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    }
+    input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin: 0;
+        padding: 0;
+        opacity: 0.0;
+    }
+    .ax5-ui-progress{
+        position: absolute;
+    }
+}

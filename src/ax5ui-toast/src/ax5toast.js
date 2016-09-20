@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "toast",
-        version: "0.3.2"
+        version: "0.3.3"
     }, (function () {
         /**
          * @class ax5toast
@@ -23,6 +23,7 @@
                 cfg,
                 toastSeq = 0, toastSeqClear = null;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
                 theme: 'default',

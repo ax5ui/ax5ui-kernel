@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "select",
-        version: "0.4.2"
+        version: "0.4.4"
     }, (function () {
         /**
          * @class ax5select
@@ -22,9 +22,10 @@
                 self = this,
                 cfg;
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 theme: 'default',
-                animateTime: 250,
+                animateTime: 100,
                 lang: {
                     noSelected: '',
                     noOptions: 'no options',
@@ -44,6 +45,7 @@
             this.closeTimer = null;
             this.waitOptionsCallback = null;
             this.keyUpTimer = null;
+            this.xvar = {};
 
             cfg = this.config;
 
@@ -109,9 +111,9 @@
                         <div class="ax-select-arrow"></div> 
                     </div>
                     `;
-                    },
-                    getTmpl = function () {
-                        return `
+                },
+                getTmpl = function () {
+                    return `
                     <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5select-display {{theme}}" 
                     data-ax5select-display="{{id}}" data-ax5select-instance="{{instanceId}}">
                         <div class="ax5select-display-table" data-els="display-table">
@@ -318,8 +320,9 @@
                                     index: $option.attr("data-option-index")
                                 }
                             }, undefined, "internal");
-
                             if (!this.queue[this.activeSelectQueueIndex].multiple) this.close();
+                        }else{
+                            this.close();
                         }
                     }
                 },
@@ -461,7 +464,6 @@
                             });
 
                             if (target) {
-                                // selected clear
                                 this.val(queIdx, {clear: true});
                             }
                             else {
@@ -472,9 +474,9 @@
                                 }
                                 else {
                                     self.open(queIdx);
+                                    U.stopEvent(e);
                                 }
                             }
-                            //U.stopEvent(e);
                         },
                         'keyUp': function (queIdx, e) {
                             if (e.which == ax5.info.eventKeys.SPACE) {
@@ -709,6 +711,7 @@
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
                 this.onChange = cfg.onChange;
+
                 jQuery(window).bind("resize.ax5select-display-" + this.instanceId, (function () {
                     alignSelectDisplay.call(this);
                 }).bind(this));
@@ -894,26 +897,27 @@
                         }
                     }
 
-
                     /// 사용자 입력으로 옵션을 검색하기 위한 시나리오
                     // 옵션그룹이 활성화 되면 사용자 입력을 받기위한 input 값 초기화 및 포커스 다른 select가 닫히면서 display focus 이벤트와 충돌하는 문제가 있으므로
                     // 1밀리세컨 지연후 포커스 처리. input에 포커스가 되므로 input value로 options를 검색 할 수 있게 됩니다.
                     item.$displayInput.val('');
-                    setTimeout(function () {
+
+                    setTimeout((function () {
                         item.$displayInput.trigger("focus");
-                    }, 1);
 
-                    jQuery(window).bind("keyup.ax5select-" + this.instanceId, (function (e) {
-                        e = e || window.event;
-                        onBodyKeyup.call(this, e);
-                        U.stopEvent(e);
-                    }).bind(this));
+                        jQuery(window).bind("keyup.ax5select-" + this.instanceId, (function (e) {
+                            e = e || window.event;
+                            onBodyKeyup.call(this, e);
+                            U.stopEvent(e);
+                        }).bind(this));
 
-                    jQuery(window).bind("click.ax5select-" + this.instanceId, (function (e) {
-                        e = e || window.event;
-                        onBodyClick.call(this, e);
-                        U.stopEvent(e);
-                    }).bind(this));
+                        jQuery(window).bind("click.ax5select-" + this.instanceId, (function (e) {
+                            e = e || window.event;
+                            onBodyClick.call(this, e);
+                            U.stopEvent(e);
+                        }).bind(this));
+
+                    }).bind(this), 300);
 
                     onStateChanged.call(this, item, {
                         self: this,
@@ -1145,11 +1149,19 @@
                     this.activeSelectOptionGroup = null;
                     this.activeSelectQueueIndex = -1;
 
-                    onStateChanged.call(this, item, {
+                    var that = {
                         self: this,
+                        item: item,
+                        value: item.selected,
                         state: "close"
-                    });
+                    };
 
+                    onStateChanged.call(this, item, that);
+
+                    // waitOption timer
+                    if (item.onClose) {
+                        item.onClose.call(that);
+                    }
                 }).bind(this), cfg.animateTime);
                 this.waitOptionsCallback = null;
                 return this;

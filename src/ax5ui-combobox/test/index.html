@@ -14,7 +14,7 @@
 </head>
 <body style="padding: 10px;">
 <div class="container">
-    <form name="forms" class="form-inline">
+    <form name="forms">
         <h1>form-group</h1>
 
         <div class="form-group">
@@ -50,16 +50,19 @@
     </form>
 
     <button type="button" class="btn" data-btn="setValue">setValue</button>
-    <button type="button" class="btn" data-btn="getValue">getValue</button>
+    <button type="button" class="btn" data-btn="setValue2">setValue(array)</button>
+    <button type="button" class="btn" data-btn="setText">setText</button>
+    <button type="button" class="btn" data-btn="setText2">setText(array)</button>
+    <button type="button" class="btn" data-btn="getSelectedOption">getSelectedOption</button>
     <button type="button" class="btn" data-btn="setValueSelect">setValue to select</button>
     <button type="button" class="btn" data-btn="update">update options</button>
 </div>
 <script>
     var options = [];
-    options.push({value: "string", text: "string"});
-    options.push({value: "number", text: "number"});
-    options.push({value: "substr", text: "substr"});
-    options.push({value: "substring", text: "substring"});
+    options.push({value: "1", text: "string"});
+    options.push({value: "2", text: "number"});
+    options.push({value: "3", text: "substr"});
+    options.push({value: "4", text: "substring"});
     options.push({value: "search", text: "search"});
     options.push({value: "parseInt", text: "parseInt"});
     options.push({value: "toFixed", text: "toFixed"});
@@ -68,7 +71,8 @@
 
 
     var myCombo = new ax5.ui.combobox({
-        theme: "danger"
+        theme: "danger",
+        removeIcon: '<i class="fa fa-times" aria-hidden="true"></i>'
     });
 
     $(document.body).ready(function () {
@@ -77,10 +81,23 @@
             var act = this.getAttribute("data-btn");
             switch (act) {
                 case "setValue":
-                    myCombo.val($('[data-ax5combobox="combo1"]'), ["string", "number", "새로운 문구"]);
+                    myCombo.setValue($('[data-ax5combobox="combo1"]'), "1");
+                    //myCombo.blur($('[data-ax5combobox="combo1"]'));
                     break;
-                case "getValue":
-                    console.log(myCombo.val($('[data-ax5combobox="combo1"]')));
+                case "setValue2":
+                    myCombo.setValue($('[data-ax5combobox="combo1"]'), ["1", "2"]);
+                    //myCombo.blur($('[data-ax5combobox="combo1"]'));
+                    break;
+                case "setText":
+                    myCombo.setText($('[data-ax5combobox="combo1"]'), "string");
+                    //myCombo.blur($('[data-ax5combobox="combo1"]'));
+                    break;
+                case "setText2":
+                    myCombo.setText($('[data-ax5combobox="combo1"]'), ["substring", "search"]);
+                    //myCombo.blur($('[data-ax5combobox="combo1"]'));
+                    break;
+                case "getSelectedOption":
+                    console.log(myCombo.getSelectedOption($('[data-ax5combobox="combo1"]')));
                     console.log($(document.forms).serialize());
                     break;
                 case "setValueSelect":
@@ -109,7 +126,7 @@
             target: $('[data-ax5combobox="combo1"]'),
             options: options,
             onStateChanged: function () {
-                //console.log(this);
+                console.log(this);
             }
         });
 
@@ -131,6 +148,8 @@
             }
         });
 
+
+        //myCombo.open($('[data-ax5combobox="combo1"]'));
     });
 
 

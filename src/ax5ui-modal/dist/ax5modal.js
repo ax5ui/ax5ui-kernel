@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "0.7.2"
+        version: "0.7.8"
     }, function () {
         /**
          * @class ax5modal
@@ -38,6 +38,7 @@
                 };
             };
 
+            this.instanceId = ax5.getGuid();
             this.config = {
                 id: 'ax5-modal-' + this.instanceId,
                 position: {
@@ -67,7 +68,7 @@
                 return true;
             },
                 getContentTmpl = function getContentTmpl() {
-                return " \n                <div id=\"{{modalId}}\" data-modal-els=\"root\" class=\"ax5modal {{theme}} {{fullscreen}}\" style=\"{{styles}}\">\n                    {{#header}}\n                    <div class=\"ax-modal-header\" data-modal-els=\"header\">\n                        {{{title}}}\n                        {{#btns}}\n                            <div class=\"ax-modal-header-addon\">\n                            {{#@each}}\n                            <a tabindex=\"-1\" data-modal-header-btn=\"{{@key}}\" class=\"{{@value.theme}}\">{{{@value.label}}}</a>\n                            {{/@each}}\n                            </div>\n                        {{/btns}}\n                    </div>\n                    {{/header}}\n                    <div class=\"ax-modal-body\" data-modal-els=\"body\">\n                    {{#iframe}}\n                        <div data-modal-els=\"iframe-wrap\" style=\"-webkit-overflow-scrolling: touch; overflow: auto;position: relative;\">\n                        <iframe name=\"{{modalId}}-frame\" src=\"\" width=\"100%\" height=\"100%\" frameborder=\"0\" data-modal-els=\"iframe\" style=\"position: absolute;left:0;top:0;\"></iframe>\n                        </div>\n                        <form name=\"{{modalId}}-form\" data-modal-els=\"iframe-form\">\n                        <input type=\"hidden\" name=\"modalId\" value=\"{{modalId}}\" />\n                        {{#param}}\n                        {{#@each}}\n                        <input type=\"hidden\" name=\"{{@key}}\" value=\"{{@value}}\" />\n                        {{/@each}}\n                        {{/param}}\n                        </form>\n                    {{/iframe}}\n                    </div>\n                </div>\n                ";
+                return " \n                    <div id=\"{{modalId}}\" data-modal-els=\"root\" class=\"ax5modal {{theme}} {{fullscreen}}\" style=\"{{styles}}\">\n                        {{#header}}\n                        <div class=\"ax-modal-header\" data-modal-els=\"header\">\n                            {{{title}}}\n                            {{#btns}}\n                                <div class=\"ax-modal-header-addon\">\n                                {{#@each}}\n                                <a tabindex=\"-1\" data-modal-header-btn=\"{{@key}}\" class=\"{{@value.theme}}\">{{{@value.label}}}</a>\n                                {{/@each}}\n                                </div>\n                            {{/btns}}\n                        </div>\n                        {{/header}}\n                        <div class=\"ax-modal-body\" data-modal-els=\"body\">\n                        {{#iframe}}\n                        \n                            <div data-modal-els=\"iframe-wrap\" style=\"-webkit-overflow-scrolling: touch; overflow: auto;position: relative;\">\n                                <table data-modal-els=\"iframe-loading\" style=\"width:100%;height:100%;\"><tr><td style=\"text-align: center;vertical-align: middle\">{{{iframeLoadingMsg}}}</td></tr></table>\n                                <iframe name=\"{{modalId}}-frame\" src=\"\" width=\"100%\" height=\"100%\" frameborder=\"0\" data-modal-els=\"iframe\" style=\"position: absolute;left:0;top:0;\"></iframe>\n                            </div>\n                            <form name=\"{{modalId}}-form\" data-modal-els=\"iframe-form\">\n                            <input type=\"hidden\" name=\"modalId\" value=\"{{modalId}}\" />\n                            {{#param}}\n                            {{#@each}}\n                            <input type=\"hidden\" name=\"{{@key}}\" value=\"{{@value}}\" />\n                            {{/@each}}\n                            {{/param}}\n                            </form>\n                        {{/iframe}}\n                        </div>\n                    </div>\n                    ";
             },
                 getContent = function getContent(modalId, opts) {
                 var data = {
@@ -76,7 +77,8 @@
                     header: opts.header,
                     fullScreen: opts.fullScreen ? "fullscreen" : "",
                     styles: [],
-                    iframe: opts.iframe
+                    iframe: opts.iframe,
+                    iframeLoadingMsg: opts.iframeLoadingMsg
                 };
 
                 if (opts.zIndex) {
@@ -90,7 +92,6 @@
             },
                 open = function open(opts, callBack) {
                 var that;
-
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
                 this.activeModal = jQuery('#' + opts.id);
@@ -106,6 +107,7 @@
                     this.$["iframe-wrap"] = this.activeModal.find('[data-modal-els="iframe-wrap"]');
                     this.$["iframe"] = this.activeModal.find('[data-modal-els="iframe"]');
                     this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
+                    this.$["iframe-loading"] = this.activeModal.find('[data-modal-els="iframe-loading"]');
                 }
 
                 //- position 정렬
@@ -122,7 +124,6 @@
                 };
 
                 if (opts.iframe) {
-
                     this.$["iframe-wrap"].css({ height: opts.height });
                     this.$["iframe"].css({ height: opts.height });
 
@@ -132,8 +133,14 @@
                     this.$["iframe-form"].attr({ "action": opts.iframe.url });
                     this.$["iframe"].on("load", function () {
                         that.state = "load";
+                        if (opts.iframeLoadingMsg) {
+                            this.$["iframe-loading"].hide();
+                        }
                         onStateChanged.call(this, opts, that);
                     }.bind(this));
+                    if (!opts.iframeLoadingMsg) {
+                        this.$["iframe"].show();
+                    }
                     this.$["iframe-form"].submit();
                 }
 
@@ -353,8 +360,10 @@
                     jQuery(window).unbind("resize.ax-modal");
 
                     setTimeout(function () {
-                        this.activeModal.remove();
-                        this.activeModal = null;
+                        if (this.activeModal) {
+                            this.activeModal.remove();
+                            this.activeModal = null;
+                        }
                         onStateChanged.call(this, opts, {
                             self: this,
                             state: "close"
@@ -366,7 +375,7 @@
 
             /**
              * @method ax5modal.minimize
-             * @returns {axClass}
+             * @returns {ax5modal}
              */
             this.minimize = function () {
 
@@ -390,7 +399,7 @@
 
             /**
              * @method ax5modal.maximize
-             * @returns {axClass}
+             * @returns {ax5modal}
              */
             this.maximize = function () {
                 var opts = self.modalConfig;
@@ -433,7 +442,18 @@
             };
 
             /**
-             * @mothod ax5modal.align
+             * @method ax5modal.setModalConfig
+             * @param _config
+             * @returns {ax5.ui.ax5modal}
+             */
+            this.setModalConfig = function (_config) {
+                self.modalConfig = jQuery.extend({}, self.modalConfig, _config);
+                this.align();
+                return this;
+            };
+
+            /**
+             * @method ax5modal.align
              * @param position
              * @param e
              * @returns {ax5modal}
@@ -449,18 +469,22 @@
                         height: opts.height
                     };
 
-                    if (opts.fullScreen) {
+                    var fullScreen = function (_fullScreen) {
+                        if (typeof _fullScreen === "undefined") {
+                            return false;
+                        } else if (U.isFunction(_fullScreen)) {
+                            return _fullScreen();
+                        }
+                    }(opts.fullScreen);
+
+                    if (fullScreen) {
                         if (opts.header) this.$.header.hide();
                         box.width = jQuery(window).width();
-                        box.height = jQuery(window).height();
+                        box.height = opts.height;
                         box.left = 0;
                         box.top = 0;
-
-                        if (opts.iframe) {
-                            this.$["iframe-wrap"].css({ height: box.height });
-                            this.$["iframe"].css({ height: box.height });
-                        }
                     } else {
+                        if (opts.header) this.$.header.show();
                         if (position) {
                             jQuery.extend(true, opts.position, position);
                         }
@@ -490,9 +514,16 @@
                         } else {
                             box.top = opts.position.top || 0;
                         }
+                        if (box.left < 0) box.left = 0;
+                        if (box.top < 0) box.top = 0;
                     }
 
                     this.activeModal.css(box);
+
+                    if (opts.iframe) {
+                        this.$["iframe-wrap"].css({ height: box.height });
+                        this.$["iframe"].css({ height: box.height });
+                    }
                     return this;
                 };
             }();

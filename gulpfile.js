@@ -133,6 +133,30 @@ var PATHS = {
         dest: "src/ax5ui-layout/dist",
         scss: "ax5layout.scss",
         js: "ax5layout"
+    },
+    "ax5ui-binder": {
+        isPlugin: true,
+        root: "src/ax5ui-binder",
+        src: "src/ax5ui-binder/src",
+        dest: "src/ax5ui-binder/dist",
+        scss: "ax5binder.scss",
+        js: "ax5binder"
+    },
+    "ax5ui-multi-uploader": {
+        isPlugin: true,
+        root: "src/ax5ui-multi-uploader",
+        src: "src/ax5ui-multi-uploader/src",
+        dest: "src/ax5ui-multi-uploader/dist",
+        scss: "ax5multi-uploader.scss",
+        js: "ax5multi-uploader"
+    },
+    "ax5ui-autocomplete": {
+        isPlugin: true,
+        root: "src/ax5ui-autocomplete",
+        src: "src/ax5ui-autocomplete/src",
+        dest: "src/ax5ui-autocomplete/dist",
+        scss: "ax5autocomplete.scss",
+        js: "ax5autocomplete"
     }
 };
 

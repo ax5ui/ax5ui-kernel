@@ -1,40 +1,40 @@
 {
-  "name": "ax5ui-kernel",
-  "version": "1.0.0",
-  "engines": {
-    "node": ">=0.10.0"
-  },
-  "dependencies": {},
-  "scripts": {
-    "build": "babel src -d lib"
-  },
-  "devDependencies": {
-    "ax5core": "",
-    "babel-cli": "^6.0.0",
-    "babel-preset-es2015": "",
-    "bootstrap-sass": "^3.0.0",
-    "bourbon": "^4.2.6",
-    "fs-finder": "^1.8.1",
-    "gulp": "*",
-    "gulp-babel": "^6.1.2",
-    "gulp-changed": "*",
-    "gulp-clean": "",
-    "gulp-concat": "*",
-    "gulp-jsdoc-to-markdown": "",
-    "gulp-jsdoc3": "^0.3.0",
-    "gulp-marko-ax5": "",
-    "gulp-notify": "",
-    "gulp-plumber": "",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.1.1",
-    "gulp-sourcemaps": "",
-    "gulp-uglify": "^1.5.1",
-    "gulp-util": "*",
-    "htmlparser": "^1.7.7",
-    "js-beautify": "^1.5.10",
-    "markdown-it": "~5.0.2",
-    "marko": "^2.8.4",
-    "node-sass": "^3.3.0",
-    "strip-indent": "^1.0.1"
-  }
+    "name": "ax5ui-kernel",
+    "version": "1.0.0",
+    "engines": {
+        "node": ">=0.10.0"
+    },
+    "dependencies": {},
+    "scripts": {
+        "build": "babel src -d lib"
+    },
+    "devDependencies": {
+        "ax5core": "",
+        "babel-cli": "^6.0.0",
+        "babel-preset-es2015": "",
+        "bootstrap-sass": "^3.0.0",
+        "bourbon": "^4.2.6",
+        "fs-finder": "^1.8.1",
+        "gulp": "*",
+        "gulp-babel": "^6.1.2",
+        "gulp-changed": "*",
+        "gulp-clean": "",
+        "gulp-concat": "*",
+        "gulp-jsdoc-to-markdown": "",
+        "gulp-jsdoc3": "^0.3.0",
+        "gulp-marko-ax5": "",
+        "gulp-notify": "",
+        "gulp-plumber": "",
+        "gulp-rename": "^1.2.2",
+        "gulp-sass": "^2.1.1",
+        "gulp-sourcemaps": "",
+        "gulp-uglify": "^1.5.1",
+        "gulp-util": "*",
+        "htmlparser": "^1.7.7",
+        "js-beautify": "^1.5.10",
+        "markdown-it": "~5.0.2",
+        "marko": "^2.8.4",
+        "node-sass": "^3.3.0",
+        "strip-indent": "^1.0.1"
+    }
 }

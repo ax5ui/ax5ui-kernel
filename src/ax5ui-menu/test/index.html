@@ -34,7 +34,9 @@
     };
 
     $(document.body).ready(function () {
-        toast = new ax5.ui.toast({containerPosition: "top-right"});
+        toast = new ax5.ui.toast({
+            containerPosition: "top-right"
+        });
         menu = new ax5.ui.menu({
             theme: 'primary',
             // width: 200,
@@ -46,11 +48,15 @@
             icons: {
                 'arrow': '<i class="fa fa-caret-right"></i>'
             },
+            columnKeys: {
+                label: 'name',
+                items: 'chidren'
+            },
             items: [
                 {
                     icon: '<i class="fa fa-archive"></i>',
-                    label: "Menu Parent 0",
-                    items: [
+                    name: "Menu Parent 0",
+                    chidren: [
                         {
                             check: {
                                 type: 'checkbox',
@@ -58,7 +64,7 @@
                                 value: '0',
                                 checked: false
                             },
-                            label: "Menu Z",
+                            name: "Menu Z",
                             data: {},
                             role: "",
                             accelerator: "CmdOrCtrl+Z"
@@ -70,32 +76,36 @@
                                 value: '1',
                                 checked: true
                             },
-                            label: "Menu A",
+                            name: "Menu A",
                             data: {},
                             role: ""
                             //accelerator: "CmdOrCtrl+A"
                         }
-                    ]
+                    ],
+                    filterType: "A"
                 },
-                {divide: true},
+                {
+                    divide: true,
+                    filterType: "A"
+                },
                 {
                     icon: '<i class="fa fa-mixcloud"></i>',
-                    label: "Menu Parent 1",
-                    items: [
+                    name: "Menu Parent 1",
+                    chidren: [
                         {
-                            label: "Menu Z",
+                            name: "Menu Z",
                             data: {},
                             role: "",
                             //accelerator: "CmdOrCtrl+Z",
-                            items: [
+                            chidren: [
                                 {
-                                    label: "Menu Z",
+                                    name: "Menu Z",
                                     data: {},
                                     role: ""
                                     //accelerator: "CmdOrCtrl+Z"
                                 },
                                 {
-                                    label: "Menu A",
+                                    name: "Menu A",
                                     data: {},
                                     role: ""
                                     //accelerator: "CmdOrCtrl+A"
@@ -103,12 +113,13 @@
                             ]
                         },
                         {
-                            label: "Menu A",
+                            name: "Menu A",
                             data: {},
                             role: ""
                             //accelerator: "CmdOrCtrl+A"
                         }
-                    ]
+                    ],
+                    filterType: "A"
                 },
                 {
                     check: {
@@ -118,7 +129,7 @@
                         checked: false
                     },
                     icon: '<i class="fa fa-bluetooth"></i>',
-                    label: "Menu Parent 2"
+                    name: "Menu Parent 2"
                 },
                 {
                     check: {
@@ -127,7 +138,7 @@
                         value: '2',
                         checked: false
                     },
-                    label: "Menu Parent 3"
+                    name: "Menu Parent 3"
                 },
                 {
                     check: {
@@ -136,7 +147,7 @@
                         value: '3',
                         checked: false
                     },
-                    label: "Menu Parent 4"
+                    name: "Menu Parent 4"
                 },
                 {divide: true},
                 {
@@ -175,8 +186,12 @@
         attached();
 
         $(document).bind("contextmenu", function (e) {
-            //menu.popup(e, {theme:"danger"});
-            menu.popup(e);
+            /*
+            menu.popup(e, {theme:"danger", filter: function(){
+                return true;
+            }});
+            */
+
             ax5.util.stopEvent(e);
             // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
         });
@@ -199,11 +214,15 @@
             onClick: function () {
                 console.log(this);
             },
+            columnKeys: {
+                label: 'name',
+                items: 'chidren'
+            },
             items: [
                 {
                     icon: '<i class="fa fa-archive"></i>',
-                    label: "Menu Parent 0",
-                    items: [
+                    name: "Menu Parent 0",
+                    chidren: [
                         {
                             check: {
                                 type: 'checkbox',
@@ -211,7 +230,7 @@
                                 value: '0',
                                 checked: false
                             },
-                            label: "Menu Z",
+                            name: "Menu Z",
                             data: {},
                             role: "",
                             accelerator: "CmdOrCtrl+Z"
@@ -223,7 +242,7 @@
                                 value: '1',
                                 checked: true
                             },
-                            label: "Menu A",
+                            name: "Menu A",
                             data: {},
                             role: ""
                             //accelerator: "CmdOrCtrl+A"
@@ -232,22 +251,22 @@
                 },
                 {
                     icon: '<i class="fa fa-mixcloud"></i>',
-                    label: "Menu Parent 1",
-                    items: [
+                    name: "Menu Parent 1",
+                    chidren: [
                         {
-                            label: "Menu Z",
+                            name: "Menu Z",
                             data: {},
                             role: "",
                             //accelerator: "CmdOrCtrl+Z",
-                            items: [
+                            chidren: [
                                 {
-                                    label: "Menu Z",
+                                    name: "Menu Z",
                                     data: {},
                                     role: ""
                                     //accelerator: "CmdOrCtrl+Z"
                                 },
                                 {
-                                    label: "Menu A",
+                                    name: "Menu A",
                                     data: {},
                                     role: ""
                                     //accelerator: "CmdOrCtrl+A"
@@ -255,7 +274,7 @@
                             ]
                         },
                         {
-                            label: "Menu A",
+                            name: "Menu A",
                             data: {},
                             role: ""
                             //accelerator: "CmdOrCtrl+A"

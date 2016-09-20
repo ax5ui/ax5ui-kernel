@@ -1556,11 +1556,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         * 	[, 그 외 찾고 싶은 attribute명들]
         * };
          * console.log(
+         * console.log(
          *    ax5.util.findParentNode(e.target, {tagname:"a", clazz:"ax-menu-handel", "data-custom-attr":"attr_value"})
          * );
          * // cond 함수로 처리하기
          * jQuery('#id').bind("click.app_expand", function(e){
-        * 	var target = ax5.dom.findParentNode(e.target, function(target){
+        * 	var target = ax5.util.findParentNode(e.target, function(target){
         * 		if($(target).hasClass("aside")){
         * 			return true;
         * 		}
@@ -1944,6 +1945,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return ax5;
     }(); // ax5.ui에 연결
 }).call(window);
+ax5.def = {};
 ax5.info.errorMsg["ax5dialog"] = {
     "501": "Duplicate call error"
 };
@@ -2286,7 +2288,7 @@ ax5.ui = function () {
          * ```
          */
         this.setConfig = function (cfg, callInit) {
-            jQuery.extend(true, this.config, cfg, true);
+            jQuery.extend(true, this.config, cfg);
             if (typeof callInit == "undefined" || callInit === true) {
                 this.init();
             }
@@ -2336,6 +2338,11 @@ ax5.ui = function () {
         var classStore = config.classStore ? config.classStore : ax5.ui;
         if (!classStore) throw 'invalid classStore';
 
+        // make ui definition variable
+        ax5.def[config.className] = {
+            version: config.version
+        };
+
         var factory = function factory(cls, arg) {
             switch (arg.length) {
                 case 0:
@@ -2378,6 +2385,7 @@ ax5.ui = function () {
         addClass: addClass
     };
 }();
+
 /*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
  * http://github.com/janl/mustache.js
@@ -2877,9 +2885,11 @@ ax5.ui = function () {
 
         if (isArray(value)) {
             for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
-                value[j]['@i'] = j;
-                value[j]['@first'] = j === 0;
-                buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
+                if (value[j]) {
+                    value[j]['@i'] = j;
+                    value[j]['@first'] = j === 0;
+                    buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
+                }
             }
         } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' || typeof value === 'string' || typeof value === 'number') {
             buffer += this.renderTokens(token[4], context.push(value), partials, originalTemplate);

@@ -6,7 +6,7 @@
 
     UI.addClass({
         className: "dialog",
-        version: "0.8.2"
+        version: "0.8.6"
     }, (function () {
         /**
          * @class ax5dialog
@@ -22,7 +22,7 @@
                 self = this,
                 cfg;
 
-            this.activeDialog = null;
+            this.instanceId = ax5.getGuid();
             this.config = {
                 id: 'ax5-dialog-' + this.instanceId,
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
@@ -33,9 +33,9 @@
                 lang: {
                     "ok": "ok", "cancel": "cancel"
                 },
-                animateTime: 250
+                animateTime: 150
             };
-
+            this.activeDialog = null;
             cfg = this.config;
 
             var
@@ -52,41 +52,41 @@
                 },
                 getContentTmpl = function () {
                     return `
-<div id="{{dialogId}}" data-ax5-ui="dialog" class="ax5-ui-dialog {{theme}}">
-    <div class="ax-dialog-header">
-        {{{title}}}
-    </div>
-    <div class="ax-dialog-body">
-        <div class="ax-dialog-msg">{{{msg}}}</div>
-        
-        {{#input}}
-        <div class="ax-dialog-prompt">
-            {{#@each}}
-            <div class="form-group">
-            {{#@value.label}}
-            <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>
-            {{/@value.label}}
-            <input type="{{@value.type}}" placeholder="{{@value.placeholder}}" class="form-control {{@value.theme}}" data-dialog-prompt="{{@key}}" style="width:100%;" value="{{@value.value}}" />
-            {{#@value.help}}
-            <p class="help-block">{{#_crlf}}{{.}}{{/_crlf}}</p>
-            {{/@value.help}}
-            </div>
-            {{/@each}}
-        </div>
-        {{/input}}
-        
-        <div class="ax-dialog-buttons">
-            <div class="ax-button-wrap">
-            {{#btns}}
-                {{#@each}}
-                <button type="button" data-dialog-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{@value.label}}</button>
-                {{/@each}}
-            {{/btns}}
-            </div>
-        </div>
-    </div>
-</div>  
-`;
+                    <div id="{{dialogId}}" data-ax5-ui="dialog" class="ax5-ui-dialog {{theme}}">
+                        <div class="ax-dialog-header">
+                            {{{title}}}
+                        </div>
+                        <div class="ax-dialog-body">
+                            <div class="ax-dialog-msg">{{{msg}}}</div>
+                            
+                            {{#input}}
+                            <div class="ax-dialog-prompt">
+                                {{#@each}}
+                                <div class="form-group">
+                                {{#@value.label}}
+                                <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>
+                                {{/@value.label}}
+                                <input type="{{@value.type}}" placeholder="{{@value.placeholder}}" class="form-control {{@value.theme}}" data-dialog-prompt="{{@key}}" style="width:100%;" value="{{@value.value}}" />
+                                {{#@value.help}}
+                                <p class="help-block">{{#_crlf}}{{.}}{{/_crlf}}</p>
+                                {{/@value.help}}
+                                </div>
+                                {{/@each}}
+                            </div>
+                            {{/input}}
+                            
+                            <div class="ax-dialog-buttons">
+                                <div class="ax-button-wrap">
+                                {{#btns}}
+                                    {{#@each}}
+                                    <button type="button" data-dialog-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{@value.label}}</button>
+                                    {{/@each}}
+                                {{/btns}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                    `;
                 },
                 getContent = function (dialogId, opts) {
                     var
@@ -109,10 +109,7 @@
                     }
                 },
                 open = function (opts, callBack) {
-                    var
-                        pos = {},
-                        box
-                        ;
+                    var pos = {}, box;
 
                     opts.id = (opts.id || cfg.id);
 
@@ -135,6 +132,9 @@
                     else {
                         pos.left = opts.position.left || 0;
                         pos.top = opts.position.top || 0;
+                    }
+                    if(cfg.zIndex){
+                        pos["z-index"] = cfg.zIndex;
                     }
                     this.activeDialog.css(pos);
 
@@ -184,6 +184,9 @@
                         box.left = opts.position.left || 0;
                         box.top = opts.position.top || 0;
                     }
+                    if(box.left < 0) box.left = 0;
+                    if(box.top < 0) box.top = 0;
+
                     this.activeDialog.css(box);
 
                     opts = null;
@@ -295,6 +298,7 @@
              * Preferences of dialog UI
              * @method ax5dialog.setConfig
              * @param {Object} config - 클래스 속성값
+             * @param {Number} [config.zIndex]
              * @returns {ax5dialog}
              * @example
              * ```
@@ -317,9 +321,9 @@
              * @example
              * ```
              * myDialog.alert({
-		 *  title: 'app title',
-		 *  msg: 'alert'
-		 * }, function(){});
+             *  title: 'app title',
+             *  msg: 'alert'
+             * }, function(){});
              * ```
              */
             this.alert = function (opts, callBack, tryCount) {
