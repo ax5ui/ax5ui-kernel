@@ -17,4 +17,5 @@ git subsplit publish --heads="master" --no-tags src/ax5ui-layout:git@github.com:
 git subsplit publish --heads="master" --no-tags src/ax5ui-binder:git@github.com:ax5ui/ax5ui-binder.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-autocomplete:git@github.com:ax5ui/ax5ui-autocomplete.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-multi-uploader:git@github.com:ax5ui/ax5ui-multi-uploader.git
+git subsplit publish --heads="master" --no-tags src/ax5ui-uploader:git@github.com:ax5ui/ax5ui-uploader.git
 rm -rf .subsplit/
