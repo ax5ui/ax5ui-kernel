@@ -21,7 +21,7 @@
         "javascript ui"
     ],
     "scripts": {
-        "test": "./node_modules/karma/bin/karma start karma.conf.js"
+        "test": "karma start karma.conf.js"
     },
     "devDependencies": {
         "karma": "^1.3.0",
