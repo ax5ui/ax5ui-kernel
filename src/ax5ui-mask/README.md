@@ -21,7 +21,7 @@ If you've never used bower, please refer to [http://bower.io/#install-bower](htt
 
 ### Install with npm
 If you do not use bower, it also can be installed by using npm as an alternative.
-In npm, so pile on the package manager for the front end, you need to solve the problem of plug-in dependencies.
+In case of npm, which is the package manager for the front end, you need to solve the problem of plug-in dependencies.
 
 ```sh
 npm install jquery
@@ -29,8 +29,8 @@ npm install ax5core
 npm install ax5ui-mask
 ```
 
-After you download the file in npm install, you will need to copy to the location where you want to use as a resource for the project.
-If the inconvenience in the process that you want to copy the file and can be easily copied by using a `gulp` or `grunt`.
+After you download the install file in npm, you will need to copy it to the location where you want to use as a resource for the project.
+If the copy process is inconvenient, it also can be done easily by using `gulp` or `grunt`.
 
 ### Download code
 - [ax5core Github releases](https://github.com/ax5ui/ax5core/releases)
