@@ -1432,6 +1432,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         self: self,
                         page: self.page,
                         list: self.list,
+                        item: self.list[_column.dindex],
                         dindex: _column.dindex,
                         rowIndex: _column.rowIndex,
                         colIndex: _column.colIndex,
