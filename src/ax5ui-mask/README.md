@@ -36,9 +36,9 @@ If the copy process is inconvenient, it also can be done easily by using `gulp` 
 - [ax5core Github releases](https://github.com/ax5ui/ax5core/releases)
 - [ax5ui-mask Github releases](https://github.com/ax5ui/ax5ui-mask/releases)
 
-### Insert the "ax5mask" in the HTML HEAD.
+### Insert "ax5mask" in HTML HEAD.
 
-Location of the folder can be determined freely in your project. But be careful not to accidentally caused
+Folder location can be any for your project. However, be careful not to accidentally caused
 exactly the path.
 ```html
 <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.css" />
@@ -48,7 +48,7 @@ exactly the path.
 ```
 
 **CDN urls**
-It is CDN url of ax5ui-select. ax5ui offers the CDN services through the rawgit.
+It is CDN url for ax5ui-select. ax5ui offers the CDN services through rawgit.
 ```
 https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.css
 https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.js
