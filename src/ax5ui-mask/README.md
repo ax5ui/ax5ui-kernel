@@ -48,7 +48,7 @@ exactly the path.
 ```
 
 **CDN urls**
-It is CDN url for ax5ui-select. ax5ui offers the CDN services through rawgit.
+This is a list of CDN urls for ax5ui-select. ax5ui offers the CDN services through rawgit.
 ```
 https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.css
 https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.js
