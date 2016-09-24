@@ -8,19 +8,19 @@
 > * _[ax5core](http://ax5.io/ax5core)_
 
 
-### Install by bower
+### Install with bower
 ```sh
 bower install ax5ui-mask
 ```
 [bower](http://bower.io/#install-bower) is web front-end package manager.
-using the `bower`, when you install the plug-in is installed to resolve the plug-in dependencies under the `bower_components` folder.  
+When you install `bower`, it will be installed under the `bower_components` folder to resolve the plug-in dependencies.  
 (You can change the folder location. [.bowerrc](http://bower.io/docs/config/#bowerrc-specification) )
 
-It is recommended that you install by using the `bower`. 
+It is recommended that you install by using `bower`. 
 If you've never used bower, please refer to [http://bower.io/#install-bower](http://bower.io/#install-bower).
 
-### Install by npm
-If you do not use the bower, it can be downloaded by using the npm as second best.
+### Install with npm
+If you do not use bower, it also can be installed by using npm as an alternative.
 In npm, so pile on the package manager for the front end, you need to solve the problem of plug-in dependencies.
 
 ```sh
