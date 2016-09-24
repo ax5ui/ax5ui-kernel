@@ -7,7 +7,7 @@
 // ax5.ui.grid
 (function () {
 
-    var UI = ax5.ui;
+    var UI = ax5.ui; 
     var U = ax5.util;
     var GRID;
 
