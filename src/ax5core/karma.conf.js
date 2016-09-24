@@ -13,7 +13,7 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             'dist/ax5core.js',
-            'test.core.js'
+            './test/test.core.type.js'
         ],
         // list of files to exclude
         exclude: [],
