@@ -13,7 +13,7 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             'dist/ax5core.js',
-            'karma.test.js'
+            'test.core.js'
         ],
         // list of files to exclude
         exclude: [],
