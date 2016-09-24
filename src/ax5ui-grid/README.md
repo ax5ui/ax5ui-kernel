@@ -113,7 +113,7 @@ firstGrid.setConfig({
 
 ***
 
-test
+
 
 ### Preview
 - [See Demostration](http://ax5.io/ax5ui-grid/demo/index.html)
