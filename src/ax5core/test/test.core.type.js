@@ -1,44 +1,49 @@
 describe('ax5.util.getType TEST', function() {
-    it('ax5.util.getType(1)', function() {
-        if (ax5.util.getType(1) === "number") {
-        } else {
-            throw new Error('실패');
+    var success = [
+        {
+            args: [ 1 ],
+            expect: 'number'
+        },
+        {
+            args: [ '1' ],
+            expect: 'string'
+        },
+        {
+            args: [ [0, 1, 2] ],
+            expect: 'array'
+        },
+        {
+            args: [ {a: 1} ],
+            expect: 'object'
+        },
+        {
+            args: [ function(){} ],
+            expect: 'function'
+        },
+        {
+            args: [ document.querySelectorAll("div") ],
+            expect: 'nodelist'
+        },
+        {
+            args: [ document.createDocumentFragment() ],
+            expect: 'fragment'
+        },
+        {
+            args: [ null ],
+            expect: 'null'
+        },
+        {
+            args: [ undefined ],
+            expect: 'undefined'
         }
+    ];
+
+    success.forEach(function(item){
+        it('ax5.util.getType: ' + JSON.stringify(item), function() {
+            var actual = ax5.util.getType.apply(this, item.args);
+
+            actual.should.equal(item.expect);
+        });
     });
-    it('ax5.util.getType("1")', function() {
-        if (ax5.util.getType("1") === "string") {
-        } else {
-            throw new Error('실패');
-        }
-    });
-    it('ax5.util.getType([0, 1, 2])', function() {
-        if (ax5.util.getType([0, 1, 2]) === "array") {
-        } else {
-            throw new Error('실패');
-        }
-    });
-    it('ax5.util.getType({a: 1})', function() {
-        if (ax5.util.getType({a: 1}) === "object") {
-        } else {
-            throw new Error('실패');
-        }
-    });
-    it('ax5.util.getType(function () {})', function() {
-        if (ax5.util.getType(function () {}) === "function") {
-        } else {
-            throw new Error('실패');
-        }
-    });
-    it('ax5.util.getType(document.querySelectorAll("div"))', function() {
-        if (ax5.util.getType(document.querySelectorAll("div")) === "nodelist") {
-        } else {
-            throw new Error('실패');
-        }
-    });
-    it('ax5.util.getType(document.createDocumentFragment())', function() {
-        if (ax5.util.getType(document.createDocumentFragment()) === "fragment") {
-        } else {
-            throw new Error('실패');
-        }
-    });
+
 });
