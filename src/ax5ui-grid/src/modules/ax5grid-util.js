@@ -4,6 +4,8 @@
     var GRID = ax5.ui.grid;
     var U = ax5.util;
 
+
+
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
      * @param _table
