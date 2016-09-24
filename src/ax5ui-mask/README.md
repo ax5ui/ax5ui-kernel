@@ -17,7 +17,7 @@ using the `bower`, when you install the plug-in is installed to resolve the plug
 (You can change the folder location. [.bowerrc](http://bower.io/docs/config/#bowerrc-specification) )
 
 It is recommended that you install by using the `bower`. 
-If you've never used a bower is, you will be able to be used for [http://bower.io/#install-bower](http://bower.io/#install-bower).
+If you've never used bower, please refer to [http://bower.io/#install-bower](http://bower.io/#install-bower).
 
 ### Install by npm
 If you do not use the bower, it can be downloaded by using the npm as second best.
