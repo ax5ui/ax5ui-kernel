@@ -86,3 +86,21 @@ describe('ax5.util.toArray TEST', function() {
         actual.should.deepEqual(["A", "X", "I", "S", "J"]);
     });
 });
+
+
+
+describe('ax5.util.setCookie TEST', function() {
+    it('ax5.util.setCookie("ax5-cookie-path", "abcde", 2, {path: "/"})', function() {
+        ax5.util.setCookie("ax5-cookie-path", "abcde", 2, {path: "/"});
+
+        document.cookie.indexOf('ax5-cookie-path=abcde').should.above(-1);
+    });
+});
+
+describe('ax5.util.getCookie TEST', function() {
+    it('ax5.util.getCookie("ax5-cookie-path") expect "abcde"', function() {
+        var actual = ax5.util.getCookie('ax5-cookie-path');
+
+        actual.should.equal('abcde');
+    });
+});
