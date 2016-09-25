@@ -146,14 +146,16 @@ var testTargets = [
     }
 ];
 
-_.each(testTargets, function(testTarget){
-    describe('ax5.util.' + testTarget.testMethod + ' TEST', function() {
-        _.each(testTarget.testCases, function(testCase){
-            _.each(testCase.args, function(args){
-                it('ax5.util.' + testTarget.testMethod + '(' + args.name + ') expect ' + testCase.expect, function() {
-                    var actual = ax5.util[testTarget.testMethod].call(this, args.value);
+describe('ax5.util.is{Type}', function() {
+    _.each(testTargets, function(testTarget){
+        describe('ax5.util.' + testTarget.testMethod + ' TEST', function() {
+            _.each(testTarget.testCases, function(testCase){
+                _.each(testCase.args, function(args){
+                    it('ax5.util.' + testTarget.testMethod + '(' + args.name + ') expect ' + testCase.expect, function() {
+                        var actual = ax5.util[testTarget.testMethod].call(this, args.value);
 
-                    actual.should.equal(testCase.expect);
+                        actual.should.equal(testCase.expect);
+                    });
                 });
             });
         });

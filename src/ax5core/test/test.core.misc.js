@@ -75,3 +75,14 @@ describe('ax5.util.toJson TEST', function() {
         });
     });
 });
+
+describe('ax5.util.toArray TEST', function() {
+    it('ax5.util.toArray converts [Array-like objects] to [Array]', function() {
+        function something() {
+            return ax5.util.toArray(arguments);
+        }
+        var actual = something("A", "X", "I", "S", "J");
+
+        actual.should.deepEqual(["A", "X", "I", "S", "J"]);
+    });
+});
