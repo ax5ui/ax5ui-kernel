@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-select
+"select" allows users to select a collection of items.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
