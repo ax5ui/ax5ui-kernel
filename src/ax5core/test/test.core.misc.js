@@ -15,3 +15,22 @@ describe('ax5.util.param TEST', function() {
         _.isEqual(actual, {"a":"1","b":"1232"}).should.equal(true);
     });
 });
+
+describe('ax5.util.parseJson TEST', function() {
+    it('ax5.util.util.parseJson("[{"a":"99"},"2","3"]") expect [{"a":"99"},"2","3"]', function() {
+        var actual = ax5.util.parseJson('[{"a":"99"},"2","3"]');
+
+        actual.should.deepEqual([{"a":"99"},"2","3"]);
+    });
+    it('ax5.util.parseJson("{"a":1, "b":function(){return 1;}}", false) expect {"error": 500, "msg": "syntax error"}', function() {
+        var actual = ax5.util.parseJson('{"a":1, "b":function(){return 1;}}', false);
+
+        actual.should.deepEqual({"error": 500, "msg": "syntax error"});
+    });
+    it('ax5.util.parseJson("{"a":1, "b":function(){return 1;}}", true) expect {"a": 1, "b": "{Function}"}', function() {
+        var actual = ax5.util.parseJson('{"a":1, "b":function(){return 1;}}', true);
+
+        actual.a.should.equal(1);
+        actual.b.should.Function();
+    });
+});
