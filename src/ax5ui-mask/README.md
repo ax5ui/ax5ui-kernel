@@ -29,7 +29,7 @@ npm install ax5core
 npm install ax5ui-mask
 ```
 
-After you download the install file in npm, you will need to copy it to the location where you want to use as a resource for the project.
+After downloading the install file of npm, you will need to copy it to the location where you want to use as a resource for the project.
 If the copy process is inconvenient, it also can be done easily by using `gulp` or `grunt`.
 
 ### Download code
@@ -47,14 +47,14 @@ Folder location can be any for your project. However, please be sure to assign t
 ```
 
 **CDN urls**
-This is a list of CDN urls for ax5ui-select. ax5ui offers the CDN services through rawgit.
+This is a list of CDN urls for ax5ui-mask. ax5ui offers the CDN services through rawgit.
 ```
 https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.css
 https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.js
 https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.min.js
 ```
 
-### Basic Usages
+### Basic Usage
 ```js
 var mask = new ax5.ui.mask();
 mask.open();

@@ -11,8 +11,9 @@
 
 ### Install with bower
 ```sh
-bower install ax5ui-mask
+bower install ax5ui-menu
 ```
+[bower](http://bower.io/#install-bower) is web front-end package manager.
 [bower](http://bower.io/#install-bower) is web front-end package manager.
 When you install `bower`, it will be installed under the `bower_components` folder to resolve the plug-in dependencies.  
 (You can change the folder location. [.bowerrc](http://bower.io/docs/config/#bowerrc-specification) )
@@ -27,20 +28,20 @@ In case of npm, which is the package manager for the front end, you need to solv
 ```sh
 npm install jquery
 npm install ax5core
-npm install ax5ui-mask
+npm install ax5ui-menu
 ```
 
-After you download the install file in npm, you will need to copy it to the location where you want to use as a resource for the project.
+After downloading the install file of npm, you will need to copy it to the location where you want to use as a resource for the project.
 If the copy process is inconvenient, it also can be done easily by using `gulp` or `grunt`.
 
 ### Download code
 - [ax5core Github releases](https://github.com/ax5ui/ax5core/releases)
-- [ax5ui-mask Github releases](https://github.com/ax5ui/ax5ui-mask/releases)
+- [ax5ui-menu Github releases](https://github.com/ax5ui/ax5ui-menu/releases)
 
 
 ### Insert "ax5menu" in HTML HEAD.
-Folder location can be any for your project. However, be careful not to accidentally caused
-exactly the path.
+Folder location can be any for your project. However, please be sure to assign the right path in the project.
+
 ```html
 <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.css" />
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
@@ -49,14 +50,14 @@ exactly the path.
 ```
 
 **CDN urls**
-This is a list of CDN urls for ax5ui-select. ax5ui offers the CDN services through rawgit.
+This is a list of CDN urls for ax5ui-menu. ax5ui offers the CDN services through rawgit.
 ```
 https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.css
 https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.js
 https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.min.js
 ```
 
-### Basic Usages
+### Basic Usage
 ```js
 var menu = new ax5.ui.menu({
     theme: 'primary',
