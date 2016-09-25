@@ -34,3 +34,44 @@ describe('ax5.util.parseJson TEST', function() {
         actual.b.should.Function();
     });
 });
+
+describe('ax5.util.toJson TEST', function() {
+    var testCases = [
+        {
+            args: 1,
+            expect: 1
+        },
+        {
+            args: "A",
+            expect: '"A"'
+        },
+        {
+            args: [1, 2, 3, "A"],
+            expect: '[1,2,3,"A"]'
+        },
+        {
+            args: {a: "a", x: "x"},
+            expect: '{"a": "a", "x": "x"}'
+        },
+        {
+            args: [1,{"a": "a", "x": "x"}],
+            expect: '[1,{"a": "a", "x": "x"}]'
+        },
+        {
+            args: {"a": "a", "x": "x", "list": [1,2,3]},
+            expect: '{"a": "a", "x": "x", "list": [1,2,3]}'
+        },
+        {
+            args: function func() {},
+            expect: '"{Function}"'
+        }
+    ];
+
+    _.each(testCases, function(testCase){
+        it('ax5.util.toJson(' + (JSON.stringify(testCase.args) || testCase.args.toString()) + ') expect ' + testCase.expect, function() {
+            var actual = ax5.util.toJson(testCase.args);
+
+            actual.should.deepEqual(testCase.expect);
+        });
+    });
+});
