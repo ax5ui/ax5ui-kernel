@@ -39,4 +39,36 @@ describe('ax5.util.getObject TEST', function() {
 
         _.isEqual(ax5.util.toJson(result) , [{"pickup": true, "name": "AXISJ"}, {"pickup": true , "name": "AX5"}]).should.equal(true);
     });
+    
+    //ax5.util.search
+    var a = ["A" , "X" , "5"];
+
+    it('ax5.util.search(["A" , "X" , "5"], function(){return this == "X"})' , function(){
+        var idx = ax5.util.search(a , function(){
+            return this == "X";
+        });
+
+        _.isEqual(a[idx] , "X").should.equal(true);
+    });
+
+    var a = ["A" , "X" ,"5"];
+
+    it('["A" , "X" ,"5"][ax5.util.search(["A" , "X" ,"5"] , function(idx){return idx == 2;})]' function(){
+        var result = a[ax5.util.search(a,function(idx){
+            return idx == 2;})
+        ];
+
+        _.isEqual(result,"5").should.equal(true);
+    });
+
+    var b = {a:"AX5-0" , x: "AX5-1" , 5:"AX5-2"};
+
+    it('{a:"AX5-0" , x:"AX5-1" , 5:"AX5-2"}[ax5.util.search(b , function(k){return k == "x"})]' , function(){
+        var result = b[ax5.util.search(b,function(k){
+            return k == "x";
+        })];
+
+        _.isEqual(result , "AX5-1").should.equal(true);
+    });
+    //end ax5.util.search
 });
