@@ -599,7 +599,7 @@
 
                     while (i--) {
                         vi = value.length;
-                        while (vi--) {
+                        while (vi--) { 
                             if (typeof value[vi] !== "undefined" && options[i].value === value[vi].toString()) {
                                 options[i].selected = true;
                                 option_matched = true;
