@@ -38,8 +38,7 @@ If the copy process is inconvenient, it also can be done easily by using `gulp` 
 
 ### Insert "ax5mask" in HTML HEAD.
 
-Folder location can be any for your project. However, be careful not to accidentally caused
-exactly the path.
+Folder location can be any for your project. However, please be sure to assign the right path in the project.
 ```html
 <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-mask/master/dist/ax5mask.css" />
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
