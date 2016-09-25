@@ -306,7 +306,7 @@
                     }
                 },
                 alignGrid = function (_isFirst) {
-                    // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
+                    // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하는 아규먼트
                     var CT_WIDTH = this.$["container"]["root"].width();
                     var CT_HEIGHT = this.$["container"]["root"].height();
                     var CT_INNER_WIDTH = CT_WIDTH;
