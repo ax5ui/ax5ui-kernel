@@ -226,8 +226,8 @@ gulp.task('default', function () {
 
 });
 
-/**
- * concant all src for dist
+ /**
+ * concat all src for dist
  */
 gulp.task('dist-all-in-one', function () {
 

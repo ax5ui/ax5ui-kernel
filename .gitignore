@@ -8,3 +8,5 @@ bower_components
 *.iml
 .DS_Store
 _git
+**/test/bower_components
+/src/ax5ui-grid/test/php/vendor
