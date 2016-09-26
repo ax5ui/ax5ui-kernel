@@ -108,3 +108,12 @@ describe('ax5.util.xxxCookie TEST', function() {
     });
 
 });
+
+describe('ax5.util.findParentNode TEST', function() {
+    it('ax5.util.findParentNode($(".first").get(0), { tagname: "div", clazz: "test-mockup-1" }) expect $("div.test-mockup-1").get(0)', function() {
+        var actual = ax5.util.findParentNode($('.first').get(0), { tagname: 'div', clazz: 'test-mockup-1' });
+        var expect = $('div.test-mockup-1').get(0);
+
+        should.equal(actual, expect);
+    });
+});
