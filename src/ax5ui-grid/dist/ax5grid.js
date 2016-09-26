@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.18"
+        version: "0.2.21"
     }, function () {
         /**
          * @class ax5grid
@@ -307,7 +307,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             },
                 alignGrid = function alignGrid(_isFirst) {
-                // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
+                // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하는 아규먼트
                 var CT_WIDTH = this.$["container"]["root"].width();
                 var CT_HEIGHT = this.$["container"]["root"].height();
                 var CT_INNER_WIDTH = CT_WIDTH;
@@ -2962,9 +2962,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }
                 break;
-            case "modified":
+            case "selected":
                 for (; i < l; i++) {
-                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.modified]) {
+                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.selected]) {
                         returnList.push(jQuery.extend({}, this.list[i]));
                     }
                 }
@@ -3749,7 +3749,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var U = ax5.util;
 
     var onclickPageMove = function onclickPageMove(_act) {
-        var callBack = function callBack(_pageNo) {
+        var callback = function callback(_pageNo) {
             if (this.page.currentPage != _pageNo) {
                 this.page.selectPage = _pageNo;
                 if (this.config.page.onChange) {
@@ -3763,27 +3763,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
         var processor = {
             "first": function first() {
-                callBack.call(this, 0);
+                callback.call(this, 0);
             },
             "prev": function prev() {
                 var pageNo = this.page.currentPage - 1;
                 if (pageNo < 0) pageNo = 0;
-                callBack.call(this, pageNo);
+                callback.call(this, pageNo);
             },
             "next": function next() {
                 var pageNo = this.page.currentPage + 1;
                 if (pageNo > this.page.totalPages - 1) pageNo = this.page.totalPages - 1;
-                callBack.call(this, pageNo);
+                callback.call(this, pageNo);
             },
             "last": function last() {
-                callBack.call(this, this.page.totalPages - 1);
+                callback.call(this, this.page.totalPages - 1);
             }
         };
 
         if (_act in processor) {
             processor[_act].call(this);
         } else {
-            callBack.call(this, _act - 1);
+            callback.call(this, _act - 1);
         }
     };
 
@@ -4346,6 +4346,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @param _frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
+
     var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(_table, _frozenColumnIndex) {
         var tempTable_l = { rows: [] };
         var tempTable_r = { rows: [] };
