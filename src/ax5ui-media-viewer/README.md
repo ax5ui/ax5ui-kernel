@@ -56,7 +56,7 @@ https://cdn.rawgit.com/ax5ui/ax5ui-media-viewer/master/dist/ax5media-viewer.js
 https://cdn.rawgit.com/ax5ui/ax5ui-media-viewer/master/dist/ax5media-viewer.min.js
 ```
 
-### Basic Usages
+### Basic Usage
 ```html
 <div id="media-viewer-target-0"></div>
 ```
@@ -96,6 +96,6 @@ $(document.body).ready(function () {
 ***
 
 ### Preview
-- [See Demostration](http://ax5.io/ax5ui-media-viewer/demo/index.html)
+- [See Demonstration](http://ax5.io/ax5ui-media-viewer/demo/index.html)
 
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
