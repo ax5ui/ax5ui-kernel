@@ -12,7 +12,7 @@ describe('ax5.util.param TEST', function() {
     it('ax5.util.param("a=1&b=1232") expect {"a":"1","b":"1232"}', function() {
         var actual = ax5.util.param("a=1&b=1232");
 
-        _.isEqual(actual, {"a":"1","b":"1232"}).should.equal(true);
+        should.deepEqual(actual, {"a":"1","b":"1232"});
     });
 });
 
@@ -87,20 +87,24 @@ describe('ax5.util.toArray TEST', function() {
     });
 });
 
+describe('ax5.util.xxxCookie TEST', function() {
 
+    ax5.util.setCookie('ax5-cookie', null); // reset ax5-cookie value
 
-describe('ax5.util.setCookie TEST', function() {
-    it('ax5.util.setCookie("ax5-cookie-path", "abcde", 2, {path: "/"})', function() {
-        ax5.util.setCookie("ax5-cookie-path", "abcde", 2, {path: "/"});
+    describe('ax5.util.setCookie TEST', function() {
+        it('ax5.util.setCookie("ax5-cookie", "abcde")', function() {
+            ax5.util.setCookie('ax5-cookie', 'abcde');
 
-        document.cookie.indexOf('ax5-cookie-path=abcde').should.above(-1);
+            document.cookie.indexOf('ax5-cookie=abcde').should.above(-1);
+        });
     });
-});
 
-describe('ax5.util.getCookie TEST', function() {
-    it('ax5.util.getCookie("ax5-cookie-path") expect "abcde"', function() {
-        var actual = ax5.util.getCookie('ax5-cookie-path');
+    describe('ax5.util.getCookie TEST', function() {
+        it('ax5.util.getCookie("ax5-cookie") expect "abcde"', function() {
+            var actual = ax5.util.getCookie('ax5-cookie');
 
-        actual.should.equal('abcde');
+            actual.should.equal('abcde');
+        });
     });
+
 });
