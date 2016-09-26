@@ -125,6 +125,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.footSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 오른쪽
             this.needToPaintSum = true; // 데이터 셋이 변경되어 summary 변경 필요여부
 
+
             cfg = this.config;
 
             var onStateChanged = function onStateChanged(_opts, _that) {
@@ -1201,6 +1202,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // todo : filter
 // todo : body menu
 // todo : column reorder
+
 
 // ax5.ui.grid.body
 (function () {
@@ -3747,7 +3749,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var U = ax5.util;
 
     var onclickPageMove = function onclickPageMove(_act) {
-        var callBack = function callBack(_pageNo) {
+        var callback = function callback(_pageNo) {
             if (this.page.currentPage != _pageNo) {
                 this.page.selectPage = _pageNo;
                 if (this.config.page.onChange) {
@@ -3761,27 +3763,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
         var processor = {
             "first": function first() {
-                callBack.call(this, 0);
+                callback.call(this, 0);
             },
             "prev": function prev() {
                 var pageNo = this.page.currentPage - 1;
                 if (pageNo < 0) pageNo = 0;
-                callBack.call(this, pageNo);
+                callback.call(this, pageNo);
             },
             "next": function next() {
                 var pageNo = this.page.currentPage + 1;
                 if (pageNo > this.page.totalPages - 1) pageNo = this.page.totalPages - 1;
-                callBack.call(this, pageNo);
+                callback.call(this, pageNo);
             },
             "last": function last() {
-                callBack.call(this, this.page.totalPages - 1);
+                callback.call(this, this.page.totalPages - 1);
             }
         };
 
         if (_act in processor) {
             processor[_act].call(this);
         } else {
-            callBack.call(this, _act - 1);
+            callback.call(this, _act - 1);
         }
     };
 
