@@ -7,15 +7,15 @@
 
     <title>GRID</title>
 
-    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-mask/dist/ax5mask.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-calendar/dist/ax5calendar.css"/>
-    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../dist/ax5grid.css"/>
+    <link rel="stylesheet" type="text/css" href="<?=$bower_url?>/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="<?=$bower_url?>/ax5ui-mask/dist/ax5mask.css"/>
+    <link rel="stylesheet" type="text/css" href="<?=$bower_url?>/ax5ui-calendar/dist/ax5calendar.css"/>
+    <link rel="stylesheet" href="<?=$bower_url?>/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="<?=$ax5_url?>/ax5grid.css"/>
 
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/ax5core/dist/ax5core.js"></script>
-    <script src="../dist/ax5grid.js"></script>
+    <script src="<?=$bower_url?>/jquery/dist/jquery.min.js"></script>
+    <script src="<?=$bower_url?>/ax5core/dist/ax5core.js"></script>
+    <script src="<?=$ax5_url?>/ax5grid.js"></script>
 </head>
 <body style="padding: 20px;">
 
@@ -25,16 +25,16 @@
 
 <div style="padding: 5px;">
     <h3>height</h3>
-        <button class="btn btn-default" data-set-height="300">300px</button>
-        <button class="btn btn-default" data-set-height="400">400px</button>
-        <button class="btn btn-default" data-set-height="800">800px</button>
-        <button class="btn btn-default" data-set-height="100%">100%</button>
+    <button class="btn btn-default" data-set-height="300">300px</button>
+    <button class="btn btn-default" data-set-height="400">400px</button>
+    <button class="btn btn-default" data-set-height="800">800px</button>
+    <button class="btn btn-default" data-set-height="100%">100%</button>
 </div>
 <div style="padding: 5px;">
     <h3>row</h3>
-        <button class="btn btn-default" data-grid-control="row-add">add</button>
-        <button class="btn btn-default" data-grid-control="row-remove">remove</button>
-        <button class="btn btn-default" data-grid-control="row-update">update</button>
+    <button class="btn btn-default" data-grid-control="row-add">add</button>
+    <button class="btn btn-default" data-grid-control="row-remove">remove</button>
+    <button class="btn btn-default" data-grid-control="row-update">update</button>
 </div>
 <div style="padding: 5px;">
     <h3>column</h3>
@@ -50,7 +50,7 @@
 
 <script>
 
-    
+
     var firstGrid = new ax5.ui.grid();
 
     ax5.ui.grid.formatter["myType"] = function () {
@@ -63,15 +63,6 @@
     ax5.ui.grid.collector["myType"] = function () {
         return "myType" + (this.value || "");
     };
-
-    var sampleData = [
-        {a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
-        {companyJson: {"대표자명":"abcd"}, a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
-        {companyJson: {"대표자명":"abcd"}, a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
-        {companyJson: {"대표자명":"위세라"}, a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
-        {companyJson: {"대표자명":"abcd"}, a: "A", b: "B01", price: 1400, amount: 5, cost: 7000, saleDt: "2016-08-29", customer: "황세진", saleType: "D"},
-        {companyJson: {"대표자명":"abcd"}, a: "A", b: "A01", price: 1500, amount: 2, cost: 3000, saleDt: "2016-08-26", customer: "이서연", saleType: "A"}
-    ];
 
     var gridView = {
         initView: function () {
@@ -116,7 +107,9 @@
              }
              });
              */
-            firstGrid.setData(sampleData);
+            $.get('json_data.php?len=10', function(data) {
+                firstGrid.setData(data);
+            }, 'JSON');
 
             return this;
         }
@@ -125,8 +118,8 @@
     $(document.body).ready(function () {
 
         gridView
-                .initView()
-                .setData();
+            .initView()
+            .setData();
 
         $('[data-set-height]').click(function () {
             var height = this.getAttribute("data-set-height");
@@ -141,7 +134,9 @@
         $('[data-grid-control]').click(function () {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))]);
+                    $.get('json_data.php?len=1', function(data) {
+                        firstGrid.addRow(data);
+                    }, 'JSON');
                     break;
                 case "row-remove":
                     firstGrid.removeRow();
@@ -149,7 +144,6 @@
                 case "row-update":
                     firstGrid.updateRow($.extend({}, firstGrid.list[1], {price: 100, amount: 100, cost: 10000}), 1);
                     break;
-
                 case "column-add":
                     firstGrid.addColumn({key: "b", label: "필드B"});
                     break;
