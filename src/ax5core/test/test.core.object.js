@@ -98,4 +98,27 @@ describe('ax5.util.getObject TEST', function() {
         _.isEqual(ax5.util.map({a: 1, b: 2}, function (k, v) {return {id: k, value: v};}) , [{"id":"a","value":1},{"id":"b","value":2}]).should.equal(true);   
     });
     /*end ax5.util.map*/
+
+     /*ax5.util.merge*/
+    it('ax5.util.merge([1,2,3],[7,8,9])' , function(){
+        _.isEqual(ax5.util.merge([1,2,3],[7,8,9]) , [1,2,3,7,8,9]).should.equal(true);
+    });
+    /*end ax5.util.merge*/
+
+    /*ax5.util.reduce*/
+    //Example01
+    it('ax5.util.reduce([5,4,3,2,1]) , function(p , n){return p*n;}' , function(){
+        should.deepEqual(ax5.util.reduce([5,4,3,2,1] , function(p,n){return p*n;}) , 120);
+    });
+    //Example02
+    it('ax5.util.reduce({a:1,b:2} , function(p,n){ return parseInt(p || 0) + parseInt(n);})' , function(){
+        should.deepEqual(ax5.util.reduce({a:1,b:2} , function(p,n){ return parseInt(p || 0) + parseInt(n);}), 3);
+    });
+    /*end ax5.util.reduce*/
+
+    /*ax5.util.reduceRight*/
+    it('ax5.util.reduceRight([5,4,3,2,1] , function(p,n){return p-n;})' ,function(){
+        should.deepEqual(ax5.util.reduceRight([5,4,3,2,1] , function(p,n){return p-n;}) , -13);
+    });
+    /*end ax5.util.reduceRight*/
 });
