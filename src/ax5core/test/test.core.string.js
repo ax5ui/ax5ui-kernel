@@ -16,24 +16,14 @@ describe('ax5.util.left TEST', function() {
           explanation: 'abc4, 4'
       },
       {
-          args: [ 'abc4', 4.0 ],
+          args: [ 'abc4efg', 4.0 ],
           expect: 'abc4',
-          explanation: 'abc4, 4.0'
+          explanation: 'abc4efg, 4.0'
       },
       {
-          args: [ 'abc4', 4.1 ],
-          expect: 'abc4',
-          explanation: 'abc4, 4.1'
-      },
-      {
-          args: [ 'abc4', 4.9 ],
-          expect: 'abc4',
-          explanation: 'abc4, 4.9'
-      },
-      {
-          args: [ 'abc4', 100 ],
-          expect: 'abc4',
-          explanation: 'abc4, 100'
+          args: [ 'abc4e', 100 ],
+          expect: 'abc4e',
+          explanation: 'abc4e, 100'
       },
       {
           args: [ 'abc4', '4' ],
@@ -68,7 +58,7 @@ describe('ax5.util.left TEST', function() {
       {
           args: [ 'abc', null ],
           expect: '',
-          explanation: 'abc, ""'
+          explanation: 'abc, null'
       },
       {
           args: [ 'abc', undefined],
@@ -108,12 +98,18 @@ describe('ax5.util.left TEST', function() {
   ];
 
   testCases.forEach(function(testCase){
-      it('ax5.util.left(' + testCase.explanation + ') expect ' + testCase.expect, function() {
+      it('ax5.util.left(' + testCase.explanation + ') expect ' + showEmptyString(testCase.expect), function() {
           var actual = ax5.util.left.apply(this, testCase.args);
 
           actual.should.deepEqual(testCase.expect);
       });
   });
+
+  function showEmptyString(target) {
+    if (target.length === 0 && ax5.util.getType(target) === "string") return '\"\"';
+    return target;
+  }
+
 });
 
 describe('ax5.util.right TEST', function() {
@@ -182,7 +178,7 @@ describe('ax5.util.setDigit Test', function() {
     {
       args: [ 1, 2 ],
       expect: '01'
-    },
+    }
   ];
   testCases.forEach(function(testCase){
       it('ax5.util.setDigit(' + testCase.args + ') expect ' + testCase.expect, function() {
