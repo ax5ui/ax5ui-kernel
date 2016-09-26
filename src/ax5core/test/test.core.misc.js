@@ -117,3 +117,32 @@ describe('ax5.util.findParentNode TEST', function() {
         should.equal(actual, expect);
     });
 });
+
+describe('ax5.util.cssNumber TEST', function() {
+    var testCases = [
+        {
+            args: '100px',
+            expect: '100px'
+        },
+        {
+            args: 100,
+            expect: '100px'
+        },
+        {
+            args: '100%',
+            expect: '100%'
+        },
+        {
+            args: '##100@',
+            expect: '100px'
+        }
+    ];
+
+    _.each(testCases, function(testCase){
+        it('ax5.util.toJson(' + JSON.stringify(testCase.args) + ') expect ' + testCase.expect, function() {
+            var actual = ax5.util.cssNumber(testCase.args);
+
+            should.equal(actual, testCase.expect);
+        });
+    });
+});
