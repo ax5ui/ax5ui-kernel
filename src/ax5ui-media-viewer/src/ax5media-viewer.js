@@ -461,7 +461,7 @@
              */
             this.select = (function () {
                 var mediaView = {
-                    image: function (obj, callBack) {
+                    image: function (obj, callback) {
                         self.$["viewer-loading"].show();
                         var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
                         var img = new Image();
@@ -470,15 +470,15 @@
                             self.$["viewer-loading"].fadeOut();
                             var h = dim[1];
                             var w = h * img.width / img.height;
-                            callBack(img, Math.floor(w), h);
+                            callback(img, Math.floor(w), h);
                         };
                         return img;
                     },
-                    video: function (obj, callBack) {
+                    video: function (obj, callback) {
                         self.$["viewer-loading"].show();
                         var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
                         var html = jQuery(obj.video[cfg.columnKeys.html]);
-                        callBack(html, dim[0], dim[1]);
+                        callback(html, dim[0], dim[1]);
                         self.$["viewer-loading"].fadeOut();
                     }
                 };
