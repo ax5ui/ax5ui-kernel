@@ -4,35 +4,39 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2106186d60c3a93a89f7f7501832b58c",
-    "content-hash": "0550568ea0ee249a62956f33a748fd40",
+    "hash": "7997823b39ab0a173bc41e6c860fec59",
+    "content-hash": "a5bd46b5aaedef5261f2c077b71be047",
     "packages": [
         {
-            "name": "altorouter/altorouter",
-            "version": "v1.2.0",
+            "name": "fzaninotto/faker",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/dannyvankooten/AltoRouter.git",
-                "reference": "39c50092470128c12284d332bb57f306bb5b58e4"
+                "url": "https://github.com/fzaninotto/Faker.git",
+                "reference": "44f9a286a04b80c76a4e5fb7aad8bb539b920123"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dannyvankooten/AltoRouter/zipball/39c50092470128c12284d332bb57f306bb5b58e4",
-                "reference": "39c50092470128c12284d332bb57f306bb5b58e4",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/44f9a286a04b80c76a4e5fb7aad8bb539b920123",
+                "reference": "44f9a286a04b80c76a4e5fb7aad8bb539b920123",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": "^5.3.3|^7.0"
             },
             "require-dev": {
-                "codeclimate/php-test-reporter": "dev-master",
-                "phpunit/phpunit": "4.5.*"
+                "ext-intl": "*",
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "~1.5"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": []
+            },
             "autoload": {
-                "classmap": [
-                    "AltoRouter.php"
-                ]
+                "psr-4": {
+                    "Faker\\": "src/Faker/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -40,71 +44,16 @@
             ],
             "authors": [
                 {
-                    "name": "Danny van Kooten",
-                    "email": "dannyvankooten@gmail.com",
-                    "homepage": "http://dannyvankooten.com/"
-                },
-                {
-                    "name": "Koen Punt",
-                    "homepage": "https://github.com/koenpunt"
-                },
-                {
-                    "name": "niahoo",
-                    "homepage": "https://github.com/niahoo"
+                    "name": "François Zaninotto"
                 }
             ],
-            "description": "A lightning fast router for PHP",
-            "homepage": "https://github.com/dannyvankooten/AltoRouter",
+            "description": "Faker is a PHP library that generates fake data for you.",
             "keywords": [
-                "lightweight",
-                "router",
-                "routing"
+                "data",
+                "faker",
+                "fixtures"
             ],
-            "time": "2015-11-30 00:47:43"
-        },
-        {
-            "name": "aviat4ion/query",
-            "version": "v2.5.1",
-            "source": {
-                "type": "git",
-                "url": "https://git.timshomepage.net/aviat4ion/Query.git",
-                "reference": "555865bdb79fcaaf042ad43e45b3c9b0abbe02cc"
-            },
-            "require": {
-                "php": ">=5.3"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "autoload.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "dbad-license"
-            ],
-            "authors": [
-                {
-                    "name": "Timothy J. Warren",
-                    "email": "tim@timshomepage.net",
-                    "homepage": "https://timshomepage.net",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Database Query Builder and Abstraction layer",
-            "homepage": "https://github.com/aviat4ion/Query",
-            "keywords": [
-                "codeigniter",
-                "database",
-                "firebird",
-                "mysql",
-                "pdo",
-                "postgres",
-                "query builder",
-                "sqlite"
-            ],
-            "abandoned": "aviat/ion",
-            "time": "2015-07-31 14:56:16"
+            "time": "2016-04-29 12:21:54"
         }
     ],
     "packages-dev": [],

@@ -1,6 +1,5 @@
 {
     "require": {
-        "aviat4ion/query": "^2.5",
-        "altorouter/altorouter": "^1.2"
+        "fzaninotto/faker": "^1.6"
     }
 }
