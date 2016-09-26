@@ -146,3 +146,19 @@ describe('ax5.util.cssNumber TEST', function() {
         });
     });
 });
+
+describe('ax5.util.css TEST', function() {
+
+    it('ax5.util.css({background:"#ccc",padding:"50px",width:"100px" }) expect background:#ccc;padding:50px;width:100px;', function() {
+        var actual = ax5.util.css({background:"#ccc",padding:"50px",width:"100px" });
+
+        should.equal(actual, 'background:#ccc;padding:50px;width:100px;');
+    });
+
+    it('ax5.util.css("width:100px;padding: 50px; background: #ccc") expect {width: "100px", padding: "50px", background: "#ccc"}', function() {
+        var actual = ax5.util.css('width:100px;padding: 50px; background: #ccc');
+
+        should.deepEqual(actual, {width: "100px", padding: "50px", background: "#ccc"});
+    });
+
+});
