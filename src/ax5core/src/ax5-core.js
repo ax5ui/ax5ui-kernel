@@ -1038,7 +1038,7 @@
         function left(str, pos) {
             if (typeof str === "undefined" || typeof pos === "undefined") return "";
             if (isString(pos)) {
-                return (str.indexOf(pos) > -1) ? str.substr(0, str.indexOf(pos)) : str;
+                return (str.indexOf(pos) > -1) ? str.substr(0, str.indexOf(pos)) : "";
             }
             else if (isNumber(pos)) {
                 return str.substr(0, pos);
@@ -1066,7 +1066,7 @@
             if (typeof str === "undefined" || typeof pos === "undefined") return "";
             str = '' + str;
             if (isString(pos)) {
-                return (str.lastIndexOf(pos) > -1) ? str.substr(str.lastIndexOf(pos) + 1) : str;
+                return (str.lastIndexOf(pos) > -1) ? str.substr(str.lastIndexOf(pos) + 1) : "";
             }
             else if (isNumber(pos)) {
                 return str.substr(str.length - pos);
