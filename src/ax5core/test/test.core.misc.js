@@ -76,6 +76,10 @@ describe('ax5.util.toJson TEST', function() {
     });
 });
 
+describe('ax5.util.alert TEST', function(){
+    // TODO 대략 난감... HJ.Park 2016-09-26
+});
+
 describe('ax5.util.toArray TEST', function() {
     it('ax5.util.toArray converts [Array-like objects] to [Array]', function() {
         function something() {
@@ -161,4 +165,16 @@ describe('ax5.util.css TEST', function() {
         should.deepEqual(actual, {width: "100px", padding: "50px", background: "#ccc"});
     });
 
+});
+
+describe('ax5.util.stopEvent TEST', function(){
+    // TODO 대략 난감... HJ.Park 2016-09-26
+});
+
+describe('ax5.util.selectRange TEST', function() {
+    // TODO 대략 난감... HJ.Park 2016-09-26
+});
+
+describe('ax5.util.debounce TEST', function() {
+    // TODO 대략 난감... HJ.Park 2016-09-26
 });
