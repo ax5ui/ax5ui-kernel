@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-menu
+"menu" displays a list of items in a hierarchical structure.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
