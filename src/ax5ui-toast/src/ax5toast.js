@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "toast",
-        version: "0.3.3"
+        version: "0.4.0"
     }, (function () {
         /**
          * @class ax5toast
@@ -69,7 +69,7 @@
                         };
 
                     try {
-                        return ax5.mustache.render(TOAST.tmpl.get("toastDisplay", data));
+                        return TOAST.tmpl.get.call(this, "toastDisplay", data);
                     }
                     finally {
                         toastId = null;

@@ -3,7 +3,7 @@
 
     var TOAST = ax5.ui.toast;
 
-    var toastDisplay =
+    var toastDisplay = function(columnKeys) {
         `<div id="{{toastId}}" data-ax5-ui="toast" class="ax5-ui-toast {{theme}}">
             {{#icon}}
             <div class="ax-toast-icon">{{{.}}}</div>
@@ -23,11 +23,13 @@
             {{/btns}}
             <div style="clear:both;"></div>
         </div>`;
+    };
 
     TOAST.tmpl = {
         "toastDisplay": toastDisplay,
-        get: function (tmplName, data) {
-            return ax5.mustache.render(TOAST.tmpl[tmplName], data);
+
+        get: function (tmplName, data, columnKeys) {
+            return ax5.mustache.render(TOAST.tmpl[tmplName].call(this, columnKeys), data);
         }
     };
 
