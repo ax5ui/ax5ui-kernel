@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-picker
+"picker" provides users a simple way to select a single value from a pre-determined set of values.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
