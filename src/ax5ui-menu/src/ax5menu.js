@@ -88,8 +88,6 @@
                     that = null;
                     return true;
                 },
-                // getTmpl = MENU.tmpl.tmpl, // hoksi
-                getTmpl_menuBar = MENU.tmpl.tmplMenubar, // hoksi
                 popup = function (opt, items, depth, path) {
                     var
                         data = opt,
@@ -126,10 +124,7 @@
                     data['@hasChild'] = function () {
                         return this[cfg.columnKeys.items] && this[cfg.columnKeys.items].length > 0;
                     };
-                    activeMenu = jQuery(
-                        // ax5.mustache.render(getTmpl(cfg.columnKeys), data)
-                        MENU.tmpl.get.call(this, "tmpl", data, cfg.columnKeys)
-                    );
+                    activeMenu = jQuery(MENU.tmpl.get.call(this, "tmpl", data, cfg.columnKeys));
                     jQuery(document.body).append(activeMenu);
 
                     // remove queue
@@ -569,10 +564,7 @@
 
                     data[cfg.columnKeys.items] = items;
 
-                    activeMenu = jQuery(
-                        // ax5.mustache.render(getTmpl_menuBar(cfg.columnKeys), data)
-                        MENU.tmpl.get.call(this, "tmplMenubar", data, cfg.columnKeys)
-                    );
+                    activeMenu = jQuery(MENU.tmpl.get.call(this, "tmplMenubar", data, cfg.columnKeys));
                     self.menuBar = {
                         target: jQuery(el),
                         opened: false

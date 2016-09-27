@@ -1,8 +1,7 @@
 // ax5.ui.menu.tmpl
 (function () {
     var MENU = ax5.ui.menu;
-    var U = ax5.util;
-
+    
     var tmpl = function (columnKeys) {
         return `
         <div class="ax5-ui-menu {{theme}}" {{#width}}style="width:{{width}}px;"{{/width}}>
