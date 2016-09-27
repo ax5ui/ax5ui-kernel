@@ -81,18 +81,13 @@
                 }
                 return true;
             },
-                getFrameTmpl = MEDIAVIEWER.tmpl.frame,
                 getFrame = function getFrame() {
-                var data = jQuery.extend(true, {}, cfg),
-                    tmpl = getFrameTmpl(cfg.columnKeys);
-
-                data.id = this.id;
+                var data = jQuery.extend(true, { id: this.id }, cfg);
 
                 try {
-                    return ax5.mustache.render(tmpl, data);
+                    return MEDIAVIEWER.tmpl.get.call(this, "frame", data, cfg.columnKeys);
                 } finally {
                     data = null;
-                    tmpl = null;
                 }
             },
                 onClick = function onClick(e, target) {
@@ -495,6 +490,10 @@
     };
 
     MEDIAVIEWER.tmpl = {
-        "frame": frame
+        "frame": frame,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(MEDIAVIEWER.tmpl[tmplName].call(this, columnKeys), data);
+        }
     };
 })();

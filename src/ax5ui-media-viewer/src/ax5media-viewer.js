@@ -81,20 +81,15 @@
                     }
                     return true;
                 },
-                getFrameTmpl = MEDIAVIEWER.tmpl.frame,
                 getFrame = function () {
                     var
-                        data = jQuery.extend(true, {}, cfg),
-                        tmpl = getFrameTmpl(cfg.columnKeys);
-
-                    data.id = this.id;
+                        data = jQuery.extend(true, {id: this.id}, cfg);
 
                     try {
-                        return ax5.mustache.render(tmpl, data);
+                        return MEDIAVIEWER.tmpl.get.call(this, "frame", data, cfg.columnKeys);
                     }
                     finally {
                         data = null;
-                        tmpl = null;
                     }
                 },
                 onClick = function (e, target) {

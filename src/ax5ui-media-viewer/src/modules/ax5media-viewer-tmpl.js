@@ -44,6 +44,10 @@
     };
 
     MEDIAVIEWER.tmpl = {
-        "frame": frame
+        "frame": frame,
+
+        get: function (tmplName, data, columnKeys) {
+            return ax5.mustache.render(MEDIAVIEWER.tmpl[tmplName].call(this, columnKeys), data);
+        }
     };
 })();
