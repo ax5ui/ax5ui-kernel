@@ -18,7 +18,7 @@
                 `;
     };
     var dayTmpl = function (columnKeys) {
-            return `
+        return `
                 <table data-calendar-table="day" cellpadding="0" cellspacing="0" style="width:100%;">
                     <thead>
                         <tr>
@@ -50,9 +50,9 @@
                     </tbody>
                 </table>
                 `;
-        };
+    };
     var monthTmpl = function (columnKeys) {
-            return `
+        return `
                 <table data-calendar-table="month" cellpadding="0" cellspacing="0" style="width:100%;">
                     <thead>
                         <tr>
@@ -82,9 +82,9 @@
                     </tbody>
                 </table>
                 `;
-        };
+    };
     var yearTmpl = function (columnKeys) {
-            return `
+        return `
                 <table data-calendar-table="year" cellpadding="0" cellspacing="0" style="width:100%;">
                     <thead>
                         <tr>
@@ -114,7 +114,7 @@
                     </tbody>
                 </table>
                 `;
-        };
+    };
 
     CALENDAR.tmpl = {
         "frameTmpl": frameTmpl,

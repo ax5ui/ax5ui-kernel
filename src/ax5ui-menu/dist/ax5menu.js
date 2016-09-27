@@ -86,11 +86,7 @@
                 that = null;
                 return true;
             },
-
-            // getTmpl = MENU.tmpl.tmpl, // hoksi
-            getTmpl_menuBar = MENU.tmpl.tmplMenubar,
-                // hoksi
-            popup = function popup(opt, items, depth, path) {
+                popup = function popup(opt, items, depth, path) {
                 var data = opt,
                     activeMenu,
                     removed;
@@ -123,9 +119,7 @@
                 data['@hasChild'] = function () {
                     return this[cfg.columnKeys.items] && this[cfg.columnKeys.items].length > 0;
                 };
-                activeMenu = jQuery(
-                // ax5.mustache.render(getTmpl(cfg.columnKeys), data)
-                MENU.tmpl.get.call(this, "tmpl", data, cfg.columnKeys));
+                activeMenu = jQuery(MENU.tmpl.get.call(this, "tmpl", data, cfg.columnKeys));
                 jQuery(document.body).append(activeMenu);
 
                 // remove queue
@@ -551,9 +545,7 @@
 
                     data[cfg.columnKeys.items] = items;
 
-                    activeMenu = jQuery(
-                    // ax5.mustache.render(getTmpl_menuBar(cfg.columnKeys), data)
-                    MENU.tmpl.get.call(this, "tmplMenubar", data, cfg.columnKeys));
+                    activeMenu = jQuery(MENU.tmpl.get.call(this, "tmplMenubar", data, cfg.columnKeys));
                     self.menuBar = {
                         target: jQuery(el),
                         opened: false
@@ -669,7 +661,6 @@
 // ax5.ui.menu.tmpl
 (function () {
     var MENU = ax5.ui.menu;
-    var U = ax5.util;
 
     var tmpl = function tmpl(columnKeys) {
         return "\n        <div class=\"ax5-ui-menu {{theme}}\" {{#width}}style=\"width:{{width}}px;\"{{/width}}>\n            <div class=\"ax-menu-body\">\n                {{#" + columnKeys.items + "}}\n                    {{^@isMenu}}\n                        {{#divide}}\n                        <div class=\"ax-menu-item-divide\" data-menu-item-index=\"{{@i}}\"></div>\n                        {{/divide}}\n                        {{#html}}\n                        <div class=\"ax-menu-item-html\" data-menu-item-index=\"{{@i}}\">{{{@html}}}</div>\n                        {{/html}}\n                    {{/@isMenu}}\n                    {{#@isMenu}}\n                    <div class=\"ax-menu-item\" data-menu-item-depth=\"{{@depth}}\" data-menu-item-index=\"{{@i}}\" data-menu-item-path=\"{{@path}}.{{@i}}\">\n                        <span class=\"ax-menu-item-cell ax-menu-item-checkbox\">\n                            {{#check}}\n                            <span class=\"item-checkbox-wrap useCheckBox\" {{#checked}}data-item-checked=\"true\"{{/checked}}></span>\n                            {{/check}}\n                            {{^check}}\n                            <span class=\"item-checkbox-wrap\"></span>\n                            {{/check}}\n                        </span>\n                        {{#icon}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-icon\" style=\"width:{{cfg.iconWidth}}px;\">{{{.}}}</span>\n                        {{/icon}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-label\">{{{" + columnKeys.label + "}}}</span>\n                        {{#accelerator}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-accelerator\" style=\"width:{{cfg.acceleratorWidth}}px;\"><span class=\"item-wrap\">{{.}}</span></span>\n                        {{/accelerator}}\n                        {{#@hasChild}}\n                        <span class=\"ax-menu-item-cell ax-menu-item-handle\">{{{cfg.icons.arrow}}}</span>\n                        {{/@hasChild}}\n                    </div>\n                    {{/@isMenu}}\n\n                {{/" + columnKeys.items + "}}\n            </div>\n            <div class=\"ax-menu-arrow\"></div>\n        </div>\n        ";
