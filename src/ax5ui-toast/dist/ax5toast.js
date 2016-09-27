@@ -74,7 +74,7 @@
                     data = null;
                 }
             },
-                open = function open(opts, callback) {
+                open = function open(opts, callBack) {
                 if (toastSeqClear) clearTimeout(toastSeqClear);
 
                 var toastBox,
@@ -105,21 +105,21 @@
                 if (opts.toastType === "push") {
                     // 자동 제거 타이머 시작
                     setTimeout(function () {
-                        this.close(opts, callback);
+                        this.close(opts, callBack);
                     }.bind(this), cfg.displayTime);
 
                     toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, function (e) {
-                        btnOnClick.call(this, e || window.event, opts, toastBox, callback);
+                        btnOnClick.call(this, e || window.event, opts, toastBox, callBack);
                     }.bind(this));
                 } else if (opts.toastType === "confirm") {
                     toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, function (e) {
-                        btnOnClick.call(this, e || window.event, opts, toastBox, callback);
+                        btnOnClick.call(this, e || window.event, opts, toastBox, callBack);
                     }.bind(this));
                 }
 
                 box = null;
             },
-                btnOnClick = function btnOnClick(e, opts, toastBox, callback, target, k) {
+                btnOnClick = function btnOnClick(e, opts, toastBox, callBack, target, k) {
                 target = U.findParentNode(e.target, function (target) {
                     if (target.getAttribute("data-ax-toast-btn")) {
                         return true;
@@ -138,18 +138,18 @@
                     if (opts.btns && opts.btns[k].onClick) {
                         opts.btns[k].onClick.call(that, k);
                     } else if (opts.toastType === "push") {
-                        if (callback) callback.call(that, k);
-                        this.close(opts, callback);
+                        if (callBack) callBack.call(that, k);
+                        this.close(opts, callBack);
                     } else if (opts.toastType === "confirm") {
-                        if (callback) callback.call(that, k);
-                        this.close(opts, callback);
+                        if (callBack) callBack.call(that, k);
+                        this.close(opts, callBack);
                     }
                 }
 
                 e = null;
                 opts = null;
                 toastBox = null;
-                callback = null;
+                callBack = null;
                 target = null;
                 k = null;
             };
@@ -179,10 +179,10 @@
             /**
              * @method ax5toast.push
              * @param opts
-             * @param callback
+             * @param callBack
              * @returns {ax5toast}
              */
-            this.push = function (opts, callback) {
+            this.push = function (opts, callBack) {
                 if (!self.containerId) {
                     this.init();
                 }
@@ -198,20 +198,20 @@
                 jQuery.extend(true, self.dialogConfig, cfg, opts);
                 opts = self.dialogConfig;
 
-                open.call(this, opts, callback);
+                open.call(this, opts, callBack);
 
                 opts = null;
-                callback = null;
+                callBack = null;
                 return this;
             };
 
             /**
              * @method ax5toast.confirm
              * @param opts
-             * @param callback
+             * @param callBack
              * @returns {ax5toast}
              */
-            this.confirm = function (opts, callback) {
+            this.confirm = function (opts, callBack) {
                 if (!self.containerId) {
                     this.init();
                 }
@@ -232,10 +232,10 @@
                         ok: { label: cfg.lang["ok"], theme: opts.theme }
                     };
                 }
-                open.call(this, opts, callback);
+                open.call(this, opts, callBack);
 
                 opts = null;
-                callback = null;
+                callBack = null;
                 return this;
             };
 
@@ -248,7 +248,7 @@
              * my_toast.close();
              * ```
              */
-            this.close = function (opts, callback) {
+            this.close = function (opts, callBack) {
                 if (typeof opts === "undefined") {
                     opts = U.last(this.queue);
                 }
@@ -264,7 +264,7 @@
                     };
 
                     toastBox.remove();
-                    if (callback) callback.call(that);
+                    if (callBack) callBack.call(that);
 
                     that = {
                         self: this,
@@ -284,7 +284,7 @@
 
                     that = null;
                     opts = null;
-                    callback = null;
+                    callBack = null;
                     toastBox = null;
                 }.bind(this), cfg.animateTime);
 
@@ -312,7 +312,7 @@
     var TOAST = ax5.ui.toast;
 
     var toastDisplay = function toastDisplay(columnKeys) {
-        "<div id=\"{{toastId}}\" data-ax5-ui=\"toast\" class=\"ax5-ui-toast {{theme}}\">\n            {{#icon}}\n            <div class=\"ax-toast-icon\">{{{.}}}</div>\n            {{/icon}}\n            <div class=\"ax-toast-body\">{{{msg}}}</div>\n            {{#btns}}\n            <div class=\"ax-toast-buttons\">\n                <div class=\"ax-button-wrap\">\n                    {{#@each}}\n                    <button type=\"button\" data-ax-toast-btn=\"{{@key}}\" class=\"btn btn-{{@value.theme}}\">{{{@value.label}}}</button>\n                    {{/@each}}\n                </div>\n            </div>\n            {{/btns}}\n            {{^btns}}\n                <a class=\"ax-toast-close\" data-ax-toast-btn=\"ok\">{{{closeIcon}}}</a>\n            {{/btns}}\n            <div style=\"clear:both;\"></div>\n        </div>";
+        return "\n        <div id=\"{{toastId}}\" data-ax5-ui=\"toast\" class=\"ax5-ui-toast {{theme}}\">\n            {{#icon}}\n            <div class=\"ax-toast-icon\">{{{.}}}</div>\n            {{/icon}}\n            <div class=\"ax-toast-body\">{{{msg}}}</div>\n            {{#btns}}\n            <div class=\"ax-toast-buttons\">\n                <div class=\"ax-button-wrap\">\n                    {{#@each}}\n                    <button type=\"button\" data-ax-toast-btn=\"{{@key}}\" class=\"btn btn-{{@value.theme}}\">{{{@value.label}}}</button>\n                    {{/@each}}\n                </div>\n            </div>\n            {{/btns}}\n            {{^btns}}\n                <a class=\"ax-toast-close\" data-ax-toast-btn=\"ok\">{{{closeIcon}}}</a>\n            {{/btns}}\n            <div style=\"clear:both;\"></div>\n        </div>\n        ";
     };
 
     TOAST.tmpl = {
