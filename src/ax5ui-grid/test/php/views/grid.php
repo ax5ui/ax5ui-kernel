@@ -23,31 +23,6 @@
     <div data-ax5grid="first-grid" data-ax5grid-config='{showLineNumber: true, showRowSelector: true}' style="height: 100%;"></div>
 </div>
 
-<div style="padding: 5px;">
-    <h3>height</h3>
-    <button class="btn btn-default" data-set-height="300">300px</button>
-    <button class="btn btn-default" data-set-height="400">400px</button>
-    <button class="btn btn-default" data-set-height="800">800px</button>
-    <button class="btn btn-default" data-set-height="100%">100%</button>
-</div>
-<div style="padding: 5px;">
-    <h3>row</h3>
-    <button class="btn btn-default" data-grid-control="row-add">add</button>
-    <button class="btn btn-default" data-grid-control="row-remove">remove</button>
-    <button class="btn btn-default" data-grid-control="row-update">update</button>
-</div>
-<div style="padding: 5px;">
-    <h3>column</h3>
-    <button class="btn btn-default" data-grid-control="column-add">add</button>
-    <button class="btn btn-default" data-grid-control="column-remove">remove</button>
-    <button class="btn btn-default" data-grid-control="column-update">update</button>
-</div>
-<div style="padding: 5px;">
-    <h3>etc.</h3>
-    <button class="btn btn-default" data-grid-control="width-resize">width resize</button>
-    <button class="btn btn-default" data-grid-control="delete-all">delete all</button>
-</div>
-
 <script>
 
 
@@ -68,47 +43,64 @@
         initView: function () {
             firstGrid.setConfig({
                 target: $('[data-ax5grid="first-grid"]'),
+                header: {
+                    align: "center",
+                    columnHeight: 28
+                },
+                body: {
+                    align: "center",
+                    columnHeight: 28,
+                    onClick: function () {
+                        console.log(this);
+                        // this.self.select(this.dindex);
+                    },
+                },
                 columns: [
+                    {key: "id", label: "ID", align: "center"},
                     {
-                        key: "companyJson['대표자명']",
-                        label: "필드A",
+                        key: "company",
+                        label: "회사",
                         width: 80,
-                        styleClass: function () {
-                            return "ABC";
-                        },
                         enableFilter: true,
                         align: "center",
                         editor: {type:"text"}
                     },
-                    {key: "b", label: "필드B", align: "center"},
+                    {key: "ceo", label: "대표이사", align: "center"},
                     {
-                        key: undefined, label: "필드C", columns: [
-                        {key: "price", label: "단가", formatter: "money", align: "right"},
-                        {key: "amount", label: "수량", formatter: "money", align: "right"},
-                        {key: "cost", label: "금액", align: "right", formatter: "money"}
-                    ]
+                        key: undefined,
+                        label: "주문내역",
+                        columns: [
+                            {key: "price", label: "단가", formatter: "money", align: "right"},
+                            {key: "amount", label: "수량", formatter: "money", align: "right"},
+                            {key: "cost", label: "금액", align: "right", formatter: "money"}
+                        ]
                     },
-                    {key: "saleDt", label: "판매일자", align: "center"},
+                    {key: "sale_date", label: "판매일자", align: "center"},
                     {key: "customer", label: "고객명"},
-                    {key: "saleType", label: "판매타입"}
-                ]
+                    {key: "sale_type", label: "판매타입"}
+                ],
+                page: {
+                    navigationItemCount: 9,
+                    height: 30,
+                    display: true,
+                    firstIcon: '<i class="fa fa-step-backward" aria-hidden="true"></i>',
+                    prevIcon: '<i class="fa fa-caret-left" aria-hidden="true"></i>',
+                    nextIcon: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
+                    lastIcon: '<i class="fa fa-step-forward" aria-hidden="true"></i>',
+                    onChange: function () {
+                        console.log(this);
+                        gridView.setData(this.page.selectPage);
+                    }
+                }
             });
             return this;
         },
         setData: function (_pageNo) {
-            /*
-             firstGrid.setData({
-             list: sampleData,
-             page: {
-             currentPage: _pageNo || 0,
-             pageSize: 50,
-             totalElements: 500,
-             totalPages: 100
-             }
-             });
-             */
-            $.get('json_data.php?len=10', function(data) {
-                firstGrid.setData(data);
+            var page = (_pageNo || 0) + 1;
+            $.get('json_data.php?len=10&page=' + page, function(data) {
+                if(data.status == 'success') {
+                    firstGrid.setData(data.data);
+                }
             }, 'JSON');
 
             return this;
@@ -129,39 +121,6 @@
                 $("#grid-parent").css({height: "auto"});
             }
             firstGrid.setHeight(height);
-        });
-
-        $('[data-grid-control]').click(function () {
-            switch (this.getAttribute("data-grid-control")) {
-                case "row-add":
-                    $.get('json_data.php?len=1', function(data) {
-                        firstGrid.addRow(data);
-                    }, 'JSON');
-                    break;
-                case "row-remove":
-                    firstGrid.removeRow();
-                    break;
-                case "row-update":
-                    firstGrid.updateRow($.extend({}, firstGrid.list[1], {price: 100, amount: 100, cost: 10000}), 1);
-                    break;
-                case "column-add":
-                    firstGrid.addColumn({key: "b", label: "필드B"});
-                    break;
-                case "column-remove":
-                    firstGrid.removeColumn();
-                    break;
-                case "column-update":
-                    firstGrid.updateColumn({key: "b", label: "필드B"}, 0);
-                    break;
-                case "width-resize":
-
-                    $("#grid-parent").css({width: 400});
-                    ax5.ui.grid_instance.forEach(function (g) {
-                        g.align();
-                    });
-
-                    break;
-            }
         });
 
     });
