@@ -1,5 +1,4 @@
-describe('ax5.util.getObject TEST', function() {
-
+describe('ax5.util.filter TEST', function() {
     /* ax5.util.filter */
     //example 01
     var array = [5,4,3,2,1];
@@ -45,6 +44,9 @@ describe('ax5.util.getObject TEST', function() {
     });
     
     /* end ax5.util.filter */
+});
+
+describe('ax5.util.search TEST', function() {
     /*ax5.util.search */
     //example01
     var a = ["A" , "X" , "5"];
@@ -79,7 +81,9 @@ describe('ax5.util.getObject TEST', function() {
         _.isEqual(result , "AX5-1").should.equal(true);
     });
     /*end ax5.util.search */
+});
 
+describe('ax5.util.map TEST', function() {
     /*ax5.util.map*/
     //Usage 01
     var map_a = [1,2,3,4,5];
@@ -98,13 +102,17 @@ describe('ax5.util.getObject TEST', function() {
         _.isEqual(ax5.util.map({a: 1, b: 2}, function (k, v) {return {id: k, value: v};}) , [{"id":"a","value":1},{"id":"b","value":2}]).should.equal(true);   
     });
     /*end ax5.util.map*/
+});
 
-     /*ax5.util.merge*/
+describe('ax5.util.merge TEST', function() {
+    /*ax5.util.merge*/
     it('ax5.util.merge([1,2,3],[7,8,9])' , function(){
         _.isEqual(ax5.util.merge([1,2,3],[7,8,9]) , [1,2,3,7,8,9]).should.equal(true);
     });
     /*end ax5.util.merge*/
+});
 
+describe('ax5.util.reduce TEST', function() {
     /*ax5.util.reduce*/
     //Example01
     it('ax5.util.reduce([5,4,3,2,1]) , function(p , n){return p*n;}' , function(){
@@ -115,13 +123,17 @@ describe('ax5.util.getObject TEST', function() {
         should.deepEqual(ax5.util.reduce({a:1,b:2} , function(p,n){ return parseInt(p || 0) + parseInt(n);}), 3);
     });
     /*end ax5.util.reduce*/
+});
 
+describe('ax5.util.reduceRight TEST', function() {
     /*ax5.util.reduceRight*/
     it('ax5.util.reduceRight([5,4,3,2,1] , function(p,n){return p-n;})' ,function(){
         should.deepEqual(ax5.util.reduceRight([5,4,3,2,1] , function(p,n){return p-n;}) , -13);
     });
     /*end ax5.util.reduceRight*/
+});
 
+describe('ax5.util.sum TEST', function() {
     /*ax.util.Sum */
     //Usage 01
     it('ax5.util.sum([{name: "122", value: 9},{name: "122", value: 10},{name: "123", value: 11}] , function(){if(this.name == "122"){return this.value;}})' , function(){
@@ -155,7 +167,9 @@ describe('ax5.util.getObject TEST', function() {
         should.deepEqual(test,40);
     });
     /*end ax.util.Sum */
+});
 
+describe('ax5.util.avg TEST', function() {
     /* ax.util.avg */
     it('ax5.util.avg(arr , function(){return this.value;})' , function(){
         var arr = [
@@ -171,7 +185,9 @@ describe('ax5.util.getObject TEST', function() {
         should.deepEqual(rs,10);
     }); 
     /* end ax.util.avg */    
+});
 
+describe('ax5.util.first TEST', function() {
     /* ax.util.first */
     //Example 01
     it('ax5.util.first(["ax5", "axisj"])' , function(){
@@ -189,7 +205,9 @@ describe('ax5.util.getObject TEST', function() {
         should.deepEqual(ax5.util.first(_obj),{"k" : "ax5"});
     });
     /* end ax.util.first */
+});
 
+describe('ax5.util.first TEST', function() {
     /* ax5.util.last */
     //Example01
     it('ax5.util.last(["ax5", "axisj"])' , function(){
@@ -206,8 +224,8 @@ describe('ax5.util.getObject TEST', function() {
         should.deepEqual(ax5.util.last(_obj) , {"z" : "axisj"});
     });
     /* end ax5.util.last */
-    
-    /* ax5.util.deepCopy */
+}); 
 
-    /* end ax5.util.deepCopy */
-});
+/* ax5.util.deepCopy */
+
+/* end ax5.util.deepCopy */
