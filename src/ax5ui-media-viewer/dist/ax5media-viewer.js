@@ -5,6 +5,7 @@
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var MEDIAVIEWER;
 
     UI.addClass({
         className: "mediaViewer",
@@ -80,20 +81,13 @@
                 }
                 return true;
             },
-                getFrameTmpl = function getFrameTmpl(columnKeys) {
-                return "\n                    <div data-ax5-ui-media-viewer=\"{{id}}\" class=\"{{theme}}\">\n                        <div data-media-viewer-els=\"viewer-holder\">\n                        <div data-media-viewer-els=\"viewer\"></div>\n                        </div>\n                        <div data-media-viewer-els=\"viewer-loading\">\n                        <div class=\"ax5-ui-media-viewer-loading-holder\">\n                        <div class=\"ax5-ui-media-viewer-loading-cell\">\n                        {{{loading.icon}}}\n                    {{{loading.text}}}\n                    </div>\n                    </div>\n                    </div>\n                    {{#media}}\n                    <div data-media-viewer-els=\"media-list-holder\">\n                        <div data-media-viewer-els=\"media-list-prev-handle\">{{{prevHandle}}}</div>\n                    <div data-media-viewer-els=\"media-list\">\n                        <div data-media-viewer-els=\"media-list-table\">\n                        {{#list}}\n                    <div data-media-viewer-els=\"media-list-table-td\">\n                        {{#image}}\n                    <div data-media-thumbnail=\"{{@i}}\">\n                        <img src=\"{{" + columnKeys.poster + "}}\" data-media-thumbnail-image=\"{{@i}}\" />\n                        </div>\n                        {{/image}}\n                    {{#video}}\n                    <div data-media-thumbnail=\"{{@i}}\">{{#" + columnKeys.poster + "}}<img src=\"{{.}}\" data-media-thumbnail-video=\"{{@i}}\" />>{{/" + columnKeys.poster + "}}{{^" + columnKeys.poster + "}}<a data-media-thumbnail-video=\"{{@i}}\">{{{media." + columnKeys.poster + "}}}</a>{{/" + columnKeys.poster + "}}</div>\n                    {{/video}}\n                    </div>\n                        {{/list}}\n                    </div>\n                        </div>\n                        <div data-media-viewer-els=\"media-list-next-handle\">{{{nextHandle}}}</div>\n                        </div>\n                        {{/media}}\n                    </div>\n                        ";
-            },
                 getFrame = function getFrame() {
-                var data = jQuery.extend(true, {}, cfg),
-                    tmpl = getFrameTmpl(cfg.columnKeys);
-
-                data.id = this.id;
+                var data = jQuery.extend(true, { id: this.id }, cfg);
 
                 try {
-                    return ax5.mustache.render(tmpl, data);
+                    return MEDIAVIEWER.tmpl.get.call(this, "frame", data, cfg.columnKeys);
                 } finally {
                     data = null;
-                    tmpl = null;
                 }
             },
                 onClick = function onClick(e, target) {
@@ -483,4 +477,23 @@
         };
         return ax5mediaViewer;
     }());
+
+    MEDIAVIEWER = ax5.ui.mediaViewer;
+})();
+// ax5.ui.mediaViewer.tmpl
+(function () {
+    var MEDIAVIEWER = ax5.ui.mediaViewer;
+    var U = ax5.util;
+
+    var frame = function frame(columnKeys) {
+        return "\n            <div data-ax5-ui-media-viewer=\"{{id}}\" class=\"{{theme}}\">\n                <div data-media-viewer-els=\"viewer-holder\">\n                <div data-media-viewer-els=\"viewer\"></div>\n                </div>\n                <div data-media-viewer-els=\"viewer-loading\">\n                <div class=\"ax5-ui-media-viewer-loading-holder\">\n                <div class=\"ax5-ui-media-viewer-loading-cell\">\n                {{{loading.icon}}}\n            {{{loading.text}}}\n            </div>\n            </div>\n            </div>\n            {{#media}}\n            <div data-media-viewer-els=\"media-list-holder\">\n                <div data-media-viewer-els=\"media-list-prev-handle\">{{{prevHandle}}}</div>\n            <div data-media-viewer-els=\"media-list\">\n                <div data-media-viewer-els=\"media-list-table\">\n                {{#list}}\n            <div data-media-viewer-els=\"media-list-table-td\">\n                {{#image}}\n            <div data-media-thumbnail=\"{{@i}}\">\n                <img src=\"{{" + columnKeys.poster + "}}\" data-media-thumbnail-image=\"{{@i}}\" />\n                </div>\n                {{/image}}\n            {{#video}}\n            <div data-media-thumbnail=\"{{@i}}\">{{#" + columnKeys.poster + "}}<img src=\"{{.}}\" data-media-thumbnail-video=\"{{@i}}\" />>{{/" + columnKeys.poster + "}}{{^" + columnKeys.poster + "}}<a data-media-thumbnail-video=\"{{@i}}\">{{{media." + columnKeys.poster + "}}}</a>{{/" + columnKeys.poster + "}}</div>\n            {{/video}}\n            </div>\n                {{/list}}\n            </div>\n                </div>\n                <div data-media-viewer-els=\"media-list-next-handle\">{{{nextHandle}}}</div>\n                </div>\n                {{/media}}\n            </div>\n        ";
+    };
+
+    MEDIAVIEWER.tmpl = {
+        "frame": frame,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(MEDIAVIEWER.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
 })();

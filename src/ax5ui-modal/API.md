@@ -138,7 +138,7 @@ Type: `Object'
 - - -
 
 ## open()
-`open(Options[, callBack])`
+`open(Options[, callback])`
 
 it is possible to redefine all of the options that can be used in setConfig.  
 
