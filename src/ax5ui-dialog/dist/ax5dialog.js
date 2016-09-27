@@ -5,6 +5,7 @@
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var DIALOG;
 
     UI.addClass({
         className: "dialog",
@@ -49,9 +50,6 @@
                 that = null;
                 return true;
             },
-                getContentTmpl = function getContentTmpl() {
-                return "\n                    <div id=\"{{dialogId}}\" data-ax5-ui=\"dialog\" class=\"ax5-ui-dialog {{theme}}\">\n                        <div class=\"ax-dialog-header\">\n                            {{{title}}}\n                        </div>\n                        <div class=\"ax-dialog-body\">\n                            <div class=\"ax-dialog-msg\">{{{msg}}}</div>\n                            \n                            {{#input}}\n                            <div class=\"ax-dialog-prompt\">\n                                {{#@each}}\n                                <div class=\"form-group\">\n                                {{#@value.label}}\n                                <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>\n                                {{/@value.label}}\n                                <input type=\"{{@value.type}}\" placeholder=\"{{@value.placeholder}}\" class=\"form-control {{@value.theme}}\" data-dialog-prompt=\"{{@key}}\" style=\"width:100%;\" value=\"{{@value.value}}\" />\n                                {{#@value.help}}\n                                <p class=\"help-block\">{{#_crlf}}{{.}}{{/_crlf}}</p>\n                                {{/@value.help}}\n                                </div>\n                                {{/@each}}\n                            </div>\n                            {{/input}}\n                            \n                            <div class=\"ax-dialog-buttons\">\n                                <div class=\"ax-button-wrap\">\n                                {{#btns}}\n                                    {{#@each}}\n                                    <button type=\"button\" data-dialog-btn=\"{{@key}}\" class=\"btn btn-{{@value.theme}}\">{{@value.label}}</button>\n                                    {{/@each}}\n                                {{/btns}}\n                                </div>\n                            </div>\n                        </div>\n                    </div>  \n                    ";
-            },
                 getContent = function getContent(dialogId, opts) {
                 var data = {
                     dialogId: dialogId,
@@ -65,7 +63,7 @@
                 };
 
                 try {
-                    return ax5.mustache.render(getContentTmpl(), data);
+                    return DIALOG.tmpl.get.call(this, "dialogDisplay", data);
                 } finally {
                     data = null;
                 }
@@ -478,4 +476,22 @@
         };
         return ax5dialog;
     }());
+    DIALOG = ax5.ui.dialog;
+})();
+
+// ax5.ui.dialog.tmpl
+(function () {
+
+    var DIALOG = ax5.ui.dialog;
+
+    var dialogDisplay = function dialogDisplay(columnKeys) {
+        return " \n        <div id=\"{{dialogId}}\" data-ax5-ui=\"dialog\" class=\"ax5-ui-dialog {{theme}}\">\n            <div class=\"ax-dialog-header\">\n                {{{title}}}\n            </div>\n            <div class=\"ax-dialog-body\">\n                <div class=\"ax-dialog-msg\">{{{msg}}}</div>\n                \n                {{#input}}\n                <div class=\"ax-dialog-prompt\">\n                    {{#@each}}\n                    <div class=\"form-group\">\n                    {{#@value.label}}\n                    <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>\n                    {{/@value.label}}\n                    <input type=\"{{@value.type}}\" placeholder=\"{{@value.placeholder}}\" class=\"form-control {{@value.theme}}\" data-dialog-prompt=\"{{@key}}\" style=\"width:100%;\" value=\"{{@value.value}}\" />\n                    {{#@value.help}}\n                    <p class=\"help-block\">{{#_crlf}}{{.}}{{/_crlf}}</p>\n                    {{/@value.help}}\n                    </div>\n                    {{/@each}}\n                </div>\n                {{/input}}\n                \n                <div class=\"ax-dialog-buttons\">\n                    <div class=\"ax-button-wrap\">\n                    {{#btns}}\n                        {{#@each}}\n                        <button type=\"button\" data-dialog-btn=\"{{@key}}\" class=\"btn btn-{{@value.theme}}\">{{@value.label}}</button>\n                        {{/@each}}\n                    {{/btns}}\n                    </div>\n                </div>\n            </div>\n        </div>  \n        ";
+    };
+
+    DIALOG.tmpl = {
+        "dialogDisplay": dialogDisplay,
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(DIALOG.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
 })();
