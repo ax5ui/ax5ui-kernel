@@ -113,7 +113,7 @@ myToast.setConfig({
 - - -
 
 ## push()
-`push(String|Options[, callBack])`
+`push(String|Options[, callback])`
 
 If this is String in the first argument and recognizes the first argument to `msg`.  
 it is possible to redefine all of the options that can be used in setConfig.  
@@ -134,7 +134,7 @@ toast.push({
 - - -
 
 ## confirm()
-`confirm(String|Options[, callBack])`
+`confirm(String|Options[, callback])`
 
 ```js
 confirmToast.confirm({

@@ -12,6 +12,7 @@
      * @param _frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
+
     var divideTableByFrozenColumnIndex = function (_table, _frozenColumnIndex) {
         var tempTable_l = {rows: []};
         var tempTable_r = {rows: []};
@@ -339,7 +340,7 @@
                     colIndex: addC,
                     colspan: colspan,
                     rowspan: 1,
-                    label: "&nbsp;",
+                    label: "&nbsp;"
                 });
             }
             addC += colspan;
