@@ -4,7 +4,8 @@
     var TOAST = ax5.ui.toast;
 
     var toastDisplay = function(columnKeys) {
-        `<div id="{{toastId}}" data-ax5-ui="toast" class="ax5-ui-toast {{theme}}">
+        return `
+        <div id="{{toastId}}" data-ax5-ui="toast" class="ax5-ui-toast {{theme}}">
             {{#icon}}
             <div class="ax-toast-icon">{{{.}}}</div>
             {{/icon}}
@@ -22,7 +23,8 @@
                 <a class="ax-toast-close" data-ax-toast-btn="ok">{{{closeIcon}}}</a>
             {{/btns}}
             <div style="clear:both;"></div>
-        </div>`;
+        </div>
+        `;
     };
 
     TOAST.tmpl = {

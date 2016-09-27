@@ -159,14 +159,14 @@ select.bind({
   lang: {
       loading: '<i class="fa fa-spinner fa-pulse"></i>'
   },
-  onExpand: function (callBack) {
+  onExpand: function (callback) {
       setTimeout(function () {
-        callBack({
+        callback({
             options: [
-                {value: "V0", text: "callBack Text 0"},
-                {value: "V1", text: "callBack Text 1"},
-                {value: "V2", text: "callBack Text 2"},
-                {value: "V3", text: "callBack Text 3"}
+                {value: "V0", text: "callback Text 0"},
+                {value: "V1", text: "callback Text 1"},
+                {value: "V2", text: "callback Text 2"},
+                {value: "V3", text: "callback Text 3"}
             ]
         });
       }, 300);
