@@ -86,7 +86,7 @@
                     data.iframe.param = ax5.util.param(data.iframe.param);
                 }
 
-                return MODAL.tmpl.get.call(this, "content", data, null);
+                return MODAL.tmpl.get.call(this, "content", data, {});
             },
                 open = function open(opts, callback) {
                 var that;
