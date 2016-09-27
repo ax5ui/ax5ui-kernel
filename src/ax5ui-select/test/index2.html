@@ -88,7 +88,7 @@
             }
         });
 
-        var callBackCount = 0;
+        var callbackCount = 0;
         $('[data-ax5select="select1"]').ax5select({
             lang: {
                 loading: '<i class="fa fa-spinner fa-pulse"></i>'
@@ -96,29 +96,29 @@
             onChange: function () {
                 console.log(this);
             },
-            onExpand: function (callBack) {
+            onExpand: function (callback) {
 
                 setTimeout(function () {
-                    if (callBackCount == 0) {
-                        callBack({
+                    if (callbackCount == 0) {
+                        callback({
                             options: [
-                                {value: "V0", text: "callBack Text 0"},
-                                {value: "V1", text: "callBack Text 1"},
-                                {value: "V2", text: "callBack Text 2"},
-                                {value: "V3", text: "callBack Text 3"}
+                                {value: "V0", text: "callback Text 0"},
+                                {value: "V1", text: "callback Text 1"},
+                                {value: "V2", text: "callback Text 2"},
+                                {value: "V3", text: "callback Text 3"}
                             ]
                         });
                     } else {
-                        callBack({
+                        callback({
                             options: [
-                                {value: "V0", text: "callBack Text 0"},
-                                {value: "V11", text: "callBack Text 11"},
-                                {value: "V12", text: "callBack Text 12"},
-                                {value: "V13", text: "callBack Text 13"}
+                                {value: "V0", text: "callback Text 0"},
+                                {value: "V11", text: "callback Text 11"},
+                                {value: "V12", text: "callback Text 12"},
+                                {value: "V13", text: "callback Text 13"}
                             ]
                         });
                     }
-                    callBackCount++;
+                    callbackCount++;
                 }, 300);
 
             }
