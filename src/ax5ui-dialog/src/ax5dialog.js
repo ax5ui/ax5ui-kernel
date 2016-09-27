@@ -3,6 +3,7 @@
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var DIALOG;
 
     UI.addClass({
         className: "dialog",
@@ -50,6 +51,8 @@
                     that = null;
                     return true;
                 },
+
+                /*
                 getContentTmpl = function () {
                     return `
                     <div id="{{dialogId}}" data-ax5-ui="dialog" class="ax5-ui-dialog {{theme}}">
@@ -88,6 +91,8 @@
                     </div>  
                     `;
                 },
+                */
+
                 getContent = function (dialogId, opts) {
                     var
                         data = {
@@ -102,7 +107,8 @@
                         };
 
                     try {
-                        return ax5.mustache.render(getContentTmpl(), data);
+                        //return ax5.mustache.render(getContentTmpl(), data);
+                        return DIALOG.tmpl.get.call(this, "dialogDisplay", data);
                     }
                     finally {
                         data = null;
@@ -525,5 +531,5 @@
         };
         return ax5dialog;
     })());
-
+    DIALOG = ax5.ui.dialog;
 })();
