@@ -121,4 +121,93 @@ describe('ax5.util.getObject TEST', function() {
         should.deepEqual(ax5.util.reduceRight([5,4,3,2,1] , function(p,n){return p-n;}) , -13);
     });
     /*end ax5.util.reduceRight*/
+
+    /*ax.util.Sum */
+    //Usage 01
+    it('ax5.util.sum([{name: "122", value: 9},{name: "122", value: 10},{name: "123", value: 11}] , function(){if(this.name == "122"){return this.value;}})' , function(){
+        var arr = [
+            {name: "122", value: 9},
+            {name: "122", value: 10},
+            {name: "123", value: 11}
+        ];
+
+        var rs = ax5.util.sum(arr, function () {
+            if(this.name == "122") {
+                return this.value;
+            }
+        });
+
+        should.deepEqual(rs,19); 
+    });
+
+    //Usage 02
+    it('ax5.util.sum([{name: "122", value: 9},{name: "122", value: 10},{name: "123", value: 11}] , 10 , function(){return this.value;})' , function(){
+        var arr = [
+            {name: "122", value: 9},
+            {name: "122", value: 10},
+            {name: "123", value: 11}
+        ];
+
+        var test = ax5.util.sum(arr,10,function(){
+            return this.value;
+        });       
+
+        should.deepEqual(test,40);
+    });
+    /*end ax.util.Sum */
+
+    /* ax.util.avg */
+    it('ax5.util.avg(arr , function(){return this.value;})' , function(){
+        var arr = [
+            {name: "122", value: 9},
+            {name: "122", value: 10},
+            {name: "123", value: 11}
+        ];
+
+        var rs = ax5.util.avg(arr , function(){
+            return this.value;
+        });
+
+        should.deepEqual(rs,10);
+    }); 
+    /* end ax.util.avg */    
+
+    /* ax.util.first */
+    //Example 01
+    it('ax5.util.first(["ax5", "axisj"])' , function(){
+        var _arr = ["ax5", "axisj"];
+        var str = ax5.util.first(_arr);
+
+        should.deepEqual(str,"ax5");
+    });
+    
+    //Example 02
+    //confirm 필요 (ax5.util.toJson을 넣으면 에러)
+    it('ax5.util.first({k: "ax5", z: "axisj"})' , function(){
+        var _obj = {k: "ax5", z: "axisj"};
+
+        should.deepEqual(ax5.util.first(_obj),{"k" : "ax5"});
+    });
+    /* end ax.util.first */
+
+    /* ax5.util.last */
+    //Example01
+    it('ax5.util.last(["ax5", "axisj"])' , function(){
+        var _arr = ["ax5", "axisj"];
+        
+        should.deepEqual(ax5.util.last(_arr) , "axisj");
+    });
+
+    //Example 02
+    //confirm 필요 (ax5.util.toJson을 넣으면 에러)
+    it('ax5.util.last({k: "ax5", z: "axisj"})' , function(){
+        var _obj = {k: "ax5", z: "axisj"};
+        
+        should.deepEqual(ax5.util.last(_obj) , {"z" : "axisj"});
+    });
+    /* end ax5.util.last */
+    
+    /* ax5.util.deepCopy */
+
+    /* end ax5.util.deepCopy */
 });
