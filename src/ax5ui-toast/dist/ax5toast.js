@@ -74,7 +74,7 @@
                     data = null;
                 }
             },
-                open = function open(opts, callBack) {
+                open = function open(opts, callback) {
                 if (toastSeqClear) clearTimeout(toastSeqClear);
 
                 var toastBox,
@@ -105,21 +105,21 @@
                 if (opts.toastType === "push") {
                     // 자동 제거 타이머 시작
                     setTimeout(function () {
-                        this.close(opts, callBack);
+                        this.close(opts, callback);
                     }.bind(this), cfg.displayTime);
 
                     toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, function (e) {
-                        btnOnClick.call(this, e || window.event, opts, toastBox, callBack);
+                        btnOnClick.call(this, e || window.event, opts, toastBox, callback);
                     }.bind(this));
                 } else if (opts.toastType === "confirm") {
                     toastBox.find("[data-ax-toast-btn]").on(cfg.clickEventName, function (e) {
-                        btnOnClick.call(this, e || window.event, opts, toastBox, callBack);
+                        btnOnClick.call(this, e || window.event, opts, toastBox, callback);
                     }.bind(this));
                 }
 
                 box = null;
             },
-                btnOnClick = function btnOnClick(e, opts, toastBox, callBack, target, k) {
+                btnOnClick = function btnOnClick(e, opts, toastBox, callback, target, k) {
                 target = U.findParentNode(e.target, function (target) {
                     if (target.getAttribute("data-ax-toast-btn")) {
                         return true;
@@ -138,18 +138,18 @@
                     if (opts.btns && opts.btns[k].onClick) {
                         opts.btns[k].onClick.call(that, k);
                     } else if (opts.toastType === "push") {
-                        if (callBack) callBack.call(that, k);
-                        this.close(opts, callBack);
+                        if (callback) callback.call(that, k);
+                        this.close(opts, callback);
                     } else if (opts.toastType === "confirm") {
-                        if (callBack) callBack.call(that, k);
-                        this.close(opts, callBack);
+                        if (callback) callback.call(that, k);
+                        this.close(opts, callback);
                     }
                 }
 
                 e = null;
                 opts = null;
                 toastBox = null;
-                callBack = null;
+                callback = null;
                 target = null;
                 k = null;
             };
@@ -179,10 +179,10 @@
             /**
              * @method ax5toast.push
              * @param opts
-             * @param callBack
+             * @param callback
              * @returns {ax5toast}
              */
-            this.push = function (opts, callBack) {
+            this.push = function (opts, callback) {
                 if (!self.containerId) {
                     this.init();
                 }
@@ -198,20 +198,20 @@
                 jQuery.extend(true, self.dialogConfig, cfg, opts);
                 opts = self.dialogConfig;
 
-                open.call(this, opts, callBack);
+                open.call(this, opts, callback);
 
                 opts = null;
-                callBack = null;
+                callback = null;
                 return this;
             };
 
             /**
              * @method ax5toast.confirm
              * @param opts
-             * @param callBack
+             * @param callback
              * @returns {ax5toast}
              */
-            this.confirm = function (opts, callBack) {
+            this.confirm = function (opts, callback) {
                 if (!self.containerId) {
                     this.init();
                 }
@@ -232,10 +232,10 @@
                         ok: { label: cfg.lang["ok"], theme: opts.theme }
                     };
                 }
-                open.call(this, opts, callBack);
+                open.call(this, opts, callback);
 
                 opts = null;
-                callBack = null;
+                callback = null;
                 return this;
             };
 
@@ -248,7 +248,7 @@
              * my_toast.close();
              * ```
              */
-            this.close = function (opts, callBack) {
+            this.close = function (opts, callback) {
                 if (typeof opts === "undefined") {
                     opts = U.last(this.queue);
                 }
@@ -264,7 +264,7 @@
                     };
 
                     toastBox.remove();
-                    if (callBack) callBack.call(that);
+                    if (callback) callback.call(that);
 
                     that = {
                         self: this,
@@ -284,7 +284,7 @@
 
                     that = null;
                     opts = null;
-                    callBack = null;
+                    callback = null;
                     toastBox = null;
                 }.bind(this), cfg.animateTime);
 
