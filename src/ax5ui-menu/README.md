@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-menu
+"menu" displays a list of items in a hierarchical structure.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
@@ -76,6 +77,6 @@ $(document).bind("contextmenu", function (e) {
 ***
 
 ### Preview
-- [See Demostration](http://ax5.io/ax5ui-menu/demo/index.html)
+- [See Demonstration](http://ax5.io/ax5ui-menu/demo/index.html)
 
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
