@@ -120,7 +120,6 @@
                         body: this.maskContent
                     });
                     */
-
                     body = getBodyTmpl({
                         theme: _cfg.theme,
                         maskId: maskId,
