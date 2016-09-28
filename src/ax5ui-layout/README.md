@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-layout
+"layout" helps users set position and size of multiple panels on a page.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
