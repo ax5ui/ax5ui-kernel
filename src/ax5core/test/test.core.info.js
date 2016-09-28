@@ -1,6 +1,3 @@
-
-// ax5.info.ETC
-// ax5.info.supportTouch
 describe('ax5.info TEST', function() {
     it('ax5.info.version expect x.x.x', function() {
         should.equal(ax5.info.version.split('.').length, 3);
@@ -60,8 +57,8 @@ describe('ax5.info TEST', function() {
         should.deepEqual(ax5.info.weekNames, expect);
     });
 
-    it('ax5.info.supportTouch expect false', function() {
-        should.equal(ax5.info.supportTouch, false);
+    it('ax5.info.supportTouch expect Boolean', function() {
+        should(ax5.info.supportTouch).Boolean();
     });
 
 });
