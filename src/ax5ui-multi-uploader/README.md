@@ -2,6 +2,7 @@
 
 # ax5ui-uploader
 "uploader" allows users to upload single or multiple files with item selection.
+
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 > * _[ax5core](http://ax5.io/ax5core)_
