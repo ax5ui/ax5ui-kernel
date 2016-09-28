@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "picker",
-        version  : "0.7.13"
+        version: "0.8.0"
     }, (function () {
         /**
          * @class ax5picker
@@ -26,19 +26,19 @@
             this.instanceId = ax5.getGuid();
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
-                theme         : 'default',
-                title         : '',
-                lang          : {
-                    "ok"    : "ok",
+                theme: 'default',
+                title: '',
+                lang: {
+                    "ok": "ok",
                     "cancel": "cancel"
                 },
-                animateTime   : 100,
+                animateTime: 100,
                 calendar: {
                     control: {
-                        left     : ax5.def.picker.date_leftArrow || '&#x02190',
-                        yearTmpl : ax5.def.picker.date_yearTmpl || '%s',
+                        left: ax5.def.picker.date_leftArrow || '&#x02190',
+                        yearTmpl: ax5.def.picker.date_yearTmpl || '%s',
                         monthTmpl: ax5.def.picker.date_monthTmpl || '%s',
-                        right    : ax5.def.picker.date_rightArrow || '&#x02192',
+                        right: ax5.def.picker.date_rightArrow || '&#x02192',
                         yearFirst: true
                     }
                 }
@@ -73,12 +73,12 @@
                     };
 
                     var pickerType = {
-                        '@fn'       : function (queIdx, _input) {
+                        '@fn': function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 inputLength = _input.length,
-                                 config = {
-                                      inputLength: inputLength || 1
-                                 };
+                                config = {
+                                    inputLength: inputLength || 1
+                                };
 
                             if (inputLength > 1) {
                                 config.btns = {
@@ -91,7 +91,7 @@
                             config = null;
                             inputLength = null;
                         },
-                        'date'      : function (queIdx, _input) {
+                        'date': function (queIdx, _input) {
                             // 1. 이벤트 바인딩
                             // 2. ui 준비
 
@@ -100,10 +100,10 @@
                                 contentMargin = (item.content) ? item.content.margin || 5 : 5,
                                 inputLength = _input.length,
                                 config = {
-                                contentWidth: (contentWidth * inputLength) + ((inputLength - 1) * contentMargin),
-                                content     : { width : contentWidth, margin: contentMargin },
-                                inputLength : inputLength || 1
-                            };
+                                    contentWidth: (contentWidth * inputLength) + ((inputLength - 1) * contentMargin),
+                                    content: {width: contentWidth, margin: contentMargin},
+                                    inputLength: inputLength || 1
+                                };
 
                             if (inputLength > 1 && !item.btns) {
                                 config.btns = {
@@ -130,7 +130,7 @@
                             config = null;
                             inputLength = null;
                         },
-                        'keyboard'  : function (queIdx, _input) {
+                        'keyboard': function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 inputLength = _input.length,
                                 config = {
@@ -142,7 +142,7 @@
                             config = null;
                             inputLength = null;
                         },
-                        'numpad'    : function (queIdx, _input) {
+                        'numpad': function (queIdx, _input) {
                             var item = this.queue[queIdx],
                                 inputLength = _input.length,
                                 config = {
@@ -214,14 +214,14 @@
 
                         pos = item.$target.offset();
                         dim = {
-                            width : item.$target.outerWidth(),
+                            width: item.$target.outerWidth(),
                             height: item.$target.outerHeight()
                         };
                         pickerDim = {
-                            winWidth : Math.max($window.width(), $body.width()),
+                            winWidth: Math.max($window.width(), $body.width()),
                             winHeight: Math.max($window.height(), $body.height()),
-                            width    : this.activePicker.outerWidth(),
-                            height   : this.activePicker.outerHeight()
+                            width: this.activePicker.outerWidth(),
+                            height: this.activePicker.outerHeight()
                         };
 
                         // picker css(width, left, top) & direction 결정
@@ -330,10 +330,10 @@
 
                         if (item.btns && item.btns[k].onClick) {
                             let that = {
-                                key  : k,
+                                key: k,
                                 value: item.btns[k],
-                                self : this,
-                                item : item
+                                self: this,
+                                item: item
                             };
                             item.btns[k].onClick.call(that, k);
                         }
@@ -434,9 +434,9 @@
                     _input.val(val);
 
                     onStateChanged.call(this, item, {
-                        self : self,
+                        self: self,
                         state: "changeValue",
-                        item : item,
+                        item: item,
                         value: val
                     });
 
@@ -460,14 +460,14 @@
             this.open = (function () {
 
                 var pickerContent = {
-                    '@fn'       : function (queIdx, callback) {
+                    '@fn': function (queIdx, callback) {
                         var item = this.queue[queIdx];
                         item.content.call(item, function (html) {
                             callback(html);
                         });
                         return true;
                     },
-                    'date'      : function (queIdx) {
+                    'date': function (queIdx) {
                         var item = this.queue[queIdx];
                         var html = [];
                         for (var i = 0; i < item.inputLength; i++) {
@@ -480,7 +480,7 @@
                         html.push('<div style="clear:both;"></div>');
                         item.pickerContent.html(html.join(''));
 
-                        var calendarConfig = jQuery.extend({}, cfg.calendar, {displayDate:(new Date())});
+                        var calendarConfig = jQuery.extend({}, cfg.calendar, {displayDate: (new Date())});
                         var input = (item.$target.get(0).tagName.toUpperCase() == "INPUT") ? item.$target : item.$target.find('input[type]');
 
                         // calendar bind
@@ -569,15 +569,15 @@
                                 }
 
                                 onStateChanged.call(this, item, {
-                                    self : self,
+                                    self: self,
                                     state: "changeValue",
-                                    item : item,
+                                    item: item,
                                     value: _input.val()
                                 });
                             });
                         });
                     },
-                    'keyboard'  : function (queIdx) {
+                    'keyboard': function (queIdx) {
                         var item = this.queue[queIdx];
                         var html = [];
                         for (var i = 0; i < item.inputLength; i++) {
@@ -721,15 +721,15 @@
                                 }
 
                                 onStateChanged.call(this, item, {
-                                    self : self,
+                                    self: self,
                                     state: "changeValue",
-                                    item : item,
+                                    item: item,
                                     value: _input.val()
                                 });
                             });
                         });
                     },
-                    'numpad'    : function (queIdx) {
+                    'numpad': function (queIdx) {
                         var item = this.queue[queIdx];
                         var html = [];
                         for (var i = 0; i < item.inputLength; i++) {
@@ -819,9 +819,9 @@
                                 }
 
                                 onStateChanged.call(this, item, {
-                                    self : self,
+                                    self: self,
                                     state: state,
-                                    item : item,
+                                    item: item,
                                     value: _input.val()
                                 });
                             });
@@ -850,7 +850,7 @@
                         return this;
                     }
 
-                    this.activePicker = jQuery( PICKER.tmpl.get(this, item, queIdx));
+                    this.activePicker = jQuery(PICKER.tmpl.get.call(this, "pickerTmpl", item));
                     this.activePickerArrow = this.activePicker.find(".ax-picker-arrow");
                     this.activePickerQueueIndex = queIdx;
                     item.pickerContent = this.activePicker.find('[data-picker-els="content"]');
@@ -894,9 +894,9 @@
                     }).bind(this));
 
                     onStateChanged.call(this, item, {
-                        self : this,
+                        self: this,
                         state: "open",
-                        item : item
+                        item: item
                     });
 
                     return this;
@@ -924,7 +924,7 @@
                     this.activePickerQueueIndex = -1;
 
                     onStateChanged.call(this, item, {
-                        self : this,
+                        self: this,
                         state: state || "close"
                     });
 
@@ -943,6 +943,7 @@
         return ax5picker;
     })());
 
+    PICKER = ax5.ui.picker;
 })();
 
 /**
@@ -988,8 +989,5 @@ jQuery.fn.ax5picker = (function () {
             });
         }
         return this;
-    }
-
-    PICKER = ax5.ui.picker;
-
+    };
 })();

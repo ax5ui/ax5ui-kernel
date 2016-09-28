@@ -748,6 +748,9 @@
             else if (!!(O && O.nodeType == 11)) {
                 typeName = "fragment";
             }
+            else if (O == null) {
+                typeName = "null";
+            }
             else if (typeof O === "undefined") {
                 typeName = "undefined";
             }
@@ -849,7 +852,7 @@
          * @returns {Boolean}
          */
         function isNodelist(O) {
-            return (_toString.call(O) == "[object NodeList]" || (O && O[0] && O[0].nodeType == 1));
+            return !!(_toString.call(O) == "[object NodeList]" || (typeof O !== "undefined" && O && O[0] && O[0].nodeType == 1));
         }
 
         /**
@@ -886,6 +889,11 @@
                 result = true;
             }
             else {
+                if (O.length > 7) {
+                    if(date(O) instanceof Date){
+                        return true;
+                    }
+                }
                 O = O.replace(/\D/g, '');
                 if (O.length > 7) {
                     var
