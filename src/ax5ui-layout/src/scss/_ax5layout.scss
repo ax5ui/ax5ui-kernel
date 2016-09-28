@@ -77,17 +77,17 @@
         height: 100%;
 
         &.split-panel-vertical {
-            width: 100%;
+            height: 100%;
         }
         &.split-panel-horizontal {
-            height: 100%;
+            width: 100%;
         }
     }
     > [data-splitter] {
         // @include transition(all 0.3s, $ease-in-out-cubic);
         position: absolute;
         background: $ax5layout-splitter-background;
-        z-index: 3;
+        //z-index: 3;
 
         &.dock-panel-top {
             top: 0px;
@@ -110,12 +110,12 @@
             cursor: ew-resize;
         }
         &.split-panel-vertical {
-            width: 100%;
-            cursor: ns-resize;
-        }
-        &.split-panel-horizontal {
             height: 100%;
             cursor: ew-resize;
+        }
+        &.split-panel-horizontal {
+            width: 100%;
+            cursor: ns-resize;
         }
     }
     > [data-tab-panel-label-holder] {
@@ -221,7 +221,7 @@
     position: absolute;
     left: 0px;
     top: 0px;
-    background: $ax5layout-splitter-background;
+    background: $ax5layout-resizer-background;
     z-index: 10;
     overflow: hidden;
     padding: 0;
