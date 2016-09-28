@@ -93,8 +93,6 @@ describe('ax5.util.toArray TEST', function() {
 
 describe('ax5.util.xxxCookie TEST', function() {
 
-    ax5.util.setCookie('ax5-cookie', null); // reset ax5-cookie value
-
     describe('ax5.util.setCookie TEST', function() {
         it('ax5.util.setCookie("ax5-cookie", "abcde")', function() {
             ax5.util.setCookie('ax5-cookie', 'abcde');
