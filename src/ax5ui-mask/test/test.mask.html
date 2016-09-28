@@ -8,13 +8,15 @@
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/should/should.js"></script>
     <script type="text/javascript" src="bower_components/lodash/lodash.js"></script>
-    <script src="../dist/ax5core.js"></script>
+    <script src="bower_components/ax5core/dist/ax5core.js"></script>
+    <script src="../dist/ax5mask.js"></script>
+    <link rel="stylesheet" type="text/css" href="../dist/ax5mask.css" />
 </head>
 <body>
 <div id="mocha"></div>
 
 <script>mocha.setup('bdd')</script>
-<script type="text/javascript" src="test.core.type.js"></script>
+<script type="text/javascript" src="test.mask.js"></script>
 <script>mocha.run();</script>
 </body>
 </html>
