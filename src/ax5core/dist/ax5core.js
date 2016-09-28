@@ -857,6 +857,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (!O) {} else if (O instanceof Date && !isNaN(O.valueOf())) {
                 result = true;
             } else {
+                if (O.length > 7) {
+                    if (date(O) instanceof Date) {
+                        return true;
+                    }
+                }
                 O = O.replace(/\D/g, '');
                 if (O.length > 7) {
                     var mm = O.substr(4, 2),

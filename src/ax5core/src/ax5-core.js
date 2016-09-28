@@ -886,6 +886,11 @@
                 result = true;
             }
             else {
+                if (O.length > 7) {
+                    if(date(O) instanceof Date){
+                        return true;
+                    }
+                }
                 O = O.replace(/\D/g, '');
                 if (O.length > 7) {
                     var
