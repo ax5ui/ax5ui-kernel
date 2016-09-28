@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-grid
+"grid" displays data in a table format with various options provided for configuration.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
