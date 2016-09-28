@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-formatter
+"formatter" provides a set of pre-defined formats for various kinds of values. 
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
@@ -9,7 +10,7 @@
 > * _[bootstrap](http://getbootstrap.com/)_
 
 
-### Install by bower
+### Install with bower
 ```sh
 bower install ax5ui-formatter
 ```
