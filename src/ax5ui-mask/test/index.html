@@ -19,10 +19,12 @@
 <script>
     $(document.body).ready(function(){
         window.mask = new ax5.ui.mask();
+
         $("#mask-open").click(function(){
             mask.open({
                 //position: "fixed",
-                //target: $("#user-content").get(0),
+                content: 'MASK test',
+                target: $("#user-content").get(0),
                 onClick: function(){
                     console.log(this);
                 }
