@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.18"
+        version: "0.2.21"
     }, function () {
         /**
          * @class ax5grid
@@ -124,6 +124,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.leftFootSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 왼쪽
             this.footSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 오른쪽
             this.needToPaintSum = true; // 데이터 셋이 변경되어 summary 변경 필요여부
+
 
             cfg = this.config;
 
@@ -306,7 +307,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             },
                 alignGrid = function alignGrid(_isFirst) {
-                // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
+                // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하는 아규먼트
                 var CT_WIDTH = this.$["container"]["root"].width();
                 var CT_HEIGHT = this.$["container"]["root"].height();
                 var CT_INNER_WIDTH = CT_WIDTH;
@@ -1202,6 +1203,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // todo : body menu
 // todo : column reorder
 
+
 // ax5.ui.grid.body
 (function () {
 
@@ -1430,6 +1432,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         self: self,
                         page: self.page,
                         list: self.list,
+                        item: self.list[_column.dindex],
                         dindex: _column.dindex,
                         rowIndex: _column.rowIndex,
                         colIndex: _column.colIndex,
@@ -2959,9 +2962,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }
                 break;
-            case "modified":
+            case "selected":
                 for (; i < l; i++) {
-                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.modified]) {
+                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.selected]) {
                         returnList.push(jQuery.extend({}, this.list[i]));
                     }
                 }
@@ -3746,7 +3749,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var U = ax5.util;
 
     var onclickPageMove = function onclickPageMove(_act) {
-        var callBack = function callBack(_pageNo) {
+        var callback = function callback(_pageNo) {
             if (this.page.currentPage != _pageNo) {
                 this.page.selectPage = _pageNo;
                 if (this.config.page.onChange) {
@@ -3760,27 +3763,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
         var processor = {
             "first": function first() {
-                callBack.call(this, 0);
+                callback.call(this, 0);
             },
             "prev": function prev() {
                 var pageNo = this.page.currentPage - 1;
                 if (pageNo < 0) pageNo = 0;
-                callBack.call(this, pageNo);
+                callback.call(this, pageNo);
             },
             "next": function next() {
                 var pageNo = this.page.currentPage + 1;
                 if (pageNo > this.page.totalPages - 1) pageNo = this.page.totalPages - 1;
-                callBack.call(this, pageNo);
+                callback.call(this, pageNo);
             },
             "last": function last() {
-                callBack.call(this, this.page.totalPages - 1);
+                callback.call(this, this.page.totalPages - 1);
             }
         };
 
         if (_act in processor) {
             processor[_act].call(this);
         } else {
-            callBack.call(this, _act - 1);
+            callback.call(this, _act - 1);
         }
     };
 
@@ -4315,19 +4318,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 (function () {
 
     var GRID = ax5.ui.grid;
-    var main = "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\">\n                <textarea data-ax5grid-form=\"clipboard\"></textarea>\n            </div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\">\n                <div data-ax5grid-page=\"holder\">\n                    <div data-ax5grid-page=\"navigation\"></div>\n                    <div data-ax5grid-page=\"status\"></div>\n                </div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n            <div data-ax5grid-resizer=\"vertical\"></div>\n            <div data-ax5grid-resizer=\"horizontal\"></div>\n        </div>";
+    var main = function main() {
+        return "<div data-ax5grid-container=\"root\" data-ax5grid-instance=\"{{instanceId}}\">\n            <div data-ax5grid-container=\"hidden\">\n                <textarea data-ax5grid-form=\"clipboard\"></textarea>\n            </div>\n            <div data-ax5grid-container=\"header\">\n                <div data-ax5grid-panel=\"aside-header\"></div>\n                <div data-ax5grid-panel=\"left-header\"></div>\n                <div data-ax5grid-panel=\"header\">\n                    <div data-ax5grid-panel-scroll=\"header\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-header\"></div>\n            </div>\n            <div data-ax5grid-container=\"body\">\n                <div data-ax5grid-panel=\"top-aside-body\"></div>\n                <div data-ax5grid-panel=\"top-left-body\"></div>\n                <div data-ax5grid-panel=\"top-body\">\n                    <div data-ax5grid-panel-scroll=\"top-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"top-right-body\"></div>\n                <div data-ax5grid-panel=\"aside-body\">\n                    <div data-ax5grid-panel-scroll=\"aside-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"left-body\">\n                    <div data-ax5grid-panel-scroll=\"left-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"body\">\n                    <div data-ax5grid-panel-scroll=\"body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"right-body\">\n                  <div data-ax5grid-panel-scroll=\"right-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-aside-body\"></div>\n                <div data-ax5grid-panel=\"bottom-left-body\"></div>\n                <div data-ax5grid-panel=\"bottom-body\">\n                    <div data-ax5grid-panel-scroll=\"bottom-body\"></div>\n                </div>\n                <div data-ax5grid-panel=\"bottom-right-body\"></div>\n            </div>\n            <div data-ax5grid-container=\"page\">\n                <div data-ax5grid-page=\"holder\">\n                    <div data-ax5grid-page=\"navigation\"></div>\n                    <div data-ax5grid-page=\"status\"></div>\n                </div>\n            </div>\n            <div data-ax5grid-container=\"scroller\">\n                <div data-ax5grid-scroller=\"vertical\">\n                    <div data-ax5grid-scroller=\"vertical-bar\"></div>    \n                </div>\n                <div data-ax5grid-scroller=\"horizontal\">\n                    <div data-ax5grid-scroller=\"horizontal-bar\"></div>\n                </div>\n                <div data-ax5grid-scroller=\"corner\"></div>\n            </div>\n            <div data-ax5grid-resizer=\"vertical\"></div>\n            <div data-ax5grid-resizer=\"horizontal\"></div>\n        </div>";
+    };
 
-    var page_navigation = "<div data-ax5grid-page-navigation=\"holder\">\n            {{#hasPage}}\n            <div data-ax5grid-page-navigation=\"cell\">    \n                {{#firstIcon}}<button data-ax5grid-page-move=\"first\">{{{firstIcon}}}</button>{{/firstIcon}}\n                <button data-ax5grid-page-move=\"prev\">{{{prevIcon}}}</button>\n            </div>\n            <div data-ax5grid-page-navigation=\"cell-paging\">\n                {{#@paging}}\n                <button data-ax5grid-page-move=\"{{pageNo}}\" data-ax5grid-page-selected=\"{{selected}}\">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation=\"cell\">\n                <button data-ax5grid-page-move=\"next\">{{{nextIcon}}}</button>\n                {{#lastIcon}}<button data-ax5grid-page-move=\"last\">{{{lastIcon}}}</button>{{/lastIcon}}\n            </div>\n            {{/hasPage}}\n        </div>";
+    var page_navigation = function page_navigation() {
+        return "<div data-ax5grid-page-navigation=\"holder\">\n            {{#hasPage}}\n            <div data-ax5grid-page-navigation=\"cell\">    \n                {{#firstIcon}}<button data-ax5grid-page-move=\"first\">{{{firstIcon}}}</button>{{/firstIcon}}\n                <button data-ax5grid-page-move=\"prev\">{{{prevIcon}}}</button>\n            </div>\n            <div data-ax5grid-page-navigation=\"cell-paging\">\n                {{#@paging}}\n                <button data-ax5grid-page-move=\"{{pageNo}}\" data-ax5grid-page-selected=\"{{selected}}\">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation=\"cell\">\n                <button data-ax5grid-page-move=\"next\">{{{nextIcon}}}</button>\n                {{#lastIcon}}<button data-ax5grid-page-move=\"last\">{{{lastIcon}}}</button>{{/lastIcon}}\n            </div>\n            {{/hasPage}}\n        </div>";
+    };
 
-    var page_status = "<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>";
+    var page_status = function page_status() {
+        return "<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>";
+    };
 
     GRID.tmpl = {
         "main": main,
         "page_navigation": page_navigation,
         "page_status": page_status,
 
-        get: function get(tmplName, data) {
-            return ax5.mustache.render(GRID.tmpl[tmplName], data);
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(GRID.tmpl[tmplName].call(this, columnKeys), data);
         }
     };
 })();
@@ -4343,6 +4352,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @param _frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
+
     var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(_table, _frozenColumnIndex) {
         var tempTable_l = { rows: [] };
         var tempTable_r = { rows: [] };

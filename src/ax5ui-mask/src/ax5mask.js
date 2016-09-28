@@ -3,6 +3,7 @@
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var MASK;
 
     UI.addClass({
         className: "mask",
@@ -44,17 +45,8 @@
                     that = null;
                     return true;
                 },
-                getBodyTmpl = function () {
-                    return `
-                <div class="ax-mask {{theme}}" id="{{maskId}}">
-                    <div class="ax-mask-bg"></div>
-                    <div class="ax-mask-content">
-                        <div class="ax-mask-body">
-                        {{{body}}}
-                        </div>
-                    </div>
-                </div>
-                `;
+                getBodyTmpl = function (data) {
+                    return MASK.tmpl.get.call(this, "defaultMask", data);
                 },
                 setBody = function (content) {
                     this.maskContent = content;
@@ -110,6 +102,7 @@
                 if (this.status === "on") this.close();
                 if (options && options.content) setBody.call(this, options.content);
                 self.maskConfig = {};
+
                 jQuery.extend(true, self.maskConfig, this.config, options);
 
                 var _cfg = self.maskConfig,
@@ -119,8 +112,16 @@
                     $mask,
                     css = {},
                     that = {},
+                    /*
                     bodyTmpl = getBodyTmpl(),
                     body = ax5.mustache.render(bodyTmpl, {
+                        theme: _cfg.theme,
+                        maskId: maskId,
+                        body: this.maskContent
+                    });
+                    */
+
+                    body = getBodyTmpl({
                         theme: _cfg.theme,
                         maskId: maskId,
                         body: this.maskContent
@@ -136,6 +137,7 @@
                         width: $target.outerWidth(),
                         height: $target.outerHeight()
                     };
+
                     if (typeof self.maskConfig.zIndex !== "undefined") {
                         css["z-index"] = self.maskConfig.zIndex;
                     }
@@ -149,14 +151,14 @@
                 this.status = "on";
                 $mask.css(css);
 
-                if (this.onClick) {
-                    $mask.click(function () {
+                if (_cfg.onClick) {
+                    $mask.on("click", function (e) {
                         that = {
-                            self: this,
+                            self: self,
                             state: "open",
                             type: "click"
                         };
-                        this.onClick.call(that, that);
+                        self.maskConfig.onClick.call(that, that);
                     });
                 }
 
@@ -164,7 +166,6 @@
                     self: this,
                     state: "open"
                 });
-
 
                 options = null;
                 _cfg = null;
@@ -174,7 +175,7 @@
                 $mask = null;
                 css = null;
                 that = null;
-                bodyTmpl = null;
+                //bodyTmpl = null;
                 body = null;
 
                 return this;
@@ -228,5 +229,5 @@
         };
         return ax5mask;
     })());
-
+    MASK = ax5.ui.mask;
 })();

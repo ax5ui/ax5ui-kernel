@@ -2,8 +2,9 @@
     'use strict';
 
     // root of function
-    var root = this, win = window, doc = document, docElem = document.documentElement,
-        reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
+    var root = this, win = this;
+    var doc = (win) ? win.document : null, docElem = (win) ? win.document.documentElement : null;
+    var reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
         reMs = /^-ms-/,
         reSnakeCase = /[\-_]([\da-z])/gi,
         reCamelCase = /([A-Z])/g,
@@ -99,6 +100,8 @@
          * ```
          */
         var browser = (function (ua, mobile, browserName, match, browser, browserVersion) {
+            if (!win || !win.navigator) return {};
+
             ua = navigator.userAgent.toLowerCase(), mobile = (ua.search(/mobile/g) != -1), browserName, match, browser, browserVersion;
 
             if (ua.search(/iphone/g) != -1) {
@@ -136,7 +139,7 @@
          * 브라우저에 따른 마우스 휠 이벤트이름
          * @member {Object} ax5.info.wheelEnm
          */
-        var wheelEnm = ((/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel");
+        var wheelEnm = (win && (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel");
 
         /**
          * 첫번째 자리수 동사 - (필요한것이 없을때 : 4, 실행오류 : 5)
@@ -217,7 +220,7 @@
             }
         }
 
-        var supportTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+        var supportTouch = (win) ? (('ontouchstart' in win) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) : false;
 
         return {
             errorMsg: errorMsg,
@@ -677,6 +680,9 @@
             else if (ax5.util.isFunction(O)) {
                 jsonString = '"{Function}"';
             }
+            else {
+                jsonString = O;
+            }
             return jsonString;
         }
 
@@ -741,6 +747,9 @@
             }
             else if (!!(O && O.nodeType == 11)) {
                 typeName = "fragment";
+            }
+            else if (O == null) {
+                typeName = "null";
             }
             else if (typeof O === "undefined") {
                 typeName = "undefined";
@@ -843,7 +852,7 @@
          * @returns {Boolean}
          */
         function isNodelist(O) {
-            return (_toString.call(O) == "[object NodeList]" || (O && O[0] && O[0].nodeType == 1));
+            return !!(_toString.call(O) == "[object NodeList]" || (typeof O !== "undefined" && O && O[0] && O[0].nodeType == 1));
         }
 
         /**
@@ -880,6 +889,11 @@
                 result = true;
             }
             else {
+                if (O.length > 7) {
+                    if(date(O) instanceof Date){
+                        return true;
+                    }
+                }
                 O = O.replace(/\D/g, '');
                 if (O.length > 7) {
                     var
@@ -1032,7 +1046,7 @@
         function left(str, pos) {
             if (typeof str === "undefined" || typeof pos === "undefined") return "";
             if (isString(pos)) {
-                return (str.indexOf(pos) > -1) ? str.substr(0, str.indexOf(pos)) : str;
+                return (str.indexOf(pos) > -1) ? str.substr(0, str.indexOf(pos)) : "";
             }
             else if (isNumber(pos)) {
                 return str.substr(0, pos);
@@ -1060,7 +1074,7 @@
             if (typeof str === "undefined" || typeof pos === "undefined") return "";
             str = '' + str;
             if (isString(pos)) {
-                return (str.lastIndexOf(pos) > -1) ? str.substr(str.lastIndexOf(pos) + 1) : str;
+                return (str.lastIndexOf(pos) > -1) ? str.substr(str.lastIndexOf(pos) + 1) : "";
             }
             else if (isNumber(pos)) {
                 return str.substr(str.length - pos);
@@ -1347,23 +1361,29 @@
                 aDateTime, aTimes, aTime, aDate,
                 utcD, localD,
                 va;
+            var ISO_8601 = /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/i;
+            var ISO_8601_FULL = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
 
             if (isString(d)) {
                 if (d.length == 0) {
                     d = new Date();
                 }
                 else if (d.length > 15) {
-                    aDateTime = d.split(/ /g), aTimes, aTime,
-                        aDate = aDateTime[0].split(/\D/g),
-                        yy = aDate[0];
-                    mm = parseFloat(aDate[1]);
-                    dd = parseFloat(aDate[2]);
-                    aTime = aDateTime[1] || "09:00";
-                    aTimes = aTime.substring(0, 5).split(":");
-                    hh = parseFloat(aTimes[0]);
-                    mi = parseFloat(aTimes[1]);
-                    if (right(aTime, 2) === "AM" || right(aTime, 2) === "PM") hh += 12;
-                    d = localDate(yy, mm - 1, dd, hh, mi);
+                    if (ISO_8601_FULL.test(d) || ISO_8601.test(d)) {
+                        d = new Date(d);
+                    } else {
+                        aDateTime = d.split(/ /g), aTimes, aTime,
+                            aDate = aDateTime[0].split(/\D/g),
+                            yy = aDate[0];
+                        mm = parseFloat(aDate[1]);
+                        dd = parseFloat(aDate[2]);
+                        aTime = aDateTime[1] || "09:00";
+                        aTimes = aTime.substring(0, 5).split(":");
+                        hh = parseFloat(aTimes[0]);
+                        mi = parseFloat(aTimes[1]);
+                        if (right(aTime, 2) === "AM" || right(aTime, 2) === "PM") hh += 12;
+                        d = localDate(yy, mm - 1, dd, hh, mi);
+                    }
                 }
                 else if (d.length == 14) {
                     va = d.replace(/\D/g, "");
@@ -1758,7 +1778,7 @@
          * ax5.util.stopEvent(e);
          * ```
          */
-        function stopEvent(e) { 
+        function stopEvent(e) {
             // 이벤트 중지 구문
             if (!e) var e = window.event;
 
@@ -1901,7 +1921,7 @@
             var debounced = function () {
                 var args = toArray(arguments);
 
-                if(removeTimeout) clearTimeout(removeTimeout);
+                if (removeTimeout) clearTimeout(removeTimeout);
                 if (timeout) {
                     // 두번째 호출
                     if (timeout) clearTimeout(timeout);
@@ -1913,8 +1933,8 @@
                     timeout = setTimeout((function (args) {
                         func.apply(this, args);
                     }).bind(this, args), (immediately) ? 0 : wait);
-                } 
-                removeTimeout = setTimeout(function(){
+                }
+                removeTimeout = setTimeout(function () {
                     clearTimeout(timeout);
                     timeout = null;
                 }, wait);
@@ -2014,8 +2034,12 @@
         }
     })();
 
-    root.ax5 = (function () {
-        return ax5;
-    })(); // ax5.ui에 연결
+    if (typeof module === "object" && typeof module.exports === "object") {
+        module.exports = ax5;
+    } else {
+        root.ax5 = (function () {
+            return ax5;
+        })(); // ax5.ui에 연결
+    }
 
-}).call(window);
+}).call(typeof window !== "undefined" ? window : this);

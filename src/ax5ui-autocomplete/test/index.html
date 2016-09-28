@@ -120,7 +120,7 @@
         myUI.bind({
             //theme: "primary",
             target: $('[data-ax5autocomplete="ui1"]'),
-            onSearch: function (callBack) {
+            onSearch: function (callback) {
                 var searchWord = this.searchWord;
                 setTimeout(function () {
                     var regExp = new RegExp(searchWord);
@@ -133,7 +133,7 @@
                             })
                         }
                     });
-                    callBack({
+                    callback({
                         options: myOptions
                     });
                 }, 150);
@@ -144,10 +144,12 @@
             }
         });
 
+        //myUI.open($('[data-ax5autocomplete="ui1"]'));
+
         myUI.bind({
             //theme: "primary",
             target: $('[data-ax5autocomplete="ui2"]'),
-            onSearch: function (callBack) {
+            onSearch: function (callback) {
                 var searchWord = this.searchWord;
                 setTimeout(function () {
                     var regExp = new RegExp(searchWord);
@@ -160,7 +162,7 @@
                             })
                         }
                     });
-                    callBack({
+                    callback({
                         options: myOptions
                     });
                 }, 150);
@@ -174,7 +176,7 @@
         myUI.bind({
             theme: "primary",
             target: $('[data-ax5autocomplete="ui3"]'),
-            onSearch: function (callBack) {
+            onSearch: function (callback) {
                 var searchWord = this.searchWord;
                 setTimeout(function () {
                     var regExp = new RegExp(searchWord);
@@ -187,7 +189,7 @@
                             })
                         }
                     });
-                    callBack({
+                    callback({
                         options: myOptions
                     });
                 }, 150);

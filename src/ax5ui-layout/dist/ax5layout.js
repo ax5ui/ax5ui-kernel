@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "layout",
-        version: "0.2.10"
+        version: "0.3.0"
     }, function () {
         /**
          * @class ax5layout
@@ -78,7 +78,7 @@
                 alignLayout = function () {
                 var beforeSetCSS = {
                     "split": {
-                        "vertical": function vertical(item, panel, panelIndex) {
+                        "horizontal": function horizontal(item, panel, panelIndex) {
                             if (panel.splitter) {
                                 panel.__height = item.splitter.size;
                             } else {
@@ -99,7 +99,7 @@
                                 }
                             }
                         },
-                        "horizontal": function horizontal(item, panel, panelIndex) {
+                        "vertical": function vertical(item, panel, panelIndex) {
                             if (panel.splitter) {
                                 panel.__width = item.splitter.size;
                             } else {
@@ -240,7 +240,7 @@
                         panel.$target.css(css);
                     },
                     "split": {
-                        "vertical": function vertical(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
+                        "horizontal": function horizontal(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
                             var css = {};
                             var prevPosition = panelIndex ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
                             if (panel.splitter) {
@@ -258,7 +258,7 @@
                             panel.offsetEnd = Number(prevPosition) + Number(css.height);
                             panel.$target.css(css);
                         },
-                        "horizontal": function horizontal(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
+                        "vertical": function vertical(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
                             var css = {};
                             var prevPosition = panelIndex ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
 
@@ -298,7 +298,7 @@
                             beforeSetCSS["split"][item.oriental].call(this, item, panel, panelIndex);
                         });
 
-                        if (item.oriental == "vertical") {
+                        if (item.oriental == "horizontal") {
                             withoutAsteriskSize = U.sum(item.splitPanel, function (n) {
                                 if (n.height != "*") return U.number(n.__height);
                             });
@@ -320,8 +320,7 @@
                     }
                 };
 
-                return function (queIdx, callBack, windowResize) {
-
+                return function (queIdx, callback, windowResize) {
                     var item = this.queue[queIdx];
 
                     // 레이아웃 타겟의 CSS속성을 미리 저장해 둡니다. 왜? 패널별로 크기 계산 할 때 쓰려고
@@ -340,8 +339,8 @@
                             this.onResize.call(this, this);
                         }.bind(item), 1);
                     }
-                    if (callBack) {
-                        callBack.call(item, item);
+                    if (callback) {
+                        callback.call(item, item);
                     }
                 };
             }(),
@@ -412,7 +411,7 @@
                         "split": function split(e) {
                             var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
 
-                            if (item.oriental == "vertical") {
+                            if (item.oriental == "horizontal") {
                                 panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
 
                                 var prevPanel = item.splitPanel[panel.panelIndex - 1];
@@ -488,7 +487,7 @@
                         },
                         "split-panel": {
                             "split": function split() {
-                                if (item.oriental == "vertical") {
+                                if (item.oriental == "horizontal") {
                                     // 앞과 뒤의 높이 조절
                                     item.splitPanel[panel.panelIndex - 1].__height += panel.__da;
                                     item.splitPanel[panel.panelIndex + 1].__height -= panel.__da;
@@ -621,10 +620,10 @@
                                 });
                                 panelInfo.resizerType = "split";
                             } else {
-                                if (item.oriental == "vertical") {
+                                if (item.oriental == "horizontal") {
                                     panelInfo.__height = getPixel(panelInfo.height, item.targetDimension.height);
                                 } else {
-                                    item.oriental = "horizontal";
+                                    item.oriental = "vertical";
                                     panelInfo.__width = getPixel(panelInfo.width, item.targetDimension.width);
                                 }
                             }
@@ -799,7 +798,7 @@
             /**
              * @method ax5layout.align
              * @param boundID
-             * @param {Function} [callBack]
+             * @param {Function} [callback]
              * @param {String} [windowResize]
              * @returns {ax5layout}
              */
@@ -834,7 +833,7 @@
              * @method ax5layout.resize
              * @param boundID
              * @param {Object} resizeOption
-             * @param {Function} [callBack]
+             * @param {Function} [callback]
              * @returns {ax5layout}
              */
             this.resize = function () {
@@ -855,7 +854,7 @@
                     "tab-panel": function tabPanel() {}
                 };
 
-                return function (boundID, resizeOption, callBack) {
+                return function (boundID, resizeOption, callback) {
                     var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
                     if (queIdx === -1) {
                         console.log(ax5.info.getError("ax5layout", "402", "resize"));
@@ -863,7 +862,7 @@
                     }
 
                     resizeLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx], resizeOption);
-                    alignLayout.call(this, queIdx, callBack);
+                    alignLayout.call(this, queIdx, callback);
                     return this;
                 };
             }();
@@ -886,7 +885,7 @@
                     "tab-panel": function tabPanel() {}
                 };
 
-                return function (boundID, callBack) {
+                return function (boundID, callback) {
                     var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
                     if (queIdx === -1) {
                         console.log(ax5.info.getError("ax5layout", "402", "reset"));
@@ -894,7 +893,7 @@
                     }
 
                     resetLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx]);
-                    alignLayout.call(this, queIdx, callBack);
+                    alignLayout.call(this, queIdx, callback);
                     return this;
                 };
             }();

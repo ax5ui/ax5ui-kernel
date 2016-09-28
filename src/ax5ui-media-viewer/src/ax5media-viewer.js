@@ -3,6 +3,7 @@
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var MEDIAVIEWER;
 
     UI.addClass({
         className: "mediaViewer",
@@ -80,58 +81,15 @@
                     }
                     return true;
                 },
-                getFrameTmpl = function (columnKeys) {
-                    return `
-                    <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">
-                        <div data-media-viewer-els="viewer-holder">
-                        <div data-media-viewer-els="viewer"></div>
-                        </div>
-                        <div data-media-viewer-els="viewer-loading">
-                        <div class="ax5-ui-media-viewer-loading-holder">
-                        <div class="ax5-ui-media-viewer-loading-cell">
-                        {{{loading.icon}}}
-                    {{{loading.text}}}
-                    </div>
-                    </div>
-                    </div>
-                    {{#media}}
-                    <div data-media-viewer-els="media-list-holder">
-                        <div data-media-viewer-els="media-list-prev-handle">{{{prevHandle}}}</div>
-                    <div data-media-viewer-els="media-list">
-                        <div data-media-viewer-els="media-list-table">
-                        {{#list}}
-                    <div data-media-viewer-els="media-list-table-td">
-                        {{#image}}
-                    <div data-media-thumbnail="{{@i}}">
-                        <img src="{{${columnKeys.poster}}}" data-media-thumbnail-image="{{@i}}" />
-                        </div>
-                        {{/image}}
-                    {{#video}}
-                    <div data-media-thumbnail="{{@i}}">{{#${columnKeys.poster}}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/${columnKeys.poster}}}{{^${columnKeys.poster}}}<a data-media-thumbnail-video="{{@i}}">{{{media.${columnKeys.poster}}}}</a>{{/${columnKeys.poster}}}</div>
-                    {{/video}}
-                    </div>
-                        {{/list}}
-                    </div>
-                        </div>
-                        <div data-media-viewer-els="media-list-next-handle">{{{nextHandle}}}</div>
-                        </div>
-                        {{/media}}
-                    </div>
-                        `;
-                },
                 getFrame = function () {
                     var
-                        data = jQuery.extend(true, {}, cfg),
-                        tmpl = getFrameTmpl(cfg.columnKeys);
-
-                    data.id = this.id;
+                        data = jQuery.extend(true, {id: this.id}, cfg);
 
                     try {
-                        return ax5.mustache.render(tmpl, data);
+                        return MEDIAVIEWER.tmpl.get.call(this, "frame", data, cfg.columnKeys);
                     }
                     finally {
                         data = null;
-                        tmpl = null;
                     }
                 },
                 onClick = function (e, target) {
@@ -461,7 +419,7 @@
              */
             this.select = (function () {
                 var mediaView = {
-                    image: function (obj, callBack) {
+                    image: function (obj, callback) {
                         self.$["viewer-loading"].show();
                         var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
                         var img = new Image();
@@ -470,15 +428,15 @@
                             self.$["viewer-loading"].fadeOut();
                             var h = dim[1];
                             var w = h * img.width / img.height;
-                            callBack(img, Math.floor(w), h);
+                            callback(img, Math.floor(w), h);
                         };
                         return img;
                     },
-                    video: function (obj, callBack) {
+                    video: function (obj, callback) {
                         self.$["viewer-loading"].show();
                         var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
                         var html = jQuery(obj.video[cfg.columnKeys.html]);
-                        callBack(html, dim[0], dim[1]);
+                        callback(html, dim[0], dim[1]);
                         self.$["viewer-loading"].fadeOut();
                     }
                 };
@@ -551,4 +509,5 @@
         return ax5mediaViewer;
     })());
 
+    MEDIAVIEWER = ax5.ui.mediaViewer;
 })();

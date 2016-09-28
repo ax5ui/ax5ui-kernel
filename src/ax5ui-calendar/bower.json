@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-calendar",
-	"version": "0.8.9",
+	"version": "0.9.0",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
 	],
@@ -21,6 +21,6 @@
 		"ax5core": ">=1.2.0",
 		"bootstrap": "^3.3.6"
 	},
-	"license": "LGPLv3",
+	"license": "LGPL-3.0",
 	"homepage": "ax5.io"
 }

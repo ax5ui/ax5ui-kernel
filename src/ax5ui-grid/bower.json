@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-grid",
-	"version": "0.2.18",
+	"version": "0.2.21",
 	"description": "A grid plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
@@ -24,6 +24,6 @@
 		"ax5ui-calendar": ">=0.8.8",
 		"ax5ui-picker": ">=0.7.11"
 	},
-	"license": "LGPLv3",
+	"license": "LGPL-3.0",
 	"homepage": "ax5.io"
 }
