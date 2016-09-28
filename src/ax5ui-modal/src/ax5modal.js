@@ -401,6 +401,7 @@
                 return function (minimizePosition) {
                     var opts = self.modalConfig;
                     if (typeof minimizePosition === "undefined") minimizePosition = cfg.minimizePosition;
+
                     this.minimized = true;
                     this.$.body.hide();
                     self.modalConfig.originalHeight = opts.height;
@@ -408,7 +409,7 @@
                     alignProcessor[minimizePosition].call(this);
 
                     onStateChanged.call(this, opts, {
-                        self : this,
+                        self: this,
                         state: "minimize"
                     });
 
