@@ -825,7 +825,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * @returns {Boolean}
          */
         function isNodelist(O) {
-            return _toString.call(O) == "[object NodeList]" || O && O[0] && O[0].nodeType == 1;
+            return !!(_toString.call(O) == "[object NodeList]" || typeof O !== "undefined" && O && O[0] && O[0].nodeType == 1);
         }
 
         /**
