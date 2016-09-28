@@ -1,7 +1,6 @@
 // ax5.ui.mediaViewer.tmpl
 (function () {
     var MEDIAVIEWER = ax5.ui.mediaViewer;
-    var U = ax5.util;
 
     var frame = function (columnKeys) {
         return `

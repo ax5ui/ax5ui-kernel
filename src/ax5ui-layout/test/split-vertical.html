@@ -1,10 +1,4 @@
 <!DOCTYPE html>
-<!--
-  ~ Copyright (c) 2016. tom@axisj.com
-  ~ - github.com/thomasjang
-  ~ - www.axisj.com
-  -->
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,18 +23,30 @@
 </head>
 <body>
 
-<div data-ax5layout="ax2" data-config='{layout:"split-panel", oriental: "vertical"}' style="height:100%;">
-    <div data-split-panel='{height: "*"}'>
-        123123123
+<div data-ax5layout="ax1" data-config='{layout:"split-panel", oriental: "vertical"}' style="height: 100%;">
+    <div data-split-panel='{width: "300", minWidth:50}'></div>
+    <div data-splitter='{}'></div>
+    <div data-split-panel='{width: "*"}'>
+
+
     </div>
     <div data-splitter='{}'></div>
-    <div data-split-panel='{height: "*"}'>
-        12312
-    </div>
+    <div data-split-panel='{width: "200", minWidth: 50, maxWidth: 300}'></div>
 </div>
+
 <script>
     // todo : panel show & hide
     jQuery(document.body).ready(function () {
+        jQuery('[data-ax5layout="ax1"]').ax5layout({
+            splitter: {
+                size: 10
+            },
+            autoResize: false,
+            onResize: function () {
+                //console.log(this.$target);
+                //console.log(this);
+            }
+        });
         jQuery('[data-ax5layout="ax2"]').ax5layout({
             onResize: function () {
                 //console.log(this.$target);
@@ -48,6 +54,10 @@
             }
         });
     });
+
+    jQuery(window).resize(function () {
+        jQuery('[data-ax5layout="ax1"]').ax5layout("align", "windowResize");
+    })
 </script>
 
 </body>

@@ -18,7 +18,7 @@
                 `;
     };
     var dayTmpl = function (columnKeys) {
-            return `
+        return `
                 <table data-calendar-table="day" cellpadding="0" cellspacing="0" style="width:100%;">
                     <thead>
                         <tr>
@@ -50,9 +50,9 @@
                     </tbody>
                 </table>
                 `;
-        };
+    };
     var monthTmpl = function (columnKeys) {
-            return `
+        return `
                 <table data-calendar-table="month" cellpadding="0" cellspacing="0" style="width:100%;">
                     <thead>
                         <tr>
@@ -82,9 +82,9 @@
                     </tbody>
                 </table>
                 `;
-        };
+    };
     var yearTmpl = function (columnKeys) {
-            return `
+        return `
                 <table data-calendar-table="year" cellpadding="0" cellspacing="0" style="width:100%;">
                     <thead>
                         <tr>
@@ -114,14 +114,14 @@
                     </tbody>
                 </table>
                 `;
-        };
+    };
 
     CALENDAR.tmpl = {
         "frameTmpl": frameTmpl,
         "dayTmpl": dayTmpl,
         "monthTmpl": monthTmpl,
         "yearTmpl": yearTmpl,
-
+        
         get: function (tmplName, data, columnKeys) {
             return ax5.mustache.render(CALENDAR.tmpl[tmplName].call(this, columnKeys), data);
         }
