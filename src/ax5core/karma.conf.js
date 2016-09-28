@@ -12,8 +12,11 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
+            'test/bower_components/jquery/dist/jquery.min.js',
+            'test/bower_components/should/should.js',
+            'test/bower_components/lodash/lodash.js',
             'dist/ax5core.js',
-            'karma.test.js'
+            'test/test.*.js'
         ],
         // list of files to exclude
         exclude: [],
@@ -35,6 +38,8 @@ module.exports = function (config) {
         autoWatch: true,
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+        browsers: ['PhantomJS'],
+        /*
         browsers: ['Chrome', 'Firefox', 'Safari', 'IE'],
         customLaunchers: {
             Chrome_travis_ci: {
@@ -42,6 +47,7 @@ module.exports = function (config) {
                 flags: ['--no-sandbox']
             }
         },
+        */
         singleRun: true,
         concurrency: Infinity
     };
@@ -50,5 +56,5 @@ module.exports = function (config) {
         configuration.browsers = ['Chrome_travis_ci'];
     }
 
-    config.set()
+    config.set(configuration);
 }
