@@ -8,10 +8,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     // root of function
 
     var root = this,
-        win = window,
-        doc = document,
-        docElem = document.documentElement,
-        reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
+        win = this;
+    var doc = win ? win.document : null,
+        docElem = win ? win.document.documentElement : null;
+    var reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
         reMs = /^-ms-/,
         reSnakeCase = /[\-_]([\da-z])/gi,
         reCamelCase = /([A-Z])/g,
@@ -103,6 +103,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ```
          */
         var browser = function (ua, mobile, browserName, match, browser, browserVersion) {
+            if (!win || !win.navigator) return {};
+
             ua = navigator.userAgent.toLowerCase(), mobile = ua.search(/mobile/g) != -1, browserName, match, browser, browserVersion;
 
             if (ua.search(/iphone/g) != -1) {
@@ -137,7 +139,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * 브라우저에 따른 마우스 휠 이벤트이름
          * @member {Object} ax5.info.wheelEnm
          */
-        var wheelEnm = /Firefox/i.test(navigator.userAgent) ? "DOMMouseScroll" : "mousewheel";
+        var wheelEnm = win && /Firefox/i.test(navigator.userAgent) ? "DOMMouseScroll" : "mousewheel";
 
         /**
          * 첫번째 자리수 동사 - (필요한것이 없을때 : 4, 실행오류 : 5)
@@ -217,7 +219,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
 
-        var supportTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+        var supportTouch = win ? 'ontouchstart' in win || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 : false;
 
         return {
             errorMsg: errorMsg,
@@ -664,6 +666,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 jsonString = "undefined";
             } else if (ax5.util.isFunction(O)) {
                 jsonString = '"{Function}"';
+            } else {
+                jsonString = O;
             }
             return jsonString;
         }
@@ -726,6 +730,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 typeName = "element";
             } else if (!!(O && O.nodeType == 11)) {
                 typeName = "fragment";
+            } else if (O == null) {
+                typeName = "null";
             } else if (typeof O === "undefined") {
                 typeName = "undefined";
             } else if (_toString.call(O) == "[object Object]") {
@@ -821,7 +827,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * @returns {Boolean}
          */
         function isNodelist(O) {
-            return _toString.call(O) == "[object NodeList]" || O && O[0] && O[0].nodeType == 1;
+            return !!(_toString.call(O) == "[object NodeList]" || typeof O !== "undefined" && O && O[0] && O[0].nodeType == 1);
         }
 
         /**
@@ -853,6 +859,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (!O) {} else if (O instanceof Date && !isNaN(O.valueOf())) {
                 result = true;
             } else {
+                if (O.length > 7) {
+                    if (date(O) instanceof Date) {
+                        return true;
+                    }
+                }
                 O = O.replace(/\D/g, '');
                 if (O.length > 7) {
                     var mm = O.substr(4, 2),
@@ -997,7 +1008,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         function left(str, pos) {
             if (typeof str === "undefined" || typeof pos === "undefined") return "";
             if (isString(pos)) {
-                return str.indexOf(pos) > -1 ? str.substr(0, str.indexOf(pos)) : str;
+                return str.indexOf(pos) > -1 ? str.substr(0, str.indexOf(pos)) : "";
             } else if (isNumber(pos)) {
                 return str.substr(0, pos);
             } else {
@@ -1023,7 +1034,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (typeof str === "undefined" || typeof pos === "undefined") return "";
             str = '' + str;
             if (isString(pos)) {
-                return str.lastIndexOf(pos) > -1 ? str.substr(str.lastIndexOf(pos) + 1) : str;
+                return str.lastIndexOf(pos) > -1 ? str.substr(str.lastIndexOf(pos) + 1) : "";
             } else if (isNumber(pos)) {
                 return str.substr(str.length - pos);
             } else {
@@ -1295,20 +1306,26 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         function date(d, cond) {
             var yy, mm, dd, hh, mi, aDateTime, aTimes, aTime, aDate, utcD, localD, va;
+            var ISO_8601 = /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/i;
+            var ISO_8601_FULL = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
 
             if (isString(d)) {
                 if (d.length == 0) {
                     d = new Date();
                 } else if (d.length > 15) {
-                    aDateTime = d.split(/ /g), aTimes, aTime, aDate = aDateTime[0].split(/\D/g), yy = aDate[0];
-                    mm = parseFloat(aDate[1]);
-                    dd = parseFloat(aDate[2]);
-                    aTime = aDateTime[1] || "09:00";
-                    aTimes = aTime.substring(0, 5).split(":");
-                    hh = parseFloat(aTimes[0]);
-                    mi = parseFloat(aTimes[1]);
-                    if (right(aTime, 2) === "AM" || right(aTime, 2) === "PM") hh += 12;
-                    d = localDate(yy, mm - 1, dd, hh, mi);
+                    if (ISO_8601_FULL.test(d) || ISO_8601.test(d)) {
+                        d = new Date(d);
+                    } else {
+                        aDateTime = d.split(/ /g), aTimes, aTime, aDate = aDateTime[0].split(/\D/g), yy = aDate[0];
+                        mm = parseFloat(aDate[1]);
+                        dd = parseFloat(aDate[2]);
+                        aTime = aDateTime[1] || "09:00";
+                        aTimes = aTime.substring(0, 5).split(":");
+                        hh = parseFloat(aTimes[0]);
+                        mi = parseFloat(aTimes[1]);
+                        if (right(aTime, 2) === "AM" || right(aTime, 2) === "PM") hh += 12;
+                        d = localDate(yy, mm - 1, dd, hh, mi);
+                    }
                 } else if (d.length == 14) {
                     va = d.replace(/\D/g, "");
                     d = localDate(va.substr(0, 4), va.substr(4, 2) - 1, number(va.substr(6, 2)), number(va.substr(8, 2)), number(va.substr(10, 2)), number(va.substr(12, 2)));
@@ -1941,10 +1958,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
     }();
 
-    root.ax5 = function () {
-        return ax5;
-    }(); // ax5.ui에 연결
-}).call(window);
+    if ((typeof module === 'undefined' ? 'undefined' : _typeof(module)) === "object" && _typeof(module.exports) === "object") {
+        module.exports = ax5;
+    } else {
+        root.ax5 = function () {
+            return ax5;
+        }(); // ax5.ui에 연결
+    }
+}).call(typeof window !== "undefined" ? window : undefined);
 ax5.def = {};
 ax5.info.errorMsg["ax5dialog"] = {
     "501": "Duplicate call error"
@@ -2998,6 +3019,7 @@ ax5.ui = function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var DIALOG;
 
     UI.addClass({
         className: "dialog",
@@ -3042,9 +3064,6 @@ ax5.ui = function () {
                 that = null;
                 return true;
             },
-                getContentTmpl = function getContentTmpl() {
-                return '\n                    <div id="{{dialogId}}" data-ax5-ui="dialog" class="ax5-ui-dialog {{theme}}">\n                        <div class="ax-dialog-header">\n                            {{{title}}}\n                        </div>\n                        <div class="ax-dialog-body">\n                            <div class="ax-dialog-msg">{{{msg}}}</div>\n                            \n                            {{#input}}\n                            <div class="ax-dialog-prompt">\n                                {{#@each}}\n                                <div class="form-group">\n                                {{#@value.label}}\n                                <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>\n                                {{/@value.label}}\n                                <input type="{{@value.type}}" placeholder="{{@value.placeholder}}" class="form-control {{@value.theme}}" data-dialog-prompt="{{@key}}" style="width:100%;" value="{{@value.value}}" />\n                                {{#@value.help}}\n                                <p class="help-block">{{#_crlf}}{{.}}{{/_crlf}}</p>\n                                {{/@value.help}}\n                                </div>\n                                {{/@each}}\n                            </div>\n                            {{/input}}\n                            \n                            <div class="ax-dialog-buttons">\n                                <div class="ax-button-wrap">\n                                {{#btns}}\n                                    {{#@each}}\n                                    <button type="button" data-dialog-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{@value.label}}</button>\n                                    {{/@each}}\n                                {{/btns}}\n                                </div>\n                            </div>\n                        </div>\n                    </div>  \n                    ';
-            },
                 getContent = function getContent(dialogId, opts) {
                 var data = {
                     dialogId: dialogId,
@@ -3058,12 +3077,12 @@ ax5.ui = function () {
                 };
 
                 try {
-                    return ax5.mustache.render(getContentTmpl(), data);
+                    return DIALOG.tmpl.get.call(this, "dialogDisplay", data);
                 } finally {
                     data = null;
                 }
             },
-                open = function open(opts, callBack) {
+                open = function open(opts, callback) {
                 var pos = {},
                     box;
 
@@ -3101,12 +3120,12 @@ ax5.ui = function () {
                 }
 
                 this.activeDialog.find("[data-dialog-btn]").on(cfg.clickEventName, function (e) {
-                    btnOnClick.call(this, e || window.event, opts, callBack);
+                    btnOnClick.call(this, e || window.event, opts, callback);
                 }.bind(this));
 
                 // bind key event
                 jQuery(window).bind("keydown.ax5dialog", function (e) {
-                    onKeyup.call(this, e || window.event, opts, callBack);
+                    onKeyup.call(this, e || window.event, opts, callback);
                 }.bind(this));
 
                 jQuery(window).bind("resize.ax5dialog", function (e) {
@@ -3146,7 +3165,7 @@ ax5.ui = function () {
 
                 return this;
             },
-                btnOnClick = function btnOnClick(e, opts, callBack, target, k) {
+                btnOnClick = function btnOnClick(e, opts, callback, target, k) {
                 var that;
                 if (e.srcElement) e.target = e.srcElement;
 
@@ -3178,10 +3197,10 @@ ax5.ui = function () {
                     if (opts.btns[k].onClick) {
                         opts.btns[k].onClick.call(that, k);
                     } else if (opts.dialogType === "alert") {
-                        if (callBack) callBack.call(that, k);
+                        if (callback) callback.call(that, k);
                         this.close();
                     } else if (opts.dialogType === "confirm") {
-                        if (callBack) callBack.call(that, k);
+                        if (callback) callback.call(that, k);
                         this.close();
                     } else if (opts.dialogType === "prompt") {
                         if (k === 'ok') {
@@ -3190,18 +3209,18 @@ ax5.ui = function () {
                                 return false;
                             }
                         }
-                        if (callBack) callBack.call(that, k);
+                        if (callback) callback.call(that, k);
                         this.close();
                     }
                 }
 
                 that = null;
                 opts = null;
-                callBack = null;
+                callback = null;
                 target = null;
                 k = null;
             },
-                onKeyup = function onKeyup(e, opts, callBack, target, k) {
+                onKeyup = function onKeyup(e, opts, callback, target, k) {
                 var that,
                     emptyKey = null;
 
@@ -3229,7 +3248,7 @@ ax5.ui = function () {
                             emptyKey = null;
                             return false;
                         }
-                        if (callBack) callBack.call(that, k);
+                        if (callback) callback.call(that, k);
                         this.close();
                     }
                 }
@@ -3237,7 +3256,7 @@ ax5.ui = function () {
                 that = null;
                 emptyKey = null;
                 opts = null;
-                callBack = null;
+                callback = null;
                 target = null;
                 k = null;
             };
@@ -3263,7 +3282,7 @@ ax5.ui = function () {
              * open the dialog of alert type
              * @method ax5dialog.alert
              * @param {Object|String} [{theme, title, msg, btns}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
-             * @param {Function} [callBack] - 사용자 확인 이벤트시 호출될 callBack 함수
+             * @param {Function} [callback] - 사용자 확인 이벤트시 호출될 callback 함수
              * @returns {ax5dialog}
              * @example
              * ```
@@ -3273,7 +3292,7 @@ ax5.ui = function () {
              * }, function(){});
              * ```
              */
-            this.alert = function (opts, callBack, tryCount) {
+            this.alert = function (opts, callback, tryCount) {
                 if (U.isString(opts)) {
                     opts = {
                         title: cfg.title,
@@ -3285,7 +3304,7 @@ ax5.ui = function () {
                     // try one more
                     if (!tryCount) {
                         setTimeout(function () {
-                            this.alert(opts, callBack, 1);
+                            this.alert(opts, callback, 1);
                         }.bind(this), Number(cfg.animateTime) + 100);
                     } else {
                         console.log(ax5.info.getError("ax5dialog", "501", "alert"));
@@ -3303,10 +3322,10 @@ ax5.ui = function () {
                         ok: { label: cfg.lang["ok"], theme: opts.theme }
                     };
                 }
-                open.call(this, opts, callBack);
+                open.call(this, opts, callback);
 
                 opts = null;
-                callBack = null;
+                callback = null;
                 return this;
             };
 
@@ -3314,7 +3333,7 @@ ax5.ui = function () {
              * open the dialog of confirm type
              * @method ax5dialog.confirm
              * @param {Object|String} [{theme, title, msg, btns}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
-             * @param {Function} [callBack] - 사용자 확인 이벤트시 호출될 callBack 함수
+             * @param {Function} [callback] - 사용자 확인 이벤트시 호출될 callback 함수
              * @returns {ax5dialog}
              * @example
              * ```
@@ -3324,7 +3343,7 @@ ax5.ui = function () {
              * }, function(){});
              * ```
              */
-            this.confirm = function (opts, callBack, tryCount) {
+            this.confirm = function (opts, callback, tryCount) {
                 if (U.isString(opts)) {
                     opts = {
                         title: cfg.title,
@@ -3336,7 +3355,7 @@ ax5.ui = function () {
                     // try one more
                     if (!tryCount) {
                         setTimeout(function () {
-                            this.confirm(opts, callBack, 1);
+                            this.confirm(opts, callback, 1);
                         }.bind(this), Number(cfg.animateTime) + 100);
                     } else {
                         console.log(ax5.info.getError("ax5dialog", "501", "confirm"));
@@ -3356,10 +3375,10 @@ ax5.ui = function () {
                         cancel: { label: cfg.lang["cancel"] }
                     };
                 }
-                open.call(this, opts, callBack);
+                open.call(this, opts, callback);
 
                 opts = null;
-                callBack = null;
+                callback = null;
                 return this;
             };
 
@@ -3367,7 +3386,7 @@ ax5.ui = function () {
              * open the dialog of prompt type
              * @method ax5dialog.prompt
              * @param {Object|String} [{theme, title, msg, btns, input}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
-             * @param {Function} [callBack] - 사용자 확인 이벤트시 호출될 callBack 함수
+             * @param {Function} [callback] - 사용자 확인 이벤트시 호출될 callback 함수
              * @returns {ax5dialog}
              * @example
              * ```
@@ -3377,7 +3396,7 @@ ax5.ui = function () {
              * }, function(){});
              * ```
              */
-            this.prompt = function (opts, callBack, tryCount) {
+            this.prompt = function (opts, callback, tryCount) {
                 if (U.isString(opts)) {
                     opts = {
                         title: cfg.title,
@@ -3389,7 +3408,7 @@ ax5.ui = function () {
                     // try one more
                     if (!tryCount) {
                         setTimeout(function () {
-                            this.prompt(opts, callBack, 1);
+                            this.prompt(opts, callback, 1);
                         }.bind(this), Number(cfg.animateTime) + 100);
                     } else {
                         console.log(ax5.info.getError("ax5dialog", "501", "prompt"));
@@ -3400,7 +3419,6 @@ ax5.ui = function () {
                 self.dialogConfig = {};
                 jQuery.extend(true, self.dialogConfig, cfg, opts);
                 opts = self.dialogConfig;
-
                 opts.dialogType = "prompt";
                 opts.theme = opts.theme || cfg.theme || "";
 
@@ -3415,10 +3433,10 @@ ax5.ui = function () {
                         cancel: { label: cfg.lang["cancel"] }
                     };
                 }
-                open.call(this, opts, callBack);
+                open.call(this, opts, callback);
 
                 opts = null;
-                callBack = null;
+                callback = null;
                 return this;
             };
 
@@ -3472,12 +3490,31 @@ ax5.ui = function () {
         };
         return ax5dialog;
     }());
+    DIALOG = ax5.ui.dialog;
+})();
+
+// ax5.ui.dialog.tmpl
+(function () {
+
+    var DIALOG = ax5.ui.dialog;
+
+    var dialogDisplay = function dialogDisplay(columnKeys) {
+        return ' \n        <div id="{{dialogId}}" data-ax5-ui="dialog" class="ax5-ui-dialog {{theme}}">\n            <div class="ax-dialog-header">\n                {{{title}}}\n            </div>\n            <div class="ax-dialog-body">\n                <div class="ax-dialog-msg">{{{msg}}}</div>\n                \n                {{#input}}\n                <div class="ax-dialog-prompt">\n                    {{#@each}}\n                    <div class="form-group">\n                    {{#@value.label}}\n                    <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>\n                    {{/@value.label}}\n                    <input type="{{@value.type}}" placeholder="{{@value.placeholder}}" class="form-control {{@value.theme}}" data-dialog-prompt="{{@key}}" style="width:100%;" value="{{@value.value}}" />\n                    {{#@value.help}}\n                    <p class="help-block">{{#_crlf}}{{.}}{{/_crlf}}</p>\n                    {{/@value.help}}\n                    </div>\n                    {{/@each}}\n                </div>\n                {{/input}}\n                \n                <div class="ax-dialog-buttons">\n                    <div class="ax-button-wrap">\n                    {{#btns}}\n                        {{#@each}}\n                        <button type="button" data-dialog-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{@value.label}}</button>\n                        {{/@each}}\n                    {{/btns}}\n                    </div>\n                </div>\n            </div>\n        </div>  \n        ';
+    };
+
+    DIALOG.tmpl = {
+        "dialogDisplay": dialogDisplay,
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(DIALOG.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
 })();
 // ax5.ui.mask
 (function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var MASK;
 
     UI.addClass({
         className: "mask",
@@ -3517,8 +3554,8 @@ ax5.ui = function () {
                 that = null;
                 return true;
             },
-                getBodyTmpl = function getBodyTmpl() {
-                return '\n                <div class="ax-mask {{theme}}" id="{{maskId}}">\n                    <div class="ax-mask-bg"></div>\n                    <div class="ax-mask-content">\n                        <div class="ax-mask-body">\n                        {{{body}}}\n                        </div>\n                    </div>\n                </div>\n                ';
+                getBodyTmpl = function getBodyTmpl(data) {
+                return MASK.tmpl.get.call(this, "defaultMask", data);
             },
                 setBody = function setBody(content) {
                 this.maskContent = content;
@@ -3574,6 +3611,7 @@ ax5.ui = function () {
                 if (this.status === "on") this.close();
                 if (options && options.content) setBody.call(this, options.content);
                 self.maskConfig = {};
+
                 jQuery.extend(true, self.maskConfig, this.config, options);
 
                 var _cfg = self.maskConfig,
@@ -3583,8 +3621,17 @@ ax5.ui = function () {
                     $mask,
                     css = {},
                     that = {},
-                    bodyTmpl = getBodyTmpl(),
-                    body = ax5.mustache.render(bodyTmpl, {
+
+                /*
+                bodyTmpl = getBodyTmpl(),
+                body = ax5.mustache.render(bodyTmpl, {
+                    theme: _cfg.theme,
+                    maskId: maskId,
+                    body: this.maskContent
+                });
+                */
+
+                body = getBodyTmpl({
                     theme: _cfg.theme,
                     maskId: maskId,
                     body: this.maskContent
@@ -3600,6 +3647,7 @@ ax5.ui = function () {
                         width: $target.outerWidth(),
                         height: $target.outerHeight()
                     };
+
                     if (typeof self.maskConfig.zIndex !== "undefined") {
                         css["z-index"] = self.maskConfig.zIndex;
                     }
@@ -3612,14 +3660,14 @@ ax5.ui = function () {
                 this.status = "on";
                 $mask.css(css);
 
-                if (this.onClick) {
-                    $mask.click(function () {
+                if (_cfg.onClick) {
+                    $mask.on("click", function (e) {
                         that = {
-                            self: this,
+                            self: self,
                             state: "open",
                             type: "click"
                         };
-                        this.onClick.call(that, that);
+                        self.maskConfig.onClick.call(that, that);
                     });
                 }
 
@@ -3636,7 +3684,7 @@ ax5.ui = function () {
                 $mask = null;
                 css = null;
                 that = null;
-                bodyTmpl = null;
+                //bodyTmpl = null;
                 body = null;
 
                 return this;
@@ -3690,16 +3738,18 @@ ax5.ui = function () {
         };
         return ax5mask;
     }());
+    MASK = ax5.ui.mask;
 })();
 // ax5.ui.toast
 (function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var TOAST;
 
     UI.addClass({
         className: "toast",
-        version: "0.3.3"
+        version: "0.4.1"
     }, function () {
         /**
          * @class ax5toast
@@ -3747,9 +3797,6 @@ ax5.ui = function () {
                 that = null;
                 return true;
             },
-                getContentTmpl = function getContentTmpl() {
-                return '\n                    <div id="{{toastId}}" data-ax5-ui="toast" class="ax5-ui-toast {{theme}}">\n                        {{#icon}}\n                        <div class="ax-toast-icon">{{{.}}}</div>\n                        {{/icon}}\n                        <div class="ax-toast-body">{{{msg}}}</div>\n                        {{#btns}}\n                        <div class="ax-toast-buttons">\n                            <div class="ax-button-wrap">\n                            {{#@each}}\n                            <button type="button" data-ax-toast-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{{@value.label}}}</button>\n                            {{/@each}}\n                            </div>\n                        </div>\n                        {{/btns}}\n                        {{^btns}}\n                        <a class="ax-toast-close" data-ax-toast-btn="ok">{{{closeIcon}}}</a>\n                        {{/btns}}\n                        <div style="clear:both;"></div>\n                    </div>\n                    ';
-            },
                 getContent = function getContent(toastId, opts) {
                 var data = {
                     toastId: toastId,
@@ -3761,7 +3808,7 @@ ax5.ui = function () {
                 };
 
                 try {
-                    return ax5.mustache.render(getContentTmpl(), data);
+                    return TOAST.tmpl.get.call(this, "toastDisplay", data);
                 } finally {
                     toastId = null;
                     data = null;
@@ -3997,16 +4044,35 @@ ax5.ui = function () {
         };
         return ax5toast;
     }());
+    TOAST = ax5.ui.toast;
+})();
+// ax5.ui.toast.tmpl
+(function () {
+
+    var TOAST = ax5.ui.toast;
+
+    var toastDisplay = function toastDisplay(columnKeys) {
+        return '\n        <div id="{{toastId}}" data-ax5-ui="toast" class="ax5-ui-toast {{theme}}">\n            {{#icon}}\n            <div class="ax-toast-icon">{{{.}}}</div>\n            {{/icon}}\n            <div class="ax-toast-body">{{{msg}}}</div>\n            {{#btns}}\n            <div class="ax-toast-buttons">\n                <div class="ax-button-wrap">\n                    {{#@each}}\n                    <button type="button" data-ax-toast-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{{@value.label}}}</button>\n                    {{/@each}}\n                </div>\n            </div>\n            {{/btns}}\n            {{^btns}}\n                <a class="ax-toast-close" data-ax-toast-btn="ok">{{{closeIcon}}}</a>\n            {{/btns}}\n            <div style="clear:both;"></div>\n        </div>';
+    };
+
+    TOAST.tmpl = {
+        "toastDisplay": toastDisplay,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(TOAST.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
 })();
 // ax5.ui.modal
 (function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var MODAL;
 
     UI.addClass({
         className: "modal",
-        version: "0.7.8"
+        version: "0.7.9"
     }, function () {
         /**
          * @class ax5modal
@@ -4045,7 +4111,7 @@ ax5.ui = function () {
                     margin: 10
                 },
                 minimizePosition: "bottom-right",
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
+                clickEventName: "mousedown", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
                 theme: 'default',
                 width: 300,
                 height: 400,
@@ -4065,9 +4131,6 @@ ax5.ui = function () {
                 }
                 return true;
             },
-                getContentTmpl = function getContentTmpl() {
-                return ' \n                    <div id="{{modalId}}" data-modal-els="root" class="ax5modal {{theme}} {{fullscreen}}" style="{{styles}}">\n                        {{#header}}\n                        <div class="ax-modal-header" data-modal-els="header">\n                            {{{title}}}\n                            {{#btns}}\n                                <div class="ax-modal-header-addon">\n                                {{#@each}}\n                                <a tabindex="-1" data-modal-header-btn="{{@key}}" class="{{@value.theme}}">{{{@value.label}}}</a>\n                                {{/@each}}\n                                </div>\n                            {{/btns}}\n                        </div>\n                        {{/header}}\n                        <div class="ax-modal-body" data-modal-els="body">\n                        {{#iframe}}\n                        \n                            <div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">\n                                <table data-modal-els="iframe-loading" style="width:100%;height:100%;"><tr><td style="text-align: center;vertical-align: middle">{{{iframeLoadingMsg}}}</td></tr></table>\n                                <iframe name="{{modalId}}-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>\n                            </div>\n                            <form name="{{modalId}}-form" data-modal-els="iframe-form">\n                            <input type="hidden" name="modalId" value="{{modalId}}" />\n                            {{#param}}\n                            {{#@each}}\n                            <input type="hidden" name="{{@key}}" value="{{@value}}" />\n                            {{/@each}}\n                            {{/param}}\n                            </form>\n                        {{/iframe}}\n                        </div>\n                    </div>\n                    ';
-            },
                 getContent = function getContent(modalId, opts) {
                 var data = {
                     modalId: modalId,
@@ -4086,9 +4149,9 @@ ax5.ui = function () {
                     data.iframe.param = ax5.util.param(data.iframe.param);
                 }
 
-                return ax5.mustache.render(getContentTmpl(), data);
+                return MODAL.tmpl.get.call(this, "content", data, {});
             },
-                open = function open(opts, callBack) {
+                open = function open(opts, callback) {
                 var that;
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
@@ -4142,7 +4205,7 @@ ax5.ui = function () {
                     this.$["iframe-form"].submit();
                 }
 
-                if (callBack) callBack.call(that);
+                if (callback) callback.call(that);
                 onStateChanged.call(this, opts, that);
 
                 // bind key event
@@ -4167,7 +4230,7 @@ ax5.ui = function () {
                     return false;
                 });
             },
-                btnOnClick = function btnOnClick(e, opts, callBack, target, k) {
+                btnOnClick = function btnOnClick(e, opts, callback, target, k) {
                 var that;
                 if (e.srcElement) e.target = e.srcElement;
 
@@ -4194,7 +4257,7 @@ ax5.ui = function () {
 
                 that = null;
                 opts = null;
-                callBack = null;
+                callback = null;
                 target = null;
                 k = null;
             },
@@ -4333,10 +4396,10 @@ ax5.ui = function () {
              * my_modal.open();
              * ```
              */
-            this.open = function (opts, callBack) {
+            this.open = function (opts, callback) {
                 if (!this.activeModal) {
                     opts = self.modalConfig = jQuery.extend(true, {}, cfg, opts);
-                    open.call(this, opts, callBack);
+                    open.call(this, opts, callback);
                 }
                 return this;
             };
@@ -4368,6 +4431,9 @@ ax5.ui = function () {
                         });
                     }.bind(this), cfg.animateTime);
                 }
+
+                this.minimized = false; // hoksi
+
                 return this;
             };
 
@@ -4378,18 +4444,23 @@ ax5.ui = function () {
             this.minimize = function () {
 
                 return function (minimizePosition) {
-                    var opts = self.modalConfig;
-                    if (typeof minimizePosition === "undefined") minimizePosition = cfg.minimizePosition;
-                    this.minimized = true;
-                    this.$.body.hide();
-                    self.modalConfig.originalHeight = opts.height;
-                    self.modalConfig.height = 0;
-                    alignProcessor[minimizePosition].call(this);
 
-                    onStateChanged.call(this, opts, {
-                        self: this,
-                        state: "minimize"
-                    });
+                    if (this.minimized !== true) {
+
+                        var opts = self.modalConfig;
+                        if (typeof minimizePosition === "undefined") minimizePosition = cfg.minimizePosition;
+
+                        this.minimized = true;
+                        this.$.body.hide();
+                        self.modalConfig.originalHeight = opts.height;
+                        self.modalConfig.height = 0;
+                        alignProcessor[minimizePosition].call(this);
+
+                        onStateChanged.call(this, opts, {
+                            self: this,
+                            state: "minimize"
+                        });
+                    }
 
                     return this;
                 };
@@ -4539,15 +4610,35 @@ ax5.ui = function () {
         };
         return ax5modal;
     }());
+
+    MODAL = ax5.ui.modal;
+})();
+// ax5.ui.modal.tmpl
+(function () {
+    var MODAL = ax5.ui.modal;
+
+    var content = function content() {
+        return ' \n        <div id="{{modalId}}" data-modal-els="root" class="ax5modal {{theme}} {{fullscreen}}" style="{{styles}}">\n            {{#header}}\n            <div class="ax-modal-header" data-modal-els="header">\n                {{{title}}}\n                {{#btns}}\n                    <div class="ax-modal-header-addon">\n                    {{#@each}}\n                    <a tabindex="-1" data-modal-header-btn="{{@key}}" class="{{@value.theme}}">{{{@value.label}}}</a>\n                    {{/@each}}\n                    </div>\n                {{/btns}}\n            </div>\n            {{/header}}\n            <div class="ax-modal-body" data-modal-els="body">\n            {{#iframe}}\n            \n                <div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">\n                    <table data-modal-els="iframe-loading" style="width:100%;height:100%;"><tr><td style="text-align: center;vertical-align: middle">{{{iframeLoadingMsg}}}</td></tr></table>\n                    <iframe name="{{modalId}}-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>\n                </div>\n                <form name="{{modalId}}-form" data-modal-els="iframe-form">\n                <input type="hidden" name="modalId" value="{{modalId}}" />\n                {{#param}}\n                {{#@each}}\n                <input type="hidden" name="{{@key}}" value="{{@value}}" />\n                {{/@each}}\n                {{/param}}\n                </form>\n            {{/iframe}}\n            </div>\n        </div>\n        ';
+    };
+
+    MODAL.tmpl = {
+        "content": content,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(MODAL.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
 })();
 // ax5.ui.calendar
 (function () {
+
     var UI = ax5.ui;
     var U = ax5.util;
+    var CALENDAR;
 
     UI.addClass({
         className: "calendar",
-        version: "0.8.9"
+        version: "0.9.0"
     }, function () {
 
         /**
@@ -4612,15 +4703,11 @@ ax5.ui = function () {
 
                 that = null;
             },
-                getFrameTmpl = function getFrameTmpl() {
-                return '\n                <div class="ax5-ui-calendar {{theme}}" data-calendar-els="root" onselectstart="return false;">\n                    {{#control}}\n                    <div class="calendar-control" data-calendar-els="control" style="{{controlCSS}}">\n                        <a class="date-move-left" data-calendar-move="left" style="{{controlButtonCSS}}">{{{left}}}</a>\n                        <div class="date-display" data-calendar-els="control-display" style="{{controlCSS}}"></div>\n                        <a class="date-move-right" data-calendar-move="right" style="{{controlButtonCSS}}">{{{right}}}</a>\n                    </div>\n                    {{/control}}\n                    <div class="calendar-body" data-calendar-els="body"></div>\n                </div>\n                ';
-            },
                 getFrame = function getFrame() {
                 var data = jQuery.extend(true, {}, cfg, {
                     controlCSS: {},
                     controlButtonCSS: {}
-                }),
-                    tmpl = getFrameTmpl();
+                });
 
                 data.controlButtonCSS["height"] = data.controlCSS["height"] = U.cssNumber(cfg.dimensions.controlHeight);
                 data.controlButtonCSS["line-height"] = data.controlCSS["line-height"] = U.cssNumber(cfg.dimensions.controlHeight);
@@ -4630,20 +4717,10 @@ ax5.ui = function () {
                 data.controlButtonCSS = U.css(data.controlButtonCSS);
 
                 try {
-                    return ax5.mustache.render(tmpl, data);
+                    return CALENDAR.tmpl.get.call(this, "frameTmpl", data);
                 } finally {
                     data = null;
-                    tmpl = null;
                 }
-            },
-                getDayTmpl = function getDayTmpl() {
-                return '\n                <table data-calendar-table="day" cellpadding="0" cellspacing="0" style="width:100%;">\n                    <thead>\n                        <tr>\n                        {{#weekNames}}\n                            <td class="calendar-col-{{col}}" style="height: {{colHeadHeight}}">\n                            {{label}}\n                            </td>\n                        {{/weekNames}}\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfWeek}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfWeek}}\n                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">\n                                <a class="calendar-item-day {{addClass}}" data-calendar-item-date="{{thisDate}}">\n                                    <span class="addon addon-header"></span>\n                                    {{thisDataLabel}}\n                                    <span class="addon addon-footer"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ';
-            },
-                getMonthTmpl = function getMonthTmpl() {
-                return '\n                <table data-calendar-table="month" cellpadding="0" cellspacing="0" style="width:100%;">\n                    <thead>\n                        <tr>\n                            <td class="calendar-col-0" colspan="3" style="height: {{colHeadHeight}}">\n                            {{colHeadLabel}}\n                            </td>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfRow}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfRow}}\n                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">\n                                <a class="calendar-item-month {{addClass}}" data-calendar-item-month="{{thisMonth}}">\n                                    <span class="addon"></span>\n                                    {{thisMonthLabel}}\n                                    <span class="lunar"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ';
-            },
-                getYearTmpl = function getYearTmpl() {
-                return '\n                <table data-calendar-table="year" cellpadding="0" cellspacing="0" style="width:100%;">\n                    <thead>\n                        <tr>\n                            <td class="calendar-col-0" colspan="4" style="height: {{colHeadHeight}}">\n                            {{colHeadLabel}}\n                            </td>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfRow}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfRow}}\n                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">\n                                <a class="calendar-item-year {{addClass}}" data-calendar-item-year="{{thisYear}}">\n                                    <span class="addon"></span>\n                                    {{thisYearLabel}}\n                                    <span class="lunar"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ';
             },
                 setDisplay = function setDisplay() {
                 var myDate = U.date(cfg.displayDate),
@@ -4718,7 +4795,7 @@ ax5.ui = function () {
                     frameHeight = Math.floor(frameWidth * (6 / 7)),
                     // 1week = 7days, 1month = 6weeks
                 data,
-                    tmpl = getDayTmpl();
+                    tmpl;
 
                 if (cfg.dimensions.height) {
                     frameHeight = U.number(cfg.dimensions.height) - U.number(cfg.dimensions.colHeadHeight);
@@ -4776,8 +4853,8 @@ ax5.ui = function () {
                     }
                     i++;
                 }
-
-                this.$["body"].html(ax5.mustache.render(tmpl, data));
+                tmpl = CALENDAR.tmpl.get.call(this, "dayTmpl", data);
+                this.$["body"].html(tmpl);
                 this.$["body"].find('[data-calendar-item-date]').on(cfg.clickEventName, function (e) {
                     e = e || window.event;
                     onclick.call(self, e, 'date');
@@ -4820,7 +4897,7 @@ ax5.ui = function () {
                     frameWidth = this.$["body"].width(),
                     frameHeight = Math.floor(frameWidth * (6 / 7)),
                     data,
-                    tmpl = getMonthTmpl();
+                    tmpl;
 
                 if (cfg.dimensions.height) {
                     frameHeight = U.number(cfg.dimensions.height) - U.number(cfg.dimensions.colHeadHeight);
@@ -4868,8 +4945,8 @@ ax5.ui = function () {
                     }
                     i++;
                 }
-
-                this.$["body"].html(ax5.mustache.render(tmpl, data));
+                tmpl = CALENDAR.tmpl.get.call(this, "monthTmpl", data);
+                this.$["body"].html(tmpl);
                 this.$["body"].find('[data-calendar-item-month]').on(cfg.clickEventName, function (e) {
                     e = e || window.event;
                     onclick.call(self, e, 'month');
@@ -4911,7 +4988,7 @@ ax5.ui = function () {
                     frameWidth = this.$["body"].width(),
                     frameHeight = Math.floor(frameWidth * (6 / 7)),
                     data,
-                    tmpl = getYearTmpl();
+                    tmpl;
 
                 if (cfg.dimensions.height) {
                     frameHeight = U.number(cfg.dimensions.height) - U.number(cfg.dimensions.colHeadHeight);
@@ -4959,8 +5036,8 @@ ax5.ui = function () {
                     }
                     i++;
                 }
-
-                this.$["body"].html(ax5.mustache.render(tmpl, data));
+                tmpl = CALENDAR.tmpl.get.call(this, "yearTmpl", data);
+                this.$["body"].html(tmpl);
                 this.$["body"].find('[data-calendar-item-year]').on(cfg.clickEventName, function (e) {
                     e = e || window.event;
                     onclick.call(this, e, 'year');
@@ -5512,16 +5589,47 @@ ax5.ui = function () {
         };
         return ax5calendar;
     }());
+    CALENDAR = ax5.ui.calendar;
+})();
+// ax5.ui.calendar.tmpl
+(function () {
+
+    var CALENDAR = ax5.ui.calendar;
+
+    var frameTmpl = function frameTmpl(columnKeys) {
+        return '\n                <div class="ax5-ui-calendar {{theme}}" data-calendar-els="root" onselectstart="return false;">\n                    {{#control}}\n                    <div class="calendar-control" data-calendar-els="control" style="{{controlCSS}}">\n                        <a class="date-move-left" data-calendar-move="left" style="{{controlButtonCSS}}">{{{left}}}</a>\n                        <div class="date-display" data-calendar-els="control-display" style="{{controlCSS}}"></div>\n                        <a class="date-move-right" data-calendar-move="right" style="{{controlButtonCSS}}">{{{right}}}</a>\n                    </div>\n                    {{/control}}\n                    <div class="calendar-body" data-calendar-els="body"></div>\n                </div>\n                ';
+    };
+    var dayTmpl = function dayTmpl(columnKeys) {
+        return '\n                <table data-calendar-table="day" cellpadding="0" cellspacing="0" style="width:100%;">\n                    <thead>\n                        <tr>\n                        {{#weekNames}}\n                            <td class="calendar-col-{{col}}" style="height: {{colHeadHeight}}">\n                            {{label}}\n                            </td>\n                        {{/weekNames}}\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfWeek}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfWeek}}\n                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">\n                                <a class="calendar-item-day {{addClass}}" data-calendar-item-date="{{thisDate}}">\n                                    <span class="addon addon-header"></span>\n                                    {{thisDataLabel}}\n                                    <span class="addon addon-footer"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ';
+    };
+    var monthTmpl = function monthTmpl(columnKeys) {
+        return '\n                <table data-calendar-table="month" cellpadding="0" cellspacing="0" style="width:100%;">\n                    <thead>\n                        <tr>\n                            <td class="calendar-col-0" colspan="3" style="height: {{colHeadHeight}}">\n                            {{colHeadLabel}}\n                            </td>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfRow}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfRow}}\n                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">\n                                <a class="calendar-item-month {{addClass}}" data-calendar-item-month="{{thisMonth}}">\n                                    <span class="addon"></span>\n                                    {{thisMonthLabel}}\n                                    <span class="lunar"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ';
+    };
+    var yearTmpl = function yearTmpl(columnKeys) {
+        return '\n                <table data-calendar-table="year" cellpadding="0" cellspacing="0" style="width:100%;">\n                    <thead>\n                        <tr>\n                            <td class="calendar-col-0" colspan="4" style="height: {{colHeadHeight}}">\n                            {{colHeadLabel}}\n                            </td>\n                        </tr>\n                    </thead>\n                    <tbody>\n                        <tr>\n                            {{#list}}    \n                            {{#isStartOfRow}}\n                            {{^@first}}\n                        </tr>\n                        <tr>\n                            {{/@first}}\n                            {{/isStartOfRow}}\n                            <td class="calendar-col-{{col}}" style="{{itemStyles}}">\n                                <a class="calendar-item-year {{addClass}}" data-calendar-item-year="{{thisYear}}">\n                                    <span class="addon"></span>\n                                    {{thisYearLabel}}\n                                    <span class="lunar"></span>\n                                </a>\n                            </td>\n                            {{/list}}\n                        </tr>\n                    </tbody>\n                </table>\n                ';
+    };
+
+    CALENDAR.tmpl = {
+        "frameTmpl": frameTmpl,
+        "dayTmpl": dayTmpl,
+        "monthTmpl": monthTmpl,
+        "yearTmpl": yearTmpl,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(CALENDAR.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
 })();
 // ax5.ui.picker
 (function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var PICKER;
 
     UI.addClass({
         className: "picker",
-        version: "0.7.13"
+        version: "0.8.0"
     }, function () {
         /**
          * @class ax5picker
@@ -5586,10 +5694,8 @@ ax5.ui = function () {
                 var pickerType = {
                     '@fn': function fn(queIdx, _input) {
                         var item = this.queue[queIdx],
-                            config = {},
-                            inputLength = _input.length;
-
-                        config = {
+                            inputLength = _input.length,
+                            config = {
                             inputLength: inputLength || 1
                         };
 
@@ -5611,15 +5717,10 @@ ax5.ui = function () {
                         var item = this.queue[queIdx],
                             contentWidth = item.content ? item.content.width || 270 : 270,
                             contentMargin = item.content ? item.content.margin || 5 : 5,
-                            config = {},
-                            inputLength = _input.length;
-
-                        config = {
+                            inputLength = _input.length,
+                            config = {
                             contentWidth: contentWidth * inputLength + (inputLength - 1) * contentMargin,
-                            content: {
-                                width: contentWidth,
-                                margin: contentMargin
-                            },
+                            content: { width: contentWidth, margin: contentMargin },
                             inputLength: inputLength || 1
                         };
 
@@ -5638,10 +5739,8 @@ ax5.ui = function () {
                     },
                     'secure-num': function secureNum(queIdx, _input) {
                         var item = this.queue[queIdx],
-                            config = {},
-                            inputLength = _input.length;
-
-                        config = {
+                            inputLength = _input.length,
+                            config = {
                             inputLength: inputLength || 1
                         };
 
@@ -5652,10 +5751,8 @@ ax5.ui = function () {
                     },
                     'keyboard': function keyboard(queIdx, _input) {
                         var item = this.queue[queIdx],
-                            config = {},
-                            inputLength = _input.length;
-
-                        config = {
+                            inputLength = _input.length,
+                            config = {
                             inputLength: inputLength || 1
                         };
 
@@ -5666,10 +5763,8 @@ ax5.ui = function () {
                     },
                     'numpad': function numpad(queIdx, _input) {
                         var item = this.queue[queIdx],
-                            config = {},
-                            inputLength = _input.length;
-
-                        config = {
+                            inputLength = _input.length,
+                            config = {
                             inputLength: inputLength || 1
                         };
 
@@ -5717,9 +5812,6 @@ ax5.ui = function () {
                     return this;
                 };
             }(),
-                getTmpl = function getTmpl(queIdx) {
-                return '\n                    <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n                        {{#title}}\n                            <div class="ax-picker-heading">{{title}}</div>\n                        {{/title}}\n                        <div class="ax-picker-body">\n                            <div class="ax-picker-content" data-picker-els="content" style="width:{{contentWidth}}px;"></div>\n                            {{#btns}}\n                                <div class="ax-picker-buttons">\n                                {{#btns}}\n                                    {{#@each}}\n                                    <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                                    {{/@each}}\n                                {{/btns}}\n                                </div>\n                            {{/btns}}\n                        </div>\n                        <div class="ax-picker-arrow"></div>\n                    </div>\n                    ';
-            },
                 alignPicker = function alignPicker(append) {
                 if (!this.activePicker) return this;
 
@@ -5969,10 +6061,10 @@ ax5.ui = function () {
             this.open = function () {
 
                 var pickerContent = {
-                    '@fn': function fn(queIdx, callBack) {
+                    '@fn': function fn(queIdx, callback) {
                         var item = this.queue[queIdx];
                         item.content.call(item, function (html) {
-                            callBack(html);
+                            callback(html);
                         });
                         return true;
                     },
@@ -6255,7 +6347,7 @@ ax5.ui = function () {
                         return this;
                     }
 
-                    this.activePicker = jQuery(ax5.mustache.render(getTmpl.call(this, item, queIdx), item));
+                    this.activePicker = jQuery(PICKER.tmpl.get.call(this, "pickerTmpl", item));
                     this.activePickerArrow = this.activePicker.find(".ax-picker-arrow");
                     this.activePickerQueueIndex = queIdx;
                     item.pickerContent = this.activePicker.find('[data-picker-els="content"]');
@@ -6344,6 +6436,8 @@ ax5.ui = function () {
         };
         return ax5picker;
     }());
+
+    PICKER = ax5.ui.picker;
 })();
 
 /**
@@ -6390,6 +6484,23 @@ jQuery.fn.ax5picker = function () {
         return this;
     };
 }();
+// ax5.ui.picker.tmpl
+(function () {
+    var PICKER = ax5.ui.picker;
+    var U = ax5.util;
+
+    var pickerTmpl = function pickerTmpl() {
+        return '\n<div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n    {{#title}}\n        <div class="ax-picker-heading">{{title}}</div>\n    {{/title}}\n    <div class="ax-picker-body">\n        <div class="ax-picker-content" data-picker-els="content" style="width:{{contentWidth}}px;"></div>\n        {{#btns}}\n            <div class="ax-picker-buttons">\n            {{#btns}}\n                {{#@each}}\n                <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class="ax-picker-arrow"></div>\n</div>\n';
+    };
+
+    PICKER.tmpl = {
+        "pickerTmpl": pickerTmpl,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(PICKER.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
+})();
 // ax5.ui.formatter
 (function () {
     var UI = ax5.ui;
@@ -6700,14 +6811,321 @@ jQuery.fn.ax5formatter = function () {
     };
 }();
 
+// ax5.ui.formatter.formatter
+(function () {
+
+    var FORMATTER = ax5.ui.formatter;
+    var U = ax5.util;
+    var ctrlKeys = {
+        "18": "KEY_ALT",
+        "8": "KEY_BACKSPACE",
+        "17": "KEY_CONTROL",
+        "46": "KEY_DELETE",
+        "40": "KEY_DOWN",
+        "35": "KEY_END",
+        "187": "KEY_EQUAL",
+        "27": "KEY_ESC",
+        "36": "KEY_HOME",
+        "45": "KEY_INSERT",
+        "37": "KEY_LEFT",
+        "189": "KEY_MINUS",
+        "34": "KEY_PAGEDOWN",
+        "33": "KEY_PAGEUP",
+        // "190": "KEY_PERIOD",
+        "13": "KEY_RETURN",
+        "39": "KEY_RIGHT",
+        "16": "KEY_SHIFT",
+        // "32": "KEY_SPACE",
+        "9": "KEY_TAB",
+        "38": "KEY_UP",
+        "91": "KEY_WINDOW"
+        //"107" : "NUMPAD_ADD",
+        //"194" : "NUMPAD_COMMA",
+        //"110" : "NUMPAD_DECIMAL",
+        //"111" : "NUMPAD_DIVIDE",
+        //"12" : "NUMPAD_EQUAL",
+        //"106" : "NUMPAD_MULTIPLY",
+        //"109" : "NUMPAD_SUBTRACT"
+    };
+    var numKeys = {
+        '48': 1, '49': 1, '50': 1, '51': 1, '52': 1, '53': 1, '54': 1, '55': 1, '56': 1, '57': 1,
+        '96': 1, '97': 1, '98': 1, '99': 1, '100': 1, '101': 1, '102': 1, '103': 1, '104': 1, '105': 1
+    };
+    var pattern_money = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '188': ','
+            };
+            if (_opts.patternArgument == "int") {
+                // 소수점 입력 안됨
+            } else {
+                enterableKeyCodes['190'] = "."; // 소수점 입력 허용
+            }
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/[^0-9^\.^\-]/g, "");
+            var regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
+                arrNumber = val.split('.'),
+                returnValue;
+
+            arrNumber[0] += '.';
+
+            do {
+                arrNumber[0] = arrNumber[0].replace(regExpPattern, '$1,$2');
+            } while (regExpPattern.test(arrNumber[0]));
+
+            if (arrNumber.length > 1) {
+                if (U.isNumber(_opts.maxRound)) {
+                    returnValue = arrNumber[0] + U.left(arrNumber[1], _opts.maxRound);
+                } else {
+                    returnValue = arrNumber.join('');
+                }
+            } else {
+                returnValue = arrNumber[0].split('.')[0];
+            }
+
+            return returnValue;
+        }
+    };
+
+    var pattern_number = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '190': '.'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/[^0-9^\.^\-]/g, "");
+            var arrNumber = val.split('.'),
+                returnValue;
+
+            if (arrNumber.length > 1) {
+                if (U.isNumber(_opts.maxRound)) {
+                    returnValue = arrNumber[0] + U.left(arrNumber[1], _opts.maxRound);
+                } else {
+                    returnValue = arrNumber.join('');
+                }
+            } else {
+                returnValue = arrNumber[0].split('.')[0];
+            }
+
+            return returnValue;
+        }
+    };
+
+    var pattern_date = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '189': '-', '191': '/'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "");
+            if (val == "") return val;
+            var regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})?.*$/;
+
+            if (_opts.patternArgument == "time") {
+                regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})? ?([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
+            }
+
+            var matchedPattern = val.match(regExpPattern),
+                returnValue = "",
+                inspectValue = function inspectValue(val, format, inspect, data) {
+                var _val = {
+                    'Y': function Y(v) {
+                        if (typeof v == "undefined") v = TODAY.getFullYear();
+                        if (v == '' || v == '0000') v = TODAY.getFullYear();
+                        return v.length < 4 ? U.setDigit(v, 4) : v;
+                    },
+                    'M': function M(v) {
+                        if (typeof v == "undefined") v = TODAY.getMonth() + 1;
+                        return v > 12 ? 12 : v == 0 ? '01' : U.setDigit(v, 2);
+                    },
+                    'D': function D(v) {
+                        if (typeof v == "undefined") v = TODAY.getDate() + 1;
+                        var dLen = U.daysOfMonth(data[1], data[2] - 1);
+                        return v > dLen ? dLen : v == 0 ? '01' : U.setDigit(v, 2);
+                    },
+                    'h': function h(v) {
+                        if (!v) v = 0;
+                        return v > 23 ? 23 : U.setDigit(v, 2);
+                    },
+                    'm': function m(v) {
+                        if (!v) v = 0;
+                        return v > 59 ? 59 : U.setDigit(v, 2);
+                    },
+                    's': function s(v) {
+                        if (!v) v = 0;
+                        return v > 59 ? 59 : U.setDigit(v, 2);
+                    }
+                };
+                return inspect ? _val[format](val) : val;
+            };
+
+            returnValue = val.replace(regExpPattern, function (a, b) {
+                var nval = [inspectValue(arguments[1], "Y", eType)];
+                if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
+                if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
+                if (_opts.patternArgument == "time") {
+                    if (arguments[4] || eType) nval.push(' ' + inspectValue(arguments[4], "h", eType));
+                    if (arguments[5] || eType) nval.push(':' + inspectValue(arguments[5], "m", eType));
+                    if (arguments[6] || eType) nval.push(':' + inspectValue(arguments[6], "s", eType));
+                }
+                return nval.join('');
+            });
+
+            if (eType == 'blur' && !matchedPattern) {
+                returnValue = function () {
+                    var nval = [inspectValue(returnValue, "Y", eType)];
+                    nval.push('-' + inspectValue(0, "M", eType));
+                    nval.push('-' + inspectValue(0, "D", eType, arguments));
+                    if (_opts.patternArgument == "time") {
+                        nval.push(' ' + inspectValue(0, "h", eType));
+                        nval.push(':' + inspectValue(0, "m", eType));
+                        nval.push(':' + inspectValue(0, "s", eType));
+                    }
+                    return nval.join('');
+                }();
+            } else if (!matchedPattern) returnValue = returnValue.length > 4 ? U.left(returnValue, 4) : returnValue;
+
+            return returnValue;
+        }
+    };
+
+    var pattern_time = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '186': ':'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "");
+            var regExpPattern = /^([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
+
+            var matchedPattern = val.match(regExpPattern),
+                returnValue = val.replace(regExpPattern, function (a, b) {
+                var nval = [arguments[1]];
+                if (arguments[2]) nval.push(':' + arguments[2]);
+                if (arguments[3]) nval.push(':' + arguments[3]);
+                return nval.join('');
+            });
+
+            if (!matchedPattern) returnValue = returnValue.length > 2 ? U.left(returnValue, 2) : returnValue;
+
+            return returnValue;
+        }
+    };
+
+    var pattern_bizno = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '189': '-'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "");
+            var regExpPattern = /^([0-9]{3})\-?([0-9]{1,2})?\-?([0-9]{1,5})?.*$/,
+                returnValue = val.replace(regExpPattern, function (a, b) {
+                var nval = [arguments[1]];
+                if (arguments[2]) nval.push(arguments[2]);
+                if (arguments[3]) nval.push(arguments[3]);
+                return nval.join("-");
+            });
+
+            return returnValue;
+        }
+    };
+
+    var pattern_phone = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '189': '-', '188': ','
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "");
+            var regExpPattern3 = /^([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
+            if (val.substr(0, 2) == "02") {
+                regExpPattern3 = /^([0-9]{2})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
+            }
+
+            var returnValue = val.replace(regExpPattern3, function (a, b) {
+                var nval = [arguments[1]];
+                if (arguments[2]) nval.push(arguments[2]);
+                if (arguments[3]) nval.push(arguments[3]);
+                if (arguments[4]) nval.push(arguments[4]);
+                if (arguments[5]) nval.push(arguments[5]);
+                return nval.join("-");
+            });
+            return returnValue;
+        }
+    };
+
+    var pattern_credit = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            var enterableKeyCodes = {
+                '189': '-'
+            };
+            return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            val = val.replace(/\D/g, "").substring(0, 16);
+
+            var regExpPattern3 = /^([0-9]{4})\-?([0-9]{4})?\-?([0-9]{4})?\-?([0-9]{4})?/,
+                returnValue = val.replace(regExpPattern3, function (a, b) {
+                var nval = [arguments[1]];
+                if (arguments[2]) nval.push(arguments[2]);
+                if (arguments[3]) nval.push(arguments[3]);
+                if (arguments[4]) nval.push(arguments[4]);
+                return nval.join("-");
+            });
+            return returnValue;
+        }
+    };
+
+    var pattern_custom = {
+        getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
+            if (_opts.getEnterableKeyCodes) {
+                return _opts.getEnterableKeyCodes.call(_opts, { $input: _opts.$input });
+            } else {
+                return null;
+            }
+        },
+        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
+            if (_opts.getPatternValue) {
+                return _opts.getPatternValue.call(_opts, { event: e, $input: _opts.$input, value: val });
+            }
+        }
+    };
+
+    FORMATTER.formatter = {
+        ctrlKeys: ctrlKeys,
+        numKeys: numKeys,
+        money: pattern_money,
+        number: pattern_number,
+        date: pattern_date,
+        time: pattern_time,
+        bizno: pattern_bizno,
+        phone: pattern_phone,
+        credit: pattern_credit,
+        custom: pattern_custom
+    };
+})();
 // ax5.ui.menu
 (function () {
     var UI = ax5.ui;
     var U = ax5.util;
+    var MENU;
 
     UI.addClass({
         className: "menu",
-        version: "0.6.5"
+        version: "0.7.0"
     }, function () {
         /**
          * @class ax5.ui.menu
@@ -6785,12 +7203,6 @@ jQuery.fn.ax5formatter = function () {
                 that = null;
                 return true;
             },
-                getTmpl = function getTmpl(columnKeys) {
-                return '\n                    <div class="ax5-ui-menu {{theme}}" {{#width}}style="width:{{width}}px;"{{/width}}>\n                        <div class="ax-menu-body">\n                            {{#' + columnKeys.items + '}}\n                                {{^@isMenu}}\n                                    {{#divide}}\n                                    <div class="ax-menu-item-divide" data-menu-item-index="{{@i}}"></div>\n                                    {{/divide}}\n                                    {{#html}}\n                                    <div class="ax-menu-item-html" data-menu-item-index="{{@i}}">{{{@html}}}</div>\n                                    {{/html}}\n                                {{/@isMenu}}\n                                {{#@isMenu}}\n                                <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}" data-menu-item-path="{{@path}}.{{@i}}">\n                                    <span class="ax-menu-item-cell ax-menu-item-checkbox">\n                                        {{#check}}\n                                        <span class="item-checkbox-wrap useCheckBox" {{#checked}}data-item-checked="true"{{/checked}}></span>\n                                        {{/check}}\n                                        {{^check}}\n                                        <span class="item-checkbox-wrap"></span>\n                                        {{/check}}\n                                    </span>\n                                    {{#icon}}\n                                    <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>\n                                    {{/icon}}\n                                    <span class="ax-menu-item-cell ax-menu-item-label">{{{' + columnKeys.label + '}}}</span>\n                                    {{#accelerator}}\n                                    <span class="ax-menu-item-cell ax-menu-item-accelerator" style="width:{{cfg.acceleratorWidth}}px;"><span class="item-wrap">{{.}}</span></span>\n                                    {{/accelerator}}\n                                    {{#@hasChild}}\n                                    <span class="ax-menu-item-cell ax-menu-item-handle">{{{cfg.icons.arrow}}}</span>\n                                    {{/@hasChild}}\n                                </div>\n                                {{/@isMenu}}\n        \n                            {{/' + columnKeys.items + '}}\n                        </div>\n                        <div class="ax-menu-arrow"></div>\n                    </div>\n                    ';
-            },
-                getTmpl_menuBar = function getTmpl_menuBar(columnKeys) {
-                return '\n                    <div class="ax5-ui-menubar {{theme}}">\n                        <div class="ax-menu-body">\n                            {{#' + columnKeys.items + '}}\n                                {{^@isMenu}}\n                                    {{#divide}}\n                                    <div class="ax-menu-item-divide" data-menu-item-index="{{@i}}"></div>\n                                    {{/divide}}\n                                    {{#html}}\n                                    <div class="ax-menu-item-html" data-menu-item-index="{{@i}}">{{{@html}}}</div>\n                                    {{/html}}\n                                {{/@isMenu}}\n                                {{#@isMenu}}\n                                <div class="ax-menu-item" data-menu-item-index="{{@i}}">\n                                    {{#icon}}\n                                    <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>\n                                    {{/icon}}\n                                    <span class="ax-menu-item-cell ax-menu-item-label">{{{' + columnKeys.label + '}}}</span>\n                                </div>\n                                {{/@isMenu}}\n                            {{/' + columnKeys.items + '}}\n                        </div>\n                    </div>\n                    ';
-            },
                 popup = function popup(opt, items, depth, path) {
                 var data = opt,
                     activeMenu,
@@ -6824,7 +7236,7 @@ jQuery.fn.ax5formatter = function () {
                 data['@hasChild'] = function () {
                     return this[cfg.columnKeys.items] && this[cfg.columnKeys.items].length > 0;
                 };
-                activeMenu = jQuery(ax5.mustache.render(getTmpl(cfg.columnKeys), data));
+                activeMenu = jQuery(MENU.tmpl.get.call(this, "tmpl", data, cfg.columnKeys));
                 jQuery(document.body).append(activeMenu);
 
                 // remove queue
@@ -7250,7 +7662,7 @@ jQuery.fn.ax5formatter = function () {
 
                     data[cfg.columnKeys.items] = items;
 
-                    activeMenu = jQuery(ax5.mustache.render(getTmpl_menuBar(cfg.columnKeys), data));
+                    activeMenu = jQuery(MENU.tmpl.get.call(this, "tmplMenubar", data, cfg.columnKeys));
                     self.menuBar = {
                         target: jQuery(el),
                         opened: false
@@ -7360,12 +7772,35 @@ jQuery.fn.ax5formatter = function () {
         };
         return ax5menu;
     }());
+
+    MENU = ax5.ui.menu;
+})();
+// ax5.ui.menu.tmpl
+(function () {
+    var MENU = ax5.ui.menu;
+
+    var tmpl = function tmpl(columnKeys) {
+        return '\n        <div class="ax5-ui-menu {{theme}}" {{#width}}style="width:{{width}}px;"{{/width}}>\n            <div class="ax-menu-body">\n                {{#' + columnKeys.items + '}}\n                    {{^@isMenu}}\n                        {{#divide}}\n                        <div class="ax-menu-item-divide" data-menu-item-index="{{@i}}"></div>\n                        {{/divide}}\n                        {{#html}}\n                        <div class="ax-menu-item-html" data-menu-item-index="{{@i}}">{{{@html}}}</div>\n                        {{/html}}\n                    {{/@isMenu}}\n                    {{#@isMenu}}\n                    <div class="ax-menu-item" data-menu-item-depth="{{@depth}}" data-menu-item-index="{{@i}}" data-menu-item-path="{{@path}}.{{@i}}">\n                        <span class="ax-menu-item-cell ax-menu-item-checkbox">\n                            {{#check}}\n                            <span class="item-checkbox-wrap useCheckBox" {{#checked}}data-item-checked="true"{{/checked}}></span>\n                            {{/check}}\n                            {{^check}}\n                            <span class="item-checkbox-wrap"></span>\n                            {{/check}}\n                        </span>\n                        {{#icon}}\n                        <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>\n                        {{/icon}}\n                        <span class="ax-menu-item-cell ax-menu-item-label">{{{' + columnKeys.label + '}}}</span>\n                        {{#accelerator}}\n                        <span class="ax-menu-item-cell ax-menu-item-accelerator" style="width:{{cfg.acceleratorWidth}}px;"><span class="item-wrap">{{.}}</span></span>\n                        {{/accelerator}}\n                        {{#@hasChild}}\n                        <span class="ax-menu-item-cell ax-menu-item-handle">{{{cfg.icons.arrow}}}</span>\n                        {{/@hasChild}}\n                    </div>\n                    {{/@isMenu}}\n\n                {{/' + columnKeys.items + '}}\n            </div>\n            <div class="ax-menu-arrow"></div>\n        </div>\n        ';
+    };
+    var tmplMenubar = function tmplMenubar(columnKeys) {
+        return '\n        <div class="ax5-ui-menubar {{theme}}">\n            <div class="ax-menu-body">\n                {{#' + columnKeys.items + '}}\n                    {{^@isMenu}}\n                        {{#divide}}\n                        <div class="ax-menu-item-divide" data-menu-item-index="{{@i}}"></div>\n                        {{/divide}}\n                        {{#html}}\n                        <div class="ax-menu-item-html" data-menu-item-index="{{@i}}">{{{@html}}}</div>\n                        {{/html}}\n                    {{/@isMenu}}\n                    {{#@isMenu}}\n                    <div class="ax-menu-item" data-menu-item-index="{{@i}}">\n                        {{#icon}}\n                        <span class="ax-menu-item-cell ax-menu-item-icon" style="width:{{cfg.iconWidth}}px;">{{{.}}}</span>\n                        {{/icon}}\n                        <span class="ax-menu-item-cell ax-menu-item-label">{{{' + columnKeys.label + '}}}</span>\n                    </div>\n                    {{/@isMenu}}\n                {{/' + columnKeys.items + '}}\n            </div>\n        </div>\n        ';
+    };
+
+    MENU.tmpl = {
+        "tmpl": tmpl,
+        "tmplMenubar": tmplMenubar,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(MENU.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
 })();
 // ax5.ui.select
 (function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var SELECT;
 
     UI.addClass({
         className: "select",
@@ -7460,18 +7895,6 @@ jQuery.fn.ax5formatter = function () {
                 item = null;
                 that = null;
                 return true;
-            },
-                getOptionGroupTmpl = function getOptionGroupTmpl(columnKeys) {
-                return '\n                    <div class="ax5select-option-group {{theme}} {{size}}" data-ax5select-option-group="{{id}}">\n                        <div class="ax-select-body">\n                            <div class="ax-select-option-group-content" data-els="content"></div>\n                        </div>\n                        <div class="ax-select-arrow"></div> \n                    </div>\n                    ';
-            },
-                getTmpl = function getTmpl() {
-                return '\n                    <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5select-display {{theme}}" \n                    data-ax5select-display="{{id}}" data-ax5select-instance="{{instanceId}}">\n                        <div class="ax5select-display-table" data-els="display-table">\n                            <div data-ax5select-display="label">{{label}}</div>\n                            <div data-ax5select-display="addon"> \n                                {{#multiple}}{{#reset}}\n                                <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                                {{/reset}}{{/multiple}}\n                                {{#icons}}\n                                <span class="addon-icon-closed">{{clesed}}</span>\n                                <span class="addon-icon-opened">{{opened}}</span>\n                                {{/icons}}\n                                {{^icons}}\n                                <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                                <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                                {{/icons}}\n                            </div>\n                        </div>\n                        <input type="text" tabindex="-1" data-ax5select-display="input" \n                        style="position:absolute;z-index:0;left:0px;top:0px;font-size:1px;opacity: 0;width:1px;border: 0px none;color : transparent;text-indent: -9999em;" />\n                    </a>\n                    ';
-            },
-                getSelectTmpl = function getSelectTmpl() {
-                return '\n                    <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n                    ';
-            },
-                getOptionsTmpl = function getOptionsTmpl(columnKeys) {
-                return '\n                    {{#waitOptions}}\n                        <div class="ax-select-option-item">\n                                <div class="ax-select-option-item-holder">\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">\n                                        {{{lang.loading}}}\n                                    </span>\n                                </div>\n                            </div>\n                    {{/waitOptions}}\n                    {{^waitOptions}}\n                        {{#options}}\n                            {{#optgroup}}\n                                <div class="ax-select-option-group">\n                                    <div class="ax-select-option-item-holder">\n                                        <span class="ax-select-option-group-label">\n                                            {{{.}}}\n                                        </span>\n                                    </div>\n                                    {{#options}}\n                                    <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" \n                                    data-option-value="{{' + columnKeys.optionValue + '}}" \n                                    {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                        <div class="ax-select-option-item-holder">\n                                            {{#multiple}}\n                                            <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                                <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                            </span>\n                                            {{/multiple}}\n                                            <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                        </div>\n                                    </div>\n                                    {{/options}}\n                                </div>                            \n                            {{/optgroup}}\n                            {{^optgroup}}\n                            <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                <div class="ax-select-option-item-holder">\n                                    {{#multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                    </span>\n                                    {{/multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                </div>\n                            </div>\n                            {{/optgroup}}\n                        {{/options}}\n                        {{^options}}\n                            <div class="ax-select-option-item">\n                                <div class="ax-select-option-item-holder">\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">\n                                        {{{lang.noOptions}}}\n                                    </span>\n                                </div>\n                            </div>\n                        {{/options}}\n                    {{/waitOptions}}\n                    ';
             },
                 alignSelectDisplay = function alignSelectDisplay() {
                 var i = this.queue.length,
@@ -7768,7 +8191,7 @@ jQuery.fn.ax5formatter = function () {
                             return item.size ? "input-" + item.size : "";
                         }();
 
-                        item.$display = jQuery(ax5.mustache.render(getTmpl.call(this, queIdx), data));
+                        item.$display = SELECT.tmpl.get.call(this, "tmpl", data);
                         item.$displayLabel = item.$display.find('[data-ax5select-display="label"]');
 
                         if (item.$target.find("select").get(0)) {
@@ -7782,7 +8205,7 @@ jQuery.fn.ax5formatter = function () {
                                 item.$select.attr("multiple", "multiple");
                             }
                         } else {
-                            item.$select = jQuery(ax5.mustache.render(getSelectTmpl.call(this, queIdx), data));
+                            item.$select = SELECT.tmpl.get.call(this, "selectTmpl", data);
                             item.$target.append(item.$select);
                             // select append
                         }
@@ -8041,7 +8464,7 @@ jQuery.fn.ax5formatter = function () {
                             data.multiple = item.multiple;
                             data.lang = item.lang;
                             data.options = item.options;
-                            this.activeSelectOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                            this.activeSelectOptionGroup.find('[data-els="content"]').html(SELECT.tmpl.get.call(this, "optionsTmpl", data));
                         }
                     }.bind(this));
                 };
@@ -8096,8 +8519,8 @@ jQuery.fn.ax5formatter = function () {
                     }
 
                     data.options = item.options;
-                    this.activeSelectOptionGroup = jQuery(ax5.mustache.render(getOptionGroupTmpl.call(this, item.columnKeys), data));
-                    this.activeSelectOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(getOptionsTmpl.call(this, item.columnKeys), data)));
+                    this.activeSelectOptionGroup = SELECT.tmpl.get.call(this, "optionGroupTmpl", data);
+                    this.activeSelectOptionGroup.find('[data-els="content"]').html(SELECT.tmpl.get.call(this, "optionGroupTmpl", data));
                     this.activeSelectQueueIndex = queIdx;
 
                     alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append
@@ -8401,6 +8824,7 @@ jQuery.fn.ax5formatter = function () {
         };
         return ax5select;
     }());
+    SELECT = ax5.ui.select;
 })();
 
 ax5.ui.select_instance = new ax5.ui.select();
@@ -8444,6 +8868,35 @@ jQuery.fn.ax5select = function () {
         return this;
     };
 }();
+// ax5.ui.select.tmpl
+(function () {
+
+    var SELECT = ax5.ui.select;
+
+    var optionGroupTmpl = function optionGroupTmpl(columnKeys) {
+        return '\n                    <div class="ax5select-option-group {{theme}} {{size}}" data-ax5select-option-group="{{id}}">\n                        <div class="ax-select-body">\n                            <div class="ax-select-option-group-content" data-els="content"></div>\n                        </div>\n                        <div class="ax-select-arrow"></div> \n                    </div>\n                    ';
+    };
+    var tmpl = function tmpl(columnKeys) {
+        return '\n                    <a {{^tabIndex}}href="#ax5select-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}class="form-control {{formSize}} ax5select-display {{theme}}" \n                    data-ax5select-display="{{id}}" data-ax5select-instance="{{instanceId}}">\n                        <div class="ax5select-display-table" data-els="display-table">\n                            <div data-ax5select-display="label">{{label}}</div>\n                            <div data-ax5select-display="addon"> \n                                {{#multiple}}{{#reset}}\n                                <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                                {{/reset}}{{/multiple}}\n                                {{#icons}}\n                                <span class="addon-icon-closed">{{clesed}}</span>\n                                <span class="addon-icon-opened">{{opened}}</span>\n                                {{/icons}}\n                                {{^icons}}\n                                <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                                <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                                {{/icons}}\n                            </div>\n                        </div>\n                        <input type="text" tabindex="-1" data-ax5select-display="input" \n                        style="position:absolute;z-index:0;left:0px;top:0px;font-size:1px;opacity: 0;width:1px;border: 0px none;color : transparent;text-indent: -9999em;" />\n                    </a>\n                    ';
+    };
+    var selectTmpl = function selectTmpl(columnKeys) {
+        return '\n                    <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n                    ';
+    };
+    var optionsTmpl = function optionsTmpl(columnKeys) {
+        return '\n                    {{#waitOptions}}\n                        <div class="ax-select-option-item">\n                                <div class="ax-select-option-item-holder">\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">\n                                        {{{lang.loading}}}\n                                    </span>\n                                </div>\n                            </div>\n                    {{/waitOptions}}\n                    {{^waitOptions}}\n                        {{#options}}\n                            {{#optgroup}}\n                                <div class="ax-select-option-group">\n                                    <div class="ax-select-option-item-holder">\n                                        <span class="ax-select-option-group-label">\n                                            {{{.}}}\n                                        </span>\n                                    </div>\n                                    {{#options}}\n                                    <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" \n                                    data-option-value="{{' + columnKeys.optionValue + '}}" \n                                    {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                        <div class="ax-select-option-item-holder">\n                                            {{#multiple}}\n                                            <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                                <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                            </span>\n                                            {{/multiple}}\n                                            <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                        </div>\n                                    </div>\n                                    {{/options}}\n                                </div>                            \n                            {{/optgroup}}\n                            {{^optgroup}}\n                            <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                <div class="ax-select-option-item-holder">\n                                    {{#multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                    </span>\n                                    {{/multiple}}\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                </div>\n                            </div>\n                            {{/optgroup}}\n                        {{/options}}\n                        {{^options}}\n                            <div class="ax-select-option-item">\n                                <div class="ax-select-option-item-holder">\n                                    <span class="ax-select-option-item-cell ax-select-option-item-label">\n                                        {{{lang.noOptions}}}\n                                    </span>\n                                </div>\n                            </div>\n                        {{/options}}\n                    {{/waitOptions}}\n                    ';
+    };
+
+    SELECT.tmpl = {
+        "optionGroupTmpl": optionGroupTmpl,
+        "tmpl": tmpl,
+        "selectTmpl": selectTmpl,
+        "optionsTmpl": optionsTmpl,
+
+        get: function get(tmplName, data, columnKeys) {
+            return jQuery(ax5.mustache.render(SELECT.tmpl[tmplName].call(this, columnKeys), data));
+        }
+    };
+})();
 /*
  * Copyright (c) 2016. tom@axisj.com
  * - github.com/thomasjang
@@ -8459,7 +8912,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "grid",
-        version: "0.2.18"
+        version: "0.2.21"
     }, function () {
         /**
          * @class ax5grid
@@ -8566,6 +9019,7 @@ jQuery.fn.ax5select = function () {
             this.leftFootSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 왼쪽
             this.footSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 오른쪽
             this.needToPaintSum = true; // 데이터 셋이 변경되어 summary 변경 필요여부
+
 
             cfg = this.config;
 
@@ -8748,7 +9202,7 @@ jQuery.fn.ax5select = function () {
                 }
             },
                 alignGrid = function alignGrid(_isFirst) {
-                // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하하는 아규먼트
+                // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하는 아규먼트
                 var CT_WIDTH = this.$["container"]["root"].width();
                 var CT_HEIGHT = this.$["container"]["root"].height();
                 var CT_INNER_WIDTH = CT_WIDTH;
@@ -9644,11 +10098,3549 @@ jQuery.fn.ax5select = function () {
 // todo : body menu
 // todo : column reorder
 
+
+// ax5.ui.grid.body
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
+    var columnSelect = {
+        focusClear: function focusClear() {
+            var self = this;
+            for (var c in self.focusedColumn) {
+                var _column = self.focusedColumn[c];
+                if (_column) {
+                    self.$.panel[_column.panelName].find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]').find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]').removeAttr('data-ax5grid-column-focused');
+                }
+            }
+            self.focusedColumn = {};
+        },
+        clear: function clear() {
+            var self = this;
+            for (var c in self.selectedColumn) {
+                var _column = self.selectedColumn[c];
+                if (_column) {
+                    self.$.panel[_column.panelName].find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]').find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]').removeAttr('data-ax5grid-column-selected');
+                }
+            }
+            self.selectedColumn = {};
+        },
+        init: function init(column) {
+            var self = this;
+            if (this.isInlineEditing) {
+                for (var editKey in this.inlineEditing) {
+                    if (editKey == column.dindex + "_" + column.colIndex + "_" + column.rowIndex) {
+                        return this;
+                    }
+                }
+            }
+
+            // focus
+            columnSelect.focusClear.call(self);
+            self.focusedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex] = {
+                panelName: column.panelName,
+                dindex: column.dindex,
+                rowIndex: column.rowIndex,
+                colIndex: column.colIndex,
+                colspan: column.colspan
+            };
+
+            // select
+            columnSelect.clear.call(self);
+            self.xvar.selectedRange = {
+                start: [column.dindex, column.rowIndex, column.colIndex, column.colspan - 1],
+                end: null
+            };
+            self.selectedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex] = function (data) {
+                if (data) {
+                    return false;
+                } else {
+                    return {
+                        panelName: column.panelName,
+                        dindex: column.dindex,
+                        rowIndex: column.rowIndex,
+                        colIndex: column.colIndex,
+                        colspan: column.colspan
+                    };
+                }
+            }(self.selectedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex]);
+
+            this.$.panel[column.panelName].find('[data-ax5grid-tr-data-index="' + column.dindex + '"]').find('[data-ax5grid-column-rowindex="' + column.rowIndex + '"][data-ax5grid-column-colindex="' + column.colIndex + '"]').attr('data-ax5grid-column-focused', "true").attr('data-ax5grid-column-selected', "true");
+
+            if (this.isInlineEditing) {
+                GRID.body.inlineEdit.deActive.call(this, "RETURN");
+            }
+        },
+        update: function update(column) {
+            var self = this;
+            var dindex, colIndex, rowIndex, trl;
+
+            self.xvar.selectedRange["end"] = [column.dindex, column.rowIndex, column.colIndex, column.colspan - 1];
+            columnSelect.clear.call(self);
+
+            var range = {
+                r: {
+                    s: Math.min(self.xvar.selectedRange["start"][0], self.xvar.selectedRange["end"][0]),
+                    e: Math.max(self.xvar.selectedRange["start"][0], self.xvar.selectedRange["end"][0])
+                },
+                c: {
+                    s: Math.min(self.xvar.selectedRange["start"][2], self.xvar.selectedRange["end"][2]),
+                    e: Math.max(self.xvar.selectedRange["start"][2] + self.xvar.selectedRange["start"][3], self.xvar.selectedRange["end"][2] + self.xvar.selectedRange["end"][3])
+                }
+            };
+
+            dindex = range.r.s;
+            for (; dindex <= range.r.e; dindex++) {
+
+                trl = this.bodyRowTable.rows.length;
+                rowIndex = 0;
+                for (; rowIndex < trl; rowIndex++) {
+                    colIndex = range.c.s;
+                    for (; colIndex <= range.c.e; colIndex++) {
+                        var _panels = [],
+                            panelName = "";
+
+                        if (self.xvar.frozenRowIndex > dindex) _panels.push("top");
+                        if (self.xvar.frozenColumnIndex > colIndex) _panels.push("left");
+                        _panels.push("body");
+                        if (_panels[0] !== "top") _panels.push("scroll");
+                        panelName = _panels.join("-");
+
+                        self.selectedColumn[dindex + "_" + colIndex + "_" + rowIndex] = {
+                            panelName: panelName,
+                            dindex: dindex,
+                            rowIndex: rowIndex,
+                            colIndex: colIndex,
+                            colspan: column.colspan
+                        };
+
+                        _panels = null;
+                        panelName = null;
+                    }
+                }
+            }
+            dindex = null;
+            colIndex = null;
+            rowIndex = null;
+
+            for (var c in self.selectedColumn) {
+                var _column = self.selectedColumn[c];
+                if (_column) {
+                    self.$.panel[_column.panelName].find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]').find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]').attr('data-ax5grid-column-selected', 'true');
+                }
+            }
+        }
+    };
+
+    var columnSelector = {
+        "on": function on(cell) {
+            var self = this;
+
+            if (this.inlineEditing[cell.dindex + "_" + cell.colIndex + "_" + cell.rowIndex]) {
+                return;
+            }
+
+            columnSelect.init.call(self, cell);
+
+            this.$["container"]["body"].on("mousemove.ax5grid-" + this.instanceId, '[data-ax5grid-column-attr="default"]', function (e) {
+                if (this.getAttribute("data-ax5grid-column-rowIndex")) {
+                    columnSelect.update.call(self, {
+                        panelName: this.getAttribute("data-ax5grid-panel-name"),
+                        dindex: Number(this.getAttribute("data-ax5grid-data-index")),
+                        rowIndex: Number(this.getAttribute("data-ax5grid-column-rowIndex")),
+                        colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
+                        colspan: Number(this.getAttribute("colspan"))
+                    });
+                    U.stopEvent(e);
+                }
+            }).on("mouseup.ax5grid-" + this.instanceId, function () {
+                columnSelector.off.call(self);
+            }).on("mouseleave.ax5grid-" + this.instanceId, function () {
+                columnSelector.off.call(self);
+            });
+
+            jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+        },
+        "off": function off() {
+
+            this.$["container"]["body"].off("mousemove.ax5grid-" + this.instanceId).off("mouseup.ax5grid-" + this.instanceId).off("mouseleave.ax5grid-" + this.instanceId);
+
+            jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+        }
+    };
+
+    var updateRowState = function updateRowState(_states, _dindex, _data) {
+        var self = this;
+        var cfg = this.config;
+
+        var processor = {
+            "selected": function selected(_dindex) {
+                var i = this.$.livePanelKeys.length;
+                while (i--) {
+                    this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').attr("data-ax5grid-selected", this.list[_dindex][cfg.columnKeys.selected]);
+                }
+            },
+            "selectedClear": function selectedClear() {
+                var si = this.selectedDataIndexs.length;
+                while (si--) {
+                    var dindex = this.selectedDataIndexs[si];
+                    var i = this.$.livePanelKeys.length;
+                    while (i--) {
+                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').attr("data-ax5grid-selected", false);
+                        this.list[dindex][cfg.columnKeys.selected] = false;
+                    }
+                }
+            },
+            "cellChecked": function cellChecked(_dindex, _data) {
+                var key = _data.key;
+                var rowIndex = _data.rowIndex;
+                var colIndex = _data.colIndex;
+
+                var panelName = function () {
+                    var _panels = [];
+                    if (this.xvar.frozenRowIndex > _dindex) _panels.push("top");
+                    if (this.xvar.frozenColumnIndex > colIndex) _panels.push("left");
+                    _panels.push("body");
+                    if (_panels[0] !== "top") _panels.push("scroll");
+                    return _panels.join("-");
+                }.call(this);
+
+                this.$.panel[panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowIndex="' + rowIndex + '"][data-ax5grid-column-colIndex="' + colIndex + '"]').find('[data-ax5grid-editor="checkbox"]').attr("data-ax5grid-checked", '' + _data.checked);
+            }
+        };
+        _states.forEach(function (_state) {
+            if (!processor[_state]) throw 'invaild state name';
+            processor[_state].call(self, _dindex, _data);
+        });
+    };
+
+    var init = function init() {
+        var self = this;
+
+        this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function (e) {
+            var panelName, attr, row, col, dindex, rowIndex, colIndex;
+            var targetClick = {
+                "default": function _default(_column) {
+                    var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                    var that = {
+                        self: self,
+                        page: self.page,
+                        list: self.list,
+                        item: self.list[_column.dindex],
+                        dindex: _column.dindex,
+                        rowIndex: _column.rowIndex,
+                        colIndex: _column.colIndex,
+                        column: column,
+                        value: self.list[_column.dindex][column.key]
+                    };
+
+                    if (column.editor && column.editor.type == "checkbox") {
+                        // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
+                        var value = GRID.data.getValue.call(self, _column.dindex, column.key);
+
+                        var checked, newValue;
+                        if (column.editor.config && column.editor.config.trueValue) {
+                            if (checked = !(value == column.editor.config.trueValue)) {
+                                newValue = column.editor.config.trueValue;
+                            } else {
+                                newValue = column.editor.config.falseValue;
+                            }
+                        } else {
+                            newValue = checked = value == false || value == "false" || value < "1" ? "true" : "false";
+                        }
+
+                        GRID.data.setValue.call(self, _column.dindex, column.key, newValue);
+
+                        updateRowState.call(self, ["cellChecked"], _column.dindex, {
+                            key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
+                            editorConfig: column.editor.config, checked: checked
+                        });
+                    } else {
+                        if (self.config.body.onClick) {
+                            self.config.body.onClick.call(that);
+                        }
+                    }
+                },
+                "rowSelector": function rowSelector(_column) {
+                    GRID.data.select.call(self, _column.dindex);
+                    updateRowState.call(self, ["selected"], _column.dindex);
+                },
+                "lineNumber": function lineNumber(_column) {}
+            };
+
+            panelName = this.getAttribute("data-ax5grid-panel-name");
+            attr = this.getAttribute("data-ax5grid-column-attr");
+            row = Number(this.getAttribute("data-ax5grid-column-row"));
+            col = Number(this.getAttribute("data-ax5grid-column-col"));
+            rowIndex = Number(this.getAttribute("data-ax5grid-column-rowIndex"));
+            colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
+            dindex = Number(this.getAttribute("data-ax5grid-data-index"));
+
+            if (attr in targetClick) {
+                targetClick[attr]({
+                    panelName: panelName,
+                    attr: attr,
+                    row: row,
+                    col: col,
+                    dindex: dindex,
+                    rowIndex: rowIndex,
+                    colIndex: colIndex
+                });
+            }
+        });
+        this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
+            var panelName, attr, row, col, dindex, rowIndex, colIndex;
+            var targetClick = {
+                "default": function _default(_column) {
+
+                    if (this.isInlineEditing) {
+                        for (var columnKey in this.inlineEditing) {
+                            if (columnKey == _column.dindex + "_" + _column.colIndex + "_" + _column.rowIndex) {
+                                return this;
+                            }
+                        }
+                    }
+
+                    var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                    var value = "";
+                    if (column) {
+                        if (!self.list[dindex].__isGrouping) {
+                            value = GRID.data.getValue.call(self, dindex, column.key);
+                        }
+                    }
+                    GRID.body.inlineEdit.active.call(self, self.focusedColumn, e, value);
+                },
+                "rowSelector": function rowSelector(_column) {},
+                "lineNumber": function lineNumber(_column) {}
+            };
+
+            panelName = this.getAttribute("data-ax5grid-panel-name");
+            attr = this.getAttribute("data-ax5grid-column-attr");
+            row = Number(this.getAttribute("data-ax5grid-column-row"));
+            col = Number(this.getAttribute("data-ax5grid-column-col"));
+            rowIndex = Number(this.getAttribute("data-ax5grid-column-rowIndex"));
+            colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
+            dindex = Number(this.getAttribute("data-ax5grid-data-index"));
+
+            if (attr in targetClick) {
+                targetClick[attr]({
+                    panelName: panelName,
+                    attr: attr,
+                    row: row,
+                    col: col,
+                    dindex: dindex,
+                    rowIndex: rowIndex,
+                    colIndex: colIndex
+                });
+            }
+        });
+        this.$["container"]["body"].on("mouseover", "tr", function () {
+            return;
+            var dindex = this.getAttribute("data-ax5grid-tr-data-index");
+            var i = self.$.livePanelKeys.length;
+            while (i--) {
+                if (typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
+                self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
+            }
+            self.xvar.dataHoveredIndex = dindex;
+        });
+        this.$["container"]["body"].on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
+            if (this.getAttribute("data-ax5grid-column-rowIndex")) {
+                columnSelector.on.call(self, {
+                    panelName: this.getAttribute("data-ax5grid-panel-name"),
+                    dindex: Number(this.getAttribute("data-ax5grid-data-index")),
+                    rowIndex: Number(this.getAttribute("data-ax5grid-column-rowIndex")),
+                    colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
+                    colspan: Number(this.getAttribute("colspan"))
+                });
+            }
+        }).on("dragstart", function (e) {
+            U.stopEvent(e);
+            return false;
+        });
+
+        resetFrozenColumn.call(this);
+    };
+
+    var resetFrozenColumn = function resetFrozenColumn() {
+        var cfg = this.config;
+        var dividedBodyRowObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.xvar.frozenColumnIndex);
+        this.asideBodyRowData = function (dataTable) {
+            var data = { rows: [] };
+            for (var i = 0, l = dataTable.rows.length; i < l; i++) {
+                data.rows[i] = { cols: [] };
+                if (i === 0) {
+                    var col = {
+                        label: "",
+                        colspan: 1,
+                        rowspan: dataTable.rows.length,
+                        colIndex: null
+                    },
+                        _col = {};
+
+                    if (cfg.showLineNumber) {
+                        _col = jQuery.extend({}, col, {
+                            width: cfg.lineNumberColumnWidth,
+                            _width: cfg.lineNumberColumnWidth,
+                            columnAttr: "lineNumber",
+                            label: "&nbsp;", key: "__d-index__"
+                        });
+                        data.rows[i].cols.push(_col);
+                    }
+                    if (cfg.showRowSelector) {
+                        _col = jQuery.extend({}, col, {
+                            width: cfg.rowSelectorColumnWidth,
+                            _width: cfg.rowSelectorColumnWidth,
+                            columnAttr: "rowSelector",
+                            label: "", key: "__d-checkbox__"
+                        });
+                        data.rows[i].cols.push(_col);
+                    }
+                }
+            }
+
+            return data;
+        }.call(this, this.bodyRowTable);
+        this.leftBodyRowData = dividedBodyRowObj.leftData;
+        this.bodyRowData = dividedBodyRowObj.rightData;
+
+        if (cfg.body.grouping) {
+            var dividedBodyGroupingObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyGroupingTable, this.xvar.frozenColumnIndex);
+            this.asideBodyGroupingData = function (dataTable) {
+                var data = { rows: [] };
+                for (var i = 0, l = dataTable.rows.length; i < l; i++) {
+                    data.rows[i] = { cols: [] };
+                    if (i === 0) {
+                        var col = {
+                            label: "",
+                            colspan: 1,
+                            rowspan: dataTable.rows.length,
+                            colIndex: null
+                        },
+                            _col = {};
+
+                        if (cfg.showLineNumber) {
+                            _col = jQuery.extend({}, col, {
+                                width: cfg.lineNumberColumnWidth,
+                                _width: cfg.lineNumberColumnWidth,
+                                columnAttr: "lineNumber",
+                                label: "&nbsp;", key: "__d-index__"
+                            });
+                            data.rows[i].cols.push(_col);
+                        }
+                        if (cfg.showRowSelector) {
+                            _col = jQuery.extend({}, col, {
+                                width: cfg.rowSelectorColumnWidth,
+                                _width: cfg.rowSelectorColumnWidth,
+                                columnAttr: "rowSelector",
+                                label: "", key: "__d-checkbox__"
+                            });
+                            data.rows[i].cols.push(_col);
+                        }
+                    }
+                }
+
+                return data;
+            }.call(this, this.bodyGroupingTable);
+            this.leftBodyGroupingData = dividedBodyGroupingObj.leftData;
+            this.bodyGroupingData = dividedBodyGroupingObj.rightData;
+        }
+
+        this.leftFootSumData = {};
+        this.footSumData = {};
+        if (this.config.footSum) {
+            var dividedFootSumObj = GRID.util.divideTableByFrozenColumnIndex(this.footSumTable, this.xvar.frozenColumnIndex);
+            this.leftFootSumData = dividedFootSumObj.leftData;
+            this.footSumData = dividedFootSumObj.rightData;
+        }
+    };
+
+    var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value) {
+        var _key = _col.key;
+        if (_key === "__d-index__") {
+            return _index + 1;
+        } else if (_key === "__d-checkbox__") {
+            return '<div class="checkBox"></div>';
+        } else {
+            if (_col.editor && function (_editor) {
+                if (_editor.type in GRID.inlineEditor) {
+                    return GRID.inlineEditor[_editor.type].editMode == "inline";
+                }
+                return false;
+            }(_col.editor)) {
+
+                _value = _value || GRID.data.getValue.call(this, _index, _key);
+
+                if (U.isFunction(_col.editor.disabled)) {
+                    if (_col.editor.disabled.call({
+                        list: _list,
+                        dindex: _index,
+                        item: _list[_index],
+                        key: _key,
+                        value: _value
+                    })) {
+                        return _value;
+                    }
+                }
+
+                // print editor
+                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
+            }
+            if (_col.formatter) {
+                var that = {
+                    key: _key,
+                    value: _value || GRID.data.getValue.call(this, _index, _key),
+                    dindex: _index,
+                    item: _item,
+                    list: _list
+                };
+                if (U.isFunction(_col.formatter)) {
+                    return _col.formatter.call(that);
+                } else {
+                    return GRID.formatter[_col.formatter].call(that);
+                }
+            } else {
+                var returnValue = "&nbsp;";
+                if (typeof _value !== "undefined") {
+                    returnValue = _value;
+                } else {
+                    _value = GRID.data.getValue.call(this, _index, _key);
+                    if (typeof _value !== "undefined") returnValue = _value;
+                }
+                return returnValue;
+            }
+        }
+    };
+
+    var getGroupingValue = function getGroupingValue(_item, _index, _col) {
+        var value,
+            that,
+            _key = _col.key,
+            _label = _col.label;
+
+        if (typeof _key === "undefined") {
+            that = {
+                key: _key,
+                list: _item.__groupingList,
+                groupBy: _item.__groupingBy
+            };
+            if (U.isFunction(_label)) {
+                value = _label.call(that);
+            } else {
+                value = _label;
+            }
+            _item[_col.colIndex] = value;
+            return value;
+        } else if (_key === "__d-index__") {
+            return _index + 1;
+        } else if (_key === "__d-checkbox__") {
+            return '&nbsp;';
+        } else {
+            if (_col.collector) {
+                that = {
+                    key: _key,
+                    list: _item.__groupingList
+                };
+                if (U.isFunction(_col.collector)) {
+                    value = _col.collector.call(that);
+                } else {
+                    value = GRID.collector[_col.collector].call(that);
+                }
+                _item[_col.colIndex] = value;
+
+                if (_col.formatter) {
+                    that.value = value;
+                    if (U.isFunction(_col.formatter)) {
+                        return _col.collector.call(that);
+                    } else {
+                        return GRID.formatter[_col.formatter].call(that);
+                    }
+                } else {
+                    return value;
+                }
+            } else {
+                return "&nbsp;";
+            }
+        }
+    };
+
+    var getSumFieldValue = function getSumFieldValue(_list, _col) {
+        var _key = _col.key,
+            _label = _col.label;
+        //, _collector, _formatter
+        if (typeof _key === "undefined") {
+            return _label;
+        } else if (_key === "__d-index__" || _key === "__d-checkbox__") {
+            return '&nbsp;';
+        } else {
+            if (_col.collector) {
+                var that = {
+                    key: _key,
+                    list: _list
+                };
+                var value;
+                if (U.isFunction(_col.collector)) {
+                    value = _col.collector.call(that);
+                } else {
+                    value = GRID.collector[_col.collector].call(that);
+                }
+
+                if (_col.formatter) {
+                    that.value = value;
+                    if (U.isFunction(_col.formatter)) {
+                        return _col.collector.call(that);
+                    } else {
+                        return GRID.formatter[_col.formatter].call(that);
+                    }
+                } else {
+                    return value;
+                }
+            } else {
+                return "&nbsp;";
+            }
+        }
+    };
+
+    var repaint = function repaint(_reset) {
+        var cfg = this.config;
+        var list = this.list;
+        if (_reset) {
+            resetFrozenColumn.call(this);
+            this.xvar.paintStartRowIndex = undefined;
+        }
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
+        var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
+        var asideBodyRowData = this.asideBodyRowData;
+        var leftBodyRowData = this.leftBodyRowData;
+        var bodyRowData = this.bodyRowData;
+        var leftFootSumData = this.leftFootSumData;
+        var footSumData = this.footSumData;
+        var asideBodyGroupingData = this.asideBodyGroupingData;
+        var leftBodyGroupingData = this.leftBodyGroupingData;
+        var bodyGroupingData = this.bodyGroupingData;
+        var bodyAlign = cfg.body.align;
+        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
+        this.$.livePanelKeys = [];
+
+        // body-scroll 의 포지션에 의존적이므로..
+        var repaintBody = function repaintBody(_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
+            var _elTarget = this.$.panel[_elTargetKey];
+
+            if (!isFirstPaint && !_scrollConfig) {
+                this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
+                return false;
+            }
+
+            var SS = [];
+            var cgi, cgl;
+            var di, dl;
+            var tri, trl;
+            var ci, cl;
+            var col, cellHeight, colAlign;
+            var isScrolled = function () {
+                // 스크롤값이 변경되거나 처음 호출되었습니까?
+                if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
+                    _scrollConfig = {
+                        paintStartRowIndex: 0,
+                        paintRowCount: _list.length
+                    };
+                    return false;
+                } else {
+                    return true;
+                }
+            }();
+
+            SS.push('<table border="0" cellpadding="0" cellspacing="0">');
+            SS.push('<colgroup>');
+            for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
+            }
+            SS.push('<col  />');
+            SS.push('</colgroup>');
+
+            for (di = _scrollConfig.paintStartRowIndex, dl = function () {
+                var len;
+                len = _list.length;
+                if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
+                    len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
+                }
+                return len;
+            }(); di < dl; di++) {
+
+                var isGroupingRow = false;
+                var rowTable;
+
+                if (_groupRow && "__isGrouping" in _list[di]) {
+                    rowTable = _groupRow;
+                    isGroupingRow = true;
+                } else {
+                    rowTable = _bodyRow;
+                }
+
+                for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+
+                    SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '">');
+                    for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                        col = rowTable.rows[tri].cols[ci];
+                        cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                        colAlign = col.align || bodyAlign;
+
+                        SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
+                            var attrs = "";
+                            if (_focusedColumn) {
+                                attrs += 'data-ax5grid-column-focused="true" ';
+                            }
+                            if (_selectedColumn) {
+                                attrs += 'data-ax5grid-column-selected="true" ';
+                            }
+                            return attrs;
+                        }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                            var tdCSS_class = "";
+                            if (_col.styleClass) {
+                                if (U.isFunction(_col.styleClass)) {
+                                    tdCSS_class += _col.styleClass.call({
+                                        column: _col,
+                                        key: _col.key,
+                                        item: _list[di],
+                                        index: di
+                                    }) + " ";
+                                } else {
+                                    tdCSS_class += _col.styleClass + " ";
+                                }
+                            }
+                            if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                            if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                            return tdCSS_class;
+                        }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                        SS.push(function (_cellHeight) {
+                            var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                            if (!col.multiLine) {
+                                _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                            }
+
+                            return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
+
+                        SS.push('</td>');
+                    }
+                    SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                    SS.push('</tr>');
+                }
+            }
+            SS.push('</table>');
+
+            if (isScrolled) {
+                _elTarget.css({ paddingTop: (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight });
+            }
+            _elTarget.html(SS.join(''));
+            this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
+            return true;
+        };
+        var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
+            var _elTarget = this.$.panel[_elTargetKey];
+
+            if (!isFirstPaint && !_scrollConfig) {
+                this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
+                return false;
+            }
+
+            var SS = [];
+            var cgi, cgl;
+            var tri, trl;
+            var ci, cl;
+            var col, cellHeight, colAlign;
+
+            SS.push('<table border="0" cellpadding="0" cellspacing="0">');
+            SS.push('<colgroup>');
+            for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
+            }
+            SS.push('<col  />');
+            SS.push('</colgroup>');
+
+            for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                SS.push('<tr class="tr-sum">');
+                for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    col = _bodyRow.rows[tri].cols[ci];
+                    cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                    colAlign = col.align || bodyAlign;
+
+                    SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + tri + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "sum") + '" ', function (_focusedColumn, _selectedColumn) {
+                        var attrs = "";
+                        if (_focusedColumn) {
+                            attrs += 'data-ax5grid-column-focused="true" ';
+                        }
+                        if (_selectedColumn) {
+                            attrs += 'data-ax5grid-column-selected="true" ';
+                        }
+                        return attrs;
+                    }(this.focusedColumn["sum_" + col.colIndex + "_" + tri], this.selectedColumn["sum_" + col.colIndex + "_" + tri]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                        var tdCSS_class = "";
+                        if (_col.styleClass) {
+                            if (U.isFunction(_col.styleClass)) {
+                                tdCSS_class += _col.styleClass.call({
+                                    column: _col,
+                                    key: _col.key,
+                                    isFootSum: true
+                                }) + " ";
+                            } else {
+                                tdCSS_class += _col.styleClass + " ";
+                            }
+                        }
+                        if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                        return tdCSS_class;
+                    }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                    SS.push(function (_cellHeight) {
+                        var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                        if (!col.multiLine) {
+                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                        }
+
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                    }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
+
+                    SS.push('</td>');
+                }
+                SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-column-attr="' + "sum" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                SS.push('</tr>');
+            }
+
+            SS.push('</table>');
+
+            _elTarget.html(SS.join(''));
+            this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
+            return true;
+        };
+        var scrollConfig = {
+            paintStartRowIndex: paintStartRowIndex,
+            paintRowCount: paintRowCount,
+            bodyTrHeight: this.xvar.bodyTrHeight
+        };
+
+        // aside
+        if (cfg.asidePanelWidth > 0) {
+            if (this.xvar.frozenRowIndex > 0) {
+                // 상단 행고정
+                repaintBody.call(this, "top-aside-body", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+            }
+
+            repaintBody.call(this, "aside-body-scroll", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list, scrollConfig);
+
+            if (cfg.footSum) {
+                // 바닥 요약 (footSum에 대한 aside 사용안함)
+                //repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, list);
+            }
+        }
+
+        // left
+        if (this.xvar.frozenColumnIndex > 0) {
+            if (this.xvar.frozenRowIndex > 0) {
+                // 상단 행고정
+                repaintBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+            }
+
+            repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list, scrollConfig);
+
+            if (cfg.footSum && this.needToPaintSum) {
+                // 바닥 요약
+                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+            }
+        }
+
+        // body
+        if (this.xvar.frozenRowIndex > 0) {
+            // 상단 행고정
+            repaintBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+        }
+
+        repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
+
+        if (cfg.footSum && this.needToPaintSum) {
+            // 바닥 요약
+            repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+        }
+
+        //todo : repaintBody 에서 footSum 데이터 예외처리
+
+        // right
+        if (cfg.rightSum) {
+            // todo : right 표현 정리
+        }
+
+        this.xvar.paintStartRowIndex = paintStartRowIndex;
+        this.xvar.paintRowCount = paintRowCount;
+        this.xvar.dataRowCount = list.length;
+        this.needToPaintSum = false;
+        GRID.page.statusUpdate.call(this);
+    };
+
+    var repaintCell = function repaintCell(_panelName, _dindex, _rowIndex, _colIndex, _newValue) {
+        var self = this;
+        var cfg = this.config;
+        var list = this.list;
+
+        var updateCell = this.$["panel"][_panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + _rowIndex + '"][data-ax5grid-column-colindex="' + _colIndex + '"]').find('[data-ax5grid-cellholder]');
+        var colGroup = this.colGroup;
+        var col = colGroup[_colIndex];
+        updateCell.html(getFieldValue.call(this, list, list[_dindex], _dindex, col));
+
+        if (col.editor && col.editor.updateWith) {
+            col.editor.updateWith.forEach(function (updateColumnKey) {
+                colGroup.forEach(function (col) {
+                    if (col.key == updateColumnKey) {
+                        var rowIndex = col.rowIndex;
+                        var colIndex = col.colIndex;
+                        var panelName = GRID.util.findPanelByColumnIndex.call(self, _dindex, colIndex, rowIndex).panelName;
+                        var updateWithCell = self.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+                        updateWithCell.html(getFieldValue.call(self, list, list[_dindex], _dindex, col));
+                    }
+                });
+            });
+        }
+
+        /// ~~~~~~
+
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        var leftFootSumData = this.leftFootSumData;
+        var footSumData = this.footSumData;
+        var asideBodyGroupingData = this.asideBodyGroupingData;
+        var leftBodyGroupingData = this.leftBodyGroupingData;
+        var bodyGroupingData = this.bodyGroupingData;
+        var bodyAlign = cfg.body.align;
+        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+        var scrollConfig = {
+            paintStartRowIndex: paintStartRowIndex,
+            paintRowCount: paintRowCount,
+            bodyTrHeight: this.xvar.bodyTrHeight
+        };
+
+        var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
+            var _elTarget = this.$.panel[_elTargetKey];
+
+            var SS = [];
+            var cgi, cgl;
+            var tri, trl;
+            var ci, cl;
+            var col, cellHeight, colAlign;
+
+            SS.push('<table border="0" cellpadding="0" cellspacing="0">');
+            SS.push('<colgroup>');
+            for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
+            }
+            SS.push('<col  />');
+            SS.push('</colgroup>');
+
+            for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                SS.push('<tr class="tr-sum">');
+                for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    col = _bodyRow.rows[tri].cols[ci];
+                    cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                    colAlign = col.align || bodyAlign;
+
+                    SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + tri + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "sum") + '" ', function (_focusedColumn, _selectedColumn) {
+                        var attrs = "";
+                        if (_focusedColumn) {
+                            attrs += 'data-ax5grid-column-focused="true" ';
+                        }
+                        if (_selectedColumn) {
+                            attrs += 'data-ax5grid-column-selected="true" ';
+                        }
+                        return attrs;
+                    }(this.focusedColumn["sum_" + col.colIndex + "_" + tri], this.selectedColumn["sum_" + col.colIndex + "_" + tri]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                        var tdCSS_class = "";
+                        if (_col.styleClass) {
+                            if (U.isFunction(_col.styleClass)) {
+                                tdCSS_class += _col.styleClass.call({
+                                    column: _col,
+                                    key: _col.key,
+                                    isFootSum: true
+                                }) + " ";
+                            } else {
+                                tdCSS_class += _col.styleClass + " ";
+                            }
+                        }
+                        if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                        return tdCSS_class;
+                    }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                    SS.push(function (_cellHeight) {
+                        var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                        if (!col.multiLine) {
+                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                        }
+
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                    }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
+
+                    SS.push('</td>');
+                }
+                SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-column-attr="' + "sum" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                SS.push('</tr>');
+            }
+
+            SS.push('</table>');
+
+            _elTarget.html(SS.join(''));
+            return true;
+        };
+        var replaceTr = function replaceTr(_elTargetKey, _colGroup, _groupRow, _list, _scrollConfig) {
+            var _elTarget = this.$.panel[_elTargetKey];
+            var SS = [];
+            var cgi, cgl;
+            var di, dl;
+            var tri, trl;
+            var ci, cl;
+            var col, cellHeight, colAlign;
+            for (di = _scrollConfig.paintStartRowIndex, dl = function () {
+                var len;
+                len = _list.length;
+                if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
+                    len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
+                }
+                return len;
+            }(); di < dl; di++) {
+                if (_groupRow && "__isGrouping" in _list[di]) {
+                    var rowTable = _groupRow;
+                    SS = [];
+                    for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+                        for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                            col = rowTable.rows[tri].cols[ci];
+                            cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                            colAlign = col.align || bodyAlign;
+
+                            SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
+                                var attrs = "";
+                                if (_focusedColumn) {
+                                    attrs += 'data-ax5grid-column-focused="true" ';
+                                }
+                                if (_selectedColumn) {
+                                    attrs += 'data-ax5grid-column-selected="true" ';
+                                }
+                                return attrs;
+                            }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                                var tdCSS_class = "";
+                                if (_col.styleClass) {
+                                    if (U.isFunction(_col.styleClass)) {
+                                        tdCSS_class += _col.styleClass.call({
+                                            column: _col,
+                                            key: _col.key,
+                                            item: _list[di],
+                                            index: di
+                                        }) + " ";
+                                    } else {
+                                        tdCSS_class += _col.styleClass + " ";
+                                    }
+                                }
+                                if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                                if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                                return tdCSS_class;
+                            }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                            SS.push(function (_cellHeight) {
+                                var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                                if (!col.multiLine) {
+                                    _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                                }
+
+                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                            }(cellHeight), getGroupingValue.call(this, _list[di], di, col), '</span>');
+
+                            SS.push('</td>');
+                        }
+                        SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                    }
+                    _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').html(SS.join(''));
+                }
+            }
+        };
+
+        // body.grouping tr 다시 그리기..
+        if (cfg.body.grouping) {
+            // left
+            if (this.xvar.frozenColumnIndex > 0) {
+                if (this.xvar.frozenRowIndex > 0) {
+                    // 상단 행고정
+                    replaceTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                }
+                replaceTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
+            }
+
+            // body
+            if (this.xvar.frozenRowIndex > 0) {
+                // 상단 행고정
+                replaceTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+            }
+
+            replaceTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
+        }
+
+        if (this.xvar.frozenColumnIndex > 0) {
+            if (cfg.footSum && this.needToPaintSum) {
+                // 바닥 요약
+                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+            }
+        }
+
+        if (cfg.footSum && this.needToPaintSum) {
+            // 바닥 요약
+            repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+        }
+    };
+
+    var scrollTo = function scrollTo(css, noRepaint) {
+        var cfg = this.config;
+
+        if (cfg.asidePanelWidth > 0 && "top" in css) {
+            this.$.panel["aside-body-scroll"].css({ top: css.top });
+        }
+        if (this.xvar.frozenColumnIndex > 0 && "top" in css) {
+            this.$.panel["left-body-scroll"].css({ top: css.top });
+        }
+        if (this.xvar.frozenRowIndex > 0 && "left" in css) {
+            this.$.panel["top-body-scroll"].css({ left: css.left });
+        }
+
+        this.$.panel["body-scroll"].css(css);
+
+        if (cfg.footSum && "left" in css) {
+            this.$.panel["bottom-body-scroll"].css({ left: css.left });
+        }
+
+        if (!noRepaint && "top" in css) {
+            repaint.call(this);
+        }
+    };
+
+    var blur = function blur() {
+        columnSelect.focusClear.call(this);
+        columnSelect.clear.call(this);
+        if (this.isInlineEditing) {
+            inlineEdit.deActive.call(this);
+        }
+    };
+
+    var moveFocus = function moveFocus(_position) {
+        var focus = {
+            "UD": function UD(_dy) {
+                var moveResult = true;
+                var focusedColumn;
+                var originalColumn;
+                var while_i;
+
+                for (var c in this.focusedColumn) {
+                    focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                    break;
+                }
+
+                originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
+                columnSelect.focusClear.call(this);
+                columnSelect.clear.call(this);
+
+                if (_dy > 0) {
+                    if (focusedColumn.rowIndex + (originalColumn.rowspan - 1) + _dy > this.bodyRowTable.rows.length - 1) {
+                        focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.rowIndex = 0;
+                        if (focusedColumn.dindex > this.list.length - 1) {
+                            focusedColumn.dindex = this.list.length - 1;
+                            moveResult = false;
+                        }
+                    } else {
+                        focusedColumn.rowIndex = focusedColumn.rowIndex + _dy;
+                    }
+                } else {
+                    if (focusedColumn.rowIndex + _dy < 0) {
+                        focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.rowIndex = this.bodyRowTable.rows.length - 1;
+                        if (focusedColumn.dindex < 0) {
+                            focusedColumn.dindex = 0;
+                            moveResult = false;
+                        }
+                    } else {
+                        focusedColumn.rowIndex = focusedColumn.rowIndex + _dy;
+                    }
+                }
+
+                while_i = 0;
+                while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                    if (focusedColumn.rowIndex == 0 || while_i % 2 == (_dy > 0 ? 0 : 1)) {
+                        focusedColumn.colIndex--;
+                    } else {
+                        focusedColumn.rowIndex--;
+                    }
+
+                    if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
+                        // find fail
+                        moveResult = false;
+                        break;
+                    }
+                    while_i++;
+                }
+
+                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                focusedColumn.panelName = nPanelInfo.panelName;
+
+                // 포커스 컬럼의 위치에 따라 스크롤 처리.
+                (function () {
+                    if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
+                        if (focusedColumn.dindex <= this.xvar.paintStartRowIndex) {
+                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight });
+                            GRID.scroller.resize.call(this);
+                        } else if (focusedColumn.dindex + 1 > this.xvar.paintStartRowIndex + (this.xvar.paintRowCount - 2)) {
+                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.paintRowCount + 3) * this.xvar.bodyTrHeight });
+                            GRID.scroller.resize.call(this);
+                        }
+                    }
+                }).call(this);
+
+                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
+                this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
+
+                return moveResult;
+            },
+            "LR": function LR(_dx) {
+                var moveResult = true;
+                var focusedColumn;
+                var originalColumn;
+                var while_i = 0;
+                var isScrollPanel = false;
+                var containerPanelName = "";
+
+                for (var c in this.focusedColumn) {
+                    focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                    break;
+                }
+                originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
+
+                columnSelect.focusClear.call(this);
+                columnSelect.clear.call(this);
+
+                if (_dx < 0) {
+                    focusedColumn.colIndex = focusedColumn.colIndex + _dx;
+                    if (focusedColumn.colIndex < 0) {
+                        focusedColumn.colIndex = 0;
+                        moveResult = false;
+                    }
+                } else {
+                    focusedColumn.colIndex = focusedColumn.colIndex + (originalColumn.colspan - 1) + _dx;
+                    if (focusedColumn.colIndex > this.colGroup.length - 1) {
+                        focusedColumn.colIndex = this.colGroup.length - 1;
+                        moveResult = false;
+                    }
+                }
+
+                if (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                    focusedColumn.rowIndex = 0;
+                }
+                while_i = 0;
+                while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                    focusedColumn.colIndex--;
+                    if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
+                        // find fail
+                        moveResult = false;
+                        break;
+                    }
+                    while_i++;
+                }
+
+                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+
+                focusedColumn.panelName = nPanelInfo.panelName;
+                containerPanelName = nPanelInfo.containerPanelName;
+                isScrollPanel = nPanelInfo.isScrollPanel;
+
+                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
+
+                var $column = this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
+
+                if ($column && isScrollPanel) {
+                    // 스크롤 패널 이라면~
+                    var newLeft = function () {
+                        if ($column.position().left + $column.outerWidth() > Math.abs(this.$.panel[focusedColumn.panelName].position().left) + this.$.panel[containerPanelName].width()) {
+                            return $column.position().left + $column.outerWidth() - this.$.panel[containerPanelName].width();
+                        } else if (Math.abs(this.$.panel[focusedColumn.panelName].position().left) > $column.position().left) {
+                            return $column.position().left;
+                        } else {
+                            return;
+                        }
+                    }.call(this);
+
+                    //console.log(newLeft);
+
+                    if (typeof newLeft !== "undefined") {
+                        GRID.header.scrollTo.call(this, { left: -newLeft });
+                        scrollTo.call(this, { left: -newLeft });
+                        GRID.scroller.resize.call(this);
+                    }
+                }
+
+                return moveResult;
+            },
+            "INDEX": function INDEX(_dindex) {
+                var moveResult = true;
+                var focusedColumn;
+                var originalColumn;
+                var while_i;
+
+                for (var c in this.focusedColumn) {
+                    focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                    break;
+                }
+                if (!focusedColumn) {
+                    focusedColumn = {
+                        rowIndex: 0,
+                        colIndex: 0
+                    };
+                }
+                originalColumn = this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex];
+
+                columnSelect.focusClear.call(this);
+                columnSelect.clear.call(this);
+
+                if (_dindex == "end") {
+                    _dindex = this.list.length - 1;
+                }
+
+                focusedColumn.dindex = _dindex;
+                focusedColumn.rowIndex = 0;
+
+                while_i = 0;
+                while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                    if (focusedColumn.rowIndex == 0 || while_i % 2 == (_dy > 0 ? 0 : 1)) {
+                        focusedColumn.colIndex--;
+                    } else {
+                        focusedColumn.rowIndex--;
+                    }
+
+                    if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
+                        // find fail
+                        break;
+                    }
+                    while_i++;
+                }
+
+                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                focusedColumn.panelName = nPanelInfo.panelName;
+
+                // 포커스 컬럼의 위치에 따라 스크롤 처리.
+                (function () {
+                    if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
+                        if (focusedColumn.dindex < this.xvar.paintStartRowIndex) {
+                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight });
+                            GRID.scroller.resize.call(this);
+                        } else if (focusedColumn.dindex + 1 > this.xvar.paintStartRowIndex + (this.xvar.paintRowCount - 2)) {
+                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.paintRowCount + 3) * this.xvar.bodyTrHeight });
+                            GRID.scroller.resize.call(this);
+                        }
+                    }
+                }).call(this);
+
+                this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
+                this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
+
+                return moveResult;
+            }
+        };
+
+        var processor = {
+            "UP": function UP() {
+                return focus["UD"].call(this, -1);
+            },
+            "DOWN": function DOWN() {
+                return focus["UD"].call(this, 1);
+            },
+            "LEFT": function LEFT() {
+                return focus["LR"].call(this, -1);
+            },
+            "RIGHT": function RIGHT() {
+                return focus["LR"].call(this, 1);
+            },
+            "HOME": function HOME() {
+                return focus["INDEX"].call(this, 0);
+            },
+            "END": function END() {
+                return focus["INDEX"].call(this, "end");
+            },
+            "position": function position(_position) {
+                return focus["INDEX"].call(this, _position);
+            }
+        };
+
+        if (_position in processor) {
+            return processor[_position].call(this);
+        } else {
+            return processor["position"].call(this, _position);
+        }
+    };
+
+    var inlineEdit = {
+        active: function active(_focusedColumn, _e, _initValue) {
+            var self = this;
+            var dindex, colIndex, rowIndex, panelName, colspan;
+            var col, editor;
+
+            // this.inlineEditing = {};
+            for (var key in _focusedColumn) {
+                panelName = _focusedColumn[key].panelName;
+                dindex = _focusedColumn[key].dindex;
+                colIndex = _focusedColumn[key].colIndex;
+                rowIndex = _focusedColumn[key].rowIndex;
+                colspan = _focusedColumn[key].colspan;
+
+                // 인라인 에디팅을 멈춰야 하는 경우 조건
+                col = this.colGroup[colIndex];
+                if (!(editor = col.editor)) return this;
+
+                // editor disabled 체크
+                if (U.isFunction(editor.disabled)) {
+                    if (editor.disabled.call({
+                        list: this.list,
+                        dindex: dindex,
+                        item: this.list[dindex],
+                        key: col.key,
+                        value: _initValue
+                    })) {
+                        return this;
+                    }
+                }
+
+                // 조건에 맞지 않는 에디팅 타입이면 반응 없음.
+                if (!function (_editor, _type) {
+                    if (_editor.type in GRID.inlineEditor) {
+                        return GRID.inlineEditor[_editor.type].editMode == "popup";
+                    }
+                }(editor)) {
+                    // 체크 박스 타입이면 값 변경 시도
+                    if (editor.type == "checkbox") {
+                        var checked, newValue;
+                        if (editor.config && editor.config.trueValue) {
+                            if (checked = !(_initValue == editor.config.trueValue)) {
+                                newValue = editor.config.trueValue;
+                            } else {
+                                newValue = editor.config.falseValue;
+                            }
+                        } else {
+                            newValue = checked = _initValue == false || _initValue == "false" || _initValue < "1" ? "true" : "false";
+                        }
+
+                        GRID.data.setValue.call(self, dindex, col.key, newValue);
+
+                        updateRowState.call(self, ["cellChecked"], dindex, {
+                            key: col.key, rowIndex: rowIndex, colIndex: colIndex,
+                            editorConfig: col.editor.config, checked: checked
+                        });
+                    }
+                    return this;
+                }
+
+                if (this.list[dindex].__isGrouping) {
+                    return false;
+                }
+                if (key in this.inlineEditing) {
+                    return false;
+                }
+                this.inlineEditing[key] = {
+                    panelName: panelName,
+                    columnKey: key,
+                    column: _focusedColumn[key],
+                    useReturnToSave: GRID.inlineEditor[editor.type].useReturnToSave
+                };
+                this.isInlineEditing = true;
+            }
+            if (this.isInlineEditing) {
+
+                var initValue = function (__value, __editor) {
+                    if (__editor.type == "money") {
+                        return U.number(__value, { "money": true });
+                    } else {
+                        return __value || "";
+                    }
+                }.call(this, _initValue, editor);
+
+                this.inlineEditing[key].$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+
+                this.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(this, key, editor, this.inlineEditing[key].$inlineEditorCell, initValue);
+
+                return true;
+            }
+        },
+        deActive: function deActive(_msg, _key, _value) {
+            // console.log(this.inlineEditing.column.dindex, this.inlineEditing.$inlineEditor.val());
+            if (!this.inlineEditing[_key]) return this;
+
+            var panelName = this.inlineEditing[_key].panelName;
+            var dindex = this.inlineEditing[_key].column.dindex;
+            var rowIndex = this.inlineEditing[_key].column.rowIndex;
+            var colIndex = this.inlineEditing[_key].column.colIndex;
+
+            var column = this.bodyRowMap[this.inlineEditing[_key].column.rowIndex + "_" + this.inlineEditing[_key].column.colIndex];
+            var editorValue = function ($inlineEditor) {
+                if (typeof _value === "undefined") {
+                    if ($inlineEditor.get(0).tagName == "SELECT" || $inlineEditor.get(0).tagName == "INPUT" || $inlineEditor.get(0).tagName == "TEXTAREA") {
+                        return $inlineEditor.val();
+                    } else {
+                        _msg = "CANCEL";
+                        return false;
+                    }
+                } else {
+                    return _value;
+                }
+            }(this.inlineEditing[_key].$inlineEditor);
+
+            var newValue = function (__value, __editor) {
+                if (__editor.type == "money") {
+                    return U.number(__value);
+                } else {
+                    return __value;
+                }
+            }.call(this, editorValue, column.editor);
+
+            var action = {
+                "CANCEL": function CANCEL(_dindex, _column, _newValue) {
+                    action["__clear"].call(this);
+                },
+                "RETURN": function RETURN(_dindex, _column, _newValue) {
+                    if (GRID.data.setValue.call(this, _dindex, _column.key, _newValue)) {
+                        action["__clear"].call(this);
+                        GRID.body.repaintCell.call(this, panelName, dindex, rowIndex, colIndex, _newValue);
+                    } else {
+                        action["__clear"].call(this);
+                    }
+                },
+                "__clear": function __clear() {
+                    this.isInlineEditing = false;
+                    var bindedAx5ui = this.inlineEditing[_key].$inlineEditor.data("binded-ax5ui");
+                    if (bindedAx5ui == "ax5picker") {
+                        this.inlineEditing[_key].$inlineEditor.ax5picker("close");
+                    } else if (bindedAx5ui == "ax5select") {
+                        this.inlineEditing[_key].$inlineEditor.ax5select("close");
+                    }
+
+                    this.inlineEditing[_key].$inlineEditor.remove();
+                    this.inlineEditing[_key].$inlineEditor = null;
+                    this.inlineEditing[_key].$inlineEditorCell = null;
+                    this.inlineEditing[_key] = undefined;
+                    delete this.inlineEditing[_key]; // delete 지원안하는 브라우저 테스트..
+                }
+            };
+
+            if (_msg in action) {
+                action[_msg || "RETURN"].call(this, dindex, column, newValue);
+            } else {
+                action["__clear"].call(this);
+            }
+        },
+        keydown: function keydown(key, columnKey) {
+            var processor = {
+                "ESC": function ESC() {
+                    for (var columnKey in this.inlineEditing) {
+                        inlineEdit.deActive.call(this, "CANCEL", columnKey);
+                    }
+                },
+                "RETURN": function RETURN() {
+                    if (this.isInlineEditing) {
+                        if (this.inlineEditing[columnKey] && this.inlineEditing[columnKey].useReturnToSave) {
+                            // todo : 네이밍 검증 할 필요있음.
+                            inlineEdit.deActive.call(this, "RETURN", columnKey);
+                        }
+                    } else {
+                        for (var k in this.focusedColumn) {
+                            var _column = this.focusedColumn[k];
+                            var column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                            var dindex = _column.dindex;
+                            var value = "";
+                            if (column) {
+                                if (!this.list[dindex].__isGrouping) {
+                                    value = GRID.data.getValue.call(this, dindex, column.key);
+                                }
+                            }
+                            GRID.body.inlineEdit.active.call(this, this.focusedColumn, null, value);
+                        }
+                    }
+                }
+            };
+
+            if (key in processor) {
+                processor[key].call(this, key);
+            }
+        }
+    };
+
+    GRID.body = {
+        init: init,
+        repaint: repaint,
+        repaintCell: repaintCell,
+        updateRowState: updateRowState,
+        scrollTo: scrollTo,
+        blur: blur,
+        moveFocus: moveFocus,
+        inlineEdit: inlineEdit
+    };
+})();
+
+// ax5.ui.grid.collector
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+    var sum = function sum() {
+        var value = 0;
+        var i = this.list.length;
+        while (i--) {
+            if (!("__groupingList" in this.list[i])) {
+                value += U.number(this.list[i][this.key]);
+            }
+        }
+        return value;
+    };
+    var avg = function avg() {
+        var value = 0;
+        var i = this.list.length,
+            listLength = 0;
+        while (i--) {
+            if (!("__groupingList" in this.list[i])) {
+                value += U.number(this.list[i][this.key]);
+                listLength++;
+            }
+        }
+        return U.number(value / (listLength || 1), { "round": 2 });
+    };
+
+    GRID.collector = {
+        sum: sum,
+        avg: avg
+    };
+})();
+// ax5.ui.grid.layout
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
+    var init = function init() {};
+
+    var clearGroupingData = function clearGroupingData(_list) {
+        var i = 0,
+            l = _list.length;
+        var returnList = [];
+        for (; i < l; i++) {
+            if (_list[i] && !_list[i]["__isGrouping"]) {
+                if (_list[i][this.config.columnKeys.selected]) {
+                    this.selectedDataIndexs.push(i);
+                }
+                returnList.push(jQuery.extend({}, _list[i]));
+            }
+        }
+        return returnList;
+    };
+
+    var initData = function initData(_list) {
+        this.selectedDataIndexs = [];
+        var i = 0,
+            l = _list.length;
+        var returnList = [];
+        var appendIndex = 0;
+
+        if (this.config.body.grouping) {
+            var groupingKeys = U.map(this.bodyGrouping.by, function () {
+                return {
+                    key: this,
+                    compareString: "",
+                    grouping: false,
+                    list: []
+                };
+            });
+            var gi = 0,
+                gl = groupingKeys.length,
+                compareString,
+                appendRow = [],
+                ari;
+            for (; i < l + 1; i++) {
+                gi = 0;
+                if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
+                    this.deletedList.push(_list[i]);
+                } else {
+                    compareString = "";
+                    appendRow = [];
+                    for (; gi < gl; gi++) {
+                        if (_list[i]) {
+                            compareString += "$|$" + _list[i][groupingKeys[gi].key];
+                        }
+                        if (appendIndex > 0 && compareString != groupingKeys[gi].compareString) {
+                            var appendRowItem = { keys: [], labels: [], list: groupingKeys[gi].list };
+                            for (var ki = 0; ki < gi + 1; ki++) {
+                                appendRowItem.keys.push(groupingKeys[ki].key);
+                                appendRowItem.labels.push(_list[i - 1][groupingKeys[ki].key]);
+                            }
+                            appendRow.push(appendRowItem);
+                            groupingKeys[gi].list = [];
+                        }
+                        groupingKeys[gi].list.push(_list[i]);
+                        groupingKeys[gi].compareString = compareString;
+                    }
+
+                    ari = appendRow.length;
+                    while (ari--) {
+                        returnList.push({ __isGrouping: true, __groupingList: appendRow[ari].list, __groupingBy: { keys: appendRow[ari].keys, labels: appendRow[ari].labels } });
+                    }
+
+                    if (_list[i]) {
+                        if (_list[i][this.config.columnKeys.selected]) {
+                            this.selectedDataIndexs.push(i);
+                        }
+                        returnList.push(_list[i]);
+                        appendIndex++;
+                    }
+                }
+            }
+        } else {
+            for (; i < l; i++) {
+                if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
+                    this.deletedList.push(_list[i]);
+                } else if (_list[i]) {
+                    if (_list[i][this.config.columnKeys.selected]) {
+                        this.selectedDataIndexs.push(i);
+                    }
+                    returnList.push(_list[i]);
+                }
+            }
+        }
+
+        return returnList;
+    };
+
+    var set = function set(data) {
+        var self = this;
+
+        if (U.isArray(data)) {
+            this.page = null;
+            this.list = initData.call(this, Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
+            this.deletedList = [];
+        } else if ("page" in data) {
+            this.page = jQuery.extend({}, data.page);
+            this.list = initData.call(this, Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
+            this.deletedList = [];
+        }
+
+        this.needToPaintSum = true;
+        this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        GRID.page.navigationUpdate.call(this);
+
+        if (this.config.body.grouping) {}
+        return this;
+    };
+
+    var get = function get(_type) {
+        return {
+            list: this.list,
+            page: this.page
+        };
+    };
+
+    var getList = function getList(_type) {
+        var returnList = [];
+        var i = 0,
+            l = this.list.length;
+        switch (_type) {
+            case "modified":
+                for (; i < l; i++) {
+                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.modified]) {
+                        returnList.push(jQuery.extend({}, this.list[i]));
+                    }
+                }
+                break;
+            case "selected":
+                for (; i < l; i++) {
+                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.selected]) {
+                        returnList.push(jQuery.extend({}, this.list[i]));
+                    }
+                }
+                break;
+            case "deleted":
+                //_list = GRID.data.clearGroupingData(this.list);
+                returnList = [].concat(this.deletedList);
+                break;
+            default:
+                returnList = GRID.data.clearGroupingData.call(this, this.list);
+        }
+        return returnList;
+    };
+
+    var add = function add(_row, _dindex) {
+        var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
+        var processor = {
+            "first": function first() {
+                list = [].concat(_row).concat(list);
+            },
+            "last": function last() {
+                list = list.concat([].concat(_row));
+            }
+        };
+
+        if (typeof _dindex === "undefined") _dindex = "last";
+        if (_dindex in processor) {
+            _row[this.config.columnKeys.modified] = true;
+            processor[_dindex].call(this, _row);
+        } else {
+            if (!U.isNumber(_dindex)) {
+                throw 'invalid argument _dindex';
+            }
+            //
+            list = list.splice(_dindex, [].concat(_row));
+        }
+
+        if (this.config.body.grouping) {
+            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        } else if (Object.keys(this.sortInfo).length) {
+            list = sort.call(this, this.sortInfo, list);
+        }
+
+        this.list = list;
+
+        this.needToPaintSum = true;
+        this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        GRID.page.navigationUpdate.call(this);
+        return this;
+    };
+
+    /**
+     * list에서 완전 제거 하는 경우 사용.
+     * ax5grid.data.remove
+     */
+    var remove = function remove(_dindex) {
+        var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
+        var processor = {
+            "first": function first() {
+                list.splice(_dindex, 1);
+            },
+            "last": function last() {
+                var lastIndex = list.length - 1;
+                list.splice(lastIndex, 1);
+            }
+        };
+
+        if (typeof _dindex === "undefined") _dindex = "last";
+        if (_dindex in processor) {
+            processor[_dindex].call(this, _dindex);
+        } else {
+            if (!U.isNumber(_dindex)) {
+                throw 'invalid argument _dindex';
+            }
+            //
+            list.splice(_dindex, 1);
+        }
+
+        if (this.config.body.grouping) {
+            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        } else if (Object.keys(this.sortInfo).length) {
+            list = sort.call(this, this.sortInfo, list);
+        }
+
+        this.list = list;
+
+        this.needToPaintSum = true;
+        this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        GRID.page.navigationUpdate.call(this);
+        return this;
+    };
+
+    /**
+     * list에서 deleted 처리 repaint
+     * ax5grid.data.deleteRow
+     */
+    var deleteRow = function deleteRow(_dindex) {
+        var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
+
+        var processor = {
+            "first": function first() {
+                list[0][this.config.columnKeys.deleted] = true;
+            },
+            "last": function last() {
+                list[list.length - 1][this.config.columnKeys.deleted] = true;
+            },
+            "selected": function selected() {
+                var i = list.length;
+                while (i--) {
+                    if (list[i][this.config.columnKeys.selected]) {
+                        list[i][this.config.columnKeys.deleted] = true;
+                    }
+                }
+            }
+        };
+
+        if (typeof _dindex === "undefined") _dindex = "last";
+        if (_dindex in processor) {
+            processor[_dindex].call(this, _dindex);
+        } else {
+            if (!U.isNumber(_dindex)) {
+                throw 'invalid argument _dindex';
+            }
+            list[_dindex][this.config.columnKeys.deleted] = true;
+        }
+
+        if (this.config.body.grouping) {
+            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        } else if (Object.keys(this.sortInfo).length) {
+            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        } else {
+            list = initData.call(this, list);
+        }
+
+        this.list = list;
+
+        this.needToPaintSum = true;
+        this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        GRID.page.navigationUpdate.call(this);
+        return this;
+    };
+
+    var update = function update(_row, _dindex) {
+        if (!U.isNumber(_dindex)) {
+            throw 'invalid argument _dindex';
+        }
+        //
+        this.needToPaintSum = true;
+        this.list.splice(_dindex, 1, _row);
+
+        if (this.config.body.grouping) {
+            this.list = initData.call(this, clearGroupingData.call(this, this.list));
+        }
+    };
+
+    var setValue = function setValue(_dindex, _key, _value) {
+        this.needToPaintSum = true;
+        if (/[\.\[\]]/.test(_key)) {
+            try {
+                this.list[_dindex][this.config.columnKeys.modified] = true;
+                Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;").call(this.list[_dindex], _value);
+            } catch (e) {}
+        } else {
+            this.list[_dindex][this.config.columnKeys.modified] = true;
+            this.list[_dindex][_key] = _value;
+        }
+        return true;
+    };
+
+    var getValue = function getValue(_dindex, _key, _value) {
+        if (/[\.\[\]]/.test(_key)) {
+            try {
+                _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(this.list[_dindex]);
+            } catch (e) {}
+        } else {
+            _value = this.list[_dindex][_key];
+        }
+        return _value;
+    };
+
+    var clearSelect = function clearSelect() {
+        this.selectedDataIndexs = [];
+    };
+
+    var select = function select(_dindex, _selected) {
+        var cfg = this.config;
+
+        if (this.list[_dindex].__isGrouping) return false;
+
+        if (typeof _selected === "undefined") {
+            if (this.list[_dindex][cfg.columnKeys.selected] = !this.list[_dindex][cfg.columnKeys.selected]) {
+                this.selectedDataIndexs.push(_dindex);
+            }
+        } else {
+            if (this.list[_dindex][cfg.columnKeys.selected] = _selected) {
+                this.selectedDataIndexs.push(_dindex);
+            }
+        }
+        return this.list[_dindex][cfg.columnKeys.selected];
+    };
+
+    var sort = function sort(_sortInfo, _list) {
+        var self = this;
+        var list = _list || this.list;
+        var sortInfoArray = [];
+
+        for (var k in _sortInfo) {
+            sortInfoArray[_sortInfo[k].seq] = { key: k, order: _sortInfo[k].orderBy };
+        }
+        sortInfoArray = U.filter(sortInfoArray, function () {
+            return typeof this !== "undefined";
+        });
+
+        var i = 0,
+            l = sortInfoArray.length,
+            _a_val,
+            _b_val;
+        list.sort(function (_a, _b) {
+            for (i = 0; i < l; i++) {
+                _a_val = _a[sortInfoArray[i].key];
+                _b_val = _b[sortInfoArray[i].key];
+                if ((typeof _a_val === 'undefined' ? 'undefined' : _typeof(_a_val)) !== (typeof _b_val === 'undefined' ? 'undefined' : _typeof(_b_val))) {
+                    _a_val = '' + _a_val;
+                    _b_val = '' + _b_val;
+                }
+                if (_a_val < _b_val) {
+                    return sortInfoArray[i].order === "asc" ? -1 : 1;
+                } else if (_a_val > _b_val) {
+                    return sortInfoArray[i].order === "asc" ? 1 : -1;
+                }
+            }
+        });
+
+        if (_list) {
+            return list;
+        } else {
+            this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
+            this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+            GRID.page.navigationUpdate.call(this);
+            return this;
+        }
+    };
+
+    GRID.data = {
+        init: init,
+        set: set,
+        get: get,
+        getList: getList,
+        setValue: setValue,
+        getValue: getValue,
+        clearSelect: clearSelect,
+        select: select,
+        add: add,
+        remove: remove,
+        deleteRow: deleteRow,
+        update: update,
+        sort: sort,
+        initData: initData,
+        clearGroupingData: clearGroupingData
+    };
+})();
+// ax5.ui.grid.formatter
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+    var money = function money() {
+        return U.number(this.value, { "money": true });
+    };
+
+    GRID.formatter = {
+        money: money
+    };
+})();
+// ax5.ui.grid.header
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
+    var columnResizerEvent = {
+        "on": function on(_columnResizer, _colIndex) {
+            var self = this;
+            var $columnResizer = $(_columnResizer);
+            var columnResizerPositionLeft = $columnResizer.offset().left;
+            var gridTargetOffsetLeft = self.$["container"]["root"].offset().left;
+            self.xvar.columnResizerIndex = _colIndex;
+            var resizeRange = {
+                min: -self.colGroup[_colIndex]._width + 2,
+                max: self.colGroup[_colIndex + 1] ? self.colGroup[_colIndex + 1]._width : self.$["container"]["root"].width() - 2
+            };
+            //console.log(resizeRange);
+
+            jQuery(document.body).bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
+                var mouseObj = GRID.util.getMousePosition(e);
+                self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+
+                if (resizeRange.min > self.xvar.__da) {
+                    self.xvar.__da = resizeRange.min;
+                } else if (resizeRange.max < self.xvar.__da) {
+                    self.xvar.__da = resizeRange.max;
+                }
+
+                if (!self.xvar.columnResizerLived) {
+                    self.$["resizer"]["horizontal"].addClass("live");
+                }
+                self.xvar.columnResizerLived = true;
+                self.$["resizer"]["horizontal"].css({
+                    left: columnResizerPositionLeft + self.xvar.__da - gridTargetOffsetLeft
+                });
+            }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
+                columnResizerEvent.off.call(self);
+                U.stopEvent(e);
+            }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
+                columnResizerEvent.off.call(self);
+                U.stopEvent(e);
+            });
+
+            jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+        },
+        "off": function off() {
+            this.$["resizer"]["horizontal"].removeClass("live");
+            this.xvar.columnResizerLived = false;
+            this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+
+            jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
+
+            jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+        }
+    };
+
+    var init = function init() {
+        // 헤더 초기화
+        var self = this;
+
+        this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
+            var key = this.getAttribute("data-ax5grid-column-key");
+            var colIndex = this.getAttribute("data-ax5grid-column-colindex");
+            var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
+            var col = self.colGroup[colIndex];
+            if (key && col) {
+                if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
+                    if (!col.sortFixed) toggleSort.call(self, col.key);
+                }
+            }
+            GRID.body.blur.call(self);
+        });
+        this.$["container"]["header"].on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
+            var colIndex = this.getAttribute("data-ax5grid-column-resizer");
+            self.xvar.mousePosition = GRID.util.getMousePosition(e);
+            columnResizerEvent.on.call(self, this, Number(colIndex));
+            U.stopEvent(e);
+        }).on("dragstart", function (e) {
+            U.stopEvent(e);
+            return false;
+        });
+
+        resetFrozenColumn.call(this);
+    };
+
+    var resetFrozenColumn = function resetFrozenColumn() {
+        var cfg = this.config;
+        var dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+        this.asideHeaderData = function (dataTable) {
+            var colGroup = [];
+            var data = { rows: [] };
+            for (var i = 0, l = dataTable.rows.length; i < l; i++) {
+                data.rows[i] = { cols: [] };
+                if (i === 0) {
+                    var col = {
+                        label: "",
+                        colspan: 1,
+                        rowspan: dataTable.rows.length,
+                        key: "__dindex__",
+                        colIndex: null
+                    },
+                        _col = {};
+
+                    if (cfg.showLineNumber) {
+                        _col = jQuery.extend({}, col, {
+                            label: "&nbsp;",
+                            width: cfg.lineNumberColumnWidth,
+                            _width: cfg.lineNumberColumnWidth
+                        });
+                        colGroup.push(_col);
+                        data.rows[i].cols.push(_col);
+                    }
+                    if (cfg.showRowSelector) {
+                        _col = jQuery.extend({}, col, {
+                            label: "",
+                            width: cfg.rowSelectorColumnWidth,
+                            _width: cfg.rowSelectorColumnWidth
+                        });
+                        colGroup.push(_col);
+                        data.rows[i].cols.push(_col);
+                    }
+                }
+            }
+
+            this.asideColGroup = colGroup;
+            return data;
+        }.call(this, this.headerTable);
+        this.leftHeaderData = dividedHeaderObj.leftData;
+        this.headerData = dividedHeaderObj.rightData;
+    };
+
+    var repaint = function repaint(_reset) {
+        var cfg = this.config;
+        var colGroup = this.colGroup;
+        if (_reset) {
+            resetFrozenColumn.call(this);
+            this.xvar.paintStartRowIndex = undefined;
+        }
+        var asideHeaderData = this.asideHeaderData;
+        var leftHeaderData = this.leftHeaderData;
+        var headerData = this.headerData;
+        var headerAlign = cfg.header.align;
+
+        // this.asideColGroup : asideHeaderData에서 처리 함.
+        this.leftHeaderColGroup = colGroup.slice(0, this.config.frozenColumnIndex);
+        this.headerColGroup = colGroup.slice(this.config.frozenColumnIndex);
+
+        var repaintHeader = function repaintHeader(_elTarget, _colGroup, _bodyRow) {
+            var tableWidth = 0;
+            var SS = [];
+            SS.push('<table border="0" cellpadding="0" cellspacing="0">');
+            SS.push('<colgroup>');
+            for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                SS.push('<col style="width:' + _colGroup[cgi]._width + 'px;"  />');
+                tableWidth += _colGroup[cgi]._width;
+            }
+            SS.push('<col  />');
+            SS.push('</colgroup>');
+
+            for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                var trCSS_class = "";
+                SS.push('<tr class="' + trCSS_class + '">');
+                for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    var col = _bodyRow.rows[tri].cols[ci];
+                    var cellHeight = cfg.header.columnHeight * col.rowspan - cfg.header.columnBorderWidth;
+                    var colAlign = headerAlign || col.align;
+                    SS.push('<td ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', function () {
+                        return typeof col.key !== "undefined" ? 'data-ax5grid-column-key="' + col.key + '" ' : '';
+                    }(), 'data-ax5grid-column-colindex="' + col.colIndex + '" ', 'data-ax5grid-column-rowindex="' + col.rowIndex + '" ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                        var tdCSS_class = "";
+                        if (_col.styleClass) {
+                            if (U.isFunction(_col.styleClass)) {
+                                tdCSS_class += _col.styleClass.call({
+                                    column: _col,
+                                    key: _col.key
+                                }) + " ";
+                            } else {
+                                tdCSS_class += _col.styleClass + " ";
+                            }
+                        }
+                        if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
+                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                        return tdCSS_class;
+                    }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                    SS.push(function () {
+                        var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
+                        return '<span data-ax5grid-cellHolder="" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                    }(), function () {
+                        var _SS = "";
+
+                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && (cfg.sortable === true || col.sortable === true) && col.sortable !== false) {
+                            _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[col.colIndex].sort || "") + '" />';
+                        }
+                        return _SS;
+                    }(), col.label || "&nbsp;", '</span>');
+
+                    if (!U.isNothing(col.colIndex)) {
+                        if (cfg.enableFilter) {
+                            SS.push('<span data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
+                        }
+                    }
+
+                    SS.push('</td>');
+                }
+                SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'style="height: ' + cfg.header.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                SS.push('</tr>');
+            }
+            SS.push('</table>');
+            _elTarget.html(SS.join(''));
+
+            /// append column-resizer
+            (function () {
+                var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth;
+                var resizerLeft = 0;
+                var AS = [];
+                for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
+                    var col = _colGroup[cgi];
+                    if (!U.isNothing(col.colIndex)) {
+                        //_colGroup[cgi]._width
+                        resizerLeft += col._width;
+                        AS.push('<div data-ax5grid-column-resizer="' + col.colIndex + '" style="height:' + resizerHeight + 'px;left: ' + (resizerLeft - 4) + 'px;"  />');
+                    }
+                }
+                _elTarget.append(AS);
+            }).call(this);
+
+            return tableWidth;
+        };
+
+        if (cfg.asidePanelWidth > 0) {
+            repaintHeader(this.$.panel["aside-header"], this.asideColGroup, asideHeaderData);
+        }
+
+        if (cfg.frozenColumnIndex > 0) {
+            repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
+        }
+        this.xvar.scrollContentWidth = repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
+
+        if (cfg.rightSum) {}
+    };
+
+    var scrollTo = function scrollTo(css) {
+        this.$.panel["header-scroll"].css(css);
+        return this;
+    };
+
+    var toggleSort = function toggleSort(_key) {
+        var sortOrder = "";
+        var sortInfo = {};
+        var seq = 0;
+
+        for (var k in this.sortInfo) {
+            if (this.sortInfo[k].fixed) {
+                sortInfo[k] = this.sortInfo[k];
+                seq++;
+            }
+        }
+
+        for (var i = 0, l = this.colGroup.length; i < l; i++) {
+            if (this.colGroup[i].key == _key) {
+                if (sortOrder == "") {
+                    if (typeof this.colGroup[i].sort === "undefined") {
+                        sortOrder = "desc";
+                    } else if (this.colGroup[i].sort === "desc") {
+                        sortOrder = "asc";
+                    } else {
+                        sortOrder = undefined;
+                    }
+                }
+                this.colGroup[i].sort = sortOrder;
+            } else if (!this.config.multiSort) {
+                this.colGroup[i].sort = undefined;
+            }
+
+            if (typeof this.colGroup[i].sort !== "undefined") {
+                if (!sortInfo[this.colGroup[i].key]) {
+                    sortInfo[this.colGroup[i].key] = {
+                        seq: seq++,
+                        orderBy: this.colGroup[i].sort
+                    };
+                }
+            }
+        }
+
+        this.setColumnSort(sortInfo);
+        return this;
+    };
+
+    var applySortStatus = function applySortStatus(_sortInfo) {
+        for (var i = 0, l = this.colGroup.length; i < l; i++) {
+            for (var _key in _sortInfo) {
+                if (this.colGroup[i].key == _key) {
+                    this.colGroup[i].sort = _sortInfo[_key].orderBy;
+                }
+            }
+        }
+        return this;
+    };
+
+    GRID.header = {
+        init: init,
+        repaint: repaint,
+        scrollTo: scrollTo,
+        toggleSort: toggleSort,
+        applySortStatus: applySortStatus
+    };
+})();
+// ax5.ui.grid.inlineEditor
+(function () {
+
+    var GRID = ax5.ui.grid;
+
+    var edit_text = {
+        useReturnToSave: true,
+        editMode: "popup",
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="text" value="' + _value + '" >';
+        },
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
+            var $el;
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey);
+            });
+            return $el;
+        },
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
+            _$el.focus().select();
+        }
+    };
+
+    var edit_money = {
+        useReturnToSave: true,
+        editMode: "popup",
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="money" value="' + _value + '" >';
+        },
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
+            var $el;
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey);
+            });
+            return $el;
+        },
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
+            _$el.data("binded-ax5ui", "ax5formater");
+            _$el.ax5formatter({
+                pattern: "money"
+            });
+            _$el.focus().select();
+        }
+    };
+
+    var edit_number = {
+        useReturnToSave: true,
+        editMode: "popup",
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="number" value="' + _value + '" >';
+        },
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
+            var $el;
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            $el.on("blur", function () {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey);
+            });
+            return $el;
+        },
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
+            _$el.data("binded-ax5ui", "ax5formater");
+            _$el.ax5formatter({
+                pattern: "number"
+            });
+            _$el.focus().select();
+        }
+    };
+
+    var edit_date = {
+        useReturnToSave: true,
+        editMode: "popup",
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            return '<input type="text" data-ax5grid-editor="calendar" value="' + _value + '" >';
+        },
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
+            var $el;
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            return $el;
+        },
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
+            var self = _root;
+            _$el.data("binded-ax5ui", "ax5picker");
+            _$el.ax5picker({
+                direction: "auto",
+                content: {
+                    type: 'date',
+                    formatter: {
+                        pattern: 'date'
+                    }
+                },
+                onStateChanged: function onStateChanged() {
+                    if (this.state == "open") {
+                        this.self.activePicker.attr("data-ax5grid-inline-edit-picker", "date");
+                    } else if (this.state == "close") {
+                        GRID.body.inlineEdit.deActive.call(self, "RETURN", _columnKey);
+                    }
+                }
+            });
+            _$el.focus().select();
+        }
+    };
+
+    var edit_select = {
+        useReturnToSave: false,
+        editMode: "popup",
+        getHtml: function getHtml(_root, _columnKey, _editor, _value) {
+            var po = [];
+            po.push('<div data-ax5select="ax5grid-editor" data-ax5select-config="{}">');
+            po.push('</div>');
+
+            return po.join('');
+        },
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
+            var $el;
+            _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
+            this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            return $el;
+        },
+        bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
+            var eConfig = {
+                columnKeys: {
+                    optionValue: "value",
+                    optionText: "text",
+                    optionSelected: "selected"
+                }
+            };
+            jQuery.extend(true, eConfig, _editor.config);
+
+            eConfig.options.forEach(function (n) {
+                if (n[eConfig.columnKeys.optionValue] == _value) n[eConfig.columnKeys.optionSelected] = true;
+            });
+
+            var self = _root;
+            _$el.data("binded-ax5ui", "ax5select");
+            _$el.ax5select({
+                columnKeys: eConfig.columnKeys,
+                options: eConfig.options,
+                onStateChanged: function onStateChanged() {
+                    if (this.state == "open") {
+                        this.self.activeSelectOptionGroup.attr("data-ax5grid-inline-edit-picker", "select");
+                    } else if (this.state == "changeValue") {
+                        GRID.body.inlineEdit.deActive.call(self, "RETURN", _columnKey, this.value[0][eConfig.columnKeys.optionValue]);
+                    } else if (this.state == "close") {
+                        GRID.body.inlineEdit.deActive.call(self, "ESC", _columnKey);
+                    }
+                }
+            });
+            _$el.ax5select("open");
+            _$el.ax5select("setValue", _value);
+            _$el.find("a").focus();
+        }
+    };
+
+    var edit_checkbox = {
+        editMode: "inline",
+        getHtml: function getHtml(_root, _editor, _value) {
+
+            var lineHeight = _root.config.body.columnHeight - _root.config.body.columnPadding * 2 - _root.config.body.columnBorderWidth;
+            var checked;
+            if (_editor.config && _editor.config.trueValue) {
+                checked = _value == _editor.config.trueValue ? "true" : "false";
+            } else {
+                checked = _value == false || _value == "false" || _value < "1" ? "false" : "true";
+            }
+
+            var eConfig = {
+                marginTop: 2,
+                height: lineHeight - 4
+            };
+            jQuery.extend(true, eConfig, _editor.config);
+            eConfig.marginTop = (lineHeight - eConfig.height) / 2;
+
+            return '<div data-ax5grid-editor="checkbox" data-ax5grid-checked="' + checked + '" style="height:' + eConfig.height + 'px;width:' + eConfig.height + 'px;margin-top:' + eConfig.marginTop + 'px;"></div>';
+        }
+    };
+
+    GRID.inlineEditor = {
+        "text": edit_text,
+        "money": edit_money,
+        "number": edit_number,
+        "date": edit_date,
+        "select": edit_select,
+        "checkbox": edit_checkbox
+    };
+})();
+// ax5.ui.grid.page
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
+    var onclickPageMove = function onclickPageMove(_act) {
+        var callback = function callback(_pageNo) {
+            if (this.page.currentPage != _pageNo) {
+                this.page.selectPage = _pageNo;
+                if (this.config.page.onChange) {
+                    this.config.page.onChange.call({
+                        self: this,
+                        page: this.page,
+                        data: this.data
+                    });
+                }
+            }
+        };
+        var processor = {
+            "first": function first() {
+                callback.call(this, 0);
+            },
+            "prev": function prev() {
+                var pageNo = this.page.currentPage - 1;
+                if (pageNo < 0) pageNo = 0;
+                callback.call(this, pageNo);
+            },
+            "next": function next() {
+                var pageNo = this.page.currentPage + 1;
+                if (pageNo > this.page.totalPages - 1) pageNo = this.page.totalPages - 1;
+                callback.call(this, pageNo);
+            },
+            "last": function last() {
+                callback.call(this, this.page.totalPages - 1);
+            }
+        };
+
+        if (_act in processor) {
+            processor[_act].call(this);
+        } else {
+            callback.call(this, _act - 1);
+        }
+    };
+
+    var navigationUpdate = function navigationUpdate() {
+        var self = this;
+        if (this.page) {
+            var page = {
+                hasPage: false,
+                currentPage: this.page.currentPage,
+                pageSize: this.page.pageSize,
+                totalElements: this.page.totalElements,
+                totalPages: this.page.totalPages,
+                firstIcon: this.config.page.firstIcon,
+                prevIcon: this.config.page.prevIcon || "«",
+                nextIcon: this.config.page.nextIcon || "»",
+                lastIcon: this.config.page.lastIcon
+            };
+            var navigationItemCount = this.config.page.navigationItemCount;
+
+            page["@paging"] = function () {
+                var returns = [];
+
+                var startI = page.currentPage - Math.floor(navigationItemCount / 2);
+                if (startI < 0) startI = 0;
+                var endI = page.currentPage + navigationItemCount;
+                if (endI > page.totalPages) endI = page.totalPages;
+
+                if (endI - startI > navigationItemCount) {
+                    endI = startI + navigationItemCount;
+                }
+
+                if (endI - startI < navigationItemCount) {
+                    startI = endI - navigationItemCount;
+                }
+                if (startI < 0) startI = 0;
+
+                for (var p = startI, l = endI; p < l; p++) {
+                    returns.push({ 'pageNo': p + 1, 'selected': page.currentPage == p });
+                }
+                return returns;
+            }();
+
+            if (page["@paging"].length > 0) {
+                page.hasPage = true;
+            }
+
+            this.$["page"]["navigation"].html(GRID.tmpl.get("page_navigation", page));
+            this.$["page"]["navigation"].find("[data-ax5grid-page-move]").on("click", function () {
+                var act = this.getAttribute("data-ax5grid-page-move");
+                onclickPageMove.call(self, act);
+            });
+        } else {
+            this.$["page"]["navigation"].empty();
+        }
+    };
+
+    var statusUpdate = function statusUpdate() {
+        var fromRowIndex = this.xvar.paintStartRowIndex;
+        var toRowIndex = this.xvar.paintStartRowIndex + this.xvar.paintRowCount - 1;
+        //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
+        var totalElements = this.xvar.dataRowCount;
+        if (toRowIndex > totalElements) {
+            toRowIndex = totalElements;
+        }
+
+        this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
+            fromRowIndex: U.number(fromRowIndex + 1, { "money": true }),
+            toRowIndex: U.number(toRowIndex, { "money": true }),
+            totalElements: U.number(totalElements, { "money": true })
+        }));
+    };
+
+    GRID.page = {
+        navigationUpdate: navigationUpdate,
+        statusUpdate: statusUpdate
+    };
+})();
+// ax5.ui.grid.scroller
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
+    var convertScrollPosition = {
+        "vertical": function vertical(css, _var) {
+            var _content_height = _var._content_height - _var._panel_height;
+            var _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight;
+            var top = _content_height * css.top / _scroller_height;
+            if (top < 0) top = 0;else if (_content_height < top) {
+                top = _content_height;
+            }
+            return {
+                top: -top
+            };
+        },
+        "horizontal": function horizontal(css, _var) {
+            var _content_width = _var._content_width - _var._panel_width;
+            var _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth;
+            var left = _content_width * css.left / _scroller_width;
+            if (left < 0) left = 0;else if (_content_width < left) {
+                left = _content_width;
+            }
+            return {
+                left: -left
+            };
+        }
+    };
+    var convertScrollBarPosition = {
+        "vertical": function vertical(_top, _var) {
+
+            var type = "vertical";
+            var _content_height = _var._content_height - _var._panel_height;
+            var _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight;
+            var top = _scroller_height * _top / _content_height;
+
+            if (-top > _scroller_height) {
+                top = -_scroller_height;
+
+                var scrollPositon = convertScrollPosition[type].call(this, { top: -top }, {
+                    _content_width: _var._content_width,
+                    _content_height: _var._content_height,
+                    _panel_width: _var._panel_width,
+                    _panel_height: _var._panel_height,
+                    _horizontal_scroller_width: _var._horizontal_scroller_width,
+                    _vertical_scroller_height: _var._vertical_scroller_height,
+                    verticalScrollBarHeight: _var.verticalScrollBarHeight,
+                    horizontalScrollBarWidth: _var.horizontalScrollBarWidth
+                });
+
+                GRID.body.scrollTo.call(this, scrollPositon);
+            }
+
+            return -top;
+        },
+        "horizontal": function horizontal(_left, _var) {
+            var type = "horizontal";
+            var _content_width = _var._content_width - _var._panel_width;
+            var _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth;
+            var left = _scroller_width * _left / _content_width;
+
+            if (-left > _scroller_width) {
+                left = -_scroller_width;
+                var scrollPositon = convertScrollPosition[type].call(this, { left: -left }, {
+                    _content_width: _var._content_width,
+                    _content_height: _var._content_height,
+                    _panel_width: _var._panel_width,
+                    _panel_height: _var._panel_height,
+                    _horizontal_scroller_width: _var._horizontal_scroller_width,
+                    _vertical_scroller_height: _var._vertical_scroller_height,
+                    verticalScrollBarHeight: _var.verticalScrollBarHeight,
+                    horizontalScrollBarWidth: _var.horizontalScrollBarWidth
+                });
+
+                GRID.header.scrollTo.call(this, scrollPositon);
+                GRID.body.scrollTo.call(this, scrollPositon);
+            }
+
+            return -left;
+        }
+    };
+    var scrollBarMover = {
+        "click": function click(track, bar, type, e) {
+
+            var self = this,
+                trackOffset = track.offset(),
+                barBox = {
+                width: bar.outerWidth(), height: bar.outerHeight()
+            },
+                trackBox = {
+                width: track.innerWidth(), height: track.innerHeight()
+            },
+                _vertical_scroller_height = self.$["scroller"]["vertical"].innerHeight(),
+                _panel_height = self.$["panel"]["body"].height(),
+                _horizontal_scroller_width = self.$["scroller"]["horizontal"].innerWidth(),
+                _panel_width = self.$["panel"]["body"].width(),
+                _content_height = self.xvar.scrollContentHeight,
+                _content_width = self.xvar.scrollContentWidth,
+                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].outerHeight(),
+                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].outerWidth(),
+                getScrollerPosition = {
+                "vertical": function vertical(e) {
+                    var mouseObj = GRID.util.getMousePosition(e);
+                    // track을 벗어 나지 안도록 범위 체크
+                    var newTop = mouseObj.clientY - trackOffset.top;
+                    if (newTop < 0) {
+                        newTop = 0;
+                    } else if (newTop + barBox.height > trackBox.height) {
+                        newTop = trackBox.height - barBox.height;
+                    }
+                    return { top: newTop };
+                },
+                "horizontal": function horizontal(e) {
+                    var mouseObj = GRID.util.getMousePosition(e);
+                    // track을 벗어 나지 안도록 범위 체크
+                    var newLeft = mouseObj.clientX - trackOffset.left;
+                    if (newLeft < 0) {
+                        newLeft = 0;
+                    } else if (newLeft + barBox.width > trackBox.width) {
+                        newLeft = trackBox.width - barBox.width;
+                    }
+                    return { left: newLeft };
+                }
+            };
+
+            var css = getScrollerPosition[type](e);
+            bar.css(css);
+
+            var scrollPositon = convertScrollPosition[type].call(self, css, {
+                _content_width: _content_width,
+                _content_height: _content_height,
+                _panel_width: _panel_width,
+                _panel_height: _panel_height,
+                _horizontal_scroller_width: _horizontal_scroller_width,
+                _vertical_scroller_height: _vertical_scroller_height,
+                verticalScrollBarHeight: verticalScrollBarHeight,
+                horizontalScrollBarWidth: horizontalScrollBarWidth
+            });
+            if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
+            GRID.body.scrollTo.call(self, scrollPositon);
+        },
+        "on": function on(track, bar, type) {
+            var self = this,
+                barOffset = bar.position(),
+                barBox = {
+                width: bar.outerWidth(), height: bar.outerHeight()
+            },
+                trackBox = {
+                width: track.innerWidth(), height: track.innerHeight()
+            },
+                _vertical_scroller_height = self.$["scroller"]["vertical"].innerHeight(),
+                _panel_height = self.$["panel"]["body"].height(),
+                _horizontal_scroller_width = self.$["scroller"]["horizontal"].innerWidth(),
+                _panel_width = self.$["panel"]["body"].width(),
+                _content_height = self.xvar.scrollContentHeight,
+                _content_width = self.xvar.scrollContentWidth,
+                verticalScrollBarHeight = self.$["scroller"]["vertical-bar"].outerHeight(),
+                horizontalScrollBarWidth = self.$["scroller"]["horizontal-bar"].outerWidth(),
+                getScrollerPosition = {
+                "vertical": function vertical(e) {
+                    var mouseObj = GRID.util.getMousePosition(e);
+                    self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+                    // track을 벗어 나지 안도록 범위 체크
+                    var newTop = barOffset.top + self.xvar.__da;
+                    if (newTop < 0) {
+                        newTop = 0;
+                    } else if (newTop + barBox.height > trackBox.height) {
+                        newTop = trackBox.height - barBox.height;
+                    }
+                    return { top: newTop };
+                },
+                "horizontal": function horizontal(e) {
+                    var mouseObj = GRID.util.getMousePosition(e);
+                    self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                    // track을 벗어 나지 안도록 범위 체크
+                    var newLeft = barOffset.left + self.xvar.__da;
+                    if (newLeft < 0) {
+                        newLeft = 0;
+                    } else if (newLeft + barBox.width > trackBox.width) {
+                        newLeft = trackBox.width - barBox.width;
+                    }
+                    return { left: newLeft };
+                }
+            };
+
+            self.xvar.__da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+
+            jQuery(document.body).bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
+                var css = getScrollerPosition[type](e);
+                bar.css(css);
+
+                var scrollPositon = convertScrollPosition[type].call(self, css, {
+                    _content_width: _content_width,
+                    _content_height: _content_height,
+                    _panel_width: _panel_width,
+                    _panel_height: _panel_height,
+                    _horizontal_scroller_width: _horizontal_scroller_width,
+                    _vertical_scroller_height: _vertical_scroller_height,
+                    verticalScrollBarHeight: verticalScrollBarHeight,
+                    horizontalScrollBarWidth: horizontalScrollBarWidth
+                });
+
+                if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
+                GRID.body.scrollTo.call(self, scrollPositon);
+            }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
+                scrollBarMover.off.call(self);
+            }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
+                scrollBarMover.off.call(self);
+            });
+
+            jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+        },
+        "off": function off() {
+            jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
+
+            jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+        }
+    };
+    var scrollContentMover = {
+        "wheel": function wheel(delta) {
+            var self = this,
+                _body_scroll_position = self.$["panel"]["body-scroll"].position(),
+                _panel_height = self.$["panel"]["body"].height(),
+                _panel_width = self.$["panel"]["body"].width(),
+                _content_height = self.xvar.scrollContentHeight,
+                _content_width = self.xvar.scrollContentWidth;
+
+            var newLeft, newTop;
+            var _top_is_end = false;
+            var _left_is_end = false;
+
+            newLeft = _body_scroll_position.left - delta.x;
+            newTop = _body_scroll_position.top - delta.y;
+
+            // newTop이 범위를 넘었는지 체크
+            if (newTop >= 0) {
+                newTop = 0;
+                _top_is_end = true;
+            } else if (newTop <= _panel_height - _content_height) {
+                newTop = _panel_height - _content_height;
+                if (newTop >= 0) newTop = 0;
+                _top_is_end = true;
+            } else {
+                if (delta.y == 0) _top_is_end = true;
+            }
+
+            // newLeft이 범위를 넘었는지 체크
+            if (newLeft >= 0) {
+                newLeft = 0;
+                _left_is_end = true;
+            } else if (newLeft <= _panel_width - _content_width) {
+                newLeft = _panel_width - _content_width;
+                if (newLeft >= 0) newLeft = 0;
+                _left_is_end = true;
+            } else {
+                if (delta.x == 0) _left_is_end = true;
+            }
+
+            //self.$["panel"]["body-scroll"].css({left: newLeft, top: newTop});
+            GRID.header.scrollTo.call(this, { left: newLeft });
+            GRID.body.scrollTo.call(this, { left: newLeft, top: newTop });
+            resize.call(this);
+
+            return !_top_is_end || !_left_is_end;
+        },
+        "on": function on() {
+            var self = this,
+                _body_scroll_position = self.$["panel"]["body-scroll"].position(),
+                _panel_height = self.$["panel"]["body"].height(),
+                _panel_width = self.$["panel"]["body"].width(),
+                _content_height = self.xvar.scrollContentHeight,
+                _content_width = self.xvar.scrollContentWidth,
+                getContentPosition = function getContentPosition(e) {
+                var mouseObj = GRID.util.getMousePosition(e);
+                var newLeft, newTop;
+
+                self.xvar.__x_da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                self.xvar.__y_da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+
+                newLeft = _body_scroll_position.left + self.xvar.__x_da;
+                newTop = _body_scroll_position.top + self.xvar.__y_da;
+
+                // newTop이 범위를 넘었는지 체크
+                if (newTop >= 0) {
+                    newTop = 0;
+                } else if (newTop <= _panel_height - _content_height) {
+                    newTop = _panel_height - _content_height;
+                    if (newTop >= 0) newTop = 0;
+                }
+
+                // newLeft이 범위를 넘었는지 체크
+                if (newLeft >= 0) {
+                    newLeft = 0;
+                } else if (newLeft <= _panel_width - _content_width) {
+                    newLeft = _panel_width - _content_width;
+                    if (newLeft >= 0) newLeft = 0;
+                }
+
+                return {
+                    left: newLeft, top: newTop
+                };
+            };
+
+            this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+
+            jQuery(document.body).bind("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+                var css = getContentPosition(e);
+                GRID.header.scrollTo.call(self, { left: css.left });
+                GRID.body.scrollTo.call(self, css, "noRepaint");
+                resize.call(self);
+                U.stopEvent(e);
+            }).bind("touchend" + ".ax5grid-" + this.instanceId, function (e) {
+                var css = getContentPosition(e);
+                GRID.header.scrollTo.call(self, { left: css.left });
+                GRID.body.scrollTo.call(self, css);
+                resize.call(self);
+                U.stopEvent(e);
+                scrollContentMover.off.call(self);
+            });
+
+            jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+        },
+        "off": function off() {
+
+            jQuery(document.body).unbind("touchmove" + ".ax5grid-" + this.instanceId).unbind("touchend" + ".ax5grid-" + this.instanceId);
+
+            jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+        }
+    };
+
+    var init = function init() {
+        var self = this;
+        //this.config.scroller.size
+        var margin = this.config.scroller.trackPadding;
+
+        this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
+        this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
+
+        this.$["scroller"]["vertical-bar"].bind(GRID.util.ENM["mousedown"], function (e) {
+            this.xvar.mousePosition = GRID.util.getMousePosition(e);
+            scrollBarMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical");
+        }.bind(this)).bind("dragstart", function (e) {
+            U.stopEvent(e);
+            return false;
+        });
+        this.$["scroller"]["vertical"].bind("click", function (e) {
+            if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "vertical") {
+                scrollBarMover.click.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical", e);
+            }
+        }.bind(this));
+
+        this.$["scroller"]["horizontal-bar"].bind(GRID.util.ENM["mousedown"], function (e) {
+            this.xvar.mousePosition = GRID.util.getMousePosition(e);
+            scrollBarMover.on.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal");
+        }.bind(this)).bind("dragstart", function (e) {
+            U.stopEvent(e);
+            return false;
+        });
+        this.$["scroller"]["horizontal"].bind("click", function (e) {
+            if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "horizontal") {
+                scrollBarMover.click.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal", e);
+            }
+        }.bind(this));
+
+        this.$["container"]["body"].bind('mousewheel DOMMouseScroll', function (e) {
+            var E = e.originalEvent;
+            var delta = { x: 0, y: 0 };
+            if (E.detail) {
+                delta.y = E.detail * 10;
+            } else {
+                if (typeof E.deltaY === "undefined") {
+                    delta.y = -E.wheelDelta;
+                    delta.x = 0;
+                } else {
+                    delta.y = E.deltaY;
+                    delta.x = E.deltaX;
+                }
+            }
+
+            if (scrollContentMover.wheel.call(this, delta)) {
+                U.stopEvent(e);
+            }
+        }.bind(this));
+
+        if (document.addEventListener && ax5.info.supportTouch) {
+            this.$["container"]["body"].on("touchstart", '[data-ax5grid-panel]', function (e) {
+                self.xvar.mousePosition = GRID.util.getMousePosition(e);
+                scrollContentMover.on.call(self);
+            });
+        }
+    };
+
+    var resize = function resize() {
+        var _vertical_scroller_height = this.$["scroller"]["vertical"].height(),
+            _horizontal_scroller_width = this.$["scroller"]["horizontal"].width(),
+            _panel_height = this.$["panel"]["body"].height(),
+            _panel_width = this.$["panel"]["body"].width(),
+            _content_height = this.xvar.scrollContentHeight,
+            _content_width = this.xvar.scrollContentWidth,
+            verticalScrollBarHeight = _panel_height * _vertical_scroller_height / _content_height,
+            horizontalScrollBarWidth = _panel_width * _horizontal_scroller_width / _content_width;
+
+        if (verticalScrollBarHeight < this.config.scroller.barMinSize) verticalScrollBarHeight = this.config.scroller.barMinSize;
+        if (horizontalScrollBarWidth < this.config.scroller.barMinSize) horizontalScrollBarWidth = this.config.scroller.barMinSize;
+
+        this.$["scroller"]["vertical-bar"].css({
+            top: convertScrollBarPosition.vertical.call(this, this.$.panel["body-scroll"].position().top, {
+                _content_width: _content_width,
+                _content_height: _content_height,
+                _panel_width: _panel_width,
+                _panel_height: _panel_height,
+                _horizontal_scroller_width: _horizontal_scroller_width,
+                _vertical_scroller_height: _vertical_scroller_height,
+                verticalScrollBarHeight: verticalScrollBarHeight,
+                horizontalScrollBarWidth: horizontalScrollBarWidth
+            }),
+            height: verticalScrollBarHeight
+        });
+
+        //console.log(horizontalScrollBarWidth);
+
+        this.$["scroller"]["horizontal-bar"].css({
+            left: convertScrollBarPosition.horizontal.call(this, this.$.panel["body-scroll"].position().left, {
+                _content_width: _content_width,
+                _content_height: _content_height,
+                _panel_width: _panel_width,
+                _panel_height: _panel_height,
+                _horizontal_scroller_width: _horizontal_scroller_width,
+                _vertical_scroller_height: _vertical_scroller_height,
+                verticalScrollBarHeight: verticalScrollBarHeight,
+                horizontalScrollBarWidth: horizontalScrollBarWidth
+            }),
+            width: horizontalScrollBarWidth
+        });
+
+        _vertical_scroller_height = null;
+        _horizontal_scroller_width = null;
+        _panel_height = null;
+        _panel_width = null;
+        _content_height = null;
+        _content_width = null;
+        verticalScrollBarHeight = null;
+        horizontalScrollBarWidth = null;
+    };
+
+    GRID.scroller = {
+        init: init,
+        resize: resize
+    };
+})();
+// ax5.ui.grid.tmpl
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var main = function main() {
+        return '<div data-ax5grid-container="root" data-ax5grid-instance="{{instanceId}}">\n            <div data-ax5grid-container="hidden">\n                <textarea data-ax5grid-form="clipboard"></textarea>\n            </div>\n            <div data-ax5grid-container="header">\n                <div data-ax5grid-panel="aside-header"></div>\n                <div data-ax5grid-panel="left-header"></div>\n                <div data-ax5grid-panel="header">\n                    <div data-ax5grid-panel-scroll="header"></div>\n                </div>\n                <div data-ax5grid-panel="right-header"></div>\n            </div>\n            <div data-ax5grid-container="body">\n                <div data-ax5grid-panel="top-aside-body"></div>\n                <div data-ax5grid-panel="top-left-body"></div>\n                <div data-ax5grid-panel="top-body">\n                    <div data-ax5grid-panel-scroll="top-body"></div>\n                </div>\n                <div data-ax5grid-panel="top-right-body"></div>\n                <div data-ax5grid-panel="aside-body">\n                    <div data-ax5grid-panel-scroll="aside-body"></div>\n                </div>\n                <div data-ax5grid-panel="left-body">\n                    <div data-ax5grid-panel-scroll="left-body"></div>\n                </div>\n                <div data-ax5grid-panel="body">\n                    <div data-ax5grid-panel-scroll="body"></div>\n                </div>\n                <div data-ax5grid-panel="right-body">\n                  <div data-ax5grid-panel-scroll="right-body"></div>\n                </div>\n                <div data-ax5grid-panel="bottom-aside-body"></div>\n                <div data-ax5grid-panel="bottom-left-body"></div>\n                <div data-ax5grid-panel="bottom-body">\n                    <div data-ax5grid-panel-scroll="bottom-body"></div>\n                </div>\n                <div data-ax5grid-panel="bottom-right-body"></div>\n            </div>\n            <div data-ax5grid-container="page">\n                <div data-ax5grid-page="holder">\n                    <div data-ax5grid-page="navigation"></div>\n                    <div data-ax5grid-page="status"></div>\n                </div>\n            </div>\n            <div data-ax5grid-container="scroller">\n                <div data-ax5grid-scroller="vertical">\n                    <div data-ax5grid-scroller="vertical-bar"></div>    \n                </div>\n                <div data-ax5grid-scroller="horizontal">\n                    <div data-ax5grid-scroller="horizontal-bar"></div>\n                </div>\n                <div data-ax5grid-scroller="corner"></div>\n            </div>\n            <div data-ax5grid-resizer="vertical"></div>\n            <div data-ax5grid-resizer="horizontal"></div>\n        </div>';
+    };
+
+    var page_navigation = function page_navigation() {
+        return '<div data-ax5grid-page-navigation="holder">\n            {{#hasPage}}\n            <div data-ax5grid-page-navigation="cell">    \n                {{#firstIcon}}<button data-ax5grid-page-move="first">{{{firstIcon}}}</button>{{/firstIcon}}\n                <button data-ax5grid-page-move="prev">{{{prevIcon}}}</button>\n            </div>\n            <div data-ax5grid-page-navigation="cell-paging">\n                {{#@paging}}\n                <button data-ax5grid-page-move="{{pageNo}}" data-ax5grid-page-selected="{{selected}}">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation="cell">\n                <button data-ax5grid-page-move="next">{{{nextIcon}}}</button>\n                {{#lastIcon}}<button data-ax5grid-page-move="last">{{{lastIcon}}}</button>{{/lastIcon}}\n            </div>\n            {{/hasPage}}\n        </div>';
+    };
+
+    var page_status = function page_status() {
+        return '<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>';
+    };
+
+    GRID.tmpl = {
+        "main": main,
+        "page_navigation": page_navigation,
+        "page_status": page_status,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(GRID.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
+})();
+// ax5.ui.grid.util
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
+    /**
+     * @method ax5grid.util.divideTableByFrozenColumnIndex
+     * @param _table
+     * @param _frozenColumnIndex
+     * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
+     */
+
+    var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(_table, _frozenColumnIndex) {
+        var tempTable_l = { rows: [] };
+        var tempTable_r = { rows: [] };
+        for (var r = 0, rl = _table.rows.length; r < rl; r++) {
+            var row = _table.rows[r];
+
+            tempTable_l.rows[r] = { cols: [] };
+            tempTable_r.rows[r] = { cols: [] };
+
+            for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                var col = jQuery.extend({}, row.cols[c]);
+                var colStartIndex = col.colIndex,
+                    colEndIndex = col.colIndex + col.colspan;
+
+                if (colStartIndex < _frozenColumnIndex) {
+                    if (colEndIndex <= _frozenColumnIndex) {
+                        // 좌측편에 변형없이 추가
+                        tempTable_l.rows[r].cols.push(col);
+                    } else {
+                        var leftCol = jQuery.extend({}, col);
+                        var rightCol = jQuery.extend({}, leftCol);
+                        leftCol.colspan = _frozenColumnIndex - leftCol.colIndex;
+                        rightCol.colIndex = _frozenColumnIndex;
+                        rightCol.colspan = col.colspan - leftCol.colspan;
+
+                        tempTable_l.rows[r].cols.push(leftCol);
+                        tempTable_r.rows[r].cols.push(rightCol);
+                    }
+                } else {
+                    // 오른편
+                    tempTable_r.rows[r].cols.push(col);
+                }
+            }
+        }
+
+        return {
+            leftData: tempTable_l,
+            rightData: tempTable_r
+        };
+    };
+
+    var getMousePosition = function getMousePosition(e) {
+        var mouseObj,
+            originalEvent = e.originalEvent ? e.originalEvent : e;
+        mouseObj = 'changedTouches' in originalEvent ? originalEvent.changedTouches[0] : originalEvent;
+        // clientX, Y 쓰면 스크롤에서 문제 발생
+        return {
+            clientX: mouseObj.pageX,
+            clientY: mouseObj.pageY
+        };
+    };
+
+    var ENM = {
+        "mousedown": ax5.info.supportTouch ? "touchstart" : "mousedown",
+        "mousemove": ax5.info.supportTouch ? "touchmove" : "mousemove",
+        "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
+    };
+
+    var makeHeaderTable = function makeHeaderTable(_columns) {
+        var columns = U.deepCopy(_columns);
+        var cfg = this.config;
+        var table = {
+            rows: []
+        };
+        var colIndex = 0;
+        var maekRows = function maekRows(_columns, depth, parentField) {
+            var row = { cols: [] };
+            var i = 0,
+                l = _columns.length;
+
+            for (; i < l; i++) {
+                var field = _columns[i];
+                var colspan = 1;
+
+                if (!field.hidden) {
+                    field.colspan = 1;
+                    field.rowspan = 1;
+
+                    field.rowIndex = depth;
+                    field.colIndex = function () {
+                        if (!parentField) {
+                            return colIndex++;
+                        } else {
+                            colIndex = parentField.colIndex + i + 1;
+                            return parentField.colIndex + i;
+                        }
+                    }();
+
+                    row.cols.push(field);
+
+                    if ('columns' in field) {
+                        colspan = maekRows(field.columns, depth + 1, field);
+                    } else {
+                        field.width = 'width' in field ? field.width : cfg.columnMinWidth;
+                    }
+                    field.colspan = colspan;
+                } else {}
+            }
+
+            if (row.cols.length > 0) {
+                if (!table.rows[depth]) {
+                    table.rows[depth] = { cols: [] };
+                }
+                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                return row.cols.length - 1 + colspan;
+            } else {
+                return colspan;
+            }
+        };
+        maekRows(columns, 0);
+
+        // set rowspan
+        for (var r = 0, rl = table.rows.length; r < rl; r++) {
+            for (var c = 0, cl = table.rows[r].cols.length; c < cl; c++) {
+                if (!('columns' in table.rows[r].cols[c])) {
+                    table.rows[r].cols[c].rowspan = rl - r;
+                }
+            }
+        }
+
+        return table;
+    };
+
+    var makeBodyRowTable = function makeBodyRowTable(_columns) {
+        var columns = U.deepCopy(_columns);
+        var table = {
+            rows: []
+        };
+        var colIndex = 0;
+        var maekRows = function maekRows(_columns, depth, parentField) {
+            var row = { cols: [] };
+            var i = 0,
+                l = _columns.length;
+
+            var selfMakeRow = function selfMakeRow(__columns) {
+                var i = 0,
+                    l = __columns.length;
+                for (; i < l; i++) {
+                    var field = __columns[i];
+                    var colspan = 1;
+
+                    if (!field.hidden) {
+
+                        if ('key' in field) {
+                            field.colspan = 1;
+                            field.rowspan = 1;
+
+                            field.rowIndex = depth;
+                            field.colIndex = function () {
+                                if (!parentField) {
+                                    return colIndex++;
+                                } else {
+                                    colIndex = parentField.colIndex + i + 1;
+                                    return parentField.colIndex + i;
+                                }
+                            }();
+
+                            row.cols.push(field);
+                            if ('columns' in field) {
+                                colspan = maekRows(field.columns, depth + 1, field);
+                            }
+                            field.colspan = colspan;
+                        } else {
+                            if ('columns' in field) {
+                                selfMakeRow(field.columns, depth);
+                            }
+                        }
+                    } else {}
+                }
+            };
+
+            for (; i < l; i++) {
+                var field = _columns[i];
+                var colspan = 1;
+
+                if (!field.hidden) {
+
+                    if ('key' in field) {
+                        field.colspan = 1;
+                        field.rowspan = 1;
+
+                        field.rowIndex = depth;
+                        field.colIndex = function () {
+                            if (!parentField) {
+                                return colIndex++;
+                            } else {
+                                colIndex = parentField.colIndex + i + 1;
+                                return parentField.colIndex + i;
+                            }
+                        }();
+
+                        row.cols.push(field);
+                        if ('columns' in field) {
+                            colspan = maekRows(field.columns, depth + 1, field);
+                        }
+                        field.colspan = colspan;
+                    } else {
+                        if ('columns' in field) {
+                            selfMakeRow(field.columns, depth);
+                        }
+                    }
+                } else {}
+            }
+
+            if (row.cols.length > 0) {
+                if (!table.rows[depth]) {
+                    table.rows[depth] = { cols: [] };
+                }
+                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                return row.cols.length - 1 + colspan;
+            } else {
+                return colspan;
+            }
+        };
+        maekRows(columns, 0);
+
+        (function (table) {
+            // set rowspan
+            for (var r = 0, rl = table.rows.length; r < rl; r++) {
+                var row = table.rows[r];
+                for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                    var col = row.cols[c];
+                    if (!('columns' in col)) {
+                        col.rowspan = rl - r;
+                    }
+                }
+            }
+        })(table);
+
+        return table;
+    };
+
+    var makeBodyRowMap = function makeBodyRowMap(_table) {
+        var map = {};
+        _table.rows.forEach(function (row) {
+            row.cols.forEach(function (col) {
+                map[col.rowIndex + "_" + col.colIndex] = jQuery.extend({}, col);
+            });
+        });
+        return map;
+    };
+
+    var makeFootSumTable = function makeFootSumTable(_footSumColumns) {
+        var table = {
+            rows: []
+        };
+
+        for (var r = 0, rl = _footSumColumns.length; r < rl; r++) {
+            var footSumRow = _footSumColumns[r];
+            table.rows[r] = { cols: [] };
+            var addC = 0;
+            for (var c = 0, cl = footSumRow.length; c < cl; c++) {
+                if (addC > this.columns.length) break;
+                var colspan = footSumRow[c].colspan || 1;
+                if (footSumRow[c].label || footSumRow[c].key) {
+                    table.rows[r].cols.push({
+                        colspan: colspan,
+                        rowspan: 1,
+                        colIndex: addC,
+                        columnAttr: "sum",
+                        align: footSumRow[c].align,
+                        label: footSumRow[c].label,
+                        key: footSumRow[c].key,
+                        collector: footSumRow[c].collector,
+                        formatter: footSumRow[c].formatter
+                    });
+                } else {
+                    table.rows[r].cols.push({
+                        colIndex: addC,
+                        colspan: colspan,
+                        rowspan: 1,
+                        label: "&nbsp;"
+                    });
+                }
+                addC += colspan;
+            }
+            addC -= 1;
+            if (addC < this.columns.length + 1) {
+                for (var c = addC; c < this.columns.length + 1; c++) {
+                    table.rows[r].cols.push({
+                        colIndex: c + 1,
+                        colspan: 1,
+                        rowspan: 1,
+                        label: "&nbsp;"
+                    });
+                }
+            }
+        }
+        return table;
+    };
+
+    var makeBodyGroupingTable = function makeBodyGroupingTable(_bodyGroupingColumns) {
+        var table = {
+            rows: []
+        };
+
+        var r = 0;
+        table.rows[r] = { cols: [] };
+        var addC = 0;
+        for (var c = 0, cl = _bodyGroupingColumns.length; c < cl; c++) {
+            if (addC > this.columns.length) break;
+            var colspan = _bodyGroupingColumns[c].colspan || 1;
+            if (_bodyGroupingColumns[c].label || _bodyGroupingColumns[c].key) {
+                table.rows[r].cols.push({
+                    colspan: colspan,
+                    rowspan: 1,
+                    rowIndex: 0,
+                    colIndex: addC,
+                    columnAttr: "default",
+                    align: _bodyGroupingColumns[c].align,
+                    label: _bodyGroupingColumns[c].label,
+                    key: _bodyGroupingColumns[c].key,
+                    collector: _bodyGroupingColumns[c].collector,
+                    formatter: _bodyGroupingColumns[c].formatter
+                });
+            } else {
+                table.rows[r].cols.push({
+                    rowIndex: 0,
+                    colIndex: addC,
+                    colspan: colspan,
+                    rowspan: 1,
+                    label: "&nbsp;"
+                });
+            }
+            addC += colspan;
+        }
+        addC -= 1;
+        if (addC < this.columns.length + 1) {
+            for (var c = addC; c < this.columns.length + 1; c++) {
+                table.rows[r].cols.push({
+                    rowIndex: 0,
+                    colIndex: c + 1,
+                    colspan: 1,
+                    rowspan: 1,
+                    label: "&nbsp;"
+                });
+            }
+        }
+
+        return table;
+    };
+
+    var findPanelByColumnIndex = function findPanelByColumnIndex(_dindex, _colIndex, _rowIndex) {
+        var _containerPanelName;
+        var _isScrollPanel = false;
+        var _panels = [];
+
+        if (this.xvar.frozenRowIndex > _dindex) _panels.push("top");
+        if (this.xvar.frozenColumnIndex > _colIndex) _panels.push("left");
+        _panels.push("body");
+
+        if (this.xvar.frozenColumnIndex <= _colIndex || this.xvar.frozenRowIndex <= _dindex) {
+            _containerPanelName = _panels.join("-");
+            _panels.push("scroll");
+            _isScrollPanel = true;
+        }
+
+        return {
+            panelName: _panels.join("-"),
+            containerPanelName: _containerPanelName,
+            isScrollPanel: _isScrollPanel
+        };
+    };
+
+    var getRealPathForDataItem = function getRealPathForDataItem(_dataPath) {
+        var path = [];
+        var _path = [].concat(_dataPath.split(/[\.\[\]]/g));
+        _path.forEach(function (n) {
+            if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+        });
+        _path = null;
+        return path.join("");
+    };
+
+    GRID.util = {
+        divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
+        getMousePosition: getMousePosition,
+        ENM: ENM,
+        makeHeaderTable: makeHeaderTable,
+        makeBodyRowTable: makeBodyRowTable,
+        makeBodyRowMap: makeBodyRowMap,
+        makeFootSumTable: makeFootSumTable,
+        makeBodyGroupingTable: makeBodyGroupingTable,
+        findPanelByColumnIndex: findPanelByColumnIndex,
+        getRealPathForDataItem: getRealPathForDataItem
+    };
+})();
 // ax5.ui.mediaViewer
 (function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var MEDIAVIEWER;
 
     UI.addClass({
         className: "mediaViewer",
@@ -9724,20 +13716,13 @@ jQuery.fn.ax5select = function () {
                 }
                 return true;
             },
-                getFrameTmpl = function getFrameTmpl(columnKeys) {
-                return '\n                    <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">\n                        <div data-media-viewer-els="viewer-holder">\n                        <div data-media-viewer-els="viewer"></div>\n                        </div>\n                        <div data-media-viewer-els="viewer-loading">\n                        <div class="ax5-ui-media-viewer-loading-holder">\n                        <div class="ax5-ui-media-viewer-loading-cell">\n                        {{{loading.icon}}}\n                    {{{loading.text}}}\n                    </div>\n                    </div>\n                    </div>\n                    {{#media}}\n                    <div data-media-viewer-els="media-list-holder">\n                        <div data-media-viewer-els="media-list-prev-handle">{{{prevHandle}}}</div>\n                    <div data-media-viewer-els="media-list">\n                        <div data-media-viewer-els="media-list-table">\n                        {{#list}}\n                    <div data-media-viewer-els="media-list-table-td">\n                        {{#image}}\n                    <div data-media-thumbnail="{{@i}}">\n                        <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                        </div>\n                        {{/image}}\n                    {{#video}}\n                    <div data-media-thumbnail="{{@i}}">{{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}{{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}</div>\n                    {{/video}}\n                    </div>\n                        {{/list}}\n                    </div>\n                        </div>\n                        <div data-media-viewer-els="media-list-next-handle">{{{nextHandle}}}</div>\n                        </div>\n                        {{/media}}\n                    </div>\n                        ';
-            },
                 getFrame = function getFrame() {
-                var data = jQuery.extend(true, {}, cfg),
-                    tmpl = getFrameTmpl(cfg.columnKeys);
-
-                data.id = this.id;
+                var data = jQuery.extend(true, { id: this.id }, cfg);
 
                 try {
-                    return ax5.mustache.render(tmpl, data);
+                    return MEDIAVIEWER.tmpl.get.call(this, "frame", data, cfg.columnKeys);
                 } finally {
                     data = null;
-                    tmpl = null;
                 }
             },
                 onClick = function onClick(e, target) {
@@ -10039,7 +14024,7 @@ jQuery.fn.ax5select = function () {
              */
             this.select = function () {
                 var mediaView = {
-                    image: function image(obj, callBack) {
+                    image: function image(obj, callback) {
                         self.$["viewer-loading"].show();
                         var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
                         var img = new Image();
@@ -10048,15 +14033,15 @@ jQuery.fn.ax5select = function () {
                             self.$["viewer-loading"].fadeOut();
                             var h = dim[1];
                             var w = h * img.width / img.height;
-                            callBack(img, Math.floor(w), h);
+                            callback(img, Math.floor(w), h);
                         };
                         return img;
                     },
-                    video: function video(obj, callBack) {
+                    video: function video(obj, callback) {
                         self.$["viewer-loading"].show();
                         var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
                         var html = jQuery(obj.video[cfg.columnKeys.html]);
-                        callBack(html, dim[0], dim[1]);
+                        callback(html, dim[0], dim[1]);
                         self.$["viewer-loading"].fadeOut();
                     }
                 };
@@ -10127,6 +14112,24 @@ jQuery.fn.ax5select = function () {
         };
         return ax5mediaViewer;
     }());
+
+    MEDIAVIEWER = ax5.ui.mediaViewer;
+})();
+// ax5.ui.mediaViewer.tmpl
+(function () {
+    var MEDIAVIEWER = ax5.ui.mediaViewer;
+
+    var frame = function frame(columnKeys) {
+        return '\n            <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">\n                <div data-media-viewer-els="viewer-holder">\n                <div data-media-viewer-els="viewer"></div>\n                </div>\n                <div data-media-viewer-els="viewer-loading">\n                <div class="ax5-ui-media-viewer-loading-holder">\n                <div class="ax5-ui-media-viewer-loading-cell">\n                {{{loading.icon}}}\n            {{{loading.text}}}\n            </div>\n            </div>\n            </div>\n            {{#media}}\n            <div data-media-viewer-els="media-list-holder">\n                <div data-media-viewer-els="media-list-prev-handle">{{{prevHandle}}}</div>\n            <div data-media-viewer-els="media-list">\n                <div data-media-viewer-els="media-list-table">\n                {{#list}}\n            <div data-media-viewer-els="media-list-table-td">\n                {{#image}}\n            <div data-media-thumbnail="{{@i}}">\n                <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                </div>\n                {{/image}}\n            {{#video}}\n            <div data-media-thumbnail="{{@i}}">{{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}{{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}</div>\n            {{/video}}\n            </div>\n                {{/list}}\n            </div>\n                </div>\n                <div data-media-viewer-els="media-list-next-handle">{{{nextHandle}}}</div>\n                </div>\n                {{/media}}\n            </div>\n        ';
+    };
+
+    MEDIAVIEWER.tmpl = {
+        "frame": frame,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(MEDIAVIEWER.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
 })();
 // ax5.ui.uploader
 (function () {
@@ -10494,7 +14497,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "combobox",
-        version: "0.3.6"
+        version: "0.3.9"
     }, function () {
         /**
          * @class ax5combobox
@@ -10689,7 +14692,7 @@ jQuery.fn.ax5select = function () {
                             gindex: target.getAttribute("data-option-group-index"),
                             index: target.getAttribute("data-option-index")
                         }
-                    }, undefined, "internal");
+                    }, undefined, true);
                     U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
                     if (!item.multiple) {
                         this.close();
@@ -10719,7 +14722,7 @@ jQuery.fn.ax5select = function () {
                         }
                     }
 
-                    setOptionSelect.call(this, item.id, values, true); // set Value
+                    setOptionSelect.call(this, item.id, values, true, true); // set Value
                     focusLabel.call(this, this.activecomboboxQueueIndex);
                     if (!item.multiple) this.close();
                 }
@@ -10738,7 +14741,13 @@ jQuery.fn.ax5select = function () {
                 data.selected = item.selected;
                 data.hasSelected = data.selected && data.selected.length > 0;
                 data.removeIcon = item.removeIcon;
-                return ax5.mustache.render(COMBOBOX.tmpl["label"].call(this, item.columnKeys), data) + "&nbsp;";
+
+                try {
+                    //return ax5.mustache.render(COMBOBOX.tmpl["label"].call(this, item.columnKeys), data) + "&nbsp;";
+                    return COMBOBOX.tmpl.get.call(this, "label", data, item.columnKeys);
+                } finally {
+                    data = null;
+                }
             },
                 syncLabel = function syncLabel(queIdx) {
                 var item = this.queue[queIdx],
@@ -10765,9 +14774,13 @@ jQuery.fn.ax5select = function () {
                 this.queue[queIdx].$displayLabel.trigger("blur");
             },
                 onSearch = function onSearch(queIdx, searchWord) {
-
                 this.queue[queIdx].waitOptions = true;
-                this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx])));
+                /*
+                this.activecomboboxOptionGroup.find('[data-els="content"]').html(
+                    jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx]))
+                );
+                 */
+                this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "option", this.queue[queIdx], this.queue[queIdx].columnKeys)));
 
                 this.queue[queIdx].onSearch.call({
                     self: this,
@@ -10806,17 +14819,22 @@ jQuery.fn.ax5select = function () {
                     data.multiple = item.multiple;
                     data.lang = item.lang;
                     data.options = item.options;
-                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, item.columnKeys), data)));
+                    /*
+                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                        ax5.mustache.render(COMBOBOX.tmpl.options.call(this, item.columnKeys), data))
+                    );
+                    */
+                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)));
                 }.bind(this));
             },
                 focusWord = function focusWord(queIdx, searchWord) {
+                //console.log(searchWord);
+
                 if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
                 var options = [],
                     i = -1,
                     l = this.queue[queIdx].indexedOptions.length - 1,
                     n;
-
-                console.log(searchWord);
 
                 if (searchWord != "") {
                     var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
@@ -10942,6 +14960,7 @@ jQuery.fn.ax5select = function () {
                             if (typeof direction !== "undefined") {
                                 // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
                                 // 방향이 있으면 라벨 값을 수정
+
                                 var childNodes = item.$displayLabel.get(0).childNodes;
                                 var lastNode = childNodes[childNodes.length - 1];
                                 if (lastNode && lastNode.nodeType == '3') {
@@ -11345,21 +15364,24 @@ jQuery.fn.ax5select = function () {
 
                         for (var i = 0, l = childNodes.length; i < l; i++) {
                             var node = childNodes[i];
-                            if (node.nodeType in COMBOBOX.util.nodeTypeProcessor) {
-                                var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, queIdx, node, false);
-                                if (typeof value === "undefined") {
-                                    //
-                                } else if (U.isString(value)) {
-                                    //editingText = value;
-                                    //values.push(value);
-                                } else {
-                                    values.push(value);
+                            if (node.nodeType == 1) {
+                                if (node.nodeType in COMBOBOX.util.nodeTypeProcessor) {
+
+                                    var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, queIdx, node, false);
+                                    if (typeof value === "undefined") {
+                                        //
+                                    } else if (U.isString(value)) {
+                                        //editingText = value;
+                                        //values.push(value);
+                                    } else {
+                                        values.push(value);
+                                    }
                                 }
                             }
                         }
 
-                        //블러 이벤트명 작성중인 텍스트를 제외
-                        setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
+                        setOptionSelect.call(this, item.id, values, undefined, false); // set Value
+                        //if(item.selected.length != values.length){}
                     };
 
                     var comboboxEvent = {
@@ -11414,7 +15436,14 @@ jQuery.fn.ax5select = function () {
                                 self.open(queIdx);
                                 U.stopEvent(e);
                             }
-                            debouncedFocusWord.call(this, queIdx);
+
+                            var disableCtrlKeys = {
+                                "40": "KEY_DOWN",
+                                "38": "KEY_UP"
+                            };
+                            if (!disableCtrlKeys[e.which]) {
+                                debouncedFocusWord.call(this, queIdx);
+                            }
                         },
                         'keyDown': function keyDown(queIdx, e) {
                             if (e.which == ax5.info.eventKeys.ESC) {
@@ -11463,7 +15492,8 @@ jQuery.fn.ax5select = function () {
                                 return item.size ? "input-" + item.size : "";
                             }();
 
-                            item.$display = jQuery(ax5.mustache.render(COMBOBOX.tmpl["comboboxDisplay"].call(this, queIdx), data));
+                            //item.$display = jQuery(ax5.mustache.render(COMBOBOX.tmpl["comboboxDisplay"].call(this, queIdx), data));
+                            item.$display = jQuery(COMBOBOX.tmpl.get.call(this, "comboboxDisplay", data, item.columnKeys));
                             item.$displayTable = item.$display.find('[data-els="display-table"]');
                             item.$displayLabel = item.$display.find('[data-ax5combobox-display="label"]');
 
@@ -11477,7 +15507,8 @@ jQuery.fn.ax5select = function () {
                                     item.$select.attr("multiple", "multiple");
                                 }
                             } else {
-                                item.$select = jQuery(ax5.mustache.render(COMBOBOX.tmpl["formSelect"].call(this, queIdx), data));
+                                //item.$select = jQuery(ax5.mustache.render(COMBOBOX.tmpl["formSelect"].call(this, queIdx), data));
+                                item.$select = jQuery(COMBOBOX.tmpl.get.call(this, "formSelect", data, item.columnKeys));
                                 item.$target.append(item.$select);
                             }
 
@@ -11497,6 +15528,7 @@ jQuery.fn.ax5select = function () {
                         item.$display.unbind('click.ax5combobox').bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
 
                         // combobox 태그에 대한 이벤트 감시
+
 
                         item.$displayLabel.unbind("focus.ax5combobox").bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx)).unbind("blur.ax5combobox").bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx)).unbind('keyup.ax5combobox').bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5combobox").bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
 
@@ -11600,7 +15632,12 @@ jQuery.fn.ax5select = function () {
                             data.multiple = item.multiple;
                             data.lang = item.lang;
                             data.options = item.options;
-                            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)));
+                            /*
+                            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                                ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)
+                            ));
+                            */
+                            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)));
                         }
                     }.bind(this));
                 };
@@ -11655,8 +15692,10 @@ jQuery.fn.ax5select = function () {
                         return !this.hide;
                     });
 
-                    this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(COMBOBOX.tmpl["optionGroup"].call(this, item.columnKeys), data));
-                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)));
+                    //this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(COMBOBOX.tmpl["optionGroup"].call(this, item.columnKeys), data));
+                    this.activecomboboxOptionGroup = jQuery(COMBOBOX.tmpl.get.call(this, "optionGroup", data, item.columnKeys));
+                    //this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)));
+                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)));
                     this.activecomboboxQueueIndex = queIdx;
 
                     alignComboboxOptionGroup.call(this, "append"); // alignComboboxOptionGroup 에서 body append
@@ -11741,7 +15780,7 @@ jQuery.fn.ax5select = function () {
                 } else if (U.isString(_value) || U.isNumber(_value)) {
                     setOptionSelect.call(this, queIdx, { value: _value }, _selected || true, { noStateChange: true });
                 }
-                blurLabel.call(this, queIdx);
+                //blurLabel.call(this, queIdx);
 
                 return this;
             };
@@ -11766,7 +15805,7 @@ jQuery.fn.ax5select = function () {
                 }
                 clearSelected.call(this, queIdx);
                 setOptionSelect.call(this, queIdx, _text, true, { noStateChange: true });
-                blurLabel.call(this, queIdx);
+                //blurLabel.call(this, queIdx);
 
                 return this;
             };
@@ -11957,6 +15996,136 @@ jQuery.fn.ax5combobox = function () {
     };
 }();
 
+// ax5.ui.combobox.tmpl
+(function () {
+
+    var COMBOBOX = ax5.ui.combobox;
+    var U = ax5.util;
+
+    var optionGroup = function optionGroup(columnKeys) {
+        return '\n            <div class="ax5combobox-option-group {{theme}} {{size}}" data-ax5combobox-option-group="{{id}}">\n                <div class="ax-combobox-body">\n                    <div class="ax-combobox-option-group-content" data-els="content"></div>\n                </div>\n                <div class="ax-combobox-arrow"></div> \n            </div>\n        ';
+    };
+
+    var comboboxDisplay = function comboboxDisplay(columnKeys) {
+        return '\n            <div class="form-control {{formSize}} ax5combobox-display {{theme}}" \n            data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">\n                <div class="ax5combobox-display-table" data-els="display-table">\n                    <div data-ax5combobox-display="label-holder"> \n                    <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n                    data-ax5combobox-display="label"\n                    contentEditable="true"\n                    spellcheck="false">{{{label}}}</a>\n                    </div>\n                    <div data-ax5combobox-display="addon"> \n                        {{#multiple}}{{#reset}}\n                        <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                        {{/reset}}{{/multiple}}\n                        {{#icons}}\n                        <span class="addon-icon-closed">{{clesed}}</span>\n                        <span class="addon-icon-opened">{{opened}}</span>\n                        {{/icons}}\n                        {{^icons}}\n                        <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                        <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                        {{/icons}}\n                    </div>\n                </div>\n            </a>\n        ';
+    };
+
+    var formSelect = function formSelect(columnKeys) {
+        return '\n            <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n        ';
+    };
+
+    var options = function options(columnKeys) {
+        return '\n            {{#waitOptions}}\n                <div class="ax-combobox-option-item">\n                        <div class="ax-combobox-option-item-holder">\n                            <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">\n                                {{{lang.loading}}}\n                            </span>\n                        </div>\n                    </div>\n            {{/waitOptions}}\n            {{^waitOptions}}\n                {{#options}}\n                    {{#optgroup}}\n                        <div class="ax-combobox-option-group">\n                            <div class="ax-combobox-option-item-holder">\n                                <span class="ax-combobox-option-group-label">\n                                    {{{.}}}\n                                </span>\n                            </div>\n                            {{#options}}\n                            {{^hide}}\n                            <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" \n                            data-option-value="{{' + columnKeys.optionValue + '}}" \n                            {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                                <div class="ax-combobox-option-item-holder">\n                                    {{#multiple}}\n                                    <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">\n                                        <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                                    </span>\n                                    {{/multiple}}\n                                    <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                                </div>\n                            </div>\n                            {{/hide}}\n                            {{/options}}\n                        </div>                            \n                    {{/optgroup}}\n                    {{^optgroup}}\n                    {{^hide}}\n                    <div class="ax-combobox-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                        <div class="ax-combobox-option-item-holder">\n                            {{#multiple}}\n                            <span class="ax-combobox-option-item-cell ax-combobox-option-item-checkbox">\n                                <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                            </span>\n                            {{/multiple}}\n                            <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                        </div>\n                    </div>\n                    {{/hide}}\n                    {{/optgroup}}\n                {{/options}}\n                {{^options}}\n                    <div class="ax-combobox-option-item">\n                        <div class="ax-combobox-option-item-holder">\n                            <span class="ax-combobox-option-item-cell ax-combobox-option-item-label">\n                                {{{lang.noOptions}}}\n                            </span>\n                        </div>\n                    </div>\n                {{/options}}\n            {{/waitOptions}}\n        ';
+    };
+
+    var label = function label(columnKeys) {
+        return '\n            {{#selected}}<div tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">\n                <div data-ax5combobox-remove="true" data-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div>\n                <span>{{text}}</span>\n                </div>\n            {{/selected}}\n        ';
+    };
+
+    COMBOBOX.tmpl = {
+        "comboboxDisplay": comboboxDisplay,
+        "formSelect": formSelect,
+        "optionGroup": optionGroup,
+        "options": options,
+        "label": label,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(COMBOBOX.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
+})();
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+// ax5.ui.combobox.util
+(function () {
+
+    var COMBOBOX = ax5.ui.combobox;
+    var U = ax5.util;
+
+    var nodeTypeProcessor = {
+        '1': function _(queIdx, node, editable) {
+            var cfg = this.config;
+            var textNode = node;
+
+            if ($(node).find("span").get(0)) {
+                textNode = $(node).find("span").get(0);
+            }
+
+            var text = (textNode.textContent || textNode.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
+            var item = this.queue[queIdx];
+
+            var selectedIndex, option;
+            if (item.selected && item.selected.length > 0 && node.getAttribute("data-ax5combobox-selected-text") == text) {
+                selectedIndex = node.getAttribute("data-ax5combobox-selected-label");
+                option = item.selected[selectedIndex];
+                return {
+                    index: {
+                        gindex: option["@gindex"],
+                        index: option["@index"],
+                        value: option[cfg.columnKeys.optionValue]
+                    }
+                };
+            } else if (!node.getAttribute("data-ax5combobox-selected-text")) {
+                if (text != "") {
+                    if (editable) {
+                        return text;
+                    } else {
+                        var $option;
+                        if (item.optionFocusIndex > -1) $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
+                        if (item.optionFocusIndex > -1 && $option.get(0) && $option.attr("data-option-value")) {
+                            return {
+                                index: {
+                                    gindex: $option.attr("data-option-group-index"),
+                                    index: $option.attr("data-option-index")
+                                }
+                            };
+                        } else {
+                            return item.editable ? text : undefined;
+                        }
+                    }
+                } else {
+                    return undefined;
+                }
+            } else {
+                return text;
+            }
+        },
+        '3': function _(queIdx, node, editable) {
+            var cfg = this.config;
+            var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
+            var item = this.queue[queIdx];
+
+            if (text != "") {
+                if (editable) {
+                    return text;
+                } else {
+                    var $option;
+                    if (item.optionFocusIndex > -1) $option = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
+                    if (item.optionFocusIndex > -1 && $option.get(0) && $option.attr("data-option-value")) {
+                        return {
+                            index: {
+                                gindex: $option.attr("data-option-group-index"),
+                                index: $option.attr("data-option-index")
+                            }
+                        };
+                    } else {
+                        return item.editable ? text : undefined;
+                    }
+                }
+            } else {
+                return undefined;
+            }
+        }
+    };
+
+    COMBOBOX.util = {
+        nodeTypeProcessor: nodeTypeProcessor
+    };
+})();
 // ax5.ui.layout
 (function () {
     var UI = ax5.ui;
@@ -11964,7 +16133,7 @@ jQuery.fn.ax5combobox = function () {
 
     UI.addClass({
         className: "layout",
-        version: "0.2.10"
+        version: "0.3.0"
     }, function () {
         /**
          * @class ax5layout
@@ -12035,7 +16204,7 @@ jQuery.fn.ax5combobox = function () {
                 alignLayout = function () {
                 var beforeSetCSS = {
                     "split": {
-                        "vertical": function vertical(item, panel, panelIndex) {
+                        "horizontal": function horizontal(item, panel, panelIndex) {
                             if (panel.splitter) {
                                 panel.__height = item.splitter.size;
                             } else {
@@ -12056,7 +16225,7 @@ jQuery.fn.ax5combobox = function () {
                                 }
                             }
                         },
-                        "horizontal": function horizontal(item, panel, panelIndex) {
+                        "vertical": function vertical(item, panel, panelIndex) {
                             if (panel.splitter) {
                                 panel.__width = item.splitter.size;
                             } else {
@@ -12197,7 +16366,7 @@ jQuery.fn.ax5combobox = function () {
                         panel.$target.css(css);
                     },
                     "split": {
-                        "vertical": function vertical(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
+                        "horizontal": function horizontal(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
                             var css = {};
                             var prevPosition = panelIndex ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
                             if (panel.splitter) {
@@ -12215,7 +16384,7 @@ jQuery.fn.ax5combobox = function () {
                             panel.offsetEnd = Number(prevPosition) + Number(css.height);
                             panel.$target.css(css);
                         },
-                        "horizontal": function horizontal(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
+                        "vertical": function vertical(item, panel, panelIndex, withoutAsteriskSize, windowResize) {
                             var css = {};
                             var prevPosition = panelIndex ? Number(item.splitPanel[panelIndex - 1].offsetEnd) : 0;
 
@@ -12255,7 +16424,7 @@ jQuery.fn.ax5combobox = function () {
                             beforeSetCSS["split"][item.oriental].call(this, item, panel, panelIndex);
                         });
 
-                        if (item.oriental == "vertical") {
+                        if (item.oriental == "horizontal") {
                             withoutAsteriskSize = U.sum(item.splitPanel, function (n) {
                                 if (n.height != "*") return U.number(n.__height);
                             });
@@ -12277,8 +16446,7 @@ jQuery.fn.ax5combobox = function () {
                     }
                 };
 
-                return function (queIdx, callBack, windowResize) {
-
+                return function (queIdx, callback, windowResize) {
                     var item = this.queue[queIdx];
 
                     // 레이아웃 타겟의 CSS속성을 미리 저장해 둡니다. 왜? 패널별로 크기 계산 할 때 쓰려고
@@ -12297,8 +16465,8 @@ jQuery.fn.ax5combobox = function () {
                             this.onResize.call(this, this);
                         }.bind(item), 1);
                     }
-                    if (callBack) {
-                        callBack.call(item, item);
+                    if (callback) {
+                        callback.call(item, item);
                     }
                 };
             }(),
@@ -12369,7 +16537,7 @@ jQuery.fn.ax5combobox = function () {
                         "split": function split(e) {
                             var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
 
-                            if (item.oriental == "vertical") {
+                            if (item.oriental == "horizontal") {
                                 panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
 
                                 var prevPanel = item.splitPanel[panel.panelIndex - 1];
@@ -12445,7 +16613,7 @@ jQuery.fn.ax5combobox = function () {
                         },
                         "split-panel": {
                             "split": function split() {
-                                if (item.oriental == "vertical") {
+                                if (item.oriental == "horizontal") {
                                     // 앞과 뒤의 높이 조절
                                     item.splitPanel[panel.panelIndex - 1].__height += panel.__da;
                                     item.splitPanel[panel.panelIndex + 1].__height -= panel.__da;
@@ -12578,10 +16746,10 @@ jQuery.fn.ax5combobox = function () {
                                 });
                                 panelInfo.resizerType = "split";
                             } else {
-                                if (item.oriental == "vertical") {
+                                if (item.oriental == "horizontal") {
                                     panelInfo.__height = getPixel(panelInfo.height, item.targetDimension.height);
                                 } else {
-                                    item.oriental = "horizontal";
+                                    item.oriental = "vertical";
                                     panelInfo.__width = getPixel(panelInfo.width, item.targetDimension.width);
                                 }
                             }
@@ -12756,7 +16924,7 @@ jQuery.fn.ax5combobox = function () {
             /**
              * @method ax5layout.align
              * @param boundID
-             * @param {Function} [callBack]
+             * @param {Function} [callback]
              * @param {String} [windowResize]
              * @returns {ax5layout}
              */
@@ -12791,7 +16959,7 @@ jQuery.fn.ax5combobox = function () {
              * @method ax5layout.resize
              * @param boundID
              * @param {Object} resizeOption
-             * @param {Function} [callBack]
+             * @param {Function} [callback]
              * @returns {ax5layout}
              */
             this.resize = function () {
@@ -12812,7 +16980,7 @@ jQuery.fn.ax5combobox = function () {
                     "tab-panel": function tabPanel() {}
                 };
 
-                return function (boundID, resizeOption, callBack) {
+                return function (boundID, resizeOption, callback) {
                     var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
                     if (queIdx === -1) {
                         console.log(ax5.info.getError("ax5layout", "402", "resize"));
@@ -12820,7 +16988,7 @@ jQuery.fn.ax5combobox = function () {
                     }
 
                     resizeLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx], resizeOption);
-                    alignLayout.call(this, queIdx, callBack);
+                    alignLayout.call(this, queIdx, callback);
                     return this;
                 };
             }();
@@ -12843,7 +17011,7 @@ jQuery.fn.ax5combobox = function () {
                     "tab-panel": function tabPanel() {}
                 };
 
-                return function (boundID, callBack) {
+                return function (boundID, callback) {
                     var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
                     if (queIdx === -1) {
                         console.log(ax5.info.getError("ax5layout", "402", "reset"));
@@ -12851,7 +17019,7 @@ jQuery.fn.ax5combobox = function () {
                     }
 
                     resetLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx]);
-                    alignLayout.call(this, queIdx, callBack);
+                    alignLayout.call(this, queIdx, callback);
                     return this;
                 };
             }();
@@ -13112,10 +17280,10 @@ jQuery.fn.ax5layout = function () {
             };
 
             /**
-             * data_path에 값이 변경되는 이벤트 발생하면 callBack을 실행합니다.
+             * data_path에 값이 변경되는 이벤트 발생하면 callback을 실행합니다.
              * @method ax5binder.onChange
              * @param dataPath
-             * @param callBack
+             * @param callback
              * @returns {ax5binder}
              * @example
              * ```js
@@ -13133,16 +17301,16 @@ jQuery.fn.ax5layout = function () {
              *   });
              * ```
              */
-            this.onChange = function (dataPath, callBack) {
-                this.change_trigger[dataPath || "*"] = callBack;
+            this.onChange = function (dataPath, callback) {
+                this.change_trigger[dataPath || "*"] = callback;
                 return this;
             };
 
             /**
-             * data-ax-repeat="list" 속성이 부여된 엘리먼트 하위에 태그중에 data-ax-repeat-click 속성을 가진 아이템에 대해 클릭 이벤트 발생하면 callBack을 실행합니다.
+             * data-ax-repeat="list" 속성이 부여된 엘리먼트 하위에 태그중에 data-ax-repeat-click 속성을 가진 아이템에 대해 클릭 이벤트 발생하면 callback을 실행합니다.
              * @method ax5binder.onClick
              * @param dataPath
-             * @param callBack
+             * @param callback
              * @returns {ax5binder}
              * @example
              * ```js
@@ -13159,8 +17327,8 @@ jQuery.fn.ax5layout = function () {
              *   });
              * ```
              */
-            this.onClick = function (dataPath, callBack) {
-                this.click_trigger[dataPath] = callBack;
+            this.onClick = function (dataPath, callback) {
+                this.click_trigger[dataPath] = callback;
                 return this;
             };
 
@@ -13194,14 +17362,14 @@ jQuery.fn.ax5layout = function () {
 
                 this.change("*");
 
-                var callBack = this.update_trigger[dataPath];
-                if (callBack) {
+                var callback = this.update_trigger[dataPath];
+                if (callback) {
                     var that = {
                         repeat_path: dataPath,
                         tmpl: tmpl,
                         list: list
                     };
-                    callBack.call(that, that);
+                    callback.call(that, that);
                 }
 
                 return this;
@@ -13236,14 +17404,14 @@ jQuery.fn.ax5layout = function () {
 
                 this.change("*");
 
-                var callBack = this.update_trigger[dataPath];
-                if (callBack) {
+                var callback = this.update_trigger[dataPath];
+                if (callback) {
                     var that = {
                         repeat_path: dataPath,
                         tmpl: tmpl,
                         list: list
                     };
-                    callBack.call(that, that);
+                    callback.call(that, that);
                 }
 
                 return this;
@@ -13273,14 +17441,14 @@ jQuery.fn.ax5layout = function () {
 
                 this.change("*");
 
-                var callBack = this.update_trigger[dataPath];
-                if (callBack) {
+                var callback = this.update_trigger[dataPath];
+                if (callback) {
                     var that = {
                         repeat_path: dataPath,
                         tmpl: tmpl,
                         list: list
                     };
-                    callBack.call(that, that);
+                    callback.call(that, that);
                 }
 
                 return this;
@@ -13358,7 +17526,7 @@ jQuery.fn.ax5layout = function () {
             /**
              * @method ax5binder.onUpdate
              * @param dataPath
-             * @param callBack
+             * @param callback
              * @returns {ax5binder}
              * @example
              * ```js
@@ -13370,8 +17538,8 @@ jQuery.fn.ax5layout = function () {
              *  });
              * ```
              */
-            this.onUpdate = function (dataPath, callBack) {
-                this.update_trigger[dataPath] = callBack;
+            this.onUpdate = function (dataPath, callback) {
+                this.update_trigger[dataPath] = callback;
                 return this;
             };
 
@@ -13496,20 +17664,20 @@ jQuery.fn.ax5layout = function () {
                  */
 
                 //_this.tmpl
-                var callBack;
+                var callback;
                 for (var tk in _this.tmpl) {
                     for (var ix in _this.tmpl[tk]) {
                         // console.log(_this.tmpl[tk][ix].content);
                         this.print_tmpl(tk, _this.tmpl[tk][ix], "isInit");
                     }
 
-                    if (callBack = this.update_trigger[tk]) {
+                    if (callback = this.update_trigger[tk]) {
                         var that = {
                             repeat_path: tk,
                             tmpl: _this.tmpl[tk],
                             list: Function("", "return this." + tk + ";").call(this.model)
                         };
-                        callBack.call(that, that);
+                        callback.call(that, that);
                     }
                 }
             };
@@ -13584,9 +17752,9 @@ jQuery.fn.ax5layout = function () {
             };
 
             this.change = function (dataPath, that) {
-                var callBack = this.change_trigger[dataPath];
-                if (callBack) {
-                    callBack.call(that, that);
+                var callback = this.change_trigger[dataPath];
+                if (callback) {
+                    callback.call(that, that);
                 }
                 if (dataPath != "*" && this.change_trigger["*"]) {
                     this.change_trigger["*"].call(that, that);
@@ -13594,9 +17762,9 @@ jQuery.fn.ax5layout = function () {
             };
 
             this.click = function (dataPath, that) {
-                var callBack = this.click_trigger[dataPath];
-                if (callBack) {
-                    callBack.call(that, that);
+                var callback = this.click_trigger[dataPath];
+                if (callback) {
+                    callback.call(that, that);
                 }
             };
 
@@ -13930,7 +18098,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "autocomplete",
-        version: "0.0.4"
+        version: "0.0.5"
     }, function () {
         /**
          * @class ax5autocomplete
@@ -14174,7 +18342,7 @@ jQuery.fn.ax5layout = function () {
                 data.selected = item.selected;
                 data.hasSelected = data.selected && data.selected.length > 0;
                 data.removeIcon = item.removeIcon;
-                return ax5.mustache.render(AUTOCOMPLETE.tmpl["label"].call(this, item.columnKeys), data) + "&nbsp;";
+                return AUTOCOMPLETE.tmpl.get.call(this, "label", data, item.columnKeys) + "&nbsp;";
             },
                 syncLabel = function syncLabel(queIdx) {
                 var item = this.queue[queIdx],
@@ -14188,9 +18356,9 @@ jQuery.fn.ax5layout = function () {
                     n["@index"] = nindex;
                 });
 
-                item.$select.html(ax5.mustache.render(AUTOCOMPLETE.tmpl["formSelectOptions"].call(this, item.columnKeys), {
+                item.$select.html(AUTOCOMPLETE.tmpl.get.call(this, "formSelectOptions", {
                     selected: item.selected
-                }));
+                }, item.columnKeys));
 
                 item.$displayLabel.html(getLabel.call(this, queIdx));
                 item.$target.height('');
@@ -14256,7 +18424,7 @@ jQuery.fn.ax5layout = function () {
                     data.multiple = item.multiple;
                     data.lang = item.lang;
                     data.options = item.options;
-                    this.activeautocompleteOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl.options.call(this, item.columnKeys), data)));
+                    this.activeautocompleteOptionGroup.find('[data-els="content"]').html(jQuery(AUTOCOMPLETE.tmpl.get.call(this, "options", data, item.columnKeys)));
 
                     focusWord.call(this, this.activeautocompleteQueueIndex, searchWord);
                 }.bind(this));
@@ -14832,7 +19000,7 @@ jQuery.fn.ax5layout = function () {
                                 return item.size ? "input-" + item.size : "";
                             }();
 
-                            item.$display = jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl["autocompleteDisplay"].call(this, queIdx), data));
+                            item.$display = jQuery(AUTOCOMPLETE.tmpl.get.call(this, "autocompleteDisplay", data, item.columnKeys));
                             item.$displayTable = item.$display.find('[data-els="display-table"]');
                             item.$displayLabel = item.$display.find('[data-ax5autocomplete-display="label"]');
 
@@ -14845,7 +19013,7 @@ jQuery.fn.ax5layout = function () {
                                 }
                                 item.$select.attr("multiple", "multiple");
                             } else {
-                                item.$select = jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl["formSelect"].call(this, queIdx), data));
+                                item.$select = jQuery(AUTOCOMPLETE.tmpl.get.call(this, "formSelect", data, item.columnKeys));
                                 item.$target.append(item.$select);
                             }
 
@@ -14861,6 +19029,7 @@ jQuery.fn.ax5layout = function () {
                         item.$display.unbind('click.ax5autocomplete').bind('click.ax5autocomplete', autocompleteEvent.click.bind(this, queIdx));
 
                         // autocomplete 태그에 대한 이벤트 감시
+
 
                         item.$displayLabel.unbind("focus.ax5autocomplete").bind("focus.ax5autocomplete", autocompleteEvent.focus.bind(this, queIdx)).unbind("blur.ax5autocomplete").bind("blur.ax5autocomplete", autocompleteEvent.blur.bind(this, queIdx)).unbind('keyup.ax5autocomplete').bind('keyup.ax5autocomplete', autocompleteEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5autocomplete").bind("keydown.ax5autocomplete", autocompleteEvent.keyDown.bind(this, queIdx));
 
@@ -14975,8 +19144,8 @@ jQuery.fn.ax5layout = function () {
                     data.waitOptions = true;
                     data.options = [];
 
-                    this.activeautocompleteOptionGroup = jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl["optionGroup"].call(this, item.columnKeys), data));
-                    this.activeautocompleteOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(AUTOCOMPLETE.tmpl["options"].call(this, item.columnKeys), data)));
+                    this.activeautocompleteOptionGroup = jQuery(AUTOCOMPLETE.tmpl.get.call(this, "optionGroup", data, item.columnKeys));
+                    this.activeautocompleteOptionGroup.find('[data-els="content"]').html(jQuery(AUTOCOMPLETE.tmpl.get.call(this, "options", data, item.columnKeys)));
                     this.activeautocompleteQueueIndex = queIdx;
 
                     alignAutocompleteOptionGroup.call(this, "append"); // alignAutocompleteOptionGroup 에서 body append
@@ -15261,3 +19430,119 @@ jQuery.fn.ax5autocomplete = function () {
         return this;
     };
 }();
+// ax5.ui.autocomplete.tmpl
+(function () {
+    var AUTOCOMPLETE = ax5.ui.autocomplete;
+    var U = ax5.util;
+
+    var optionGroup = function optionGroup(columnKeys) {
+        return '\n<div class="ax5autocomplete-option-group {{theme}} {{size}}" data-ax5autocomplete-option-group="{{id}}">\n    <div class="ax-autocomplete-body">\n        <div class="ax-autocomplete-option-group-content" data-els="content"></div>\n    </div>\n    <div class="ax-autocomplete-arrow"></div> \n</div>\n';
+    };
+
+    var autocompleteDisplay = function autocompleteDisplay(columnKeys) {
+        return '\n<div class="form-control {{formSize}} ax5autocomplete-display {{theme}}" \ndata-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">\n    <div class="ax5autocomplete-display-table" data-els="display-table">\n        <div data-ax5autocomplete-display="label-holder"> \n        <a {{^tabIndex}}href="#ax5autocomplete-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n        data-ax5autocomplete-display="label"\n        contentEditable="true"\n        spellcheck="false">{{{label}}}</a>\n        </div>\n        <div data-ax5autocomplete-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n';
+    };
+
+    var formSelect = function formSelect(columnKeys) {
+        return '\n<select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" multiple="multiple"></select>\n';
+    };
+
+    var formSelectOptions = function formSelectOptions(columnKeys) {
+        return '\n{{#selected}}\n<option value="{{' + columnKeys.optionValue + '}}" selected="true">{{' + columnKeys.optionText + '}}</option>\n{{/selected}}\n';
+    };
+
+    var options = function options(columnKeys) {
+        return '\n{{#waitOptions}}\n    <div class="ax-autocomplete-option-item">\n            <div class="ax-autocomplete-option-item-holder">\n                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">\n                    {{{lang.loading}}}\n                </span>\n            </div>\n        </div>\n{{/waitOptions}}\n{{^waitOptions}}\n    {{#options}}\n        {{^hide}}\n        <div class="ax-autocomplete-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n            <div class="ax-autocomplete-option-item-holder">\n                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">{{' + columnKeys.optionText + '}}</span>\n            </div>\n        </div>\n        {{/hide}}\n    {{/options}}\n    {{^options}}\n        <div class="ax-autocomplete-option-item">\n            <div class="ax-autocomplete-option-item-holder">\n                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">\n                    {{{lang.noOptions}}}\n                </span>\n            </div>\n        </div>\n    {{/options}}\n{{/waitOptions}}\n';
+    };
+
+    var label = function label(columnKeys) {
+        return '{{#selected}}<div tabindex="-1" data-ax5autocomplete-selected-label="{{@i}}" data-ax5autocomplete-selected-text="{{text}}"><div data-ax5autocomplete-remove="true" data-ax5autocomplete-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}';
+    };
+
+    AUTOCOMPLETE.tmpl = {
+        "autocompleteDisplay": autocompleteDisplay,
+        "formSelect": formSelect,
+        "formSelectOptions": formSelectOptions,
+        "optionGroup": optionGroup,
+        "options": options,
+        "label": label,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(AUTOCOMPLETE.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
+})();
+// ax5.ui.autocomplete.util
+(function () {
+
+    var AUTOCOMPLETE = ax5.ui.autocomplete;
+    var U = ax5.util;
+
+    var nodeTypeProcessor = {
+        '1': function _(queIdx, node, editable) {
+            var cfg = this.config;
+            var textNode = node;
+
+            if ($(node).find("span").get(0)) {
+                textNode = $(node).find("span").get(0);
+            }
+
+            var text = (textNode.textContent || textNode.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
+            var item = this.queue[queIdx];
+
+            var selectedIndex, option;
+
+            if (item.selected && item.selected.length > 0) {
+                if (node.getAttribute("data-ax5autocomplete-selected-text") == text) {
+                    selectedIndex = node.getAttribute("data-ax5autocomplete-selected-label");
+                    option = item.selected[selectedIndex];
+                    return {
+                        selectedIndex: {
+                            index: option["@index"],
+                            value: option[cfg.columnKeys.optionValue]
+                        }
+                    };
+                } else {
+                    selectedIndex = node.getAttribute("data-ax5autocomplete-selected-label");
+                    option = item.selected[selectedIndex];
+                    return {
+                        removeSelectedIndex: {
+                            index: option["@index"],
+                            value: option[cfg.columnKeys.optionValue]
+                        }
+                    };
+                }
+            }
+        },
+        '3': function _(queIdx, node, editable) {
+            var cfg = this.config;
+            var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
+            var item = this.queue[queIdx];
+
+            if (text != "") {
+                if (editable) {
+                    return text;
+                } else {
+                    var $option;
+                    if (item.optionFocusIndex > -1) $option = this.activeautocompleteOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
+                    if (item.optionFocusIndex > -1 && $option.get(0) && $option.attr("data-option-value")) {
+                        return {
+                            optionIndex: {
+                                gindex: $option.attr("data-option-group-index"),
+                                index: $option.attr("data-option-index")
+                            }
+                        };
+                    } else {
+                        return item.editable ? text : undefined;
+                    }
+                }
+            } else {
+                return undefined;
+            }
+        }
+    };
+
+    AUTOCOMPLETE.util = {
+        nodeTypeProcessor: nodeTypeProcessor
+    };
+})();
