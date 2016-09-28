@@ -42,111 +42,112 @@ describe('ax5.util.getType TEST', function() {
         it('ax5.util.getType(' + testCase.expect + ') expect ' + testCase.expect, function() {
             var actual = ax5.util.getType.apply(this, testCase.args);
 
-            actual.should.equal(testCase.expect);
+            should.equal(actual, testCase.expect);
         });
     });
 
 });
 
-var getTypes = function(typeNames, isExclude) {
-    var types = [
-        { name: 'Window', value: window },
-        { name: 'DOMElement', value: document.createElement('div') },
-        { name: 'Object', value: {} },
-        { name: 'Array', value: [] },
-        { name: 'Function', value: new Function() },
-        { name: 'String', value: 'ax5ui' },
-        { name: 'Number', value: 5 },
-        { name: 'DOMNodelist', value: document.querySelectorAll('.content') },
-        { name: 'undefined', value: undefined },
-        { name: 'Null', value: null },
-        { name: 'EmptyString', value: '' },
-        { name: 'Date', value: new Date() }
-    ];
-
-    var matchedTypes = _.map(typeNames, function(typeName){
-        return _.find(types, { 'name': typeName });
-    });
-
-    if (isExclude === true) {
-        return _.reject(types, function(type){
-            return _.findIndex(matchedTypes, { 'name': type.name }) > -1;
-        });
-    } else {
-        return matchedTypes;
-    }
-}
-
-var getTestCases = function(typeNames){
-    var testCases = [];
-    var trueExpectedTypes = getTypes(typeNames);
-    var falseExpectedTypes = getTypes(typeNames, true);
-
-    _.each(trueExpectedTypes, function(type){
-        testCases.push({
-            args: [ type ],
-            expect: true
-        });
-    });
-
-    _.each(falseExpectedTypes, function(type){
-        testCases.push({
-            args: [ type ],
-            expect: false
-        });
-    });
-
-    return testCases;
-}
-
-var testTargets = [
-    {
-        testMethod: 'isWindow',
-        testCases: getTestCases(['Window'])
-    },
-    {
-        testMethod: 'isElement',
-        testCases: getTestCases(['DOMElement'])
-    },
-    {
-        testMethod: 'isObject',
-        testCases: getTestCases(['Object'])
-    },
-    {
-        testMethod: 'isArray',
-        testCases: getTestCases(['Array'])
-    },
-    {
-        testMethod: 'isFunction',
-        testCases: getTestCases(['Function'])
-    },
-    {
-        testMethod: 'isString',
-        testCases: getTestCases(['String', 'EmptyString'])
-    },
-    {
-        testMethod: 'isNumber',
-        testCases: getTestCases(['Number'])
-    },
-    {
-        testMethod: 'isNodelist',
-        testCases: getTestCases(['DOMNodelist'])
-    },
-    {
-        testMethod: 'isUndefined',
-        testCases: getTestCases(['undefined'])
-    },
-    {
-        testMethod: 'isNothing',
-        testCases: getTestCases(['undefined', 'Null', 'EmptyString'])
-    },
-    {
-        testMethod: 'isDate',
-        testCases: getTestCases(['Date'])
-    }
-];
 
 describe('ax5.util.is{Type}', function() {
+    var getTypes = function(typeNames, isExclude) {
+        var types = [
+            { name: 'Window', value: window },
+            { name: 'DOMElement', value: document.createElement('div') },
+            { name: 'Object', value: {} },
+            { name: 'Array', value: [] },
+            { name: 'Function', value: new Function() },
+            { name: 'String', value: 'ax5ui' },
+            { name: 'Number', value: 5 },
+            { name: 'DOMNodelist', value: document.querySelectorAll('.content') },
+            { name: 'undefined', value: undefined },
+            { name: 'Null', value: null },
+            { name: 'EmptyString', value: '' },
+            { name: 'Date', value: new Date() }
+        ];
+
+        var matchedTypes = _.map(typeNames, function(typeName){
+            return _.find(types, { 'name': typeName });
+        });
+
+        if (isExclude === true) {
+            return _.reject(types, function(type){
+                return _.findIndex(matchedTypes, { 'name': type.name }) > -1;
+            });
+        } else {
+            return matchedTypes;
+        }
+    }
+
+    var getTestCases = function(typeNames){
+        var testCases = [];
+        var trueExpectedTypes = getTypes(typeNames);
+        var falseExpectedTypes = getTypes(typeNames, true);
+
+        _.each(trueExpectedTypes, function(type){
+            testCases.push({
+                args: [ type ],
+                expect: true
+            });
+        });
+
+        _.each(falseExpectedTypes, function(type){
+            testCases.push({
+                args: [ type ],
+                expect: false
+            });
+        });
+
+        return testCases;
+    }
+
+    var testTargets = [
+        {
+            testMethod: 'isWindow',
+            testCases: getTestCases(['Window'])
+        },
+        {
+            testMethod: 'isElement',
+            testCases: getTestCases(['DOMElement'])
+        },
+        {
+            testMethod: 'isObject',
+            testCases: getTestCases(['Object'])
+        },
+        {
+            testMethod: 'isArray',
+            testCases: getTestCases(['Array'])
+        },
+        {
+            testMethod: 'isFunction',
+            testCases: getTestCases(['Function'])
+        },
+        {
+            testMethod: 'isString',
+            testCases: getTestCases(['String', 'EmptyString'])
+        },
+        {
+            testMethod: 'isNumber',
+            testCases: getTestCases(['Number'])
+        },
+        {
+            testMethod: 'isNodelist',
+            testCases: getTestCases(['DOMNodelist'])
+        },
+        {
+            testMethod: 'isUndefined',
+            testCases: getTestCases(['undefined'])
+        },
+        {
+            testMethod: 'isNothing',
+            testCases: getTestCases(['undefined', 'Null', 'EmptyString'])
+        },
+        {
+            testMethod: 'isDate',
+            testCases: getTestCases(['Date'])
+        }
+    ];
+
     _.each(testTargets, function(testTarget){
         describe('ax5.util.' + testTarget.testMethod + ' TEST', function() {
             _.each(testTarget.testCases, function(testCase){
@@ -154,7 +155,7 @@ describe('ax5.util.is{Type}', function() {
                     it('ax5.util.' + testTarget.testMethod + '(' + args.name + ') expect ' + testCase.expect, function() {
                         var actual = ax5.util[testTarget.testMethod].call(this, args.value);
 
-                        actual.should.equal(testCase.expect);
+                        should.equal(actual, testCase.expect);
                     });
                 });
             });

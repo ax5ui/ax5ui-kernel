@@ -1,6 +1,6 @@
 describe('ax5.info TEST', function() {
     it('ax5.info.version expect x.x.x', function() {
-        should.equal(ax5.info.version.split('.').length, 3);
+        ax5.info.version.should.match(/\d+\.\d+\.\d+/);
     });
 
     it('ax5.info.eventKeys expect {BACKSPACE: 8, ...}', function() {
@@ -37,7 +37,7 @@ describe('ax5.info TEST', function() {
     });
 
     it('ax5.info.isBrowser expect true', function() {
-        should.equal(ax5.info.isBrowser, true);
+        should(ax5.info.isBrowser).Boolean();
     });
 
     it('ax5.info.wheelEnm expect "mousewheel"', function() {
