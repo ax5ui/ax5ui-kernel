@@ -2,7 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-formatter
-"formatter" provides a set of pre-defined formats for various kinds of values. 
+"formatter" provides a set of pre-defined formats for various types of values. 
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
