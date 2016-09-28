@@ -3,6 +3,7 @@
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var PICKER;
 
     UI.addClass({
         className: "picker",
@@ -74,12 +75,10 @@
                     var pickerType = {
                         '@fn'       : function (queIdx, _input) {
                             var item = this.queue[queIdx],
-                                config = {},
-                                inputLength = _input.length;
-
-                            config = {
-                                inputLength: inputLength || 1
-                            };
+                                inputLength = _input.length,
+                                 config = {
+                                      inputLength: inputLength || 1
+                                 };
 
                             if (inputLength > 1) {
                                 config.btns = {
@@ -99,15 +98,10 @@
                             var item = this.queue[queIdx],
                                 contentWidth = (item.content) ? item.content.width || 270 : 270,
                                 contentMargin = (item.content) ? item.content.margin || 5 : 5,
-                                config = {},
-                                inputLength = _input.length;
-
-                            config = {
+                                inputLength = _input.length,
+                                config = {
                                 contentWidth: (contentWidth * inputLength) + ((inputLength - 1) * contentMargin),
-                                content     : {
-                                    width : contentWidth,
-                                    margin: contentMargin
-                                },
+                                content     : { width : contentWidth, margin: contentMargin },
                                 inputLength : inputLength || 1
                             };
 
@@ -126,12 +120,10 @@
                         },
                         'secure-num': function (queIdx, _input) {
                             var item = this.queue[queIdx],
-                                config = {},
-                                inputLength = _input.length;
-
-                            config = {
-                                inputLength: inputLength || 1
-                            };
+                                inputLength = _input.length,
+                                config = {
+                                    inputLength: inputLength || 1
+                                };
 
                             this.queue[queIdx] = jQuery.extend(true, config, item);
 
@@ -140,12 +132,10 @@
                         },
                         'keyboard'  : function (queIdx, _input) {
                             var item = this.queue[queIdx],
-                                config = {},
-                                inputLength = _input.length;
-
-                            config = {
-                                inputLength: inputLength || 1
-                            };
+                                inputLength = _input.length,
+                                config = {
+                                    inputLength: inputLength || 1
+                                };
 
                             this.queue[queIdx] = jQuery.extend(true, config, item);
 
@@ -154,12 +144,10 @@
                         },
                         'numpad'    : function (queIdx, _input) {
                             var item = this.queue[queIdx],
-                                config = {},
-                                inputLength = _input.length;
-
-                            config = {
-                                inputLength: inputLength || 1
-                            };
+                                inputLength = _input.length,
+                                config = {
+                                    inputLength: inputLength || 1
+                                };
 
                             this.queue[queIdx] = jQuery.extend(true, config, item);
 
@@ -214,28 +202,7 @@
                     }
 
                 })(),
-                getTmpl = function (queIdx) {
-                    return `
-                    <div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">
-                        {{#title}}
-                            <div class="ax-picker-heading">{{title}}</div>
-                        {{/title}}
-                        <div class="ax-picker-body">
-                            <div class="ax-picker-content" data-picker-els="content" style="width:{{contentWidth}}px;"></div>
-                            {{#btns}}
-                                <div class="ax-picker-buttons">
-                                {{#btns}}
-                                    {{#@each}}
-                                    <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>
-                                    {{/@each}}
-                                {{/btns}}
-                                </div>
-                            {{/btns}}
-                        </div>
-                        <div class="ax-picker-arrow"></div>
-                    </div>
-                    `;
-                },
+
                 alignPicker = function (append) {
                     if (!this.activePicker) return this;
 
@@ -883,7 +850,7 @@
                         return this;
                     }
 
-                    this.activePicker = jQuery(ax5.mustache.render(getTmpl.call(this, item, queIdx), item));
+                    this.activePicker = jQuery( PICKER.tmpl.get(this, item, queIdx));
                     this.activePickerArrow = this.activePicker.find(".ax-picker-arrow");
                     this.activePickerQueueIndex = queIdx;
                     item.pickerContent = this.activePicker.find('[data-picker-els="content"]');
@@ -1022,4 +989,7 @@ jQuery.fn.ax5picker = (function () {
         }
         return this;
     }
+
+    PICKER = ax5.ui.picker;
+
 })();
