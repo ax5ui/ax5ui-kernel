@@ -730,6 +730,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 typeName = "element";
             } else if (!!(O && O.nodeType == 11)) {
                 typeName = "fragment";
+            } else if (O == null) {
+                typeName = "null";
             } else if (typeof O === "undefined") {
                 typeName = "undefined";
             } else if (_toString.call(O) == "[object Object]") {

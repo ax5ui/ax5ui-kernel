@@ -748,6 +748,9 @@
             else if (!!(O && O.nodeType == 11)) {
                 typeName = "fragment";
             }
+            else if (O == null) {
+                typeName = "null";
+            }
             else if (typeof O === "undefined") {
                 typeName = "undefined";
             }
