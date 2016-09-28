@@ -231,20 +231,3 @@
     }());
     MASK = ax5.ui.mask;
 })();
-// ax5.ui.mask.tmpl
-(function () {
-
-    var MASK = ax5.ui.mask;
-
-    var defaultMask = function defaultMask(columnKeys) {
-        return "\n            <div class=\"ax-mask {{theme}}\" id=\"{{maskId}}\">\n                <div class=\"ax-mask-bg\"></div>\n                <div class=\"ax-mask-content\">\n                    <div class=\"ax-mask-body\">\n                    {{{body}}}\n                    </div>\n                </div>\n            </div>\n        ";
-    };
-
-    MASK.tmpl = {
-        "defaultMask": defaultMask,
-
-        get: function get(tmplName, data, columnKeys) {
-            return ax5.mustache.render(MASK.tmpl[tmplName].call(this, columnKeys), data);
-        }
-    };
-})();

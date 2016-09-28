@@ -2,6 +2,7 @@
 
 # ax5ui-uploader
 "uploader" allows users to upload single or multiple files with item selection.
+
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 > * _[ax5core](http://ax5.io/ax5core)_
@@ -48,7 +49,7 @@ Folder location can be any for your project. However, please be sure to assign t
 ```
 
 **CDN urls**
-This is a list of CDN urls for ax5ui-mask. ax5ui offers the CDN services through rawgit.
+This is a list of CDN urls for ax5ui-multi-uploader. ax5ui offers the CDN services through rawgit.
 ```
 https://cdn.rawgit.com/ax5ui/ax5ui-uploader/master/dist/ax5uploader.css
 https://cdn.rawgit.com/ax5ui/ax5ui-uploader/master/dist/ax5uploader.js
