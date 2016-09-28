@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "0.3.8"
+        version: "0.3.9"
     }, (function () {
         /**
          * @class ax5combobox
@@ -263,7 +263,15 @@
                     data.selected = item.selected;
                     data.hasSelected = (data.selected && data.selected.length > 0);
                     data.removeIcon = item.removeIcon;
-                    return ax5.mustache.render(COMBOBOX.tmpl["label"].call(this, item.columnKeys), data) + "&nbsp;";
+                        
+                    try {
+                        //return ax5.mustache.render(COMBOBOX.tmpl["label"].call(this, item.columnKeys), data) + "&nbsp;";
+                        return COMBOBOX.tmpl.get.call(this, "label", data, item.columnKeys);
+                    }
+                    finally {
+                        data = null;
+                    }
+
                 },
                 syncLabel = function (queIdx) {
                     var item = this.queue[queIdx], displayTableHeight;
@@ -290,9 +298,15 @@
                     this.queue[queIdx].$displayLabel.trigger("blur");
                 },
                 onSearch = function (queIdx, searchWord) {
-
                     this.queue[queIdx].waitOptions = true;
-                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx])));
+                    /*
+                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(
+                        jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx]))
+                    );
+                     */
+                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                        COMBOBOX.tmpl.get.call(this, "option", this.queue[queIdx], this.queue[queIdx].columnKeys)
+                    ));
 
                     this.queue[queIdx].onSearch.call({
                         self: this,
@@ -331,11 +345,20 @@
                         data.multiple = item.multiple;
                         data.lang = item.lang;
                         data.options = item.options;
-                        this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, item.columnKeys), data)));
+                        /*
+                        this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                            ax5.mustache.render(COMBOBOX.tmpl.options.call(this, item.columnKeys), data))
+                        );
+                        */
+                        this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                            COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)
+                        ));
 
                     }).bind(this));
                 },
                 focusWord = function (queIdx, searchWord) {
+                    //console.log(searchWord);
+                    
                     if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
                     var options = [], i = -1, l = this.queue[queIdx].indexedOptions.length - 1, n;
 
@@ -478,6 +501,7 @@
                                 if (typeof direction !== "undefined") {
                                     // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
                                     // 방향이 있으면 라벨 값을 수정
+
                                     var childNodes = item.$displayLabel.get(0).childNodes;
                                     var lastNode = childNodes[childNodes.length - 1];
                                     if (lastNode && lastNode.nodeType == '3') {
@@ -487,6 +511,7 @@
                                         jQuery(lastNode).after(item.indexedOptions[_focusIndex].text);
                                         U.selectRange(item.$displayLabel, "end");
                                     }
+
                                 }
                             }
                         }
@@ -985,7 +1010,14 @@
                                 self.open(queIdx);
                                 U.stopEvent(e);
                             }
-                            debouncedFocusWord.call(this, queIdx);
+
+                            var disableCtrlKeys = {
+                                "40": "KEY_DOWN",
+                                "38": "KEY_UP"
+                            };
+                            if(!disableCtrlKeys[e.which]) {
+                                debouncedFocusWord.call(this, queIdx);
+                            }
                         },
                         'keyDown': function (queIdx, e) {
                             if (e.which == ax5.info.eventKeys.ESC) {
@@ -1037,7 +1069,8 @@
                                 return (item.size) ? "input-" + item.size : "";
                             })();
 
-                            item.$display = jQuery(ax5.mustache.render(COMBOBOX.tmpl["comboboxDisplay"].call(this, queIdx), data));
+                            //item.$display = jQuery(ax5.mustache.render(COMBOBOX.tmpl["comboboxDisplay"].call(this, queIdx), data));
+                            item.$display = jQuery( COMBOBOX.tmpl.get.call(this, "comboboxDisplay", data, item.columnKeys) );
                             item.$displayTable = item.$display.find('[data-els="display-table"]');
                             item.$displayLabel = item.$display.find('[data-ax5combobox-display="label"]');
 
@@ -1054,7 +1087,8 @@
                                 }
                             }
                             else {
-                                item.$select = jQuery(ax5.mustache.render(COMBOBOX.tmpl["formSelect"].call(this, queIdx), data));
+                                //item.$select = jQuery(ax5.mustache.render(COMBOBOX.tmpl["formSelect"].call(this, queIdx), data));
+                                item.$select = jQuery( COMBOBOX.tmpl.get.call(this, "formSelect", data, item.columnKeys) );
                                 item.$target.append(item.$select);
                             }
 
@@ -1196,7 +1230,14 @@
                             data.multiple = item.multiple;
                             data.lang = item.lang;
                             data.options = item.options;
-                            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)));
+                            /*
+                            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                                ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)
+                            ));
+                            */
+                            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                                COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)
+                            ));
                         }
                     }).bind(this));
                 };
@@ -1249,8 +1290,12 @@
                         return !this.hide;
                     });
 
-                    this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(COMBOBOX.tmpl["optionGroup"].call(this, item.columnKeys), data));
-                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)));
+                    //this.activecomboboxOptionGroup = jQuery(ax5.mustache.render(COMBOBOX.tmpl["optionGroup"].call(this, item.columnKeys), data));
+                    this.activecomboboxOptionGroup = jQuery( COMBOBOX.tmpl.get.call(this, "optionGroup", data, item.columnKeys) );
+                    //this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)));
+                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                        COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)
+                    ));
                     this.activecomboboxQueueIndex = queIdx;
 
                     alignComboboxOptionGroup.call(this, "append"); // alignComboboxOptionGroup 에서 body append
