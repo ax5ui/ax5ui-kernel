@@ -1,7 +1,10 @@
 # Type
 
-## ax5.util.getType
-Return argument object type
+## ax5.util.getType()
+Return argument's object type.
+- argument : any type of variable.
+- return : The type of argument(number, string, array, object, function, nodelist, fragment).
+
 ```js
 ax5.util.getType(1); // "number"
 ax5.util.getType("1"); // "string"
@@ -11,49 +14,31 @@ ax5.util.getType(function () {}); // "function"
 ax5.util.getType(document.querySelectorAll("div")); // "nodelist"
 ax5.util.getType(document.createDocumentFragment()); // "fragment"
 ```
-Javascript object type name is not clear. so util.getType method very useful.
+Javascript object type name is not clear. so util.getType() method is very useful.
 
 ---
-f
-## ax5.util.is(Type)
-Return argument object type is [type] result.
+## ax5.util.is`Type`()
+Return Boolean value depending on the correspondence of 'does the argument is this type?'.
+- argument : any type of variable.
+- return : Boolean Value 1 || 0 (True || False)
+
 ```js
-// return is window.
+// return 1 || 0 (True || False)
 ax5.util.isWindow(window);
-
-// return is element.
 ax5.util.isElement(document.getElementById("#ax5-util-is-type"));
-
-// return is Object.
 ax5.util.isObject({});
-
-// return is Array.
 ax5.util.isArray([]);
-
-// return is Functon.
 ax5.util.isFunction(new Function);
-
-// return is String.
 ax5.util.isString('');
-
-// return is Number.
 ax5.util.isNumber(1);
-
-// return is nodeList.
 ax5.util.isNodelist(document.querySelectorAll(".content"));
-
-// return is undefined.
 ax5.util.isUndefined();
-
-// return is undefined|''|null.
 ax5.util.isNothing();
-
-// return is Date
 ax5.util.isDate();
 
 ```
 
-## ax5.util.isDateFormat
+#### ax5.util.isDateFormat
 `ax5.util.isDateFormat(String)`
 
 ```js
@@ -67,108 +52,243 @@ console.log(ax5.util.isDateFormat('20161132')); // false
 
 # Object
 ## ax5.util.filter
-The first item is delivered to the second argument of the filter function. The second argument is an anonymous function, the result is True, the items will be collected.
-```js
-var result, aarray = [5, 4, 3, 2, 1];
+You can freely edit filter function by anonymous function when use.
+The data is filtered by your customized filter function.
 
-result = ax5.util.filter(aarray, function () {
+ - Argument 01 : Original Data.
+ - Argument 02 : Anonymous function(filter function). 
+ - Usage : ax5.util.filter(Argument01, function(){ return });
+ - Output
+ 
+**Example 01**
+
+```js
+var aarray = [5, 4, 3, 2, 1];
+```
+aarray : original data.
+
+```js
+var result = ax5.util.filter(array, function () {
     return this % 2;
 });
-console.log(result);
+```
+edit annoymous function. it will be a filter.
 
+```js
+console.log(result);
+> [5, 3, 1]
+```
+if the return value of filter function is false, the data is filtered.
+
+
+**Example 02**
+```js
 var list = [
-    {isdel: 1, name: "ax5-1"}, {name: "ax5-2"}, {
-        isdel: 1,
-        name: "ax5-3"
-    }, {name: "ax5-4"}, {name: "ax5-5"}
+    {isdel: 1, name: "ax5-1"},
+    {name: "ax5-2"},
+    {isdel: 1,name: "ax5-3"},
+    {name: "ax5-4"},
+    {name: "ax5-5"}
 ];
-result = ax5.util.filter(list, function () {
+```
+
+```js
+var result = ax5.util.filter(list, function () {
     return (this.isdel != 1);
 });
-console.log(JSON.stringify(result));
+```
 
-var filObject = {a:1, s:"string", oa:{pickup:true, name:"AXISJ"}, os:{pickup:true, name:"AX5"}};
-result = ax5.util.filter( filObject, function(){
+```js
+console.log(JSON.stringify(result));
+> [object, object, object]
+>> object0.name = ax5-2
+>> object1.name = ax5-4
+>> object2.name = ax5-5
+```
+
+**Example03**
+```js
+var filObject = {
+a : 1, 
+s : "string", 
+oa : {pickup:true, name:"AXISJ"}, 
+os : {pickup:true, name:"AX5"}
+};
+```
+
+```js
+var result = ax5.util.filter( filObject, function(){
 	return this.pickup;
 });
+```
+
+```js
 console.log( ax5.util.toJson(result) );
-// [{"pickup": , "name": "AXISJ"}, {"pickup": , "name": "AX5"}]
+> [{"pickup": , "name": "AXISJ"}, {"pickup": , "name": "AX5"}]
 ```
 
 ---
 
 ## ax5.util.search
-It returns the first item of the result of the function is True.
+You can freely edit search function by anonymous function when use.
+The search function will return the first item which is correspondent to the function.
+
+- Argument 01 : Original Data.
+- Argument 02 : Anonymous function(search function). 
+- Usage : Argument01[ ax5.util.search(Argument01, function(){ return }) ];
+
+**Example 01**
 ```js
 var a = ["A", "X", "5"];
+```
+
+```js
 var idx = ax5.util.search(a, function () {
     return this == "X";
 });
+```
+
+```js
 console.log(a[idx]);
+> X
+```
+if there is no correspondont item, it will retrun -1
 
-idx = ax5.util.search(a, function () {
-    return this == "B";
-});
-console.log(idx);
-// -1
 
-console.log(a[
-    ax5.util.search(a, function (idx) {
-        return idx == 2;
-    })
-    ]);
-// 5
+**Example 02**
+```js
+var a = ["A", "X", "5"];
+```
 
+```js
+console.log(
+      a[
+        ax5.util.search(a, function (idx){
+            return idx == 2;
+          })
+      ]
+    );
+> 5
+```
+
+**Example 03**
+```js
 var b = {a: "AX5-0", x: "AX5-1", 5: "AX5-2"};
-console.log(b[
-    ax5.util.search(b, function (k, v) {
-        return k == "x";
-    })
-    ]);
-// AX5-1
+```
+
+```js
+console.log(
+      b[
+        ax5.util.search(b, function (k) {
+            return k == "x";
+        })
+      ]
+    );
+> AX5-1
 ```
 ---
 
 ## ax5.util.map
-`"map"` creating a new array features set into an array or object. In the example I've created a simple object array as a numeric array.
+You can freely edit mapping function by anonymous function when use.
+The mapping function will return the array or object which is set by original data.
+In the example I've created a simple object array as a numeric array.
+
+ - Argument 01 : Original Data.
+ - Argument 02 : Anonymous function(mapping function). 
+ - Usage : ax5.util.map(Argument01, function(){ return }).
+ - Output
+
 ```js
 var a = [1, 2, 3, 4, 5];
+```
+Usage 01 :
+```js
 a = ax5.util.map(a, function () {
     return {id: this};
 });
-console.log(ax5.util.toJson(a));
+```
 
+Output 01 :
+```js
+console.log(ax5.util.toJson(a));
+> [{"id": 1},{"id": 2},{"id": 3},{"id": 4},{"id": 5}]
+```
+
+Usage 02 :
+```js
 console.log(
     ax5.util.map({a: 1, b: 2}, function (k, v) {
         return {id: k, value: v};
     })
 );
 ```
+
+Output 02 :
+```js
+> [object, object]
+>> object0.id = a
+>> object0.value = 1
+>> object1.id = b
+>> object1.value = 2
+```
 ---
 
 ## ax5.util.merge
-`"array like"` the type of object `"concat"`.
+concat the 'array like' objects.
+- Argument
+- Usage
+- Output
+
+Argument : 
 ```js
 var a = [1, 2, 3], b = [7, 8, 9];
-console.log(ax5.util.merge(a, b));
+```
+Usage :
+```js
+var c = ax5.util.merge(a,b);
+```
+
+Output :
+```js
+> [1, 2, 3, 7, 8, 9]
 ```
 ---
 
 ## ax5.util.reduce
-As a result of the process performed in the operation from the left to the right of the array it will be reflected to the left side item. It returns the final value of the item.
-```js
-var aarray = [5, 4, 3, 2, 1], result;
-console.log(ax5.util.reduce(aarray, function (p, n) {
-    return p * n;
-}));
-// 120
+This method is performed by data argument and anonymous function. the anonymous function has two arguments(result value, index value). the anonymous function excute code using the data argument of index value. return value is saved at result value and index value moves to right. repeat this process for the end of data argument.
 
-console.log(ax5.util.reduce({a: 1, b: 2}, function (p, n) {
-    // If the "Object" is the first "p" value is "undefined".
-    return parseInt(p | 0) + parseInt(n);
-}));
-// 3
+- Argument 01 : Original Data.
+- Argument 02 : Anonymous function(reduce function).
+- Usage : ax5.util.reduce(Argument01, function(result, index){ return }).
+- Output
+
+**Example 01**
+```js
+var aarray = [5, 4, 3, 2, 1];
 ```
+
+```js
+console.log(ax5.util.reduce(aarray, function (p, n) {
+    return p * n; //This sentence is same to <return p = p*n>
+}));
+> 120
+```
+- p : result variable. The return value is saved at 'p'.(initial value = 5)
+- n : 'second to last' located variable. (initial value = 4. auto move left to right)
+
+**Example 02**
+```js
+console.log(ax5.util.reduce({a: 1, b: 2}, function (p, n) {
+    return parseInt(p || 0) + parseInt(n);
+    // This sentence is same to (return p=p+n;)
+}));
+> 3
+```
+- if the first 'p' value is object, 'p' will be undefined. So 'n' will point first index.
+- p : result variable. The return value is saved at 'p'. (initial value = 0 (undefined || 0))
+- n : the 'value' value of 'first to last' located variable. (initail value = 1)
+- parseInt(n) : not necessiry in this example. but parsing is recommended to prevent errors.
+
 ---
 
 ## ax5.util.reduceRight
@@ -178,149 +298,252 @@ var aarray = [5, 4, 3, 2, 1];
 console.log(ax5.util.reduceRight(aarray, function (p, n) {
     return p - n;
 }));
-// -13
+-13
 ```
 ---
 
 ## ax5.util.sum
-It returns the sum. The sum of all the values returned by the function.
+You can freely edit summation function by anonymous function when use.
+The summation function will add the values which corresponds to conditions of your summation function.
+
+- Argument 01 : Original Data.
+- Argument 02 : Anonymous function(summation function). 
+- Usage : ax5.util.sum(Argument01, function(){ return }).
+- Output
+
+Argument :
 ```js
 var arr = [
     {name: "122", value: 9},
     {name: "122", value: 10},
     {name: "123", value: 11}
 ];
+```
 
+Usage 01 :
+```js
 var rs = ax5.util.sum(arr, function () {
     if(this.name == "122") {
         return this.value;
     }
 });
-console.log(rs); // 19
+```
 
+Output 01 :
+```js
+console.log(rs); 
+> 19
+```
+
+Usage 02 :
+```js
 console.log(ax5.util.sum(arr, 10, function () {
     return this.value;
 }));
-// 40
+```
+
+Output 02 :
+```js
+> 40
 ```
 ---
 
 ## ax5.util.avg
-It returns the average. The average of all the values returned by the function.
+You can freely edit averaging function by anonymous function when use.
+The averaging function will get average of values which correspond to conditions of your averaging function.
+
+- Argument 01 : Original Data.
+- Argument 02 : Anonymous function(averaging function). 
+- Usage : ax5.util.avg(Argument01, function(){ return }).
+- Output
+
+Argument :
 ```js
 var arr = [
     {name: "122", value: 9},
     {name: "122", value: 10},
     {name: "123", value: 11}
 ];
+```
 
+Usage :
+```js
 var rs = ax5.util.avg(arr, function () {
     return this.value;
 });
+```
 
+Output :
+
+```js
 console.log(rs); // 10
 ```
 ---
 
 
 ## ax5.util.first
-It returns the first element in the Array, or Object. However, it is faster to use Array in the "Array [0]" rather than using the "first" method.
+It returns the first element in Array or Object. However, to use Array in the "Array [0]" is faster than using the "first()" method.
+- Argument 01 : Original Data.
+- Usage : ax5.util.first(Argument01)
+- Output
+
+Argument :
 ```js
 var _arr = ["ax5", "axisj"];
 var _obj = {k: "ax5", z: "axisj"};
+```
 
+Usage :
+```js
 console.log(ax5.util.first(_arr));
-// ax5
-
 console.log(ax5.util.toJson(ax5.util.first(_obj)));
-// {"k": "ax5"}
+```
+
+Output :
+```js
+> "ax5"
+> {"k": "ax5"}
 ```
 ---
 
 ## ax5.util.last
-It returns the last element in the Array, or Object.
+It returns the last element in the or Object.
+
+Argument :
 ```js
 var _arr = ["ax5", "axisj"];
 var _obj = {k: "ax5", z: "axisj"};
+```
 
+Usage :
+```js
 console.log(ax5.util.last(_arr));
-// axisj
-
 console.log(ax5.util.toJson(ax5.util.last(_obj)));
-// {"z": "axisj"}
+```
+
+Output :
+```js
+> "axisj"
+> {"z": "axisj"}
 ```
 ---
+
+## ax5.util.deepCopy
+It returns deep copied Object.
+```js
+var obj = [
+    {name:"A", child:[{name:"a-1"}]},
+    {name:"B", child:[{name:"b-1"}], callBack: function(){ console.log('callBack'); }}
+];
+var copiedObj = ax5.util.deepCopy(obj);
+
+obj[1].callBack();
+copiedObj[1].callBack();
+copiedObj[1].child[0].name = "c-1";
+
+console.log(obj[1].child[0].name, copiedObj[1].child[0].name);
+```
 
 # String
 
 ## ax5.util.left
-Returns. Since the beginning of the string to the index, up to a certain character in a string from the beginning of the string.
+Return string from first index to final index of original data.
+
+- Argument 01 : Original Data.
+- Argument 02 : final index || finall character.
+- Usage : ax5.util.left(Argument01, Argument02)
+- Output
+
 ```js
 console.log(ax5.util.left("abcd.efd", 3));
-// abc
+> abc
 console.log(ax5.util.left("abcd.efd", "."));
-// abcd
+> abcd
 ```
 ---
 
 ## ax5.util.right
-Returns. Up from the end of the string index, up to a certain character in a string from the end of the string
+Return string from start index to end index of original data. The arrangement is not changing.
+
+- Argument 01 : Original Data.
+- Argument 02 : start index || start character.
+- Usage : ax5.util.left(Argument01, Argument02)
+- Output
+
+
 ```js
 console.log(ax5.util.right("abcd.efd", 3));
-// efd
+> efd
 console.log(ax5.util.right("abcd.efd", "."));
-// efd
+> efd
 ```
 ---
 
 ## ax5.util.camelCase
-It converts a string to "Camel Case". "a-b", "aB" will be the "aB".
+Converts a string to "Camel Case". "a-b", "aB" will be the "aB".
 ```js
 console.log(ax5.util.camelCase("inner-width"));
+> innerWidth
 console.log(ax5.util.camelCase("innerWidth"));
-// innerWidth
+> innerWidth
 console.log(ax5.util.camelCase("camelCase"));
-// camelCase
+> camelCase
 console.log(ax5.util.camelCase("aBc"));
-// aBc
+> aBc
 ```
 ---
 
 ## ax5.util.snakeCase
-It converts a string to "Snake Case". "aB" will be the "a-b".
+Converts a string to "Snake Case". "aB" will be the "a-b".
 ```js
 console.log(ax5.util.snakeCase("inner-width"));
-// inner-width
+> inner-width
 console.log(ax5.util.snakeCase("camelCase"));
-// camel-case
+> camel-case 
 console.log(ax5.util.snakeCase("aBc"));
-// a-bc
+> a-bc
 ```
 ---
+
+## ax5.util.setDigit
+```js
+ax5.util.setDigit(1, 2);
+> "01"
+```
 
 # Number
 
 ## ax5.util.number
-When the number covers the development, often it requires multiple steps. The syntax is very complex and it is difficult to maintain. "ax5.util.number" command to convert a number that were resolved by passing a JSON format.
+by this method, you can modify original data to variety number-like types. there are several options such as round, money, byte, abs.
+
+When the number covers the development, it often requires multiple steps. The syntax is very complex and it is difficult to maintain. "ax5.util.number" command to convert a number that were resolved by passing a JSON format.
+
+- Argument 01 : Original Data.
+- Option_round : set dcimal place. less than that place value will be rounded.
+- Option_money : convert to money type.(shoots comma for every third digit.)
+- Option_byte :  convert to byte, KB, MB, GB.
+- Option_abs : set absolute value option.
+- Output
+
 ```js
 console.log('round(1) : ' + ax5.util.number(123456789.678, {round: 1}));
-// round(1) : 123456789.7
+> round(1) : 123456789.7
 
 console.log('round(1) money() : '
     + ax5.util.number(123456789.678, {round: 1, money: true}));
-// round(1) money() : 123,456,789.7
+> round(1) money() : 123,456,789.7
 
 console.log('round(2) byte() : '
     + ax5.util.number(123456789.678, {round: 2, byte: true}));
-// round(2) byte() : 117.7MB
+> round(2) byte() : 117.7MB
 
 console.log('abs() round(2) money() : '
     + ax5.util.number(-123456789.678, {abs: true, round: 2, money: true}));
-// abs() round(2) money() : 123,456,789.68
+> abs() round(2) money() : 123,456,789.68
 
 console.log('abs() round(2) money() : '
     + ax5.util.number("A-1234~~56789.8~888PX", {abs: true, round: 2, money: true}));
-// abs() round(2) money() : 123,456,789.89
+> abs() round(2) money() : 123,456,789.89
 ```
 - - -
 
@@ -329,8 +552,8 @@ console.log('abs() round(2) money() : '
 `ax5.util.date(date[, cond])`
 ```js
 ax5.util.date('2013-01-01'); // Tue Jan 01 2013 23:59:00 GMT+0900 (KST)
-ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/mm/dd'}); // "2015/07/01"
-ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/mm/dd'}); // "1919/03/11"
+ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/MM/dd'}); // "2015/07/01"
+ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/MM/dd hh:mm:ss'}); // "1919/03/11 23:59:00"
 ```
 
 ## dday
@@ -409,13 +632,24 @@ ax5.util.alert({a: 1, b: 2});
 ```
 --- 
 ## ax5.util.toArray
-"nodelist" or on the Array Like such "arguments", has properties such as "length", but you can not use functions defined in Array.prototype. With "toArray" because it is easy to convert an array.
+It converts 'Array-like objects' to 'Array' such as nodelist, arguments. 'Array-like objects' already have some useful properties such as "length", however they can not applied for functions defined in Array.prototype. So, if you want to use array functions, convert to Array by toArray() method. it's very easy to convert.
+
+- Argument 01 : Original Data.
+- Usgae : ax5.util.toArray(Argument);
+- Output
+
+Usage :
 ```js
 function something() {
     var arr = ax5.util.toArray(arguments);
     console.log(ax5.util.toJson(arr));
 }
 something("A", "X", "I", "S", "J");
+```
+
+Output :
+```js
+> ["A","X","I","S","J"]
 ```
 ---
 
@@ -451,7 +685,7 @@ console.log(
 
 // using cond 
 jQuery('#id').bind("click.app_expand", function(e){
-    var target = ax5.dom.findParentNode(e.target, function(target){
+    var target = ax5.util.findParentNode(e.target, function(target){
         if($(target).hasClass("aside")){
             return true;
         }
@@ -510,4 +744,16 @@ ax5.util.stopEvent(e);
         //ax5.util.selectRange($("#select-test-2"), "selectAll"); // selectAll
     });
 </script>
+```
+
+## ax5.util.debounce
+`ax5.util.debounce(func, wait[, immediately])`
+```js
+var debounceFn = ax5.util.debounce(function( val ) {
+    console.log(val);
+}, 300);
+
+$(document.body).click(function(){
+    debounceFn(new Date());
+});
 ```

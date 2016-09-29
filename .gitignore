@@ -1,10 +1,12 @@
 # Created by .ignore support plugin (hsz.mobi)
 node_modules
+bower_components
 *.marko.js
 *.html.js
 .idea
 *.ignore.js
 *.iml
 .DS_Store
-**/test/bower_components
 _git
+**/test/bower_components
+/src/ax5ui-grid/test/php/vendor

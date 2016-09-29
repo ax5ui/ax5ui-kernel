@@ -18,6 +18,7 @@ myModal.set_config({
         top: "top|middle|bottom|Number", 
         margin: "Number"
     },
+    iframeLoadingMsg: "",
     iframe: {
         method: "get|post", 
         url: "String", 
@@ -137,7 +138,7 @@ Type: `Object'
 - - -
 
 ## open()
-`open(Options[, callBack])`
+`open(Options[, callback])`
 
 it is possible to redefine all of the options that can be used in setConfig.  
 

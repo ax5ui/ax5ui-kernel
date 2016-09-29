@@ -272,6 +272,20 @@ myCalendar.setMarker({
 
 - - -
 
+## setPeriod()
+`setPeriod(marker[, isApply])`
+
+```js
+myCalendar.setPeriod({
+    range: [
+        {from: '2016-07-05', to: '2016-07-09', fromLabel: '시작', toLabel: '종료'},
+        {from: '2016-07-11', to: '2016-07-15', fromLabel: '시작', toLabel: '종료'}
+    ]
+});
+```
+
+- - -
+
 ## onStateChanged
 
 Type: `Function`

@@ -150,7 +150,7 @@ menu.onLoad = function(){
 - - -
 
 ## popup
-`popup(event|position)`
+`popup(event|position, opts)`
 ```js
 $(document).bind("contextmenu", function (e) {
     menu.popup(e);
@@ -160,6 +160,12 @@ $(document).bind("contextmenu", function (e) {
 or use custom position
 ```js
 menu.popup({left:0, top:0, width:200});
+$(document).bind("contextmenu", function (e) {
+    menu.popup(e, {theme:"basic", filter:function(){
+        return true;
+    }});
+    ax5.util.stopEvent(e);
+});
 ```
 
 - - -

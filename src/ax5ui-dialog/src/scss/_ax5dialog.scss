@@ -93,7 +93,7 @@
 // mixins --------------------------------------------- end
 
 .ax5-ui-dialog {
-	@include animation(ax-dialog $ax5dialog-easing-time-open $ease-out-back);
+	@include animation(ax-dialog $ax5dialog-easing-time-open $ease-in-out-cubic);
 	@include transform(translateZ(0));
 
 	@include ax-dialog();
@@ -118,6 +118,6 @@
 	}
 
 	&.destroy {
-		@include animation(ax-dialog-destroy $ax5dialog-easing-time-close $ease-in-back forwards);
+		@include animation(ax-dialog-destroy $ax5dialog-easing-time-close $ease-in-out-cubic forwards);
 	}
 }

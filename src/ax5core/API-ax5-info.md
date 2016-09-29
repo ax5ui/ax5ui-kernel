@@ -1,13 +1,13 @@
 # ax5.info
 
 ## ax5.info.version
-Version of ax5
+You can **check Version of ax5** by this code.
 ```js   
 console.log(ax5.info.version);
 ```
 ---
 ## ax5.info.eventKeys
-eventKeys object key map
+**Key map _ eventKeys object.**
 ```js   
 console.log(ax5.info.eventKeys);
 /*
@@ -17,14 +17,14 @@ console.log(ax5.info.eventKeys);
 ```
 ---
 ## ax5.info.browser
-It is user browser infomation
+You can **check user browser information** by this code.
 ```js
 console.log(ax5.info.browser);
 // {"name": "chrome", "version": "46.0.2490.86", "mobile": }
 ```
 ---
 ## ax5.info.urlUtil
-Return current page's URL Infomation
+You can **check current page's URL Infomation** by this code.
 ```js
 console.log(ax5.info.urlUtil());
 /*
@@ -42,7 +42,7 @@ console.log(ax5.info.urlUtil());
 ```
 ---
 ## ax5.info.errorMsg
-When an error occurs in the UI Class, the error message can be customized.
+You can **customize the error message** by this code, When an error occurs in the UI Class.
 ```js
 // reset user error message
 ax5.info.errorMsg["UI name"]["100"] = "my error 100";

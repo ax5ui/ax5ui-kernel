@@ -107,7 +107,7 @@ input: {
 ***
 
 ## alert()
-`alert(String|Options[, callBack])`
+`alert(String|Options[, callback])`
 
 If this is String in the first argument and recognizes the first argument to `msg`.  
 it is possible to redefine all of the options that can be used in setConfig.  
@@ -128,9 +128,9 @@ dialog.alert({
 ```
 
 ## confirm()
-`confirm(String|Options[, callBack])`
+`confirm(String|Options[, callback])`
 
-alert and use the way is similar. Remember only the portion that determines the input of users in callBack function confirm is if you can.
+alert and use the way is similar. Remember only the portion that determines the input of users in callback function confirm is if you can.
 
 ```js
 confirmDialog.confirm({
@@ -147,7 +147,7 @@ confirmDialog.confirm({
 ```
 
 ## prompt()
-`prompt(String|Options[, callBack])`
+`prompt(String|Options[, callback])`
 
 alert and use the way is similar. 
 

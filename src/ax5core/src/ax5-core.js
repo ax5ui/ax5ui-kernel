@@ -2,8 +2,9 @@
     'use strict';
 
     // root of function
-    var root = this, win = window, doc = document, docElem = document.documentElement,
-        reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
+    var root = this, win = this;
+    var doc = (win) ? win.document : null, docElem = (win) ? win.document.documentElement : null;
+    var reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
         reMs = /^-ms-/,
         reSnakeCase = /[\-_]([\da-z])/gi,
         reCamelCase = /([A-Z])/g,
@@ -99,6 +100,8 @@
          * ```
          */
         var browser = (function (ua, mobile, browserName, match, browser, browserVersion) {
+            if (!win || !win.navigator) return {};
+
             ua = navigator.userAgent.toLowerCase(), mobile = (ua.search(/mobile/g) != -1), browserName, match, browser, browserVersion;
 
             if (ua.search(/iphone/g) != -1) {
@@ -136,7 +139,7 @@
          * 브라우저에 따른 마우스 휠 이벤트이름
          * @member {Object} ax5.info.wheelEnm
          */
-        var wheelEnm = ((/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel");
+        var wheelEnm = (win && (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel");
 
         /**
          * 첫번째 자리수 동사 - (필요한것이 없을때 : 4, 실행오류 : 5)
@@ -217,7 +220,7 @@
             }
         }
 
-        var supportTouch = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+        var supportTouch = (win) ? (('ontouchstart' in win) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) : false;
 
         return {
             errorMsg: errorMsg,
@@ -677,6 +680,9 @@
             else if (ax5.util.isFunction(O)) {
                 jsonString = '"{Function}"';
             }
+            else {
+                jsonString = O;
+            }
             return jsonString;
         }
 
@@ -741,6 +747,9 @@
             }
             else if (!!(O && O.nodeType == 11)) {
                 typeName = "fragment";
+            }
+            else if (O === null) {
+                typeName = "null";
             }
             else if (typeof O === "undefined") {
                 typeName = "undefined";
@@ -843,7 +852,7 @@
          * @returns {Boolean}
          */
         function isNodelist(O) {
-            return (_toString.call(O) == "[object NodeList]" || (O && O[0] && O[0].nodeType == 1));
+            return !!(_toString.call(O) == "[object NodeList]" || (typeof O !== "undefined" && O && O[0] && O[0].nodeType == 1));
         }
 
         /**
@@ -880,6 +889,11 @@
                 result = true;
             }
             else {
+                if (O.length > 7) {
+                    if(date(O) instanceof Date){
+                        return true;
+                    }
+                }
                 O = O.replace(/\D/g, '');
                 if (O.length > 7) {
                     var
@@ -1032,7 +1046,7 @@
         function left(str, pos) {
             if (typeof str === "undefined" || typeof pos === "undefined") return "";
             if (isString(pos)) {
-                return (str.indexOf(pos) > -1) ? str.substr(0, str.indexOf(pos)) : str;
+                return (str.indexOf(pos) > -1) ? str.substr(0, str.indexOf(pos)) : "";
             }
             else if (isNumber(pos)) {
                 return str.substr(0, pos);
@@ -1060,7 +1074,7 @@
             if (typeof str === "undefined" || typeof pos === "undefined") return "";
             str = '' + str;
             if (isString(pos)) {
-                return (str.lastIndexOf(pos) > -1) ? str.substr(str.lastIndexOf(pos) + 1) : str;
+                return (str.lastIndexOf(pos) > -1) ? str.substr(str.lastIndexOf(pos) + 1) : "";
             }
             else if (isNumber(pos)) {
                 return str.substr(str.length - pos);
@@ -1338,8 +1352,8 @@
          * @example
          * ```js
          * ax5.util.date('2013-01-01'); // Tue Jan 01 2013 23:59:00 GMT+0900 (KST)
-         * ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/mm/dd'}); // "2015/07/01"
-         * ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/mm/dd'}); // "1919/03/11"
+         * ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/MM/dd'}); // "2015/07/01"
+         * ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/MM/dd hh:mm:ss'}); // "1919/03/11 23:59:00"
          * ```
          */
         function date(d, cond) {
@@ -1347,23 +1361,29 @@
                 aDateTime, aTimes, aTime, aDate,
                 utcD, localD,
                 va;
+            var ISO_8601 = /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/i;
+            var ISO_8601_FULL = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
 
             if (isString(d)) {
                 if (d.length == 0) {
                     d = new Date();
                 }
                 else if (d.length > 15) {
-                    aDateTime = d.split(/ /g), aTimes, aTime,
-                        aDate = aDateTime[0].split(/\D/g),
-                        yy = aDate[0];
-                    mm = parseFloat(aDate[1]);
-                    dd = parseFloat(aDate[2]);
-                    aTime = aDateTime[1] || "09:00";
-                    aTimes = aTime.substring(0, 5).split(":");
-                    hh = parseFloat(aTimes[0]);
-                    mi = parseFloat(aTimes[1]);
-                    if (right(aTime, 2) === "AM" || right(aTime, 2) === "PM") hh += 12;
-                    d = localDate(yy, mm - 1, dd, hh, mi);
+                    if (ISO_8601_FULL.test(d) || ISO_8601.test(d)) {
+                        d = new Date(d);
+                    } else {
+                        aDateTime = d.split(/ /g), aTimes, aTime,
+                            aDate = aDateTime[0].split(/\D/g),
+                            yy = aDate[0];
+                        mm = parseFloat(aDate[1]);
+                        dd = parseFloat(aDate[2]);
+                        aTime = aDateTime[1] || "09:00";
+                        aTimes = aTime.substring(0, 5).split(":");
+                        hh = parseFloat(aTimes[0]);
+                        mi = parseFloat(aTimes[1]);
+                        if (right(aTime, 2) === "AM" || right(aTime, 2) === "PM") hh += 12;
+                        d = localDate(yy, mm - 1, dd, hh, mi);
+                    }
                 }
                 else if (d.length == 14) {
                     va = d.replace(/\D/g, "");
@@ -1433,7 +1453,7 @@
                         var yre = /[^y]*(yyyy)[^y]*/gi;
                         yre.exec(fStr);
                         var regY = RegExp.$1;
-                        var mre = /[^m]*(mm)[^m]*/gi;
+                        var mre = /[^m]*(MM)[^m]*/g;
                         mre.exec(fStr);
                         var regM = RegExp.$1;
                         var dre = /[^d]*(dd)[^d]*/gi;
@@ -1442,7 +1462,7 @@
                         var hre = /[^h]*(hh)[^h]*/gi;
                         hre.exec(fStr);
                         var regH = RegExp.$1;
-                        var mire = /[^m]*(mi)[^i]*/gi;
+                        var mire = /[^m]*(mm)[^i]*/g;
                         mire.exec(fStr);
                         var regMI = RegExp.$1;
                         var sre = /[^s]*(ss)[^s]*/gi;
@@ -1455,7 +1475,7 @@
                         if (regY === "yyyy") {
                             fStr = fStr.replace(regY, right(nY, regY.length));
                         }
-                        if (regM === "mm") {
+                        if (regM === "MM") {
                             if (regM.length == 1) nM = (d.getMonth() + 1);
                             fStr = fStr.replace(regM, nM);
                         }
@@ -1466,7 +1486,7 @@
                         if (regH === "hh") {
                             fStr = fStr.replace(regH, nH);
                         }
-                        if (regMI === "mi") {
+                        if (regMI === "mm") {
                             fStr = fStr.replace(regMI, nMM);
                         }
                         if (regS === "ss") {
@@ -1612,11 +1632,12 @@
 		 * 	[, 그 외 찾고 싶은 attribute명들]
 		 * };
          * console.log(
+         * console.log(
          *    ax5.util.findParentNode(e.target, {tagname:"a", clazz:"ax-menu-handel", "data-custom-attr":"attr_value"})
          * );
          * // cond 함수로 처리하기
          * jQuery('#id').bind("click.app_expand", function(e){
-		 * 	var target = ax5.dom.findParentNode(e.target, function(target){
+		 * 	var target = ax5.util.findParentNode(e.target, function(target){
 		 * 		if($(target).hasClass("aside")){
 		 * 			return true;
 		 * 		}
@@ -1881,6 +1902,82 @@
             }
         })();
 
+        /**
+         * @method ax5.util.debounce
+         * @param {Function} func
+         * @param {Number} wait
+         * @param {Boolean} immediately
+         * @returns {debounced}
+         * @example
+         * ```js
+         * var debounceFn = ax5.util.debounce(function( val ) { console.log(val); }, 300);
+         * $(document.body).click(function(){
+         *  debounceFn(new Date());
+         * });
+         * ```
+         */
+        var debounce = function (func, wait, immediately) {
+            var timeout, removeTimeout;
+            var debounced = function () {
+                var args = toArray(arguments);
+
+                if (removeTimeout) clearTimeout(removeTimeout);
+                if (timeout) {
+                    // 두번째 호출
+                    if (timeout) clearTimeout(timeout);
+                    timeout = setTimeout((function (args) {
+                        func.apply(this, args);
+                    }).bind(this, args), wait);
+                } else {
+                    // 첫 호출
+                    timeout = setTimeout((function (args) {
+                        func.apply(this, args);
+                    }).bind(this, args), (immediately) ? 0 : wait);
+                }
+                removeTimeout = setTimeout(function () {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }, wait);
+            };
+            debounced.cancel = function () {
+                clearTimeout(timeout);
+                clearTimeout(removeTimeout);
+                timeout = null;
+            };
+
+            return debounced;
+        };
+
+
+        /**
+         * @method ax5.util.deepCopy
+         * @param {Object} obj
+         * @returns {Object}
+         * @example
+         * ```js
+         * var obj = [
+         *  {name:"A", child:[{name:"a-1"}]},
+         *  {name:"B", child:[{name:"b-1"}], callBack: function(){ console.log('callBack'); }}
+         * ];
+         * var copiedObj = ax5.util.deepCopy(obj)
+         * ```
+         */
+        function deepCopy(obj) {
+            var r, l;
+            if (typeof obj == 'object') {
+                if (U.isArray(obj)) {
+                    l = obj.length;
+                    r = new Array(l);
+                    for (var i = 0; i < l; i++) {
+                        r[i] = deepCopy(obj[i]);
+                    }
+                    return r;
+                } else {
+                    return jQuery.extend({}, obj);
+                }
+            }
+            return obj;
+        }
 
         return {
             alert: alert,
@@ -1896,6 +1993,8 @@
             parseJson: parseJson,
             first: first,
             last: last,
+            deepCopy: deepCopy,
+
             left: left,
             right: right,
             getType: getType,
@@ -1930,12 +2029,17 @@
             isDate: isDate,
             isDateFormat: isDateFormat,
             stopEvent: stopEvent,
-            selectRange: selectRange
+            selectRange: selectRange,
+            debounce: debounce
         }
     })();
 
-    root.ax5 = (function () {
-        return ax5;
-    })(); // ax5.ui에 연결
+    if (typeof module === "object" && typeof module.exports === "object") {
+        module.exports = ax5;
+    } else {
+        root.ax5 = (function () {
+            return ax5;
+        })(); // ax5.ui에 연결
+    }
 
-}).call(window);
+}).call(typeof window !== "undefined" ? window : this);

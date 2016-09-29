@@ -1,8 +1,18 @@
+'use strict';
+
+var fs = require('fs');
+var gulp = require('gulp');
+var sass = require('gulp-sass');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
 var changed = require('gulp-changed');
 var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
 var babel = require('gulp-babel');
 var clean = require('gulp-clean');
+var gulpJsdoc2md = require('gulp-jsdoc-to-markdown');
+var rename = require('gulp-rename');
+var gutil = require('gulp-util');
 
 var PATHS = {
     "ax5core": {
@@ -123,6 +133,30 @@ var PATHS = {
         dest: "src/ax5ui-layout/dist",
         scss: "ax5layout.scss",
         js: "ax5layout"
+    },
+    "ax5ui-binder": {
+        isPlugin: true,
+        root: "src/ax5ui-binder",
+        src: "src/ax5ui-binder/src",
+        dest: "src/ax5ui-binder/dist",
+        scss: "ax5binder.scss",
+        js: "ax5binder"
+    },
+    "ax5ui-multi-uploader": {
+        isPlugin: true,
+        root: "src/ax5ui-multi-uploader",
+        src: "src/ax5ui-multi-uploader/src",
+        dest: "src/ax5ui-multi-uploader/dist",
+        scss: "ax5multi-uploader.scss",
+        js: "ax5multi-uploader"
+    },
+    "ax5ui-autocomplete": {
+        isPlugin: true,
+        root: "src/ax5ui-autocomplete",
+        src: "src/ax5ui-autocomplete/src",
+        dest: "src/ax5ui-autocomplete/dist",
+        scss: "ax5autocomplete.scss",
+        js: "ax5autocomplete"
     }
 };
 
@@ -157,11 +191,12 @@ for (var k in PATHS) {
     if (__p.isPlugin && __p.js) {
         gulp.task(k + '-scripts', (function (k, __p) {
             return function () {
-                gulp.src(PATHS[k].src + '/*.js')
+                gulp.src([PATHS[k].src + '/*.js', PATHS[k].src + '/modules/*.js'])
                     .pipe(plumber({errorHandler: errorAlert}))
                     .pipe(concat(__p.js + '.js'))
                     .pipe(babel({
-                        presets: ['es2015']
+                        presets: ['es2015'],
+                        compact: false
                     }))
                     .pipe(gulp.dest(PATHS[k].dest))
                     .pipe(concat(__p.js + '.min.js'))
@@ -182,7 +217,7 @@ gulp.task('default', function () {
 
         var __p = PATHS[k];
         if (__p.isPlugin && __p.js) {
-            gulp.watch(PATHS[k].src + '/*.js', [k + '-scripts']);
+            gulp.watch(PATHS[k].src + '/**/*.js', [k + '-scripts']);
         }
         if (__p.isPlugin && __p.scss) {
             gulp.watch(PATHS[k].src + '/**/*.scss', [k + '-scss']);
@@ -191,17 +226,17 @@ gulp.task('default', function () {
 
 });
 
-/**
- * concant all src for dist
+ /**
+ * concat all src for dist
  */
 gulp.task('dist-all-in-one', function () {
 
-    var jsSrcs   = [];
+    var jsSrcs = [];
     var scssSrcs = [];
     for (var k in PATHS) {
         var __p = PATHS[k];
         if (__p.isPlugin) {
-            if (__p.js)   jsSrcs.push(PATHS[k].src + '/*.js');
+            if (__p.js)   jsSrcs.push(PATHS[k].src + '/*.js', PATHS[k].src + '/modules/*.js');
             if (__p.scss) scssSrcs.push(PATHS[k].src + '/' + __p.scss);
         }
     }
@@ -210,7 +245,8 @@ gulp.task('dist-all-in-one', function () {
         .pipe(plumber({errorHandler: errorAlert}))
         .pipe(concat('ax5ui.all.js'))
         .pipe(babel({
-            presets: ['es2015']
+            presets: ['es2015'],
+            compact: false
         }))
         .pipe(gulp.dest('dist/'))
         .pipe(concat('ax5ui.all.min.js'))
@@ -222,11 +258,4 @@ gulp.task('dist-all-in-one', function () {
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(concat('ax5ui.all.css'))
         .pipe(gulp.dest('dist/'));
-});
-
-var jsdoc = require('gulp-jsdoc3');
-
-gulp.task('doc', function (cb) {
-    gulp.src(['src/ax5ui-select/src/ax5select.js'], {read: false})
-        .pipe(jsdoc(cb));
 });
