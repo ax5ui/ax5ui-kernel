@@ -36,7 +36,7 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
+         * ```js
          * var formatter = new ax5.ui.formatter();
          * ```
          */
