@@ -2,7 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-combobox
-"combobox"
+"combobox" lets users make a selection from a drop-down list.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
