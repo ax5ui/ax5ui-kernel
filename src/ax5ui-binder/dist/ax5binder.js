@@ -16,7 +16,7 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
+         * ```js
          * var myBinder = new ax5.ui.binder();
          * ```
          */
@@ -77,7 +77,7 @@
                 /*
                 var path = [];
                 var _path = [].concat(dataPath.split(/[\.\[\]]/g));
-                  _path.forEach(function (n) {
+                 _path.forEach(function (n) {
                     if (n !== "") path.push(n);
                 });
                 _path = null;
@@ -599,7 +599,7 @@
 
                     while (i--) {
                         vi = value.length;
-                        while (vi--) { 
+                        while (vi--) {
                             if (typeof value[vi] !== "undefined" && options[i].value === value[vi].toString()) {
                                 options[i].selected = true;
                                 option_matched = true;

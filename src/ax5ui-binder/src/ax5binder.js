@@ -14,7 +14,7 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
+         * ```js
          * var myBinder = new ax5.ui.binder();
          * ```
          */

@@ -50,7 +50,7 @@ Folder location can be any for your project. However, please be sure to assign t
 ```
 
 **CDN urls**
-This is a list of CDN urls for ax5ui-mask. ax5ui offers the CDN services through rawgit.
+This is a list of CDN urls for ax5ui-modal. ax5ui offers the CDN services through rawgit.
 ```
 https://cdn.rawgit.com/ax5ui/ax5ui-modal/master/dist/ax5modal.css
 https://cdn.rawgit.com/ax5ui/ax5ui-modal/master/dist/ax5modal.js
