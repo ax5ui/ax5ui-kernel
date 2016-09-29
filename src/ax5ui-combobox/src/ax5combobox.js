@@ -14,7 +14,7 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
+         * ```js
          * var mycombobox = new ax5.ui.combobox();
          * ```
          */
