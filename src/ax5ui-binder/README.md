@@ -44,7 +44,6 @@ Folder location can be any for your project. However, please be sure to assign t
 <script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"></script>
 <script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-binder/master/dist/ax5binder.min.js"></script>
 ```
-***
 
 **CDN urls**
 This is a list of CDN urls for ax5ui-binder. ax5ui offers the CDN services through rawgit.
