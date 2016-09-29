@@ -14,7 +14,7 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
+         * ```js
          * var myDialog = new ax5.ui.dialog();
          * ```
          */
