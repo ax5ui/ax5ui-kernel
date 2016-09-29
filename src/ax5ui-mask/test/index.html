@@ -14,12 +14,7 @@
 <div id="user-content" style="width:300px;height:300px;border: 1px solid #000;"></div>
 <button type="button" id="mask-open">mask-open</button>
 <button type="button" id="mask-close">mask-close</button>
-
-<div style="height:30px;"></div>
-
-<div id="user-content02" style="width:300px;height:300px;border: 1px solid #000;"></div>
 <button type="button" id="custom-mask-open">custom-mask-open</button>
-<button type="button" id="custom-mask-close">custom-mask-close</button>
 <script>
     $(document.body).ready(function(){
         var customMask = function customMask() {
@@ -32,10 +27,25 @@
                     '</div>';
             return cTmpl;
         };
-
         ax5.ui.mask.tmpl.customMask = customMask;
-
         window.mask = new ax5.ui.mask();
+
+        $("#custom-mask-open").click(function(){
+            mask.open({
+                templateName: 'customMask',
+                content: 'custom MASK on target',
+                target: $("#user-content").get(0),
+                onClick: function(){
+                    console.log(this);
+                }
+            });
+        });
+        /*
+         $("#custom-mask-close").click(function(){
+         mask.close();
+         });
+         */
+
 
         $("#mask-open").click(function(){
             mask.open({
@@ -51,18 +61,6 @@
             mask.close();
         });
 
-        $("#custom-mask-open").click(function(){
-            mask.open({
-                content: 'custom MASK on target',
-                target: $("#user-content02").get(0),
-                onClick: function(){
-                    console.log(this);
-                }
-            }, 'customMask');
-        });
-        $("#custom-mask-close").click(function(){
-            mask.close();
-        });
 
 
     });

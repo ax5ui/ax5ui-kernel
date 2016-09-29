@@ -45,9 +45,9 @@
                     that = null;
                     return true;
                 },
-                getBodyTmpl = function (data, tmplName) {
-                    if (typeof tmplName === "undefined") tmplName = "defaultMask";
-                    return MASK.tmpl.get.call(this, tmplName, data);
+                getBodyTmpl = function (data) {
+                    if (typeof data.templateName === "undefined") data.templateName = "defaultMask";
+                    return MASK.tmpl.get.call(this, data.templateName, data);
                 },
                 setBody = function (content) {
                     this.maskContent = content;
@@ -77,7 +77,7 @@
             /**
              * open mask
              * target 을 주지 않으면 기본적으로 body 에 마스크가 적용되고 원하는 타겟을 지정해서 마스크를 씌울 수 있습니다.
-             *
+             * 기본 정의된 마스크 외에 사용자가 템플릿을 정의해서 마스크를 사용 가능합니다.
              * @method ax5mask.open
              * @param {Object} config
              * @param {String} config
@@ -100,20 +100,34 @@
              *     }
              * });
              *
+             * 
+             * var customMask = function customMask() {
+             *     var cTmpl = '' +
+             *             '<div class="ax-mask" id="{{maskId}}" >' +
+             *             '    <div class="ax-mask-bg" style="background-color:red   !important;"></div>' +
+             *             '    <div class="ax-mask-content">' +
+             *             '        {{{body}}}' +
+             *             '    </div>' +
+             *             '</div>';
+             *     return cTmpl;
+             * };
+             * ax5.ui.mask.tmpl.customMask = customMask;
+             * 
              * my_mask.open({
              *     target: $("#mask-target").get(0), // dom Element
              *     content: "<h1>Loading..</h1>",
+             *     
              *     onStateChanged: function () {
              *
              *     }
              * });
              * ```
              */
-            this.open = function (options, tmplName) {
+            this.open = function (options) {
 
                 if (this.status === "on") this.close();
                 if (options && options.content) setBody.call(this, options.content);
-                if (typeof tmplName === "undefined") tmplName = "defaultMask";
+                if (typeof options.templateName === "undefined") options.templateName = "defaultMask";
                 self.maskConfig = {};
 
                 jQuery.extend(true, self.maskConfig, this.config, options);
@@ -125,6 +139,7 @@
                     $mask,
                     css = {},
                     that = {},
+                    templateName = _cfg.templateName,
                     /*
                     bodyTmpl = getBodyTmpl(),
                     body = ax5.mustache.render(bodyTmpl, {
@@ -136,8 +151,9 @@
                     body = getBodyTmpl({
                         theme: _cfg.theme,
                         maskId: maskId,
-                        body: this.maskContent
-                    }, tmplName);
+                        body: this.maskContent,
+                        templateName: templateName
+                    });
 
                 jQuery(document.body).append(body);
 
@@ -185,7 +201,7 @@
                 $mask = null;
                 css = null;
                 that = null;
-                //bodyTmpl = null;
+                templateName  = null;
                 body = null;
 
                 return this;
