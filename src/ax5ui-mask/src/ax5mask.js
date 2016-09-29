@@ -230,6 +230,7 @@
                         });
                     };
 
+
                     if(_delay) {
                         setTimeout((function () {
                             _close.call(this);
@@ -241,6 +242,12 @@
                 return this;
             };
             //== class body end
+
+
+            this.pullRequest = function(){
+                console.log("test pullRequest01");
+                console.log("test pullRequest02");
+            };
 
             // 클래스 생성자
             this.main = (function () {
