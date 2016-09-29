@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-autocomplete
+"autocomplete" displays suggestions while the input is being typed by users.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
