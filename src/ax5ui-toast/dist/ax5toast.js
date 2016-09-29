@@ -57,7 +57,19 @@
                 that = null;
                 return true;
             },
-                getContent = function getContent(toastId, opts) {
+
+            /**
+             * @method ax5toast.getContent
+             * @param {String} toastId
+             * @param {Object} opts
+             * @returns toastDisplay
+             * @example
+             * ```js
+             * ax5toast.getContent('ax5-toast-3-1', opts);
+             * ```
+             */
+            getContent = function getContent(toastId, opts) {
+
                 var data = {
                     toastId: toastId,
                     theme: opts.theme,
