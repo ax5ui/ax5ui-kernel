@@ -730,7 +730,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 typeName = "element";
             } else if (!!(O && O.nodeType == 11)) {
                 typeName = "fragment";
-            } else if (O == null) {
+            } else if (O === null) {
                 typeName = "null";
             } else if (typeof O === "undefined") {
                 typeName = "undefined";
@@ -1966,6 +1966,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }(); // ax5.ui에 연결
     }
 }).call(typeof window !== "undefined" ? window : undefined);
+
 ax5.def = {};
 ax5.info.errorMsg["ax5dialog"] = {
     "501": "Duplicate call error"
