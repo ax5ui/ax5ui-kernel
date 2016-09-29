@@ -1,6 +1,7 @@
 [![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-calendar
+"calendar" displays dates in a calendar format and enables users to select a single or multiple values.
 
 > *Dependencies*
 * _[jQuery 1.X+](http://jquery.com/)_
