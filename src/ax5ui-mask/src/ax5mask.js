@@ -45,8 +45,9 @@
                     that = null;
                     return true;
                 },
-                getBodyTmpl = function (data) {
-                    return MASK.tmpl.get.call(this, "defaultMask", data);
+                getBodyTmpl = function (data, tmplName) {
+                    if (typeof tmplName === "undefined") tmplName = "defaultMask";
+                    return MASK.tmpl.get.call(this, tmplName, data);
                 },
                 setBody = function (content) {
                     this.maskContent = content;
@@ -75,8 +76,11 @@
 
             /**
              * open mask
+             * target 을 주지 않으면 기본적으로 body 에 마스크가 적용되고 원하는 타겟을 지정해서 마스크를 씌울 수 있습니다.
+             *
              * @method ax5mask.open
              * @param {Object} config
+             * @param {String} config
              * @returns {ax5mask}
              * @example
              * ```js
@@ -95,12 +99,21 @@
              *
              *     }
              * });
+             *
+             * my_mask.open({
+             *     target: $("#mask-target").get(0), // dom Element
+             *     content: "<h1>Loading..</h1>",
+             *     onStateChanged: function () {
+             *
+             *     }
+             * });
              * ```
              */
-            this.open = function (options) {
+            this.open = function (options, tmplName) {
 
                 if (this.status === "on") this.close();
                 if (options && options.content) setBody.call(this, options.content);
+                if (typeof tmplName === "undefined") tmplName = "defaultMask";
                 self.maskConfig = {};
 
                 jQuery.extend(true, self.maskConfig, this.config, options);
@@ -124,7 +137,7 @@
                         theme: _cfg.theme,
                         maskId: maskId,
                         body: this.maskContent
-                    });
+                    }, tmplName);
 
                 jQuery(document.body).append(body);
 
@@ -143,9 +156,7 @@
                     $target.addClass("ax-masking");
                 }
 
-
                 this.$mask = $mask = jQuery("#" + maskId);
-
                 this.$target = $target;
                 this.status = "on";
                 $mask.css(css);

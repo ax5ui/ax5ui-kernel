@@ -236,7 +236,7 @@ gulp.task('dist-all-in-one', function () {
     for (var k in PATHS) {
         var __p = PATHS[k];
         if (__p.isPlugin) {
-            if (__p.js)   jsSrcs.push(PATHS[k].src + '/*.js');
+            if (__p.js)   jsSrcs.push(PATHS[k].src + '/*.js', PATHS[k].src + '/modules/*.js');
             if (__p.scss) scssSrcs.push(PATHS[k].src + '/' + __p.scss);
         }
     }
