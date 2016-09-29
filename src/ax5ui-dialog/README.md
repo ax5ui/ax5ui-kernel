@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5ui-dialog
+"dialog" displays information on a popup window and also enables users to enter input values.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
