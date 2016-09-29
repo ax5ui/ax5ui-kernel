@@ -98,17 +98,12 @@ describe('ax5.util.left TEST', function() {
   ];
 
   testCases.forEach(function(testCase){
-      it('ax5.util.left(' + testCase.explanation + ') expect ' + showEmptyString(testCase.expect), function() {
+      it('ax5.util.left(' + testCase.explanation + ') expect ' + JSON.stringify(testCase.expect), function() {
           var actual = ax5.util.left.apply(this, testCase.args);
 
           actual.should.deepEqual(testCase.expect);
       });
   });
-
-  function showEmptyString(target) {
-    if (target.length === 0 && ax5.util.getType(target) === "string") return '\"\"';
-    return target;
-  }
 
 });
 

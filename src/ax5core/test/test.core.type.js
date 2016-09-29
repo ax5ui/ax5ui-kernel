@@ -184,7 +184,7 @@ describe('ax5.util.isDateFormat TEST', function() {
         },
         {
             args: [ '01/01/2016' ],
-            expect: false
+            expect: true
         },
         {
             args: [ '2016010' ],
@@ -192,15 +192,15 @@ describe('ax5.util.isDateFormat TEST', function() {
         },
         {
             args: [ '201601011200' ],
-            expect: false
+            expect: true
         },
         {
             args: [ '2016-01-01T12:00' ],
-            expect: false
+            expect: true
         },
         {
             args: [ '2016-01-01T12:00+09:00' ],
-            expect: false
+            expect: true
         },
         {
             args: [ '' ],
