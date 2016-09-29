@@ -23,7 +23,8 @@
                 <a class="ax-toast-close" data-ax-toast-btn="ok">{{{closeIcon}}}</a>
             {{/btns}}
             <div style="clear:both;"></div>
-        </div>`;
+        </div>
+        `;
     };
 
     TOAST.tmpl = {
