@@ -14,8 +14,29 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
-         * var my_mask = new ax5.ui.mask();
+         * ```js
+         * var customMask = function customMask() {
+         *     var cTmpl = '' +
+         *         '<div class="ax-mask" id="{{maskId}}" >' +
+         *         '    <div class="ax-mask-bg" style="background-color:red !important;"></div>' +
+         *         '    <div class="ax-mask-content">' +
+         *         '        {{{body}}}' +
+         *         '    </div>' +
+         *         '</div>';
+         *     return cTmpl;
+         * };
+         * ax5.ui.mask.tmpl.customMask = customMask;
+         *
+         * var mask = new ax5.ui.mask();
+         *
+         * mask.open({
+         *     templateName: 'customMask',
+         *     content: 'custom MASK on target',
+         *     target: $("#user-content").get(0),
+         *     onClick: function(){
+         *         console.log(this);
+         *     }
+         * });
          * ```
          */
         var ax5mask = function () {
