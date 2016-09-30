@@ -34,3 +34,39 @@ describe('formatter Money TEST', function() {
 		$('div.form-group').remove();
 	});
 });
+
+describe('formatter Date TEST', function() {
+	before(function(){
+		$('body').append(
+			'<div class="form-group">\n' +
+			'    <div class="input-group">\n' +
+			'        <span class="input-group-addon">Date</span>\n' +
+			'        <input id="ax5formatter-004" name="3" type="text" class="form-control" placeholder="yyyy-mm-dd" data-ax5formatter="date">\n' +
+			'    </div>\n' +
+			'</div>\n' +
+			'<div class="form-group">\n' +
+			'    <div class="input-group">\n' +
+			'        <span class="input-group-addon">Date(time)</span>\n' +
+			'        <input id="ax5formatter-005" name="3" type="text" class="form-control" placeholder="yyyy-mm-dd hh:mi:ss" data-ax5formatter="date(time)">\n' +
+			'    </div>\n' +
+			'</div>\n' +
+			'<div class="form-group">\n' +
+			'    <div class="input-group">\n' +
+			'        <span class="input-group-addon">Time</span>\n' +
+			'        <input id="ax5formatter-006" name="3" type="text" class="form-control" placeholder="hh:mi:ss" data-ax5formatter="time">\n' +
+			'    </div>\n' +
+			'</div>');
+	});
+
+	it('Formatter Date' , function(){
+		$('[data-ax5formatter]').ax5formatter();
+
+		$('#ax5formatter-004').val('20160903').blur().val().should.equal('2016-09-03');
+		$('#ax5formatter-005').val('20160903101010').blur().val().should.equal('2016-09-03 10:10:10');
+		$('#ax5formatter-006').val('101010').blur().val().should.equal('10:10:10');
+	});
+
+	after(function(){
+		$('div.form-group').remove();
+	});
+});
