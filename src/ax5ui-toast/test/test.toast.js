@@ -6,7 +6,6 @@ describe('ax5.ui.toast TEST', function() {
             displayTime: 0,
             animateTime: 0,
             onStateChanged: function(){
-                console.log('toast.push()#' + this.state);
                 var $toastEl = $('#' + this.toastId);
                 if (this.state == 'open') {
                     $toastEl.find('.ax-toast-body').text().should.equal(message);
@@ -18,7 +17,6 @@ describe('ax5.ui.toast TEST', function() {
         });
 
         toast.push(message, function () {
-            console.log('toast.push()#callback');
             should(this.toastId).String();
         });
 	});
@@ -30,7 +28,6 @@ describe('ax5.ui.toast TEST', function() {
             displayTime: 0,
             animateTime: 0,
             onStateChanged: function(){
-                console.log('toast.confirm()#' + this.state, this);
                 var $toastEl = $('#' + this.toastId);
                 if (this.state == 'open') {
                     $toastEl.find('.ax-toast-body').text().should.equal(message);
@@ -42,7 +39,6 @@ describe('ax5.ui.toast TEST', function() {
         });
 
         toast.confirm(message, function () {
-            console.log('toast.confirm()#callback');
             should(this.toastId).String();
         });
 
