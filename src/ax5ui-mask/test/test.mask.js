@@ -17,8 +17,8 @@ describe('ax5.ui.mask.setConfig TEST', function(){
 			    }
 		});
 
-		should.deepEqual(JSON.stringify(mask.config.zIndex) , '1000');
-		should.deepEqual(mask.config.content , 'Loading content');
+		should.equal(mask.config.zIndex , '1000');
+		should.equal(mask.config.content , 'Loading content');
     });
 
     it('without using setConfig' , function(){
@@ -33,8 +33,8 @@ describe('ax5.ui.mask.setConfig TEST', function(){
 		    }
 		});
 
-		should.deepEqual(JSON.stringify(mask.config.zIndex) , '1000');
-		should.deepEqual(mask.config.content , 'Loading content');
+		should.equal(mask.config.zIndex , '1000');
+		should.equal(mask.config.content , 'Loading content');
     });
 });
 /* end ax5.mask.setConfig */
@@ -43,7 +43,7 @@ describe('ax5.ui.mask.setConfig TEST', function(){
 describe('ax5.ui.mask.open TEST' , function(){
 	it('ax5.ui.mask.open config' , function(){
 		var mask = new ax5.ui.mask();
-		should.deepEqual(typeof mask.open , "function");
+		should.equal(typeof mask.open , "function");
 	});
 
 	it('ax5.ui.mask.open with config' , function(){
@@ -51,7 +51,7 @@ describe('ax5.ui.mask.open TEST' , function(){
 			target : $('body').get(0),
 			content : 'mask'
 		});
-		should.deepEqual(typeof mask.open , "function");
+		should.equal(typeof mask.open , "function");
 	});
 });
 /* end ax5.mask.open */
@@ -61,7 +61,7 @@ describe('ax5.ui.mask.close TEST' , function(){
 	it('ax5.ui.mask.close config' , function(){
 		var mask = new ax5.ui.mask();
 
-		should.deepEqual(typeof mask.close , 'function');
+		should.equal(typeof mask.close , 'function');
 	});
 });
 /* end ax5.mask.close*/
@@ -73,7 +73,7 @@ describe('ax5.ui.mask theme TEST' , function(){
 			theme : 'danger'
 		});
 
-		should.deepEqual(mask.config.theme , 'danger');
+		should.equal(mask.config.theme , 'danger');
 	});
 });
 /* end ax5.mask theme test */
