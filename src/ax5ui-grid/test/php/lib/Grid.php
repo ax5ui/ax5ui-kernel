@@ -23,4 +23,6 @@ class Column
     public $align;
     public $width;
     public $enableFilter;
+    public $editor;
+    public $columns;
 }
