@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.21"
+        version: "0.2.22"
     }, function () {
         /**
          * @class ax5grid
@@ -49,6 +49,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 lineNumberColumnWidth: 30,
                 rowSelectorColumnWidth: 26,
                 sortable: undefined,
+                remoteSort: false,
 
                 header: {
                     align: false,
@@ -536,13 +537,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 sortColumns = function sortColumns(_sortInfo) {
                 GRID.header.repaint.call(this);
 
-                if (this.config.body.grouping) {
-                    this.list = GRID.data.initData.call(this, GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list)));
+                if (U.isFunction(this.config.remoteSort)) {
+                    var that = { sortInfo: [] };
+                    for (var k in _sortInfo) {
+                        that.sortInfo.push({
+                            key: k,
+                            orderBy: _sortInfo[k].orderBy,
+                            seq: _sortInfo[k].seq
+                        });
+                    }
+                    that.sortInfo.sort(function (a, b) {
+                        return a.seq > b.seq;
+                    });
+                    this.config.remoteSort.call(that, that);
                 } else {
-                    this.list = GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list));
+                    if (this.config.body.grouping) {
+                        this.list = GRID.data.initData.call(this, GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list)));
+                    } else {
+                        this.list = GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list));
+                    }
+                    GRID.body.repaint.call(this, true);
+                    GRID.scroller.resize.call(this);
                 }
-                GRID.body.repaint.call(this, true);
-                GRID.scroller.resize.call(this);
             };
 
             /// private end
@@ -562,7 +578,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Number} [_config.rowSelectorColumnWidth=25]
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
-             * @param {Boolean} [_config.remoteSort=false]
+             * @param {Function} [_config.remoteSort=false]
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
@@ -643,10 +659,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              *                 {key: "b", label: "필드B", align: "center"},
              *                 {
              *                     key: undefined, label: "필드C", columns: [
-             *                     {key: "price", label: "단가", formatter: "money", align: "right"},
-             *                     {key: "amount", label: "수량", formatter: "money", align: "right"},
-             *                     {key: "cost", label: "금액", align: "right", formatter: "money"}
-             *                 ]
+             *                         {key: "price", label: "단가", formatter: "money", align: "right"},
+             *                         {key: "amount", label: "수량", formatter: "money", align: "right"},
+             *                         {key: "cost", label: "금액", align: "right", formatter: "money"}
+             *                     ]
              *                 },
              *                 {key: "saleDt", label: "판매일자", align: "center"},
              *                 {key: "customer", label: "고객명"},
@@ -1259,6 +1275,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
+// todo : remote sort
 // todo : filter
 // todo : body menu
 // todo : column reorder
@@ -2986,11 +3003,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         if (U.isArray(data)) {
             this.page = null;
-            this.list = initData.call(this, Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
+            this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
             this.deletedList = [];
         } else if ("page" in data) {
             this.page = jQuery.extend({}, data.page);
-            this.list = initData.call(this, Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
+            this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
             this.deletedList = [];
         }
 

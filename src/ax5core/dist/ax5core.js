@@ -239,6 +239,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
 
+        /**
+         * 브라우져의 터치 기능 유무를 확인합니다.
+         * @method ax5.info.supportTouch
+         * @returns {boolean}
+         * @example
+         * ```
+         * var chkFlag = ax5.info.supportTouch;
+         */
         var supportTouch = win ? 'ontouchstart' in win || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 : false;
 
         return {
@@ -870,6 +878,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return typeof O === "undefined" || O === null || O === "";
         }
 
+        /**
+         * 오브젝트가 날자값인지 판단합니다.
+         * @method ax5.util.isDate
+         * @param {Date} O
+         * @returns {Boolean}
+         * @example
+         * ```js
+         * ax5.util.isDate('2016-09-30');
+         * // false
+         * ax5.util.isDate( new Date('2016-09-30') );
+         * // true
+         * ```
+         */
         function isDate(O) {
             return O instanceof Date && !isNaN(O.valueOf());
         }
@@ -906,6 +927,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ```js
          * ax5.util.first({a:1, b:2});
          * // Object {a: 1}
+         * ax5.util.first([1,2,3,4]);
+         * // 1
          * ```
          */
         function first(O) {
@@ -931,6 +954,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ```js
          * ax5.util.last({a:1, b:2});
          * // Object {b: 2}
+         * ax5.util.last([1,2,3,4]);
+         * // 4
          * ```
          */
         function last(O) {
@@ -1216,7 +1241,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         /**
-         * 천번째 인자에 두번째 인자 아이템을 합쳐줍니다. concat과 같은 역할을 하지만. 인자가 Array타입이 아니어도 됩니다.
+         * 첫번째 인자에 두번째 인자 아이템을 합쳐줍니다. concat과 같은 역할을 하지만. 인자가 Array타입이 아니어도 됩니다.
          * @method ax5.util.merge
          * @param {Array|ArrayLike} first
          * @param {Array|ArrayLike} second
@@ -1526,7 +1551,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * @example
          * ```js
          * ax5.util.weeksOfMonth("2015-10-01"); // {year: 2015, month: 10, count: 1}
-         * ax5.util.weeksOfMonth("2015-09-19"); // {year: 2015, month: 10, count: 1}
+         * ax5.util.weeksOfMonth("2015-09-19"); // {year: 2015, month: 9, count: 3}
          * ```
          */
         function weeksOfMonth(d) {
@@ -1540,6 +1565,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         /**
          * 년월에 맞는 날자수를 반환합니다.
+         * (new Date()).getMonth() 기준으로 월값을 보냅니다. "2월" 인경우 "1" 을 넘기게 됩니다.
          * @method ax5.util.daysOfMonth
          * @param {Number} y
          * @param {Number} m
@@ -1562,18 +1588,37 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         /**
          * 원하는 횟수 만큼 자릿수 맞춤 문자열을 포함한 문자열을 반환합니다.
+         * 문자열 길이보다 작은값을 보내면 무시됩니다.
          * @method ax5.util.setDigit
          * @param {String|Number} num
          * @param {Number} length
          * @param {String} [padder=0]
          * @param {Number} [radix]
          * @returns {String}
+         * @example
+         * ```
+         * ax5.util.setDigit(2016, 6)
+         * // "002016"
+         * ax5.util.setDigit(2016, 2)
+         * // "2016"
+         * ```
          */
         function setDigit(num, length, padder, radix) {
             var s = num.toString(radix || 10);
             return times(padder || '0', length - s.length) + s;
         }
 
+        /**
+         * 문자열을 지정된 수만큼 반복 합니다.
+         * @param {String} s
+         * @param {Number} count
+         * @returns {string}
+         * @example
+         * ```
+         * ax5.util.times(2016, 2)
+         * //"20162016"
+         * ```
+         */
         function times(s, count) {
             return count < 1 ? '' : new Array(count + 1).join(s);
         }
@@ -1693,13 +1738,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         /**
+         * css string 및 object 를 넘기면 object 및 string 으로 변환되어 리턴됩니다.
          * @method ax5.util.css
-         * @param {Object|String} val - CSSString or CSSObject
+         * @param {Object|String} val - CSS String or CSS Object
          * @returns {String|Object}
          * @example
          * ```
          * console.log(ax5.util.css({background: "#ccc", padding: "50px", width: "100px"}));
+         * //"background:#ccc;padding:50px;width:100px;"
          * console.log(ax5.util.css('width:100px;padding: 50px; background: #ccc'));
+         * // object {width: "100px", padding: "50px", background: "#ccc"}
          * ```
          */
         function css(val) {
@@ -1848,6 +1896,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }();
 
         /**
+         * 지정한 시간을 지연시켜 함수를 실행합니다.
          * @method ax5.util.debounce
          * @param {Function} func
          * @param {Number} wait

@@ -91,6 +91,12 @@
         initView: function () {
             firstGrid.setConfig({
                 target: $('[data-ax5grid="first-grid"]'),
+                sortable: true,
+                multiSort: true,
+                remoteSort: function () {
+                    gridView.sortInfo = this.sortInfo;
+                    gridView.setData();
+                },
                 header: {
                     align: "center",
                     columnHeight: 28,
@@ -115,8 +121,7 @@
                         width: 80,
                         enableFilter: true,
                         align: "center",
-                        editor: {type:"text"},
-                        sortable: true
+                        editor: {type:"text"}
                     },
                     {key: "ceo", label: "대표이사", align: "center"},
                     {
@@ -142,19 +147,29 @@
                     lastIcon: '<i class="fa fa-step-forward" aria-hidden="true"></i>',
                     onChange: function () {
                         console.log(this);
-                        gridView.setData(this.page.selectPage);
+                        gridView.pageNo = this.page.selectPage;
+                        gridView.setData();
                     }
                 }
             });
             return this;
         },
-        setData: function (_pageNo) {
-            var page = (_pageNo || 0) + 1;
-            $.get('json_data.php?len=20&page=' + page, function(data) {
+        pageNo: 0,
+        sortInfo: {},
+        len: 11,
+        setData: function () {
+            var page = (gridView.pageNo || 0) + 1;
+            $.post('json_data.php',
+                {
+                    len: gridView.len,
+                    page: page,
+                    sort: gridView.sortInfo,
+                    mode: 'read'
+                }, function(data) {
                 if(data.status == 'success') {
                     firstGrid.setData(data.data);
-                }
-            }, 'JSON');
+                }}, 'JSON'
+            );
 
             return this;
         }
