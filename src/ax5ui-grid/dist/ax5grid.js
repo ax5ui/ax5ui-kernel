@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.21"
+        version: "0.2.22"
     }, function () {
         /**
          * @class ax5grid
@@ -125,6 +125,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.leftFootSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 왼쪽
             this.footSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 오른쪽
             this.needToPaintSum = true; // 데이터 셋이 변경되어 summary 변경 필요여부
+
 
             cfg = this.config;
 
@@ -658,10 +659,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              *                 {key: "b", label: "필드B", align: "center"},
              *                 {
              *                     key: undefined, label: "필드C", columns: [
-             *                     {key: "price", label: "단가", formatter: "money", align: "right"},
-             *                     {key: "amount", label: "수량", formatter: "money", align: "right"},
-             *                     {key: "cost", label: "금액", align: "right", formatter: "money"}
-             *                 ]
+             *                         {key: "price", label: "단가", formatter: "money", align: "right"},
+             *                         {key: "amount", label: "수량", formatter: "money", align: "right"},
+             *                         {key: "cost", label: "금액", align: "right", formatter: "money"}
+             *                     ]
              *                 },
              *                 {key: "saleDt", label: "판매일자", align: "center"},
              *                 {key: "customer", label: "고객명"},
@@ -1278,6 +1279,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // todo : filter
 // todo : body menu
 // todo : column reorder
+
 
 // ax5.ui.grid.body
 (function () {

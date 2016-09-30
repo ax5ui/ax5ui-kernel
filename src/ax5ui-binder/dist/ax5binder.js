@@ -552,8 +552,8 @@
                                     if (origin_value[i] == this.value) {
                                         //hasItemIndex = i;
                                     } else {
-                                            new_value.push(origin_value[i]);
-                                        }
+                                        new_value.push(origin_value[i]);
+                                    }
                                 }
                                 origin_value = new_value;
                             }
@@ -805,8 +805,8 @@
                                     if (origin_value[i] == this.value) {
                                         //hasItemIndex = i;
                                     } else {
-                                            new_value.push(origin_value[i]);
-                                        }
+                                        new_value.push(origin_value[i]);
+                                    }
                                 }
                                 origin_value = new_value;
                             }
