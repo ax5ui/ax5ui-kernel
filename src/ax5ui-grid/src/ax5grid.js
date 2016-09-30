@@ -673,10 +673,10 @@
              *                 {key: "b", label: "필드B", align: "center"},
              *                 {
              *                     key: undefined, label: "필드C", columns: [
-             *                     {key: "price", label: "단가", formatter: "money", align: "right"},
-             *                     {key: "amount", label: "수량", formatter: "money", align: "right"},
-             *                     {key: "cost", label: "금액", align: "right", formatter: "money"}
-             *                 ]
+             *                         {key: "price", label: "단가", formatter: "money", align: "right"},
+             *                         {key: "amount", label: "수량", formatter: "money", align: "right"},
+             *                         {key: "cost", label: "금액", align: "right", formatter: "money"}
+             *                     ]
              *                 },
              *                 {key: "saleDt", label: "판매일자", align: "center"},
              *                 {key: "customer", label: "고객명"},
