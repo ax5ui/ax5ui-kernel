@@ -36,7 +36,7 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
+         * ```js
          * var formatter = new ax5.ui.formatter();
          * ```
          */
@@ -358,8 +358,8 @@ jQuery.fn.ax5formatter = function () {
             if (_opts.patternArgument == "int") {
                 // 소수점 입력 안됨
             } else {
-                    enterableKeyCodes['190'] = "."; // 소수점 입력 허용
-                }
+                enterableKeyCodes['190'] = "."; // 소수점 입력 허용
+            }
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
         getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
