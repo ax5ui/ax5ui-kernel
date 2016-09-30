@@ -125,7 +125,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.footSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 오른쪽
             this.needToPaintSum = true; // 데이터 셋이 변경되어 summary 변경 필요여부
 
-
             cfg = this.config;
 
             var onStateChanged = function onStateChanged(_opts, _that) {
@@ -536,13 +535,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 sortColumns = function sortColumns(_sortInfo) {
                 GRID.header.repaint.call(this);
 
-                if (this.config.body.grouping) {
-                    this.list = GRID.data.initData.call(this, GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list)));
+                if (U.isFunction(this.config.remoteSort)) {
+                    var that = { sortInfo: [] };
+                    for (var k in _sortInfo) {
+                        that.sortInfo.push({
+                            key: k,
+                            orderBy: _sortInfo[k].orderBy,
+                            seq: _sortInfo[k].seq
+                        });
+                    }
+                    that.sortInfo.sort(function (a, b) {
+                        return a.seq > b.seq;
+                    });
+                    this.config.remoteSort.call(that, that);
                 } else {
-                    this.list = GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list));
+                    if (this.config.body.grouping) {
+                        this.list = GRID.data.initData.call(this, GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list)));
+                    } else {
+                        this.list = GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list));
+                    }
+                    GRID.body.repaint.call(this, true);
+                    GRID.scroller.resize.call(this);
                 }
-                GRID.body.repaint.call(this, true);
-                GRID.scroller.resize.call(this);
             };
 
             /// private end
@@ -562,7 +576,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Number} [_config.rowSelectorColumnWidth=25]
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
-             * @param {Boolean} [_config.remoteSort=false]
+             * @param {Function} [_config.remoteSort=false]
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
@@ -1259,10 +1273,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
+// todo : remote sort
 // todo : filter
 // todo : body menu
 // todo : column reorder
-
 
 // ax5.ui.grid.body
 (function () {

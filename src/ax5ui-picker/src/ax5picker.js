@@ -14,8 +14,28 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
-         * var myPicker = new ax5.ui.picker();
+         * ```js
+         * ax5.def.picker.date_leftArrow = '<i class="fa fa-chevron-left"></i>';
+         * ax5.def.picker.date_yearTmpl = '%s';
+         * ax5.def.picker.date_monthTmpl = '%s';
+         * def.picker.date_rightArrow = '<i class="fa fa-chevron-right"></i>';
+         *
+         * var picker = new ax5.ui.picker({
+         *     onStateChanged: function () {
+         *         console.log(this);
+         *     }
+         * });
+         *
+         * picker.bind({
+         *     target: $('[data-picker-date]'),
+         *     direction: "auto",
+         *     content: {
+         *         type: 'date',
+         *         formatter: {
+         *             pattern: 'date'
+         *         }
+         *     }
+         * });
          * ```
          */
         var ax5picker = function () {

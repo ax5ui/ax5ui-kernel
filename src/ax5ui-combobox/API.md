@@ -174,7 +174,7 @@ ax5combobox jquery extends
 
 **Example**  
 ```html
-<div data-ax5combobox="combo1" data-ax5combobox-config='{
+<div data-ax5combobox="ax1" data-ax5combobox-config='{
  multiple: true,
  editable: true,
  size: "",
@@ -182,7 +182,7 @@ ax5combobox jquery extends
  }'></div>
 <script>
 jQuery('[data-ax5combobox="ax1"]').ax5combobox();
-$('[data-ax5combobox="ax1"]').ax5combobox("getValue");
+$('[data-ax5combobox="ax1"]').ax5combobox("getSelectedOption");
 $('[data-ax5combobox="ax1"]').ax5combobox("setValue", ["string", "number"]);
 $('[data-ax5combobox="ax1"]').ax5combobox("enable");
 $('[data-ax5combobox="ax1"]').ax5combobox("disable");

@@ -16,8 +16,80 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
-         * var myViewer = new ax5.ui.mediaViewer();
+         * ```js
+         * var myViewer = new ax5.ui.mediaViewer({
+         *     theme: "danger",
+         *     target: $("#media-viewer-target-0"),
+         *     loading: {
+         *         icon: '<i class="fa fa-spinner fa-pulse fa-2x fa-fw margin-bottom" aria-hidden="true"></i>',
+         *         text: '<div>Now Loading</div>'
+         *     },
+         *     media: {
+         *         width: '11%', height: '11%',
+         *         prevHandle: '<i class="fa fa-chevron-left"></i>',
+         *         nextHandle: '<i class="fa fa-chevron-right"></i>',
+         *         poster: '<i class="fa fa-youtube-play" style="font-size: 20px;"></i>',
+         *         list: [
+         *             {
+         *                 video: {
+         *                     html: '<iframe src="https://player.vimeo.com/video/121840700?color=fcfcfc&badge=0" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
+         *                     poster: ''
+         *                 }
+         *             },
+         *             {
+         *                 video: {
+         *                     html: '<iframe width="560" height="315" src="https://www.youtube.com/embed/w9Uh2oP88JI" frameborder="0" allowfullscreen></iframe>',
+         *                     poster: ''
+         *                 }
+         *             },
+         *             {
+         *                 image: {
+         *                     src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+         *                     poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+         *                 }
+         *             },
+         *             {
+         *                 image: {
+         *                     src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+         *                     poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+         *                 }
+         *             },
+         *             {
+         *                 image: {
+         *                     src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+         *                     poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+         *                 }
+         *             },
+         *             {
+         *                 image: {
+         *                     src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+         *                     poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+         *                 }
+         *             },
+         *             {
+         *                 image: {
+         *                     src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+         *                     poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+         *                 }
+         *             },
+         *             {
+         *                 image: {
+         *                     src: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg',
+         *                     poster: 'http://www.improgrammer.net/wp-content/uploads/2015/11/top-20-node-js-Frameworks-1.jpg'
+         *                 }
+         *             },
+         *             {
+         *                 image: {
+         *                     src: 'https://www.twilio.com/blog/wp-content/uploads/2013/11/Screen-Shot-2013-11-06-at-12.05.36-PM.png',
+         *                     poster: 'https://www.twilio.com/blog/wp-content/uploads/2013/11/Screen-Shot-2013-11-06-at-12.05.36-PM.png'
+         *                 }
+         *             }
+         *         ]
+         *     },
+         *     onClick: function () {
+         *         console.log(this);
+         *     }
+         * });
          * ```
          */
         var ax5mediaViewer = function ax5mediaViewer() {
