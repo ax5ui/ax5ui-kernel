@@ -14,8 +14,30 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
-         * var myselect = new ax5.ui.select();
+         * ```js
+         * var options = [];
+         * for (var i = 0; i < 20; i++) {
+         *     options.push({value: i, text: "optionText" + i});
+         * }
+
+         * var mySelect = new ax5.ui.select({
+         *     theme: "danger"
+         * });
+
+         * mySelect.bind({
+         *     theme: "primary",
+         *     target: $('[data-ax5select="select1"]'),
+         *     options: options,
+         *     onChange: function () {
+         *         console.log(this);
+         *     },
+         *     onClose: function () {
+         *         console.log(this);
+         *     },
+         *     onStateChanged: function () {
+         *         console.log(this);
+         *     }
+         * });
          * ```
          */
         var ax5select = function () {
