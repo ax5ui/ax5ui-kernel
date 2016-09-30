@@ -19,7 +19,7 @@
          * @logs
          * 2014-06-21 tom : 시작
          * @example
-         * ```
+         * ```js
          * var my_pad = new ax5.ui.calendar();
          * ```
          */
