@@ -25,16 +25,16 @@
 
 <div style="padding: 5px;">
     <h3>height</h3>
-        <button class="btn btn-default" data-set-height="300">300px</button>
-        <button class="btn btn-default" data-set-height="400">400px</button>
-        <button class="btn btn-default" data-set-height="800">800px</button>
-        <button class="btn btn-default" data-set-height="100%">100%</button>
+    <button class="btn btn-default" data-set-height="300">300px</button>
+    <button class="btn btn-default" data-set-height="400">400px</button>
+    <button class="btn btn-default" data-set-height="800">800px</button>
+    <button class="btn btn-default" data-set-height="100%">100%</button>
 </div>
 <div style="padding: 5px;">
     <h3>row</h3>
-        <button class="btn btn-default" data-grid-control="row-add">add</button>
-        <button class="btn btn-default" data-grid-control="row-remove">remove</button>
-        <button class="btn btn-default" data-grid-control="row-update">update</button>
+    <button class="btn btn-default" data-grid-control="row-add">add</button>
+    <button class="btn btn-default" data-grid-control="row-remove">remove</button>
+    <button class="btn btn-default" data-grid-control="row-update">update</button>
 </div>
 <div style="padding: 5px;">
     <h3>column</h3>
@@ -50,14 +50,14 @@
 
 <script>
 
-    
+
     var firstGrid = new ax5.ui.grid();
 
     ax5.ui.grid.formatter["myType"] = function () {
         return "myType" + (this.value || "");
     };
-    ax5.ui.grid.formatter["capital"] = function(){
-        return (''+this.value).toUpperCase();
+    ax5.ui.grid.formatter["capital"] = function () {
+        return ('' + this.value).toUpperCase();
     };
 
     ax5.ui.grid.collector["myType"] = function () {
@@ -65,18 +65,24 @@
     };
 
     var sampleData = [
-        {a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
-        {companyJson: {"대표자명":"abcd"}, a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
-        {companyJson: {"대표자명":"abcd"}, a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
-        {companyJson: {"대표자명":"위세라"}, a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
-        {companyJson: {"대표자명":"abcd"}, a: "A", b: "B01", price: 1400, amount: 5, cost: 7000, saleDt: "2016-08-29", customer: "황세진", saleType: "D"},
-        {companyJson: {"대표자명":"abcd"}, a: "A", b: "A01", price: 1500, amount: 2, cost: 3000, saleDt: "2016-08-26", customer: "이서연", saleType: "A"}
+        {companyJson: {"대표자명": "----"}, a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
+        {companyJson: {"대표자명": "위세라"}, a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "B01", price: 1400, amount: 5, cost: 7000, saleDt: "2016-08-29", customer: "황세진", saleType: "D"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "A01", price: 1500, amount: 2, cost: 3000, saleDt: "2016-08-26", customer: "이서연", saleType: "A"}
     ];
 
     var gridView = {
         initView: function () {
             firstGrid.setConfig({
                 target: $('[data-ax5grid="first-grid"]'),
+                sortable: true,
+                multiSort: true,
+                remoteSort: function () {
+                    console.log(JSON.stringify(this.sortInfo, null, '\t'));
+                    gridView.setSortData(this.sortInfo);
+                },
                 columns: [
                     {
                         key: "companyJson['대표자명']",
@@ -87,7 +93,7 @@
                         },
                         enableFilter: true,
                         align: "center",
-                        editor: {type:"text"}
+                        editor: {type: "text"}
                     },
                     {key: "b", label: "필드B", align: "center"},
                     {
@@ -119,6 +125,12 @@
             firstGrid.setData(sampleData);
 
             return this;
+        },
+        setSortData: function (sortInfo) {
+            var sortedList = sampleData.sort(function (a, b) {
+                return a["b"] < b["b"];
+            });
+            firstGrid.setData(sortedList);
         }
     };
 
