@@ -156,7 +156,7 @@
         },
         pageNo: 0,
         sortInfo: {},
-        len: 20,
+        len: 11,
         setData: function () {
             var page = (gridView.pageNo || 0) + 1;
             $.post('json_data.php',
