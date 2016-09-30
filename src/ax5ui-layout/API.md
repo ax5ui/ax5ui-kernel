@@ -22,9 +22,10 @@
 * [ax5layout](#ax5layout)
     * [.setConfig(config)](#ax5layout.setConfig) ⇒ <code>[ax5layout](#ax5layout)</code>
     * [.bind(item)](#ax5layout.bind) ⇒ <code>[ax5layout](#ax5layout)</code>
-    * [.align(boundID, [callBack], [windowResize])](#ax5layout.align) ⇒ <code>[ax5layout](#ax5layout)</code>
+    * [.align(boundID, [callback], [windowResize])](#ax5layout.align) ⇒ <code>[ax5layout](#ax5layout)</code>
     * [.onResize(boundID, fn)](#ax5layout.onResize) ⇒ <code>[ax5layout](#ax5layout)</code>
-    * [.resize(boundID, resizeOption, [callBack])](#ax5layout.resize) ⇒ <code>[ax5layout](#ax5layout)</code>
+    * [.resize(boundID, resizeOption, [callback])](#ax5layout.resize) ⇒ <code>[ax5layout](#ax5layout)</code>
+    * [.tabOpen(boundID, tabIndex)](#ax5layout.tabOpen) ⇒ <code>ax5.ui.ax5layout</code>
 
 <a name="ax5layout.setConfig"></a>
 
@@ -62,13 +63,13 @@ Preferences of layout UI
 
 <a name="ax5layout.align"></a>
 
-### ax5layout.align(boundID, [callBack], [windowResize]) ⇒ <code>[ax5layout](#ax5layout)</code>
+### ax5layout.align(boundID, [callback], [windowResize]) ⇒ <code>[ax5layout](#ax5layout)</code>
 **Kind**: static method of <code>[ax5layout](#ax5layout)</code>  
 
 | Param | Type |
 | --- | --- |
 | boundID |  | 
-| [callBack] | <code>function</code> | 
+| [callback] | <code>function</code> | 
 | [windowResize] | <code>String</code> | 
 
 <a name="ax5layout.onResize"></a>
@@ -83,14 +84,24 @@ Preferences of layout UI
 
 <a name="ax5layout.resize"></a>
 
-### ax5layout.resize(boundID, resizeOption, [callBack]) ⇒ <code>[ax5layout](#ax5layout)</code>
+### ax5layout.resize(boundID, resizeOption, [callback]) ⇒ <code>[ax5layout](#ax5layout)</code>
 **Kind**: static method of <code>[ax5layout](#ax5layout)</code>  
 
 | Param | Type |
 | --- | --- |
 | boundID |  | 
 | resizeOption | <code>Object</code> | 
-| [callBack] | <code>function</code> | 
+| [callback] | <code>function</code> | 
+
+<a name="ax5layout.tabOpen"></a>
+
+### ax5layout.tabOpen(boundID, tabIndex) ⇒ <code>ax5.ui.ax5layout</code>
+**Kind**: static method of <code>[ax5layout](#ax5layout)</code>  
+
+| Param |
+| --- |
+| boundID | 
+| tabIndex | 
 
 <a name="jQueryExtends"></a>
 

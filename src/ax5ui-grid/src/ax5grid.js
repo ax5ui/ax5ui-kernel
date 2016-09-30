@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.21"
+        version: "0.2.22"
     }, (function () {
         /**
          * @class ax5grid
@@ -46,6 +46,7 @@
                 lineNumberColumnWidth: 30,
                 rowSelectorColumnWidth: 26,
                 sortable: undefined,
+                remoteSort: false,
 
                 header: {
                     align: false,
@@ -538,25 +539,40 @@
                 sortColumns = function (_sortInfo) {
                     GRID.header.repaint.call(this);
 
-                    if (this.config.body.grouping) {
-                        this.list = GRID.data.initData.call(this,
-                            GRID.data.sort.call(this,
-                                _sortInfo,
+                    if (U.isFunction(this.config.remoteSort)) {
+                        var that = {sortInfo: []};
+                        for (var k in _sortInfo) {
+                            that.sortInfo.push({
+                                key: k,
+                                orderBy: _sortInfo[k].orderBy,
+                                seq: _sortInfo[k].seq
+                            });
+                        }
+                        that.sortInfo.sort(function (a, b) {
+                            return a.seq > b.seq;
+                        });
+                        this.config.remoteSort.call(that, that);
+                    } else {
+                        if (this.config.body.grouping) {
+                            this.list = GRID.data.initData.call(this,
+                                GRID.data.sort.call(this,
+                                    _sortInfo,
+                                    GRID.data.clearGroupingData.call(this,
+                                        this.list
+                                    )
+                                )
+                            );
+                        }
+                        else {
+                            this.list = GRID.data.sort.call(this, _sortInfo,
                                 GRID.data.clearGroupingData.call(this,
                                     this.list
                                 )
-                            )
-                        );
+                            );
+                        }
+                        GRID.body.repaint.call(this, true);
+                        GRID.scroller.resize.call(this);
                     }
-                    else {
-                        this.list = GRID.data.sort.call(this, _sortInfo,
-                            GRID.data.clearGroupingData.call(this,
-                                this.list
-                            )
-                        );
-                    }
-                    GRID.body.repaint.call(this, true);
-                    GRID.scroller.resize.call(this);
                 };
 
             /// private end
@@ -576,7 +592,7 @@
              * @param {Number} [_config.rowSelectorColumnWidth=25]
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
-             * @param {Boolean} [_config.remoteSort=false]
+             * @param {Function} [_config.remoteSort=false]
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
@@ -657,10 +673,10 @@
              *                 {key: "b", label: "필드B", align: "center"},
              *                 {
              *                     key: undefined, label: "필드C", columns: [
-             *                     {key: "price", label: "단가", formatter: "money", align: "right"},
-             *                     {key: "amount", label: "수량", formatter: "money", align: "right"},
-             *                     {key: "cost", label: "금액", align: "right", formatter: "money"}
-             *                 ]
+             *                         {key: "price", label: "단가", formatter: "money", align: "right"},
+             *                         {key: "amount", label: "수량", formatter: "money", align: "right"},
+             *                         {key: "cost", label: "금액", align: "right", formatter: "money"}
+             *                     ]
              *                 },
              *                 {key: "saleDt", label: "판매일자", align: "center"},
              *                 {key: "customer", label: "고객명"},
@@ -787,7 +803,7 @@
                                 U.stopEvent(e);
                             }
                             else if (e.which == ax5.info.eventKeys.UP) {
-                                self.keyDown("RETURN", {shiftKey:true});
+                                self.keyDown("RETURN", {shiftKey: true});
                             }
                             else if (e.which == ax5.info.eventKeys.DOWN) {
                                 self.keyDown("RETURN", {});
@@ -884,7 +900,7 @@
                             GRID.body.inlineEdit.keydown.call(this, "RETURN");
                         }
                     },
-                    "TAB": function(_e){
+                    "TAB": function (_e) {
                         var activeEditLength = 0;
                         for (var columnKey in this.inlineEditing) {
                             activeEditLength++;
@@ -1100,7 +1116,7 @@
              * ax5Grid.deleteRow("selected");
              * ```
              */
-            this.deleteRow = function (_dindex){
+            this.deleteRow = function (_dindex) {
                 GRID.data.deleteRow.call(this, _dindex);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
@@ -1278,6 +1294,7 @@
 })();
 
 
+// todo : remote sort
 // todo : filter
 // todo : body menu
 // todo : column reorder
