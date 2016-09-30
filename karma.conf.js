@@ -18,6 +18,7 @@ module.exports = function(config) {
       'node_modules/jquery/dist/jquery.min.js',
       'node_modules/lodash/lodash.min.js',
       'node_modules/should/should.js',
+      'dist/ax5ui.all.css',
       'dist/ax5ui.all.min.js',
       'src/**/test/test.*.js'
     ],
