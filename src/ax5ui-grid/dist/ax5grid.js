@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.2.22"
+        version: "0.3.0"
     }, function () {
         /**
          * @class ax5grid
@@ -125,7 +125,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.leftFootSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 왼쪽
             this.footSumData = {}; // frozenColumnIndex 를 기준으로 나누어진 출력 레이아웃 오른쪽
             this.needToPaintSum = true; // 데이터 셋이 변경되어 summary 변경 필요여부
-
 
             cfg = this.config;
 
@@ -681,14 +680,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ```
              */
             this.init = function (_config) {
-                this.onStateChanged = cfg.onStateChanged;
-                this.onClick = cfg.onClick;
-
                 cfg = jQuery.extend(true, {}, cfg, _config);
                 if (!cfg.target) {
                     console.log(ax5.info.getError("ax5grid", "401", "init"));
                     return this;
                 }
+
+                this.onStateChanged = cfg.onStateChanged;
+                this.onClick = cfg.onClick;
+                this.onLoad = cfg.onLoad;
+                this.onDataChanged = cfg.body.onDataChanged;
+                // todo event에 대한 추가 정의 필요
 
                 this.$target = jQuery(cfg.target);
 
@@ -816,6 +818,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     }
                 });
+
+                // 그리드 레이아웃이 모든 준비를 마친시점에 onLoad존재 여부를 확인하고 호출하여 줍니다.
+                setTimeout(function () {
+                    if (this.onLoad) {
+                        this.onLoad.call({
+                            self: this
+                        });
+                    }
+                }.bind(this));
                 return this;
             };
 
@@ -1279,7 +1290,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // todo : filter
 // todo : body menu
 // todo : column reorder
-
 
 // ax5.ui.grid.body
 (function () {
@@ -3210,6 +3220,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         } else {
             this.list[_dindex][this.config.columnKeys.modified] = true;
             this.list[_dindex][_key] = _value;
+        }
+
+        if (this.onDataChanged) {
+            this.onDataChanged.call({
+                self: this,
+                list: this.list,
+                dindex: _dindex,
+                item: this.list[_dindex],
+                key: _key,
+                value: _value
+            });
         }
         return true;
     };

@@ -339,6 +339,17 @@
             this.list[_dindex][this.config.columnKeys.modified] = true;
             this.list[_dindex][_key] = _value;
         }
+
+        if(this.onDataChanged){
+            this.onDataChanged.call({
+                self: this,
+                list: this.list,
+                dindex: _dindex,
+                item: this.list[_dindex],
+                key: _key,
+                value: _value
+            });
+        }
         return true;
     };
 

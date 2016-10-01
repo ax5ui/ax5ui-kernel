@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.2.22"
+        version: "0.3.0"
     }, (function () {
         /**
          * @class ax5grid
@@ -695,14 +695,17 @@
              * ```
              */
             this.init = function (_config) {
-                this.onStateChanged = cfg.onStateChanged;
-                this.onClick = cfg.onClick;
-
                 cfg = jQuery.extend(true, {}, cfg, _config);
                 if (!cfg.target) {
                     console.log(ax5.info.getError("ax5grid", "401", "init"));
                     return this;
                 }
+
+                this.onStateChanged = cfg.onStateChanged;
+                this.onClick = cfg.onClick;
+                this.onLoad = cfg.onLoad;
+                this.onDataChanged = cfg.body.onDataChanged;
+                // todo event에 대한 추가 정의 필요
 
                 this.$target = jQuery(cfg.target);
 
@@ -834,6 +837,15 @@
                         }
                     }
                 });
+
+                // 그리드 레이아웃이 모든 준비를 마친시점에 onLoad존재 여부를 확인하고 호출하여 줍니다.
+                setTimeout((function(){
+                    if(this.onLoad){
+                        this.onLoad.call({
+                            self: this
+                        })
+                    }
+                }).bind(this));
                 return this;
             };
 
