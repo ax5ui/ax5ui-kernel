@@ -686,6 +686,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     return this;
                 }
 
+                // 그리드의 이벤트 정의 구간
                 this.onStateChanged = cfg.onStateChanged;
                 this.onClick = cfg.onClick;
                 this.onLoad = cfg.onLoad;
@@ -1030,7 +1031,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              */
             this.setHeight = function (_height) {
                 //console.log(this.$target);
-
                 if (_height == "100%") {
                     _height = this.$target.offsetParent().innerHeight();
                 }
@@ -1199,8 +1199,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             /**
              * @method ax5grid.setColumnWidth
-             * @param _width
-             * @param _cindex
+             * @param {Number} _width
+             * @param {Number} _cindex
+             * @returns {ax5grid}
              */
             this.setColumnWidth = function (_width, _cindex) {
                 this.colGroup[this.xvar.columnResizerIndex]._width = _width;
@@ -1216,12 +1217,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
 
             /**
-             * @method ax5grid.getColumnSort
+             * @method ax5grid.getColumnSortInfo
              * @returns {Object} sortInfo
              */
-            this.getColumnSort = function () {
-
-                return {};
+            this.getColumnSortInfo = function () {
+                var that = { sortInfo: [] };
+                for (var k in this.sortInfo) {
+                    that.sortInfo.push({
+                        key: k,
+                        orderBy: this.sortInfo[k].orderBy,
+                        seq: this.sortInfo[k].seq
+                    });
+                }
+                that.sortInfo.sort(function (a, b) {
+                    return a.seq > b.seq;
+                });
+                return that.sortInfo;
             };
 
             /**
