@@ -77,7 +77,19 @@
                 that = null;
                 return true;
             },
-                getContent = function getContent(toastId, opts) {
+
+            /**
+             * @method ax5toast.getContent
+             * @param {String} toastId
+             * @param {Object} opts
+             * @returns toastDisplay
+             * @example
+             * ```js
+             * ax5toast.getContent('ax5-toast-3-1', opts);
+             * ```
+             */
+            getContent = function getContent(toastId, opts) {
+
                 var data = {
                     toastId: toastId,
                     theme: opts.theme,
@@ -94,7 +106,14 @@
                     data = null;
                 }
             },
-                open = function open(opts, callBack) {
+
+            /**
+             * @method ax5toast.open
+             * @param opts
+             * @param callBack
+             * @returns {ax5toast}
+             */
+            open = function open(opts, callBack) {
                 if (toastSeqClear) clearTimeout(toastSeqClear);
 
                 var toastBox,

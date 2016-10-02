@@ -15,8 +15,33 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
-         * var myuploader = new ax5.ui.multiUploader();
+         * ```js
+         * var upload = new ax5.ui.uploader();
+         * $(document.body).ready(function () {
+         *     upload.setConfig({
+         *         target: $("#user-info-profileImageUrl"),
+         *         file_types: "image/*",
+         *         empty_msg: "프로필 사진",
+         *         progress_theme: "basic",
+         *         upload_http: {
+         *             method: "POST",
+         *             url: "/api/v1/aws/s3/upload",
+         *             filename_param_key: "file",
+         *             data: {bucket: "gajago-user-profile", crop: true}
+         *         },
+         *         on_event: function (that) {
+         *             if (that.action == "fileselect") {
+         *                 console.log(that.file);
+         *             }
+         *             else if (that.action == "uploaded") {
+         *                 _root.form.profile_uploaded(that.file);
+         *             }
+         *             else if (that.action == "error") {
+         *                 alert(that.error.msg);
+         *             }
+         *         }
+         *     });
+         * });
          * ```
          */
         var ax5multiUploader = function ax5multiUploader() {

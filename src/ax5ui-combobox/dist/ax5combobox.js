@@ -435,9 +435,9 @@
                             _focusIndex = 0;
                             //_focusIndex = (direction > 0) ? 0 : item.optionItemLength - 1; // 맨 끝으로 보낼것인가 말 것인가.
                         } else {
-                                _focusIndex = _prevFocusIndex + direction;
-                                if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > item.optionItemLength - 1) _focusIndex = item.optionItemLength - 1;
-                            }
+                            _focusIndex = _prevFocusIndex + direction;
+                            if (_focusIndex < 0) _focusIndex = 0;else if (_focusIndex > item.optionItemLength - 1) _focusIndex = item.optionItemLength - 1;
+                        }
                     }
 
                     item.optionFocusIndex = _focusIndex;
@@ -858,28 +858,28 @@
                                 if (typeof value === "undefined") {
                                     //
                                 } else if (U.isString(value)) {
-                                        searchWord = value;
-                                        if (node.nodeType == '1' && node.getAttribute("data-ax5combobox-selected-text")) {
-                                            // 노드 타입인데 문자열이 리턴 되었다면 선택을 취소해야함.
-                                            searchWord = false; // 검색을 수행하지 않고 값을 변경하자.
-                                        } else {
-                                                values.push(value);
-                                            }
+                                    searchWord = value;
+                                    if (node.nodeType == '1' && node.getAttribute("data-ax5combobox-selected-text")) {
+                                        // 노드 타입인데 문자열이 리턴 되었다면 선택을 취소해야함.
+                                        searchWord = false; // 검색을 수행하지 않고 값을 변경하자.
                                     } else {
                                         values.push(value);
                                     }
+                                } else {
+                                    values.push(value);
+                                }
                             }
                         }
 
                         if (childNodes.length == 0) {
                             setOptionSelect.call(this, item.id, null, undefined, "internal"); // clear value
                         } else if (searchWord === false) {
-                                setOptionSelect.call(this, item.id, null, undefined, "internal"); // clear value
-                                setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
-                                U.selectRange(item.$displayLabel, "end"); // label focus end
-                            } else if (searchWord != "") {
-                                    focusWord.call(self, queIdx, searchWord);
-                                }
+                            setOptionSelect.call(this, item.id, null, undefined, "internal"); // clear value
+                            setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
+                            U.selectRange(item.$displayLabel, "end"); // label focus end
+                        } else if (searchWord != "") {
+                            focusWord.call(self, queIdx, searchWord);
+                        }
                     }, 150);
 
                     var blurLabel = function blurLabel(queIdx) {
@@ -897,11 +897,11 @@
                                     if (typeof value === "undefined") {
                                         //
                                     } else if (U.isString(value)) {
-                                            //editingText = value;
-                                            //values.push(value);
-                                        } else {
-                                                values.push(value);
-                                            }
+                                        //editingText = value;
+                                        //values.push(value);
+                                    } else {
+                                        values.push(value);
+                                    }
                                 }
                             }
                         }
@@ -1054,6 +1054,7 @@
                         item.$display.unbind('click.ax5combobox').bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
 
                         // combobox 태그에 대한 이벤트 감시
+
 
                         item.$displayLabel.unbind("focus.ax5combobox").bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx)).unbind("blur.ax5combobox").bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx)).unbind('keyup.ax5combobox').bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5combobox").bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
 

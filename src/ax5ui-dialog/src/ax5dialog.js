@@ -71,7 +71,12 @@
                     that = null;
                     return true;
                 },
-
+                /**
+                 * @method ax5dialog.getContent
+                 * @param {String} dialogId
+                 * @param {Object} opts
+                 * @returns dialogDisplay
+                 */
                 getContent = function (dialogId, opts) {
                     var
                         data = {
@@ -92,6 +97,11 @@
                         data = null;
                     }
                 },
+                /**
+                 * @method ax5dialog.open
+                 * @param {Object} opts
+                 * @param callback
+                 */
                 open = function (opts, callback) {
                     var pos = {}, box;
 

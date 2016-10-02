@@ -1,9 +1,9 @@
 [![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5core
-"ax5core" is a collection of utility functions, designed for use in ax5ui. "ax5core" consist of "ax5" keys.(ax5.info, ax5.util ...) class variable will be added under "ax5.ui".
+"ax5core" is a collection of utility functions which were designed to be used in ax5ui. It consists of "ax5" keys such as "ax5.info", "ax5.util" and others, and class variables can be added under "ax5.ui".
 
-By these build system, "ax5core" needs only a minimal code and "ax5core" can guarantee the safety, application-compatibility.
+By having the build system, "ax5core" requires only a minimum amount of codes and it can guarantee safety and application-compatibility.
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
