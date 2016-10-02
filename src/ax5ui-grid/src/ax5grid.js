@@ -1316,7 +1316,7 @@
 })();
 
 
-// todo : remote sort
+// todo : merge cells
 // todo : filter
 // todo : body menu
 // todo : column reorder
