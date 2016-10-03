@@ -50,6 +50,18 @@
                 <li class="active"><a href="#">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Nav header</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
@@ -70,7 +82,7 @@
         <p class="text-muted">Place sticky footer content here.</p>
     </div>
 </footer>
-
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script>
 
 
@@ -86,7 +98,7 @@
     ax5.ui.grid.collector["myType"] = function () {
         return "myType" + (this.value || "");
     };
-
+    var orgData = {};
     var gridView = {
         initView: function () {
             firstGrid.setConfig({
@@ -106,12 +118,29 @@
                     }
                 },
                 body: {
+                    orgData: {},
                     align: "center",
                     columnHeight: 28,
                     onClick: function () {
-                        console.log(this);
-                        // this.self.select(this.dindex);
+                        console.log(this.list);
+                        orgData = ax5.util.deepCopy(this.list);
                     },
+                    onDataChanged: function() {
+                        endLoop:
+                        for(var rowNum in this.list) {
+                            for(var key in this.list[rowNum]) {
+                                if(orgData[rowNum][key] != this.list[rowNum][key]) {
+                                    var postData = ax5.util.deepCopy(this.list[rowNum]);
+                                    postData['mode'] = 'update';
+                                    $.post('json_data.php', postData, function(data) {
+                                        console.log(data);
+                                    }, 'JSON');
+
+                                    break endLoop;
+                                }
+                            }
+                        }
+                    }
                 },
                 columns: [
                     {key: "id", label: "ID", align: "center"},

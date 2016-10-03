@@ -8,9 +8,7 @@ require_once 'db/db.config.php';
 // 가상 데이터 생성용 클래스
 // $faker = Faker\Factory::create('ko_KR');
 
-$len = isset($_POST['len']) ? $_POST['len'] : 10;
-$page = isset($_POST['page']) ? $_POST['page'] : 1;
-$sortInfo = isset($_POST['sort']) ? $_POST['sort'] : '';
+$ret = false;
 $mode = isset($_POST['mode']) ? $_POST['mode'] : 'read';
 
 $sales = new json_data();
@@ -18,16 +16,36 @@ $sales = new json_data();
 // Json 헤더 설정
 header('Content-Type: application/json');
 
-echo $sales
-    ->set_limit($len)
-    ->set_page($page)
-    ->set_sort($sortInfo)
-    ->read()
-    ->get_json();
+switch($mode) {
+    case 'update':
+        if(isset($_POST['id']) && $_POST['id']) {
+            $ret = $sales
+                ->set($_POST)
+                ->update($_POST['id'])
+                ->get_json();
+        }
+        break;
+    default:
+        $len = isset($_POST['len']) ? $_POST['len'] : 10;
+        $page = isset($_POST['page']) ? $_POST['page'] : 1;
+        $sortInfo = isset($_POST['sort']) ? $_POST['sort'] : '';
+
+        $ret = $sales
+            ->set_limit($len)
+            ->set_page($page)
+            ->set_sort($sortInfo)
+            ->read()
+            ->get_json();
+        break;
+
+}
+
+echo $ret;
 
 class json_data {
     protected $db;
     protected $ret;
+    protected $setData;
     protected $data;
     protected $page;
     protected $offset;
@@ -62,6 +80,7 @@ class json_data {
 
         $this->tbl = 'sales';
         $this->data = false;
+        $this->setData = array();
 
         return $this;
     }
@@ -96,6 +115,33 @@ class json_data {
         return $this;
     }
 
+    public function update($id)
+    {
+        $column = array('company');
+
+        foreach($column as $key) {
+            if(isset($this->setData[$key])) {
+                $this->db->set($key, $this->setData[$key]);
+            }
+        }
+
+        $this->db
+            ->where('id', $id)
+            ->update($this->tbl);
+
+        return $this;
+    }
+
+    public function set($key, $data = null)
+    {
+        if(is_array($key)) {
+            $this->setData = $key;
+        } else {
+            $this->setData[$key] = $data;
+        }
+
+        return $this;
+    }
     public function get()
     {
         return $this->data;
