@@ -90,7 +90,7 @@
                         console.log(rowNum);
 
                         // Ajax 로직 대체
-                        setTimeout(function(){
+                        setTimeout(function () {
                             gridData[rowNum].cost = gridData[rowNum].price * gridData[rowNum].amount;
                             firstGrid.updateRow(gridData[rowNum], rowNum);
                         }, 1000);
@@ -111,8 +111,8 @@
                     {key: "b", label: "필드B", align: "center"},
                     {
                         key: undefined, label: "필드C", columns: [
-                        {key: "price", label: "단가", formatter: "money", align: "right", editor: {type:"text"}},
-                        {key: "amount", label: "수량", formatter: "money", align: "right", editor: {type:"text"}},
+                        {key: "price", label: "단가", formatter: "money", align: "right", editor: {type: "text"}},
+                        {key: "amount", label: "수량", formatter: "money", align: "right", editor: {type: "text"}},
                         {key: "cost", label: "금액", align: "right", formatter: "money"}
                     ]
                     },
