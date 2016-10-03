@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "mask",
-        version: "0.7.5"
+        version: "0.7.6"
     }, function () {
         /**
          * @class ax5mask
@@ -148,7 +148,7 @@
 
                 if (this.status === "on") this.close();
                 if (options && options.content) setBody.call(this, options.content);
-                if (typeof options.templateName === "undefined") options.templateName = "defaultMask";
+                if (options && typeof options.templateName === "undefined") options.templateName = "defaultMask";
                 self.maskConfig = {};
 
                 jQuery.extend(true, self.maskConfig, this.config, options);
@@ -263,7 +263,6 @@
                 return this;
             };
             //== class body end
-
 
             this.pullRequest = function () {
                 console.log("test pullRequest01");
