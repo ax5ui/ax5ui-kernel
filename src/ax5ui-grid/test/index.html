@@ -83,6 +83,19 @@
                     console.log(JSON.stringify(this.sortInfo, null, '\t'));
                     gridView.setSortData(this.sortInfo);
                 },
+                body: {
+                    onDataChanged: function () {
+                        var rowNum = this.dindex;
+                        var gridData = this.list;
+                        console.log(rowNum);
+
+                        // Ajax 로직 대체
+                        setTimeout(function(){
+                            gridData[rowNum].cost = gridData[rowNum].price * gridData[rowNum].amount;
+                            firstGrid.updateRow(gridData[rowNum], rowNum);
+                        }, 1000);
+                    },
+                },
                 columns: [
                     {
                         key: "companyJson['대표자명']",
@@ -98,8 +111,8 @@
                     {key: "b", label: "필드B", align: "center"},
                     {
                         key: undefined, label: "필드C", columns: [
-                        {key: "price", label: "단가", formatter: "money", align: "right"},
-                        {key: "amount", label: "수량", formatter: "money", align: "right"},
+                        {key: "price", label: "단가", formatter: "money", align: "right", editor: {type:"text"}},
+                        {key: "amount", label: "수량", formatter: "money", align: "right", editor: {type:"text"}},
                         {key: "cost", label: "금액", align: "right", formatter: "money"}
                     ]
                     },
