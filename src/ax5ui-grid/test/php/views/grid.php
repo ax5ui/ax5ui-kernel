@@ -102,7 +102,70 @@
     ax5.ui.grid.collector["myType"] = function () {
         return "myType" + (this.value || "");
     };
-    var orgData = {};
+
+    var ajaxCrud = {
+        orgData: {},
+        ajaxUrl: 'json_data.php',
+        read: function () {
+            var postData = {
+                len: gridView.len,
+                page: (gridView.pageNo || 0) + 1,
+                sort: gridView.sortInfo,
+                mode: 'read'
+            };
+
+            $.post(ajaxCrud.ajaxUrl, postData, function(data) {
+                    if(data.status == 'success') {
+                        firstGrid.setData(data.data);
+                    }
+                }, 'JSON'
+            );
+        },
+        update: function() {
+            var rowNum = this.dindex;
+            var columnKey = this.key;
+            var targetRow = $('[data-ax5grid-data-index="' + rowNum + '"]');
+
+            // 데이터가 변경 되었는지 확인 한다.
+            if(JSON.stringify(ajaxCrud.orgData[rowNum][columnKey]) != JSON.stringify(this.list[rowNum][columnKey])) {
+                var postData = {mode: "update"};
+
+                postData = $.extend(postData, this.list[rowNum]);
+
+                // Ajax를 이용 하여 데이터 전송
+                targetRow.css('color', 'red');
+                $.post(ajaxCrud.ajaxUrl, postData, function(data) {
+                    if(data.status == 'success') {
+                        targetRow.css('color', 'blue');
+                    }
+                }, 'JSON');
+            }
+        },
+        delete : function(){
+            if(firstGrid.selectedDataIndexs.length > 0) {
+                var postData = {
+                    "mode": "delete",
+                    "ids": []
+                };
+
+                firstGrid.selectedDataIndexs.forEach(function(val, idx){
+                    console.log(idx, val);
+                });
+
+                // 삭제할 데이터의 DB id 추츨
+                for(var i in firstGrid.selectedDataIndexs) {
+                    postData.ids.push(firstGrid.getList()[firstGrid.selectedDataIndexs[i]].id);
+                }
+
+                $.post(ajaxCrud.ajaxUrl, postData, function(data){
+                    if(data.status == 'success') {
+                        gridView.setData();
+                    }
+                });
+            }
+        }
+    }
+
     var gridView = {
         initView: function () {
             firstGrid.setConfig({
@@ -125,32 +188,9 @@
                     align: "center",
                     columnHeight: 28,
                     onClick: function () {
-                        orgData = ax5.util.deepCopy(this.list);
+                        ajaxCrud.orgData = ax5.util.deepCopy(this.list);
                     },
-                    onDataChanged: function() {
-                        var rowNum = this.dindex;
-                        var columnKey = this.key;
-                        var targetRow = $('[data-ax5grid-data-index="' + rowNum + '"]');
-
-                        // 데이터가 변경 되었는지 확인 한다.
-                        if(JSON.stringify(orgData[rowNum][columnKey]) != JSON.stringify(this.list[rowNum][columnKey])) {
-                            var postData = {mode: "update"}, gridData = this.list;
-
-                            postData = $.extend(postData, gridData[rowNum]);
-
-                            // 그리드의 데이터 값을 변경 한다.
-                            gridData[rowNum].cost = gridData[rowNum].price * gridData[rowNum].amount;
-                            firstGrid.updateRow(gridData[rowNum], rowNum);
-
-                            // Ajax를 이용 하여 데이터 전송
-                            targetRow.css('color', 'red');
-                            $.post('json_data.php', postData, function(data) {
-                                if(data.status == 'success') {
-                                    targetRow.css('color', 'blue');
-                                }
-                            }, 'JSON');
-                        }
-                    }
+                    onDataChanged: ajaxCrud.update
                 },
                 columns: [
                     {key: "id", label: "ID", align: "center"},
@@ -167,9 +207,11 @@
                         key: undefined,
                         label: "주문내역",
                         columns: [
-                            {key: "price", label: "단가", formatter: "money", align: "right", editor: {type:"text"}},
-                            {key: "amount", label: "수량", formatter: "money", align: "right", editor: {type:"text"}},
-                            {key: "cost", label: "금액", formatter: "money", align: "right"}
+                            {key: "price", label: "단가", formatter: "money", align: "right", editor: {type:"text", updateWith:['cost']}},
+                            {key: "amount", label: "수량", formatter: "money", align: "right", editor: {type:"text", updateWith:['cost']}},
+                            {key: "cost", label: "금액", align: "right",  formatter: function () {
+                                return ax5.util.number(this.item.price * this.item.amount, {"money": true});
+                            }}
                         ]
                     },
                     {key: "sale_date", label: "판매일자", align: "center"},
@@ -185,7 +227,6 @@
                     nextIcon: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
                     lastIcon: '<i class="fa fa-step-forward" aria-hidden="true"></i>',
                     onChange: function () {
-                        console.log(this);
                         gridView.pageNo = this.page.selectPage;
                         gridView.setData();
                     }
@@ -199,22 +240,7 @@
         pageNo: 0,
         sortInfo: {},
         len: 11,
-        setData: function () {
-            var page = (gridView.pageNo || 0) + 1;
-            $.post('json_data.php',
-                {
-                    len: gridView.len,
-                    page: page,
-                    sort: gridView.sortInfo,
-                    mode: 'read'
-                }, function(data) {
-                if(data.status == 'success') {
-                    firstGrid.setData(data.data);
-                }}, 'JSON'
-            );
-
-            return this;
-        }
+        setData: ajaxCrud.read
     };
 
     $(document.body).ready(function () {
@@ -222,26 +248,7 @@
             .initView()
             .setData();
 
-        $('[data-grid-control="column-remove"]').click(function(){
-            console.log(firstGrid.selectedDataIndexs.length);
-            if(firstGrid.selectedDataIndexs.length > 0) {
-                var postData = {
-                    "mode": "delete",
-                    "ids": []
-                };
-
-                // 삭제할 데이터의 DB id 추츨
-                for(var i in firstGrid.selectedDataIndexs) {
-                    postData.ids.push(firstGrid.getList()[firstGrid.selectedDataIndexs[i]].id);
-                }
-
-                $.post('json_data.php', postData, function(data){
-                    if(data.status == 'success') {
-                        gridView.setData();
-                    }
-                });
-            }
-        });
+        $('[data-grid-control="column-remove"]').click(ajaxCrud.delete);
     });
     //694470860800
 </script>
