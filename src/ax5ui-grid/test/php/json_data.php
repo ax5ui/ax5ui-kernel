@@ -25,6 +25,15 @@ switch($mode) {
                 ->get_json();
         }
         break;
+
+    case 'delete':
+        if(isset($_POST['ids']) && !empty($_POST['ids'])) {
+            $ret = $sales
+                ->delete($_POST['ids'])
+                ->get_json();
+        }
+        break;
+
     default:
         $len = isset($_POST['len']) ? $_POST['len'] : 10;
         $page = isset($_POST['page']) ? $_POST['page'] : 1;
@@ -117,7 +126,7 @@ class json_data {
 
     public function update($id)
     {
-        $column = array('company');
+        $column = array('company', 'price', 'amount');
 
         foreach($column as $key) {
             if(isset($this->setData[$key])) {
@@ -125,10 +134,22 @@ class json_data {
             }
         }
 
+        $cost = $this->setData['price'] * $this->setData['amount'];
+        $this->db->set('cost', $cost);
+
         $this->db
             ->where('id', $id)
             ->update($this->tbl);
 
+        $this->data['cost'] = $cost;
+        
+        return $this;
+    }
+
+    public function delete($ids)
+    {
+        $this->data = $ids;
+        $this->db->where_in('id', $ids)->delete($this->tbl);
         return $this;
     }
 

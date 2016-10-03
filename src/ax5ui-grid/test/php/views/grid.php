@@ -75,6 +75,10 @@
     <div style="position: relative; height:400px;" id="grid-parent">
         <div data-ax5grid="first-grid" data-ax5grid-config='{showLineNumber: true, showRowSelector: true}' style="height: 100%;"></div>
     </div>
+
+    <div style="padding: 5px;">
+        <button class="btn btn-default" data-grid-control="column-remove">remove</button>
+    </div>
 </div>
 
 <footer class="footer">
@@ -118,27 +122,33 @@
                     }
                 },
                 body: {
-                    orgData: {},
                     align: "center",
                     columnHeight: 28,
                     onClick: function () {
-                        console.log(this.list);
                         orgData = ax5.util.deepCopy(this.list);
                     },
                     onDataChanged: function() {
-                        endLoop:
-                        for(var rowNum in this.list) {
-                            for(var key in this.list[rowNum]) {
-                                if(orgData[rowNum][key] != this.list[rowNum][key]) {
-                                    var postData = ax5.util.deepCopy(this.list[rowNum]);
-                                    postData['mode'] = 'update';
-                                    $.post('json_data.php', postData, function(data) {
-                                        console.log(data);
-                                    }, 'JSON');
+                        var rowNum = this.dindex;
+                        var columnKey = this.key;
+                        var targetRow = $('[data-ax5grid-data-index="' + rowNum + '"]');
 
-                                    break endLoop;
+                        // 데이터가 변경 되었는지 확인 한다.
+                        if(JSON.stringify(orgData[rowNum][columnKey]) != JSON.stringify(this.list[rowNum][columnKey])) {
+                            var postData = {mode: "update"}, gridData = this.list;
+
+                            postData = $.extend(postData, gridData[rowNum]);
+
+                            // 그리드의 데이터 값을 변경 한다.
+                            gridData[rowNum].cost = gridData[rowNum].price * gridData[rowNum].amount;
+                            firstGrid.updateRow(gridData[rowNum], rowNum);
+
+                            // Ajax를 이용 하여 데이터 전송
+                            targetRow.css('color', 'red');
+                            $.post('json_data.php', postData, function(data) {
+                                if(data.status == 'success') {
+                                    targetRow.css('color', 'blue');
                                 }
-                            }
+                            }, 'JSON');
                         }
                     }
                 },
@@ -157,8 +167,8 @@
                         key: undefined,
                         label: "주문내역",
                         columns: [
-                            {key: "price", label: "단가", formatter: "money", align: "right"},
-                            {key: "amount", label: "수량", formatter: "money", align: "right"},
+                            {key: "price", label: "단가", formatter: "money", align: "right", editor: {type:"text"}},
+                            {key: "amount", label: "수량", formatter: "money", align: "right", editor: {type:"text"}},
                             {key: "cost", label: "금액", formatter: "money", align: "right"}
                         ]
                     },
@@ -179,6 +189,9 @@
                         gridView.pageNo = this.page.selectPage;
                         gridView.setData();
                     }
+                },
+                onLoad: function() {
+                    console.log($(firstGrid.config.target).height());
                 }
             });
             return this;
@@ -205,21 +218,30 @@
     };
 
     $(document.body).ready(function () {
-
         gridView
             .initView()
             .setData();
 
-        $('[data-set-height]').click(function () {
-            var height = this.getAttribute("data-set-height");
-            if (height == "100%") {
-                $("#grid-parent").css({height: 500});
-            } else {
-                $("#grid-parent").css({height: "auto"});
-            }
-            firstGrid.setHeight(height);
-        });
+        $('[data-grid-control="column-remove"]').click(function(){
+            console.log(firstGrid.selectedDataIndexs.length);
+            if(firstGrid.selectedDataIndexs.length > 0) {
+                var postData = {
+                    "mode": "delete",
+                    "ids": []
+                };
 
+                // 삭제할 데이터의 DB id 추츨
+                for(var i in firstGrid.selectedDataIndexs) {
+                    postData.ids.push(firstGrid.getList()[firstGrid.selectedDataIndexs[i]].id);
+                }
+
+                $.post('json_data.php', postData, function(data){
+                    if(data.status == 'success') {
+                        gridView.setData();
+                    }
+                });
+            }
+        });
     });
     //694470860800
 </script>
