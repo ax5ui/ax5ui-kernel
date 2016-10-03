@@ -70,7 +70,14 @@
                 that = null;
                 return true;
             },
-                getContent = function getContent(dialogId, opts) {
+
+            /**
+             * @method ax5dialog.getContent
+             * @param {String} dialogId
+             * @param {Object} opts
+             * @returns dialogDisplay
+             */
+            getContent = function getContent(dialogId, opts) {
                 var data = {
                     dialogId: dialogId,
                     title: opts.title || cfg.title || "",
@@ -88,7 +95,13 @@
                     data = null;
                 }
             },
-                open = function open(opts, callback) {
+
+            /**
+             * @method ax5dialog.open
+             * @param {Object} opts
+             * @param callback
+             */
+            open = function open(opts, callback) {
                 var pos = {},
                     box;
 

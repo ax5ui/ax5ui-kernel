@@ -15,8 +15,34 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
-         * var myuploader = new ax5.ui.uploader();
+         * ```js
+         * var upload = new ax5.ui.uploader();
+         * $(document.body).ready(function () {
+         *     upload.setConfig({
+         *         target: $("#user-info-profileImageUrl"),
+         *         file_types: "image/*",
+         *         empty_msg: "프로필 사진",
+         *         progress_theme: "basic",
+         *         upload_http: {
+         *             method: "POST",
+         *             url: "/api/v1/aws/s3/upload",
+         *             filename_param_key: "file",
+         *             data: {bucket: "gajago-user-profile", crop: true}
+         *         },
+         *         on_event: function (that) {
+         *             if (that.action == "fileselect") {
+         *                 //console.log(that.file);
+         *             }
+         *             else if (that.action == "uploaded") {
+         *                 //console.log(that);
+         *                 _root.form.profile_uploaded(that.file);
+         *             }
+         *             else if (that.action == "error") {
+         *                 alert(that.error.msg);
+         *             }
+         *         }
+         *     });
+         * });
          * ```
          */
         var ax5uploader = function ax5uploader() {
@@ -272,8 +298,8 @@
                     formData.append(cfg.upload_http.filename_param_key, this.selected_file);
                     // 다른 처리 방법 적용 필요
                 } else {
-                        formData.append(cfg.upload_http.filename_param_key, this.selected_file);
-                    }
+                    formData.append(cfg.upload_http.filename_param_key, this.selected_file);
+                }
 
                 for (var k in cfg.upload_http.data) {
                     formData.append(k, cfg.upload_http.data[k]);

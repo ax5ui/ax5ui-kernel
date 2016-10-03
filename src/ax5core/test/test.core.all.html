@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2016. tom@axisj.com
+  ~ - github.com/thomasjang
+  ~ - www.axisj.com
+  -->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ax5core ax5.util Date TESTING</title>
+    <link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet"/>
+    <script type="text/javascript" src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../node_modules/should/should.js"></script>
+    <script type="text/javascript" src="../node_modules/lodash/lodash.js"></script>
+    <script src="../dist/ax5core.js"></script>
+</head>
+<body>
+<div id="mocha"></div>
+
+<script>mocha.setup('bdd')</script>
+<script type="text/javascript" src="test.core.date.js"></script>
+<script type="text/javascript" src="test.core.info.js"></script>
+<script type="text/javascript" src="test.core.misc.js"></script>
+<script type="text/javascript" src="test.core.mustache.js"></script>
+<script type="text/javascript" src="test.core.number.js"></script>
+<script type="text/javascript" src="test.core.object.js"></script>
+<script type="text/javascript" src="test.core.string.js"></script>
+<script type="text/javascript" src="test.core.type.js"></script>
+
+<script>mocha.run();</script>
+</body>
+</html>
