@@ -159,9 +159,14 @@
          */
 
 
+        $('[data-picker-date]').on("change", function(){
+           console.log("change");
+        });
+        
         picker.bind({
             target: $('[data-picker-date]'),
             direction: "auto",
+            disableChangeTrigger: false,
             content: {
                 type: 'date',
                 formatter: {
