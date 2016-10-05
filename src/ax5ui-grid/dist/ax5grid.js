@@ -747,12 +747,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 GRID.scroller.init.call(this);
                 GRID.scroller.resize.call(this);
 
-                jQuery(window).bind("resize.ax5grid-" + this.instanceId, function () {
+                jQuery(window).bind("resize.ax5grid-" + this.id, function () {
                     alignGrid.call(this);
                     GRID.scroller.resize.call(this);
                 }.bind(this));
 
-                jQuery(document.body).on("click.ax5grid-" + this.instanceId, function (e) {
+                jQuery(document.body).on("click.ax5grid-" + this.id, function (e) {
                     var isPickerClick = false;
                     var target = U.findParentNode(e.target, function (_target) {
                         if (isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")) {
@@ -761,13 +761,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         return _target.getAttribute("data-ax5grid-container") === "root";
                     });
 
-                    if (target && target.getAttribute("data-ax5grid-instance") === "ax5grid-" + self.instanceId) {
+                    if (target && target.getAttribute("data-ax5grid-instance") === this.id) {
                         self.focused = true;
                     } else {
                         self.focused = false;
-                        GRID.body.blur.call(self);
+                        GRID.body.blur.call(this);
                     }
-                });
+                }.bind(this));
 
                 var ctrlKeys = {
                     "33": "KEY_PAGEUP",
