@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.3.2"
+        version: "0.3.4"
     }, function () {
         /**
          * @class ax5grid
@@ -1564,7 +1564,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 },
                 "rowSelector": function rowSelector(_column) {
-                    GRID.data.select.call(self, _column.dindex);
+                    GRID.data.select.call(self, _column.dindex, undefined, {
+                        internalCall: true
+                    });
                     updateRowState.call(self, ["selected"], _column.dindex);
                 },
                 "lineNumber": function lineNumber(_column) {}
@@ -3533,7 +3535,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.selectedDataIndexs = [];
     };
 
-    var select = function select(_dindex, _selected) {
+    var select = function select(_dindex, _selected, _options) {
         var cfg = this.config;
 
         if (this.list[_dindex].__isGrouping) return false;
@@ -3547,6 +3549,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.selectedDataIndexs.push(_dindex);
             }
         }
+
+        if (this.onDataChanged && _options && _options.internalCall) {
+            this.onDataChanged.call({
+                self: this,
+                list: this.list,
+                dindex: _dindex,
+                item: this.list[_dindex],
+                key: cfg.columnKeys.selected,
+                value: this.list[_dindex][cfg.columnKeys.selected]
+            });
+        }
+
         return this.list[_dindex][cfg.columnKeys.selected];
     };
 
