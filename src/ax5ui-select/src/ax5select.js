@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "select",
-        version: "0.4.4"
+        version: "0.4.5"
     }, (function () {
         /**
          * @class ax5select
@@ -746,7 +746,7 @@
                             data.multiple = item.multiple;
                             data.lang = item.lang;
                             data.options = item.options;
-                            this.activeSelectOptionGroup.find('[data-els="content"]').html(SELECT.tmpl.get.call(this, "optionsTmpl", data));
+                            this.activeSelectOptionGroup.find('[data-els="content"]').html(SELECT.tmpl.get.call(this, "optionsTmpl", data, item.columnKeys));
                         }
                     }).bind(this));
                 };
@@ -800,7 +800,7 @@
 
                     data.options = item.options;
                     this.activeSelectOptionGroup = SELECT.tmpl.get.call(this, "optionGroupTmpl", data);
-                    this.activeSelectOptionGroup.find('[data-els="content"]').html(SELECT.tmpl.get.call(this, "optionGroupTmpl", data));
+                    this.activeSelectOptionGroup.find('[data-els="content"]').html(SELECT.tmpl.get.call(this, "optionsTmpl", data, item.columnKeys));
                     this.activeSelectQueueIndex = queIdx;
 
                     alignSelectOptionGroup.call(this, "append"); // alignSelectOptionGroup 에서 body append
