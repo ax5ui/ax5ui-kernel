@@ -296,7 +296,9 @@
                     }
                 },
                 "rowSelector": function (_column) {
-                    GRID.data.select.call(self, _column.dindex);
+                    GRID.data.select.call(self, _column.dindex, undefined, {
+                        internalCall : true
+                    });
                     updateRowState.call(self, ["selected"], _column.dindex);
                 },
                 "lineNumber": function (_column) {

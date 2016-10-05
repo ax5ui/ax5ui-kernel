@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.3.1"
+        version: "0.3.4"
     }, (function () {
         /**
          * @class ax5grid
@@ -137,6 +137,7 @@
                 },
                 initGrid = function () {
                     // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
+                    
                     var data = {
                         instanceId: this.id
                     };
@@ -724,7 +725,8 @@
 
                 if (!this.id) this.id = this.$target.data("data-ax5grid-id");
                 if (!this.id) {
-                    this.id = 'ax5grid-' + ax5.getGuid();
+                    //this.id = 'ax5grid-' + ax5.getGuid();
+                    this.id = 'ax5grid-' + this.instanceId;
                     this.$target.data("data-ax5grid-id", grid.id);
                 }
 
@@ -759,27 +761,27 @@
                 GRID.scroller.init.call(this);
                 GRID.scroller.resize.call(this);
 
-                jQuery(window).bind("resize.ax5grid-" + this.instanceId, (function () {
+                jQuery(window).bind("resize.ax5grid-" + this.id, function () {
                     alignGrid.call(this);
                     GRID.scroller.resize.call(this);
-                }).bind(this));
+                }.bind(this));
 
-                jQuery(document.body).on("click.ax5grid-" + this.instanceId, function (e) {
+                jQuery(document.body).on("click.ax5grid-" + this.id, (function (e) {
                     var isPickerClick = false;
                     var target = U.findParentNode(e.target, function (_target) {
                         if (isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")) {
                             return true;
                         }
-                        return _target.getAttribute("data-ax5grid-container");
+                        return _target.getAttribute("data-ax5grid-container") === "root";
                     });
 
-                    if (target) {
+                    if (target && target.getAttribute("data-ax5grid-instance") === this.id) {
                         self.focused = true;
                     } else {
                         self.focused = false;
-                        GRID.body.blur.call(self);
+                        GRID.body.blur.call(this);
                     }
-                });
+                }).bind(this));
 
                 var ctrlKeys = {
                     "33": "KEY_PAGEUP",
@@ -793,7 +795,6 @@
                 };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
                     if (self.focused) {
-
                         if (self.isInlineEditing) {
                             if (e.which == ax5.info.eventKeys.ESC) {
                                 self.keyDown("ESC", e.originalEvent);

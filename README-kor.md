@@ -1,3 +1,5 @@
+![ax5ui preview](src/preview.png)
+
 # What is it!
 AX5UI는 jQuery/Bootstrap과 함께 사용하는 HTML5 웹표준 Javascript UI 플러그인입니다.  (데모 : http://ax5.io)
 AX5UI를 사용하기 위해서는 "HTML, JS, CSS"에 대한 기본지식이 있어야 합니다. "HTML, JS, CSS"에 대한 지식은 검색엔진을 이용하여 쉽게 얻을 수 있습니다.
@@ -143,17 +145,53 @@ bower install
 ## Structure
 ```
 ax5ui-kernel/
-    build/
-        push.sh (rebase with 'gh-pages' branch from 'master' branch, then change to 'master' branch.)
-        split.sh  (ax5docs, ax5core, ax5ui-dialog, the contents of a folder, such as ax5ui-mask, it overrides in each of git.)
-    src/
-        ax5core/    (utility project for ax5ui)
-        ax5ui-dialog/    (ax5ui ax5dialog project)
-        ... ax5ui plugin projects
-        ..
-        .
-    gulpfile.js
-    package.json
+├── build/
+|   ├── jsdoc2md.sh (jsdoc to markdown shell script)
+|   ├── split.sh (gitsubsplit shell script)
+|   └── split_jenkins.sh (gitsubsplit shell script for jenkins)
+├── dist/
+├── src/
+|   ├── ax5core/
+|   |   ├── dist/
+|   |   ├── src/
+|   |   ├── test/
+│   |   ├── API...
+│   |   ├── bower.json
+│   |   ├── deploy.sh
+│   |   ├── package.json
+│   |   └── README.md
+|   ├── ax5ui-autocomplete/
+|   |   ├── dist/
+|   |   |   ├── ax5autocomplete.css
+|   |   |   ├── ax5autocomplete.js
+|   |   |   └── ax5autocomplete.min.js
+|   |   ├── src/
+|   |   |   ├── modules/
+|   |   |   |   ├── ax5autocomplete-tmpl.js
+|   |   |   |   └── ax5autocomplete-util.js
+|   |   |   ├── scss/
+|   |   |   |   ├── _ax5autocomplete.scss
+|   |   |   |   └── _ax5autocomplete_variables.scss
+|   |   |   ├── ax5autocomplete.js
+|   |   |   └── ax5autocomplete.scss
+|   |   ├── test/
+|   |   |   ├── bower.json (you can run `$bower install` initialize test environment)
+|   |   |   └── index.html
+|   |   ├── bootstrap.min.js
+│   |   ├── chartist.min.js
+│   |   ├── demo.js
+│   |   ├── jquery-1.10.2.js
+│   |   └── light-bootstrap-dashboard.js
+|   ├── ax5ui-.../
+|   └── ax5ui-.../
+|
+├── .babelrc
+├── .gitignore
+├── gulpfile.js
+├── LICENSE
+├── package.json
+├── README.md
+└── README-kor.md
 ```
 
 
