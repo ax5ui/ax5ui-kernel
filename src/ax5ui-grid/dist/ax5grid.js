@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "0.3.1"
+        version: "0.3.2"
     }, function () {
         /**
          * @class ax5grid
@@ -138,6 +138,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             },
                 initGrid = function initGrid() {
                 // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
+
                 var data = {
                     instanceId: this.id
                 };
@@ -710,7 +711,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 if (!this.id) this.id = this.$target.data("data-ax5grid-id");
                 if (!this.id) {
-                    this.id = 'ax5grid-' + ax5.getGuid();
+                    //this.id = 'ax5grid-' + ax5.getGuid();
+                    this.id = 'ax5grid-' + this.instanceId;
                     this.$target.data("data-ax5grid-id", grid.id);
                 }
 
@@ -756,10 +758,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         if (isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")) {
                             return true;
                         }
-                        return _target.getAttribute("data-ax5grid-container");
+                        return _target.getAttribute("data-ax5grid-container") === "root";
                     });
 
-                    if (target) {
+                    if (target && target.getAttribute("data-ax5grid-instance") === "ax5grid-" + self.instanceId) {
                         self.focused = true;
                     } else {
                         self.focused = false;
@@ -779,7 +781,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
                     if (self.focused) {
-
                         if (self.isInlineEditing) {
                             if (e.which == ax5.info.eventKeys.ESC) {
                                 self.keyDown("ESC", e.originalEvent);
