@@ -84,6 +84,7 @@
                 target: $('[data-ax5grid="first-grid"]'),
                 sortable: true,
                 multiSort: true,
+                multipleSelect: false,
                 remoteSort: function () {
                     console.log(JSON.stringify(this.sortInfo, null, '\t'));
                     gridView.setSortData(this.sortInfo);
@@ -95,7 +96,6 @@
                     onDataChanged: function () {
                         var rowNum = this.dindex;
                         var gridData = this.list;
-                        console.log(rowNum);
 
                         // Ajax 로직 대체
                         setTimeout(function () {
@@ -105,7 +105,6 @@
                     }
                 },
                 columns: [
-                    {key: "checked", width: 28, align: "center", editor: {type: "checkbox"}, sortable: false},
                     {key: "b", label: "필드B", align: "center"},
                     {key: "saleDt", label: "판매일자", align: "center"},
                     {key: "customer", label: "고객명"},
@@ -138,7 +137,6 @@
                     }
                 },
                 columns: [
-                    {key: "checked", width: 28, align: "center", editor: {type: "checkbox"}, sortable: false},
                     {key: "b", label: "필드B", align: "center"},
                     {key: "saleDt", label: "판매일자", align: "center"},
                     {key: "customer", label: "고객명"},
@@ -193,9 +191,11 @@
                 case "row-add":
                     firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))]);
                     break;
+
                 case "row-remove":
                     firstGrid.removeRow();
                     break;
+
                 case "row-update":
                     firstGrid.updateRow($.extend({}, firstGrid.list[1], {price: 100, amount: 100, cost: 10000}), 1);
                     break;
@@ -203,12 +203,15 @@
                 case "column-add":
                     firstGrid.addColumn({key: "b", label: "필드B"});
                     break;
+
                 case "column-remove":
                     firstGrid.removeColumn();
                     break;
+
                 case "column-update":
                     firstGrid.updateColumn({key: "b", label: "필드B"}, 0);
                     break;
+
                 case "width-resize":
 
                     $("#grid-parent").css({width: 400});

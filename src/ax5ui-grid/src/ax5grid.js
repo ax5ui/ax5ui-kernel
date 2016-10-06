@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.3.4"
+        version: "0.3.5"
     }, (function () {
         /**
          * @class ax5grid
@@ -39,7 +39,7 @@
                 frozenRowIndex: 0,
                 showLineNumber: false,
                 showRowSelector: false,
-                multipleSelect: false,
+                multipleSelect: true,
 
                 height: 0,
                 columnMinWidth: 100,
@@ -586,7 +586,7 @@
              * @param {Number} [_config.frozenRowIndex=0]
              * @param {Boolean} [_config.showLineNumber=false]
              * @param {Boolean} [_config.showRowSelector=false]
-             * @param {Boolean} [_config.multipleSelect=false]
+             * @param {Boolean} [_config.multipleSelect=true]
              * @param {Number} [_config.columnMinWidth=100]
              * @param {Number} [_config.lineNumberColumnWidth=30]
              * @param {Number} [_config.rowSelectorColumnWidth=25]
@@ -796,6 +796,7 @@
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
                     if (self.focused) {
                         if (self.isInlineEditing) {
+
                             if (e.which == ax5.info.eventKeys.ESC) {
                                 self.keyDown("ESC", e.originalEvent);
                             }
@@ -812,6 +813,7 @@
                             else if (e.which == ax5.info.eventKeys.DOWN) {
                                 self.keyDown("RETURN", {});
                             }
+
                         } else {
 
                             if (e.metaKey || e.ctrlKey) {
