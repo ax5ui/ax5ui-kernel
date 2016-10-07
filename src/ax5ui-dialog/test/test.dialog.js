@@ -7,7 +7,7 @@ describe('dialog Alert TEST', function(){
         });
     });
 
-    var checkClose = function(dialog, assertMessage, done){
+    var checkClosed = function(dialog, assertMessage, done){
         setTimeout(function(){
             var dialogDom = $('#' + dialog.config.id).get(0);
             // close check
@@ -19,7 +19,7 @@ describe('dialog Alert TEST', function(){
 
     it('Basic Alert expect open, close', function(done){
         dialog.alert('Alert message', function(){
-            checkClose(dialog, 'dialog close fail.', done);
+            checkClosed(dialog, 'dialog close fail.', done);
         });
 
         // open check
@@ -29,7 +29,7 @@ describe('dialog Alert TEST', function(){
 
     it('Basic Alert expect open, close by click event', function(done){
         dialog.alert('Alert message', function(){
-            checkClose(dialog, 'dialog close by click event fail.', done);
+            checkClosed(dialog, 'dialog close by click event fail.', done);
         });
 
         // open check
