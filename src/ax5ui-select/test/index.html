@@ -75,6 +75,7 @@
             switch (act) {
                 case "setValue":
                     mySelect.val($('[data-ax5select="select1"]'), [11, 12]);
+                    $('[data-ax5select="select2"]').ax5select("setValue", null);
                     break;
                 case "getValue":
                     console.log($('[data-ax5select="select2"]').ax5select("getValue"));
