@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "select",
-        version: "0.4.5"
+        version: "0.4.6"
     }, function () {
         /**
          * @class ax5select
@@ -208,6 +208,7 @@
                             index: target.getAttribute("data-option-index")
                         }
                     }, undefined, "internal");
+                    item.$select.trigger("change");
                     item.$display.focus();
                     if (!item.multiple) this.close();
                 } else {
@@ -230,6 +231,7 @@
                                 index: $option.attr("data-option-index")
                             }
                         }, undefined, "internal");
+                        this.queue[this.activeSelectQueueIndex].$select.trigger("change");
                         if (!this.queue[this.activeSelectQueueIndex].multiple) this.close();
                     } else {
                         this.close();
@@ -514,6 +516,7 @@
                                 focusIndex++;
                             }
                         });
+
                         item.optionItemLength = focusIndex;
                         item.$select.html(po.join(''));
                     } else {
@@ -602,6 +605,7 @@
                     queIdx;
 
                 item = jQuery.extend(true, selectConfig, cfg, item);
+
                 if (!item.target) {
                     console.log(ax5.info.getError("ax5select", "401", "bind"));
                     return this;
@@ -615,6 +619,7 @@
                     item.$target.data("data-ax5select-id", item.id);
                 }
                 item.name = item.$target.attr("data-ax5select");
+
                 if (item.options) {
                     item.options = JSON.parse(JSON.stringify(item.options));
                 }
@@ -634,6 +639,8 @@
                     this.queue.push(item);
                     bindSelectTarget.call(this, this.queue.length - 1);
                 } else {
+                    this.queue[queIdx].selected = [];
+                    this.queue[queIdx].options = item.options;
                     this.queue[queIdx] = jQuery.extend(true, {}, this.queue[queIdx], item);
                     bindSelectTarget.call(this, queIdx);
                 }

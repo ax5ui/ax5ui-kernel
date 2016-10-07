@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.3.4"
+        version: "0.3.6"
     }, (function () {
         /**
          * @class ax5grid
@@ -39,7 +39,7 @@
                 frozenRowIndex: 0,
                 showLineNumber: false,
                 showRowSelector: false,
-                multipleSelect: false,
+                multipleSelect: true,
 
                 height: 0,
                 columnMinWidth: 100,
@@ -84,6 +84,7 @@
                 scrollContentWidth: 0, // 스크롤 될 내용물의 너비 (스크롤 될 내용물 : panel['body-scroll'] 안에 컬럼이 있는)
                 scrollContentHeight: 0 // 스크롤 된 내용물의 높이
             };
+
             // 그리드 데이터셋
             this.columns = []; // config.columns에서 복제된 오브젝트
             this.colGroup = []; // columns를 table태그로 출력하기 좋게 변환한 오브젝트
@@ -92,6 +93,7 @@
 
             this.list = []; // 그리드의 데이터
             this.page = {}; // 그리드의 페이지 정보
+            this.selectedDataIndexs = [];
             this.deletedList = [];
             this.sortInfo = {}; // 그리드의 헤더 정렬 정보
             this.focusedColumn = {}; // 그리드 바디의 포커스된 셀 정보
@@ -586,7 +588,7 @@
              * @param {Number} [_config.frozenRowIndex=0]
              * @param {Boolean} [_config.showLineNumber=false]
              * @param {Boolean} [_config.showRowSelector=false]
-             * @param {Boolean} [_config.multipleSelect=false]
+             * @param {Boolean} [_config.multipleSelect=true]
              * @param {Number} [_config.columnMinWidth=100]
              * @param {Number} [_config.lineNumberColumnWidth=30]
              * @param {Number} [_config.rowSelectorColumnWidth=25]
@@ -796,6 +798,7 @@
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
                     if (self.focused) {
                         if (self.isInlineEditing) {
+
                             if (e.which == ax5.info.eventKeys.ESC) {
                                 self.keyDown("ESC", e.originalEvent);
                             }
@@ -812,6 +815,7 @@
                             else if (e.which == ax5.info.eventKeys.DOWN) {
                                 self.keyDown("RETURN", {});
                             }
+
                         } else {
 
                             if (e.metaKey || e.ctrlKey) {

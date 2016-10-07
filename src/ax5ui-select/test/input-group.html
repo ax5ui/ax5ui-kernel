@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2016. tom@axisj.com
+  ~ - github.com/thomasjang
+  ~ - www.axisj.com
+  -->
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,41 +21,37 @@
 <body style="padding: 10px;">
 <div class="container">
     <form name="forms">
-        <h1>form-group</h1>
+        <h1>input-group</h1>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <div data-ax5select="select1" data-ax5select-config='{
-                    size: "lg",
+        <div class="input-group">
+            <div data-ax5select="select1" data-ax5select-config='{
                     multiple: true,
                     reset:"<i class=\"fa fa-trash\"></i>"
                 }'></div>
-                </div>
-            </div>
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" data-search-view-0-btn="printerGrpMng">
+                    Button
+                </button>
+            </span>
+        </div>
 
-            <div class="col-md-6">
-                <div class="form-group">
-                    <div data-ax5select="select2" data-ax5select-config='{
-                        size:"",
+        <div style="height: 10px;"></div>
+
+        <div class="input-group">
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" data-search-view-0-btn="printerGrpMng">
+                    Button
+                </button>
+            </span>
+            <div data-ax5select="select2" data-ax5select-config='{
                         minWidth: "150",
-                        multiple: true
+                        multiple: false
                     }'>
-                        <select data-ax-path="select2"></select>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-
-        <div class="form-group">
-            <div data-ax5select="select3" data-ax5select-config='{
-            "size":"lg"
-        }'>
-                <select data-ax-path="select3"></select>
+                <select data-ax-path="select2"></select>
             </div>
         </div>
+
+        <div style="height: 10px;"></div>
 
     </form>
 
@@ -75,7 +77,11 @@
             switch (act) {
                 case "setValue":
                     mySelect.val($('[data-ax5select="select1"]'), [11, 12]);
-                    $('[data-ax5select="select2"]').ax5select("setValue", null);
+
+                    //$('[data-ax5select="select2"]').ax5select("setValue", null);
+                    $('[data-ax5select="select2"]').ax5select({
+                        options: []
+                    });
                     break;
                 case "getValue":
                     console.log($('[data-ax5select="select2"]').ax5select("getValue"));
@@ -83,7 +89,7 @@
                     console.log($(document.forms).serialize());
                     break;
                 case "setValueSelect":
-                    $('[data-ax-path="select3"]').val("7").trigger("change");
+                    $('[data-ax-path="select2"]').val("7").trigger("change");
                     //$('[data-ax-path="select2"]').val(["optionValue7", "optionValue9"]).trigger("change");
                     break;
                 case "update":
@@ -93,27 +99,48 @@
                             {value: 99, text: "optionText"}
                         ]
                     });
+
                     $('[data-ax5select="select2"]').ax5select({
-                        options: options
+                        options: [
+                            {value: 99, text: "optionText"}
+                        ]
                     });
+
                     break;
             }
         });
 
-        // jquery extend
-        /*
-         $('[data-ax5select]').ax5select({
-         options: options
-         });
-         */
-
-
+        var callbackCount = 0;
         $('[data-ax5select="select2"]').ax5select({
-            options: options
+            onExpand: function (callback) {
+                setTimeout(function () {
+                    if (callbackCount == 0) {
+                        callback({
+                            options: [
+                                {value: "V0", text: "callback Text 0"},
+                                {value: "V1", text: "callback Text 1"},
+                                {value: "V2", text: "callback Text 2"},
+                                {value: "V3", text: "callback Text 3"}
+                            ]
+                        });
+                    } else {
+                        callback({
+                            options: [
+                                {value: "V0", text: "callback Text 0"},
+                                {value: "V11", text: "callback Text 11"},
+                                {value: "V12", text: "callback Text 12"},
+                                {value: "V13", text: "callback Text 13"}
+                            ]
+                        });
+                    }
+                    callbackCount++;
+                }, 300);
+            }
         });
-        $('[data-ax5select="select3"]').ax5select({
-            options: options
-        });
+        $('[data-ax-path="select2"]').on("change", function () {
+            console.log(this.value);
+        })
+
 
         mySelect.bind({
             //theme: "primary",
