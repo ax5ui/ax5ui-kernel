@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "grid",
-        version: "0.3.6"
+        version: "0.3.7"
     }, (function () {
         /**
          * @class ax5grid
@@ -833,7 +833,8 @@
                                 } else if (e.which == ax5.info.eventKeys.RETURN) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 } else if (e.which == ax5.info.eventKeys.TAB) {
-                                    self.keyDown("RETURN", e.originalEvent);
+                                    //self.keyDown("RETURN", e.originalEvent);
+                                    U.stopEvent(e);
                                 } else if (e.which != ax5.info.eventKeys.SPACE && Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
