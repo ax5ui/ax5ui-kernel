@@ -48,6 +48,7 @@
     "marko": "^2.8.4",
     "mocha": "^3.1.0",
     "node-sass": "^3.3.0",
+    "phantomjs-prebuilt": "^2.1.13",
     "should": "^11.1.0",
     "strip-indent": "^1.0.1"
   }
