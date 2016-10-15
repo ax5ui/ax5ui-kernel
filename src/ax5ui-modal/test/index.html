@@ -15,8 +15,11 @@
 </head>
 <body style="padding: 50px;">
 
-<button class="btn btn-danger" id="modal-open">Modal open</button>
-<button class="btn btn-danger" id="modal-close">Modal close</button>
+<button class="btn btn-danger" data-btn-action="iframe-modal-open">iframe Modal open</button>
+<button class="btn btn-danger" data-btn-action="iframe-modal-close">iframe Modal close</button>
+
+<button class="btn btn-danger" data-btn-action="modal-open">Modal open</button>
+<button class="btn btn-danger" data-btn-action="modal-close">Modal close</button>
 
 <div style="height: 1000px;"></div>
 
@@ -24,7 +27,7 @@
     // todo : move handle 구현, minimize 구현
     // 1. title 속성 추가 하자
     var modal = new ax5.ui.modal({
-        absolute: true,
+        //absolute: true,
         zIndex: 5000,
         iframeLoadingMsg: '<i class="fa fa-spinner fa-5x fa-spin" aria-hidden="true"></i>',
         header: {
@@ -58,25 +61,48 @@
     }
 
     $(document.body).ready(function () {
-        $("#modal-open").click(function () {
-            modal.open({
-                width: 800,
-                height: 600,
-                fullScreen: function(){
-                    return ($(window).width() < 600);
-                },
-                iframe: {
-                    method: "get",
-                    url: "modal-content.html",
-                    param: "callback=modalCallback"
-                }
-            });
-        });
-        $("#modal-close").click(function () {
-            modal.close();
-        });
-        $("#modal-full").click(function () {
-            modal.setModalConfig({fullScreen:true});
+
+        $('[data-btn-action]').click(function () {
+            var act = this.getAttribute("data-btn-action");
+            switch (act){
+                case "iframe-modal-open":
+                    modal.open({
+                        width: 800,
+                        height: 600,
+                        fullScreen: function () {
+                            return ($(window).width() < 600);
+                        },
+                        iframe: {
+                            method: "get",
+                            url: "modal-content.html",
+                            param: "callback=modalCallback"
+                        }
+                    });
+                    break;
+                case "iframe-modal-close":
+                    modal.close();
+                    break;
+                case "modal-open":
+                    modal.open({
+                        width: 800,
+                        height: 600,
+                        fullScreen: function () {
+                            return ($(window).width() < 600);
+                        },
+                        iframe: {
+                            method: "get",
+                            url: "modal-content.html",
+                            param: "callback=modalCallback"
+                        }
+                    });
+                    break;
+                case "modal-close":
+                    modal.close();
+                    break;
+                case "set-modal-full":
+                    modal.setModalConfig({fullScreen: true});
+                    break;
+            }
         });
     });
 </script>
