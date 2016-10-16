@@ -28,6 +28,7 @@ myModal.set_config({
     onStateChanged: "Function",
     animateTime: "Number",
     zIndex: "Number",
+    absolute: false,
     fullScreen: "Boolean",
     header: {
         title: "",
@@ -99,6 +100,9 @@ Type: `Number` [default : 300]
 
 Type: `Number`
 
+### absolute
+
+Type: `Boolean` [default=false]
 
 ### fullScreen
 

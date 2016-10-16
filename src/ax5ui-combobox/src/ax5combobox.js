@@ -14,8 +14,22 @@
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
-         * var mycombobox = new ax5.ui.combobox();
+         * ```js
+         * var options = [];
+         * options.push({value: "1", text: "string"});
+         * options.push({value: "2", text: "number"});
+         * options.push({value: "3", text: "substr"});
+         * options.push({value: "4", text: "substring"});
+         * options.push({value: "search", text: "search"});
+         * options.push({value: "parseInt", text: "parseInt"});
+         * options.push({value: "toFixed", text: "toFixed"});
+         * options.push({value: "min", text: "min"});
+         * options.push({value: "max", text: "max"});
+         *
+         * var myCombo = new ax5.ui.combobox({
+         *     theme: "danger",
+         *     removeIcon: '<i class="fa fa-times" aria-hidden="true"></i>'
+         * });
          * ```
          */
         var ax5combobox = function () {

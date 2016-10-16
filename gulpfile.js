@@ -13,6 +13,7 @@ var clean = require('gulp-clean');
 var gulpJsdoc2md = require('gulp-jsdoc-to-markdown');
 var rename = require('gulp-rename');
 var gutil = require('gulp-util');
+var shell = require('gulp-shell');
 
 var PATHS = {
     "ax5core": {
@@ -258,4 +259,17 @@ gulp.task('dist-all-in-one', function () {
         .pipe(sass({outputStyle: 'compressed'}))
         .pipe(concat('ax5ui.all.css'))
         .pipe(gulp.dest('dist/'));
+});
+
+/**
+ * src/{module}/test `npm install` auto run.
+ * this task require very long time.(5 ~ 10 minutes. maybe more :p)
+ */
+gulp.task('test-npm-install', function(){
+    var commands = [];
+    for (var k in PATHS) {
+        commands.push('cd ' + PATHS[k].root + ' && npm install');
+    }
+
+    gulp.src('').pipe(shell(commands));
 });

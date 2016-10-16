@@ -9,15 +9,35 @@
 
     UI.addClass({
         className: "dialog",
-        version: "0.8.6"
+        version: "0.8.8"
     }, function () {
         /**
          * @class ax5dialog
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
-         * var myDialog = new ax5.ui.dialog();
+         * ```js
+         * var dialog = new ax5.ui.dialog();
+         * var mask = new ax5.ui.mask();
+         * dialog.setConfig({
+         *     zIndex: 5000,
+         *     onStateChanged: function () {
+         *         if (this.state === "open") {
+         *             mask.open();
+         *         }
+         *         else if (this.state === "close") {
+         *             mask.close();
+         *         }
+         *     }
+         * });
+         *
+         * dialog.alert({
+         *     theme: 'default',
+         *     title: 'Alert default',
+         *     msg: theme + ' color'
+         * }, function () {
+         *     console.log(this);
+         * });
          * ```
          */
         var ax5dialog = function ax5dialog() {
@@ -50,7 +70,14 @@
                 that = null;
                 return true;
             },
-                getContent = function getContent(dialogId, opts) {
+
+            /**
+             * @method ax5dialog.getContent
+             * @param {String} dialogId
+             * @param {Object} opts
+             * @returns dialogDisplay
+             */
+            getContent = function getContent(dialogId, opts) {
                 var data = {
                     dialogId: dialogId,
                     title: opts.title || cfg.title || "",
@@ -68,7 +95,13 @@
                     data = null;
                 }
             },
-                open = function open(opts, callback) {
+
+            /**
+             * @method ax5dialog.open
+             * @param {Object} opts
+             * @param callback
+             */
+            open = function open(opts, callback) {
                 var pos = {},
                     box;
 
@@ -184,10 +217,10 @@
                         opts.btns[k].onClick.call(that, k);
                     } else if (opts.dialogType === "alert") {
                         if (callback) callback.call(that, k);
-                        this.close();
+                        this.close({ doNotCallback: true });
                     } else if (opts.dialogType === "confirm") {
                         if (callback) callback.call(that, k);
-                        this.close();
+                        this.close({ doNotCallback: true });
                     } else if (opts.dialogType === "prompt") {
                         if (k === 'ok') {
                             if (emptyKey) {
@@ -196,7 +229,7 @@
                             }
                         }
                         if (callback) callback.call(that, k);
-                        this.close();
+                        this.close({ doNotCallback: true });
                     }
                 }
 
@@ -235,7 +268,7 @@
                             return false;
                         }
                         if (callback) callback.call(that, k);
-                        this.close();
+                        this.close({ doNotCallback: true });
                     }
                 }
 
@@ -303,6 +336,9 @@
                 opts = self.dialogConfig;
 
                 opts.dialogType = "alert";
+                opts.theme = opts.theme || cfg.theme || "";
+                opts.callback = callback;
+
                 if (typeof opts.btns === "undefined") {
                     opts.btns = {
                         ok: { label: cfg.lang["ok"], theme: opts.theme }
@@ -310,8 +346,6 @@
                 }
                 open.call(this, opts, callback);
 
-                opts = null;
-                callback = null;
                 return this;
             };
 
@@ -355,6 +389,8 @@
 
                 opts.dialogType = "confirm";
                 opts.theme = opts.theme || cfg.theme || "";
+                opts.callback = callback;
+
                 if (typeof opts.btns === "undefined") {
                     opts.btns = {
                         ok: { label: cfg.lang["ok"], theme: opts.theme },
@@ -363,8 +399,6 @@
                 }
                 open.call(this, opts, callback);
 
-                opts = null;
-                callback = null;
                 return this;
             };
 
@@ -407,6 +441,7 @@
                 opts = self.dialogConfig;
                 opts.dialogType = "prompt";
                 opts.theme = opts.theme || cfg.theme || "";
+                opts.callback = callback;
 
                 if (typeof opts.input === "undefined") {
                     opts.input = {
@@ -421,8 +456,6 @@
                 }
                 open.call(this, opts, callback);
 
-                opts = null;
-                callback = null;
                 return this;
             };
 
@@ -435,7 +468,8 @@
              * myDialog.close();
              * ```
              */
-            this.close = function (opts, that) {
+            this.close = function (_option) {
+                var opts, that;
                 if (this.activeDialog) {
                     opts = self.dialogConfig;
                     this.activeDialog.addClass("destroy");
@@ -443,13 +477,21 @@
                     jQuery(window).unbind("resize.ax5dialog");
 
                     setTimeout(function () {
-                        this.activeDialog.remove();
-                        this.activeDialog = null;
+                        if (this.activeDialog) {
+                            this.activeDialog.remove();
+                            this.activeDialog = null;
+                        }
 
                         that = {
                             self: this,
-                            state: "close"
+                            state: "close",
+                            dialogId: opts.id
                         };
+
+                        if (opts.callback && (!_option || !_option.doNotCallback)) {
+                            opts.callback.call(that);
+                        }
+
                         if (opts && opts.onStateChanged) {
                             opts.onStateChanged.call(that, that);
                         } else if (this.onStateChanged) {

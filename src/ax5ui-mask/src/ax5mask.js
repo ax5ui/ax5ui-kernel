@@ -7,15 +7,36 @@
 
     UI.addClass({
         className: "mask",
-        version: "0.7.5"
+        version: "0.7.6"
     }, (function () {
         /**
          * @class ax5mask
          * @classdesc
          * @author tom@axisj.com
          * @example
-         * ```
-         * var my_mask = new ax5.ui.mask();
+         * ```js
+         * var customMask = function customMask() {
+         *     var cTmpl = '' +
+         *         '<div class="ax-mask" id="{{maskId}}" >' +
+         *         '    <div class="ax-mask-bg" style="background-color:red !important;"></div>' +
+         *         '    <div class="ax-mask-content">' +
+         *         '        {{{body}}}' +
+         *         '    </div>' +
+         *         '</div>';
+         *     return cTmpl;
+         * };
+         * ax5.ui.mask.tmpl.customMask = customMask;
+         *
+         * var mask = new ax5.ui.mask();
+         *
+         * mask.open({
+         *     templateName: 'customMask',
+         *     content: 'custom MASK on target',
+         *     target: $("#user-content").get(0),
+         *     onClick: function(){
+         *         console.log(this);
+         *     }
+         * });
          * ```
          */
         var ax5mask = function () {
@@ -46,7 +67,8 @@
                     return true;
                 },
                 getBodyTmpl = function (data) {
-                    return MASK.tmpl.get.call(this, "defaultMask", data);
+                    if (typeof data.templateName === "undefined") data.templateName = "defaultMask";
+                    return MASK.tmpl.get.call(this, data.templateName, data);
                 },
                 setBody = function (content) {
                     this.maskContent = content;
@@ -75,8 +97,11 @@
 
             /**
              * open mask
+             * target 을 주지 않으면 기본적으로 body 에 마스크가 적용되고 원하는 타겟을 지정해서 마스크를 씌울 수 있습니다.
+             * 기본 정의된 마스크 외에 사용자가 템플릿을 정의해서 마스크를 사용 가능합니다.
              * @method ax5mask.open
              * @param {Object} config
+             * @param {String} config
              * @returns {ax5mask}
              * @example
              * ```js
@@ -95,12 +120,35 @@
              *
              *     }
              * });
+             *
+             * 
+             * var customMask = function customMask() {
+             *     var cTmpl = '' +
+             *             '<div class="ax-mask" id="{{maskId}}" >' +
+             *             '    <div class="ax-mask-bg" style="background-color:red   !important;"></div>' +
+             *             '    <div class="ax-mask-content">' +
+             *             '        {{{body}}}' +
+             *             '    </div>' +
+             *             '</div>';
+             *     return cTmpl;
+             * };
+             * ax5.ui.mask.tmpl.customMask = customMask;
+             * 
+             * my_mask.open({
+             *     target: $("#mask-target").get(0), // dom Element
+             *     content: "<h1>Loading..</h1>",
+             *     
+             *     onStateChanged: function () {
+             *
+             *     }
+             * });
              * ```
              */
             this.open = function (options) {
 
                 if (this.status === "on") this.close();
                 if (options && options.content) setBody.call(this, options.content);
+                if (options && typeof options.templateName === "undefined") options.templateName = "defaultMask";
                 self.maskConfig = {};
 
                 jQuery.extend(true, self.maskConfig, this.config, options);
@@ -112,6 +160,7 @@
                     $mask,
                     css = {},
                     that = {},
+                    templateName = _cfg.templateName,
                     /*
                     bodyTmpl = getBodyTmpl(),
                     body = ax5.mustache.render(bodyTmpl, {
@@ -120,11 +169,11 @@
                         body: this.maskContent
                     });
                     */
-
                     body = getBodyTmpl({
                         theme: _cfg.theme,
                         maskId: maskId,
-                        body: this.maskContent
+                        body: this.maskContent,
+                        templateName: templateName
                     });
 
                 jQuery(document.body).append(body);
@@ -144,9 +193,7 @@
                     $target.addClass("ax-masking");
                 }
 
-
                 this.$mask = $mask = jQuery("#" + maskId);
-
                 this.$target = $target;
                 this.status = "on";
                 $mask.css(css);
@@ -175,7 +222,7 @@
                 $mask = null;
                 css = null;
                 that = null;
-                //bodyTmpl = null;
+                templateName  = null;
                 body = null;
 
                 return this;
@@ -204,6 +251,7 @@
                         });
                     };
 
+
                     if(_delay) {
                         setTimeout((function () {
                             _close.call(this);
@@ -215,6 +263,12 @@
                 return this;
             };
             //== class body end
+
+
+            this.pullRequest = function(){
+                console.log("test pullRequest01");
+                console.log("test pullRequest02");
+            };
 
             // 클래스 생성자
             this.main = (function () {
