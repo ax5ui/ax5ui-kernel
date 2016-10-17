@@ -45,8 +45,8 @@ module.exports = function (config) {
         autoWatch: true,
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        //browsers: ['PhantomJS'],
-        browsers: ['Chrome', 'Firefox'],
+        //browsers: ['Chrome', 'Firefox', 'PhantomJS'],
+        browsers: ['Chrome', 'Firefox', 'PhantomJS'],
         customLaunchers: {
             Chrome_travis_ci: {
                 base: 'Chrome',
