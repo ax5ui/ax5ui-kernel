@@ -7,6 +7,7 @@ case "$LOG" in
   *PATCH@*) echo "Patch Version"; VERSION=$(npm version patch --force) ;;
 esac
 
+
 VERSION=$(echo $VERSION | cut -c 2-)
 
 npm install && gulp version
