@@ -8,6 +8,8 @@ esac
 
 VERSION=$(echo $VERSION | cut -c 2-)
 
+gulp build
+
 git tag -a $VERSION -m $VERSION || true
 
 git push origin HEAD:master --follow-tags --force || true
