@@ -18,10 +18,10 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'test/bower_components/jquery/dist/jquery.min.js',
-            'test/bower_components/should/should.js',
-            'test/bower_components/lodash/lodash.js',
-            'test/bower_components/ax5core/dist/ax5core.js',
+            'https://code.jquery.com/jquery-1.12.3.min.js',
+            'https://cdn.rawgit.com/shouldjs/should.js/master/should.js',
+            'https://cdn.rawgit.com/lodash/lodash/master/dist/lodash.min.js',
+            'https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js',
             'dist/ax5dialog.js',
             'test/test.*.js'
         ],
@@ -47,12 +47,14 @@ module.exports = function (config) {
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         browsers: ['PhantomJS'],
         //browsers: ['Chrome'],
+        /*
         customLaunchers: {
             Chrome_travis_ci: {
                 base: 'Chrome',
                 flags: ['--no-sandbox']
             }
         },
+        */
         singleRun: true,
         concurrency: Infinity
     };

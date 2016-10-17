@@ -26,7 +26,7 @@
 		"test": "karma start karma.conf.js"
 	},
 	"dependencies": {
-		"ax5core": ">=0.4.0"
+		"ax5core": "^1.2.9"
 	},
 	"devDependencies": {
 		"jquery": "^3.1.1",
