@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 // Karma configuration
 // Generated on Wed Sep 21 2016 00:37:04 GMT+0900 (KST)
 
@@ -15,7 +21,8 @@ module.exports = function (config) {
             'test/bower_components/jquery/dist/jquery.min.js',
             'test/bower_components/should/should.js',
             'test/bower_components/lodash/lodash.js',
-            'dist/ax5core.js',
+            'test/bower_components/ax5core/dist/ax5core.js',
+            'dist/ax5dialog.js',
             'test/test.*.js'
         ],
         // list of files to exclude

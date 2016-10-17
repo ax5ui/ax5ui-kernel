@@ -22,6 +22,9 @@
 		"ax5ui-dialog",
 		"javascript ui"
 	],
+	"scripts": {
+		"test": "karma start karma.conf.js"
+	},
 	"dependencies": {
 		"ax5core": ">=0.4.0"
 	},

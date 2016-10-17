@@ -1,6 +1,4 @@
 ![build](https://travis-ci.org/ax5ui/ax5core.svg?branch=master)
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) 
-![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5core
 "ax5core" is a collection of utility functions which were designed to be used in ax5ui. It consists of "ax5" keys such as "ax5.info", "ax5.util" and others, and class variables can be added under "ax5.ui".
@@ -71,3 +69,6 @@ ax5.util.date("20111111", {'return':'yyyy/MM/dd hh:mm:ss', add:{"d":1}} );
 - [See API](http://ax5.io/ax5core/info/ax5-info.html)
 
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
+
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) 
+![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
