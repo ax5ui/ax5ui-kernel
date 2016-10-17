@@ -35,12 +35,11 @@ describe('ax5.util.filter TEST', function() {
         os : {pickup:true, name:"AX5"}
     };
 
-    it('ax5.util.filter( {a : 1, s : "string", oa : {pickup:true, name:"AXISJ"}, os : {pickup:true, name:"AX5"}}; , function(){return this.pickup;})' , function(){
+    it('ax5.util.filter( {a : 1, s : "string", oa : {pickup:true, name:"AXISJ"}, os : {pickup:true, name:"AX5"}}, function(){return this.pickup;})' , function(){
         var result = ax5.util.filter(filObject , function(){
             return this.pickup;
         });
-
-        _.isEqual(ax5.util.toJson(result) , [{"pickup": true, "name": "AXISJ"}, {"pickup": true , "name": "AX5"}]).should.equal(true);
+        _.isEqual(result.length , 2).should.equal(true);
     });
     
     /* end ax5.util.filter */
