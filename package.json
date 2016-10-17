@@ -1,10 +1,9 @@
 {
   "name": "ax5ui-kernel",
-  "version": "1.0.0",
+  "version": "1.2.9",
   "engines": {
     "node": ">=0.10.0"
   },
-  "dependencies": {},
   "scripts": {
     "build": "babel src -d lib",
     "test": "karma start karma.conf.js"
@@ -23,10 +22,12 @@
     "gulp-concat": "*",
     "gulp-jsdoc-to-markdown": "",
     "gulp-jsdoc3": "^0.3.0",
+    "gulp-json-editor": "^2.2.1",
     "gulp-marko-ax5": "",
     "gulp-notify": "",
     "gulp-plumber": "",
     "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
     "gulp-sass": "^2.1.1",
     "gulp-shell": "^0.5.2",
     "gulp-sourcemaps": "",
