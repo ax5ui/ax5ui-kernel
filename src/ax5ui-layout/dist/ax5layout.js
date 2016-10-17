@@ -114,12 +114,12 @@
                                         }
                                     }
                                 } else {
-                                        if (panel.height == "*") {
-                                            item.splitPanel.asteriskLength++;
-                                        } else {
-                                            //panel.__height = getPixel(panel.height, item.targetDimension.height);
-                                        }
+                                    if (panel.height == "*") {
+                                        item.splitPanel.asteriskLength++;
+                                    } else {
+                                        //panel.__height = getPixel(panel.height, item.targetDimension.height);
                                     }
+                                }
                             }
                         },
                         "vertical": function vertical(item, panel, panelIndex) {
