@@ -1,4 +1,6 @@
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+![build](https://travis-ci.org/ax5ui/ax5core.svg?branch=master)
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) 
+![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
 
 # ax5core
 "ax5core" is a collection of utility functions which were designed to be used in ax5ui. It consists of "ax5" keys such as "ax5.info", "ax5.util" and others, and class variables can be added under "ax5.ui".
