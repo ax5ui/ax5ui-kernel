@@ -47,14 +47,12 @@ module.exports = function (config) {
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         browsers: ['PhantomJS'],
         //browsers: ['Chrome'],
-        /*
         customLaunchers: {
             Chrome_travis_ci: {
                 base: 'Chrome',
                 flags: ['--no-sandbox']
             }
         },
-        */
         singleRun: true,
         concurrency: Infinity
     };
