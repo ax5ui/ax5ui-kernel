@@ -13,7 +13,7 @@ npm install && gulp version
 
 git add *
 
-git commit -m "$VERSION RELEASED" && git push origin master
+git commit -m "$VERSION RELEASED" && git pull && git push origin master
 
 git subsplit init git@github.com:ax5ui/ax5ui-kernel.git
 git subsplit publish --heads="master" --no-tags src/ax5core:git@github.com:ax5ui/ax5core.git
