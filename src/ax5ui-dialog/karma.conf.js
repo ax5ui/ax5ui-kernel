@@ -45,8 +45,8 @@ module.exports = function (config) {
         autoWatch: true,
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['PhantomJS'],
-        //browsers: ['Chrome'],
+        //browsers: ['PhantomJS'],
+        browsers: ['Chrome', 'Firefox'],
         customLaunchers: {
             Chrome_travis_ci: {
                 base: 'Chrome',
@@ -57,9 +57,11 @@ module.exports = function (config) {
         concurrency: Infinity
     };
 
+    /*
     if (process.env.TRAVIS) {
         configuration.browsers = ['Chrome_travis_ci'];
     }
+    */
 
     config.set(configuration);
 }
