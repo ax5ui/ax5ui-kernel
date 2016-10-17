@@ -1,5 +1,4 @@
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj)
-![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+![ax5ui-travis-passing](https://travis-ci.org/ax5ui/ax5ui-dialog.svg?branch=master)
 
 # ax5ui-dialog
 "dialog" displays information on a popup window and also enables users to enter input values.
@@ -82,3 +81,6 @@ $('#btn').click(function () {
 - [See Demonstration](http://ax5.io/ax5ui-dialog/demo/index.html)
 
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
+
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj)
+![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
