@@ -2,9 +2,9 @@
 LOG=`git log --pretty=oneline --abbrev-commit -1`
 
 case "$LOG" in
-  *MAJOR@*) VERSION=$(npm version major --force) ;;
-  *MINOR@*) VERSION=$(npm version minor --force) ;;
-  *PATCH@*) VERSION=$(npm version patch --force) ;;
+  *MAJOR@*) echo "Major Version"; VERSION=$(npm version major --force) ;;
+  *MINOR@*) echo "Minor version"; VERSION=$(npm version minor --force) ;;
+  *PATCH@*) echo "Patch Version"; VERSION=$(npm version patch --force) ;;
 esac
 
 VERSION=$(echo $VERSION | cut -c 2-)
