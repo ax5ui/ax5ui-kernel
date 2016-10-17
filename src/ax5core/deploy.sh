@@ -1,8 +1,8 @@
 LOG=git log -p -1
 
 case "$LOG" in
-  *[MAJOR]*) VERSION=$(npm version major) ;;
-  *[MINOR]*) VERSION=$(npm version minor) ;;
+  *MAJOR@*) VERSION=$(npm version major) ;;
+  *MINOR@*) VERSION=$(npm version minor) ;;
   *)       VERSION=$(npm version patch) ;;
 esac
 
