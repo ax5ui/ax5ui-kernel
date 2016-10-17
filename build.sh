@@ -9,7 +9,7 @@ esac
 
 VERSION=$(echo $VERSION | cut -c 2-)
 
-yarn && gulp version
+npm install && gulp version
 
 git add *
 
