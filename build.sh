@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+git checkout master
+
 LOG=`git log --pretty=oneline --abbrev-commit -1`
 
 case "$LOG" in
