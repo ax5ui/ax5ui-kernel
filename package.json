@@ -1,6 +1,6 @@
 {
   "name": "ax5ui-kernel",
-  "version": "1.2.9",
+  "version": "1.2.8",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -50,6 +50,7 @@
     "mocha": "^3.1.0",
     "node-sass": "^3.3.0",
     "should": "^11.1.0",
-    "strip-indent": "^1.0.1"
+    "strip-indent": "^1.0.1",
+    "version": "^0.1.2"
   }
 }
