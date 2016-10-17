@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "calendar",
-        version: "1.2.15"
+        version: "1.2.9"
     }, function () {
 
         /**

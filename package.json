@@ -1,6 +1,6 @@
 {
   "name": "ax5ui-kernel",
-  "version": "1.2.9",
+  "version": "1.2.8",
   "engines": {
     "node": ">=0.10.0"
   },
