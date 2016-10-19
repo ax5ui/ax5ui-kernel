@@ -15,8 +15,6 @@ esac
 
 VERSION=$(echo $VERSION | cut -c 2-)
 
-echo "Current Version : $VERSION"
-
 npm install && gulp version
 
 git add *
