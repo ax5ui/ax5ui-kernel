@@ -5,3 +5,7 @@ before_script:
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+addons:
+  sauce_connect:
+    username: "thomasjang"
+    access_key: "e93c21a7-213b-4280-b972-0d5551f6df1f"
