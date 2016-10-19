@@ -19,6 +19,6 @@
         "jquery": "^1.11.0",
         "ax5core": ">=1.0.9"
     },
-    "license": "LGPL-3.0",
+    "license": "MIT",
     "homepage": "ax5.io"
 }

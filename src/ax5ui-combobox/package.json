@@ -2,7 +2,7 @@
 	"name": "ax5ui-combobox",
 	"version": "1.2.51",
 	"description": "A combobox plugin that works with Bootstrap & jQuery",
-	"license": "LGPL-3.0",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ax5ui/ax5ui-combobox"
