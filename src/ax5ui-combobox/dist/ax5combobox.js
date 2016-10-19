@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "1.3.0"
+        version: "1.3.1"
     }, function () {
         /**
          * @class ax5combobox
