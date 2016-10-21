@@ -121,7 +121,7 @@
              *     }
              * });
              *
-             * 
+             *
              * var customMask = function customMask() {
              *     var cTmpl = '' +
              *             '<div class="ax-mask" id="{{maskId}}" >' +
@@ -133,7 +133,7 @@
              *     return cTmpl;
              * };
              * ax5.ui.mask.tmpl.customMask = customMask;
-             * 
+             *
              * my_mask.open({
              *     target: $("#mask-target").get(0), // dom Element
              *     content: "<h1>Loading..</h1>",
@@ -162,13 +162,13 @@
                     that = {},
                     templateName = _cfg.templateName,
                     /*
-                    bodyTmpl = getBodyTmpl(),
-                    body = ax5.mustache.render(bodyTmpl, {
-                        theme: _cfg.theme,
-                        maskId: maskId,
-                        body: this.maskContent
-                    });
-                    */
+                     bodyTmpl = getBodyTmpl(),
+                     body = ax5.mustache.render(bodyTmpl, {
+                     theme: _cfg.theme,
+                     maskId: maskId,
+                     body: this.maskContent
+                     });
+                     */
                     body = getBodyTmpl({
                         theme: _cfg.theme,
                         maskId: maskId,
@@ -178,7 +178,7 @@
 
                 jQuery(document.body).append(body);
 
-                
+
                 // 마스크의 타겟이 html body 가 아니라면
                 if (target && target !== jQuery(document.body).get(0)) {
                     css = {
@@ -196,16 +196,8 @@
 
                     // 마스크의 타겟이 html body가 아닌경우 window resize 이벤트를 추적하여 엘리먼트 마스크의 CSS 속성 변경
                     jQuery(window).bind("resize.ax5mask-" + this.instanceId, (function (_$target) {
-                        var css = {
-                            position: this.maskConfig.position || "absolute",
-                            left: _$target.offset().left,
-                            top: _$target.offset().top,
-                            width: _$target.outerWidth(),
-                            height: _$target.outerHeight()
-                        };
-                        this.$mask.css(css);
-
-                    }).bind(this, $target));
+                        this.align();
+                    }).bind(this));
                 }
 
                 this.$mask = $mask = jQuery("#" + maskId);
@@ -237,7 +229,7 @@
                 $mask = null;
                 css = null;
                 that = null;
-                templateName  = null;
+                templateName = null;
                 body = null;
 
                 return this;
@@ -255,7 +247,7 @@
              */
             this.close = function (_delay) {
                 if (this.$mask) {
-                    var _close = function(){
+                    var _close = function () {
                         this.status = "off";
                         this.$mask.remove();
                         this.$target.removeClass("ax-masking");
@@ -269,11 +261,11 @@
                     };
 
 
-                    if(_delay) {
+                    if (_delay) {
                         setTimeout((function () {
                             _close.call(this);
                         }).bind(this), _delay);
-                    }else{
+                    } else {
                         _close.call(this);
                     }
                 }
@@ -281,8 +273,26 @@
             };
             //== class body end
 
+            /**
+             * @method ax5mask.align
+             * @returns {ax5mask}
+             */
+            this.align = function () {
+                if (this.$target && this.$target !== jQuery(document.body).get(0)) {
+                    var css = {
+                        position: this.maskConfig.position || "absolute",
+                        left: this.$target.offset().left,
+                        top: this.$target.offset().top,
+                        width: this.$target.outerWidth(),
+                        height: this.$target.outerHeight()
+                    };
+                    this.$mask.css(css);
+                }
+                return this;
+            };
 
-            this.pullRequest = function(){
+
+            this.pullRequest = function () {
                 console.log("test pullRequest01");
                 console.log("test pullRequest02");
             };
