@@ -178,6 +178,8 @@
 
                 jQuery(document.body).append(body);
 
+                
+                // 마스크의 타겟이 html body 가 아니라면
                 if (target && target !== jQuery(document.body).get(0)) {
                     css = {
                         position: _cfg.position || "absolute",
@@ -191,6 +193,19 @@
                         css["z-index"] = self.maskConfig.zIndex;
                     }
                     $target.addClass("ax-masking");
+
+                    // 마스크의 타겟이 html body가 아닌경우 window resize 이벤트를 추적하여 엘리먼트 마스크의 CSS 속성 변경
+                    jQuery(window).bind("resize.ax5mask-" + this.instanceId, (function (_$target) {
+                        var css = {
+                            position: this.maskConfig.position || "absolute",
+                            left: _$target.offset().left,
+                            top: _$target.offset().top,
+                            width: _$target.outerWidth(),
+                            height: _$target.outerHeight()
+                        };
+                        this.$mask.css(css);
+
+                    }).bind(this, $target));
                 }
 
                 this.$mask = $mask = jQuery("#" + maskId);
@@ -249,6 +264,8 @@
                             self: this,
                             state: "close"
                         });
+
+                        jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
                     };
 
 
