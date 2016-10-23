@@ -23,15 +23,15 @@ describe('ax5.util.filter TEST', function() {
         var result = ax5.util.filter(list , function(){
             return (this.isdel != 1);
         });
-        
+
         _.isEqual(result , [{name : "ax5-2"},{name : "ax5-4"},{name : "ax5-5"}  ]).should.equal(true);
     });
 
     //example03
     var filObject = {
-        a : 1, 
-        s : "string", 
-        oa : {pickup:true, name:"AXISJ"}, 
+        a : 1,
+        s : "string",
+        oa : {pickup:true, name:"AXISJ"},
         os : {pickup:true, name:"AX5"}
     };
 
@@ -39,9 +39,9 @@ describe('ax5.util.filter TEST', function() {
         var result = ax5.util.filter(filObject , function(){
             return this.pickup;
         });
-        _.isEqual(result.length , 2).should.equal(true);
+        should(result).be.deepEqual([{"pickup": true, "name": "AXISJ"}, {"pickup": true , "name": "AX5"}]);
     });
-    
+
     /* end ax5.util.filter */
 });
 
@@ -97,8 +97,8 @@ describe('ax5.util.map TEST', function() {
 
     //Usage 02
     it('ax5.util.map({a: 1, b: 2}, function (k, v) {return {id: k, value: v};})' , function(){
-    
-        _.isEqual(ax5.util.map({a: 1, b: 2}, function (k, v) {return {id: k, value: v};}) , [{"id":"a","value":1},{"id":"b","value":2}]).should.equal(true);   
+
+        _.isEqual(ax5.util.map({a: 1, b: 2}, function (k, v) {return {id: k, value: v};}) , [{"id":"a","value":1},{"id":"b","value":2}]).should.equal(true);
     });
     /*end ax5.util.map*/
 });
@@ -148,7 +148,7 @@ describe('ax5.util.sum TEST', function() {
             }
         });
 
-        should.deepEqual(rs,19); 
+        should.deepEqual(rs,19);
     });
 
     //Usage 02
@@ -161,7 +161,7 @@ describe('ax5.util.sum TEST', function() {
 
         var test = ax5.util.sum(arr,10,function(){
             return this.value;
-        });       
+        });
 
         should.deepEqual(test,40);
     });
@@ -182,8 +182,8 @@ describe('ax5.util.avg TEST', function() {
         });
 
         should.deepEqual(rs,10);
-    }); 
-    /* end ax.util.avg */    
+    });
+    /* end ax.util.avg */
 });
 
 describe('ax5.util.first TEST', function() {
@@ -195,7 +195,7 @@ describe('ax5.util.first TEST', function() {
 
         should.deepEqual(str,"ax5");
     });
-    
+
     //Example 02
     //confirm 필요 (ax5.util.toJson을 넣으면 에러)
     it('ax5.util.first({k: "ax5", z: "axisj"})' , function(){
@@ -211,7 +211,7 @@ describe('ax5.util.first TEST', function() {
     //Example01
     it('ax5.util.last(["ax5", "axisj"])' , function(){
         var _arr = ["ax5", "axisj"];
-        
+
         should.deepEqual(ax5.util.last(_arr) , "axisj");
     });
 
@@ -219,11 +219,11 @@ describe('ax5.util.first TEST', function() {
     //confirm 필요 (ax5.util.toJson을 넣으면 에러)
     it('ax5.util.last({k: "ax5", z: "axisj"})' , function(){
         var _obj = {k: "ax5", z: "axisj"};
-        
+
         should.deepEqual(ax5.util.last(_obj) , {"z" : "axisj"});
     });
     /* end ax5.util.last */
-}); 
+});
 
 /* ax5.util.deepCopy */
 
