@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 // Karma configuration
 // Generated on Wed Sep 21 2016 00:37:04 GMT+0900 (KST)
 
@@ -15,7 +21,8 @@ module.exports = function (config) {
             'https://code.jquery.com/jquery-1.12.3.min.js',
             'https://cdn.rawgit.com/shouldjs/should.js/master/should.js',
             'https://cdn.rawgit.com/lodash/lodash/master/dist/lodash.min.js',
-            'dist/ax5core.js',
+            'https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js',
+            'dist/ax5dialog.js',
             'test/test.*.js'
         ],
         // list of files to exclude
@@ -38,8 +45,8 @@ module.exports = function (config) {
         autoWatch: true,
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        //browsers: ['PhantomJS'],
-        browsers: ['Chrome', 'Firefox'],
+        //browsers: ['Chrome', 'Firefox', 'PhantomJS'],
+        browsers: ['Chrome', 'Firefox', 'PhantomJS'],
         customLaunchers: {
             Chrome_travis_ci: {
                 base: 'Chrome',

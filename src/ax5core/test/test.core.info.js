@@ -41,7 +41,7 @@ describe('ax5.info TEST', function() {
     });
 
     it('ax5.info.wheelEnm expect "mousewheel"', function() {
-        should.equal(ax5.info.wheelEnm, "mousewheel");
+        should.equal(ax5.info.wheelEnm === "mousewheel" || ax5.info.wheelEnm === "DOMMouseScroll", true);
     });
 
     it('ax5.info.weekNames expect [{label: "SUN"},{label: "MON"}...]', function() {

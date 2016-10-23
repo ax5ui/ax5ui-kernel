@@ -16,6 +16,19 @@
 
 <script>
 
+    var rr = ax5.util.filter(
+            {
+                a: 1, s: "string", oa: {pickup: true, name: "AXISJ"}, os: {pickup: true, name: "AX5"}
+            },
+            function () {
+                return this.pickup;
+            }
+    );
+
+
+
+    console.log(ax5.util.toJson(rr));
+
     /* 날짜 포멧팅
      var today = new Date();
      var ppp = ax5.util.date(today, {return:'yyyy-MM-dd'});
