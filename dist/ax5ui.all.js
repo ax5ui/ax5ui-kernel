@@ -1,6 +1,6 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 (function () {
     'use strict';
@@ -53,7 +53,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "0.0.1";
+        var version = "1.3.4";
 
         /**
          * ax5 library path
@@ -3093,7 +3093,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "dialog",
-        version: "0.8.8"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5dialog
@@ -3630,7 +3630,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "mask",
-        version: "0.7.6"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5mask
@@ -3742,7 +3742,7 @@ ax5.ui = function () {
              *     }
              * });
              *
-             * 
+             *
              * var customMask = function customMask() {
              *     var cTmpl = '' +
              *             '<div class="ax-mask" id="{{maskId}}" >' +
@@ -3754,7 +3754,7 @@ ax5.ui = function () {
              *     return cTmpl;
              * };
              * ax5.ui.mask.tmpl.customMask = customMask;
-             * 
+             *
              * my_mask.open({
              *     target: $("#mask-target").get(0), // dom Element
              *     content: "<h1>Loading..</h1>",
@@ -3784,13 +3784,13 @@ ax5.ui = function () {
                     templateName = _cfg.templateName,
 
                 /*
-                bodyTmpl = getBodyTmpl(),
-                body = ax5.mustache.render(bodyTmpl, {
-                    theme: _cfg.theme,
-                    maskId: maskId,
-                    body: this.maskContent
-                });
-                */
+                 bodyTmpl = getBodyTmpl(),
+                 body = ax5.mustache.render(bodyTmpl, {
+                 theme: _cfg.theme,
+                 maskId: maskId,
+                 body: this.maskContent
+                 });
+                 */
                 body = getBodyTmpl({
                     theme: _cfg.theme,
                     maskId: maskId,
@@ -3800,6 +3800,7 @@ ax5.ui = function () {
 
                 jQuery(document.body).append(body);
 
+                // 마스크의 타겟이 html body 가 아니라면
                 if (target && target !== jQuery(document.body).get(0)) {
                     css = {
                         position: _cfg.position || "absolute",
@@ -3813,6 +3814,11 @@ ax5.ui = function () {
                         css["z-index"] = self.maskConfig.zIndex;
                     }
                     $target.addClass("ax-masking");
+
+                    // 마스크의 타겟이 html body가 아닌경우 window resize 이벤트를 추적하여 엘리먼트 마스크의 CSS 속성 변경
+                    jQuery(window).bind("resize.ax5mask-" + this.instanceId, function (_$target) {
+                        this.align();
+                    }.bind(this));
                 }
 
                 this.$mask = $mask = jQuery("#" + maskId);
@@ -3871,6 +3877,8 @@ ax5.ui = function () {
                             self: this,
                             state: "close"
                         });
+
+                        jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
                     };
 
                     if (_delay) {
@@ -3885,6 +3893,25 @@ ax5.ui = function () {
             };
             //== class body end
 
+            /**
+             * @method ax5mask.align
+             * @returns {ax5mask}
+             */
+            this.align = function () {
+                if (this.maskConfig && this.maskConfig.target && this.maskConfig.target !== jQuery(document.body).get(0)) {
+                    try {
+                        var css = {
+                            position: this.maskConfig.position || "absolute",
+                            left: this.$target.offset().left,
+                            top: this.$target.offset().top,
+                            width: this.$target.outerWidth(),
+                            height: this.$target.outerHeight()
+                        };
+                        this.$mask.css(css);
+                    } catch (e) {}
+                }
+                return this;
+            };
 
             this.pullRequest = function () {
                 console.log("test pullRequest01");
@@ -3932,7 +3959,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "toast",
-        version: "0.4.1"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5toast
@@ -4294,7 +4321,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "modal",
-        version: "0.8.3"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5modal
@@ -4484,6 +4511,8 @@ ax5.ui = function () {
                 }.bind(this));
 
                 this.$.header.bind(ENM["mousedown"], function (e) {
+                    if (opts.isFullScreen) return false;
+
                     /// 이벤트 필터링 추가 : 버튼엘리먼트로 부터 발생된 이벤트이면 moveModal 시작하지 않도록 필터링
                     var isButton = U.findParentNode(e.target, function (_target) {
                         if (_target.getAttribute("data-modal-header-btn")) {
@@ -4813,7 +4842,7 @@ ax5.ui = function () {
                         height: opts.height
                     };
 
-                    var fullScreen = function (_fullScreen) {
+                    var fullScreen = opts.isFullScreen = function (_fullScreen) {
                         if (typeof _fullScreen === "undefined") {
                             return false;
                         } else if (U.isFunction(_fullScreen)) {
@@ -4822,7 +4851,7 @@ ax5.ui = function () {
                     }(opts.fullScreen);
 
                     if (fullScreen) {
-                        if (opts.header) this.$.header.hide();
+                        if (opts.header) this.$.header.show();
                         box.width = jQuery(window).width();
                         box.height = opts.height;
                         box.left = 0;
@@ -4916,7 +4945,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "calendar",
-        version: "0.9.0"
+        version: "1.3.4"
     }, function () {
 
         /**
@@ -5951,7 +5980,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "picker",
-        version: "0.8.1"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5picker
@@ -6907,7 +6936,7 @@ jQuery.fn.ax5picker = function () {
 
     UI.addClass({
         className: "formatter",
-        version: "0.6.1"
+        version: "1.3.4"
     }, function () {
         var TODAY = new Date();
         var setSelectionRange = function setSelectionRange(input, pos) {
@@ -7543,7 +7572,7 @@ jQuery.fn.ax5formatter = function () {
 
     UI.addClass({
         className: "menu",
-        version: "0.7.0"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5.ui.menu
@@ -8336,7 +8365,7 @@ jQuery.fn.ax5formatter = function () {
 
     UI.addClass({
         className: "select",
-        version: "0.4.6"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5select
@@ -9474,7 +9503,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "grid",
-        version: "0.3.7"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5grid
@@ -10722,15 +10751,21 @@ jQuery.fn.ax5select = function () {
              * @param {Number} _selectObject.index - index of row
              * @param {Number} _selectObject.rowIndex - rowIndex of columns
              * @param {Number} _selectObject.conIndex - colIndex of columns
+             * @param {Object} _options
              * @returns {ax5grid}
              */
-            this.select = function (_selectObject) {
+            this.select = function (_selectObject, _options) {
                 if (U.isNumber(_selectObject)) {
                     var dindex = _selectObject;
 
                     if (!this.config.multipleSelect) {
                         GRID.body.updateRowState.call(this, ["selectedClear"]);
                         GRID.data.clearSelect.call(this);
+                    } else {
+                        if (_options && _options.selectedClear) {
+                            GRID.body.updateRowState.call(this, ["selectedClear"]);
+                            GRID.data.clearSelect.call(this);
+                        }
                     }
 
                     GRID.data.select.call(this, dindex);
@@ -14620,7 +14655,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "mediaViewer",
-        version: "0.4.3"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5mediaViewer
@@ -15187,7 +15222,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "uploader",
-        version: "0.0.5"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5uploader
@@ -15571,7 +15606,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "combobox",
-        version: "0.3.9"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5combobox
@@ -17221,7 +17256,7 @@ jQuery.fn.ax5combobox = function () {
 
     UI.addClass({
         className: "layout",
-        version: "0.3.2"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5layout
@@ -18248,7 +18283,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "binder",
-        version: "0.2.0"
+        version: "1.3.4"
     }, function () {
 
         /**
@@ -19196,7 +19231,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "multiUploader",
-        version: "0.0.1"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5multiUploader
@@ -19283,7 +19318,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "autocomplete",
-        version: "0.0.5"
+        version: "1.3.4"
     }, function () {
         /**
          * @class ax5autocomplete

@@ -233,7 +233,7 @@ gulp.task('default', function () {
  * concat all src for dist
  */
 gulp.task('dist-all-in-one', function () {
-
+    var packageJSON = JSON.parse(fs.readFileSync('package.json'));
     var jsSrcs = [];
     var scssSrcs = [];
     for (var k in PATHS) {
@@ -246,6 +246,7 @@ gulp.task('dist-all-in-one', function () {
 
     gulp.src(jsSrcs)
         .pipe(plumber({errorHandler: errorAlert}))
+        .pipe(replace("${VERSION}", packageJSON.version))
         .pipe(concat('ax5ui.all.js'))
         .pipe(babel({
             presets: ['es2015'],
