@@ -37,6 +37,7 @@
 <div style="padding: 5px;">
     <h3>row</h3>
     <button class="btn btn-default" data-grid-control="row-add">add</button>
+    <button class="btn btn-default" data-grid-control="row-add2">add(no sort)</button>
     <button class="btn btn-default" data-grid-control="row-remove">remove</button>
     <button class="btn btn-default" data-grid-control="row-update">update</button>
 </div>
@@ -189,6 +190,10 @@
         $('[data-grid-control]').click(function () {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
+                    firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort:true});
+                    break;
+
+                case "row-add2":
                     firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))]);
                     break;
 
