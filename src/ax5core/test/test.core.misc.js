@@ -94,18 +94,18 @@ describe('ax5.util.toArray TEST', function() {
 describe('ax5.util.xxxCookie TEST', function() {
 
     describe('ax5.util.setCookie TEST', function() {
-        it('ax5.util.setCookie("ax5-cookie", "abcde")', function() {
-            ax5.util.setCookie('ax5-cookie', 'abcde');
+        it('ax5.util.setCookie("ax5-cookie", "eng+한글")', function() {
+            ax5.util.setCookie('ax5-cookie', 'eng+한글');
 
-            document.cookie.indexOf('ax5-cookie=abcde').should.above(-1);
+            document.cookie.indexOf('ax5-cookie=eng+%uD55C%uAE00').should.above(-1);
         });
     });
 
     describe('ax5.util.getCookie TEST', function() {
-        it('ax5.util.getCookie("ax5-cookie") expect "abcde"', function() {
+        it('ax5.util.getCookie("ax5-cookie") expect "eng+한글"', function() {
             var actual = ax5.util.getCookie('ax5-cookie');
 
-            actual.should.equal('abcde');
+            actual.should.equal('eng+한글');
         });
     });
 
