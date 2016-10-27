@@ -1332,6 +1332,7 @@
 // todo : filter
 // todo : body menu
 // todo : column reorder
+// todo : editor 필수값 속성 지정
 
 
 

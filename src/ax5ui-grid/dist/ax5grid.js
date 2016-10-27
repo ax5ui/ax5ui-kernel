@@ -1312,6 +1312,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // todo : filter
 // todo : body menu
 // todo : column reorder
+// todo : editor 필수값 속성 지정
 
 
 // ax5.ui.grid.body
@@ -3145,7 +3146,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 },
                 "RETURN": function RETURN() {
-
                     if (this.isInlineEditing) {
                         if (this.inlineEditing[columnKey] && this.inlineEditing[columnKey].useReturnToSave) {
                             // todo : 네이밍 검증 할 필요있음.
