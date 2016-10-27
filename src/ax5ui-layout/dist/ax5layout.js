@@ -929,13 +929,11 @@
 
                 return function (boundID, callback) {
                     var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
-                    if (queIdx === -1) {
-                        console.log(ax5.info.getError("ax5layout", "402", "reset"));
-                        return;
+                    if (queIdx === -1) {} else {
+                        resetLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx]);
+                        alignLayout.call(this, queIdx, callback);
                     }
 
-                    resetLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx]);
-                    alignLayout.call(this, queIdx, callback);
                     return this;
                 };
             }();
