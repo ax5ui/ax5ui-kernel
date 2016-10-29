@@ -2000,7 +2000,7 @@
                     return U.number(__value);
                 }
                 else {
-                    return __value;
+                    return document.createElement( 'a' ).appendChild(document.createTextNode( __value ) ).parentNode.innerHTML;
                 }
             }).call(this, editorValue, column.editor);
 

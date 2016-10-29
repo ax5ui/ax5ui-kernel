@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.7"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -3099,7 +3099,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (__editor.type == "money") {
                     return U.number(__value);
                 } else {
-                    return __value;
+                    return document.createElement('a').appendChild(document.createTextNode(__value)).parentNode.innerHTML;
                 }
             }.call(this, editorValue, column.editor);
 
@@ -3551,6 +3551,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var setValue = function setValue(_dindex, _key, _value) {
+
         this.needToPaintSum = true;
         if (/[\.\[\]]/.test(_key)) {
             try {
@@ -3561,6 +3562,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.list[_dindex][this.config.columnKeys.modified] = true;
             this.list[_dindex][_key] = _value;
         }
+
+        console.log(this.list[_dindex][_key], _value);
 
         if (this.onDataChanged) {
             this.onDataChanged.call({
@@ -5129,9 +5132,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
             addC += colspan;
         }
-        addC -= 1;
-        if (addC < this.columns.length + 1) {
-            for (var c = addC; c < this.columns.length + 1; c++) {
+
+        if (addC < this.colGroup.length) {
+            for (var c = addC; c < this.colGroup.length; c++) {
                 table.rows[r].cols.push({
                     rowIndex: 0,
                     colIndex: c + 1,
