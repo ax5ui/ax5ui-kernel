@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.10"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1323,7 +1323,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var escapeString = function escapeString(_value) {
         var tagsToReplace = {
-            '&': '&amp;',
+            //'&': '&amp;',
             '<': '&lt;',
             '>': '&gt;'
         };
