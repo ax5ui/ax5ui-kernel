@@ -183,3 +183,35 @@ describe('ax5.util.setDigit Test', function() {
       });
   });
 });
+
+describe('ax5.util.escape Test', function() {
+    it('ax5.util.escapeHtml("HTML <span>string</span> & "escape"") expect "HTML &lt;span&gt;string&lt;/span&gt; &amp; &quot;escape&quot;"', function() {
+        var actual = ax5.util.escapeHtml('HTML <span>string</span> & "escape"');
+        should(actual).be.equal('HTML &lt;span&gt;string&lt;/span&gt; &amp; &quot;escape&quot;');
+    });
+
+    it('ax5.util.escapeHtml(undefined) expect undefined', function() {
+        var actual = ax5.util.escapeHtml(undefined);
+        should(actual).be.equal(undefined);
+    });
+
+    it('ax5.util.escapeHtml({ "foo": 1 }) expect { "foo": 1 }', function() {
+        var actual = ax5.util.escapeHtml({ "foo": 1 });
+        should(actual).be.deepEqual({ "foo": 1 });
+    });
+
+    it('ax5.util.unescapeHtml("HTML &lt;span&gt;string&lt;/span&gt; &amp; &quot;escape&quot;") expect "HTML <span>string</span> & "escape""', function() {
+        var actual = ax5.util.unescapeHtml('HTML &lt;span&gt;string&lt;/span&gt; &amp; &quot;escape&quot;');
+        should(actual).be.equal('HTML <span>string</span> & "escape"');
+    });
+
+    it('ax5.util.unescapeHtml(undefined) expect undefined', function() {
+        var actual = ax5.util.unescapeHtml(undefined);
+        should(actual).be.equal(undefined);
+    });
+
+    it('ax5.util.unescapeHtml({ "foo": 1 }) expect { "foo": 1 }', function() {
+        var actual = ax5.util.unescapeHtml({ "foo": 1 });
+        should(actual).be.deepEqual({ "foo": 1 });
+    });
+});
