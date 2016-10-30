@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.9"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -3110,7 +3110,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (__editor.type == "money") {
                     return U.number(__value);
                 } else {
-                    return escapeString(__value);
+                    return __value;
                 }
             }.call(this, editorValue, column.editor);
 

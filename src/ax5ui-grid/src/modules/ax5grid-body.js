@@ -2011,7 +2011,7 @@
                     return U.number(__value);
                 }
                 else {
-                    return escapeString(__value);
+                    return __value;
                 }
             }).call(this, editorValue, column.editor);
 
