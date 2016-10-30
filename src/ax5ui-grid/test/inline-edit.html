@@ -70,7 +70,7 @@
     };
 
     var sampleData = [
-        {a: "A", b: "A<1", price: 1000, amount: 12, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y"},
+        {a: "A", b: "A<A", price: 1000, amount: 12, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y"},
         {a: "A", b: "B01", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
         {a: "A", b: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
         {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
@@ -153,9 +153,7 @@
                             return false;
                         }}
                     },
-                    {key: "b", label: "필드B", align: "center", editor: {type: "text"}, formatter: function(){
-                        return this.value.replace(/</g, '&lt;');
-                    }},
+                    {key: "b", label: "필드B", align: "center", editor: {type: "text"}},
                     {
                         key: undefined,
                         label: "필드C", columns: [
