@@ -63,10 +63,12 @@
 
             target: document.getElementById("calendar-target"),
             displayDate: (new Date()),
+            startOfWeek: 1,
             mode: "day",
             selectMode: "day",
 
             // selectable: {range:[{from: '2016-02-01', to: '2016-02-20'}]},
+            /*
             marker: (function () {
                 var marker = {};
                 marker[_c_date(today, {'return': 'yyyy-MM-dd', 'add': {d: -1}})] = true;
@@ -77,6 +79,7 @@
 
                 return marker;
             })(),
+            */
             /*
              marker: {
              '2016-04-07': {theme: 'holiday', label: '설날'},

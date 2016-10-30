@@ -85,18 +85,19 @@
                         return (panel ? panel.__height + ((panel.split) ? item.splitter.size : 0) : 0);
                     }
                 },
+                getPixel = function (size, parentSize) {
+                    if (size == "*") {
+                        return;
+                    }
+                    else if (U.right(size, 1) == "%") {
+                        return parentSize * U.number(size) / 100;
+                    }
+                    else {
+                        return Number(size);
+                    }
+                },
                 alignLayout = (function () {
-                    var getPixel = function (size, parentSize) {
-                        if (size == "*") {
-                            return;
-                        }
-                        else if (U.right(size, 1) == "%") {
-                            return parentSize * U.number(size) / 100;
-                        }
-                        else {
-                            return Number(size);
-                        }
-                    };
+
                     var beforeSetCSS = {
                         "split": {
                             "horizontal": function (item, panel, panelIndex) {
@@ -335,10 +336,10 @@
                             var withoutAsteriskSize;
                             item.splitPanel.asteriskLength = 0;
                             item.splitPanel.forEach(function (panel, panelIndex) {
-                                beforeSetCSS["split"][item.oriental].call(this, item, panel, panelIndex);
+                                beforeSetCSS["split"][item.orientation].call(this, item, panel, panelIndex);
                             });
 
-                            if (item.oriental == "horizontal") {
+                            if (item.orientation == "horizontal") {
                                 withoutAsteriskSize = U.sum(item.splitPanel, function (n) {
                                     if (n.height != "*") return U.number(n.__height);
                                 });
@@ -350,7 +351,7 @@
                             }
 
                             item.splitPanel.forEach(function (panel, panelIndex) {
-                                setCSS["split"][item.oriental].call(this, item, panel, panelIndex, withoutAsteriskSize, windowResize);
+                                setCSS["split"][item.orientation].call(this, item, panel, panelIndex, withoutAsteriskSize, windowResize);
                             });
                         }
                     };
@@ -457,7 +458,7 @@
                             "split": function (e) {
                                 var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
 
-                                if (item.oriental == "horizontal") {
+                                if (item.orientation == "horizontal") {
                                     panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
 
                                     var prevPanel = item.splitPanel[panel.panelIndex - 1];
@@ -543,7 +544,7 @@
                             },
                             "split-panel": {
                                 "split": function () {
-                                    if (item.oriental == "horizontal") {
+                                    if (item.orientation == "horizontal") {
                                         // 앞과 뒤의 높이 조절
                                         item.splitPanel[panel.panelIndex - 1].__height += panel.__da;
                                         item.splitPanel[panel.panelIndex + 1].__height -= panel.__da;
@@ -622,17 +623,7 @@
 `;
                 },
                 bindLayoutTarget = (function () {
-                    var getPixel = function (size, parentSize) {
-                        if (size == "*") {
-                            return;
-                        }
-                        else if (U.right(size, 1) == "%") {
-                            return parentSize * U.number(size) / 100;
-                        }
-                        else {
-                            return Number(size);
-                        }
-                    };
+
                     var applyLayout = {
                         "dock-panel": function (queIdx) {
                             var item = this.queue[queIdx];
@@ -680,6 +671,7 @@
                             var item = this.queue[queIdx];
                             item.splitPanel = [];
                             item.$target.find('>[data-split-panel], >[data-splitter]').each(function (ELIndex) {
+
                                 var panelInfo = {};
                                 (function (data) {
                                     if (U.isObject(data) && !data.error) {
@@ -689,10 +681,11 @@
 
                                 panelInfo.$target = jQuery(this);
                                 panelInfo.$target
-                                    .addClass("split-panel-" + item.oriental);
+                                    .addClass("split-panel-" + item.orientation);
                                 panelInfo.panelIndex = ELIndex;
 
                                 if (this.getAttribute("data-splitter")) {
+
                                     panelInfo.splitter = true;
                                     panelInfo.$target
                                         .bind(ENM["mousedown"], function (e) {
@@ -706,14 +699,17 @@
                                             return false;
                                         });
                                     panelInfo.resizerType = "split";
+
                                 } else {
-                                    if (item.oriental == "horizontal") {
+
+                                    if (item.orientation == "horizontal") {
                                         panelInfo.__height = getPixel(panelInfo.height, item.targetDimension.height);
                                     }
                                     else {
-                                        item.oriental = "vertical";
+                                        item.orientation = "vertical";
                                         panelInfo.__width = getPixel(panelInfo.width, item.targetDimension.width);
                                     }
+
                                 }
 
                                 item.splitPanel.push(panelInfo);
@@ -901,7 +897,7 @@
 
                 if (queIdx === -1) {
                     var i = this.queue.length;
-                    while(i--){
+                    while (i--) {
                         alignLayout.call(this, i, null, windowResize);
                     }
                 } else {
@@ -960,12 +956,12 @@
                     var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                     if (queIdx === -1) {
                         var i = this.queue.length;
-                        while(i--){
+                        while (i--) {
                             resizeLayoutPanel[this.queue[i].layout].call(this, this.queue[i], resizeOption);
                             alignLayout.call(this, i, callback);
                         }
                     } else {
-                        if(this.queue[queIdx]) {
+                        if (this.queue[queIdx]) {
                             resizeLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx], resizeOption);
                             alignLayout.call(this, queIdx, callback);
                         }
@@ -991,8 +987,14 @@
                             }
                         });
                     },
-                    "split-panel": function () {
-
+                    "split-panel": function (item) {
+                        item.splitPanel.forEach(function (panel) {
+                            if (item.orientation == "vertical") {
+                                panel.__width = getPixel(panel.width, item.targetDimension.width);
+                            } else if (item.orientation == "horizontal") {
+                                panel.__height = getPixel(panel.height, item.targetDimension.height);
+                            }
+                        });
                     },
                     "tab-panel": function () {
 
@@ -1002,12 +1004,12 @@
                 return function (boundID, callback) {
                     var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                     if (queIdx === -1) {
-                        console.log(ax5.info.getError("ax5layout", "402", "reset"));
-                        return;
+
+                    } else {
+                        resetLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx]);
+                        alignLayout.call(this, queIdx, callback);
                     }
 
-                    resetLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx]);
-                    alignLayout.call(this, queIdx, callback);
                     return this;
                 };
 

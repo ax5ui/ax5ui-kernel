@@ -14,6 +14,7 @@ myCalendar.setConfig({
     target: "target Element", // null
     theme: 'String', // default
     displayDate: "Date|String", // new Date()
+    startOfWeek: 0, // start of week
     control: { // null
         left: 'String',
         yearTmpl: '%s',

@@ -139,7 +139,7 @@
                 },
                 initGrid = function () {
                     // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
-                    
+
                     var data = {
                         instanceId: this.id
                     };
@@ -845,8 +845,8 @@
                 });
 
                 // 그리드 레이아웃이 모든 준비를 마친시점에 onLoad존재 여부를 확인하고 호출하여 줍니다.
-                setTimeout((function(){
-                    if(this.onLoad){
+                setTimeout((function () {
+                    if (this.onLoad) {
                         this.onLoad.call({
                             self: this
                         })
@@ -918,16 +918,17 @@
                             GRID.body.inlineEdit.keydown.call(this, "RETURN");
                         }
                     },
-                    "TAB": function (_e) {
+                    "TAB": function (_e) {           
+
                         var activeEditLength = 0;
                         for (var columnKey in this.inlineEditing) {
                             activeEditLength++;
 
-                            GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey);
+                            GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey, {moveFocus: true});
                             // next focus
                             if (activeEditLength == 1) {
                                 if (GRID.body.moveFocus.call(this, (_e.shiftKey) ? "LEFT" : "RIGHT")) {
-                                    GRID.body.inlineEdit.keydown.call(this, "RETURN");
+                                    GRID.body.inlineEdit.keydown.call(this, "RETURN", undefined, {moveFocus: true});
                                 }
                             }
                         }
@@ -1070,14 +1071,16 @@
              * @method ax5grid.addRow
              * @param {Object} _row
              * @param {Number|String} [_dindex=last]
+             * @param {Object} [_options] - options of addRow
+             * @param {Boolean} [_options.sort] - sortData
              * @returns {ax5grid}
              * @example
              * ```js
              * ax5Grid.addRow($.extend({}, {...}), "first");
              * ```
              */
-            this.addRow = function (_row, _dindex) {
-                GRID.data.add.call(this, _row, _dindex);
+            this.addRow = function (_row, _dindex, _options) {
+                GRID.data.add.call(this, _row, _dindex, _options);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
                 GRID.body.moveFocus.call(this, (this.config.body.grouping) ? "START" : "END");
@@ -1294,7 +1297,7 @@
                     if (!this.config.multipleSelect) {
                         GRID.body.updateRowState.call(this, ["selectedClear"]);
                         GRID.data.clearSelect.call(this);
-                    }else {
+                    } else {
                         if (_options && _options.selectedClear) {
                             GRID.body.updateRowState.call(this, ["selectedClear"]);
                             GRID.data.clearSelect.call(this);
@@ -1329,6 +1332,7 @@
 // todo : filter
 // todo : body menu
 // todo : column reorder
+// todo : editor 필수값 속성 지정
 
 
 
