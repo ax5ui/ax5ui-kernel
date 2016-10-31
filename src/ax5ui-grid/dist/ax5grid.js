@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.14"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1839,7 +1839,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                 }
 
-                return returnValue.replace(/[<>]/g, function (tag) {
+                return typeof returnValue === "number" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
                     return tagsToReplace[tag] || tag;
                 });
             }

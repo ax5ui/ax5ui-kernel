@@ -564,7 +564,7 @@
                     if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                 }
 
-                return returnValue.replace(/[<>]/g, function (tag) {
+                return (typeof returnValue === "number") ? returnValue: returnValue.replace(/[<>]/g, function (tag) {
                     return tagsToReplace[tag] || tag;
                 });
             }

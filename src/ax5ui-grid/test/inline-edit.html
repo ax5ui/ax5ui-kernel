@@ -71,7 +71,7 @@
 
     var sampleData = [
         {a: "A", b: "A<A", price: 1000, amount: null, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y"},
-        {a: "A", b: null, price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
+        {a: "A", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
         {a: "A", b: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
         {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
         {a: "A", b: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
@@ -157,7 +157,7 @@
                     {
                         key: undefined,
                         label: "필드C", columns: [
-                            {key: "price", label: "단가", align: "right", formatter: "money", editor: {type: "money", updateWith: ['cost']}},
+                            {key: "price", label: "단가", align: "right", editor: {type: "money", updateWith: ['cost']}},
                             {key: "amount", label: "수량", align: "right", formatter: "money", editor: {type: "number", updateWith: ['cost']}},
                             {
                                 key: "cost", label: "금액", align: "right", formatter: function () {
@@ -215,6 +215,7 @@
             return this;
         },
         setData: function (_pageNo) {
+            /*
             firstGrid.setData({
                 list: sampleData,
                 page: {
@@ -224,8 +225,9 @@
                     totalPages: 100
                 }
             });
+            */
 
-            //firstGrid.setData(list);
+            firstGrid.setData(sampleData);
 
             return this;
         }
