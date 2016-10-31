@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "dialog",
-        version: "1.3.13"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5dialog
@@ -425,7 +425,7 @@
                 }
 
                 if (this.activeDialog) {
-                    // try one more
+                    // try one more 
                     if (!tryCount) {
                         setTimeout(function () {
                             this.prompt(opts, callback, 1);
