@@ -75,6 +75,7 @@
         removeIcon: '<i class="fa fa-times" aria-hidden="true"></i>'
     });
 
+
     $(document.body).ready(function () {
 
         $('[data-btn]').click(function () {
@@ -120,6 +121,8 @@
             }
         });
 
+
+
         // jquery extend
         myCombo.bind({
             //theme: "primary",
@@ -132,6 +135,8 @@
                 //console.log(this);
             }
         });
+        myCombo.disable($('[data-ax5combobox="combo1"]'));
+        myCombo.enable($('[data-ax5combobox="combo1"]'));
 
         myCombo.bind({
             //theme: "primary",
