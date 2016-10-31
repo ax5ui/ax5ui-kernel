@@ -1504,18 +1504,20 @@
             this.enable = function (_boundID) {
                 var queIdx = getQueIdx.call(this, _boundID);
 
-                if (this.queue[queIdx].$display[0]) {
-                    this.queue[queIdx].$display.find('[data-ax5combobox-display="label"]').attr("contenteditable", "true");
-                    this.queue[queIdx].$display.removeAttr("disabled");
-                }
-                if (this.queue[queIdx].$select[0]) {
-                    this.queue[queIdx].$select.removeAttr("disabled");
-                }
+                if (typeof queIdx !== "undefined") {
+                    if (this.queue[queIdx].$display[0]) {
+                        this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
+                        this.queue[queIdx].$display.removeAttr("disabled");
+                    }
+                    if (this.queue[queIdx].$select[0]) {
+                        this.queue[queIdx].$select.removeAttr("disabled");
+                    }
 
-                onStateChanged.call(this, this.queue[queIdx], {
-                    self: this,
-                    state: "enable"
-                });
+                    onStateChanged.call(this, this.queue[queIdx], {
+                        self: this,
+                        state: "enable"
+                    });
+                }
 
                 return this;
             };
@@ -1530,7 +1532,7 @@
 
                 if (typeof queIdx !== "undefined") {
                     if (this.queue[queIdx].$display[0]) {
-                        this.queue[queIdx].$display.find('[data-ax5combobox-display="label"]').attr("contenteditable", "false");
+                        this.queue[queIdx].$displayLabel.attr("contentEditable", "false");
                         this.queue[queIdx].$display.attr("disabled", "disabled");
                     }
                     if (this.queue[queIdx].$select[0]) {
