@@ -183,14 +183,57 @@
             });
         };
 
+        var menu1 = new ax5.ui.menu({
+            position: "absolute", // default position is "fixed"
+            items: [
+                {type: 1, label: "menu1"},
+                {type: 1, divide: true},
+                {
+                    label: "Tools",
+                    items: [
+                        {type: 1, label: "Ping"},
+                        {type: 1, label: "SSH"},
+                        {type: 1, label: "Telnet"},
+                        {type: 1, label: "Winbox"},
+                        {type: 1, label: "FileZilla Check SWF Hang"},
+                        {label: "FileZilla IS_FILES"},
+                        {label: "FileZilla CPU"},
+                        {label: "Live Video"},
+                        {label: "Live IPCam 1"},
+                        {label: "Live IPCam 2"},
+                        {label: "Live IPCam 3"},
+                        {label: "Live IPCam 4"},
+                        {label: "IPCam 1"},
+                        {label: "IPCam 2"},
+                        {label: "IPCam 3"},
+                        {label: "IPCam 4"},
+                        {label: "IPCam 5"},
+                        {label: "IPCam 6"}
+                    ]
+                },
+                {
+                    label: "Config",
+                    items: [
+                        {label: "ssh"},
+                        {type: 1, label: "ftp"},
+                        {type: 1, label: "winbox"}
+                    ]
+                }
+            ]
+        });
+
         attached();
 
         $(document).bind("contextmenu", function (e) {
             /*
-            menu.popup(e, {theme:"danger", filter: function(){
-                return true;
+             menu.popup(e, {theme:"danger", filter: function(){
+             return true;
+             }});
+             */
+
+            menu1.popup(e, {filter: function () {
+                return this.type != 1;
             }});
-            */
 
             ax5.util.stopEvent(e);
             // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
@@ -292,6 +335,8 @@
 
         attachedMenu.attach($("#attachedMenu-target"));
     }
+
+
 </script>
 
 </body>
