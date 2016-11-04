@@ -1313,6 +1313,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
+// todo : rowSelecor header selectAll
 // todo : merge cells
 // todo : filter
 // todo : body menu
