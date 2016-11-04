@@ -482,6 +482,7 @@ console.log(ax5.util.right("abcd.efd", "."));
 ## ax5.util.camelCase
 Converts a string to "Camel Case". "a-b", "aB" will be the "aB".
 ```js
+```js
 console.log(ax5.util.camelCase("inner-width"));
 > innerWidth
 console.log(ax5.util.camelCase("innerWidth"));
@@ -554,6 +555,8 @@ console.log('abs() round(2) money() : '
 ax5.util.date('2013-01-01'); // Tue Jan 01 2013 23:59:00 GMT+0900 (KST)
 ax5.util.date((new Date()), {add:{d:10}, return:'yyyy/MM/dd'}); // "2015/07/01"
 ax5.util.date('1919-03-01', {add:{d:10}, return:'yyyy/MM/dd hh:mm:ss'}); // "1919/03/11 23:59:00"
+ax5.util.date('1919-03-15', {set: "firstDayOfMonth"}); // Sat Mar 01 1919 12:00:00 GMT+0900 (KST)
+ax5.util.date('1919-03-15', {set: "lastDayOfMonth"}); // Mon Mar 31 1919 12:00:00 GMT+0900 (KST)
 ```
 
 ## dday
