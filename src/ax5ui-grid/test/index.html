@@ -20,7 +20,7 @@
 <body style="padding: 20px;">
 
 <div style="position: relative;height:300px;" id="grid-parent">
-    <div data-ax5grid="first-grid" data-ax5grid-config='{showLineNumber: false, showRowSelector: true}' style="height: 100%;"></div>
+    <div data-ax5grid="first-grid" data-ax5grid-config='{showLineNumber: false, showRowSelector: false}' style="height: 100%;"></div>
 </div>
 
 <div style="height: 10px;"></div>
@@ -107,7 +107,7 @@
                 },
                 columns: [
                     {key: "b", label: "필드B", align: "center"},
-                    {key: "saleDt", label: "판매일자", align: "center"},
+                    {key: "saleDt", label: "판매일자", width: "*", align: "center"},
                     {key: "customer", label: "고객명"},
                     {key: "saleType", label: "판매타입"}
                 ]

@@ -1456,7 +1456,8 @@
                 return d;
             }
             else {
-                if (cond["add"]) {
+
+                if ("add" in cond) {
                     d = (function (_d, opts) {
                         var
                             yy, mm, dd, mxdd,
@@ -1478,13 +1479,37 @@
                         else if (typeof opts["y"] !== "undefined") {
                             _d.setTime(_d.getTime() + ((opts["y"] * 365) * DyMilli));
                         }
-                        else {
-                            _d.setTime(_d.getTime() + (opts["y"] * DyMilli));
-                        }
                         return _d;
                     })(new Date(d), cond["add"]);
                 }
-                if (cond["return"]) {
+
+                if ("set" in cond) {
+                    d = (function (_d, opts) {
+                        var
+                            yy, mm, dd,
+                            processor = {
+                                "firstDayOfMonth": function (date) {
+                                    yy = date.getFullYear();
+                                    mm = date.getMonth();
+                                    dd = 1;
+                                    return new Date(yy, mm, dd, 12);
+                                },
+                                "lastDayOfMonth": function (date) {
+                                    yy = date.getFullYear();
+                                    mm = date.getMonth();
+                                    dd = daysOfMonth(yy, mm);
+                                    return new Date(yy, mm, dd, 12);
+                                }
+                            };
+                        if (opts in processor) {
+                            return processor[opts](_d);
+                        } else {
+                            return _d;
+                        }
+                    })(new Date(d), cond["set"]);
+                }
+
+                if ("return" in cond) {
                     return (function () {
                         var fStr = cond["return"], nY, nM, nD, nH, nMM, nS, nDW;
 
@@ -2049,6 +2074,70 @@
             return obj;
         }
 
+        /**
+         * HTML 문자열을 escape 처리합니다.
+         * "&lt;" represents the < sign.
+         * "&gt;" represents the > sign.
+         * "&amp;" represents the & sign.
+         * "&quot; represents the " mark.
+         * [Character entity references](https://www.w3.org/TR/html401/charset.html#h-5.3)
+         * @param {String} s
+         * @returns {string}
+         * @example
+         * ```
+         * ax5.util.escapeHtml('HTML <span>string</span> & "escape"')
+         * //"HTML &lt;span&gt;string&lt;/span&gt; &amp; &quot;escape&quot;"
+         * ```
+         */
+        function escapeHtml(s) {
+            if (_toString.call(s) != "[object String]") return s;
+            if (!s) return "";
+            return s.replace(/[\<\>\&\"]/gm, function(match){
+                switch (match) {
+                    case "<":
+                        return "&lt;";
+                    case ">":
+                        return "&gt;";
+                    case "&":
+                        return "&amp;";
+                    case "\"":
+                        return "&quot;";
+                    default:
+                        return match;
+                }
+            });
+        }
+
+        /**
+         * HTML 문자열을 unescape 처리합니다.
+         * escapeHtml를 참고하세요.
+         * @param {String} s
+         * @returns {string}
+         * @example
+         * ```
+         * ax5.util.unescapeHtml('HTML &lt;span&gt;string&lt;/span&gt; &amp; &quot;escape&quot;')
+         * //"HTML <span>string</span> & "escape""
+         * ```
+         */
+        function unescapeHtml(s) {
+            if (_toString.call(s) != "[object String]") return s;
+            if (!s) return "";
+            return s.replace(/(&lt;)|(&gt;)|(&amp;)|(&quot;)/gm, function(match){
+                switch (match) {
+                    case "&lt;":
+                        return "<";
+                    case "&gt;":
+                        return ">";
+                    case "&amp;":
+                        return "&";
+                    case "&quot;":
+                        return "\"";
+                    default:
+                        return match;
+                }
+            });
+        }
+
         return {
             alert: alert,
             each: each,
@@ -2100,7 +2189,9 @@
             isDateFormat: isDateFormat,
             stopEvent: stopEvent,
             selectRange: selectRange,
-            debounce: debounce
+            debounce: debounce,
+            escapeHtml: escapeHtml,
+            unescapeHtml: unescapeHtml
         }
     })();
 

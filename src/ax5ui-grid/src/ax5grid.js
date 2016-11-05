@@ -247,7 +247,12 @@
                 },
                 resetColGroupWidth = function () {
                     /// !! 그리드 target의 크기가 변경되면 이 함수를 호출하려 this.colGroup의 _width 값을 재 계산 하여야 함. [tom]
-                    var CT_WIDTH = this.$["container"]["root"].width();
+                    var CT_WIDTH = this.$["container"]["root"].width() - (function () {
+                        var width = 0;
+                        if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
+                        if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
+                        return width;
+                    })();
                     var totalWidth = 0;
                     var computedWidth;
                     var autoWidthColgroupIndexs = [];
@@ -816,7 +821,8 @@
                                 self.keyDown("RETURN", {});
                             }
 
-                        } else {
+                        }
+                        else {
 
                             if (e.metaKey || e.ctrlKey) {
                                 if (e.which == 67) { // c
@@ -1327,7 +1333,7 @@
     GRID = ax5.ui.grid;
 })();
 
-
+// todo : rowSelecor header selectAll
 // todo : merge cells
 // todo : filter
 // todo : body menu

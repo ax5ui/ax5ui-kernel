@@ -88,7 +88,7 @@
                 mode: 'day', // day|month|year,
                 dateFormat: 'yyyy-MM-dd',
                 displayDate: (new Date()),
-                animateTime: 250,
+                animateTime: 100,
                 dimensions: {
                     controlHeight: '40',
                     controlButtonWidth: '40',
@@ -262,9 +262,9 @@
                                     thisDataLabel: cfg.lang.dayTmpl.replace('%s', loopDate.getDate()),
                                     itemStyles: U.css(itemStyles),
                                     addClass: (function () {
-                                        
+
                                         var classNames = "";
-                                                                                
+
                                         if (cfg.selectable) {
                                             if (self.selectableMap[thisDate]) {
                                                 classNames += ( loopDate.getMonth() == thisMonth ) ? " live" : "";
@@ -289,7 +289,7 @@
                                                 }
                                             }
                                         }
-                                        
+
                                         return classNames;
                                     })()
                                     + ' '
@@ -647,8 +647,7 @@
                     });
                     if (target) {
                         value = target.getAttribute("data-calendar-move");
-
-                        if (cfg.mode == "day") {
+                        if (cfg.mode == "day" || cfg.mode == "d") {
                             if (value == "left") {
                                 cfg.displayDate = U.date(cfg.displayDate, {add: {m: -1}});
                             }
@@ -657,7 +656,7 @@
                             }
                             printDay.call(this, cfg.displayDate);
                         }
-                        else if (cfg.mode == "month") {
+                        else if (cfg.mode == "month" || cfg.mode == "m") {
                             if (value == "left") {
                                 cfg.displayDate = U.date(cfg.displayDate, {add: {y: -1}});
                             }
@@ -666,7 +665,7 @@
                             }
                             printMonth.call(this, cfg.displayDate);
                         }
-                        else if (cfg.mode == "year") {
+                        else if (cfg.mode == "year" || cfg.mode == "y") {
                             if (value == "left") {
                                 cfg.displayDate = U.date(cfg.displayDate, {add: {y: -10}});
                             }
@@ -758,7 +757,7 @@
                 };
 
                 if (cfg.control) {
-                    this.$["control"].find('[data-calendar-move]').on(cfg.clickEventName, (function (e) {
+                    this.$["root"].on(cfg.clickEventName, '[data-calendar-move]', (function (e) {
                         move.call(this, e || window.event);
                     }).bind(this));
                 }

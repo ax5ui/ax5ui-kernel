@@ -13,11 +13,11 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="bower_components/ax5ui-mask/dist/ax5mask.min.js"></script>
-    <script src="bower_components/ax5ui-calendar/dist/ax5calendar.js"></script>
+    <script src="../../ax5ui-calendar/dist/ax5calendar.js"></script>
     <script src="bower_components/ax5ui-formatter/dist/ax5formatter.js"></script>
     <script src="../dist/ax5picker.js"></script>
 </head>
-<body style="padding: 0px;">
+<body style="padding: 10px;">
 
 <!--http://bootstrap-datepicker.readthedocs.org/en/latest/-->
 <!--http://www.sitepoint.com/pure-css3-speech-bubbles/-->
@@ -28,7 +28,7 @@
 
 <input type="text" class="form-control" data-picker-date="" placeholder="yyyy/mm/dd"/>
 
-<div class="form-group" data-ax5picker="date" style="position:absolute;bottom: 100px;left: 0;">
+<div class="form-group" data-ax5picker="date" style="">
     <div class="input-group">
         <input type="text" class="form-control" placeholder="yyyy/mm/dd"/>
         <span class="input-group-addon">~</span>
@@ -147,11 +147,7 @@
 
          return;
          */
-        var picker = new ax5.ui.picker({
-            onStateChanged: function () {
-                console.log(this);
-            }
-        });
+        var picker = new ax5.ui.picker({});
         /*
          picker.onStateChanged = function(){
          console.log(this);
@@ -159,10 +155,10 @@
          */
 
 
-        $('[data-picker-date]').on("change", function(){
-           console.log("change");
+        $('[data-picker-date]').on("change", function () {
+            console.log("change");
         });
-        
+
         picker.bind({
             target: $('[data-picker-date]'),
             direction: "auto",
@@ -172,6 +168,9 @@
                 formatter: {
                     pattern: 'date'
                 }
+            },
+            onStateChanged: function () {
+                console.log(this.values);
             }
         });
 
@@ -229,6 +228,16 @@
                             }
                         },
                         ok: {label: "확인", theme: "default"}
+                    },
+                    onStateChanged: function () {
+                        if (this.state == "changeValue") {
+                            if (this.item.content.type == "date" && this.values.length > 1) {
+                                console.log(this);
+                                if (this.inputIndex == 0) {
+
+                                }
+                            }
+                        }
                     }
                 });
             }
