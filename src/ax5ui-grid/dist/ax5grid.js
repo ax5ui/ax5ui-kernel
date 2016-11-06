@@ -3765,7 +3765,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         "off": function off() {
             this.$["resizer"]["horizontal"].removeClass("live");
             this.xvar.columnResizerLived = false;
-            this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+
+            if (typeof this.xvar.__da === "undefined") {} else {
+                this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+            }
 
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
@@ -3821,20 +3824,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     if (cfg.showLineNumber) {
                         _col = jQuery.extend({}, col, {
-                            key: "__index_header__",
-                            label: "&nbsp;",
                             width: cfg.lineNumberColumnWidth,
-                            _width: cfg.lineNumberColumnWidth
+                            _width: cfg.lineNumberColumnWidth,
+                            columnAttr: "lineNumber",
+                            key: "__index_header__", label: "&nbsp;"
                         });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
                         _col = jQuery.extend({}, col, {
-                            key: "__checkbox_header__",
-                            label: "",
                             width: cfg.rowSelectorColumnWidth,
-                            _width: cfg.rowSelectorColumnWidth
+                            _width: cfg.rowSelectorColumnWidth,
+                            columnAttr: "rowSelector",
+                            key: "__checkbox_header__", label: ""
                         });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
@@ -3849,7 +3852,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.headerData = dividedHeaderObj.rightData;
     };
 
-    var getFieldValue = function getFieldValue(_col, _colAlign) {
+    var getFieldValue = function getFieldValue(_col) {
         var cfg = this.config;
         var colGroup = this.colGroup;
         var _key = _col.key;
@@ -3857,31 +3860,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             '<': '&lt;',
             '>': '&gt;'
         };
-        var SS = [];
 
         if (_key === "__checkbox_header__") {
-            SS.push('<div class="checkBox"></div>');
+            return '<div class="checkBox"></div>';
         } else {
-            SS.push(function () {
-                var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
-                return '<span data-ax5grid-cellHolder="" ' + (_colAlign ? 'data-ax5grid-text-align="' + _colAlign + '"' : '') + ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
-            }(), function () {
-                var _SS = "";
-
-                if (!U.isNothing(_col.key) && !U.isNothing(_col.colIndex) && (cfg.sortable === true || _col.sortable === true) && _col.sortable !== false) {
-                    _SS += '<span data-ax5grid-column-sort="' + _col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[_col.colIndex].sort || "") + '" />';
-                }
-                return _SS;
-            }(), _col.label || "&nbsp;", '</span>');
-
-            if (!U.isNothing(_col.colIndex)) {
-                if (cfg.enableFilter) {
-                    SS.push('<span data-ax5grid-column-filter="' + _col.colIndex + '" data-ax5grid-column-filter-value=""  />');
-                }
-            }
+            return _col.label || "&nbsp;";
         }
-
-        return SS.join('');
     };
 
     var repaint = function repaint(_reset) {
@@ -3937,7 +3921,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         if (ci == cl - 1) tdCSS_class += "isLastColumn ";
                         return tdCSS_class;
                     }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
-                    SS.push(getFieldValue.call(this, col, colAlign));
+
+                    SS.push(function () {
+                        var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
+                        return '<span data-ax5grid-cellHolder="" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                    }(), function () {
+                        var _SS = "";
+
+                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && (cfg.sortable === true || col.sortable === true) && col.sortable !== false) {
+                            _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[col.colIndex].sort || "") + '" />';
+                        }
+                        return _SS;
+                    }(), getFieldValue.call(this, col), '</span>');
+
+                    if (!U.isNothing(col.colIndex)) {
+                        if (cfg.enableFilter) {
+                            SS.push('<span data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
+                        }
+                    }
+
                     SS.push('</td>');
                 }
                 SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'style="height: ' + cfg.header.columnHeight + 'px;min-height: 1px;" ', '></td>');
