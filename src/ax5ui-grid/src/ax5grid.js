@@ -209,7 +209,6 @@
                 initColumns = function (_columns) {
                     this.columns = U.deepCopy(_columns);
                     this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
-
                     this.xvar.frozenColumnIndex = (cfg.frozenColumnIndex > this.columns.length) ? this.columns.length : cfg.frozenColumnIndex;
 
                     this.bodyRowTable = GRID.util.makeBodyRowTable.call(this, this.columns);

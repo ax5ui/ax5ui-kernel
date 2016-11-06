@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.22"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -210,7 +210,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 initColumns = function initColumns(_columns) {
                 this.columns = U.deepCopy(_columns);
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
-
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex > this.columns.length ? this.columns.length : cfg.frozenColumnIndex;
 
                 this.bodyRowTable = GRID.util.makeBodyRowTable.call(this, this.columns);
@@ -1313,6 +1312,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
+// todo : rowSelecor header selectAll
 // todo : merge cells
 // todo : filter
 // todo : body menu
@@ -3815,13 +3815,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         label: "",
                         colspan: 1,
                         rowspan: dataTable.rows.length,
-                        key: "__dindex__",
                         colIndex: null
                     },
                         _col = {};
 
                     if (cfg.showLineNumber) {
                         _col = jQuery.extend({}, col, {
+                            key: "__index_header__",
                             label: "&nbsp;",
                             width: cfg.lineNumberColumnWidth,
                             _width: cfg.lineNumberColumnWidth
@@ -3831,6 +3831,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                     if (cfg.showRowSelector) {
                         _col = jQuery.extend({}, col, {
+                            key: "__checkbox_header__",
                             label: "",
                             width: cfg.rowSelectorColumnWidth,
                             _width: cfg.rowSelectorColumnWidth
@@ -3846,6 +3847,41 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }.call(this, this.headerTable);
         this.leftHeaderData = dividedHeaderObj.leftData;
         this.headerData = dividedHeaderObj.rightData;
+    };
+
+    var getFieldValue = function getFieldValue(_col, _colAlign) {
+        var cfg = this.config;
+        var colGroup = this.colGroup;
+        var _key = _col.key;
+        var tagsToReplace = {
+            '<': '&lt;',
+            '>': '&gt;'
+        };
+        var SS = [];
+
+        if (_key === "__checkbox_header__") {
+            SS.push('<div class="checkBox"></div>');
+        } else {
+            SS.push(function () {
+                var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
+                return '<span data-ax5grid-cellHolder="" ' + (_colAlign ? 'data-ax5grid-text-align="' + _colAlign + '"' : '') + ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+            }(), function () {
+                var _SS = "";
+
+                if (!U.isNothing(_col.key) && !U.isNothing(_col.colIndex) && (cfg.sortable === true || _col.sortable === true) && _col.sortable !== false) {
+                    _SS += '<span data-ax5grid-column-sort="' + _col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[_col.colIndex].sort || "") + '" />';
+                }
+                return _SS;
+            }(), _col.label || "&nbsp;", '</span>');
+
+            if (!U.isNothing(_col.colIndex)) {
+                if (cfg.enableFilter) {
+                    SS.push('<span data-ax5grid-column-filter="' + _col.colIndex + '" data-ax5grid-column-filter-value=""  />');
+                }
+            }
+        }
+
+        return SS.join('');
     };
 
     var repaint = function repaint(_reset) {
@@ -3901,25 +3937,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         if (ci == cl - 1) tdCSS_class += "isLastColumn ";
                         return tdCSS_class;
                     }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
-
-                    SS.push(function () {
-                        var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
-                        return '<span data-ax5grid-cellHolder="" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
-                    }(), function () {
-                        var _SS = "";
-
-                        if (!U.isNothing(col.key) && !U.isNothing(col.colIndex) && (cfg.sortable === true || col.sortable === true) && col.sortable !== false) {
-                            _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[col.colIndex].sort || "") + '" />';
-                        }
-                        return _SS;
-                    }(), col.label || "&nbsp;", '</span>');
-
-                    if (!U.isNothing(col.colIndex)) {
-                        if (cfg.enableFilter) {
-                            SS.push('<span data-ax5grid-column-filter="' + col.colIndex + '" data-ax5grid-column-filter-value=""  />');
-                        }
-                    }
-
+                    SS.push(getFieldValue.call(this, col, colAlign));
                     SS.push('</td>');
                 }
                 SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'style="height: ' + cfg.header.columnHeight + 'px;min-height: 1px;" ', '></td>');
@@ -3948,13 +3966,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         if (cfg.asidePanelWidth > 0) {
-            repaintHeader(this.$.panel["aside-header"], this.asideColGroup, asideHeaderData);
+            repaintHeader.call(this, this.$.panel["aside-header"], this.asideColGroup, asideHeaderData);
         }
-
         if (cfg.frozenColumnIndex > 0) {
-            repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
+            repaintHeader.call(this, this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
-        this.xvar.scrollContentWidth = repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
+        this.xvar.scrollContentWidth = repaintHeader.call(this, this.$.panel["header-scroll"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {}
     };
