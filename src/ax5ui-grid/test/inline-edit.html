@@ -55,6 +55,15 @@
     <button class="btn btn-default" data-grid-control="column-remove">column remove</button>
     <button class="btn btn-default" data-grid-control="column-update">column update</button>
 </div>
+<div style="padding: 10px;">
+    <button class="btn btn-default" data-grid-control="select-row-toggle">toggle select list[0]</button>
+    <button class="btn btn-default" data-grid-control="select-row-true">select list[0]</button>
+    <button class="btn btn-default" data-grid-control="select-row-false">deselect list[0]</button>
+
+    <button class="btn btn-default" data-grid-control="select-all-toggle">toggle selectAll</button>
+    <button class="btn btn-default" data-grid-control="select-all-true">select selectAll</button>
+    <button class="btn btn-default" data-grid-control="select-all-false">deselect selectAll</button>
+</div>
 
 <div style="height: 10px;"></div>
 
@@ -279,6 +288,24 @@
                     break;
                 case "column-update":
                     firstGrid.updateColumn({key: "b", label: "필드B"}, 0);
+                    break;
+                case "select-row-toggle":
+                firstGrid.select(0);
+                break;
+                case "select-row-true":
+                    firstGrid.select(0, {selected: true});
+                    break;
+                case "select-row-false":
+                    firstGrid.select(0, {selected: false});
+                    break;
+                case "select-all-toggle":
+                    firstGrid.selectAll();
+                    break;
+                case "select-all-true":
+                    firstGrid.selectAll({selected: true});
+                    break;
+                case "select-all-false":
+                    firstGrid.selectAll({selected: false});
                     break;
             }
         });

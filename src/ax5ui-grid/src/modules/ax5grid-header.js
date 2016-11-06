@@ -82,11 +82,23 @@
             var colIndex = this.getAttribute("data-ax5grid-column-colindex");
             var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
             var col = self.colGroup[colIndex];
-            if (key && col) {
-                if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
-                    if (!col.sortFixed) toggleSort.call(self, col.key);
+
+            if(key === "__checkbox_header__"){
+                var selected = this.getAttribute("data-ax5grid-selected");
+                    selected = (U.isNothing(selected)) ? true : (selected === "true") ? false: true;
+
+                $(this).attr("data-ax5grid-selected", selected);
+                self.selectAll({selected: selected});
+            }
+            else{
+                if (key && col) {
+                    console.log(key, col);
+                    if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
+                        if (!col.sortFixed) toggleSort.call(self, col.key);
+                    }
                 }
             }
+
             GRID.body.blur.call(self);
         });
         this.$["container"]["header"]
@@ -354,6 +366,11 @@
             }
         }
         return this;
+    };
+
+    var select = function(_options){
+        GRID.data.select.call(this, dindex, _options && _options.selected);
+        GRID.body.updateRowState.call(this, ["selected"], dindex);
     };
 
     GRID.header = {
