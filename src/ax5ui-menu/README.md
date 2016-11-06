@@ -1,5 +1,5 @@
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj)
-![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+[![npm version](https://badge.fury.io/js/ax5ui-menu.svg)](https://badge.fury.io/js/ax5ui-menu)
+
 
 # ax5ui-menu
 "menu" displays a list of items in a hierarchical structure.
@@ -80,3 +80,7 @@ $(document).bind("contextmenu", function (e) {
 - [See Demonstration](http://ax5.io/ax5ui-menu/demo/index.html)
 
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
+
+
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj)
+![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)

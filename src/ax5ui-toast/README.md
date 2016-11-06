@@ -1,4 +1,4 @@
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+[![npm version](https://badge.fury.io/js/ax5ui-toast.svg)](https://badge.fury.io/js/ax5ui-toast)
 
 # ax5ui-toast
 "toast" provides feedbacks about an operation in a temporary popup.
@@ -74,3 +74,6 @@ myToast.push('Toast message');
 - [See Demonstration](http://ax5.io/ax5ui-toast/demo/index.html)
 
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
+
+
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)

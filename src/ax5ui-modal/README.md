@@ -1,4 +1,4 @@
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+[![npm version](https://badge.fury.io/js/ax5ui-modal.svg)](https://badge.fury.io/js/ax5ui-modal)
 
 # ax5ui-modal
 "modal" to display content on a secondary window which disables interactions with the main view.
@@ -74,3 +74,6 @@ modal.open();
 - [See Demonstration](http://ax5.io/ax5ui-modal/demo/index.html)
 
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
+
+
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)

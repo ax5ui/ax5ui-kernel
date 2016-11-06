@@ -1,5 +1,4 @@
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj)
-![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+[![npm version](https://badge.fury.io/js/ax5ui-picker.svg)](https://badge.fury.io/js/ax5ui-picker)
 
 # ax5ui-picker
 "picker" provides users a simple way to select a single value from a pre-determined set of values.
@@ -95,3 +94,6 @@ picker.bind({
 - [See Demonstration](http://ax5.io/ax5ui-picker/demo/index.html)
 
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
+
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj)
+![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
