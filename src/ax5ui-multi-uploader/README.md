@@ -1,4 +1,4 @@
-[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+[![npm version](https://badge.fury.io/js/ax5ui-ax5ui-multi-uploader.svg)](https://badge.fury.io/js/ax5ui-multi-uploader)
 
 # ax5ui-uploader
 "uploader" allows users to upload single or multiple files with item selection.
@@ -67,3 +67,5 @@ https://cdn.rawgit.com/ax5ui/ax5ui-uploader/master/dist/ax5uploader.min.js
 - [See Demonstration](http://ax5.io/ax5ui-uploader/demo/index.html)
 
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
+
+[![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) ![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)

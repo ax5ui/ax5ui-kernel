@@ -12,17 +12,18 @@
     * [.setData(_data)](#ax5grid.setData) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.getList(_type)](#ax5grid.getList) ⇒ <code>Array</code>
     * [.setHeight(_height)](#ax5grid.setHeight) ⇒ <code>[ax5grid](#ax5grid)</code>
-    * [.addRow(_row, [_dindex])](#ax5grid.addRow) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.addRow(_row, [_dindex], [_options])](#ax5grid.addRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.removeRow([_dindex])](#ax5grid.removeRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateRow(_row, _dindex)](#ax5grid.updateRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.deleteRow(_dindex)](#ax5grid.deleteRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.addColumn(_column, [_cindex])](#ax5grid.addColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.removeCloumn([_cindex])](#ax5grid.removeCloumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateColumn(_column, _cindex)](#ax5grid.updateColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
-    * [.setColumnWidth(_width, _cindex)](#ax5grid.setColumnWidth)
-    * [.getColumnSort()](#ax5grid.getColumnSort) ⇒ <code>Object</code>
+    * [.setColumnWidth(_width, _cindex)](#ax5grid.setColumnWidth) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.getColumnSortInfo()](#ax5grid.getColumnSortInfo) ⇒ <code>Object</code>
     * [.setColumnSort(_sortInfo)](#ax5grid.setColumnSort) ⇒ <code>[ax5grid](#ax5grid)</code>
-    * [.select(_selectObject)](#ax5grid.select) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.select(_selectObject, _options)](#ax5grid.select) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.selectAll(_options)](#ax5grid.selectAll) ⇒ <code>[ax5grid](#ax5grid)</code>
 
 <a name="ax5grid.setConfig"></a>
 
@@ -39,13 +40,13 @@ Preferences of grid UI
 | [_config.frozenRowIndex] | <code>Number</code> | <code>0</code> |  |
 | [_config.showLineNumber] | <code>Boolean</code> | <code>false</code> |  |
 | [_config.showRowSelector] | <code>Boolean</code> | <code>false</code> |  |
-| [_config.multipleSelect] | <code>Boolean</code> | <code>false</code> |  |
+| [_config.multipleSelect] | <code>Boolean</code> | <code>true</code> |  |
 | [_config.columnMinWidth] | <code>Number</code> | <code>100</code> |  |
 | [_config.lineNumberColumnWidth] | <code>Number</code> | <code>30</code> |  |
 | [_config.rowSelectorColumnWidth] | <code>Number</code> | <code>25</code> |  |
 | [_config.sortable] | <code>Boolean</code> | <code>false</code> |  |
 | [_config.multiSort] | <code>Boolean</code> | <code>false</code> |  |
-| [_config.remoteSort] | <code>Boolean</code> | <code>false</code> |  |
+| [_config.remoteSort] | <code>function</code> | <code>false</code> |  |
 | [_config.header] | <code>Object</code> |  |  |
 | [_config.header.align] | <code>String</code> |  |  |
 | [_config.header.columnHeight] | <code>Number</code> | <code>25</code> |  |
@@ -126,10 +127,10 @@ var gridView = {
                 {key: "b", label: "필드B", align: "center"},
                 {
                     key: undefined, label: "필드C", columns: [
-                    {key: "price", label: "단가", formatter: "money", align: "right"},
-                    {key: "amount", label: "수량", formatter: "money", align: "right"},
-                    {key: "cost", label: "금액", align: "right", formatter: "money"}
-                ]
+                        {key: "price", label: "단가", formatter: "money", align: "right"},
+                        {key: "amount", label: "수량", formatter: "money", align: "right"},
+                        {key: "cost", label: "금액", align: "right", formatter: "money"}
+                    ]
                 },
                 {key: "saleDt", label: "판매일자", align: "center"},
                 {key: "customer", label: "고객명"},
@@ -221,13 +222,15 @@ ax5Grid.setHeight(height);
 ```
 <a name="ax5grid.addRow"></a>
 
-### ax5grid.addRow(_row, [_dindex]) ⇒ <code>[ax5grid](#ax5grid)</code>
+### ax5grid.addRow(_row, [_dindex], [_options]) ⇒ <code>[ax5grid](#ax5grid)</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 
-| Param | Type | Default |
-| --- | --- | --- |
-| _row | <code>Object</code> |  | 
-| [_dindex] | <code>Number</code> &#124; <code>String</code> | <code>last</code> | 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| _row | <code>Object</code> |  |  |
+| [_dindex] | <code>Number</code> &#124; <code>String</code> | <code>last</code> |  |
+| [_options] | <code>Object</code> |  | options of addRow |
+| [_options.sort] | <code>Boolean</code> |  | sortData |
 
 **Example**  
 ```js
@@ -306,17 +309,17 @@ ax5Grid.deleteRow("selected");
 
 <a name="ax5grid.setColumnWidth"></a>
 
-### ax5grid.setColumnWidth(_width, _cindex)
+### ax5grid.setColumnWidth(_width, _cindex) ⇒ <code>[ax5grid](#ax5grid)</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 
-| Param |
-| --- |
-| _width | 
-| _cindex | 
+| Param | Type |
+| --- | --- |
+| _width | <code>Number</code> | 
+| _cindex | <code>Number</code> | 
 
-<a name="ax5grid.getColumnSort"></a>
+<a name="ax5grid.getColumnSortInfo"></a>
 
-### ax5grid.getColumnSort() ⇒ <code>Object</code>
+### ax5grid.getColumnSortInfo() ⇒ <code>Object</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 **Returns**: <code>Object</code> - sortInfo  
 <a name="ax5grid.setColumnSort"></a>
@@ -337,7 +340,7 @@ ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
 ```
 <a name="ax5grid.select"></a>
 
-### ax5grid.select(_selectObject) ⇒ <code>[ax5grid](#ax5grid)</code>
+### ax5grid.select(_selectObject, _options) ⇒ <code>[ax5grid](#ax5grid)</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 
 | Param | Type | Description |
@@ -346,4 +349,29 @@ ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
 | _selectObject.index | <code>Number</code> | index of row |
 | _selectObject.rowIndex | <code>Number</code> | rowIndex of columns |
 | _selectObject.conIndex | <code>Number</code> | colIndex of columns |
+| _options | <code>Object</code> |  |
+| _options.selectedClear | <code>Boolean</code> |  |
+| _options.selected | <code>Boolean</code> |  |
 
+**Example**  
+```js
+firstGrid.select(0);
+firstGrid.select(0, {selected: true});
+firstGrid.select(0, {selected: false});
+```
+<a name="ax5grid.selectAll"></a>
+
+### ax5grid.selectAll(_options) ⇒ <code>[ax5grid](#ax5grid)</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param | Type |
+| --- | --- |
+| _options | <code>Object</code> | 
+| _options.selected | <code>Boolean</code> | 
+
+**Example**  
+```js
+firstGrid.selectAll();
+firstGrid.selectAll({selected: true});
+firstGrid.selectAll({selected: false});
+```

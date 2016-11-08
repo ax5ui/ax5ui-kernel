@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.22"
+        version: "1.3.24"
     }, function () {
         /**
          * @class ax5grid
@@ -210,7 +210,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 initColumns = function initColumns(_columns) {
                 this.columns = U.deepCopy(_columns);
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
-
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex > this.columns.length ? this.columns.length : cfg.frozenColumnIndex;
 
                 this.bodyRowTable = GRID.util.makeBodyRowTable.call(this, this.columns);
@@ -1274,7 +1273,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Number} _selectObject.rowIndex - rowIndex of columns
              * @param {Number} _selectObject.conIndex - colIndex of columns
              * @param {Object} _options
+             * @param {Boolean} _options.selectedClear
+             * @param {Boolean} _options.selected
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.select(0);
+             * firstGrid.select(0, {selected: true});
+             * firstGrid.select(0, {selected: false});
+             * ```
              */
             this.select = function (_selectObject, _options) {
                 if (U.isNumber(_selectObject)) {
@@ -1290,10 +1297,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     }
 
-                    GRID.data.select.call(this, dindex);
+                    GRID.data.select.call(this, dindex, _options && _options.selected);
                     GRID.body.updateRowState.call(this, ["selected"], dindex);
                 }
+                return this;
+            };
 
+            /**
+             * @method ax5grid.selectAll
+             * @param {Object} _options
+             * @param {Boolean} _options.selected
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.selectAll();
+             * firstGrid.selectAll({selected: true});
+             * firstGrid.selectAll({selected: false});
+             * ```
+             */
+            this.selectAll = function (_options) {
+                GRID.data.selectAll.call(this, _options && _options.selected);
+                GRID.body.updateRowStateAll.call(this, ["selected"]);
                 return this;
             };
 
@@ -1313,7 +1337,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
-// todo : rowSelecor header selectAll
 // todo : merge cells
 // todo : filter
 // todo : body menu
@@ -1534,6 +1557,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
             processor[_state].call(self, _dindex, _data);
+        });
+    };
+
+    var updateRowStateAll = function updateRowStateAll(_states, _data) {
+        var self = this;
+        var cfg = this.config;
+
+        var processor = {
+            "selected": function selected(_dindex) {
+                GRID.body.repaint.call(this, true);
+            }
+        };
+        _states.forEach(function (_state) {
+            if (!processor[_state]) throw 'invaild state name';
+            processor[_state].call(self, _data);
         });
     };
 
@@ -3230,6 +3268,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         repaintCell: repaintCell,
         repaintRow: repaintRow,
         updateRowState: updateRowState,
+        updateRowStateAll: updateRowStateAll,
         scrollTo: scrollTo,
         blur: blur,
         moveFocus: moveFocus,
@@ -3644,6 +3683,36 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return this.list[_dindex][cfg.columnKeys.selected];
     };
 
+    var selectAll = function selectAll(_selected, _options) {
+        var cfg = this.config;
+
+        var dindex = this.list.length;
+        if (typeof _selected === "undefined") {
+            while (dindex--) {
+                if (this.list[dindex].__isGrouping) continue;
+                if (this.list[dindex][cfg.columnKeys.selected] = !this.list[dindex][cfg.columnKeys.selected]) {
+                    this.selectedDataIndexs.push(dindex);
+                }
+            }
+        } else {
+            while (dindex--) {
+                if (this.list[dindex].__isGrouping) continue;
+                if (this.list[dindex][cfg.columnKeys.selected] = _selected) {
+                    this.selectedDataIndexs.push(dindex);
+                }
+            }
+        }
+
+        if (this.onDataChanged && _options && _options.internalCall) {
+            this.onDataChanged.call({
+                self: this,
+                list: this.list
+            });
+        }
+
+        return this.list;
+    };
+
     var sort = function sort(_sortInfo, _list) {
         var self = this;
         var list = _list || this.list;
@@ -3695,6 +3764,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         getValue: getValue,
         clearSelect: clearSelect,
         select: select,
+        selectAll: selectAll,
         add: add,
         remove: remove,
         deleteRow: deleteRow,
@@ -3766,7 +3836,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         "off": function off() {
             this.$["resizer"]["horizontal"].removeClass("live");
             this.xvar.columnResizerLived = false;
-            this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+
+            if (typeof this.xvar.__da === "undefined") {} else {
+                this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+            }
 
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
@@ -3783,11 +3856,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var colIndex = this.getAttribute("data-ax5grid-column-colindex");
             var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
             var col = self.colGroup[colIndex];
-            if (key && col) {
-                if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
-                    if (!col.sortFixed) toggleSort.call(self, col.key);
+
+            if (key === "__checkbox_header__") {
+                var selected = this.getAttribute("data-ax5grid-selected");
+                selected = U.isNothing(selected) ? true : selected === "true" ? false : true;
+
+                $(this).attr("data-ax5grid-selected", selected);
+                self.selectAll({ selected: selected });
+            } else {
+                if (key && col) {
+                    console.log(key, col);
+                    if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
+                        if (!col.sortFixed) toggleSort.call(self, col.key);
+                    }
                 }
             }
+
             GRID.body.blur.call(self);
         });
         this.$["container"]["header"].on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
@@ -3816,25 +3900,26 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         label: "",
                         colspan: 1,
                         rowspan: dataTable.rows.length,
-                        key: "__dindex__",
                         colIndex: null
                     },
                         _col = {};
 
                     if (cfg.showLineNumber) {
                         _col = jQuery.extend({}, col, {
-                            label: "&nbsp;",
                             width: cfg.lineNumberColumnWidth,
-                            _width: cfg.lineNumberColumnWidth
+                            _width: cfg.lineNumberColumnWidth,
+                            columnAttr: "lineNumber",
+                            key: "__index_header__", label: "&nbsp;"
                         });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
                         _col = jQuery.extend({}, col, {
-                            label: "",
                             width: cfg.rowSelectorColumnWidth,
-                            _width: cfg.rowSelectorColumnWidth
+                            _width: cfg.rowSelectorColumnWidth,
+                            columnAttr: "rowSelector",
+                            key: "__checkbox_header__", label: ""
                         });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
@@ -3847,6 +3932,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }.call(this, this.headerTable);
         this.leftHeaderData = dividedHeaderObj.leftData;
         this.headerData = dividedHeaderObj.rightData;
+    };
+
+    var getFieldValue = function getFieldValue(_col) {
+        var cfg = this.config;
+        var colGroup = this.colGroup;
+        var _key = _col.key;
+        var tagsToReplace = {
+            '<': '&lt;',
+            '>': '&gt;'
+        };
+
+        if (_key === "__checkbox_header__") {
+            return '<div class="checkBox"></div>';
+        } else {
+            return _col.label || "&nbsp;";
+        }
     };
 
     var repaint = function repaint(_reset) {
@@ -3913,7 +4014,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[col.colIndex].sort || "") + '" />';
                         }
                         return _SS;
-                    }(), col.label || "&nbsp;", '</span>');
+                    }(), getFieldValue.call(this, col), '</span>');
 
                     if (!U.isNothing(col.colIndex)) {
                         if (cfg.enableFilter) {
@@ -3949,13 +4050,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         if (cfg.asidePanelWidth > 0) {
-            repaintHeader(this.$.panel["aside-header"], this.asideColGroup, asideHeaderData);
+            repaintHeader.call(this, this.$.panel["aside-header"], this.asideColGroup, asideHeaderData);
         }
-
         if (cfg.frozenColumnIndex > 0) {
-            repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
+            repaintHeader.call(this, this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
-        this.xvar.scrollContentWidth = repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
+        this.xvar.scrollContentWidth = repaintHeader.call(this, this.$.panel["header-scroll"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {}
     };
@@ -4016,6 +4116,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
         return this;
+    };
+
+    var select = function select(_options) {
+        GRID.data.select.call(this, dindex, _options && _options.selected);
+        GRID.body.updateRowState.call(this, ["selected"], dindex);
     };
 
     GRID.header = {
