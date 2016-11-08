@@ -25,6 +25,13 @@
             }
     );
 
+    if (window.matchMedia("(min-width: 400px)").matches) {
+        /* the viewport is at least 400 pixels wide */
+        console.log("wide");
+    } else {
+        /* the viewport is less than 400 pixels wide */
+        console.log("400");
+    }
 
 
     console.log(ax5.util.toJson(rr));
