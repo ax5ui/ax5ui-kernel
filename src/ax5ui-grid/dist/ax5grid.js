@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.25"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1832,7 +1832,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
 
         if (_key === "__d-index__") {
-            return _index + 1;
+            return _item["__index"] + 1;
         } else if (_key === "__d-checkbox__") {
             return '<div class="checkBox"></div>';
         } else {
@@ -1910,9 +1910,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             _item[_col.colIndex] = value;
             return value;
         } else if (_key === "__d-index__") {
-            return _index + 1;
+            return '';
         } else if (_key === "__d-checkbox__") {
-            return '&nbsp;';
+            return '';
         } else {
             if (_col.collector) {
                 that = {
@@ -3338,6 +3338,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             l = _list.length;
         var returnList = [];
         var appendIndex = 0;
+        var dataRealRowCount;
 
         if (this.config.body.grouping) {
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
@@ -3386,6 +3387,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         if (_list[i][this.config.columnKeys.selected]) {
                             this.selectedDataIndexs.push(i);
                         }
+                        dataRealRowCount = _list[i]["__index"] = i;
                         returnList.push(_list[i]);
                         appendIndex++;
                     }
@@ -3396,14 +3398,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
                     this.deletedList.push(_list[i]);
                 } else if (_list[i]) {
+
                     if (_list[i][this.config.columnKeys.selected]) {
                         this.selectedDataIndexs.push(i);
                     }
+                    // __index변수를 추가하여 lineNumber 에 출력합니다. (body getFieldValue 에서 출력함)
+                    dataRealRowCount = _list[i]["__index"] = i;
                     returnList.push(_list[i]);
                 }
             }
         }
 
+        // 원본 데이터의 갯수
+        // grouping은 제외하고 수집됨.
+        this.xvar.dataRealRowCount = dataRealRowCount + 1;
         return returnList;
     };
 
@@ -4432,7 +4440,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
             fromRowIndex: U.number(fromRowIndex + 1, { "money": true }),
             toRowIndex: U.number(toRowIndex, { "money": true }),
-            totalElements: U.number(totalElements, { "money": true })
+            totalElements: U.number(totalElements, { "money": true }),
+            dataRowCount: totalElements !== this.xvar.dataRealRowCount ? this.xvar.dataRealRowCount : false
         }));
     };
 
@@ -4911,7 +4920,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var page_status = function page_status() {
-        return "<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>";
+        return "<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}{{#dataRowCount}} ({{dataRowCount}}){{/dataRowCount}}</span>";
     };
 
     GRID.tmpl = {
