@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.26"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -4795,33 +4795,35 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
         this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
 
-        this.$["scroller"]["vertical-bar"].bind(GRID.util.ENM["mousedown"], function (e) {
+        this.$["scroller"]["vertical-bar"].on(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
             scrollBarMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical");
-        }.bind(this)).bind("dragstart", function (e) {
+        }.bind(this)).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
         });
-        this.$["scroller"]["vertical"].bind("click", function (e) {
-            if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "vertical") {
+
+        this.$["scroller"]["vertical"].on("click", function (e) {
+            if (e.target.getAttribute("data-ax5grid-scroller") == "vertical") {
                 scrollBarMover.click.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical", e);
             }
         }.bind(this));
 
-        this.$["scroller"]["horizontal-bar"].bind(GRID.util.ENM["mousedown"], function (e) {
+        this.$["scroller"]["horizontal-bar"].on(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
             scrollBarMover.on.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal");
-        }.bind(this)).bind("dragstart", function (e) {
+        }.bind(this)).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
         });
-        this.$["scroller"]["horizontal"].bind("click", function (e) {
-            if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "horizontal") {
+
+        this.$["scroller"]["horizontal"].on("click", function (e) {
+            if (e.target.getAttribute("data-ax5grid-scroller") == "horizontal") {
                 scrollBarMover.click.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal", e);
             }
         }.bind(this));
 
-        this.$["container"]["body"].bind('mousewheel DOMMouseScroll', function (e) {
+        this.$["container"]["body"].on('mousewheel DOMMouseScroll', function (e) {
             var E = e.originalEvent;
             var delta = { x: 0, y: 0 };
             if (E.detail) {
