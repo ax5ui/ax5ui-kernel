@@ -20,7 +20,7 @@
 <body style="padding: 20px;">
 
 <div style="position: relative;height:300px;" id="grid-parent">
-    <div data-ax5grid="first-grid" data-ax5grid-config='{showLineNumber: false, showRowSelector: false}' style="height: 100%;"></div>
+    <div data-ax5grid="first-grid" data-ax5grid-config='{showLineNumber: false, showRowSelector: true}' style="height: 100%;"></div>
 </div>
 
 <div style="height: 10px;"></div>
@@ -161,6 +161,13 @@
             firstGrid.setData(sampleData);
             secondGrid.setData(sampleData);
 
+            firstGrid.selectAll({
+                filter: function () {
+                    console.log(this);
+                    return this.b == "A01";
+                }
+            });
+
             return this;
         },
         setSortData: function (sortInfo) {
@@ -190,7 +197,7 @@
         $('[data-grid-control]').click(function () {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort:true});
+                    firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true});
                     break;
 
                 case "row-add2":
