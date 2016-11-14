@@ -86,10 +86,12 @@
                 sortable: true,
                 multiSort: true,
                 multipleSelect: false,
+                /*
                 remoteSort: function () {
                     console.log(JSON.stringify(this.sortInfo, null, '\t'));
                     gridView.setSortData(this.sortInfo);
                 },
+                */
                 body: {
                     onClick: function () {
                         this.self.select(this.dindex);
@@ -107,6 +109,7 @@
                 },
                 columns: [
                     {key: "b", label: "필드B", align: "center"},
+                    {key: "companyJson.대표자명", label: "대표자명", width: 100, align: "center"},
                     {key: "saleDt", label: "판매일자", width: "*", align: "center"},
                     {key: "customer", label: "고객명"},
                     {key: "saleType", label: "판매타입"}
@@ -163,7 +166,7 @@
 
             firstGrid.selectAll({
                 filter: function () {
-                    console.log(this);
+                    //console.log(this);
                     return this.b == "A01";
                 }
             });

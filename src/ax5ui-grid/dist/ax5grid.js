@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.29"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -3713,8 +3713,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var selectAll = function selectAll(_selected, _options) {
         var cfg = this.config;
 
-        console.log(_options);
-
         var dindex = this.list.length;
         if (typeof _selected === "undefined") {
             while (dindex--) {
@@ -3756,6 +3754,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var self = this;
         var list = _list || this.list;
         var sortInfoArray = [];
+        var getKeyValue = function getKeyValue(_item, _key, _value) {
+            if (/[\.\[\]]/.test(_key)) {
+                try {
+                    _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(_item);
+                } catch (e) {}
+            } else {
+                _value = _item[_key];
+            }
+            return _value;
+        };
 
         for (var k in _sortInfo) {
             sortInfoArray[_sortInfo[k].seq] = { key: k, order: _sortInfo[k].orderBy };
@@ -3768,10 +3776,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             l = sortInfoArray.length,
             _a_val,
             _b_val;
+
         list.sort(function (_a, _b) {
             for (i = 0; i < l; i++) {
-                _a_val = _a[sortInfoArray[i].key];
-                _b_val = _b[sortInfoArray[i].key];
+                _a_val = getKeyValue(_a, sortInfoArray[i].key);
+                _b_val = getKeyValue(_b, sortInfoArray[i].key);
+
                 if ((typeof _a_val === "undefined" ? "undefined" : _typeof(_a_val)) !== (typeof _b_val === "undefined" ? "undefined" : _typeof(_b_val))) {
                     _a_val = '' + _a_val;
                     _b_val = '' + _b_val;
@@ -3904,7 +3914,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 self.selectAll({ selected: selected });
             } else {
                 if (key && col) {
-                    console.log(key, col);
                     if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
                         if (!col.sortFixed) toggleSort.call(self, col.key);
                     }

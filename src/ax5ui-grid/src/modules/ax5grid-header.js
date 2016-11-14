@@ -92,7 +92,6 @@
             }
             else{
                 if (key && col) {
-                    console.log(key, col);
                     if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
                         if (!col.sortFixed) toggleSort.call(self, col.key);
                     }
