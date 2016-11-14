@@ -1360,6 +1360,25 @@
                 return this;
             };
 
+            this.exportExcel = function (_fileName) {
+                var table = ax5.mustache.render(GRID.tmpl.get("excel"), {
+                    columns: this.colGroup,
+                    list: this.list,
+                    grouping: cfg.body.grouping,
+                    footSum: cfg.footSum
+                });
+                
+                console.log({
+                    columns: this.colGroup,
+                    list: this.list,
+                    grouping: cfg.body.grouping,
+                    footSum: cfg.footSum
+                });
+                
+                GRID.excel.export.call(this, [table], _fileName);
+                return this;
+            };
+
             // 클래스 생성자
             this.main = (function () {
                 UI.grid_instance = UI.grid_instance || [];
@@ -1376,6 +1395,7 @@
     GRID = ax5.ui.grid;
 })();
 
+// todo : excel export
 // todo : merge cells
 // todo : filter
 // todo : body menu

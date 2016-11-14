@@ -52,7 +52,9 @@
     <button class="btn btn-default" data-grid-control="width-resize">width resize</button>
     <button class="btn btn-default" data-grid-control="delete-all">delete all</button>
 </div>
-
+<div style="padding: 5px;">
+    <button class="btn btn-default" data-grid-control="excel">Excel</button>
+</div>
 <script>
 
 
@@ -234,6 +236,12 @@
                     ax5.ui.grid_instance.forEach(function (g) {
                         g.align();
                     });
+
+                    break;
+
+                case "excel":
+
+                    firstGrid.exportExcel("myExcel.xls");
 
                     break;
             }
