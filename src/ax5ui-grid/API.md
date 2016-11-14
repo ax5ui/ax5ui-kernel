@@ -23,6 +23,7 @@
     * [.getColumnSortInfo()](#ax5grid.getColumnSortInfo) ⇒ <code>Object</code>
     * [.setColumnSort(_sortInfo)](#ax5grid.setColumnSort) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.select(_selectObject, _options)](#ax5grid.select) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.clearSelect()](#ax5grid.clearSelect) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.selectAll(_options)](#ax5grid.selectAll) ⇒ <code>[ax5grid](#ax5grid)</code>
 
 <a name="ax5grid.setConfig"></a>
@@ -359,6 +360,14 @@ firstGrid.select(0);
 firstGrid.select(0, {selected: true});
 firstGrid.select(0, {selected: false});
 ```
+<a name="ax5grid.clearSelect"></a>
+
+### ax5grid.clearSelect() ⇒ <code>[ax5grid](#ax5grid)</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+**Example**  
+```js
+firstGrid.clearSelect();
+```
 <a name="ax5grid.selectAll"></a>
 
 ### ax5grid.selectAll(_options) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -368,10 +377,17 @@ firstGrid.select(0, {selected: false});
 | --- | --- |
 | _options | <code>Object</code> | 
 | _options.selected | <code>Boolean</code> | 
+| _options.filter | <code>function</code> | 
 
 **Example**  
 ```js
 firstGrid.selectAll();
 firstGrid.selectAll({selected: true});
 firstGrid.selectAll({selected: false});
+firstGrid.selectAll({filter: function(){
+     return this["b"] == "A01";
+});
+firstGrid.selectAll({selected: true, filter: function(){
+     return this["b"] == "A01";
+});
 ```

@@ -73,4 +73,4 @@ ax5.util.date("20111111", {'return':'yyyy/MM/dd hh:mm:ss', add:{"d":1}} );
 If you have any questions, please refer to the following [gitHub](https://github.com/ax5ui/ax5ui-kernel)
 
 [![axisj-contributed](https://img.shields.io/badge/AXISJ.com-Contributed-green.svg)](https://github.com/axisj) 
-![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg)
+![](https://img.shields.io/badge/Seowoo-Mondo&Thomas-red.svg) 
