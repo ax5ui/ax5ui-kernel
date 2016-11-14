@@ -500,6 +500,7 @@
     };
 
     GRID.scroller = {
+        // 타이머
         moveout_timer: (new Date()).getTime(),
         init: init,
         resize: resize
