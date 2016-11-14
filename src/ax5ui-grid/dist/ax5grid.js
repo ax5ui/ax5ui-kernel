@@ -4576,6 +4576,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var scrollBarMover = {
         "click": function click(track, bar, type, e) {
 
+            // 마우스 무브 완료 타임과 클릭타임 차이가 20 보다 작으면 클릭이벤트 막기.
+            if (new Date().getTime() - GRID.scroller.moveout_timer < 20) {
+                return false;
+            }
+
             var self = this,
                 trackOffset = track.offset(),
                 barBox = {
@@ -4633,7 +4638,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
             GRID.body.scrollTo.call(self, scrollPositon);
         },
-        "on": function on(track, bar, type) {
+        "on": function on(track, bar, type, e) {
             var self = this,
                 barOffset = bar.position(),
                 barBox = {
@@ -4705,6 +4710,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
+
+            GRID.scroller.moveout_timer = new Date().getTime();
+
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
@@ -4837,7 +4845,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         this.$["scroller"]["vertical-bar"].on(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
-            scrollBarMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical");
+            scrollBarMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical", e);
         }.bind(this)).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
@@ -4851,7 +4859,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         this.$["scroller"]["horizontal-bar"].on(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
-            scrollBarMover.on.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal");
+            scrollBarMover.on.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal", e);
         }.bind(this)).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
@@ -4945,6 +4953,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     GRID.scroller = {
+        moveout_timer: new Date().getTime(),
         init: init,
         resize: resize
     };
