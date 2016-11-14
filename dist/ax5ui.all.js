@@ -53,7 +53,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.4";
+        var version = "1.3.29";
 
         /**
          * ax5 library path
@@ -1391,7 +1391,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (typeof cond === "undefined") {
                 return d;
             } else {
-                if (cond["add"]) {
+
+                if ("add" in cond) {
                     d = function (_d, opts) {
                         var yy,
                             mm,
@@ -1412,13 +1413,39 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             _d = new Date(yy, mm, dd, 12);
                         } else if (typeof opts["y"] !== "undefined") {
                             _d.setTime(_d.getTime() + opts["y"] * 365 * DyMilli);
-                        } else {
-                            _d.setTime(_d.getTime() + opts["y"] * DyMilli);
                         }
                         return _d;
                     }(new Date(d), cond["add"]);
                 }
-                if (cond["return"]) {
+
+                if ("set" in cond) {
+                    d = function (_d, opts) {
+                        var yy,
+                            mm,
+                            dd,
+                            processor = {
+                            "firstDayOfMonth": function firstDayOfMonth(date) {
+                                yy = date.getFullYear();
+                                mm = date.getMonth();
+                                dd = 1;
+                                return new Date(yy, mm, dd, 12);
+                            },
+                            "lastDayOfMonth": function lastDayOfMonth(date) {
+                                yy = date.getFullYear();
+                                mm = date.getMonth();
+                                dd = daysOfMonth(yy, mm);
+                                return new Date(yy, mm, dd, 12);
+                            }
+                        };
+                        if (opts in processor) {
+                            return processor[opts](_d);
+                        } else {
+                            return _d;
+                        }
+                    }(new Date(d), cond["set"]);
+                }
+
+                if ("return" in cond) {
                     return function () {
                         var fStr = cond["return"],
                             nY,
@@ -1972,6 +1999,70 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return obj;
         }
 
+        /**
+         * HTML 문자열을 escape 처리합니다.
+         * "&lt;" represents the < sign.
+         * "&gt;" represents the > sign.
+         * "&amp;" represents the & sign.
+         * "&quot; represents the " mark.
+         * [Character entity references](https://www.w3.org/TR/html401/charset.html#h-5.3)
+         * @param {String} s
+         * @returns {string}
+         * @example
+         * ```
+         * ax5.util.escapeHtml('HTML <span>string</span> & "escape"')
+         * //"HTML &lt;span&gt;string&lt;/span&gt; &amp; &quot;escape&quot;"
+         * ```
+         */
+        function escapeHtml(s) {
+            if (_toString.call(s) != "[object String]") return s;
+            if (!s) return "";
+            return s.replace(/[\<\>\&\"]/gm, function (match) {
+                switch (match) {
+                    case "<":
+                        return "&lt;";
+                    case ">":
+                        return "&gt;";
+                    case "&":
+                        return "&amp;";
+                    case "\"":
+                        return "&quot;";
+                    default:
+                        return match;
+                }
+            });
+        }
+
+        /**
+         * HTML 문자열을 unescape 처리합니다.
+         * escapeHtml를 참고하세요.
+         * @param {String} s
+         * @returns {string}
+         * @example
+         * ```
+         * ax5.util.unescapeHtml('HTML &lt;span&gt;string&lt;/span&gt; &amp; &quot;escape&quot;')
+         * //"HTML <span>string</span> & "escape""
+         * ```
+         */
+        function unescapeHtml(s) {
+            if (_toString.call(s) != "[object String]") return s;
+            if (!s) return "";
+            return s.replace(/(&lt;)|(&gt;)|(&amp;)|(&quot;)/gm, function (match) {
+                switch (match) {
+                    case "&lt;":
+                        return "<";
+                    case "&gt;":
+                        return ">";
+                    case "&amp;":
+                        return "&";
+                    case "&quot;":
+                        return "\"";
+                    default:
+                        return match;
+                }
+            });
+        }
+
         return {
             alert: alert,
             each: each,
@@ -2023,7 +2114,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             isDateFormat: isDateFormat,
             stopEvent: stopEvent,
             selectRange: selectRange,
-            debounce: debounce
+            debounce: debounce,
+            escapeHtml: escapeHtml,
+            unescapeHtml: unescapeHtml
         };
     }();
 
@@ -2334,6 +2427,138 @@ ax5.info.errorMsg["ax5combobox"] = {
             con[method] = con[method] || dummy;
         }
     })(window.console || {}); // Using `this` for web workers.
+
+
+    // Modernizr style test
+    if (!(window.webkitMatchMedia || window.mozMatchMedia || window.oMatchMedia || window.msMatchMedia || window.matchMedia)) {
+        var root = document.getElementsByTagName('html')[0];
+        root.className += ' no-matchmedia';
+    }
+
+    /*! matchMedia() polyfill - Test a CSS media type/query in JS. Authors & copyright (c) 2012: Scott Jehl, Paul Irish, Nicholas Zakas, David Knight. Dual MIT/BSD license */
+    window.matchMedia || (window.matchMedia = function () {
+        "use strict";
+
+        // For browsers that support matchMedium api such as IE 9 and webkit
+
+        var styleMedia = window.styleMedia || window.media;
+
+        // For those that don't support matchMedium
+        if (!styleMedia) {
+            var style = document.createElement('style'),
+                script = document.getElementsByTagName('script')[0],
+                info = null;
+
+            style.type = 'text/css';
+            style.id = 'matchmediajs-test';
+
+            script.parentNode.insertBefore(style, script);
+
+            // 'style.currentStyle' is used by IE <= 8 and 'window.getComputedStyle' for all other browsers
+            info = 'getComputedStyle' in window && window.getComputedStyle(style, null) || style.currentStyle;
+
+            styleMedia = {
+                matchMedium: function matchMedium(media) {
+                    var text = '@media ' + media + '{ #matchmediajs-test { width: 1px; } }';
+
+                    // 'style.styleSheet' is used by IE <= 8 and 'style.textContent' for all other browsers
+                    if (style.styleSheet) {
+                        style.styleSheet.cssText = text;
+                    } else {
+                        style.textContent = text;
+                    }
+
+                    // Test if media query is true or false
+                    return info.width === '1px';
+                }
+            };
+        }
+
+        return function (media) {
+            return {
+                matches: styleMedia.matchMedium(media || 'all'),
+                media: media || 'all'
+            };
+        };
+    }());
+
+    /*! matchMedia() polyfill addListener/removeListener extension. Author & copyright (c) 2012: Scott Jehl. Dual MIT/BSD license */
+    (function () {
+        // Bail out for browsers that have addListener support
+        if (window.matchMedia && window.matchMedia('all').addListener) {
+            return false;
+        }
+
+        var localMatchMedia = window.matchMedia,
+            hasMediaQueries = localMatchMedia('only all').matches,
+            isListening = false,
+            timeoutID = 0,
+            // setTimeout for debouncing 'handleChange'
+        queries = [],
+            // Contains each 'mql' and associated 'listeners' if 'addListener' is used
+        handleChange = function handleChange(evt) {
+            // Debounce
+            clearTimeout(timeoutID);
+
+            timeoutID = setTimeout(function () {
+                for (var i = 0, il = queries.length; i < il; i++) {
+                    var mql = queries[i].mql,
+                        listeners = queries[i].listeners || [],
+                        matches = localMatchMedia(mql.media).matches;
+
+                    // Update mql.matches value and call listeners
+                    // Fire listeners only if transitioning to or from matched state
+                    if (matches !== mql.matches) {
+                        mql.matches = matches;
+
+                        for (var j = 0, jl = listeners.length; j < jl; j++) {
+                            listeners[j].call(window, mql);
+                        }
+                    }
+                }
+            }, 30);
+        };
+
+        window.matchMedia = function (media) {
+            var mql = localMatchMedia(media),
+                listeners = [],
+                index = 0;
+
+            mql.addListener = function (listener) {
+                // Changes would not occur to css media type so return now (Affects IE <= 8)
+                if (!hasMediaQueries) {
+                    return;
+                }
+
+                // Set up 'resize' listener for browsers that support CSS3 media queries (Not for IE <= 8)
+                // There should only ever be 1 resize listener running for performance
+                if (!isListening) {
+                    isListening = true;
+                    window.addEventListener('resize', handleChange, true);
+                }
+
+                // Push object only if it has not been pushed already
+                if (index === 0) {
+                    index = queries.push({
+                        mql: mql,
+                        listeners: listeners
+                    });
+                }
+
+                listeners.push(listener);
+            };
+
+            mql.removeListener = function (listener) {
+                for (var i = 0, il = listeners.length; i < il; i++) {
+                    if (listeners[i] === listener) {
+                        listeners.splice(i, 1);
+                    }
+                }
+            };
+
+            return mql;
+        };
+    })();
 
     // extend innerWidth ..
     var html = document.getElementsByTagName('html')[0];
@@ -3093,7 +3318,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "dialog",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5dialog
@@ -3630,7 +3855,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "mask",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5mask
@@ -3959,7 +4184,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "toast",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5toast
@@ -4321,7 +4546,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "modal",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5modal
@@ -4726,6 +4951,25 @@ ax5.ui = function () {
 
                     setTimeout(function () {
                         if (this.activeModal) {
+
+                            // 프레임 제거
+                            var $iframe = this.$["iframe"]; // iframe jQuery Object
+                            if ($iframe) {
+                                var iframeObject = $iframe.get(0),
+                                    idoc = iframeObject.contentDocument ? iframeObject.contentDocument : iframeObject.contentWindow.document;
+
+                                try {
+                                    $(idoc.body).children().each(function () {
+                                        $(this).remove();
+                                    });
+                                } catch (e) {}
+                                idoc.innerHTML = "";
+                                $iframe.attr('src', 'about:blank').remove();
+
+                                // force garbarge collection for IE only
+                                window.CollectGarbage && window.CollectGarbage();
+                            }
+
                             this.activeModal.remove();
                             this.activeModal = null;
                         }
@@ -4920,6 +5164,7 @@ ax5.ui = function () {
 
     MODAL = ax5.ui.modal;
 })();
+
 // ax5.ui.modal.tmpl
 (function () {
     var MODAL = ax5.ui.modal;
@@ -4945,7 +5190,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "calendar",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
 
         /**
@@ -5020,10 +5265,11 @@ ax5.ui = function () {
             this.config = {
                 clickEventName: "click",
                 theme: 'default',
+                startOfWeek: 0,
                 mode: 'day', // day|month|year,
                 dateFormat: 'yyyy-MM-dd',
                 displayDate: new Date(),
-                animateTime: 250,
+                animateTime: 100,
                 dimensions: {
                     controlHeight: '40',
                     controlButtonWidth: '40',
@@ -5131,6 +5377,8 @@ ax5.ui = function () {
                     tableStartDate = function () {
                     var day = monthStratDate.getDay();
                     if (day == 0) day = 7;
+                    day -= cfg.startOfWeek;
+
                     try {
                         return U.date(monthStratDate, { add: { d: -day } });
                     } finally {
@@ -5142,6 +5390,7 @@ ax5.ui = function () {
                     itemStyles = {},
                     i,
                     k,
+                    _k,
                     frameWidth = this.$["body"].width(),
                     frameHeight = Math.floor(frameWidth * (6 / 7)),
                     // 1week = 7days, 1month = 6weeks
@@ -5161,6 +5410,10 @@ ax5.ui = function () {
                     list: []
                 };
 
+                if (cfg.startOfWeek) {
+                    data.weekNames = data.weekNames.concat(data.weekNames.slice(0, cfg.startOfWeek)).splice(cfg.startOfWeek);
+                }
+
                 data.weekNames.forEach(function (n) {
                     n.colHeadHeight = U.cssNumber(cfg.dimensions.colHeadHeight);
                 });
@@ -5170,6 +5423,7 @@ ax5.ui = function () {
                 while (i < 6) {
                     k = 0;
                     while (k < 7) {
+                        _k = (7 + (k - cfg.startOfWeek)) % 7;
                         var thisDate = '' + U.date(loopDate, { "return": cfg.dateFormat }),
                             _date = {
                             'row': i,
@@ -5179,15 +5433,33 @@ ax5.ui = function () {
                             thisDataLabel: cfg.lang.dayTmpl.replace('%s', loopDate.getDate()),
                             itemStyles: U.css(itemStyles),
                             addClass: function () {
+
+                                var classNames = "";
+
                                 if (cfg.selectable) {
                                     if (self.selectableMap[thisDate]) {
-                                        return loopDate.getMonth() == thisMonth ? "live" : "";
+                                        classNames += loopDate.getMonth() == thisMonth ? " live" : "";
                                     } else {
-                                        return "disable";
+                                        classNames += " disable";
                                     }
                                 } else {
-                                    return loopDate.getMonth() == thisMonth ? thisDate == U.date(_today, { "return": "yyyyMMdd" }) ? "focus" : "live" : "";
+                                    if (loopDate.getMonth() == thisMonth) {
+                                        if (thisDate == U.date(_today, { "return": "yyyyMMdd" })) {
+                                            classNames += " focus";
+                                        } else {
+                                            classNames += " live";
+                                        }
+
+                                        if (loopDate.getDay() == 0) {
+                                            classNames += " sunday";
+                                        }
+                                        if (loopDate.getDay() == 6) {
+                                            classNames += " saturday";
+                                        }
+                                    }
                                 }
+
+                                return classNames;
                             }() + ' ' + function () {
                                 return self.markerMap[thisDate] ? self.markerMap[thisDate].theme || cfg.defaultMarkerTheme : '';
                             }() + ' ' + function () {
@@ -5519,22 +5791,21 @@ ax5.ui = function () {
                 });
                 if (target) {
                     value = target.getAttribute("data-calendar-move");
-
-                    if (cfg.mode == "day") {
+                    if (cfg.mode == "day" || cfg.mode == "d") {
                         if (value == "left") {
                             cfg.displayDate = U.date(cfg.displayDate, { add: { m: -1 } });
                         } else {
                             cfg.displayDate = U.date(cfg.displayDate, { add: { m: 1 } });
                         }
                         printDay.call(this, cfg.displayDate);
-                    } else if (cfg.mode == "month") {
+                    } else if (cfg.mode == "month" || cfg.mode == "m") {
                         if (value == "left") {
                             cfg.displayDate = U.date(cfg.displayDate, { add: { y: -1 } });
                         } else {
                             cfg.displayDate = U.date(cfg.displayDate, { add: { y: 1 } });
                         }
                         printMonth.call(this, cfg.displayDate);
-                    } else if (cfg.mode == "year") {
+                    } else if (cfg.mode == "year" || cfg.mode == "y") {
                         if (value == "left") {
                             cfg.displayDate = U.date(cfg.displayDate, { add: { y: -10 } });
                         } else {
@@ -5625,7 +5896,7 @@ ax5.ui = function () {
                 };
 
                 if (cfg.control) {
-                    this.$["control"].find('[data-calendar-move]').on(cfg.clickEventName, function (e) {
+                    this.$["root"].on(cfg.clickEventName, '[data-calendar-move]', function (e) {
                         move.call(this, e || window.event);
                     }.bind(this));
                 }
@@ -5980,7 +6251,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "picker",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5picker
@@ -6026,6 +6297,7 @@ ax5.ui = function () {
                 },
                 animateTime: 100,
                 calendar: {
+                    multipleSelect: false,
                     control: {
                         left: ax5.def.picker.date_leftArrow || '&#x02190',
                         yearTmpl: ax5.def.picker.date_yearTmpl || '%s',
@@ -6264,6 +6536,8 @@ ax5.ui = function () {
 
                 var item = this.queue[this.activePickerQueueIndex];
 
+                this.activePicker.css({ top: -999 });
+
                 if (append) jQuery(document.body).append(this.activePicker);
                 setTimeout(function () {
                     _alignPicker.call(this, item);
@@ -6448,37 +6722,111 @@ ax5.ui = function () {
              * @param {String} val
              * @returns {ax5picker} this
              */
-            this.setContentValue = function (boundID, inputIndex, val) {
-                var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
-                var item = this.queue[queIdx];
-                var _input;
+            this.setContentValue = function () {
 
-                if (item) {
+                var multipleInputProcessor = {
+                    "date": function date(_item, _inputIndex, _val) {
+                        var values = [],
+                            diffDay,
+                            prevInputValue,
+                            nextInputValue;
 
-                    _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(inputIndex));
-                    _input.val(val);
-                    if (!item.disableChangeTrigger) {
-                        _input.trigger("change");
+                        if (_item.$target.get(0).tagName.toUpperCase() !== "INPUT") {
+                            _item.$target.find('input[type]').each(function () {
+                                values.push(this.value);
+                            });
+                        }
+
+                        if (_inputIndex == 0) {
+                            if (values.length > 1 && values[1] !== "") {
+                                // 값 검증
+                                diffDay = ax5.util.dday(values[1], { today: values[0] });
+                                if (diffDay < 0) {
+                                    // 다음날짜 달력을 변경합니다.
+                                    nextInputValue = _val;
+                                } else {}
+                            } else {
+                                nextInputValue = _val;
+                            }
+
+                            if (nextInputValue) {
+                                _item.pickerCalendar[1].ax5uiInstance.setSelection([nextInputValue], false).changeMode("d", nextInputValue);
+                                this.setContentValue(_item.id, 1, nextInputValue);
+                            }
+
+                            return _val;
+                        } else if (_inputIndex == 1) {
+                            if (values.length > 1) {
+                                // 값 검증
+                                diffDay = ax5.util.dday(values[1], { today: values[0] });
+                                if (diffDay < 0) {
+                                    // 다음날짜 달력을 변경합니다.
+                                    prevInputValue = values[1];
+                                }
+                            }
+
+                            if (prevInputValue) {
+                                _item.pickerCalendar[0].ax5uiInstance.setSelection([prevInputValue], false).changeMode("d", prevInputValue);
+                                this.setContentValue(_item.id, 0, prevInputValue);
+                            }
+
+                            return _val;
+                        }
+                    }
+                };
+
+                return function (boundID, inputIndex, val) {
+                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
+                    var item = this.queue[queIdx];
+                    var _input;
+
+                    if (item) {
+
+                        _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(inputIndex));
+                        _input.val(val);
+
+                        if (!item.disableChangeTrigger) {
+                            _input.trigger("change");
+                        }
+
+                        // picker의 입력이 2개이상인 경우
+                        //console.log(item.inputLength);
+                        if (item.inputLength > 1) {
+                            // 경우에 따라 첫번 선택에 따라 해야할 일들 처리
+                            if (multipleInputProcessor[item.content.type]) {
+                                val = multipleInputProcessor[item.content.type].call(this, item, inputIndex, val);
+                            }
+                        }
+
+                        var that = {
+                            self: self,
+                            state: "changeValue",
+                            item: item,
+                            inputIndex: inputIndex,
+                            value: val,
+                            values: [val]
+                        };
+                        if (item.$target.get(0).tagName.toUpperCase() !== "INPUT") {
+                            that.values = [];
+                            item.$target.find('input[type]').each(function () {
+                                that.values.push(this.value);
+                            });
+                        }
+
+                        onStateChanged.call(this, item, that);
+
+                        if (item.inputLength == 1) {
+                            this.close();
+                        }
                     }
 
-                    onStateChanged.call(this, item, {
-                        self: self,
-                        state: "changeValue",
-                        item: item,
-                        value: val
-                    });
-
-                    if (item.inputLength == 1) {
-                        this.close();
-                    }
-                }
-
-                item = null;
-                boundID = null;
-                inputIndex = null;
-                val = null;
-                return this;
-            };
+                    item = null;
+                    boundID = null;
+                    inputIndex = null;
+                    val = null;
+                    return this;
+                };
+            }();
 
             /**
              * @method ax5picker.open
@@ -6509,6 +6857,7 @@ ax5.ui = function () {
                         var input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : item.$target.find('input[type]');
 
                         // calendar bind
+                        item.pickerCalendar = [];
                         item.pickerContent.find('[data-calendar-target]').each(function () {
 
                             // calendarConfig extend ~
@@ -6524,7 +6873,11 @@ ax5.ui = function () {
                                 self.setContentValue(item.id, idx, this.date);
                             };
 
-                            new ax5.ui.calendar(calendarConfig);
+                            item.pickerCalendar.push({
+                                itemId: item.id,
+                                inputIndex: idx,
+                                ax5uiInstance: new ax5.ui.calendar(calendarConfig)
+                            });
                         });
                     },
                     'secure-num': function secureNum(queIdx) {
@@ -6936,7 +7289,7 @@ jQuery.fn.ax5picker = function () {
 
     UI.addClass({
         className: "formatter",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         var TODAY = new Date();
         var setSelectionRange = function setSelectionRange(input, pos) {
@@ -7572,7 +7925,7 @@ jQuery.fn.ax5formatter = function () {
 
     UI.addClass({
         className: "menu",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5.ui.menu
@@ -8159,26 +8512,27 @@ jQuery.fn.ax5formatter = function () {
                         index = Number(target.getAttribute("data-menu-item-index")),
                         scrollTop = cfg.position == "fixed" ? jQuery(document).scrollTop() : 0;
 
-                    if (self.menuBar.openedIndex == index) {
-                        if (eType == "click") self.close();
-                        return false;
-                    }
-
-                    self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
-                    self.menuBar.opened = true;
-                    self.menuBar.openedIndex = index;
-
-                    $target.attr("data-menu-item-opened", "true");
-                    $target.addClass("hover");
-
-                    if (cfg.offset) {
-                        if (cfg.offset.left) offset.left += cfg.offset.left;
-                        if (cfg.offset.top) offset.top += cfg.offset.top;
-                    }
-
-                    opt = getOption["object"].call(this, { left: offset.left, top: offset.top + height - scrollTop }, opt);
-
                     if (cfg.items && cfg.items[index][cfg.columnKeys.items] && cfg.items[index][cfg.columnKeys.items].length) {
+
+                        if (self.menuBar.openedIndex == index) {
+                            if (eType == "click") self.close();
+                            return false;
+                        }
+
+                        self.menuBar.target.find('[data-menu-item-index]').removeClass("hover");
+                        self.menuBar.opened = true;
+                        self.menuBar.openedIndex = index;
+
+                        $target.attr("data-menu-item-opened", "true");
+                        $target.addClass("hover");
+
+                        if (cfg.offset) {
+                            if (cfg.offset.left) offset.left += cfg.offset.left;
+                            if (cfg.offset.top) offset.top += cfg.offset.top;
+                        }
+
+                        opt = getOption["object"].call(this, { left: offset.left, top: offset.top + height - scrollTop }, opt);
+
                         popup.call(self, opt, cfg.items[index][cfg.columnKeys.items], 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
                         appEventAttach.call(self, true); // 이벤트 연결
                     }
@@ -8190,6 +8544,18 @@ jQuery.fn.ax5formatter = function () {
                     height = null;
                     index = null;
                     scrollTop = null;
+                };
+                var clickParentMenu = function clickParentMenu(target, opt, eType) {
+                    var $target = jQuery(target),
+                        offset = $target.offset(),
+                        height = $target.outerHeight(),
+                        index = Number(target.getAttribute("data-menu-item-index")),
+                        scrollTop = cfg.position == "fixed" ? jQuery(document).scrollTop() : 0;
+                    if (cfg.items && (!cfg.items[index][cfg.columnKeys.items] || cfg.items[index][cfg.columnKeys.items].length == 0)) {
+                        if (self.onClick) {
+                            self.onClick.call(cfg.items[index], cfg.items[index]);
+                        }
+                    }
                 };
 
                 return function (el, opt) {
@@ -8238,7 +8604,10 @@ jQuery.fn.ax5formatter = function () {
                                 return true;
                             }
                         });
-                        if (target) popUpChildMenu(target, opt, "click");
+                        if (target) {
+                            clickParentMenu(target, opt, "click");
+                            popUpChildMenu(target, opt, "click");
+                        }
 
                         target = null;
                     });
@@ -8336,6 +8705,8 @@ jQuery.fn.ax5formatter = function () {
 
     MENU = ax5.ui.menu;
 })();
+
+// todo : menu 드랍다운 아이콘 설정 기능 추가
 // ax5.ui.menu.tmpl
 (function () {
     var MENU = ax5.ui.menu;
@@ -8365,7 +8736,7 @@ jQuery.fn.ax5formatter = function () {
 
     UI.addClass({
         className: "select",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5select
@@ -9503,7 +9874,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "grid",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5grid
@@ -9696,7 +10067,6 @@ jQuery.fn.ax5select = function () {
                 initColumns = function initColumns(_columns) {
                 this.columns = U.deepCopy(_columns);
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
-
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex > this.columns.length ? this.columns.length : cfg.frozenColumnIndex;
 
                 this.bodyRowTable = GRID.util.makeBodyRowTable.call(this, this.columns);
@@ -9734,7 +10104,12 @@ jQuery.fn.ax5select = function () {
             },
                 resetColGroupWidth = function resetColGroupWidth() {
                 /// !! 그리드 target의 크기가 변경되면 이 함수를 호출하려 this.colGroup의 _width 값을 재 계산 하여야 함. [tom]
-                var CT_WIDTH = this.$["container"]["root"].width();
+                var CT_WIDTH = this.$["container"]["root"].width() - function () {
+                    var width = 0;
+                    if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
+                    if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
+                    return width;
+                }();
                 var totalWidth = 0;
                 var computedWidth;
                 var autoWidthColgroupIndexs = [];
@@ -10386,15 +10761,16 @@ jQuery.fn.ax5select = function () {
                         }
                     },
                     "TAB": function TAB(_e) {
+
                         var activeEditLength = 0;
                         for (var columnKey in this.inlineEditing) {
                             activeEditLength++;
 
-                            GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey);
+                            GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey, { moveFocus: true });
                             // next focus
                             if (activeEditLength == 1) {
                                 if (GRID.body.moveFocus.call(this, _e.shiftKey ? "LEFT" : "RIGHT")) {
-                                    GRID.body.inlineEdit.keydown.call(this, "RETURN");
+                                    GRID.body.inlineEdit.keydown.call(this, "RETURN", undefined, { moveFocus: true });
                                 }
                             }
                         }
@@ -10537,14 +10913,16 @@ jQuery.fn.ax5select = function () {
              * @method ax5grid.addRow
              * @param {Object} _row
              * @param {Number|String} [_dindex=last]
+             * @param {Object} [_options] - options of addRow
+             * @param {Boolean} [_options.sort] - sortData
              * @returns {ax5grid}
              * @example
              * ```js
              * ax5Grid.addRow($.extend({}, {...}), "first");
              * ```
              */
-            this.addRow = function (_row, _dindex) {
-                GRID.data.add.call(this, _row, _dindex);
+            this.addRow = function (_row, _dindex, _options) {
+                GRID.data.add.call(this, _row, _dindex, _options);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
                 GRID.body.moveFocus.call(this, this.config.body.grouping ? "START" : "END");
@@ -10752,26 +11130,70 @@ jQuery.fn.ax5select = function () {
              * @param {Number} _selectObject.rowIndex - rowIndex of columns
              * @param {Number} _selectObject.conIndex - colIndex of columns
              * @param {Object} _options
+             * @param {Boolean} _options.selectedClear
+             * @param {Boolean} _options.selected
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.select(0);
+             * firstGrid.select(0, {selected: true});
+             * firstGrid.select(0, {selected: false});
+             * ```
              */
             this.select = function (_selectObject, _options) {
                 if (U.isNumber(_selectObject)) {
                     var dindex = _selectObject;
 
                     if (!this.config.multipleSelect) {
-                        GRID.body.updateRowState.call(this, ["selectedClear"]);
-                        GRID.data.clearSelect.call(this);
+                        this.clearSelect();
                     } else {
                         if (_options && _options.selectedClear) {
-                            GRID.body.updateRowState.call(this, ["selectedClear"]);
-                            GRID.data.clearSelect.call(this);
+                            this.clearSelect();
                         }
                     }
 
-                    GRID.data.select.call(this, dindex);
+                    GRID.data.select.call(this, dindex, _options && _options.selected);
                     GRID.body.updateRowState.call(this, ["selected"], dindex);
                 }
+                return this;
+            };
 
+            /**
+             * @method ax5grid.clearSelect
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.clearSelect();
+             * ```
+             */
+            this.clearSelect = function () {
+                GRID.body.updateRowState.call(this, ["selectedClear"]);
+                GRID.data.clearSelect.call(this);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.selectAll
+             * @param {Object} _options
+             * @param {Boolean} _options.selected
+             * @param {Function} _options.filter
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.selectAll();
+             * firstGrid.selectAll({selected: true});
+             * firstGrid.selectAll({selected: false});
+             * firstGrid.selectAll({filter: function(){
+             *      return this["b"] == "A01";
+             * });
+             * firstGrid.selectAll({selected: true, filter: function(){
+             *      return this["b"] == "A01";
+             * });
+             * ```
+             */
+            this.selectAll = function (_options) {
+                GRID.data.selectAll.call(this, _options && _options.selected, _options);
+                GRID.body.updateRowStateAll.call(this, ["selected"]);
                 return this;
             };
 
@@ -10795,6 +11217,7 @@ jQuery.fn.ax5select = function () {
 // todo : filter
 // todo : body menu
 // todo : column reorder
+// todo : editor 필수값 속성 지정
 
 
 // ax5.ui.grid.body
@@ -11010,6 +11433,21 @@ jQuery.fn.ax5select = function () {
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
             processor[_state].call(self, _dindex, _data);
+        });
+    };
+
+    var updateRowStateAll = function updateRowStateAll(_states, _data) {
+        var self = this;
+        var cfg = this.config;
+
+        var processor = {
+            "selected": function selected(_dindex) {
+                GRID.body.repaint.call(this, true);
+            }
+        };
+        _states.forEach(function (_state) {
+            if (!processor[_state]) throw 'invaild state name';
+            processor[_state].call(self, _data);
         });
     };
 
@@ -11264,8 +11702,13 @@ jQuery.fn.ax5select = function () {
 
     var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value) {
         var _key = _col.key;
+        var tagsToReplace = {
+            '<': '&lt;',
+            '>': '&gt;'
+        };
+
         if (_key === "__d-index__") {
-            return _index + 1;
+            return typeof _item["__index"] !== "undefined" ? _item["__index"] + 1 : "";
         } else if (_key === "__d-checkbox__") {
             return '<div class="checkBox"></div>';
         } else {
@@ -11307,14 +11750,18 @@ jQuery.fn.ax5select = function () {
                     return GRID.formatter[_col.formatter].call(that);
                 }
             } else {
-                var returnValue = "&nbsp;";
+                var returnValue = "";
+
                 if (typeof _value !== "undefined") {
                     returnValue = _value;
                 } else {
                     _value = GRID.data.getValue.call(this, _index, _key);
-                    if (typeof _value !== "undefined") returnValue = _value;
+                    if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                 }
-                return returnValue;
+
+                return typeof returnValue === "number" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
+                    return tagsToReplace[tag] || tag;
+                });
             }
         }
     };
@@ -11339,9 +11786,9 @@ jQuery.fn.ax5select = function () {
             _item[_col.colIndex] = value;
             return value;
         } else if (_key === "__d-index__") {
-            return _index + 1;
+            return '';
         } else if (_key === "__d-checkbox__") {
-            return '&nbsp;';
+            return '';
         } else {
             if (_col.collector) {
                 that = {
@@ -11530,7 +11977,6 @@ jQuery.fn.ax5select = function () {
 
                             return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
                         }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
-
                         SS.push('</td>');
                     }
                     SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
@@ -11542,7 +11988,8 @@ jQuery.fn.ax5select = function () {
             if (isScrolled) {
                 _elTarget.css({ paddingTop: (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight });
             }
-            _elTarget.html(SS.join(''));
+            _elTarget.empty().get(0).innerHTML = SS.join('');
+
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
@@ -11619,7 +12066,7 @@ jQuery.fn.ax5select = function () {
 
             SS.push('</table>');
 
-            _elTarget.html(SS.join(''));
+            _elTarget.empty().get(0).innerHTML = SS.join('');
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
@@ -11794,7 +12241,7 @@ jQuery.fn.ax5select = function () {
 
             SS.push('</table>');
 
-            _elTarget.html(SS.join(''));
+            _elTarget.empty().get(0).innerHTML = SS.join('');
             return true;
         };
         var replaceGroupTr = function replaceGroupTr(_elTargetKey, _colGroup, _groupRow, _list, _scrollConfig) {
@@ -11863,7 +12310,7 @@ jQuery.fn.ax5select = function () {
                         }
                         SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
                     }
-                    _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').html(SS.join(''));
+                    _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
                 }
             }
         };
@@ -11992,7 +12439,7 @@ jQuery.fn.ax5select = function () {
 
             SS.push('</table>');
 
-            _elTarget.html(SS.join(''));
+            _elTarget.empty().get(0).innerHTML = SS.join('');
             return true;
         };
         var replaceGroupTr = function replaceGroupTr(_elTargetKey, _colGroup, _groupRow, _list, _scrollConfig) {
@@ -12061,7 +12508,7 @@ jQuery.fn.ax5select = function () {
                         }
                         SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
                     }
-                    _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').html(SS.join(''));
+                    _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
                 }
             }
         };
@@ -12121,7 +12568,8 @@ jQuery.fn.ax5select = function () {
                 SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
             }
 
-            _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').html(SS.join(''));
+            //_elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').html(SS.join(''));
+            _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
         };
 
         // left
@@ -12514,7 +12962,6 @@ jQuery.fn.ax5select = function () {
                         }
 
                         GRID.data.setValue.call(self, dindex, col.key, newValue);
-
                         updateRowState.call(self, ["cellChecked"], dindex, {
                             key: col.key, rowIndex: rowIndex, colIndex: colIndex,
                             editorConfig: col.editor.config, checked: checked
@@ -12539,11 +12986,16 @@ jQuery.fn.ax5select = function () {
             }
             if (this.isInlineEditing) {
 
+                var originalValue = GRID.data.getValue.call(self, dindex, col.key);
                 var initValue = function (__value, __editor) {
+                    if (U.isNothing(__value)) {
+                        __value = U.isNothing(originalValue) ? "" : originalValue;
+                    }
+
                     if (__editor.type == "money") {
                         return U.number(__value, { "money": true });
                     } else {
-                        return __value || "";
+                        return __value;
                     }
                 }.call(this, _initValue, editor);
 
@@ -12620,7 +13072,7 @@ jQuery.fn.ax5select = function () {
                 action["__clear"].call(this);
             }
         },
-        keydown: function keydown(key, columnKey) {
+        keydown: function keydown(key, columnKey, _options) {
             var processor = {
                 "ESC": function ESC() {
                     for (var columnKey in this.inlineEditing) {
@@ -12634,6 +13086,7 @@ jQuery.fn.ax5select = function () {
                             inlineEdit.deActive.call(this, "RETURN", columnKey);
                         }
                     } else {
+
                         for (var k in this.focusedColumn) {
                             var _column = this.focusedColumn[k];
                             var column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
@@ -12646,7 +13099,32 @@ jQuery.fn.ax5select = function () {
                             }
 
                             var col = this.colGroup[_column.colIndex];
-                            if (GRID.inlineEditor[col.editor.type].editMode !== "inline") {
+
+                            if (GRID.inlineEditor[col.editor.type].editMode === "inline") {
+                                if (_options && _options.moveFocus) {} else {
+                                    if (column.editor && column.editor.type == "checkbox") {
+
+                                        value = GRID.data.getValue.call(this, dindex, column.key);
+
+                                        var checked, newValue;
+                                        if (column.editor.config && column.editor.config.trueValue) {
+                                            if (checked = !(value == column.editor.config.trueValue)) {
+                                                newValue = column.editor.config.trueValue;
+                                            } else {
+                                                newValue = column.editor.config.falseValue;
+                                            }
+                                        } else {
+                                            newValue = checked = value == false || value == "false" || value < "1" ? "true" : "false";
+                                        }
+
+                                        GRID.data.setValue.call(this, _column.dindex, column.key, newValue);
+                                        updateRowState.call(this, ["cellChecked"], dindex, {
+                                            key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
+                                            editorConfig: column.editor.config, checked: checked
+                                        });
+                                    }
+                                }
+                            } else {
                                 GRID.body.inlineEdit.active.call(this, this.focusedColumn, null, value);
                             }
                         }
@@ -12655,7 +13133,7 @@ jQuery.fn.ax5select = function () {
             };
 
             if (key in processor) {
-                processor[key].call(this, key);
+                processor[key].call(this, key, columnKey, _options);
             }
         }
     };
@@ -12666,6 +13144,7 @@ jQuery.fn.ax5select = function () {
         repaintCell: repaintCell,
         repaintRow: repaintRow,
         updateRowState: updateRowState,
+        updateRowStateAll: updateRowStateAll,
         scrollTo: scrollTo,
         blur: blur,
         moveFocus: moveFocus,
@@ -12735,6 +13214,7 @@ jQuery.fn.ax5select = function () {
             l = _list.length;
         var returnList = [];
         var appendIndex = 0;
+        var dataRealRowCount;
 
         if (this.config.body.grouping) {
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
@@ -12783,6 +13263,7 @@ jQuery.fn.ax5select = function () {
                         if (_list[i][this.config.columnKeys.selected]) {
                             this.selectedDataIndexs.push(i);
                         }
+                        dataRealRowCount = _list[i]["__index"] = i;
                         returnList.push(_list[i]);
                         appendIndex++;
                     }
@@ -12793,14 +13274,20 @@ jQuery.fn.ax5select = function () {
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
                     this.deletedList.push(_list[i]);
                 } else if (_list[i]) {
+
                     if (_list[i][this.config.columnKeys.selected]) {
                         this.selectedDataIndexs.push(i);
                     }
+                    // __index변수를 추가하여 lineNumber 에 출력합니다. (body getFieldValue 에서 출력함)
+                    dataRealRowCount = _list[i]["__index"] = i;
                     returnList.push(_list[i]);
                 }
             }
         }
 
+        // 원본 데이터의 갯수
+        // grouping은 제외하고 수집됨.
+        this.xvar.dataRealRowCount = dataRealRowCount + 1;
         return returnList;
     };
 
@@ -12862,7 +13349,7 @@ jQuery.fn.ax5select = function () {
         return returnList;
     };
 
-    var add = function add(_row, _dindex) {
+    var add = function add(_row, _dindex, _options) {
         var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
         var processor = {
             "first": function first() {
@@ -12887,7 +13374,7 @@ jQuery.fn.ax5select = function () {
 
         if (this.config.body.grouping) {
             list = initData.call(this, sort.call(this, this.sortInfo, list));
-        } else if (Object.keys(this.sortInfo).length) {
+        } else if (_options && _options.sort && Object.keys(this.sortInfo).length) {
             list = sort.call(this, this.sortInfo, list);
         }
 
@@ -13007,27 +13494,32 @@ jQuery.fn.ax5select = function () {
     };
 
     var setValue = function setValue(_dindex, _key, _value) {
+        var originalValue = getValue.call(this, _dindex, _key);
         this.needToPaintSum = true;
-        if (/[\.\[\]]/.test(_key)) {
-            try {
+
+        if (originalValue !== _value) {
+            if (/[\.\[\]]/.test(_key)) {
+                try {
+                    this.list[_dindex][this.config.columnKeys.modified] = true;
+                    Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;").call(this.list[_dindex], _value);
+                } catch (e) {}
+            } else {
                 this.list[_dindex][this.config.columnKeys.modified] = true;
-                Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;").call(this.list[_dindex], _value);
-            } catch (e) {}
-        } else {
-            this.list[_dindex][this.config.columnKeys.modified] = true;
-            this.list[_dindex][_key] = _value;
+                this.list[_dindex][_key] = _value;
+            }
+
+            if (this.onDataChanged) {
+                this.onDataChanged.call({
+                    self: this,
+                    list: this.list,
+                    dindex: _dindex,
+                    item: this.list[_dindex],
+                    key: _key,
+                    value: _value
+                });
+            }
         }
 
-        if (this.onDataChanged) {
-            this.onDataChanged.call({
-                self: this,
-                list: this.list,
-                dindex: _dindex,
-                item: this.list[_dindex],
-                key: _key,
-                value: _value
-            });
-        }
         return true;
     };
 
@@ -13073,6 +13565,48 @@ jQuery.fn.ax5select = function () {
         }
 
         return this.list[_dindex][cfg.columnKeys.selected];
+    };
+
+    var selectAll = function selectAll(_selected, _options) {
+        var cfg = this.config;
+
+        console.log(_options);
+
+        var dindex = this.list.length;
+        if (typeof _selected === "undefined") {
+            while (dindex--) {
+                if (this.list[dindex].__isGrouping) continue;
+                if (_options && _options.filter) {
+                    if (_options.filter.call(this.list[dindex]) !== true) {
+                        continue;
+                    }
+                }
+                if (this.list[dindex][cfg.columnKeys.selected] = !this.list[dindex][cfg.columnKeys.selected]) {
+                    this.selectedDataIndexs.push(dindex);
+                }
+            }
+        } else {
+            while (dindex--) {
+                if (this.list[dindex].__isGrouping) continue;
+                if (_options && _options.filter) {
+                    if (_options.filter.call(this.list[dindex]) !== true) {
+                        continue;
+                    }
+                }
+                if (this.list[dindex][cfg.columnKeys.selected] = _selected) {
+                    this.selectedDataIndexs.push(dindex);
+                }
+            }
+        }
+
+        if (this.onDataChanged && _options && _options.internalCall) {
+            this.onDataChanged.call({
+                self: this,
+                list: this.list
+            });
+        }
+
+        return this.list;
     };
 
     var sort = function sort(_sortInfo, _list) {
@@ -13126,6 +13660,7 @@ jQuery.fn.ax5select = function () {
         getValue: getValue,
         clearSelect: clearSelect,
         select: select,
+        selectAll: selectAll,
         add: add,
         remove: remove,
         deleteRow: deleteRow,
@@ -13197,7 +13732,10 @@ jQuery.fn.ax5select = function () {
         "off": function off() {
             this.$["resizer"]["horizontal"].removeClass("live");
             this.xvar.columnResizerLived = false;
-            this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+
+            if (typeof this.xvar.__da === "undefined") {} else {
+                this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+            }
 
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
@@ -13214,11 +13752,22 @@ jQuery.fn.ax5select = function () {
             var colIndex = this.getAttribute("data-ax5grid-column-colindex");
             var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
             var col = self.colGroup[colIndex];
-            if (key && col) {
-                if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
-                    if (!col.sortFixed) toggleSort.call(self, col.key);
+
+            if (key === "__checkbox_header__") {
+                var selected = this.getAttribute("data-ax5grid-selected");
+                selected = U.isNothing(selected) ? true : selected === "true" ? false : true;
+
+                $(this).attr("data-ax5grid-selected", selected);
+                self.selectAll({ selected: selected });
+            } else {
+                if (key && col) {
+                    console.log(key, col);
+                    if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
+                        if (!col.sortFixed) toggleSort.call(self, col.key);
+                    }
                 }
             }
+
             GRID.body.blur.call(self);
         });
         this.$["container"]["header"].on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
@@ -13247,25 +13796,26 @@ jQuery.fn.ax5select = function () {
                         label: "",
                         colspan: 1,
                         rowspan: dataTable.rows.length,
-                        key: "__dindex__",
                         colIndex: null
                     },
                         _col = {};
 
                     if (cfg.showLineNumber) {
                         _col = jQuery.extend({}, col, {
-                            label: "&nbsp;",
                             width: cfg.lineNumberColumnWidth,
-                            _width: cfg.lineNumberColumnWidth
+                            _width: cfg.lineNumberColumnWidth,
+                            columnAttr: "lineNumber",
+                            key: "__index_header__", label: "&nbsp;"
                         });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
                         _col = jQuery.extend({}, col, {
-                            label: "",
                             width: cfg.rowSelectorColumnWidth,
-                            _width: cfg.rowSelectorColumnWidth
+                            _width: cfg.rowSelectorColumnWidth,
+                            columnAttr: "rowSelector",
+                            key: "__checkbox_header__", label: ""
                         });
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
@@ -13278,6 +13828,22 @@ jQuery.fn.ax5select = function () {
         }.call(this, this.headerTable);
         this.leftHeaderData = dividedHeaderObj.leftData;
         this.headerData = dividedHeaderObj.rightData;
+    };
+
+    var getFieldValue = function getFieldValue(_col) {
+        var cfg = this.config;
+        var colGroup = this.colGroup;
+        var _key = _col.key;
+        var tagsToReplace = {
+            '<': '&lt;',
+            '>': '&gt;'
+        };
+
+        if (_key === "__checkbox_header__") {
+            return '<div class="checkBox"></div>';
+        } else {
+            return _col.label || "&nbsp;";
+        }
     };
 
     var repaint = function repaint(_reset) {
@@ -13344,7 +13910,7 @@ jQuery.fn.ax5select = function () {
                             _SS += '<span data-ax5grid-column-sort="' + col.colIndex + '" data-ax5grid-column-sort-order="' + (colGroup[col.colIndex].sort || "") + '" />';
                         }
                         return _SS;
-                    }(), col.label || "&nbsp;", '</span>');
+                    }(), getFieldValue.call(this, col), '</span>');
 
                     if (!U.isNothing(col.colIndex)) {
                         if (cfg.enableFilter) {
@@ -13380,13 +13946,12 @@ jQuery.fn.ax5select = function () {
         };
 
         if (cfg.asidePanelWidth > 0) {
-            repaintHeader(this.$.panel["aside-header"], this.asideColGroup, asideHeaderData);
+            repaintHeader.call(this, this.$.panel["aside-header"], this.asideColGroup, asideHeaderData);
         }
-
         if (cfg.frozenColumnIndex > 0) {
-            repaintHeader(this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
+            repaintHeader.call(this, this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
-        this.xvar.scrollContentWidth = repaintHeader(this.$.panel["header-scroll"], this.headerColGroup, headerData);
+        this.xvar.scrollContentWidth = repaintHeader.call(this, this.$.panel["header-scroll"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {}
     };
@@ -13447,6 +14012,11 @@ jQuery.fn.ax5select = function () {
             }
         }
         return this;
+    };
+
+    var select = function select(_options) {
+        GRID.data.select.call(this, dindex, _options && _options.selected);
+        GRID.body.updateRowState.call(this, ["selected"], dindex);
     };
 
     GRID.header = {
@@ -13758,7 +14328,8 @@ jQuery.fn.ax5select = function () {
         this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
             fromRowIndex: U.number(fromRowIndex + 1, { "money": true }),
             toRowIndex: U.number(toRowIndex, { "money": true }),
-            totalElements: U.number(totalElements, { "money": true })
+            totalElements: U.number(totalElements, { "money": true }),
+            dataRowCount: totalElements !== this.xvar.dataRealRowCount ? this.xvar.dataRealRowCount : false
         }));
     };
 
@@ -13996,6 +14567,10 @@ jQuery.fn.ax5select = function () {
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth;
 
+            if (isNaN(_content_height) || isNaN(_content_width)) {
+                return false;
+            }
+
             var newLeft, newTop;
             var _top_is_end = false;
             var _left_is_end = false;
@@ -14108,33 +14683,35 @@ jQuery.fn.ax5select = function () {
         this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
         this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
 
-        this.$["scroller"]["vertical-bar"].bind(GRID.util.ENM["mousedown"], function (e) {
+        this.$["scroller"]["vertical-bar"].on(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
             scrollBarMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical");
-        }.bind(this)).bind("dragstart", function (e) {
+        }.bind(this)).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
         });
-        this.$["scroller"]["vertical"].bind("click", function (e) {
-            if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "vertical") {
+
+        this.$["scroller"]["vertical"].on("click", function (e) {
+            if (e.target.getAttribute("data-ax5grid-scroller") == "vertical") {
                 scrollBarMover.click.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical", e);
             }
         }.bind(this));
 
-        this.$["scroller"]["horizontal-bar"].bind(GRID.util.ENM["mousedown"], function (e) {
+        this.$["scroller"]["horizontal-bar"].on(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
             scrollBarMover.on.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal");
-        }.bind(this)).bind("dragstart", function (e) {
+        }.bind(this)).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
         });
-        this.$["scroller"]["horizontal"].bind("click", function (e) {
-            if (e.target && e.target.getAttribute("data-ax5grid-scroller") == "horizontal") {
+
+        this.$["scroller"]["horizontal"].on("click", function (e) {
+            if (e.target.getAttribute("data-ax5grid-scroller") == "horizontal") {
                 scrollBarMover.click.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal", e);
             }
         }.bind(this));
 
-        this.$["container"]["body"].bind('mousewheel DOMMouseScroll', function (e) {
+        this.$["container"]["body"].on('mousewheel DOMMouseScroll', function (e) {
             var E = e.originalEvent;
             var delta = { x: 0, y: 0 };
             if (E.detail) {
@@ -14233,7 +14810,7 @@ jQuery.fn.ax5select = function () {
     };
 
     var page_status = function page_status() {
-        return '<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}</span>';
+        return '<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}{{#dataRowCount}} ({{dataRowCount}}){{/dataRowCount}}</span>';
     };
 
     GRID.tmpl = {
@@ -14585,9 +15162,9 @@ jQuery.fn.ax5select = function () {
             }
             addC += colspan;
         }
-        addC -= 1;
-        if (addC < this.columns.length + 1) {
-            for (var c = addC; c < this.columns.length + 1; c++) {
+
+        if (addC < this.colGroup.length) {
+            for (var c = addC; c < this.colGroup.length; c++) {
                 table.rows[r].cols.push({
                     rowIndex: 0,
                     colIndex: c + 1,
@@ -14655,7 +15232,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "mediaViewer",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5mediaViewer
@@ -15222,7 +15799,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5uploader
@@ -15606,7 +16183,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "combobox",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5combobox
@@ -15867,7 +16444,7 @@ jQuery.fn.ax5select = function () {
 
                 try {
                     //return ax5.mustache.render(COMBOBOX.tmpl["label"].call(this, item.columnKeys), data) + "&nbsp;";
-                    return COMBOBOX.tmpl.get.call(this, "label", data, item.columnKeys);
+                    return COMBOBOX.tmpl.get.call(this, "label", data, item.columnKeys) + "&nbsp;";
                 } finally {
                     data = null;
                 }
@@ -15899,9 +16476,9 @@ jQuery.fn.ax5select = function () {
                 onSearch = function onSearch(queIdx, searchWord) {
                 this.queue[queIdx].waitOptions = true;
                 /*
-                this.activecomboboxOptionGroup.find('[data-els="content"]').html(
-                    jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx]))
-                );
+                 this.activecomboboxOptionGroup.find('[data-els="content"]').html(
+                 jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx]))
+                 );
                  */
                 this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "option", this.queue[queIdx], this.queue[queIdx].columnKeys)));
 
@@ -15943,10 +16520,10 @@ jQuery.fn.ax5select = function () {
                     data.lang = item.lang;
                     data.options = item.options;
                     /*
-                    this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
-                        ax5.mustache.render(COMBOBOX.tmpl.options.call(this, item.columnKeys), data))
-                    );
-                    */
+                     this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                     ax5.mustache.render(COMBOBOX.tmpl.options.call(this, item.columnKeys), data))
+                     );
+                     */
                     this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)));
                 }.bind(this));
             },
@@ -16524,7 +17101,12 @@ jQuery.fn.ax5select = function () {
                                 if (clickEl === "optionItemRemove") {
                                     var selectedIndex = target.getAttribute("data-ax5combobox-remove-index");
                                     var option = this.queue[queIdx].selected[selectedIndex];
-                                    setOptionSelect.call(this, queIdx, { index: { gindex: option['@gindex'], index: option['@index'] } }, false, true);
+                                    setOptionSelect.call(this, queIdx, {
+                                        index: {
+                                            gindex: option['@gindex'],
+                                            index: option['@index']
+                                        }
+                                    }, false, true);
                                     focusLabel.call(this, queIdx);
                                     U.stopEvent(e);
                                     return this;
@@ -16756,10 +17338,10 @@ jQuery.fn.ax5select = function () {
                             data.lang = item.lang;
                             data.options = item.options;
                             /*
-                            this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
-                                ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)
-                            ));
-                            */
+                             this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                             ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)
+                             ));
+                             */
                             this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)));
                         }
                     }.bind(this));
@@ -17000,13 +17582,21 @@ jQuery.fn.ax5select = function () {
              */
             this.enable = function (_boundID) {
                 var queIdx = getQueIdx.call(this, _boundID);
-                this.queue[queIdx].$display.removeAttr("disabled");
-                this.queue[queIdx].$input.removeAttr("disabled");
 
-                onStateChanged.call(this, this.queue[queIdx], {
-                    self: this,
-                    state: "enable"
-                });
+                if (typeof queIdx !== "undefined") {
+                    if (this.queue[queIdx].$display[0]) {
+                        this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
+                        this.queue[queIdx].$display.removeAttr("disabled");
+                    }
+                    if (this.queue[queIdx].$select[0]) {
+                        this.queue[queIdx].$select.removeAttr("disabled");
+                    }
+
+                    onStateChanged.call(this, this.queue[queIdx], {
+                        self: this,
+                        state: "enable"
+                    });
+                }
 
                 return this;
             };
@@ -17018,14 +17608,29 @@ jQuery.fn.ax5select = function () {
              */
             this.disable = function (_boundID) {
                 var queIdx = getQueIdx.call(this, _boundID);
-                this.queue[queIdx].$display.attr("disabled", "disabled");
-                this.queue[queIdx].$input.attr("disabled", "disabled");
 
-                onStateChanged.call(this, this.queue[queIdx], {
-                    self: this,
-                    state: "disable"
-                });
+                if (typeof queIdx !== "undefined") {
+                    if (this.queue[queIdx].$display[0]) {
+                        this.queue[queIdx].$displayLabel.attr("contentEditable", "false");
+                        this.queue[queIdx].$display.attr("disabled", "disabled");
+                    }
+                    if (this.queue[queIdx].$select[0]) {
+                        this.queue[queIdx].$select.attr("disabled", "disabled");
+                    }
 
+                    onStateChanged.call(this, this.queue[queIdx], {
+                        self: this,
+                        state: "disable"
+                    });
+                }
+                return this;
+            };
+
+            /**
+             * @method ax5combobox.align
+             */
+            this.align = function () {
+                alignComboboxDisplay.call(this);
                 return this;
             };
 
@@ -17142,7 +17747,7 @@ jQuery.fn.ax5combobox = function () {
     };
 
     var label = function label(columnKeys) {
-        return '\n            {{#selected}}<div tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}">\n                <div data-ax5combobox-remove="true" data-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div>\n                <span>{{text}}</span>\n                </div>\n            {{/selected}}\n        ';
+        return '{{#selected}}<div tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}"><div data-ax5combobox-remove="true" data-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}';
     };
 
     COMBOBOX.tmpl = {
@@ -17256,7 +17861,7 @@ jQuery.fn.ax5combobox = function () {
 
     UI.addClass({
         className: "layout",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5layout
@@ -17334,16 +17939,17 @@ jQuery.fn.ax5combobox = function () {
                     return panel ? panel.__height + (panel.split ? item.splitter.size : 0) : 0;
                 }
             },
+                getPixel = function getPixel(size, parentSize) {
+                if (size == "*") {
+                    return;
+                } else if (U.right(size, 1) == "%") {
+                    return parentSize * U.number(size) / 100;
+                } else {
+                    return Number(size);
+                }
+            },
                 alignLayout = function () {
-                var getPixel = function getPixel(size, parentSize) {
-                    if (size == "*") {
-                        return;
-                    } else if (U.right(size, 1) == "%") {
-                        return parentSize * U.number(size) / 100;
-                    } else {
-                        return Number(size);
-                    }
-                };
+
                 var beforeSetCSS = {
                     "split": {
                         "horizontal": function horizontal(item, panel, panelIndex) {
@@ -17573,10 +18179,10 @@ jQuery.fn.ax5combobox = function () {
                         var withoutAsteriskSize;
                         item.splitPanel.asteriskLength = 0;
                         item.splitPanel.forEach(function (panel, panelIndex) {
-                            beforeSetCSS["split"][item.oriental].call(this, item, panel, panelIndex);
+                            beforeSetCSS["split"][item.orientation].call(this, item, panel, panelIndex);
                         });
 
-                        if (item.oriental == "horizontal") {
+                        if (item.orientation == "horizontal") {
                             withoutAsteriskSize = U.sum(item.splitPanel, function (n) {
                                 if (n.height != "*") return U.number(n.__height);
                             });
@@ -17587,7 +18193,7 @@ jQuery.fn.ax5combobox = function () {
                         }
 
                         item.splitPanel.forEach(function (panel, panelIndex) {
-                            setCSS["split"][item.oriental].call(this, item, panel, panelIndex, withoutAsteriskSize, windowResize);
+                            setCSS["split"][item.orientation].call(this, item, panel, panelIndex, withoutAsteriskSize, windowResize);
                         });
                     }
                 };
@@ -17689,7 +18295,7 @@ jQuery.fn.ax5combobox = function () {
                         "split": function split(e) {
                             var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
 
-                            if (item.oriental == "horizontal") {
+                            if (item.orientation == "horizontal") {
                                 panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
 
                                 var prevPanel = item.splitPanel[panel.panelIndex - 1];
@@ -17765,7 +18371,7 @@ jQuery.fn.ax5combobox = function () {
                         },
                         "split-panel": {
                             "split": function split() {
-                                if (item.oriental == "horizontal") {
+                                if (item.orientation == "horizontal") {
                                     // 앞과 뒤의 높이 조절
                                     item.splitPanel[panel.panelIndex - 1].__height += panel.__da;
                                     item.splitPanel[panel.panelIndex + 1].__height -= panel.__da;
@@ -17822,15 +18428,7 @@ jQuery.fn.ax5combobox = function () {
                 return '\n<div data-tab-panel-label-holder="{{id}}">\n    <div data-tab-panel-label-border="{{id}}"></div>\n    <div data-tab-panel-label-table="{{id}}">\n        <div data-tab-panel-aside="left"></div>\n    {{#tabPanel}}\n        <div data-tab-panel-label="{{panelIndex}}" data-tab-active="{{active}}">\n            <div data-tab-label="{{panelIndex}}">{{{label}}}</div>\n        </div>\n    {{/tabPanel}}\n        <div data-tab-panel-aside="right"></div>\n    </div>\n</div>\n';
             },
                 bindLayoutTarget = function () {
-                var getPixel = function getPixel(size, parentSize) {
-                    if (size == "*") {
-                        return;
-                    } else if (U.right(size, 1) == "%") {
-                        return parentSize * U.number(size) / 100;
-                    } else {
-                        return Number(size);
-                    }
-                };
+
                 var applyLayout = {
                     "dock-panel": function dockPanel(queIdx) {
                         var item = this.queue[queIdx];
@@ -17874,6 +18472,7 @@ jQuery.fn.ax5combobox = function () {
                         var item = this.queue[queIdx];
                         item.splitPanel = [];
                         item.$target.find('>[data-split-panel], >[data-splitter]').each(function (ELIndex) {
+
                             var panelInfo = {};
                             (function (data) {
                                 if (U.isObject(data) && !data.error) {
@@ -17882,10 +18481,11 @@ jQuery.fn.ax5combobox = function () {
                             })(U.parseJson(this.getAttribute("data-split-panel") || this.getAttribute("data-splitter"), true));
 
                             panelInfo.$target = jQuery(this);
-                            panelInfo.$target.addClass("split-panel-" + item.oriental);
+                            panelInfo.$target.addClass("split-panel-" + item.orientation);
                             panelInfo.panelIndex = ELIndex;
 
                             if (this.getAttribute("data-splitter")) {
+
                                 panelInfo.splitter = true;
                                 panelInfo.$target.bind(ENM["mousedown"], function (e) {
                                     if (panelInfo.panelIndex > 0 && panelInfo.panelIndex < item.splitPanel.length - 1) {
@@ -17898,10 +18498,11 @@ jQuery.fn.ax5combobox = function () {
                                 });
                                 panelInfo.resizerType = "split";
                             } else {
-                                if (item.oriental == "horizontal") {
+
+                                if (item.orientation == "horizontal") {
                                     panelInfo.__height = getPixel(panelInfo.height, item.targetDimension.height);
                                 } else {
-                                    item.oriental = "vertical";
+                                    item.orientation = "vertical";
                                     panelInfo.__width = getPixel(panelInfo.width, item.targetDimension.width);
                                 }
                             }
@@ -18168,19 +18769,25 @@ jQuery.fn.ax5combobox = function () {
                             }
                         });
                     },
-                    "split-panel": function splitPanel() {},
+                    "split-panel": function splitPanel(item) {
+                        item.splitPanel.forEach(function (panel) {
+                            if (item.orientation == "vertical") {
+                                panel.__width = getPixel(panel.width, item.targetDimension.width);
+                            } else if (item.orientation == "horizontal") {
+                                panel.__height = getPixel(panel.height, item.targetDimension.height);
+                            }
+                        });
+                    },
                     "tab-panel": function tabPanel() {}
                 };
 
                 return function (boundID, callback) {
                     var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
-                    if (queIdx === -1) {
-                        console.log(ax5.info.getError("ax5layout", "402", "reset"));
-                        return;
+                    if (queIdx === -1) {} else {
+                        resetLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx]);
+                        alignLayout.call(this, queIdx, callback);
                     }
 
-                    resetLayoutPanel[this.queue[queIdx].layout].call(this, this.queue[queIdx]);
-                    alignLayout.call(this, queIdx, callback);
                     return this;
                 };
             }();
@@ -18283,7 +18890,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "binder",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
 
         /**
@@ -19231,7 +19838,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "multiUploader",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5multiUploader
@@ -19318,7 +19925,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "autocomplete",
-        version: "1.3.4"
+        version: "1.3.29"
     }, function () {
         /**
          * @class ax5autocomplete
@@ -19782,18 +20389,18 @@ jQuery.fn.ax5layout = function () {
 
                             if (typeof direction !== "undefined") {
                                 /*
-                                // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
-                                // 방향이 있으면 라벨 값을 수정
-                                var childNodes = item.$displayLabel.get(0).childNodes;
-                                var lastNode = childNodes[childNodes.length - 1];
-                                if (lastNode && lastNode.nodeType == '3') {
-                                    //lastNode.nodeValue = item.options[_focusIndex].text;
-                                    U.selectRange(item.$displayLabel, "end");
-                                } else if (lastNode && lastNode.nodeType == '1') {
-                                    //jQuery(lastNode).after(item.options[_focusIndex].text);
-                                    U.selectRange(item.$displayLabel, "end");
-                                }
-                                */
+                                 // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
+                                 // 방향이 있으면 라벨 값을 수정
+                                 var childNodes = item.$displayLabel.get(0).childNodes;
+                                 var lastNode = childNodes[childNodes.length - 1];
+                                 if (lastNode && lastNode.nodeType == '3') {
+                                 //lastNode.nodeValue = item.options[_focusIndex].text;
+                                 U.selectRange(item.$displayLabel, "end");
+                                 } else if (lastNode && lastNode.nodeType == '1') {
+                                 //jQuery(lastNode).after(item.options[_focusIndex].text);
+                                 U.selectRange(item.$displayLabel, "end");
+                                 }
+                                 */
                                 U.selectRange(item.$displayLabel, "end");
                             }
                         }
@@ -20563,13 +21170,21 @@ jQuery.fn.ax5layout = function () {
              */
             this.enable = function (_boundID) {
                 var queIdx = getQueIdx.call(this, _boundID);
-                this.queue[queIdx].$display.removeAttr("disabled");
-                this.queue[queIdx].$input.removeAttr("disabled");
 
-                onStateChanged.call(this, this.queue[queIdx], {
-                    self: this,
-                    state: "enable"
-                });
+                if (typeof queIdx !== "undefined") {
+                    if (this.queue[queIdx].$display[0]) {
+                        this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
+                        this.queue[queIdx].$display.removeAttr("disabled");
+                    }
+                    if (this.queue[queIdx].$select[0]) {
+                        this.queue[queIdx].$select.removeAttr("disabled");
+                    }
+
+                    onStateChanged.call(this, this.queue[queIdx], {
+                        self: this,
+                        state: "enable"
+                    });
+                }
 
                 return this;
             };
@@ -20581,14 +21196,30 @@ jQuery.fn.ax5layout = function () {
              */
             this.disable = function (_boundID) {
                 var queIdx = getQueIdx.call(this, _boundID);
-                this.queue[queIdx].$display.attr("disabled", "disabled");
-                this.queue[queIdx].$input.attr("disabled", "disabled");
 
-                onStateChanged.call(this, this.queue[queIdx], {
-                    self: this,
-                    state: "disable"
-                });
+                if (typeof queIdx !== "undefined") {
+                    if (this.queue[queIdx].$display[0]) {
+                        this.queue[queIdx].$displayLabel.attr("contentEditable", "false");
+                        this.queue[queIdx].$display.attr("disabled", "disabled");
+                    }
+                    if (this.queue[queIdx].$select[0]) {
+                        this.queue[queIdx].$select.attr("disabled", "disabled");
+                    }
 
+                    onStateChanged.call(this, this.queue[queIdx], {
+                        self: this,
+                        state: "disable"
+                    });
+                }
+
+                return this;
+            };
+
+            /**
+             * @method ax5autocomplete.align
+             */
+            this.align = function () {
+                alignAutocompleteDisplay.call(this);
                 return this;
             };
 
@@ -20690,7 +21321,7 @@ jQuery.fn.ax5autocomplete = function () {
     };
 
     var autocompleteDisplay = function autocompleteDisplay(columnKeys) {
-        return '\n<div class="form-control {{formSize}} ax5autocomplete-display {{theme}}" \ndata-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">\n    <div class="ax5autocomplete-display-table" data-els="display-table">\n        <div data-ax5autocomplete-display="label-holder"> \n        <a {{^tabIndex}}href="#ax5autocomplete-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n        data-ax5autocomplete-display="label"\n        contentEditable="true"\n        spellcheck="false">{{{label}}}</a>\n        </div>\n        <div data-ax5autocomplete-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n';
+        return ' \n<div class="form-control {{formSize}} ax5autocomplete-display {{theme}}" \ndata-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">\n    <div class="ax5autocomplete-display-table" data-els="display-table">\n        <div data-ax5autocomplete-display="label-holder"> \n        <a {{^tabIndex}}href="#ax5autocomplete-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n        data-ax5autocomplete-display="label"\n        contentEditable="true"\n        spellcheck="false">{{{label}}}</a>\n        </div>\n        <div data-ax5autocomplete-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n';
     };
 
     var formSelect = function formSelect(columnKeys) {

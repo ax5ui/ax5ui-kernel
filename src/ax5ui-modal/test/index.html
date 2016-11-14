@@ -88,12 +88,9 @@
                         height: 600,
                         fullScreen: function () {
                             return ($(window).width() < 600);
-                        },
-                        iframe: {
-                            method: "get",
-                            url: "modal-content.html",
-                            param: "callback=modalCallback"
                         }
+                    }, function(){
+                        this.$.body.append('<h1>div contents</h1>');
                     });
                     break;
                 case "modal-close":

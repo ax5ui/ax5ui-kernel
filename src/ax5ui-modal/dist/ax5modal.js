@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "1.3.29"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5modal
@@ -416,21 +416,22 @@
                         if (this.activeModal) {
 
                             // 프레임 제거
-                            var $iframe = this.$["iframe"],
-                                // iframe jQuery Object
-                            iframeObject = $iframe.get(0),
-                                idoc = iframeObject.contentDocument ? iframeObject.contentDocument : iframeObject.contentWindow.document;
+                            var $iframe = this.$["iframe"]; // iframe jQuery Object
+                            if ($iframe) {
+                                var iframeObject = $iframe.get(0),
+                                    idoc = iframeObject.contentDocument ? iframeObject.contentDocument : iframeObject.contentWindow.document;
 
-                            try {
-                                $(idoc.body).children().each(function () {
-                                    $(this).remove();
-                                });
-                            } catch (e) {}
-                            idoc.innerHTML = "";
-                            $iframe.attr('src', 'about:blank').remove();
+                                try {
+                                    $(idoc.body).children().each(function () {
+                                        $(this).remove();
+                                    });
+                                } catch (e) {}
+                                idoc.innerHTML = "";
+                                $iframe.attr('src', 'about:blank').remove();
 
-                            // force garbarge collection for IE only
-                            window.CollectGarbage && window.CollectGarbage();
+                                // force garbarge collection for IE only
+                                window.CollectGarbage && window.CollectGarbage();
+                            }
 
                             this.activeModal.remove();
                             this.activeModal = null;
@@ -626,6 +627,7 @@
 
     MODAL = ax5.ui.modal;
 })();
+
 // ax5.ui.modal.tmpl
 (function () {
     var MODAL = ax5.ui.modal;
