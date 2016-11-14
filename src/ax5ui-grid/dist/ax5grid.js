@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.30"
+        version: "1.3.31"
     }, function () {
         /**
          * @class ax5grid
@@ -4953,6 +4953,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     GRID.scroller = {
+        // 타이머
         moveout_timer: new Date().getTime(),
         init: init,
         resize: resize
