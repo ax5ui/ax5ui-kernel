@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.32"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -3954,7 +3954,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var uri = "data:application/vnd.ms-excel;base64,";
 
     var getExcelTmpl = function getExcelTmpl() {
-        return "\uFEFF<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\">\n<meta http-equiv=\"content-type\" content=\"application/vnd.ms-excel; charset=UTF-8\">\n<head>\n<!--[if gte mso 9]>\n<xml>\n    <x:ExcelWorkbook>\n        <x:ExcelWorksheets>\n            {{#worksheet}}\n            <x:ExcelWorksheet>\n                <x:Name>{{name}}</x:Name>\n                <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>\n            </x:ExcelWorksheet>\n            {{/worksheet}}\n        </x:ExcelWorksheets>\n    </x:ExcelWorkbook>\n</xml>\n<![endif]-->\n</head>\n<body>\n{{#tables}}{{{body}}}{{/tables}}\n</body>\n</html>\n";
+        return "\uFEFF\n{{#tables}}{{{body}}}{{/tables}}\n";
     };
 
     var tableToExcel = function tableToExcel(table, fileName) {
@@ -3982,13 +3982,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var isSafari = !isChrome && navigator.userAgent.indexOf("Safari") > -1;
 
         var isIE = /*@cc_on!@*/false || !!document.documentMode; // this works with IE10 and IE11 both :)
-        if (isIE) {
-            if (typeof Blob !== "undefined") {
-                //use blobs if we can
-                //convert to array
-                var blob1 = new Blob([output], { type: "text/html" });
-                window.navigator.msSaveBlob(blob1, fileName);
-            } else {
+        if (navigator.msSaveOrOpenBlob) {
+            var blob1 = new Blob([output], { type: "text/html" });
+            window.navigator.msSaveOrOpenBlob(blob1, fileName);
+        } else if (isSafari) {
+            // 사파리는 지원이 안되므로 그냥 테이블을 클립보드에 복사처리
+            //tables
+            var blankWindow = window.open('about:blank', this.id + '-excel-export', 'width=600,height=400');
+            blankWindow.document.write(output);
+            blankWindow = null;
+        } else {
+            if (isIE && typeof Blob === "undefined") {
+
                 //otherwise use the iframe and save
                 //requires a blank iframe on page called txtArea1
                 var $iframe = jQuery('<iframe id="' + this.id + '-excel-export" style="display:none"></iframe>');
@@ -4000,22 +4005,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 iframe.focus();
                 iframe.document.execCommand("SaveAs", true, fileName);
                 $iframe.remove();
-            }
-        } else if (isSafari) {
-            // 사파리는 지원이 안되므로 그냥 테이블을 클립보드에 복사처리
-            //tables
-            var blankWindow = window.open('about:blank', this.id + '-excel-export', 'width=600,height=400');
-            blankWindow.document.write(output);
-            blankWindow = null;
-        } else {
-            link = uri + base64(output);
-            a = document.createElement("a");
-            a.download = fileName;
-            a.href = link;
+            } else {
+                // Attempt to use an alternative method
+                var anchor = document.body.appendChild(document.createElement("a"));
 
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+                // If the [download] attribute is supported, try to use it
+                if ("download" in anchor) {
+                    anchor.download = fileName;
+                    //anchor.href = URL.createObjectURL( blob );
+                    anchor.href = uri + base64(output);
+                    anchor.click();
+                    document.body.removeChild(anchor);
+                }
+            }
         }
 
         return true;

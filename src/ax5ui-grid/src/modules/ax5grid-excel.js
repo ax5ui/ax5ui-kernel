@@ -16,28 +16,8 @@
     var uri = "data:application/vnd.ms-excel;base64,";
 
     var getExcelTmpl = function () {
-        return `\ufeff<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-<meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">
-<head>
-<!--[if gte mso 9]>
-<xml>
-    <x:ExcelWorkbook>
-        <x:ExcelWorksheets>
-            {{#worksheet}}
-            <x:ExcelWorksheet>
-                <x:Name>{{name}}</x:Name>
-                <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
-            </x:ExcelWorksheet>
-            {{/worksheet}}
-        </x:ExcelWorksheets>
-    </x:ExcelWorkbook>
-</xml>
-<![endif]-->
-</head>
-<body>
+        return `\ufeff
 {{#tables}}{{{body}}}{{/tables}}
-</body>
-</html>
 `;
     };
 
@@ -64,15 +44,22 @@
 
         var isChrome = navigator.userAgent.indexOf("Chrome") > -1;
         var isSafari = !isChrome && navigator.userAgent.indexOf("Safari") > -1;
-        
+
         var isIE = /*@cc_on!@*/false || !!document.documentMode; // this works with IE10 and IE11 both :)
-        if (isIE) {
-            if (typeof Blob !== "undefined") {
-                //use blobs if we can
-                //convert to array
-                var blob1 = new Blob([output], {type: "text/html"});
-                window.navigator.msSaveBlob(blob1, fileName);
-            } else {
+        if (navigator.msSaveOrOpenBlob) {
+            var blob1 = new Blob([output], {type: "text/html"});
+            window.navigator.msSaveOrOpenBlob(blob1, fileName);
+        }
+        else if (isSafari) {
+            // 사파리는 지원이 안되므로 그냥 테이블을 클립보드에 복사처리
+            //tables
+            var blankWindow = window.open('about:blank', this.id + '-excel-export', 'width=600,height=400');
+            blankWindow.document.write(output);
+            blankWindow = null;
+        }
+        else {
+            if (isIE && typeof Blob === "undefined") {
+
                 //otherwise use the iframe and save
                 //requires a blank iframe on page called txtArea1
                 var $iframe = jQuery('<iframe id="' + this.id + '-excel-export" style="display:none"></iframe>');
@@ -84,24 +71,21 @@
                 iframe.focus();
                 iframe.document.execCommand("SaveAs", true, fileName);
                 $iframe.remove();
-            }
-        }
-        else if(isSafari){
-            // 사파리는 지원이 안되므로 그냥 테이블을 클립보드에 복사처리
-            //tables
-            var blankWindow = window.open('about:blank', this.id + '-excel-export', 'width=600,height=400');
-            blankWindow.document.write(output);
-            blankWindow = null;
-        }
-        else {
-            link = uri + base64(output);
-            a = document.createElement("a");
-            a.download = fileName;
-            a.href = link;
+            } else {
+                // Attempt to use an alternative method
+                var anchor = document.body.appendChild(
+                    document.createElement("a")
+                );
 
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+                // If the [download] attribute is supported, try to use it
+                if ("download" in anchor) {
+                    anchor.download = fileName;
+                    //anchor.href = URL.createObjectURL( blob );
+                    anchor.href = uri + base64(output);
+                    anchor.click();
+                    document.body.removeChild(anchor);
+                }
+            }
         }
 
         return true;
