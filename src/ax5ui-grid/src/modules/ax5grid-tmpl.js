@@ -88,15 +88,10 @@
     };
 
 
-    var _excel = function () {
-        return ``;
-    }
-
     GRID.tmpl = {
         "main": main,
         "page_navigation": page_navigation,
         "page_status": page_status,
-        "excel": _excel,
 
         get: function (tmplName, data, columnKeys) {
             return ax5.mustache.render(GRID.tmpl[tmplName].call(this, columnKeys), data);

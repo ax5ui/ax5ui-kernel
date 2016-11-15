@@ -387,6 +387,7 @@
         var cfg = this.config;
 
         if (this.list[_dindex].__isGrouping) return false;
+        if (this.list[_dindex][cfg.columnKeys.disableSelection]) return false;
 
         if (typeof _selected === "undefined") {
             if (this.list[_dindex][cfg.columnKeys.selected] = !this.list[_dindex][cfg.columnKeys.selected]) {
@@ -414,7 +415,7 @@
 
     var selectAll = function (_selected, _options) {
         var cfg = this.config;
-        
+
         var dindex = this.list.length;
         if (typeof _selected === "undefined") {
             while (dindex--) {
@@ -422,8 +423,10 @@
                 if (_options && _options.filter) {
                     if (_options.filter.call(this.list[dindex]) !== true) {
                         continue;
-                    } 
+                    }
                 }
+                if (this.list[dindex][cfg.columnKeys.disableSelection]) continue;
+
                 if (this.list[dindex][cfg.columnKeys.selected] = !this.list[dindex][cfg.columnKeys.selected]) {
                     this.selectedDataIndexs.push(dindex);
                 }
@@ -436,6 +439,8 @@
                         continue;
                     }
                 }
+                if (this.list[dindex][cfg.columnKeys.disableSelection]) continue;
+
                 if (this.list[dindex][cfg.columnKeys.selected] = _selected) {
                     this.selectedDataIndexs.push(dindex);
                 }
@@ -456,7 +461,7 @@
         var self = this;
         var list = _list || this.list;
         var sortInfoArray = [];
-        var getKeyValue = function(_item, _key, _value){
+        var getKeyValue = function (_item, _key, _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
                     _value = (Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";")).call(_item);

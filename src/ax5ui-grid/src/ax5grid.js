@@ -76,7 +76,8 @@
                 columnKeys: {
                     selected: '__selected__',
                     modified: '__modified__',
-                    deleted: '__deleted__'
+                    deleted: '__deleted__',
+                    disableSelection: '__disable_selection__'
                 }
             };
             this.xvar = {
@@ -1360,22 +1361,30 @@
                 return this;
             };
 
+            /**
+             * @method ax5grid.exportExcel
+             * @param {String} _fileName
+             * @returns {ax5grid|String}
+             * @example
+             * ```js
+             * firstGrid.exportExcel("grid-to-excel.xls");
+             * console.log(firstGrid.exportExcel());
+             * ```
+             */
             this.exportExcel = function (_fileName) {
-                var table = ax5.mustache.render(GRID.tmpl.get("excel"), {
-                    columns: this.colGroup,
-                    list: this.list,
-                    grouping: cfg.body.grouping,
-                    footSum: cfg.footSum
-                });
-                
-                console.log({
-                    columns: this.colGroup,
-                    list: this.list,
-                    grouping: cfg.body.grouping,
-                    footSum: cfg.footSum
-                });
-                
-                GRID.excel.export.call(this, [table], _fileName);
+                var table = [];
+                table.push('<table border="1">');
+                table.push(GRID.header.getExcelString.call(this));
+                table.push(GRID.body.getExcelString.call(this));
+                table.push('</table>');
+
+                if (typeof _fileName === "undefined") {
+                    return table.join('');
+                }
+                else {
+                    GRID.excel.export.call(this, [table.join('')], _fileName);
+                }
+
                 return this;
             };
 

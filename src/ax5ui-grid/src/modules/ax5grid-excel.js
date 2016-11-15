@@ -16,7 +16,7 @@
     var uri = "data:application/vnd.ms-excel;base64,";
 
     var getExcelTmpl = function () {
-        return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        return `\ufeff<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
 <meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">
 <head>
 <!--[if gte mso 9]>
@@ -62,7 +62,9 @@
             })()
         });
 
-        var isSafari = navigator.userAgent.indexOf("Safari") > -1;
+        var isChrome = navigator.userAgent.indexOf("Chrome") > -1;
+        var isSafari = !isChrome && navigator.userAgent.indexOf("Safari") > -1;
+        
         var isIE = /*@cc_on!@*/false || !!document.documentMode; // this works with IE10 and IE11 both :)
         if (isIE) {
             if (typeof Blob !== "undefined") {
@@ -85,15 +87,11 @@
             }
         }
         else if(isSafari){
-            // 사파리는 지원이 안되므로 그냥 테이블을 출력~
-            link = "data:text/plain;base64," + base64(table);
-            a = document.createElement("a");
-            a.download = fileName;
-            a.href = link;
-
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            // 사파리는 지원이 안되므로 그냥 테이블을 클립보드에 복사처리
+            //tables
+            var blankWindow = window.open('about:blank', this.id + '-excel-export', 'width=600,height=400');
+            blankWindow.document.write(output);
+            blankWindow = null;
         }
         else {
             link = uri + base64(output);

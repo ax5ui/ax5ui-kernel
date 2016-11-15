@@ -79,7 +79,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 columnKeys: {
                     selected: '__selected__',
                     modified: '__modified__',
-                    deleted: '__deleted__'
+                    deleted: '__deleted__',
+                    disableSelection: '__disable_selection__'
                 }
             };
             this.xvar = {
@@ -1340,22 +1341,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return this;
             };
 
+            /**
+             * @method ax5grid.exportExcel
+             * @param {String} _fileName
+             * @returns {ax5grid|String}
+             * @example
+             * ```js
+             * firstGrid.exportExcel("grid-to-excel.xls");
+             * console.log(firstGrid.exportExcel());
+             * ```
+             */
             this.exportExcel = function (_fileName) {
-                var table = ax5.mustache.render(GRID.tmpl.get("excel"), {
-                    columns: this.colGroup,
-                    list: this.list,
-                    grouping: cfg.body.grouping,
-                    footSum: cfg.footSum
-                });
+                var table = [];
+                table.push('<table border="1">');
+                table.push(GRID.header.getExcelString.call(this));
+                table.push(GRID.body.getExcelString.call(this));
+                table.push('</table>');
 
-                console.log({
-                    columns: this.colGroup,
-                    list: this.list,
-                    grouping: cfg.body.grouping,
-                    footSum: cfg.footSum
-                });
+                if (typeof _fileName === "undefined") {
+                    return table.join('');
+                } else {
+                    GRID.excel.export.call(this, [table.join('')], _fileName);
+                }
 
-                GRID.excel.export.call(this, [table], _fileName);
                 return this;
             };
 
@@ -1618,7 +1626,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var self = this;
 
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            var panelName, attr, row, col, dindex, rowIndex, colIndex;
+            var panelName, attr, row, col, dindex, rowIndex, colIndex, disableSelection;
             var targetClick = {
                 "default": function _default(_column) {
                     var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
@@ -1662,6 +1670,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 },
                 "rowSelector": function rowSelector(_column) {
+                    if (self.list[_column.dindex][self.config.columnKeys.disableSelection]) {
+                        return false;
+                    }
 
                     if (!self.config.multipleSelect && self.selectedDataIndexs[0] !== _column.dindex) {
                         GRID.body.updateRowState.call(self, ["selectedClear"]);
@@ -2098,7 +2109,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
 
-                    SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '">');
+                    SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
                         cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
@@ -3301,6 +3312,82 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
+    var getExcelString = function getExcelString() {
+        var cfg = this.config;
+        var list = this.list;
+        var bodyRowData = this.bodyRowData;
+        var footSumData = this.footSumData;
+        var bodyGroupingData = this.bodyGroupingData;
+
+        // body-scroll 의 포지션에 의존적이므로..
+        var getBody = function getBody(_colGroup, _bodyRow, _groupRow, _list) {
+            var SS = [];
+            var di, dl;
+            var tri, trl;
+            var ci, cl;
+            var col;
+
+            //SS.push('<table border="1">');
+            for (di = 0, dl = _list.length; di < dl; di++) {
+                var isGroupingRow = false;
+                var rowTable;
+
+                if (_groupRow && "__isGrouping" in _list[di]) {
+                    rowTable = _groupRow;
+                    isGroupingRow = true;
+                } else {
+                    rowTable = _bodyRow;
+                }
+
+                for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+                    SS.push('<tr>');
+                    for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                        col = rowTable.rows[tri].cols[ci];
+
+                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</td>');
+                    }
+                    SS.push('</tr>');
+                }
+            }
+            //SS.push('</table>');
+            return SS.join('');
+        };
+        var getSum = function getSum(_colGroup, _bodyRow, _list) {
+            var SS = [];
+            var tri, trl;
+            var ci, cl;
+            var col;
+
+            //SS.push('<table border="1">');
+            for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                SS.push('<tr>');
+                for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    col = _bodyRow.rows[tri].cols[ci];
+                    SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', getSumFieldValue.call(this, _list, col), '</td>');
+                }
+                SS.push('</tr>');
+            }
+
+            //SS.push('</table>');
+
+            return SS.join('');
+        };
+
+        var po = [];
+        po.push(getBody.call(this, this.headerColGroup, bodyRowData, bodyGroupingData, list));
+        if (cfg.footSum) {
+            // 바닥 요약
+            po.push(getSum.call(this, this.headerColGroup, footSumData, list));
+        }
+
+        // right
+        if (cfg.rightSum) {
+            // todo : right 표현 정리
+        }
+
+        return po.join('');
+    };
+
     GRID.body = {
         init: init,
         repaint: repaint,
@@ -3311,7 +3398,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         scrollTo: scrollTo,
         blur: blur,
         moveFocus: moveFocus,
-        inlineEdit: inlineEdit
+        inlineEdit: inlineEdit,
+        getExcelString: getExcelString
     };
 })();
 
@@ -3705,6 +3793,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var cfg = this.config;
 
         if (this.list[_dindex].__isGrouping) return false;
+        if (this.list[_dindex][cfg.columnKeys.disableSelection]) return false;
 
         if (typeof _selected === "undefined") {
             if (this.list[_dindex][cfg.columnKeys.selected] = !this.list[_dindex][cfg.columnKeys.selected]) {
@@ -3742,6 +3831,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         continue;
                     }
                 }
+                if (this.list[dindex][cfg.columnKeys.disableSelection]) continue;
+
                 if (this.list[dindex][cfg.columnKeys.selected] = !this.list[dindex][cfg.columnKeys.selected]) {
                     this.selectedDataIndexs.push(dindex);
                 }
@@ -3754,6 +3845,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         continue;
                     }
                 }
+                if (this.list[dindex][cfg.columnKeys.disableSelection]) continue;
+
                 if (this.list[dindex][cfg.columnKeys.selected] = _selected) {
                     this.selectedDataIndexs.push(dindex);
                 }
@@ -3861,7 +3954,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var uri = "data:application/vnd.ms-excel;base64,";
 
     var getExcelTmpl = function getExcelTmpl() {
-        return "<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\">\n<meta http-equiv=\"content-type\" content=\"application/vnd.ms-excel; charset=UTF-8\">\n<head>\n<!--[if gte mso 9]>\n<xml>\n    <x:ExcelWorkbook>\n        <x:ExcelWorksheets>\n            {{#worksheet}}\n            <x:ExcelWorksheet>\n                <x:Name>{{name}}</x:Name>\n                <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>\n            </x:ExcelWorksheet>\n            {{/worksheet}}\n        </x:ExcelWorksheets>\n    </x:ExcelWorkbook>\n</xml>\n<![endif]-->\n</head>\n<body>\n{{#tables}}{{{body}}}{{/tables}}\n</body>\n</html>\n";
+        return "\uFEFF<html xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns=\"http://www.w3.org/TR/REC-html40\">\n<meta http-equiv=\"content-type\" content=\"application/vnd.ms-excel; charset=UTF-8\">\n<head>\n<!--[if gte mso 9]>\n<xml>\n    <x:ExcelWorkbook>\n        <x:ExcelWorksheets>\n            {{#worksheet}}\n            <x:ExcelWorksheet>\n                <x:Name>{{name}}</x:Name>\n                <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>\n            </x:ExcelWorksheet>\n            {{/worksheet}}\n        </x:ExcelWorksheets>\n    </x:ExcelWorkbook>\n</xml>\n<![endif]-->\n</head>\n<body>\n{{#tables}}{{{body}}}{{/tables}}\n</body>\n</html>\n";
     };
 
     var tableToExcel = function tableToExcel(table, fileName) {
@@ -3885,7 +3978,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }()
         });
 
-        var isSafari = navigator.userAgent.indexOf("Safari") > -1;
+        var isChrome = navigator.userAgent.indexOf("Chrome") > -1;
+        var isSafari = !isChrome && navigator.userAgent.indexOf("Safari") > -1;
+
         var isIE = /*@cc_on!@*/false || !!document.documentMode; // this works with IE10 and IE11 both :)
         if (isIE) {
             if (typeof Blob !== "undefined") {
@@ -3907,15 +4002,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 $iframe.remove();
             }
         } else if (isSafari) {
-            // 사파리는 지원이 안되므로 그냥 테이블을 출력~
-            link = "data:text/plain;base64," + base64(table);
-            a = document.createElement("a");
-            a.download = fileName;
-            a.href = link;
-
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            // 사파리는 지원이 안되므로 그냥 테이블을 클립보드에 복사처리
+            //tables
+            var blankWindow = window.open('about:blank', this.id + '-excel-export', 'width=600,height=400');
+            blankWindow.document.write(output);
+            blankWindow = null;
         } else {
             link = uri + base64(output);
             a = document.createElement("a");
@@ -4282,12 +4373,37 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         GRID.body.updateRowState.call(this, ["selected"], dindex);
     };
 
+    var getExcelString = function getExcelString() {
+        var cfg = this.config;
+        var colGroup = this.colGroup;
+        var headerData = this.headerData;
+
+        var getHeader = function getHeader(_colGroup, _bodyRow) {
+            var SS = [];
+            //SS.push('<table border="1">');
+            for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                SS.push('<tr>');
+                for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    var col = _bodyRow.rows[tri].cols[ci];
+                    SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', getFieldValue.call(this, col), '</td>');
+                }
+                SS.push('</tr>');
+            }
+            //SS.push('</table>');
+
+            return SS.join('');
+        };
+
+        return getHeader.call(this, colGroup, headerData);
+    };
+
     GRID.header = {
         init: init,
         repaint: repaint,
         scrollTo: scrollTo,
         toggleSort: toggleSort,
-        applySortStatus: applySortStatus
+        applySortStatus: applySortStatus,
+        getExcelString: getExcelString
     };
 })();
 // ax5.ui.grid.inlineEditor
@@ -5086,15 +5202,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return "<span>{{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}{{#dataRowCount}} ({{dataRowCount}}){{/dataRowCount}}</span>";
     };
 
-    var _excel = function _excel() {
-        return "";
-    };
-
     GRID.tmpl = {
         "main": main,
         "page_navigation": page_navigation,
         "page_status": page_status,
-        "excel": _excel,
 
         get: function get(tmplName, data, columnKeys) {
             return ax5.mustache.render(GRID.tmpl[tmplName].call(this, columnKeys), data);
