@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "multiUploader",
-        version: "1.3.33"
+        version: "1.3.34"
     }, function () {
         /**
          * @class ax5multiUploader
