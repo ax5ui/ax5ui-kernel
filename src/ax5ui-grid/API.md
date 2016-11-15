@@ -25,6 +25,7 @@
     * [.select(_selectObject, _options)](#ax5grid.select) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.clearSelect()](#ax5grid.clearSelect) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.selectAll(_options)](#ax5grid.selectAll) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.exportExcel(_fileName)](#ax5grid.exportExcel) ⇒ <code>[ax5grid](#ax5grid)</code> &#124; <code>String</code>
 
 <a name="ax5grid.setConfig"></a>
 
@@ -390,4 +391,18 @@ firstGrid.selectAll({filter: function(){
 firstGrid.selectAll({selected: true, filter: function(){
      return this["b"] == "A01";
 });
+```
+<a name="ax5grid.exportExcel"></a>
+
+### ax5grid.exportExcel(_fileName) ⇒ <code>[ax5grid](#ax5grid)</code> &#124; <code>String</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param | Type |
+| --- | --- |
+| _fileName | <code>String</code> | 
+
+**Example**  
+```js
+firstGrid.exportExcel("grid-to-excel.xls");
+console.log(firstGrid.exportExcel());
 ```
