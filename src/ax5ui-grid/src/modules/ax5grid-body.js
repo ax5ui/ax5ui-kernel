@@ -311,7 +311,7 @@
                     }
                 },
                 "rowSelector": function (_column) {
-                    if(self.list[_column.dindex][self.config.columnKeys.disableSelection]){
+                    if (self.list[_column.dindex][self.config.columnKeys.disableSelection]) {
                         return false;
                     }
 
@@ -583,7 +583,7 @@
                     if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                 }
 
-                return (typeof returnValue === "number") ? returnValue: returnValue.replace(/[<>]/g, function (tag) {
+                return (typeof returnValue === "number") ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
                     return tagsToReplace[tag] || tag;
                 });
             }
@@ -1607,6 +1607,15 @@
     var scrollTo = function (css, noRepaint) {
         var cfg = this.config;
 
+        if (this.isInlineEditing) {
+            for (var key in this.inlineEditing) {
+                //if(this.inlineEditing[key].editor.type === "select") {}
+                // 인라인 에디팅 인데 스크롤 이벤트가 발생하면 디액티브 처리
+                GRID.body.inlineEdit.deActive.call(this, "ESC", key);
+            }
+        }
+
+
         if (cfg.asidePanelWidth > 0 && "top" in css) {
             this.$.panel["aside-body-scroll"].css({top: css.top});
         }
@@ -1974,6 +1983,7 @@
                     return false;
                 }
                 this.inlineEditing[key] = {
+                    editor: editor,
                     panelName: panelName,
                     columnKey: key,
                     column: _focusedColumn[key],
@@ -1985,7 +1995,7 @@
 
                 var originalValue = GRID.data.getValue.call(self, dindex, col.key);
                 var initValue = (function (__value, __editor) {
-                    if(U.isNothing(__value)){
+                    if (U.isNothing(__value)) {
                         __value = U.isNothing(originalValue) ? "" : originalValue;
                     }
 
@@ -2143,7 +2153,7 @@
         }
     };
 
-    var getExcelString = function(){
+    var getExcelString = function () {
         var cfg = this.config;
         var list = this.list;
         var bodyRowData = this.bodyRowData;
@@ -2211,10 +2221,10 @@
         };
 
         var po = [];
-        po.push( getBody.call(this, this.headerColGroup, bodyRowData, bodyGroupingData, list) );
+        po.push(getBody.call(this, this.headerColGroup, bodyRowData, bodyGroupingData, list));
         if (cfg.footSum) {
             // 바닥 요약
-            po.push( getSum.call(this, this.headerColGroup, footSumData, list) );
+            po.push(getSum.call(this, this.headerColGroup, footSumData, list));
         }
 
         // right

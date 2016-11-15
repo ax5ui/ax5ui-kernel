@@ -14,26 +14,22 @@
     <title>GRID</title>
 
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-mask/dist/ax5mask.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-calendar/dist/ax5calendar.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-picker/dist/ax5picker.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-select/dist/ax5select.css"/>
+    <link rel="stylesheet" type="text/css" href="/ax5ui-mask/dist/ax5mask.css"/>
+    <link rel="stylesheet" type="text/css" href="/ax5ui-calendar/dist/ax5calendar.css"/>
+    <link rel="stylesheet" type="text/css" href="/ax5ui-picker/dist/ax5picker.css"/>
+    <link rel="stylesheet" type="text/css" href="/ax5ui-select/dist/ax5select.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5grid.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/ax5core/dist/ax5core.js"></script>
-    <script src="bower_components/ax5ui-formatter/dist/ax5formatter.min.js"></script>
-    <script src="bower_components/ax5ui-calendar/dist/ax5calendar.min.js"></script>
-    <script src="bower_components/ax5ui-picker/dist/ax5picker.min.js"></script>
-    <script src="bower_components/ax5ui-select/dist/ax5select.js"></script>
+    <script src="/ax5core/dist/ax5core.js"></script>
+    <script src="/ax5ui-formatter/dist/ax5formatter.min.js"></script>
+    <script src="/ax5ui-calendar/dist/ax5calendar.min.js"></script>
+    <script src="/ax5ui-picker/dist/ax5picker.min.js"></script>
+    <script src="/ax5ui-select/dist/ax5select.js"></script>
     <script src="../dist/ax5grid.js"></script>
 </head>
 <body style="padding: 20px;">
-
-<div style="border:1px solid #0a68b4;position: relative;height:400px;" id="grid-parent">
-    <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 100%;"></div>
-</div>
 
 <div style="padding: 10px;">
     <button class="btn btn-default" data-set-height="300">높이조절(300px)</button>
@@ -66,6 +62,10 @@
     <button class="btn btn-default" data-grid-control="excel-string">get Excel String</button>
 </div>
 <div style="height: 10px;"></div>
+
+<div style="border:1px solid #0a68b4;position: relative;height:400px;" id="grid-parent">
+    <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 100%;"></div>
+</div>
 
 <TEXTAREA ID="holdtext" STYLE="position:absolute;top:-1000px;"></TEXTAREA>
 <script>
@@ -194,6 +194,15 @@
                                 optionValue: "CD", optionText: "NM"
                             },
                             options: [
+                                {CD: "A", NM: "A: String"},
+                                {CD: "B", NM: "B: Number"},
+                                {CD: "C", NM: "C: substr"},
+                                {CD: "A", NM: "A: String"},
+                                {CD: "B", NM: "B: Number"},
+                                {CD: "C", NM: "C: substr"},
+                                {CD: "A", NM: "A: String"},
+                                {CD: "B", NM: "B: Number"},
+                                {CD: "C", NM: "C: substr"},
                                 {CD: "A", NM: "A: String"},
                                 {CD: "B", NM: "B: Number"},
                                 {CD: "C", NM: "C: substr"},

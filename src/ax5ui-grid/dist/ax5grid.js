@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.34"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -2799,6 +2799,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var scrollTo = function scrollTo(css, noRepaint) {
         var cfg = this.config;
 
+        if (this.isInlineEditing) {
+            for (var key in this.inlineEditing) {
+                //if(this.inlineEditing[key].editor.type === "select") {}
+                // 인라인 에디팅 인데 스크롤 이벤트가 발생하면 디액티브 처리
+                GRID.body.inlineEdit.deActive.call(this, "ESC", key);
+            }
+        }
+
         if (cfg.asidePanelWidth > 0 && "top" in css) {
             this.$.panel["aside-body-scroll"].css({ top: css.top });
         }
@@ -3151,6 +3159,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     return false;
                 }
                 this.inlineEditing[key] = {
+                    editor: editor,
                     panelName: panelName,
                     columnKey: key,
                     column: _focusedColumn[key],
@@ -4549,6 +4558,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var self = _root;
             _$el.data("binded-ax5ui", "ax5select");
             _$el.ax5select({
+                direction: "auto",
                 columnKeys: eConfig.columnKeys,
                 options: eConfig.options,
                 onStateChanged: function onStateChanged() {
@@ -4710,7 +4720,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             fromRowIndex: U.number(fromRowIndex + 1, { "money": true }),
             toRowIndex: U.number(toRowIndex, { "money": true }),
             totalElements: U.number(totalElements, { "money": true }),
-            dataRowCount: totalElements !== this.xvar.dataRealRowCount ? this.xvar.dataRealRowCount : false
+            dataRowCount: totalElements !== this.xvar.dataRealRowCount ? U.number(this.xvar.dataRealRowCount, { "money": true }) : false
         }));
     };
 
