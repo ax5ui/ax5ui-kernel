@@ -161,8 +161,8 @@
 
                                 var displayTableHeight = item.$displayTable.outerHeight();
                                 if (Math.abs(displayTableHeight - item.$target.height()) > displayTableHeightAdjust) {
-                                    item.$target.css({height: displayTableHeight + displayTableHeightAdjust});
-                                    item.$display.css({height: displayTableHeight + displayTableHeightAdjust});
+                                    item.$target.css({height: displayTableHeight + displayTableHeightAdjust + 4});
+                                    item.$display.css({height: displayTableHeight + displayTableHeightAdjust + 4});
                                 }
                             }
                         }
@@ -326,10 +326,11 @@
                     var item = this.queue[queIdx];
 
                     item.$displayLabel.find('[data-ax5autocomplete-selected-label]').remove();
-
                     item.$displayLabelInput.before(getLabel.call(this, queIdx));
                 },
                 focusLabel = function (queIdx) {
+                    if (this.queue[queIdx].disabled) return this;
+
                     this.queue[queIdx].$displayLabel.trigger("focus");
                     this.queue[queIdx].$displayLabelInput.focus();
                 },
@@ -778,6 +779,7 @@
 
                         syncLabel.call(this, queIdx);
                         printLabel.call(this, queIdx);
+                        focusLabel.call(this, queIdx);
                         alignAutocompleteOptionGroup.call(this);
 
                         if (typeof value !== "undefined") {

@@ -21,9 +21,9 @@
 data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
     <div class="ax5combobox-display-table" data-els="display-table">
         <div data-ax5combobox-display="label-holder"> 
-            <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
+            <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
             data-ax5combobox-display="label"
-            spellcheck="false">{{{label}}}</a>
+            spellcheck="false"><input type="text"data-ax5combobox-display="input" style="border:0px none;background: transparent;" /></a>
         </div>
         <div data-ax5combobox-display="addon"> 
             {{#multiple}}{{#reset}}
@@ -47,6 +47,14 @@ data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
         return `
             <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>
         `;
+    };
+
+    var formSelectOptions = function (columnKeys) {
+        return `
+{{#selected}}
+<option value="{{${columnKeys.optionValue}}}" selected="true">{{${columnKeys.optionText}}}</option>
+{{/selected}}
+`;
     };
 
     var options = function (columnKeys) {
@@ -116,13 +124,14 @@ data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
     };
 
     var label = function (columnKeys) {
-        return `{{#selected}}<span tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}"><div data-ax5combobox-remove="true" 
-data-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{text}}</span></span>{{/selected}}`;
+        return `{{#selected}}<div tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}"><div data-ax5combobox-remove="true" 
+data-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}`;
     };
 
     COMBOBOX.tmpl = {
         "comboboxDisplay": comboboxDisplay,
         "formSelect": formSelect,
+        "formSelectOptions": formSelectOptions,
         "optionGroup": optionGroup,
         "options": options,
         "label": label,

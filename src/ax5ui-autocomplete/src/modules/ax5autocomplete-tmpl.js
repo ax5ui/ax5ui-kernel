@@ -20,7 +20,7 @@
 data-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">
     <div class="ax5autocomplete-display-table" data-els="display-table">
         <div data-ax5autocomplete-display="label-holder"> 
-        <a {{^tabIndex}}href="#ax5autocomplete-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
+        <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
         data-ax5autocomplete-display="label"
         spellcheck="false"><input type="text"data-ax5autocomplete-display="input" style="border:0px none;background: transparent;" /></a>
         </div>

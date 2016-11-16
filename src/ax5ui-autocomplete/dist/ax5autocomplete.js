@@ -160,8 +160,8 @@
 
                             var displayTableHeight = item.$displayTable.outerHeight();
                             if (Math.abs(displayTableHeight - item.$target.height()) > displayTableHeightAdjust) {
-                                item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
-                                item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
+                                item.$target.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
+                                item.$display.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
                             }
                         }
                     }
@@ -315,10 +315,11 @@
                 var item = this.queue[queIdx];
 
                 item.$displayLabel.find('[data-ax5autocomplete-selected-label]').remove();
-
                 item.$displayLabelInput.before(getLabel.call(this, queIdx));
             },
                 focusLabel = function focusLabel(queIdx) {
+                if (this.queue[queIdx].disabled) return this;
+
                 this.queue[queIdx].$displayLabel.trigger("focus");
                 this.queue[queIdx].$displayLabelInput.focus();
             },
@@ -733,6 +734,7 @@
 
                     syncLabel.call(this, queIdx);
                     printLabel.call(this, queIdx);
+                    focusLabel.call(this, queIdx);
                     alignAutocompleteOptionGroup.call(this);
 
                     if (typeof value !== "undefined") {
@@ -1377,7 +1379,7 @@ jQuery.fn.ax5autocomplete = function () {
     };
 
     var autocompleteDisplay = function autocompleteDisplay(columnKeys) {
-        return " \n<div class=\"form-control {{formSize}} ax5autocomplete-display {{theme}}\" \ndata-ax5autocomplete-display=\"{{id}}\" data-ax5autocomplete-instance=\"{{instanceId}}\">\n    <div class=\"ax5autocomplete-display-table\" data-els=\"display-table\">\n        <div data-ax5autocomplete-display=\"label-holder\"> \n        <a {{^tabIndex}}href=\"#ax5autocomplete-{{id}}\" {{/tabIndex}}{{#tabIndex}}tabindex=\"{{tabIndex}}\" {{/tabIndex}}\n        data-ax5autocomplete-display=\"label\"\n        spellcheck=\"false\"><input type=\"text\"data-ax5autocomplete-display=\"input\" style=\"border:0px none;background: transparent;\" /></a>\n        </div>\n        <div data-ax5autocomplete-display=\"addon\"> \n            {{#multiple}}{{#reset}}\n            <span class=\"addon-icon-reset\" data-selected-clear=\"true\">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n";
+        return " \n<div class=\"form-control {{formSize}} ax5autocomplete-display {{theme}}\" \ndata-ax5autocomplete-display=\"{{id}}\" data-ax5autocomplete-instance=\"{{instanceId}}\">\n    <div class=\"ax5autocomplete-display-table\" data-els=\"display-table\">\n        <div data-ax5autocomplete-display=\"label-holder\"> \n        <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex=\"{{tabIndex}}\" {{/tabIndex}}\n        data-ax5autocomplete-display=\"label\"\n        spellcheck=\"false\"><input type=\"text\"data-ax5autocomplete-display=\"input\" style=\"border:0px none;background: transparent;\" /></a>\n        </div>\n        <div data-ax5autocomplete-display=\"addon\"> \n            {{#multiple}}{{#reset}}\n            <span class=\"addon-icon-reset\" data-selected-clear=\"true\">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n";
     };
 
     var formSelect = function formSelect(columnKeys) {
