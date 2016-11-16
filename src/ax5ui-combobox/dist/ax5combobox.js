@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "1.3.40"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5combobox
@@ -248,12 +248,14 @@
                     this.close();
                     return this;
                 } else if (clickEl === "optionItem") {
+
                     setOptionSelect.call(this, item.id, {
                         index: {
                             gindex: target.getAttribute("data-option-group-index"),
                             index: target.getAttribute("data-option-index")
                         }
                     }, undefined, true);
+
                     alignComboboxDisplay.call(this);
                     alignComboboxOptionGroup.call(this);
 
@@ -298,6 +300,7 @@
             },
                 blurLabel = function blurLabel(queIdx) {
                 this.queue[queIdx].$displayLabel.trigger("blur");
+                this.queue[queIdx].$displayLabelInput.trigger("blur");
             },
                 onSearch = function onSearch(queIdx, searchWord) {
                 this.queue[queIdx].waitOptions = true;
@@ -1098,9 +1101,8 @@
                                 }
                             })(item, O);
 
-                            item.$display.find('[data-ax5combobox-display="label"]').html(getLabel.call(this, this.activecomboboxQueueIndex));
                             item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
-
+                            printLabel.call(this, this.activecomboboxQueueIndex);
                             alignComboboxDisplay.call(this);
 
                             /// 템플릿에 전달할 오브젝트 선언
