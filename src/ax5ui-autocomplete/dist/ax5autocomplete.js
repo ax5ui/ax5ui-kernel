@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "autocomplete",
-        version: "${VERSION}"
+        version: "1.3.38"
     }, function () {
         /**
          * @class ax5autocomplete
@@ -276,7 +276,7 @@
                         }
                     }, undefined, "optionItemClick");
 
-                    U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
+                    // U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
                     if (!item.multiple) {
                         this.close();
                     }
@@ -324,7 +324,7 @@
                 data.selected = item.selected;
                 data.hasSelected = data.selected && data.selected.length > 0;
                 data.removeIcon = item.removeIcon;
-                return AUTOCOMPLETE.tmpl.get.call(this, "label", data, item.columnKeys) + "&nbsp;";
+                return AUTOCOMPLETE.tmpl.get.call(this, "label", data, item.columnKeys) + '<input type="text" style="border:0px none;background: transparent;" />';
             },
                 syncLabel = function syncLabel(queIdx) {
                 var item = this.queue[queIdx],
@@ -357,7 +357,8 @@
             },
                 focusLabel = function focusLabel(queIdx) {
                 this.queue[queIdx].$displayLabel.trigger("focus");
-                U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                this.queue[queIdx].$displayLabel.find("input").focus();
+                // U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
             },
                 blurLabel = function blurLabel(queIdx) {
                 this.queue[queIdx].$displayLabel.trigger("blur");
@@ -531,7 +532,7 @@
                                  U.selectRange(item.$displayLabel, "end");
                                  }
                                  */
-                                U.selectRange(item.$displayLabel, "end");
+                                // U.selectRange(item.$displayLabel, "end");
                             }
                         }
                     }
@@ -856,7 +857,7 @@
                             onSearch.call(self, queIdx, searchWord);
                         } else if (resetSelected) {
                             setSelected.call(this, item.id, values, undefined, "internal"); // set Value
-                            U.selectRange(item.$displayLabel, "end"); // label focus end
+                            // U.selectRange(item.$displayLabel, "end"); // label focus end
                             self.close();
                         }
                     }, 150);
@@ -956,8 +957,8 @@
                             }
                         },
                         'focus': function focus(queIdx, e) {
-                            //console.log(e);
-                            U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                            // console.log(e);
+                            // U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
                         },
                         'blur': function blur(queIdx, e) {
                             blurLabel.call(this, queIdx);
@@ -1303,7 +1304,7 @@
 
                 if (typeof queIdx !== "undefined") {
                     if (this.queue[queIdx].$display[0]) {
-                        this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
+                        // this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
                         this.queue[queIdx].$display.removeAttr("disabled");
                     }
                     if (this.queue[queIdx].$select[0]) {
@@ -1451,7 +1452,7 @@ jQuery.fn.ax5autocomplete = function () {
     };
 
     var autocompleteDisplay = function autocompleteDisplay(columnKeys) {
-        return " \n<div class=\"form-control {{formSize}} ax5autocomplete-display {{theme}}\" \ndata-ax5autocomplete-display=\"{{id}}\" data-ax5autocomplete-instance=\"{{instanceId}}\">\n    <div class=\"ax5autocomplete-display-table\" data-els=\"display-table\">\n        <div data-ax5autocomplete-display=\"label-holder\"> \n        <a {{^tabIndex}}href=\"#ax5autocomplete-{{id}}\" {{/tabIndex}}{{#tabIndex}}tabindex=\"{{tabIndex}}\" {{/tabIndex}}\n        data-ax5autocomplete-display=\"label\"\n        contentEditable=\"true\"\n        spellcheck=\"false\">{{{label}}}</a>\n        </div>\n        <div data-ax5autocomplete-display=\"addon\"> \n            {{#multiple}}{{#reset}}\n            <span class=\"addon-icon-reset\" data-selected-clear=\"true\">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n";
+        return " \n<div class=\"form-control {{formSize}} ax5autocomplete-display {{theme}}\" \ndata-ax5autocomplete-display=\"{{id}}\" data-ax5autocomplete-instance=\"{{instanceId}}\">\n    <div class=\"ax5autocomplete-display-table\" data-els=\"display-table\">\n        <div data-ax5autocomplete-display=\"label-holder\"> \n        <a {{^tabIndex}}href=\"#ax5autocomplete-{{id}}\" {{/tabIndex}}{{#tabIndex}}tabindex=\"{{tabIndex}}\" {{/tabIndex}}\n        data-ax5autocomplete-display=\"label\"\n        spellcheck=\"false\">{{{label}}}</a>\n        </div>\n        <div data-ax5autocomplete-display=\"addon\"> \n            {{#multiple}}{{#reset}}\n            <span class=\"addon-icon-reset\" data-selected-clear=\"true\">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n";
     };
 
     var formSelect = function formSelect(columnKeys) {
