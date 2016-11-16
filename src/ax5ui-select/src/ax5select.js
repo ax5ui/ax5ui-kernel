@@ -72,6 +72,7 @@
 
             cfg = this.config;
 
+            var $window = jQuery(window), $body = jQuery(document.body);
             var
                 ctrlKeys = {
                     "18": "KEY_ALT",
@@ -148,7 +149,6 @@
                 alignSelectOptionGroup = function (append) {
                     if (!this.activeSelectOptionGroup) return this;
 
-                    var $window = jQuery(window), $body = jQuery(document.body);
                     var item = this.queue[this.activeSelectQueueIndex],
                         pos = {}, positionMargin = 0,
                         dim = {}, pickerDim = {},
@@ -169,7 +169,6 @@
                     };
 
                     // picker css(width, left, top) & direction 결정
-                    console.log(item.direction);
                     if (!item.direction || item.direction === "" || item.direction === "auto") {
                         // set direction
                         pickerDirection = "top";

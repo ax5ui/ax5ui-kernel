@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "1.3.35"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5combobox
@@ -65,6 +65,8 @@
 
             cfg = this.config;
 
+            var $window = jQuery(window),
+                $body = jQuery(document.body);
             var ctrlKeys = {
                 "18": "KEY_ALT",
                 "8": "KEY_BACKSPACE",
@@ -158,7 +160,10 @@
 
                 var item = this.queue[this.activecomboboxQueueIndex],
                     pos = {},
-                    dim = {};
+                    positionMargin = 0,
+                    dim = {},
+                    pickerDim = {},
+                    pickerDirection;
 
                 if (append) jQuery(document.body).append(this.activecomboboxOptionGroup);
 
@@ -167,27 +172,57 @@
                     width: item.$target.outerWidth(),
                     height: item.$target.outerHeight()
                 };
+                pickerDim = {
+                    winWidth: Math.max($window.width(), $body.width()),
+                    winHeight: Math.max($window.height(), $body.height()),
+                    width: this.activecomboboxOptionGroup.outerWidth(),
+                    height: this.activecomboboxOptionGroup.outerHeight()
+                };
 
                 // picker css(width, left, top) & direction 결정
                 if (!item.direction || item.direction === "" || item.direction === "auto") {
                     // set direction
-                    item.direction = "top";
+                    pickerDirection = "top";
+
+                    if (pos.top - pickerDim.height - positionMargin < 0) {
+                        pickerDirection = "top";
+                    } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                        pickerDirection = "bottom";
+                    }
+                } else {
+                    pickerDirection = item.direction;
                 }
 
                 if (append) {
-                    this.activecomboboxOptionGroup.addClass("direction-" + item.direction);
+                    this.activecomboboxOptionGroup.addClass("direction-" + pickerDirection);
                 }
                 this.activecomboboxOptionGroup.css(function () {
-                    if (item.direction == "top") {
+                    if (pickerDirection == "top") {
+                        if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+
+                            var newTop = pos.top + dim.height / 2 - pickerDim.height / 2;
+                            if (newTop + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                                newTop = 0;
+                            }
+                            if (newTop < 0) {
+                                newTop = 0;
+                            }
+
+                            return {
+                                left: pos.left,
+                                top: newTop,
+                                width: dim.width
+                            };
+                        }
                         return {
                             left: pos.left,
                             top: pos.top + dim.height + 1,
                             width: dim.width
                         };
-                    } else if (item.direction == "bottom") {
+                    } else if (pickerDirection == "bottom") {
                         return {
                             left: pos.left,
-                            top: pos.top - this.activecomboboxOptionGroup.outerHeight() - 1,
+                            top: pos.top - pickerDim.height - 1,
                             width: dim.width
                         };
                     }

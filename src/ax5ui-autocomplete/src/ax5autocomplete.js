@@ -87,6 +87,7 @@
 
             cfg = this.config;
 
+            var $window = jQuery(window), $body = jQuery(document.body);
             var
                 ctrlKeys = {
                     "18": "KEY_ALT",
@@ -178,12 +179,13 @@
                     return this;
                 },
                 alignAutocompleteOptionGroup = function (append) {
-                    if (!this.activeautocompleteOptionGroup) return this;
+                    if (append && !this.activeautocompleteOptionGroup) return this;
 
-                    var
-                        item = this.queue[this.activeautocompleteQueueIndex],
-                        pos = {},
-                        dim = {};
+
+                    var item = this.queue[this.activeautocompleteQueueIndex],
+                        pos = {}, positionMargin = 0,
+                        dim = {}, pickerDim = {},
+                        pickerDirection;
 
                     if (append) jQuery(document.body).append(this.activeautocompleteOptionGroup);
 
@@ -192,30 +194,60 @@
                         width: item.$target.outerWidth(),
                         height: item.$target.outerHeight()
                     };
+                    pickerDim = {
+                        winWidth: Math.max($window.width(), $body.width()),
+                        winHeight: Math.max($window.height(), $body.height()),
+                        width: this.activeautocompleteOptionGroup.outerWidth(),
+                        height: this.activeautocompleteOptionGroup.outerHeight()
+                    };
 
                     // picker css(width, left, top) & direction 결정
                     if (!item.direction || item.direction === "" || item.direction === "auto") {
                         // set direction
-                        item.direction = "top";
+                        pickerDirection = "top";
+
+                        if (pos.top - pickerDim.height - positionMargin < 0) {
+                            pickerDirection = "top";
+                        } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                            pickerDirection = "bottom";
+                        }
+                    } else {
+                        pickerDirection = item.direction;
                     }
 
                     if (append) {
                         this.activeautocompleteOptionGroup
-                            .addClass("direction-" + item.direction);
+                            .addClass("direction-" + pickerDirection);
                     }
                     this.activeautocompleteOptionGroup
                         .css((function () {
-                            if (item.direction == "top") {
+                            if (pickerDirection == "top") {
+                                if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+
+                                    var newTop = pos.top + pickerDim.height;
+                                    if (newTop + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                                        newTop = 0;
+                                    }
+                                    if(newTop < 0){
+                                        newTop = 0;
+                                    }
+
+                                    return {
+                                        left: pos.left,
+                                        top: newTop,
+                                        width: dim.width
+                                    }
+                                }
                                 return {
                                     left: pos.left,
                                     top: pos.top + dim.height + 1,
                                     width: dim.width
                                 }
                             }
-                            else if (item.direction == "bottom") {
+                            else if (pickerDirection == "bottom") {
                                 return {
                                     left: pos.left,
-                                    top: pos.top - this.activeautocompleteOptionGroup.outerHeight() - 1,
+                                    top: pos.top - pickerDim.height - 1,
                                     width: dim.width
                                 }
                             }
@@ -385,6 +417,12 @@
                         this.activeautocompleteOptionGroup.find('[data-els="content"]').html(jQuery(AUTOCOMPLETE.tmpl.get.call(this, "options", data, item.columnKeys)));
 
                         focusWord.call(this, this.activeautocompleteQueueIndex, searchWord);
+                        alignAutocompleteOptionGroup.call(this);
+
+                        setTimeout((function(){
+                            alignAutocompleteOptionGroup.call(this);
+                        }).bind(this));
+
 
                     }).bind(this));
                 },
@@ -944,7 +982,7 @@
                                 return this;
                             }
                             if (self.activeautocompleteQueueIndex != queIdx) { // 닫힌 상태 인경우
-                                self.open(queIdx);
+                                self.open(queIdx); // open and align
                                 U.stopEvent(e);
                             }
                             if (ctrlKeys[e.which]) {
