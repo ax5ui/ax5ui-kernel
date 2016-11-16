@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "autocomplete",
-        version: "${VERSION}"
+        version: "1.3.40"
     }, function () {
         /**
          * @class ax5autocomplete
@@ -1246,7 +1246,7 @@
                 return this;
             };
 
-            /**  
+            /**
              * @method ax5autocomplete.disable
              * @param {(jQueryObject|Element|Number)} _boundID
              * @returns {ax5autocomplete}
