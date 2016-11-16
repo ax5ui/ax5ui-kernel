@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "1.3.37"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5combobox
@@ -122,7 +122,8 @@
                     w;
 
                 while (i--) {
-                    var item = this.queue[i];
+                    var item = this.queue[i],
+                        displayTableHeight;
                     if (item.$display) {
                         w = Math.max(item.$select.outerWidth(), U.number(item.minWidth));
                         item.$display.css({
@@ -136,16 +137,23 @@
 
                         // 높이조절 처리
                         if (item.multiple) {
-                            var displayTableHeightAdjust = function () {
-                                return U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
-                            }.call(this);
-                            item.$target.height('');
-                            item.$display.height('');
+                            var labelItemHeight = item.$display.find('[data-ax5combobox-selected-label]').height();
+                            if (labelItemHeight) {
+                                item.$target.height('');
+                                item.$display.height('');
 
-                            var displayTableHeight = item.$displayTable.outerHeight();
-                            if (Math.abs(displayTableHeight - item.$target.height()) > displayTableHeightAdjust) {
-                                item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
-                                item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
+                                if (item.$target.height() + 10 < (displayTableHeight = item.$displayTable.outerHeight())) {
+                                    var displayTableHeightAdjust = function () {
+                                        var borderWidth = U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
+                                        if (ax5.info.browser.name === "ie") {
+                                            return borderWidth + 3 - (labelItemHeight || 20);
+                                        } else {
+                                            return borderWidth + 3;
+                                        }
+                                    }.call(this);
+                                    item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
+                                    item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
+                                } else {}
                             }
                         }
                     }
@@ -254,6 +262,7 @@
                             index: target.getAttribute("data-option-index")
                         }
                     }, undefined, true);
+
                     U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
                     if (!item.multiple) {
                         this.close();
@@ -313,25 +322,39 @@
                 syncLabel = function syncLabel(queIdx) {
                 var item = this.queue[queIdx],
                     displayTableHeight;
-                item.$displayLabel.html(getLabel.call(this, queIdx));
-                item.$target.height('');
-                item.$display.height('');
 
-                // label 사이즈 체크
-                // console.log(item.$target.height(), item.$displayTable.outerHeight());
-                if (item.$target.height() < (displayTableHeight = item.$displayTable.outerHeight())) {
-                    var displayTableHeightAdjust = function () {
-                        return U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
-                    }();
-                    item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
-                    item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
+                item.$displayLabel.html(getLabel.call(this, queIdx));
+
+                if (item.multiple) {
+                    var labelItemHeight = item.$display.find('[data-ax5combobox-selected-label]').height();
+                    if (labelItemHeight) {
+                        item.$target.height('');
+                        item.$display.height('');
+
+                        if (item.$target.height() + 10 < (displayTableHeight = item.$displayTable.outerHeight())) {
+                            var displayTableHeightAdjust = function () {
+                                var borderWidth = U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
+                                if (ax5.info.browser.name === "ie") {
+                                    return borderWidth + 3 - (labelItemHeight || 20);
+                                } else {
+                                    return borderWidth + 3;
+                                }
+                            }();
+                            item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
+                            item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
+                        } else {}
+                    }
                 }
             },
                 focusLabel = function focusLabel(queIdx) {
+                if (this.queue[queIdx].disabled) return this;
+
+                this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
                 this.queue[queIdx].$displayLabel.trigger("focus");
                 U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
             },
                 blurLabel = function blurLabel(queIdx) {
+                this.queue[queIdx].$displayLabel.attr("contentEditable", "false");
                 this.queue[queIdx].$displayLabel.trigger("blur");
             },
                 onSearch = function onSearch(queIdx, searchWord) {
@@ -380,11 +403,7 @@
                     data.multiple = item.multiple;
                     data.lang = item.lang;
                     data.options = item.options;
-                    /*
-                     this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
-                     ax5.mustache.render(COMBOBOX.tmpl.options.call(this, item.columnKeys), data))
-                     );
-                     */
+
                     this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)));
                 }.bind(this));
             },
@@ -911,6 +930,7 @@
                         } else if (searchWord === false) {
                             setOptionSelect.call(this, item.id, null, undefined, "internal"); // clear value
                             setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
+
                             U.selectRange(item.$displayLabel, "end"); // label focus end
                         } else if (searchWord != "") {
                             focusWord.call(self, queIdx, searchWord);
@@ -968,7 +988,7 @@
                                             index: option['@index']
                                         }
                                     }, false, true);
-                                    focusLabel.call(this, queIdx);
+                                    // focusLabel.call(this, queIdx);
                                     U.stopEvent(e);
                                     return this;
                                 } else if (clickEl === "clear") {
@@ -985,6 +1005,8 @@
 
                                     if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
                                         this.queue[queIdx].$displayLabel.html(getLabel.call(this, queIdx));
+                                        focusLabel.call(this, queIdx);
+                                    } else {
                                         focusLabel.call(this, queIdx);
                                     }
                                 }
@@ -1082,14 +1104,15 @@
                             // 라벨에 사용자 입력 필드가 있으므로 displayInput은 필요 없음.
                             // select.options로 item.options를 만들어내거나 item.options로 select.options를 만들어냄
                             item.options = syncComboboxOptions.call(this, queIdx, item.options);
-
-                            alignComboboxDisplay.call(this);
                         } else {
                             item.$displayLabel.html(getLabel.call(this, queIdx));
                             item.options = syncComboboxOptions.call(this, queIdx, item.options);
-
-                            alignComboboxDisplay.call(this);
                         }
+
+                        //console.log(item.$displayLabel.height(), item.$displayTable.height());
+                        item.$displayTable.find('[data-ax5combobox-display="label-holder"], [data-ax5combobox-display="addon"]').css({ "padding-top": (item.$displayTable.height() - (item.$displayLabel.height() + 3)) / 2 });
+
+                        alignComboboxDisplay.call(this);
 
                         item.$display.unbind('click.ax5combobox').bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
 
@@ -1401,6 +1424,7 @@
                 item = this.queue[this.activecomboboxQueueIndex];
                 item.optionFocusIndex = -1;
                 item.$display.removeAttr("data-combobox-option-group-opened").trigger("focus");
+                item.$displayLabel.attr("contentEditable", "false");
 
                 this.activecomboboxOptionGroup.addClass("destroy");
 
@@ -1445,8 +1469,10 @@
                 var queIdx = getQueIdx.call(this, _boundID);
 
                 if (typeof queIdx !== "undefined") {
+                    this.queue[queIdx].disabled = false;
                     if (this.queue[queIdx].$display[0]) {
-                        this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
+                        // 포커스 될 때 enable, disable 하도록 변경
+                        //this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
                         this.queue[queIdx].$display.removeAttr("disabled");
                     }
                     if (this.queue[queIdx].$select[0]) {
@@ -1471,8 +1497,10 @@
                 var queIdx = getQueIdx.call(this, _boundID);
 
                 if (typeof queIdx !== "undefined") {
+                    this.queue[queIdx].disabled = true;
                     if (this.queue[queIdx].$display[0]) {
-                        this.queue[queIdx].$displayLabel.attr("contentEditable", "false");
+                        // 포커스 될 때 enable, disable 속성 변경 토록 수정
+                        //this.queue[queIdx].$displayLabel.attr("contentEditable", "false");
                         this.queue[queIdx].$display.attr("disabled", "disabled");
                     }
                     if (this.queue[queIdx].$select[0]) {
@@ -1596,7 +1624,7 @@ jQuery.fn.ax5combobox = function () {
     };
 
     var comboboxDisplay = function comboboxDisplay(columnKeys) {
-        return "\n            <div class=\"form-control {{formSize}} ax5combobox-display {{theme}}\" \n            data-ax5combobox-display=\"{{id}}\" data-ax5combobox-instance=\"{{instanceId}}\">\n                <div class=\"ax5combobox-display-table\" data-els=\"display-table\">\n                    <div data-ax5combobox-display=\"label-holder\"> \n                    <a {{^tabIndex}}href=\"#ax5combobox-{{id}}\" {{/tabIndex}}{{#tabIndex}}tabindex=\"{{tabIndex}}\" {{/tabIndex}}\n                    data-ax5combobox-display=\"label\"\n                    contentEditable=\"true\"\n                    spellcheck=\"false\">{{{label}}}</a>\n                    </div>\n                    <div data-ax5combobox-display=\"addon\"> \n                        {{#multiple}}{{#reset}}\n                        <span class=\"addon-icon-reset\" data-selected-clear=\"true\">{{{.}}}</span>\n                        {{/reset}}{{/multiple}}\n                        {{#icons}}\n                        <span class=\"addon-icon-closed\">{{clesed}}</span>\n                        <span class=\"addon-icon-opened\">{{opened}}</span>\n                        {{/icons}}\n                        {{^icons}}\n                        <span class=\"addon-icon-closed\"><span class=\"addon-icon-arrow\"></span></span>\n                        <span class=\"addon-icon-opened\"><span class=\"addon-icon-arrow\"></span></span>\n                        {{/icons}}\n                    </div>\n                </div>\n            </a>\n        ";
+        return "\n<div class=\"form-control {{formSize}} ax5combobox-display {{theme}}\" \ndata-ax5combobox-display=\"{{id}}\" data-ax5combobox-instance=\"{{instanceId}}\">\n    <div class=\"ax5combobox-display-table\" data-els=\"display-table\">\n        <div data-ax5combobox-display=\"label-holder\"> \n            <a {{^tabIndex}}href=\"#ax5combobox-{{id}}\" {{/tabIndex}}{{#tabIndex}}tabindex=\"{{tabIndex}}\" {{/tabIndex}}\n            data-ax5combobox-display=\"label\"\n            spellcheck=\"false\">{{{label}}}</a>\n        </div>\n        <div data-ax5combobox-display=\"addon\"> \n            {{#multiple}}{{#reset}}\n            <span class=\"addon-icon-reset\" data-selected-clear=\"true\">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n            {{#icons}}\n            <span class=\"addon-icon-closed\">{{clesed}}</span>\n            <span class=\"addon-icon-opened\">{{opened}}</span>\n            {{/icons}}\n            {{^icons}}\n            <span class=\"addon-icon-closed\"><span class=\"addon-icon-arrow\"></span></span>\n            <span class=\"addon-icon-opened\"><span class=\"addon-icon-arrow\"></span></span>\n            {{/icons}}\n        </div>\n    </div>\n</div>\n        ";
     };
 
     var formSelect = function formSelect(columnKeys) {
@@ -1608,7 +1636,7 @@ jQuery.fn.ax5combobox = function () {
     };
 
     var label = function label(columnKeys) {
-        return "{{#selected}}<div tabindex=\"-1\" data-ax5combobox-selected-label=\"{{@i}}\" data-ax5combobox-selected-text=\"{{text}}\"><div data-ax5combobox-remove=\"true\" data-ax5combobox-remove-index=\"{{@i}}\">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}";
+        return "{{#selected}}<span tabindex=\"-1\" data-ax5combobox-selected-label=\"{{@i}}\" data-ax5combobox-selected-text=\"{{text}}\"><div data-ax5combobox-remove=\"true\" \ndata-ax5combobox-remove-index=\"{{@i}}\">{{{removeIcon}}}</div><span>{{text}}</span></span>{{/selected}}";
     };
 
     COMBOBOX.tmpl = {

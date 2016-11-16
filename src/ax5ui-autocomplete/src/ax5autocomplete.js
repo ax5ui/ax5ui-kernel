@@ -283,7 +283,7 @@
                             }
                         }, undefined, "optionItemClick");
 
-                        U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
+                        // U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
                         if (!item.multiple) {
                             this.close();
                         }
@@ -332,7 +332,8 @@
                     data.selected = item.selected;
                     data.hasSelected = (data.selected && data.selected.length > 0);
                     data.removeIcon = item.removeIcon;
-                    return AUTOCOMPLETE.tmpl.get.call(this, "label", data, item.columnKeys) + "&nbsp;";
+                    return AUTOCOMPLETE.tmpl.get.call(this, "label", data, item.columnKeys)
+                        + '<input type="text" style="border:0px none;background: transparent;" />';
                 },
                 syncLabel = function (queIdx) {
                     var item = this.queue[queIdx], displayTableHeight;
@@ -365,7 +366,8 @@
                 },
                 focusLabel = function (queIdx) {
                     this.queue[queIdx].$displayLabel.trigger("focus");
-                    U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                    this.queue[queIdx].$displayLabel.find("input").focus();
+                    // U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
                 },
                 blurLabel = function (queIdx) {
                     this.queue[queIdx].$displayLabel.trigger("blur");
@@ -553,7 +555,7 @@
                                      U.selectRange(item.$displayLabel, "end");
                                      }
                                      */
-                                    U.selectRange(item.$displayLabel, "end");
+                                    // U.selectRange(item.$displayLabel, "end");
                                 }
                             }
                         }
@@ -902,7 +904,7 @@
                         }
                         else if (resetSelected) {
                             setSelected.call(this, item.id, values, undefined, "internal"); // set Value
-                            U.selectRange(item.$displayLabel, "end"); // label focus end
+                            // U.selectRange(item.$displayLabel, "end"); // label focus end
                             self.close();
                         }
 
@@ -1010,8 +1012,8 @@
                             }
                         },
                         'focus': function (queIdx, e) {
-                            //console.log(e);
-                            U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                            // console.log(e);
+                            // U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
                         },
                         'blur': function (queIdx, e) {
                             blurLabel.call(this, queIdx);
@@ -1382,7 +1384,7 @@
 
                 if (typeof queIdx !== "undefined") {
                     if (this.queue[queIdx].$display[0]) {
-                        this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
+                        // this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
                         this.queue[queIdx].$display.removeAttr("disabled");
                     }
                     if (this.queue[queIdx].$select[0]) {

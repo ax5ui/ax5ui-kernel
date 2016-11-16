@@ -22,7 +22,6 @@ data-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceI
         <div data-ax5autocomplete-display="label-holder"> 
         <a {{^tabIndex}}href="#ax5autocomplete-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
         data-ax5autocomplete-display="label"
-        contentEditable="true"
         spellcheck="false">{{{label}}}</a>
         </div>
         <div data-ax5autocomplete-display="addon"> 
