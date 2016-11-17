@@ -20,6 +20,7 @@
 </head>
 <body style="padding: 10px;">
 <div class="container">
+    <div style="height:300px;"></div>
     <form name="forms">
         <h1>form-group</h1>
 
@@ -53,6 +54,8 @@
     <button type="button" class="btn" data-btn="setText">setText</button>
     <button type="button" class="btn" data-btn="setText2">setText(array)</button>
     <button type="button" class="btn" data-btn="getSelectedOption">getSelectedOption</button>
+
+    <div style="height:100px;"></div>
 </div>
 <script>
     var options = [];
@@ -146,62 +149,6 @@
 
         myUI.disable($('[data-ax5autocomplete="ui1"]'));
         myUI.enable($('[data-ax5autocomplete="ui1"]'));
-
-        //myUI.open($('[data-ax5autocomplete="ui1"]'));
-
-        myUI.bind({
-            //theme: "primary",
-            target: $('[data-ax5autocomplete="ui2"]'),
-            onSearch: function (callback) {
-                var searchWord = this.searchWord;
-                setTimeout(function () {
-                    var regExp = new RegExp(searchWord);
-                    var myOptions = [];
-                    options.forEach(function (n) {
-                        if (n.text.match(regExp)) {
-                            myOptions.push({
-                                value: n.value,
-                                text: n.text
-                            })
-                        }
-                    });
-                    callback({
-                        options: myOptions
-                    });
-                }, 150);
-
-            },
-            onStateChanged: function () {
-                //console.log(this);
-            }
-        });
-
-        myUI.bind({
-            theme: "primary",
-            target: $('[data-ax5autocomplete="ui3"]'),
-            onSearch: function (callback) {
-                var searchWord = this.searchWord;
-                setTimeout(function () {
-                    var regExp = new RegExp(searchWord);
-                    var myOptions = [];
-                    options.forEach(function (n) {
-                        if (n.text.match(regExp)) {
-                            myOptions.push({
-                                value: n.value,
-                                text: n.text
-                            })
-                        }
-                    });
-                    callback({
-                        options: myOptions
-                    });
-                }, 150);
-
-            },
-            onStateChanged: function () {
-                //console.log(this);
-            }
-        });
     });
 
 
