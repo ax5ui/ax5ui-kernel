@@ -17,6 +17,8 @@ var shell = require('gulp-shell');
 var replace = require('gulp-replace');
 var jeditor = require("gulp-json-editor");
 
+var sourcemaps = require('gulp-sourcemaps');
+
 var PATHS = {
     "ax5core": {
         isPlugin: true,
@@ -196,6 +198,7 @@ for (var k in PATHS) {
             return function () {
                 gulp.src([PATHS[k].src + '/*.js', PATHS[k].src + '/modules/*.js'])
                     .pipe(plumber({errorHandler: errorAlert}))
+                    .pipe(sourcemaps.init())
                     .pipe(concat(__p.js + '.js'))
                     .pipe(babel({
                         presets: ['es2015'],
@@ -204,6 +207,7 @@ for (var k in PATHS) {
                     .pipe(gulp.dest(PATHS[k].dest))
                     .pipe(concat(__p.js + '.min.js'))
                     .pipe(uglify())
+                    .pipe(sourcemaps.write('.'))
                     .pipe(gulp.dest(PATHS[k].dest));
             }
         })(k, __p));

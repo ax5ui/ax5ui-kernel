@@ -13,30 +13,23 @@
 
     <title>GRID</title>
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-mask/dist/ax5mask.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-calendar/dist/ax5calendar.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-picker/dist/ax5picker.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-select/dist/ax5select.css"/>
+    <link rel="stylesheet" type="text/css" href="/ax5ui-mask/dist/ax5mask.css"/>
+    <link rel="stylesheet" type="text/css" href="/ax5ui-calendar/dist/ax5calendar.css"/>
+    <link rel="stylesheet" type="text/css" href="/ax5ui-picker/dist/ax5picker.css"/>
+    <link rel="stylesheet" type="text/css" href="/ax5ui-select/dist/ax5select.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5grid.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/ax5core/dist/ax5core.js"></script>
-    <script src="bower_components/ax5ui-formatter/dist/ax5formatter.min.js"></script>
-    <script src="bower_components/ax5ui-calendar/dist/ax5calendar.min.js"></script>
-    <script src="bower_components/ax5ui-picker/dist/ax5picker.min.js"></script>
-    <script src="bower_components/ax5ui-select/dist/ax5select.js"></script>
+    <script src="/ax5core/dist/ax5core.js"></script>
+    <script src="/ax5ui-formatter/dist/ax5formatter.min.js"></script>
+    <script src="/ax5ui-calendar/dist/ax5calendar.min.js"></script>
+    <script src="/ax5ui-picker/dist/ax5picker.min.js"></script>
+    <script src="/ax5ui-select/dist/ax5select.js"></script>
     <script src="../dist/ax5grid.js"></script>
 </head>
 <body style="padding: 20px;">
-
-<div style="border:1px solid #0a68b4;position: relative;height:400px;" id="grid-parent">
-    <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 100%;"></div>
-</div>
 
 <div style="padding: 10px;">
     <button class="btn btn-default" data-set-height="300">높이조절(300px)</button>
@@ -64,8 +57,15 @@
     <button class="btn btn-default" data-grid-control="select-all-true">select selectAll</button>
     <button class="btn btn-default" data-grid-control="select-all-false">deselect selectAll</button>
 </div>
-
+<div style="padding: 5px;">
+    <button class="btn btn-default" data-grid-control="excel-export">Excel Export</button>
+    <button class="btn btn-default" data-grid-control="excel-string">get Excel String</button>
+</div>
 <div style="height: 10px;"></div>
+
+<div style="border:1px solid #0a68b4;position: relative;height:400px;" id="grid-parent">
+    <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 100%;"></div>
+</div>
 
 <TEXTAREA ID="holdtext" STYLE="position:absolute;top:-1000px;"></TEXTAREA>
 <script>
@@ -79,14 +79,14 @@
     };
 
     var sampleData = [
-        {a: "A", b: "A<A", price: 1000, amount: null, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y"},
+        {a: "A", b: "A<A", price: 1000, amount: null, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y", __disable_selection__: true},
         {a: "A", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
         {a: "A", b: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
         {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
         {a: "A", b: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
         {a: "A", b: "A01", price: 1500, amount: 2, saleDt: "2016-08-26", customer: "이서연", saleType: "A", isChecked: "N"}
     ];
-
+    ///
     var gridView = {
         initView: function () {
             firstGrid.setConfig({
@@ -197,6 +197,15 @@
                                 {CD: "A", NM: "A: String"},
                                 {CD: "B", NM: "B: Number"},
                                 {CD: "C", NM: "C: substr"},
+                                {CD: "A", NM: "A: String"},
+                                {CD: "B", NM: "B: Number"},
+                                {CD: "C", NM: "C: substr"},
+                                {CD: "A", NM: "A: String"},
+                                {CD: "B", NM: "B: Number"},
+                                {CD: "C", NM: "C: substr"},
+                                {CD: "A", NM: "A: String"},
+                                {CD: "B", NM: "B: Number"},
+                                {CD: "C", NM: "C: substr"},
                                 {CD: "D", NM: "D: substring"}
                             ]
                         }
@@ -290,8 +299,8 @@
                     firstGrid.updateColumn({key: "b", label: "필드B"}, 0);
                     break;
                 case "select-row-toggle":
-                firstGrid.select(0);
-                break;
+                    firstGrid.select(0);
+                    break;
                 case "select-row-true":
                     firstGrid.select(0, {selected: true});
                     break;
@@ -306,6 +315,12 @@
                     break;
                 case "select-all-false":
                     firstGrid.selectAll({selected: false});
+                    break;
+                case "excel-export":
+                    firstGrid.exportExcel("grid-to-excel.xls"); // ie 풀테스트
+                    break;
+                case "excel-string":
+                    console.log(firstGrid.exportExcel());
                     break;
             }
         });

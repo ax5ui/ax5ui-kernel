@@ -52,7 +52,9 @@
     <button class="btn btn-default" data-grid-control="width-resize">width resize</button>
     <button class="btn btn-default" data-grid-control="delete-all">delete all</button>
 </div>
-
+<div style="padding: 5px;">
+    <button class="btn btn-default" data-grid-control="excel">Excel</button>
+</div>
 <script>
 
 
@@ -71,7 +73,7 @@
     };
 
     var sampleData = [
-        {companyJson: {"대표자명": "----"}, a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
+        {companyJson: {"대표자명": "----"}, a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A", __disable_selection__: true},
         {companyJson: {"대표자명": "abcd"}, a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
         {companyJson: {"대표자명": "abcd"}, a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
         {companyJson: {"대표자명": "위세라"}, a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
@@ -86,10 +88,12 @@
                 sortable: true,
                 multiSort: true,
                 multipleSelect: false,
+                /*
                 remoteSort: function () {
                     console.log(JSON.stringify(this.sortInfo, null, '\t'));
                     gridView.setSortData(this.sortInfo);
                 },
+                */
                 body: {
                     onClick: function () {
                         this.self.select(this.dindex);
@@ -107,6 +111,7 @@
                 },
                 columns: [
                     {key: "b", label: "필드B", align: "center"},
+                    {key: "companyJson.대표자명", label: "대표자명", width: 100, align: "center"},
                     {key: "saleDt", label: "판매일자", width: "*", align: "center"},
                     {key: "customer", label: "고객명"},
                     {key: "saleType", label: "판매타입"}
@@ -163,7 +168,7 @@
 
             firstGrid.selectAll({
                 filter: function () {
-                    console.log(this);
+                    //console.log(this);
                     return this.b == "A01";
                 }
             });
@@ -231,6 +236,12 @@
                     ax5.ui.grid_instance.forEach(function (g) {
                         g.align();
                     });
+
+                    break;
+
+                case "excel":
+
+                    firstGrid.exportExcel("myExcel.xls");
 
                     break;
             }
