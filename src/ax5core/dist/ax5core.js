@@ -2073,6 +2073,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * @example
          * ```js
          * ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format("ASP", "ASP.NET");
+         * ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format(["ASP", "ASP.NET"]);
          * ax5.util.stinrg("{0} counts").format(100);
          * ```
          */
@@ -2087,7 +2088,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                  * @returns {*}
                  */
                 this.format = function () {
-                    var args = arguments;
+                    var args = [];
+                    for (var i = 0, l = arguments.length; i < l; i++) {
+                        args = args.concat(arguments[i]);
+                    }
                     return this.value.replace(/{(\d+)}/g, function (match, number) {
                         return typeof args[number] != 'undefined' ? args[number] : match;
                     });
@@ -2122,6 +2126,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 };
                 /**
                  * @method ax5.util.string.left
+                 * @param {String|Number} pos - 찾을 문자열 또는 포지션
                  * @returns {*}
                  */
                 this.left = function (_pos) {
@@ -2129,6 +2134,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 };
                 /**
                  * @method ax5.util.string.right
+                 * @param {String|Number} pos - 찾을 문자열 또는 포지션
                  * @returns {*}
                  */
                 this.right = function (_pos) {

@@ -58,8 +58,5 @@
     "should": "^11.1.0",
     "strip-indent": "^1.0.1",
     "version": "^0.1.2"
-  },
-  "dependencies": {
-    "gulp-sourcemaps": "^2.2.0"
   }
 }
