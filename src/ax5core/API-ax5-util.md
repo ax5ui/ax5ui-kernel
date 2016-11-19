@@ -760,3 +760,18 @@ $(document.body).click(function(){
     debounceFn(new Date());
 });
 ```
+
+## ax5.util.string
+`ax5.util.string(String).format([args]);`  
+`ax5.util.string(String).escape();`  
+`ax5.util.string(String).unescape();`  
+`ax5.util.string(String).encode();`  
+`ax5.util.string(String).decode();`   
+`ax5.util.string(String).left(pos);`  
+`ax5.util.string(String).right(pos);`  
+`ax5.util.string(String).camelCase();`  
+`ax5.util.string(String).snakeCase();`  
+```js
+ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format("ASP", "ASP.NET");
+ax5.util.stinrg("{0} counts").format(100);
+```
