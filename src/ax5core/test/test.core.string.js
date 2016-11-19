@@ -215,3 +215,11 @@ describe('ax5.util.escape Test', function() {
         should(actual).be.deepEqual({ "foo": 1 });
     });
 });
+
+
+describe('ax5.util.string Test', function() {
+    it('ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format("ASP", "ASP.NET", 99); expect "ASP is dead, but ASP.NET is alive! ASP 99"', function() {
+        var actual = ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format("ASP", "ASP.NET", 99);
+        should(actual).be.equal("ASP is dead, but ASP.NET is alive! ASP 99");
+    });
+});
