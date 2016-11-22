@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "1.3.45"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5modal
@@ -311,22 +311,23 @@
                     self.__dx = 0; // 변화량 X
                     self.__dy = 0; // 변화량 Y
 
+                    if (!self.resizer) {
+                        // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
+                        self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
+                        self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
+                        self.resizerBg.css({ zIndex: modalZIndex });
+                        self.resizer.css({
+                            left: modalOffset.left,
+                            top: modalOffset.top,
+                            width: modalBox.width,
+                            height: modalBox.height,
+                            zIndex: modalZIndex + 1
+                        });
+                        jQuery(document.body).append(self.resizerBg).append(self.resizer);
+                        self.activeModal.addClass("draged");
+                    }
+
                     jQuery(document.body).bind(ENM["mousemove"] + ".ax5modal-" + cfg.id, function (e) {
-                        if (!self.resizer) {
-                            // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
-                            self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
-                            self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
-                            self.resizerBg.css({ zIndex: modalZIndex });
-                            self.resizer.css({
-                                left: modalOffset.left,
-                                top: modalOffset.top,
-                                width: modalBox.width,
-                                height: modalBox.height,
-                                zIndex: modalZIndex + 1
-                            });
-                            jQuery(document.body).append(self.resizerBg).append(self.resizer);
-                            self.activeModal.addClass("draged");
-                        }
                         self.resizer.css(getResizerPosition(e));
                     }).bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
                         moveModal.off.call(self);
