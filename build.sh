@@ -1,29 +1,31 @@
 #!/usr/bin/env bash
-echo "Checkout Master Branch"
-git checkout master
-
-echo "Git Pull From Origin (branch master)"
-git pull origin master
 
 LOG=`git log --pretty=oneline --abbrev-commit -1`
 
 case "$LOG" in
-  *MAJOR@*) echo "Major Version"; VERSION=$(npm version major --force) ;;
-  *MINOR@*) echo "Minor version"; VERSION=$(npm version minor --force) ;;
-  *PATCH@*) echo "Patch Version"; VERSION=$(npm version patch --force) ;;
+  *MAJOR@*) echo "Major Version"; VERSION=$(npm version major --force) IS_VERSION_UP="1";;
+  *MINOR@*) echo "Minor version"; VERSION=$(npm version minor --force) IS_VERSION_UP="1";;
+  *PATCH@*) echo "Patch Version"; VERSION=$(npm version patch --force) IS_VERSION_UP="1";;
 esac
 
 VERSION=$(echo $VERSION | cut -c 2-)
 
-npm install && gulp version
+echo "VERSION : " $VERSION
 
-git add *
+if [ $IS_VERSION_UP ]
+then
+    echo "START VERSION UP PROCESS"
 
-echo "Git Commit & Push"
+    npm install && gulp version
 
-git commit -m "$VERSION RELEASED" && git pull origin master && git push origin master
+    git add *
 
-echo "Start git Subsplit"
+    echo "Git Commit & Push"
+
+    git commit -m "$VERSION RELEASED" && git pull origin master && git push origin master
+
+    echo "Start git Subsplit"
+fi
 
 git subsplit init git@github.com:ax5ui/ax5ui-kernel.git
 git subsplit publish --heads="master" --no-tags src/ax5core:git@github.com:ax5ui/ax5core.git
