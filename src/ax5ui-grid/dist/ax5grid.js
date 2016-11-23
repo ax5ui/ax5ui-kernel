@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.46"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -5513,9 +5513,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
                 addC += colspan;
             }
-            addC -= 1;
+
             if (addC < this.columns.length + 1) {
-                for (var c = addC; c < this.columns.length + 1; c++) {
+                for (var c = addC; c < this.colGroup.length; c++) {
                     table.rows[r].cols.push({
                         colIndex: c + 1,
                         colspan: 1,
