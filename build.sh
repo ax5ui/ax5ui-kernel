@@ -22,10 +22,14 @@ then
 
     echo "Git Commit & Push"
 
-    git commit -m "$VERSION RELEASED" && git pull origin master && git push origin master
+    git checkout master
 
-    echo "Start git Subsplit"
+    git pull origin master
+
+    git commit -m "$VERSION RELEASED" && git pull origin master && git push origin master
 fi
+
+echo "Start git Subsplit"
 
 git subsplit init git@github.com:ax5ui/ax5ui-kernel.git
 git subsplit publish --heads="master" --no-tags src/ax5core:git@github.com:ax5ui/ax5core.git
