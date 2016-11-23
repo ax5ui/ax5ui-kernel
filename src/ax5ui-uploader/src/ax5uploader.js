@@ -8,41 +8,7 @@
         className: "uploader",
         version: "${VERSION}"
     }, (function () {
-        /**
-         * @class ax5uploader
-         * @classdesc
-         * @author tom@axisj.com
-         * @example
-         * ```js
-         * var upload = new ax5.ui.uploader();
-         * $(document.body).ready(function () {
-         *     upload.setConfig({
-         *         target: $("#user-info-profileImageUrl"),
-         *         file_types: "image/*",
-         *         empty_msg: "프로필 사진",
-         *         progress_theme: "basic",
-         *         upload_http: {
-         *             method: "POST",
-         *             url: "/api/v1/aws/s3/upload",
-         *             filename_param_key: "file",
-         *             data: {bucket: "gajago-user-profile", crop: true}
-         *         },
-         *         on_event: function (that) {
-         *             if (that.action == "fileselect") {
-         *                 //console.log(that.file);
-         *             }
-         *             else if (that.action == "uploaded") {
-         *                 //console.log(that);
-         *                 _root.form.profile_uploaded(that.file);
-         *             }
-         *             else if (that.action == "error") {
-         *                 alert(that.error.msg);
-         *             }
-         *         }
-         *     });
-         * });
-         * ```
-         */
+
         var ax5uploader = function () {
             var
                 self = this,
@@ -68,23 +34,13 @@
 
                 this.els = {
                     "container": this.target.find('[data-ui-els="container"]'),
-                    "preview": this.target.find('[data-ui-els="preview"]'),
-                    "preview-img": this.target.find('[data-ui-els="preview-img"]'),
-                    "input-file": this.target.find('[data-ui-els="input-file"]'),
-                    "progress": this.target.find('[data-ui-els="progress"]'),
-                    "progress-bar": this.target.find('[data-ui-els="progress-bar"]')
+                    "input-file": this.target.find('[data-ui-els="input-file"]')
                 };
 
-                this.els["preview"].bind("click", (function () {
-                    this.__request_select_file();
-                }).bind(this));
-
-                this.els["input-file"].bind("change", (function (e) {
-                    this.__on_select_file(e || window.event);
-                }).bind(this));
 
                 (function () {
-
+                    // dropZone 설정 방식 변경
+                    return false;
                     var dragZone = this.els["container"],
                         preview_img = this.els["preview-img"],
                         _this = this, timer;
@@ -119,48 +75,8 @@
                     }, false);
 
                 }).call(this);
-
-                setTimeout((function () {
-                    this.__set_size_layout();
-                }).bind(this), 1);
-
-
             };
 
-            this.__get_layout = function () {
-                var po = [],
-                    inputFileMultiple = "", // inputFileMultiple = 'multiple="multiple"',  support multifile
-                    inputFileAccept = cfg.file_types;
-
-                po.push('<div class="ax5-ui-single-uploader ' + cfg.theme + '" data-ui-els="container">');
-                po.push('<div class="upload-preview" data-ui-els="preview">');
-
-                po.push('<img class="upload-preview-img" data-ui-els="preview-img" src="" style="display:none;width:100%;height:100%;" />');
-                po.push('<span class="empty-msg">' + cfg.empty_msg + '<span>');
-                po.push('</div>');
-                po.push('<div class="ax5-ui-progress ' + (cfg.progress_theme || "") + '" data-ui-els="progress" style="display: none;"><div class="progress-bar" data-ui-els="progress-bar"></div></div>');
-                po.push('<input type="file" ' + inputFileMultiple + ' accept="' + inputFileAccept + '" capture="camera" data-ui-els="input-file" />');
-
-                po.push('</div>');
-
-                return po.join('');
-            };
-
-            this.__set_size_layout = this.align = function () {
-                var progress_margin = 20,
-                    progress_height = this.els["progress"].height(),
-                    ct_width = this.els["container"].width(),
-                    ct_height = this.els["container"].height();
-
-                if (ct_width != 0 && ct_height != 0) {
-                    this.els["progress"].css({
-                        left: progress_margin,
-                        top: ct_height / 2 - progress_height / 2,
-                        width: ct_width - (progress_margin * 2)
-                    });
-                }
-                //this.els["preview-img"].css({width: ct_width, height: ct_height});
-            };
 
             this.__request_select_file = function () {
                 if (cfg.before_select_file) {
@@ -185,7 +101,7 @@
                 }
             };
 
-            this.__on_select_file = function (evt) {
+            this.__old_select_file = function (evt) {
                 var file,
                     target_id = this.target.id,
                     preview = this.els["preview-img"].get(0);
@@ -280,7 +196,7 @@
                 // if(file) this.upload(file);
             };
 
-            this.upload = function () {
+            this.__old_upload = function () {
                 var _this = this;
                 if (!this.selected_file) {
                     if (cfg.on_event) {
@@ -341,42 +257,9 @@
                 this.xhr.send(formData);  // multipart/form-data
             };
 
-            this.upload_complete = function (res) {
-                this.selected_file = null;
-                this.uploaded_file = res;
-                this.els["container"].addClass("uploaded");
-
-                if (cfg.on_event) {
-                    var that = {
-                        action: "uploaded",
-                        file: res
-                    };
-                    cfg.on_event.call(that, that);
-                }
-            };
-
-            this.set_uploaded_file = function (file) {
-                this.uploaded_file = file;
-                if (this.uploaded_file) {
-                    this.els["container"].addClass("uploaded");
-                }
-                else {
-                    this.els["container"].removeClass("uploaded");
-                }
-            };
-
-            this.set_preview_img = function (src) {
-                if (src) {
-                    this.els["preview-img"].attr({"src": src}).show();
-                }
-                else {
-                    this.els["preview-img"].attr({"src": null}).hide();
-                }
-            };
 
             // 클래스 생성자
             this.main = (function () {
-
                 UI.uploader_instance = UI.uploader_instance || [];
                 UI.uploader_instance.push(this);
 
