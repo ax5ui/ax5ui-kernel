@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "${VERSION}"
+        version: "1.3.46"
     }, function () {
         /**
          * @class ax5grid
@@ -2523,9 +2523,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var repaintRow = function repaintRow(_dindex) {
-        var self = this;
-        var cfg = this.config;
-        var list = this.list;
+        var self = this,
+            cfg = this.config,
+            list = this.list;
         /// ~~~~~~
 
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
@@ -2839,10 +2839,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var moveFocus = function moveFocus(_position) {
         var focus = {
             "UD": function UD(_dy) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i;
+                var moveResult = true,
+                    focusedColumn,
+                    originalColumn,
+                    while_i;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -3095,9 +3095,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
-            var self = this;
-            var dindex, colIndex, rowIndex, panelName, colspan;
-            var col, editor;
+            var self = this,
+                dindex,
+                colIndex,
+                rowIndex,
+                panelName,
+                colspan,
+                col,
+                editor;
 
             // this.inlineEditing = {};
             for (var key in _focusedColumn) {
@@ -3322,19 +3327,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getExcelString = function getExcelString() {
-        var cfg = this.config;
-        var list = this.list;
-        var bodyRowData = this.bodyRowData;
-        var footSumData = this.footSumData;
-        var bodyGroupingData = this.bodyGroupingData;
+        var cfg = this.config,
+            list = this.list,
+            bodyRowData = this.bodyRowData,
+            footSumData = this.footSumData,
+            bodyGroupingData = this.bodyGroupingData;
 
         // body-scroll 의 포지션에 의존적이므로..
         var getBody = function getBody(_colGroup, _bodyRow, _groupRow, _list) {
-            var SS = [];
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col;
+            var SS = [],
+                di,
+                dl,
+                tri,
+                trl,
+                ci,
+                cl,
+                col;
 
             //SS.push('<table border="1">');
             for (di = 0, dl = _list.length; di < dl; di++) {
@@ -3362,10 +3370,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return SS.join('');
         };
         var getSum = function getSum(_colGroup, _bodyRow, _list) {
-            var SS = [];
-            var tri, trl;
-            var ci, cl;
-            var col;
+            var SS = [],
+                tri,
+                trl,
+                ci,
+                cl,
+                col;
 
             //SS.push('<table border="1">');
             for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
