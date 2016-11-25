@@ -46,6 +46,7 @@
     <button class="btn btn-default" data-grid-control="row-add2">add(no sort)</button>
     <button class="btn btn-default" data-grid-control="row-remove">remove</button>
     <button class="btn btn-default" data-grid-control="row-update">update</button>
+    <button class="btn btn-default" data-grid-control="row-delete">delete</button>
 </div>
 <div style="padding: 5px;">
     <h3>column</h3>
@@ -218,6 +219,10 @@
 
                 case "row-remove":
                     firstGrid.removeRow();
+                    break;
+
+                case "row-delete":
+                    firstGrid.deleteRow("selected");
                     break;
 
                 case "row-update":
