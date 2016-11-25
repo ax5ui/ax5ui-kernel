@@ -14,6 +14,10 @@ echo "VERSION : " $VERSION
 
 if [ $IS_VERSION_UP ]
 then
+    git checkout master
+
+    git pull origin master
+
     echo "START VERSION UP PROCESS"
 
     npm install && gulp version
@@ -21,10 +25,6 @@ then
     git add *
 
     echo "Git Commit & Push"
-
-    git checkout master
-
-    git pull origin master
 
     git commit -m "$VERSION RELEASED" && git pull origin master && git push origin master
 fi
