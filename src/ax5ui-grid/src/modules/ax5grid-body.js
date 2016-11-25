@@ -1267,9 +1267,9 @@
     };
 
     var repaintRow = function (_dindex) {
-        var self = this;
-        var cfg = this.config;
-        var list = this.list;
+        var self = this,
+            cfg = this.config,
+            list = this.list;
         /// ~~~~~~
 
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
@@ -1648,10 +1648,8 @@
     var moveFocus = function (_position) {
         var focus = {
             "UD": function (_dy) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i;
+                var moveResult = true,
+                    focusedColumn, originalColumn, while_i;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -1918,9 +1916,9 @@
 
     var inlineEdit = {
         active: function (_focusedColumn, _e, _initValue) {
-            var self = this;
-            var dindex, colIndex, rowIndex, panelName, colspan;
-            var col, editor;
+            var self = this,
+                dindex, colIndex, rowIndex, panelName, colspan,
+                col, editor;
 
             // this.inlineEditing = {};
             for (var key in _focusedColumn) {
@@ -2154,19 +2152,19 @@
     };
 
     var getExcelString = function () {
-        var cfg = this.config;
-        var list = this.list;
-        var bodyRowData = this.bodyRowData;
-        var footSumData = this.footSumData;
-        var bodyGroupingData = this.bodyGroupingData;
+        var cfg = this.config,
+            list = this.list,
+            bodyRowData = this.bodyRowData,
+            footSumData = this.footSumData,
+            bodyGroupingData = this.bodyGroupingData;
 
         // body-scroll 의 포지션에 의존적이므로..
         var getBody = function (_colGroup, _bodyRow, _groupRow, _list) {
-            var SS = [];
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col;
+            var SS = [],
+                di, dl,
+                tri, trl,
+                ci, cl,
+                col;
 
             //SS.push('<table border="1">');
             for (di = 0, dl = _list.length; di < dl; di++) {
@@ -2181,7 +2179,7 @@
                 }
 
                 for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
-                    SS.push('<tr>');
+                    SS.push('\n<tr>');
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
 
@@ -2190,21 +2188,21 @@
                             'rowspan="' + col.rowspan + '" ',
                             '>', (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</td>');
                     }
-                    SS.push('</tr>');
+                    SS.push('\n</tr>');
                 }
             }
             //SS.push('</table>');
             return SS.join('');
         };
         var getSum = function (_colGroup, _bodyRow, _list) {
-            var SS = [];
-            var tri, trl;
-            var ci, cl;
-            var col;
+            var SS = [],
+                tri, trl,
+                ci, cl,
+                col;
 
             //SS.push('<table border="1">');
             for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
-                SS.push('<tr>');
+                SS.push('\n<tr>');
                 for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                     col = _bodyRow.rows[tri].cols[ci];
                     SS.push('<td ',
@@ -2212,9 +2210,8 @@
                         'rowspan="' + col.rowspan + '" ',
                         '>', getSumFieldValue.call(this, _list, col), '</td>');
                 }
-                SS.push('</tr>');
+                SS.push('\n</tr>');
             }
-
             //SS.push('</table>');
 
             return SS.join('');

@@ -3349,13 +3349,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
 
                 for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
-                    SS.push('<tr>');
+                    SS.push('\n<tr>');
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
 
                         SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</td>');
                     }
-                    SS.push('</tr>');
+                    SS.push('\n</tr>');
                 }
             }
             //SS.push('</table>');
@@ -3369,14 +3369,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             //SS.push('<table border="1">');
             for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
-                SS.push('<tr>');
+                SS.push('\n<tr>');
                 for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                     col = _bodyRow.rows[tri].cols[ci];
                     SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', getSumFieldValue.call(this, _list, col), '</td>');
                 }
-                SS.push('</tr>');
+                SS.push('\n</tr>');
             }
-
             //SS.push('</table>');
 
             return SS.join('');
