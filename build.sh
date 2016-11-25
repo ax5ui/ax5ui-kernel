@@ -8,6 +8,8 @@ case "$LOG" in
   *PATCH@*) echo "Patch Version"; VERSION=$(npm version patch --force) IS_VERSION_UP="1";;
 esac
 
+
+
 VERSION=$(echo $VERSION | cut -c 2-)
 
 echo "VERSION : " $VERSION
