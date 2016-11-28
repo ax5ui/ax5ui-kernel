@@ -27,7 +27,7 @@
         var i = 0, l = _list.length;
         var returnList = [];
         var appendIndex = 0;
-        var dataRealRowCount;
+        var dataRealRowCount = 0;
 
         if (this.config.body.grouping) {
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
@@ -84,12 +84,12 @@
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
                     this.deletedList.push(_list[i]);
                 } else if (_list[i]) {
-
                     if (_list[i][this.config.columnKeys.selected]) {
                         this.selectedDataIndexs.push(i);
                     }
                     // __index변수를 추가하여 lineNumber 에 출력합니다. (body getFieldValue 에서 출력함)
-                    dataRealRowCount = _list[i]["__index"] = i;
+                    _list[i]["__index"] = i;
+                    dataRealRowCount++;
                     returnList.push(_list[i]);
                 }
             }
@@ -97,7 +97,7 @@
 
         // 원본 데이터의 갯수
         // grouping은 제외하고 수집됨.
-        this.xvar.dataRealRowCount = dataRealRowCount + 1;
+        this.xvar.dataRealRowCount = dataRealRowCount;
         return returnList;
     };
 
@@ -245,10 +245,14 @@
                 )
             );
         } else if (Object.keys(this.sortInfo).length) {
-            list = sort.call(this,
-                this.sortInfo,
-                list
+            list = initData.call(this,
+                sort.call(this,
+                    this.sortInfo,
+                    list
+                )
             );
+        } else {
+            list = initData.call(this, list);
         }
 
         this.list = list;
@@ -259,6 +263,7 @@
         GRID.page.navigationUpdate.call(this);
         return this;
     };
+
 
     /**
      * list에서 deleted 처리 repaint
