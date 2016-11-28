@@ -21,19 +21,13 @@
 <body style="padding: 10px;">
 
 <div data-ax5uploader="upload1">
-    <input type="hidden" data-ax5uploader-param-key="p1" data-ax5uploader-param-value="" />
-    <input type="hidden" data-ax5uploader-param-key="p2" data-ax5uploader-param-value="" />
-    <input type="hidden" data-ax5uploader-param-key="p3" data-ax5uploader-param-value="" />
-    <button data-ax5uploader-button="selector" class="btn">파일선택</button>
+    <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택</button>
     <button data-ax5uploader-button="control" class="btn btn-default">전송하기</button>
 </div>
 
 <div style="height: 10px;"></div>
 
 <div data-ax5uploader="upload2">
-    <input type="hidden" data-ax5uploader-param-key="p1" data-ax5uploader-param-value="" />
-    <input type="hidden" data-ax5uploader-param-key="p2" data-ax5uploader-param-value="" />
-    <input type="hidden" data-ax5uploader-param-key="p3" data-ax5uploader-param-value="" />
     <button data-ax5uploader-button="selector" class="btn btn-default">파일선택</button>
 </div>
 
@@ -41,7 +35,7 @@
     var upload = new ax5.ui.uploader();
     $(document.body).ready(function () {
         upload.setConfig({
-
+            target: $('[data-ax5uploader="upload1"]')
         });
     });
 </script>

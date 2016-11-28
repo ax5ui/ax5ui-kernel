@@ -1,17 +1,16 @@
 // ax5.ui.uploader
 (function () {
 
-    var UI = ax5.ui;
-    var U = ax5.util;
+    let UI = ax5.ui;
+    let U = ax5.util;
 
     UI.addClass({
         className: "uploader",
         version: "${VERSION}"
     }, (function () {
 
-        var ax5uploader = function () {
-            var
-                self = this,
+        let ax5uploader = function () {
+            let self = this,
                 cfg;
 
             this.instanceId = ax5.getGuid();
@@ -20,58 +19,25 @@
                 theme: 'default',
                 file_types: "*/*"
             };
+
+            /// 업로드된 파일 큐
             this.queue = [];
-            this.target = null;
-            this.selectedFile = null;
-            this.uploadedFile = null;
+            /// 업로더 타겟
+            this.$target = null;
+            /// 업로드된 파일 정보들의 input 태그를 담아두는 컨테이너
+            this.$inputContainer = null;
+            /// input file 태그
+            this.$inputFile = null;
+            /// 파일 선택버튼
+            this.$fileSelector = null;
+            /// 파일 전송버튼
+            this.$uploadControler = null;
+            /// 파일 드랍존
+            this.$dropZone = null;
 
             cfg = this.config;
 
-            this.init = function () {
-
-                this.target = $(cfg.target);
-
-
-                (function () {
-                    // dropZone 설정 방식 변경
-                    return false;
-                    var dragZone = this.els["container"],
-                        preview_img = this.els["preview-img"],
-                        _this = this, timer;
-
-                    dragZone.get(0).addEventListener('dragover', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-
-                        preview_img.hide();
-                        if (timer) clearTimeout(timer);
-
-                        dragZone.addClass("dragover");
-                    }, false);
-                    dragZone.get(0).addEventListener('dragleave', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-
-                        if (timer) clearTimeout(timer);
-                        timer = setTimeout(function () {
-                            preview_img.show();
-                        }, 100);
-
-                        dragZone.removeClass("dragover");
-                    }, false);
-
-                    dragZone.get(0).addEventListener('drop', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-
-                        dragZone.removeClass("dragover");
-                        _this.__on_select_file(e || window.event);
-                    }, false);
-
-                }).call(this);
-            };
-
-            this.__request_select_file = function () {
+            let __request_select_file = function () {
                 if (cfg.before_select_file) {
                     if (!cfg.before_select_file.call()) {
                         return false; // 중지
@@ -94,7 +60,7 @@
                 }
             };
 
-            this.__old_select_file = function (evt) {
+            let __old_select_file = function (evt) {
                 var file,
                     target_id = this.target.id,
                     preview = this.els["preview-img"].get(0);
@@ -189,7 +155,7 @@
                 // if(file) this.upload(file);
             };
 
-            this.__old_upload = function () {
+            let __old_upload = function () {
                 var _this = this;
                 if (!this.selected_file) {
                     if (cfg.on_event) {
@@ -248,6 +214,108 @@
                     }
                 };
                 this.xhr.send(formData);  // multipart/form-data
+            };
+
+            let bindEvent = function () {
+                this.$fileSelector
+                    .off("click.ax5uploader")
+                    .on("click.ax5uploader", (function () {
+                        this.$inputFile.trigger("click");
+                    }).bind(this));
+            };
+
+            let alignLayout = function () {
+                var box = this.$fileSelector.position();
+                box.width = this.$fileSelector.outerWidth();
+                box.height = this.$fileSelector.outerHeight();
+                this.$inputFile.css(box);
+                // 상황이 좋지 않은경우 (만약 버튼 클릭으로 input file click이 되지 않는 다면 z-index값을 높여서 버튼위를 덮는다.)
+
+            };
+
+            this.init = function (_config) {
+                cfg = jQuery.extend(true, {}, cfg, _config);
+                if (!cfg.target) {
+                    console.log(ax5.info.getError("ax5uploader", "401", "init"));
+                    return this;
+                }
+
+                this.$target = jQuery(cfg.target);
+
+                // 파일 드랍존은 옵션 사항.
+                if (cfg.dropZone) {
+                    this.$dropZone = jQuery(cfg.dropZone);
+                }
+
+                // target attribute data
+                (function (data) {
+                    if (U.isObject(data) && !data.error) {
+                        cfg = jQuery.extend(true, cfg, data);
+                    }
+                }).call(this, U.parseJson(this.$target.attr("data-ax5uploader-config"), true));
+
+                // input container 추가
+                this.$inputContainer = jQuery('<div data-ax5uploader-input-container=""></div>');
+                this.$target.append(this.$inputContainer);
+
+                // detect element
+                /// fileSelector 수집
+                this.$fileSelector = this.$target.find('[data-ax5uploader-button="selector"]');
+                /// controller 수집
+                this.$uploadControler = this.$target.find('[data-ax5uploader-button="control"]');
+
+                if(this.$fileSelector.length === 0){
+                    console.log(ax5.info.getError("ax5uploader", "402", "can not find file selector"));
+                    return this;
+                }
+                
+                // input file 추가
+                this.$inputFile = jQuery('<input type="file" />');
+                this.$target.append(this.$inputFile);
+                
+                // align
+                alignLayout.call(this);
+
+                // 파일버튼 등에 이벤트 연결.
+                bindEvent.call(this);
+
+                (function () {
+                    // dropZone 설정 방식 변경
+                    return false;
+                    var dragZone = this.els["container"],
+                        preview_img = this.els["preview-img"],
+                        _this = this, timer;
+
+                    dragZone.get(0).addEventListener('dragover', function (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        preview_img.hide();
+                        if (timer) clearTimeout(timer);
+
+                        dragZone.addClass("dragover");
+                    }, false);
+                    dragZone.get(0).addEventListener('dragleave', function (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        if (timer) clearTimeout(timer);
+                        timer = setTimeout(function () {
+                            preview_img.show();
+                        }, 100);
+
+                        dragZone.removeClass("dragover");
+                    }, false);
+
+                    dragZone.get(0).addEventListener('drop', function (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        dragZone.removeClass("dragover");
+                        _this.__on_select_file(e || window.event);
+                    }, false);
+
+                }).call(this);
             };
 
             // 클래스 생성자
