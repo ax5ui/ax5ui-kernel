@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.49"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -31,12 +31,6 @@
             this.init = function () {
 
                 this.target = $(cfg.target);
-                this.target.html(this.__get_layout());
-
-                this.els = {
-                    "container": this.target.find('[data-ui-els="container"]'),
-                    "input-file": this.target.find('[data-ui-els="input-file"]')
-                };
 
                 (function () {
                     // dropZone 설정 방식 변경
@@ -264,4 +258,22 @@
         };
         return ax5uploader;
     }());
+})();
+
+// ax5.ui.uploader.tmpl
+(function () {
+
+    var UPLOADER = ax5.ui.uploader;
+
+    var uploadProgress = function uploadProgress(columnKeys) {
+        return "\n        ";
+    };
+
+    UPLOADER.tmpl = {
+        "uploadProgress": uploadProgress,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(TOAST.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
 })();

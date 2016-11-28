@@ -20,34 +20,28 @@
 </head>
 <body style="padding: 10px;">
 
-<div id="user-info-profileImageUrl"></div>
+<div data-ax5uploader="upload1">
+    <input type="hidden" data-ax5uploader-param-key="p1" data-ax5uploader-param-value="" />
+    <input type="hidden" data-ax5uploader-param-key="p2" data-ax5uploader-param-value="" />
+    <input type="hidden" data-ax5uploader-param-key="p3" data-ax5uploader-param-value="" />
+    <button data-ax5uploader-button="selector" class="btn">파일선택</button>
+    <button data-ax5uploader-button="control" class="btn btn-default">전송하기</button>
+</div>
+
+<div style="height: 10px;"></div>
+
+<div data-ax5uploader="upload2">
+    <input type="hidden" data-ax5uploader-param-key="p1" data-ax5uploader-param-value="" />
+    <input type="hidden" data-ax5uploader-param-key="p2" data-ax5uploader-param-value="" />
+    <input type="hidden" data-ax5uploader-param-key="p3" data-ax5uploader-param-value="" />
+    <button data-ax5uploader-button="selector" class="btn btn-default">파일선택</button>
+</div>
 
 <script>
     var upload = new ax5.ui.uploader();
     $(document.body).ready(function () {
         upload.setConfig({
-            target: $("#user-info-profileImageUrl"),
-            file_types: "image/*",
-            empty_msg: "프로필 사진",
-            progress_theme: "basic",
-            upload_http: {
-                method: "POST",
-                url: "/api/v1/aws/s3/upload",
-                filename_param_key: "file",
-                data: {bucket: "gajago-user-profile", crop: true}
-            },
-            on_event: function (that) {
-                if (that.action == "fileselect") {
-                    //console.log(that.file);
-                }
-                else if (that.action == "uploaded") {
-                    //console.log(that);
-                    _root.form.profile_uploaded(that.file);
-                }
-                else if (that.action == "error") {
-                    alert(that.error.msg);
-                }
-            }
+
         });
     });
 </script>

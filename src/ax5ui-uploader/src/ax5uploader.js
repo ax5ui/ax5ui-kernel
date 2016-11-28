@@ -30,12 +30,6 @@
             this.init = function () {
 
                 this.target = $(cfg.target);
-                this.target.html(this.__get_layout());
-
-                this.els = {
-                    "container": this.target.find('[data-ui-els="container"]'),
-                    "input-file": this.target.find('[data-ui-els="input-file"]')
-                };
 
 
                 (function () {
@@ -76,7 +70,6 @@
 
                 }).call(this);
             };
-
 
             this.__request_select_file = function () {
                 if (cfg.before_select_file) {
@@ -256,7 +249,6 @@
                 };
                 this.xhr.send(formData);  // multipart/form-data
             };
-
 
             // 클래스 생성자
             this.main = (function () {
