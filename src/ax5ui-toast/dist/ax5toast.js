@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "toast",
-        version: "1.3.48"
+        version: "1.3.49"
     }, function () {
         /**
          * @class ax5toast
