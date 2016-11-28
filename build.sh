@@ -3,22 +3,26 @@
 LOG=`git log --pretty=oneline --abbrev-commit -1`
 
 case "$LOG" in
-  *MAJOR@*) echo "Major Version"; VERSION=$(npm version major --force) IS_VERSION_UP="1";;
-  *MINOR@*) echo "Minor version"; VERSION=$(npm version minor --force) IS_VERSION_UP="1";;
-  *PATCH@*) echo "Patch Version"; VERSION=$(npm version patch --force) IS_VERSION_UP="1";;
+  *MAJOR@*) echo "Major Version"; VERSION_TYPE="MAJOR";;
+  *MINOR@*) echo "Minor version"; VERSION_TYPE="MINOR";;
+  *PATCH@*) echo "Patch Version"; VERSION_TYPE="PATCH";;
 esac
 
-
-
-VERSION=$(echo $VERSION | cut -c 2-)
-
-echo "VERSION : " $VERSION
-
-if [ $IS_VERSION_UP ]
+if [ $VERSION_TYPE ]
 then
     git checkout master
 
     git pull origin master
+
+    case "$VERSION_TYPE" in
+      *MAJOR*) VERSION=$(npm version major --force);;
+      *MINOR*) VERSION=$(npm version minor --force);;
+      *PATCH*) VERSION=$(npm version patch --force);;
+    esac
+
+    VERSION=$(echo $VERSION | cut -c 2-)
+
+    echo "VERSION : " $VERSION
 
     echo "START VERSION UP PROCESS"
 
