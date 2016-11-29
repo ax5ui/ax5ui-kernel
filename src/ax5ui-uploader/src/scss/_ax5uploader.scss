@@ -2,13 +2,12 @@
     position: relative;
     [data-ax5uploader-button="selector"] {
         position: relative;
-        z-index: 2;
     }
-    input[type="file"] {
-        z-index: 0;
-        position: absolute;
-        border: 0 none;
-        display: block;
-        opacity: 0;
-    }
+}
+
+[data-ax5uploader-input]{
+    position: absolute;
+    left: -1000;
+    top: -1000;
+    opacity: 0;
 }

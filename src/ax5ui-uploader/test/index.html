@@ -15,28 +15,39 @@
     <link rel="stylesheet" type="text/css" href="../dist/ax5uploader.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/ax5core/dist/ax5core.js"></script>
+    <script src="../../ax5core/dist/ax5core.js"></script>
     <script src="../dist/ax5uploader.js"></script>
 </head>
 <body style="padding: 10px;">
 
 <div data-ax5uploader="upload1">
-    <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택</button>
-    <button data-ax5uploader-button="control" class="btn btn-default">전송하기</button>
+    <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택 (*/*)</button>
 </div>
 
 <div style="height: 10px;"></div>
 
 <div data-ax5uploader="upload2">
-    <button data-ax5uploader-button="selector" class="btn btn-default">파일선택</button>
+    <button data-ax5uploader-button="selector" class="btn btn-default">파일선택 (.png, .svg)</button>
 </div>
 
 <script>
-    var upload = new ax5.ui.uploader();
+    var upload1 = new ax5.ui.uploader();
+    var upload2 = new ax5.ui.uploader();
+
     $(document.body).ready(function () {
-        upload.setConfig({
-            target: $('[data-ax5uploader="upload1"]')
+
+        upload1.setConfig({
+            target: $('[data-ax5uploader="upload1"]'),
+            multiple: true
         });
+
+        upload2.setConfig({
+            target: $('[data-ax5uploader="upload2"]'),
+            multiple: false,
+            //accept: "image/*"
+            accept: ".png, .svg"
+        });
+
     });
 </script>
 

@@ -147,14 +147,6 @@ var PATHS = {
         scss: "ax5binder.scss",
         js: "ax5binder"
     },
-    "ax5ui-multi-uploader": {
-        isPlugin: true,
-        root: "src/ax5ui-multi-uploader",
-        src: "src/ax5ui-multi-uploader/src",
-        dest: "src/ax5ui-multi-uploader/dist",
-        scss: "ax5multi-uploader.scss",
-        js: "ax5multi-uploader"
-    },
     "ax5ui-autocomplete": {
         isPlugin: true,
         root: "src/ax5ui-autocomplete",
@@ -170,6 +162,26 @@ function errorAlert(error) {
     console.log(error.toString());//Prints Error to Console
     this.emit("end"); //End function
 }
+
+
+/**
+ * watch
+ */
+gulp.task('default', function () {
+
+    // scripts
+    for (var k in PATHS) {
+
+        var __p = PATHS[k];
+        if (__p.isPlugin && __p.js) {
+            gulp.watch(PATHS[k].src + '/**/*.js', [k + '-scripts']);
+        }
+        if (__p.isPlugin && __p.scss) {
+            gulp.watch(PATHS[k].src + '/**/*.scss', [k + '-scss']);
+        }
+    }
+
+});
 
 /**
  * SASS
@@ -214,24 +226,6 @@ for (var k in PATHS) {
     }
 }
 
-/**
- * watch
- */
-gulp.task('default', function () {
-
-    // scripts
-    for (var k in PATHS) {
-
-        var __p = PATHS[k];
-        if (__p.isPlugin && __p.js) {
-            gulp.watch(PATHS[k].src + '/**/*.js', [k + '-scripts']);
-        }
-        if (__p.isPlugin && __p.scss) {
-            gulp.watch(PATHS[k].src + '/**/*.scss', [k + '-scss']);
-        }
-    }
-
-});
 
  /**
  * concat all src for dist

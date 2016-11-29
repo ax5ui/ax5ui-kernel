@@ -248,7 +248,9 @@
          * ```
          * var chkFlag = ax5.info.supportTouch;
          */
-        var supportTouch = (win) ? (('ontouchstart' in win) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) : false;
+        let supportTouch = (win) ? (('ontouchstart' in win) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) : false;
+
+        let supportFileApi = (win) ? ( win.FileReader && win.File && win.FileList && win.Blob ) : false;
 
         return {
             errorMsg: errorMsg,
@@ -260,6 +262,7 @@
             browser: browser,
             isBrowser: isBrowser,
             supportTouch: supportTouch,
+            supportFileApi: supportFileApi,
             wheelEnm: wheelEnm,
             urlUtil: urlUtil,
             getError: getError

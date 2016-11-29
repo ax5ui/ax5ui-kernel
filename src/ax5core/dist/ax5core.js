@@ -53,7 +53,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.49";
+        var version = "${VERSION}";
 
         /**
          * ax5 library path
@@ -249,6 +249,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         var supportTouch = win ? 'ontouchstart' in win || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 : false;
 
+        var supportFileApi = win ? win.FileReader && win.File && win.FileList && win.Blob : false;
+
         return {
             errorMsg: errorMsg,
             version: version,
@@ -259,6 +261,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             browser: browser,
             isBrowser: isBrowser,
             supportTouch: supportTouch,
+            supportFileApi: supportFileApi,
             wheelEnm: wheelEnm,
             urlUtil: urlUtil,
             getError: getError
