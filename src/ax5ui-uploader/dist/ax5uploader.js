@@ -59,6 +59,7 @@
                 this.selectedFiles = files;
 
                 console.log(this.selectedFiles);
+                openProgressBox.call(this);
             };
 
             var upload = function upload() {
@@ -179,6 +180,96 @@
                 */
             };
 
+            var alignProgressBox = function alignProgressBox(append) {
+                var _alignProgressBox = function _alignProgressBox() {
+                    var $window = jQuery(window),
+                        $body = jQuery(document.body);
+                    var pos = {},
+                        positionMargin = 6,
+                        dim = {},
+                        pickerDim = {},
+                        pickerDirection;
+
+                    pos = this.$fileSelector.offset();
+                    dim = {
+                        width: this.$fileSelector.outerWidth(),
+                        height: this.$fileSelector.outerHeight()
+                    };
+                    pickerDim = {
+                        winWidth: Math.max($window.width(), $body.width()),
+                        winHeight: Math.max($window.height(), $body.height()),
+                        width: this.$progressBox.outerWidth(),
+                        height: this.$progressBox.outerHeight()
+                    };
+
+                    // picker css(width, left, top) & direction 결정
+
+                    if (!cfg.direction || cfg.direction === "" || cfg.direction === "auto") {
+                        // set direction
+                        pickerDirection = "top";
+                        if (pos.top - pickerDim.height - positionMargin < 0) {
+                            pickerDirection = "top";
+                        } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                            pickerDirection = "bottom";
+                        }
+                    } else {
+                        pickerDirection = cfg.direction;
+                    }
+
+                    if (append) {
+                        this.$progressBox.addClass("direction-" + pickerDirection);
+                    }
+
+                    var positionCSS = function () {
+                        var css = { left: 0, top: 0 };
+                        switch (pickerDirection) {
+                            case "top":
+                                css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
+                                css.top = pos.top + dim.height + positionMargin;
+                                break;
+                            case "bottom":
+                                css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
+                                css.top = pos.top - pickerDim.height - positionMargin;
+                                break;
+                            case "left":
+                                css.left = pos.left + dim.width + positionMargin;
+                                css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
+                                break;
+                            case "right":
+                                css.left = pos.left - pickerDim.width - positionMargin;
+                                css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
+                                break;
+                        }
+                        return css;
+                    }();
+
+                    (function () {
+                        if (pickerDirection == "top" || pickerDirection == "bottom") {
+                            if (positionCSS.left < 0) {
+                                positionCSS.left = positionMargin;
+                                this.$progressBoxArrow.css({ left: pos.left + dim.width / 2 - positionCSS.left });
+                            } else if (positionCSS.left + pickerDim.width > pickerDim.winWidth) {
+                                positionCSS.left = pickerDim.winWidth - pickerDim.width - positionMargin;
+                                this.$progressBoxArrow.css({ left: pos.left + dim.width / 2 - positionCSS.left });
+                            }
+                        }
+                    }).call(this);
+
+                    this.$progressBox.css(positionCSS);
+                };
+
+                this.$progressBox.css({ top: -999 });
+
+                if (append) jQuery(document.body).append(this.$progressBox);
+                setTimeout(function () {
+                    _alignProgressBox.call(this);
+                }.bind(this));
+            };
+
+            var openProgressBox = function openProgressBox() {
+                alignProgressBox.call(this, "append");
+            };
+
             this.init = function (_config) {
                 cfg = jQuery.extend(true, {}, cfg, _config);
                 if (!cfg.target) {
@@ -230,9 +321,14 @@
                     jQuery(document.body).append(this.$inputFileForm);
                 }
 
-                // align
-                alignLayout.call(this);
+                this.$progressBox = jQuery(UPLOADER.tmpl.get.call(this, "progressBox", {
+                    instanceId: this.instanceId
+                }));
+                this.$progressBox.addClass("direction-top");
+                this.$progressBoxArrow = this.$progressBox.find(".ax-progressbox-arrow");
 
+                // 레이아웃 정렬
+                alignLayout.call(this);
                 // 파일버튼 등에 이벤트 연결.
                 bindEvent.call(this);
             };
@@ -272,10 +368,15 @@
         return "<form data-ax5uploader-form=\"{{instanceId}}\" method=\"post\" enctype=\"multipart/form-data\"></form>";
     };
 
+    var progressBox = function progressBox(columnKeys) {
+        return "\n<div data-ax5uploader-progressbox=\"{{instanceId}}\" class=\"{{theme}}\">\n    <div class=\"ax-progressbox-body\">\n        <div class=\"ax-pregressbox-content\">\n            <div class=\"progress\">\n              <div class=\"progress-bar progress-bar-striped active\" role=\"progressbar\" style=\"width: 0\">\n                <span class=\"sr-only\">0% Complete</span>\n              </div>\n            </div>\n        </div>\n        {{#btns}}\n            <div class=\"ax-pregressbox-buttons\">\n            {{#btns}}\n                {{#@each}}\n                <button data-pregressbox-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class=\"ax-progressbox-arrow\"></div>\n</div>\n";
+    };
+
     UPLOADER.tmpl = {
         "uploadProgress": uploadProgress,
         "inputFile": inputFile,
         "inputFileForm": inputFileForm,
+        "progressBox": progressBox,
 
         get: function get(tmplName, data, columnKeys) {
             return ax5.mustache.render(UPLOADER.tmpl[tmplName].call(this, columnKeys), data);
