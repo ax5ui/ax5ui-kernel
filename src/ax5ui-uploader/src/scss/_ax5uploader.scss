@@ -7,6 +7,11 @@
     top: 0px;
     //overflow: hidden;
     width: 200px;
+
+    .progress{
+        height: 12px;
+        margin-bottom: 0;
+    }
 }
 
 @mixin progressbox-variant($text-color, $border-color, $heading-bg-color) {

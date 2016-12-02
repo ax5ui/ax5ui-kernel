@@ -21,7 +21,8 @@
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
                 accept: "*/*",
-                multiple: false
+                multiple: false,
+                manualUpload: false
             };
 
             /// 업로드된 파일 큐
@@ -41,7 +42,7 @@
             cfg = this.config;
 
             var onSelectFile = function onSelectFile(_evt) {
-                var files;
+                var files = void 0;
 
                 if (!ax5.info.supportFileApi) {
                     // file API 지원 안되는 브라우저.
@@ -58,7 +59,6 @@
                 /// selectedFiles에 현재 파일 정보 담아두기
                 this.selectedFiles = files;
 
-                console.log(this.selectedFiles);
                 openProgressBox.call(this);
             };
 
@@ -173,11 +173,11 @@
             var alignLayout = function alignLayout() {
                 // 상황이 좋지 않은경우 (만약 버튼 클릭으로 input file click이 되지 않는 다면 z-index값을 높여서 버튼위를 덮는다.)
                 /*
-                var box = this.$fileSelector.position();
-                box.width = this.$fileSelector.outerWidth();
-                box.height = this.$fileSelector.outerHeight();
-                this.$inputFile.css(box);
-                */
+                 var box = this.$fileSelector.position();
+                 box.width = this.$fileSelector.outerWidth();
+                 box.height = this.$fileSelector.outerHeight();
+                 this.$inputFile.css(box);
+                 */
             };
 
             var alignProgressBox = function alignProgressBox(append) {
@@ -188,9 +188,11 @@
                         positionMargin = 6,
                         dim = {},
                         pickerDim = {},
-                        pickerDirection;
+                        pickerDirection = void 0;
 
-                    pos = this.$fileSelector.offset();
+                    // cfg.viewport.selector
+
+                    pos = this.$progressBox.parent().get(0) == this.$target.get(0) ? this.$fileSelector.position() : this.$fileSelector.offset();
                     dim = {
                         width: this.$fileSelector.outerWidth(),
                         height: this.$fileSelector.outerHeight()
@@ -203,7 +205,6 @@
                     };
 
                     // picker css(width, left, top) & direction 결정
-
                     if (!cfg.direction || cfg.direction === "" || cfg.direction === "auto") {
                         // set direction
                         pickerDirection = "top";
@@ -259,8 +260,15 @@
                 };
 
                 this.$progressBox.css({ top: -999 });
-
-                if (append) jQuery(document.body).append(this.$progressBox);
+                if (append) {
+                    (function () {
+                        if (cfg.viewport) {
+                            return jQuery(cfg.viewport.selector);
+                        } else {
+                            return this.$target;
+                        }
+                    }).call(this).append(this.$progressBox);
+                }
                 setTimeout(function () {
                     _alignProgressBox.call(this);
                 }.bind(this));

@@ -19,7 +19,8 @@
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
                 accept: "*/*",
-                multiple: false
+                multiple: false,
+                manualUpload: false
             };
 
             /// 업로드된 파일 큐
@@ -39,9 +40,9 @@
             cfg = this.config;
 
             let onSelectFile = function (_evt) {
-                var files;
+                let files;
 
-                if(!ax5.info.supportFileApi){
+                if (!ax5.info.supportFileApi) {
                     // file API 지원 안되는 브라우저.
                 }
                 else if ('dataTransfer' in _evt) {
@@ -59,7 +60,6 @@
                 /// selectedFiles에 현재 파일 정보 담아두기
                 this.selectedFiles = files;
 
-                console.log(this.selectedFiles);
                 openProgressBox.call(this);
             };
 
@@ -179,21 +179,23 @@
             let alignLayout = function () {
                 // 상황이 좋지 않은경우 (만약 버튼 클릭으로 input file click이 되지 않는 다면 z-index값을 높여서 버튼위를 덮는다.)
                 /*
-                var box = this.$fileSelector.position();
-                box.width = this.$fileSelector.outerWidth();
-                box.height = this.$fileSelector.outerHeight();
-                this.$inputFile.css(box);
-                */
+                 var box = this.$fileSelector.position();
+                 box.width = this.$fileSelector.outerWidth();
+                 box.height = this.$fileSelector.outerHeight();
+                 this.$inputFile.css(box);
+                 */
             };
 
             let alignProgressBox = function (append) {
                 let _alignProgressBox = function () {
                     let $window = jQuery(window), $body = jQuery(document.body);
-                    var pos = {}, positionMargin = 6,
+                    let pos = {}, positionMargin = 6,
                         dim = {}, pickerDim = {},
                         pickerDirection;
 
-                    pos = this.$fileSelector.offset();
+                    // cfg.viewport.selector
+
+                    pos = (this.$progressBox.parent().get(0) == this.$target.get(0)) ? this.$fileSelector.position() : this.$fileSelector.offset();
                     dim = {
                         width: this.$fileSelector.outerWidth(),
                         height: this.$fileSelector.outerHeight()
@@ -206,7 +208,6 @@
                     };
 
                     // picker css(width, left, top) & direction 결정
-
                     if (!cfg.direction || cfg.direction === "" || cfg.direction === "auto") {
                         // set direction
                         pickerDirection = "top";
@@ -224,8 +225,8 @@
                             .addClass("direction-" + pickerDirection);
                     }
 
-                    var positionCSS = (function () {
-                        var css = {left: 0, top: 0};
+                    let positionCSS = (function () {
+                        let css = {left: 0, top: 0};
                         switch (pickerDirection) {
                             case "top":
                                 css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
@@ -264,8 +265,15 @@
                 };
 
                 this.$progressBox.css({top: -999});
-
-                if (append) jQuery(document.body).append(this.$progressBox);
+                if (append) {
+                    (function () {
+                        if (cfg.viewport) {
+                            return jQuery(cfg.viewport.selector);
+                        } else {
+                            return this.$target;
+                        }
+                    }).call(this).append(this.$progressBox);
+                }
                 setTimeout((function () {
                     _alignProgressBox.call(this);
                 }).bind(this));
@@ -316,9 +324,9 @@
                     accept: cfg.accept
                 }));
 
-                if(ax5.info.supportFileApi) {
+                if (ax5.info.supportFileApi) {
                     jQuery(document.body).append(this.$inputFile);
-                }else{
+                } else {
                     this.$inputFileForm = jQuery(UPLOADER.tmpl.get.call(this, "inputFileForm", {
                         instanceId: this.instanceId
                     }));
