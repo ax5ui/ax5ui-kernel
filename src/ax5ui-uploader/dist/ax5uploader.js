@@ -20,9 +20,17 @@
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
+                lang: {
+                    "upload": "Upload",
+                    "abort": "Abort"
+                },
                 accept: "*/*",
                 multiple: false,
                 manualUpload: false
+            };
+            this.defaultBtns = {
+                "upload": { label: this.config.lang["upload"], theme: "btn-primary" },
+                "abort": { label: this.config.lang["abort"], theme: this.config.theme }
             };
 
             /// 업로드된 파일 큐
@@ -129,6 +137,10 @@
 
                 this.$inputFile.off("change.ax5uploader").on("change.ax5uploader", function (_evt) {
                     onSelectFile.call(this, _evt);
+                }.bind(this));
+
+                this.$progressBox.off("click.ax5uploader").on("click.ax5uploader", "button", function (_evt) {
+                    console.log("click btn");
                 }.bind(this));
 
                 (function () {
@@ -276,6 +288,9 @@
 
             var openProgressBox = function openProgressBox() {
                 alignProgressBox.call(this, "append");
+                if (cfg.manualUpload) {} else {
+                    // 자동 업로드 이면.
+                }
             };
 
             this.init = function (_config) {
@@ -329,10 +344,13 @@
                     jQuery(document.body).append(this.$inputFileForm);
                 }
 
+                // btns 확인
+                cfg.btns = jQuery.extend({}, this.defaultBtns, cfg.btns);
+
                 this.$progressBox = jQuery(UPLOADER.tmpl.get.call(this, "progressBox", {
-                    instanceId: this.instanceId
+                    instanceId: this.instanceId,
+                    btns: cfg.btns
                 }));
-                this.$progressBox.addClass("direction-top");
                 this.$progressBoxArrow = this.$progressBox.find(".ax-progressbox-arrow");
 
                 // 레이아웃 정렬
@@ -377,7 +395,7 @@
     };
 
     var progressBox = function progressBox(columnKeys) {
-        return "\n<div data-ax5uploader-progressbox=\"{{instanceId}}\" class=\"{{theme}}\">\n    <div class=\"ax-progressbox-body\">\n        <div class=\"ax-pregressbox-content\">\n            <div class=\"progress\">\n              <div class=\"progress-bar progress-bar-striped active\" role=\"progressbar\" style=\"width: 0\">\n                <span class=\"sr-only\">0% Complete</span>\n              </div>\n            </div>\n        </div>\n        {{#btns}}\n            <div class=\"ax-pregressbox-buttons\">\n            {{#btns}}\n                {{#@each}}\n                <button data-pregressbox-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class=\"ax-progressbox-arrow\"></div>\n</div>\n";
+        return "\n<div data-ax5uploader-progressbox=\"{{instanceId}}\" class=\"{{theme}}\">\n    <div class=\"ax-progressbox-body\">\n        <div class=\"ax-pregressbox-content\">\n            <div class=\"progress\">\n              <div class=\"progress-bar progress-bar-striped active\" role=\"progressbar\" style=\"width: 0\">\n                <span class=\"sr-only\">0% Complete</span>\n              </div>\n            </div>\n        </div>\n        {{#btns}}\n            <div class=\"ax-progressbox-buttons\">\n            {{#btns}}\n                {{#@each}}\n                <button data-pregressbox-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class=\"ax-progressbox-arrow\"></div>\n</div>\n";
     };
 
     UPLOADER.tmpl = {

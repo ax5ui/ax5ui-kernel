@@ -18,7 +18,7 @@
     <script src="../../ax5core/dist/ax5core.js"></script>
     <script src="../dist/ax5uploader.js"></script>
 </head>
-<body style="padding: 10px;">
+<body style="padding: 200px;">
 
 <div data-ax5uploader="upload1">
     <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택 (*/*)</button>
@@ -39,7 +39,8 @@
         upload1.setConfig({
             target: $('[data-ax5uploader="upload1"]'),
             multiple: true,
-            manualUpload: true
+            manualUpload: true,
+            direction: "left"
         });
 
         upload2.setConfig({

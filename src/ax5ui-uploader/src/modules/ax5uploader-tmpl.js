@@ -28,7 +28,7 @@
             </div>
         </div>
         {{#btns}}
-            <div class="ax-pregressbox-buttons">
+            <div class="ax-progressbox-buttons">
             {{#btns}}
                 {{#@each}}
                 <button data-pregressbox-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>

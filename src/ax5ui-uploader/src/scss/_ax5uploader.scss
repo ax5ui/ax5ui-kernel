@@ -37,8 +37,13 @@
             }
         }
         .ax-progressbox-buttons {
+            text-align: right;
             padding: $ax5uploader-buttons-padding;
             button {
+                &.btn {
+                    padding: $ax5uploader-button-padding;
+                    font-size: $ax5uploader-button-font-size;
+                }
                 &:not(:last-child) {
                     margin-right: 3px;
                 }
@@ -82,15 +87,15 @@
 
     @if ($arrow-direction == top) {
         left: 50%;
-        top: 0px;
+        top: 0;
     } @else if ($arrow-direction == right) {
-        right: 0px;
+        right: 0;
         top: 50%;
     } @else if ($arrow-direction == bottom) {
         left: 50%;
-        bottom: 0px;
+        bottom: 0;
     } @else if ($arrow-direction == left) {
-        left: 0px;
+        left: 0;
         top: 50%;
     }
 
@@ -105,26 +110,31 @@
             top: - ($arrow-size * 2);
             border-left: $arrow-size solid transparent;
             border-right: $arrow-size solid transparent;
+            border-top: 0 none;
             border-bottom: ($arrow-size * 2) solid $arrow-border-color;
         } @else if ($arrow-direction == right) {
             right: - ($arrow-size * 2);
             top: - ($arrow-size);
+            border-left: ($arrow-size * 2) solid $arrow-border-color;
+            border-right: 0 none;
             border-top: $arrow-size solid transparent;
             border-bottom: $arrow-size solid transparent;
-            border-left: ($arrow-size * 2) solid $arrow-border-color;
         } @else if ($arrow-direction == bottom) {
             left: - ($arrow-size);
             bottom: - ($arrow-size * 2);
             border-left: $arrow-size solid transparent;
             border-right: $arrow-size solid transparent;
             border-top: ($arrow-size * 2) solid $arrow-border-color;
+            border-bottom: 0 none;
         } @else if ($arrow-direction == left) {
             left: - ($arrow-size * 2);
             top: - ($arrow-size);
+            border-left: 0 none;
+            border-right: ($arrow-size * 2) solid $arrow-border-color;
             border-top: $arrow-size solid transparent;
             border-bottom: $arrow-size solid transparent;
-            border-right: ($arrow-size * 2) solid $arrow-border-color;
         }
+
     }
 
     &:after {
@@ -138,25 +148,29 @@
             top: - ($arrow-size * 2) + ($arrow-border-width * 2);
             border-left: ($arrow-size) solid transparent;
             border-right: ($arrow-size) solid transparent;
+            border-top: 0 none;
             border-bottom: ($arrow-size * 2) solid $arrow-bg;
         } @else if ($arrow-direction == right) {
             right: - ($arrow-size * 2) + ($arrow-border-width * 2);
             top: - ($arrow-size);
+            border-left: ($arrow-size * 2) solid $arrow-bg;
+            border-right: 0 none;
             border-top: ($arrow-size) solid transparent;
             border-bottom: ($arrow-size) solid transparent;
-            border-left: ($arrow-size * 2) solid $arrow-bg;
         } @else if ($arrow-direction == bottom) {
             left: - ($arrow-size);
             bottom: - ($arrow-size * 2) + ($arrow-border-width * 2);
             border-left: ($arrow-size) solid transparent;
             border-right: ($arrow-size) solid transparent;
             border-top: ($arrow-size * 2) solid $arrow-bg;
+            border-bottom: 0 none;
         } @else if ($arrow-direction == left) {
             left: - ($arrow-size * 2) + ($arrow-border-width * 2);
             top: - ($arrow-size);
+            border-left: 0 none;
+            border-right: ($arrow-size * 2) solid $arrow-bg;
             border-top: ($arrow-size) solid transparent;
             border-bottom: ($arrow-size) solid transparent;
-            border-right: ($arrow-size * 2) solid $arrow-bg;
         }
     }
 }

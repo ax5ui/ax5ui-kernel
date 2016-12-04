@@ -18,9 +18,17 @@
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
+                lang: {
+                    "upload": "Upload",
+                    "abort": "Abort"
+                },
                 accept: "*/*",
                 multiple: false,
                 manualUpload: false
+            };
+            this.defaultBtns = {
+                "upload": {label: this.config.lang["upload"], theme: "btn-primary"},
+                "abort": {label: this.config.lang["abort"], theme: this.config.theme}
             };
 
             /// 업로드된 파일 큐
@@ -137,6 +145,12 @@
                         onSelectFile.call(this, _evt);
                     }).bind(this));
 
+                this.$progressBox
+                    .off("click.ax5uploader")
+                    .on("click.ax5uploader", "button", (function (_evt) {
+                        console.log("click btn");
+                    }).bind(this));
+                
                 (function () {
                     // dropZone 설정 방식 변경
                     return false;
@@ -281,6 +295,11 @@
 
             let openProgressBox = function () {
                 alignProgressBox.call(this, "append");
+                if (cfg.manualUpload) {
+
+                } else {
+                    // 자동 업로드 이면.
+                }
             };
 
             this.init = function (_config) {
@@ -334,11 +353,13 @@
                     jQuery(document.body).append(this.$inputFileForm);
                 }
 
+                // btns 확인
+                cfg.btns = jQuery.extend({}, this.defaultBtns, cfg.btns);
+
                 this.$progressBox = jQuery(UPLOADER.tmpl.get.call(this, "progressBox", {
-                    instanceId: this.instanceId
+                    instanceId: this.instanceId,
+                    btns: cfg.btns
                 }));
-                this.$progressBox
-                    .addClass("direction-top");
                 this.$progressBoxArrow = this.$progressBox.find(".ax-progressbox-arrow");
 
                 // 레이아웃 정렬
