@@ -54,6 +54,9 @@
             this.$fileSelector = null;
             /// 파일 드랍존
             this.$dropZone = null;
+            this.__uploading = false;
+            this.selectedFiles = [];
+            this.selectedFilesTotal = 0;
 
             cfg = this.config;
 
@@ -76,7 +79,6 @@
                 if (!files) return false;
 
                 /// selectedFiles에 현재 파일 정보 담아두기
-
                 if (length in files) {
                     this.selectedFiles = U.toArray(files);
                 } else {
@@ -261,6 +263,30 @@
                 }
             };
 
+            let startUpload = (function () {
+                this.__uploading = true; // 업로드 시작 상태 처리
+
+            }).bind(this);
+
+            let updateProgressBar = (function (e) {
+                this.$progressBar.css({width: U.number((e.loaded / this.selectedFilesTotal) * 100, {round: 2}) + '%'});
+                if (e.lengthComputable) {
+                    if (e.loaded >= e.total) {
+
+                    }
+                }
+            }).bind(this);
+
+            let uploaded = (function (res) {
+                console.log(res);
+
+            }).bind(this);
+
+            let uploadComplete = (function () {
+                this.__uploading = false; // 업로드 완료 상태처리
+            }).bind(this);
+
+
             this.init = function (_config) {
                 cfg = jQuery.extend(true, {}, cfg, _config);
                 if (!cfg.target) {
@@ -319,6 +345,7 @@
                     instanceId: this.instanceId,
                     btns: cfg.btns
                 }));
+                this.$progressBar = this.$progressBox.find('[role="progressbar"]');
                 this.$progressBoxArrow = this.$progressBox.find(".ax-progressbox-arrow");
 
                 // 레이아웃 정렬
@@ -333,21 +360,6 @@
              *
              */
             this.send = (function () {
-
-                let updateProgressBar = (function (e) {
-                    this.$progressBox.css({width: U.number((e.loaded / e.total) * 100, {round: 2}) + '%'});
-                    if (e.lengthComputable) {
-                        if (e.loaded >= e.total) {
-
-                        }
-                    }
-                }).bind(self);
-                let uploaded = (function (res) {
-                    console.log(res);
-                }).bind(self);
-                let uploadComplete = (function () {
-
-                }).bind(self);
 
                 let processor = {
                     "html5": function () {
@@ -385,8 +397,14 @@
                         };
 
                         this.xhr.upload.onprogress = function (e) {
-                            console.log(e.loaded, e.total);
-                            //updateProgressBar(e);
+                            // console.log(e.loaded, e.total);
+                            updateProgressBar(e);
+                            if (U.isFunction(cfg.onprogress)) {
+                                cfg.onprogress.call({
+                                    loaded: e.loaded,
+                                    total: e.total
+                                }, e);
+                            }
                         };
                         this.xhr.send(formData);  // multipart/form-data
 
@@ -402,6 +420,15 @@
                 };
 
                 return function () {
+                    if (this.__uploading === false) {
+                        let filesTotal = 0;
+                        this.selectedFiles.forEach(function (n) {
+                            filesTotal += n.size;
+                        });
+                        this.selectedFilesTotal = filesTotal;
+                        startUpload();
+                        // 전체 파일 사이즈 구하기
+                    }
                     processor[ax5.info.supportFileApi ? "html5" : "formSubmit"].call(this);
                 }
             })();
