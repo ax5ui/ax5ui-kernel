@@ -11,20 +11,30 @@
     }, (function () {
 
         let ax5uploader = function () {
+            /**
+             * @class ax5uploader
+             * @classdesc
+             * @author tom@axisj.com
+             * @example
+             * ```js
+             *
+             * ```
+             */
             let self = this,
                 cfg;
 
             this.instanceId = ax5.getGuid();
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
-                theme: 'default',
-                lang: {
+                theme: 'default', // theme of uploader
+                lang: { // 업로더 버튼 랭귀지 설정
                     "upload": "Upload",
                     "abort": "Abort"
                 },
-                accept: "*/*",
-                multiple: false,
-                manualUpload: false
+                accept: "*/*", // 업로드 선택 파일 타입 설정
+                multiple: false, // 다중 파일 업로드
+                manualUpload: false, // 업로딩 시작 수동처리 여부
+                progressBox: true // 업로드 프로그래스 박스 사용여부 false 이면 업로드 진행바를 표시 하지 않습니다. 개발자가 onprogress 함수를 이용하여 직접 구현 해야 합니다.
             };
             this.defaultBtns = {
                 "upload": {label: this.config.lang["upload"], theme: "btn-primary"},
@@ -68,7 +78,12 @@
                 /// selectedFiles에 현재 파일 정보 담아두기
                 this.selectedFiles = files;
 
-                openProgressBox.call(this);
+                if(cfg.progressBox) {
+                    openProgressBox.call(this);
+                }
+                if(!cfg.manualUpload){
+                    this.send();
+                }
             };
 
             let upload = function () {
@@ -369,6 +384,13 @@
 
             };
 
+            /**
+             * @method ax5uploader.send
+             *
+             */
+            this.send = function () {
+
+            };
             // 클래스 생성자
             this.main = (function () {
                 UI.uploader_instance = UI.uploader_instance || [];

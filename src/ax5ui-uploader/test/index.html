@@ -40,14 +40,21 @@
             target: $('[data-ax5uploader="upload1"]'),
             multiple: true,
             manualUpload: true,
-            direction: "left"
+            direction: "left",
+            progressBox: false,
+            onprogress: function () {
+                
+            }
         });
 
         upload2.setConfig({
             target: $('[data-ax5uploader="upload2"]'),
             multiple: false,
             //accept: "image/*"
-            accept: ".png, .svg"
+            accept: ".png, .svg",
+            onprogress: function () {
+
+            }
         });
 
     });
