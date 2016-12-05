@@ -13,20 +13,30 @@
     }, function () {
 
         var ax5uploader = function ax5uploader() {
+            /**
+             * @class ax5uploader
+             * @classdesc
+             * @author tom@axisj.com
+             * @example
+             * ```js
+             *
+             * ```
+             */
             var self = this,
                 cfg = void 0;
 
             this.instanceId = ax5.getGuid();
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
-                theme: 'default',
-                lang: {
+                theme: 'default', // theme of uploader
+                lang: { // 업로더 버튼 랭귀지 설정
                     "upload": "Upload",
                     "abort": "Abort"
                 },
-                accept: "*/*",
-                multiple: false,
-                manualUpload: false
+                accept: "*/*", // 업로드 선택 파일 타입 설정
+                multiple: false, // 다중 파일 업로드
+                manualUpload: false, // 업로딩 시작 수동처리 여부
+                progressBox: true // 업로드 프로그래스 박스 사용여부 false 이면 업로드 진행바를 표시 하지 않습니다. 개발자가 onprogress 함수를 이용하여 직접 구현 해야 합니다.
             };
             this.defaultBtns = {
                 "upload": { label: this.config.lang["upload"], theme: "btn-primary" },
@@ -65,69 +75,19 @@
                 if (!files) return false;
 
                 /// selectedFiles에 현재 파일 정보 담아두기
-                this.selectedFiles = files;
 
-                openProgressBox.call(this);
-            };
-
-            var upload = function upload() {
-                var _this = this;
-                if (!this.selected_file) {
-                    if (cfg.on_event) {
-                        var that = {
-                            action: "error",
-                            error: ax5.info.get_error("single-uploader", "460", "upload")
-                        };
-                        cfg.on_event.call(that, that);
-                    }
-                    return this;
-                }
-
-                var formData = new FormData(),
-                    progress_bar = this.els["progress-bar"];
-
-                this.els["progress"].css({ display: "block" });
-                progress_bar.css({ width: '0%' });
-
-                if (window.imagePicker) {
-                    formData.append(cfg.upload_http.filename_param_key, this.selected_file);
-                    // 다른 처리 방법 적용 필요
+                if (length in files) {
+                    this.selectedFiles = U.toArray(files);
                 } else {
-                    formData.append(cfg.upload_http.filename_param_key, this.selected_file);
+                    this.selectedFiles = [files];
                 }
 
-                for (var k in cfg.upload_http.data) {
-                    formData.append(k, cfg.upload_http.data[k]);
+                if (cfg.progressBox) {
+                    openProgressBox.call(this);
                 }
-
-                this.xhr = new XMLHttpRequest();
-                this.xhr.open(cfg.upload_http.method, cfg.upload_http.url, true);
-                this.xhr.onload = function (e) {
-                    var res = e.target.response;
-                    try {
-                        if (typeof res == "string") res = U.parseJson(res);
-                    } catch (e) {
-                        console.log(e);
-                        return false;
-                    }
-                    if (res.error) {
-                        console.log(res.error);
-                        return false;
-                    }
-                    _this.upload_complete(res);
-                };
-                this.xhr.upload.onprogress = function (e) {
-                    progress_bar.css({ width: U.number(e.loaded / e.total * 100, { round: 2 }) + '%' });
-                    if (e.lengthComputable) {
-                        if (e.loaded >= e.total) {
-                            //_this.upload_complete();
-                            setTimeout(function () {
-                                _this.els["progress"].css({ display: "none" });
-                            }, 300);
-                        }
-                    }
-                };
-                this.xhr.send(formData); // multipart/form-data
+                if (!cfg.manualUpload) {
+                    this.send();
+                }
             };
 
             var bindEvent = function bindEvent() {
@@ -358,6 +318,79 @@
                 // 파일버튼 등에 이벤트 연결.
                 bindEvent.call(this);
             };
+
+            /**
+             * @method ax5uploader.send
+             *
+             */
+            this.send = function () {
+
+                var updateProgressBar = function (e) {
+                    this.$progressBox.css({ width: U.number(e.loaded / e.total * 100, { round: 2 }) + '%' });
+                    if (e.lengthComputable) {
+                        if (e.loaded >= e.total) {}
+                    }
+                }.bind(self);
+                var uploaded = function (res) {
+                    console.log(res);
+                }.bind(self);
+                var uploadComplete = function () {}.bind(self);
+
+                var processor = {
+                    "html5": function html5() {
+
+                        var uploadFile = this.selectedFiles.shift();
+                        if (!uploadFile) {
+                            console.log("더 이상 업로드할 파일 없음.");
+                        }
+
+                        var formData = new FormData();
+                        //서버로 전송해야 할 추가 파라미터 정보 설정
+
+                        this.$target.find("input").each(function () {
+                            formData.append(this.name, this.value);
+                        });
+                        // 파일 아이템 추가
+                        formData.append(cfg.form.fileName, uploadFile);
+
+                        this.xhr = new XMLHttpRequest();
+                        this.xhr.open("post", cfg.form.action, true);
+
+                        this.xhr.onload = function (e) {
+                            var res = e.target.response;
+                            try {
+                                if (typeof res == "string") res = U.parseJson(res);
+                            } catch (e) {
+                                console.log(e);
+                                return false;
+                            }
+                            if (res.error) {
+                                console.log(res.error);
+                                return false;
+                            }
+                            uploaded(res);
+                        };
+
+                        this.xhr.upload.onprogress = function (e) {
+                            console.log(e.loaded, e.total);
+                            //updateProgressBar(e);
+                        };
+                        this.xhr.send(formData); // multipart/form-data
+                    },
+                    "formSubmit": function formSubmit() {
+                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
+                        // iframe 생성
+                        var iframe = $('<iframe src="javascript:false;" name="" style="display:none;"></iframe>');
+                        // form 생성.
+
+                        $(document.body).append(iframe);
+                    }
+                };
+
+                return function () {
+                    processor[ax5.info.supportFileApi ? "html5" : "formSubmit"].call(this);
+                };
+            }();
 
             // 클래스 생성자
             this.main = function () {

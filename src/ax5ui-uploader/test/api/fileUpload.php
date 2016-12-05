@@ -21,19 +21,20 @@ $uploadfile = $upload_dir . "/" . basename($new_file_name);
 
 //print_r($_FILES); //파일정보 출력 메소드
 if (move_uploaded_file($_FILES['fileData']['tmp_name'], $uploadfile)) {
-    echo "{";
-    //echo "id:'1234', ";
-    echo "name:'" . urlencode($file_name) . "', ";
-    echo "type:'" . urlencode($file_ext) . "', ";
-    echo "saveName:'" . urlencode($new_file_name) . "', ";
-    echo "fileSize:'" . $file_size . "', ";
-    echo "uploadedPath:'/samples/AXUpload5/files/', ";
-    echo "thumbUrl:'" . urlencode("files/" . $new_file_name) . "'";
-    echo "}";
-} else {
-    echo "{";
-    echo "  error:true ";
-    echo "}";
-}
 
+    echo '{
+    "name": "'.urlencode($file_name).'",
+    "type": "'.urlencode($file_ext).'",
+    "saveName": "'.urlencode($new_file_name).'",
+    "fileSize": "'.$file_size.'",
+    "uploadedPath": "//",
+    "thumbUrl": "//"
+}';
+
+} else {
+    echo '{
+    "error": true
+}';
+
+}
 ?>

@@ -76,75 +76,19 @@
                 if (!files) return false;
 
                 /// selectedFiles에 현재 파일 정보 담아두기
-                this.selectedFiles = files;
 
-                if(cfg.progressBox) {
+                if (length in files) {
+                    this.selectedFiles = U.toArray(files);
+                } else {
+                    this.selectedFiles = [files];
+                }
+
+                if (cfg.progressBox) {
                     openProgressBox.call(this);
                 }
-                if(!cfg.manualUpload){
+                if (!cfg.manualUpload) {
                     this.send();
                 }
-            };
-
-            let upload = function () {
-                var _this = this;
-                if (!this.selected_file) {
-                    if (cfg.on_event) {
-                        var that = {
-                            action: "error",
-                            error: ax5.info.get_error("single-uploader", "460", "upload")
-                        };
-                        cfg.on_event.call(that, that);
-                    }
-                    return this;
-                }
-
-                var formData = new FormData(),
-                    progress_bar = this.els["progress-bar"];
-
-                this.els["progress"].css({display: "block"});
-                progress_bar.css({width: '0%'});
-
-                if (window.imagePicker) {
-                    formData.append(cfg.upload_http.filename_param_key, this.selected_file);
-                    // 다른 처리 방법 적용 필요
-                }
-                else {
-                    formData.append(cfg.upload_http.filename_param_key, this.selected_file);
-                }
-
-                for (var k in cfg.upload_http.data) {
-                    formData.append(k, cfg.upload_http.data[k]);
-                }
-
-                this.xhr = new XMLHttpRequest();
-                this.xhr.open(cfg.upload_http.method, cfg.upload_http.url, true);
-                this.xhr.onload = function (e) {
-                    var res = e.target.response;
-                    try {
-                        if (typeof res == "string") res = U.parseJson(res);
-                    } catch (e) {
-                        console.log(e);
-                        return false;
-                    }
-                    if (res.error) {
-                        console.log(res.error);
-                        return false;
-                    }
-                    _this.upload_complete(res);
-                };
-                this.xhr.upload.onprogress = function (e) {
-                    progress_bar.css({width: U.number((e.loaded / e.total) * 100, {round: 2}) + '%'});
-                    if (e.lengthComputable) {
-                        if (e.loaded >= e.total) {
-                            //_this.upload_complete();
-                            setTimeout(function () {
-                                _this.els["progress"].css({display: "none"});
-                            }, 300);
-                        }
-                    }
-                };
-                this.xhr.send(formData);  // multipart/form-data
             };
 
             let bindEvent = function () {
@@ -165,7 +109,7 @@
                     .on("click.ax5uploader", "button", (function (_evt) {
                         console.log("click btn");
                     }).bind(this));
-                
+
                 (function () {
                     // dropZone 설정 방식 변경
                     return false;
@@ -388,9 +332,80 @@
              * @method ax5uploader.send
              *
              */
-            this.send = function () {
+            this.send = (function () {
 
-            };
+                let updateProgressBar = (function (e) {
+                    this.$progressBox.css({width: U.number((e.loaded / e.total) * 100, {round: 2}) + '%'});
+                    if (e.lengthComputable) {
+                        if (e.loaded >= e.total) {
+
+                        }
+                    }
+                }).bind(self);
+                let uploaded = (function (res) {
+                    console.log(res);
+                }).bind(self);
+                let uploadComplete = (function () {
+
+                }).bind(self);
+
+                let processor = {
+                    "html5": function () {
+
+                        let uploadFile = this.selectedFiles.shift();
+                        if (!uploadFile) {
+                            console.log("더 이상 업로드할 파일 없음.");
+                        }
+
+                        let formData = new FormData();
+                        //서버로 전송해야 할 추가 파라미터 정보 설정
+
+                        this.$target.find("input").each(function () {
+                            formData.append(this.name, this.value);
+                        });
+                        // 파일 아이템 추가
+                        formData.append(cfg.form.fileName, uploadFile);
+
+                        this.xhr = new XMLHttpRequest();
+                        this.xhr.open("post", cfg.form.action, true);
+
+                        this.xhr.onload = function (e) {
+                            let res = e.target.response;
+                            try {
+                                if (typeof res == "string") res = U.parseJson(res);
+                            } catch (e) {
+                                console.log(e);
+                                return false;
+                            }
+                            if (res.error) {
+                                console.log(res.error);
+                                return false;
+                            }
+                            uploaded(res);
+                        };
+
+                        this.xhr.upload.onprogress = function (e) {
+                            console.log(e.loaded, e.total);
+                            //updateProgressBar(e);
+                        };
+                        this.xhr.send(formData);  // multipart/form-data
+
+                    },
+                    "formSubmit": function () {
+                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
+                        // iframe 생성
+                        let iframe = $('<iframe src="javascript:false;" name="" style="display:none;"></iframe>');
+                        // form 생성.
+
+                        $(document.body).append(iframe);
+                    }
+                };
+
+                return function () {
+                    processor[ax5.info.supportFileApi ? "html5" : "formSubmit"].call(this);
+                }
+            })();
+
             // 클래스 생성자
             this.main = (function () {
                 UI.uploader_instance = UI.uploader_instance || [];

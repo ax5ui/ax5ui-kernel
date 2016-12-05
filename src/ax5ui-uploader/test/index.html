@@ -21,12 +21,16 @@
 <body style="padding: 200px;">
 
 <div data-ax5uploader="upload1">
+    <input type="hidden" name="param1" value="value1"/>
+    <input type="hidden" name="param2" value="value2"/>
     <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택 (*/*)</button>
 </div>
 
 <div style="height: 10px;"></div>
 
 <div data-ax5uploader="upload2">
+    <input type="hidden" name="param1" value="value1"/>
+    <input type="hidden" name="param2" value="value2"/>
     <button data-ax5uploader-button="selector" class="btn btn-default">파일선택 (.png, .svg)</button>
 </div>
 
@@ -38,8 +42,12 @@
 
         upload1.setConfig({
             target: $('[data-ax5uploader="upload1"]'),
+            form: {
+                action: "api/fileUpload.php",
+                fileName: "fileData"
+            },
             multiple: true,
-            manualUpload: true,
+            manualUpload: false,
             direction: "left",
             progressBox: false,
             onprogress: function () {
@@ -49,6 +57,10 @@
 
         upload2.setConfig({
             target: $('[data-ax5uploader="upload2"]'),
+            form: {
+                action: "api/fileUpload.php",
+                fileName: "fileData"
+            },
             multiple: false,
             //accept: "image/*"
             accept: ".png, .svg",
