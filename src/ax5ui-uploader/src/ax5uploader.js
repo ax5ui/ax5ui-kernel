@@ -57,6 +57,7 @@
             this.__uploading = false;
             this.selectedFiles = [];
             this.selectedFilesTotal = 0;
+            this.__loaded = 0;
 
             cfg = this.config;
 
@@ -265,11 +266,13 @@
 
             let startUpload = (function () {
                 this.__uploading = true; // 업로드 시작 상태 처리
-
+                this.$progressUpload.attr("disabled", "disabled");
+                this.$progressAbort.removeAttr("disabled");
             }).bind(this);
 
             let updateProgressBar = (function (e) {
-                this.$progressBar.css({width: U.number((e.loaded / this.selectedFilesTotal) * 100, {round: 2}) + '%'});
+                this.__loaded += e.loaded;
+                this.$progressBar.css({width: U.number(this.__loaded / this.selectedFilesTotal * 100, {round: 2}) + '%'});
                 if (e.lengthComputable) {
                     if (e.loaded >= e.total) {
 
@@ -284,6 +287,8 @@
 
             let uploadComplete = (function () {
                 this.__uploading = false; // 업로드 완료 상태처리
+                this.$progressUpload.removeAttr("disabled");
+                this.$progressAbort.attr("disabled", "disabled");
             }).bind(this);
 
 
@@ -347,6 +352,8 @@
                 }));
                 this.$progressBar = this.$progressBox.find('[role="progressbar"]');
                 this.$progressBoxArrow = this.$progressBox.find(".ax-progressbox-arrow");
+                this.$progressUpload = this.$progressBox.find('[data-pregressbox-btn="upload"]');
+                this.$progressAbort = this.$progressBox.find('[data-pregressbox-btn="abort"]');
 
                 // 레이아웃 정렬
                 alignLayout.call(this);
@@ -366,7 +373,9 @@
 
                         let uploadFile = this.selectedFiles.shift();
                         if (!uploadFile) {
-                            console.log("더 이상 업로드할 파일 없음.");
+                            // 업로드 종료
+                            uploadComplete();
+                            return this;
                         }
 
                         let formData = new FormData();
@@ -394,6 +403,7 @@
                                 return false;
                             }
                             uploaded(res);
+                            self.send();
                         };
 
                         this.xhr.upload.onprogress = function (e) {
@@ -421,13 +431,16 @@
 
                 return function () {
                     if (this.__uploading === false) {
+                        // 전체 파일 사이즈 구하기
                         let filesTotal = 0;
                         this.selectedFiles.forEach(function (n) {
                             filesTotal += n.size;
                         });
                         this.selectedFilesTotal = filesTotal;
+                        this.__loaded = 0;
+
+                        // 업로드 시작
                         startUpload();
-                        // 전체 파일 사이즈 구하기
                     }
                     processor[ax5.info.supportFileApi ? "html5" : "formSubmit"].call(this);
                 }
