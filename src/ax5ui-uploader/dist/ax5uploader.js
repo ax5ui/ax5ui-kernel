@@ -33,6 +33,7 @@
                     "upload": "Upload",
                     "abort": "Abort"
                 },
+                animateTime: 100,
                 accept: "*/*", // 업로드 선택 파일 타입 설정
                 multiple: false, // 다중 파일 업로드
                 manualUpload: false, // 업로딩 시작 수동처리 여부
@@ -86,7 +87,7 @@
                 }
 
                 if (cfg.progressBox) {
-                    openProgressBox.call(this);
+                    openProgressBox();
                 }
                 if (!cfg.manualUpload) {
                     this.send();
@@ -103,7 +104,8 @@
                 }.bind(this));
 
                 this.$progressBox.off("click.ax5uploader").on("click.ax5uploader", "button", function (_evt) {
-                    console.log("click btn");
+                    var act = _evt.target.getAttribute("data-pregressbox-btn");
+                    console.log(act);
                 }.bind(this));
 
                 (function () {
@@ -249,12 +251,19 @@
                 }.bind(this));
             };
 
-            var openProgressBox = function openProgressBox() {
+            var openProgressBox = function () {
                 alignProgressBox.call(this, "append");
                 if (cfg.manualUpload) {} else {
                     // 자동 업로드 이면.
                 }
-            };
+            }.bind(this);
+
+            var closeProgressBox = function () {
+                this.$progressBox.addClass("destroy");
+                setTimeout(function () {
+                    this.$progressBox.remove();
+                }.bind(this), cfg.animateTime);
+            }.bind(this);
 
             var startUpload = function () {
                 this.__uploading = true; // 업로드 시작 상태 처리
@@ -278,6 +287,10 @@
                 this.__uploading = false; // 업로드 완료 상태처리
                 this.$progressUpload.removeAttr("disabled");
                 this.$progressAbort.attr("disabled", "disabled");
+
+                if (cfg.progressBox) {
+                    closeProgressBox();
+                }
             }.bind(this);
 
             this.init = function (_config) {
@@ -450,6 +463,12 @@
     UPLOADER = ax5.ui.uploader;
 })();
 
+// todo :
+// html5용 업로드 - 구현완료
+// abort
+// uploaded files display, needs columnKeys
+// delete file
+// set uploded files
 // ax5.ui.uploader.tmpl
 (function () {
 
