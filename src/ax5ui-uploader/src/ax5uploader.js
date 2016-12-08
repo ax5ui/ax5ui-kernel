@@ -111,9 +111,16 @@
                 this.$progressBox
                     .off("click.ax5uploader")
                     .on("click.ax5uploader", "button", (function (_evt) {
-                        var act = _evt.target.getAttribute("data-pregressbox-btn");
-                        console.log(act);
-
+                        let act = _evt.target.getAttribute("data-pregressbox-btn");
+                        let processor = {
+                            "upload": function () {
+                                this.send();
+                            },
+                            "abort": function () {
+                                this.abort();
+                            }
+                        };
+                        if (processor[act]) processor[act].call(this);
                     }).bind(this));
 
                 (function () {
@@ -132,6 +139,7 @@
 
                         dragZone.addClass("dragover");
                     }, false);
+
                     dragZone.get(0).addEventListener('dragleave', function (e) {
                         e.stopPropagation();
                         e.preventDefault();
@@ -267,9 +275,9 @@
                 }
             }).bind(this);
 
-            let closeProgressBox = (function(){
+            let closeProgressBox = (function () {
                 this.$progressBox.addClass("destroy");
-                setTimeout((function(){
+                setTimeout((function () {
                     this.$progressBox.remove();
                 }).bind(this), cfg.animateTime);
             }).bind(this);
@@ -279,7 +287,6 @@
                 this.$progressUpload.attr("disabled", "disabled");
                 this.$progressAbort.removeAttr("disabled");
             }).bind(this);
-
 
             let updateProgressBar = (function (e) {
                 this.__loaded += e.loaded;
@@ -304,6 +311,20 @@
                 if (cfg.progressBox) {
                     closeProgressBox();
                 }
+
+                // update uploadedFiles display
+            }).bind(this);
+
+            let cancelUpload = (function () {
+                this.__uploading = false; // 업로드 완료 상태처리
+                this.$progressUpload.removeAttr("disabled");
+                this.$progressAbort.attr("disabled", "disabled");
+
+                if (cfg.progressBox) {
+                    closeProgressBox();
+                }
+
+                // update uploadedFiles display
             }).bind(this);
 
 
@@ -459,6 +480,15 @@
                     }
                     processor[ax5.info.supportFileApi ? "html5" : "formSubmit"].call(this);
                 }
+            })();
+
+            this.abort = (function () {
+
+                return function () {
+                    if (this.__uploading == true) {
+
+                    }
+                };
             })();
 
             // 클래스 생성자

@@ -105,7 +105,15 @@
 
                 this.$progressBox.off("click.ax5uploader").on("click.ax5uploader", "button", function (_evt) {
                     var act = _evt.target.getAttribute("data-pregressbox-btn");
-                    console.log(act);
+                    var processor = {
+                        "upload": function upload() {
+                            this.send();
+                        },
+                        "abort": function abort() {
+                            this.abort();
+                        }
+                    };
+                    if (processor[act]) processor[act].call(this);
                 }.bind(this));
 
                 (function () {
@@ -125,6 +133,7 @@
 
                         dragZone.addClass("dragover");
                     }, false);
+
                     dragZone.get(0).addEventListener('dragleave', function (e) {
                         e.stopPropagation();
                         e.preventDefault();
@@ -291,6 +300,20 @@
                 if (cfg.progressBox) {
                     closeProgressBox();
                 }
+
+                // update uploadedFiles display
+            }.bind(this);
+
+            var cancelUpload = function () {
+                this.__uploading = false; // 업로드 완료 상태처리
+                this.$progressUpload.removeAttr("disabled");
+                this.$progressAbort.attr("disabled", "disabled");
+
+                if (cfg.progressBox) {
+                    closeProgressBox();
+                }
+
+                // update uploadedFiles display
             }.bind(this);
 
             this.init = function (_config) {
@@ -442,6 +465,13 @@
                         startUpload();
                     }
                     processor[ax5.info.supportFileApi ? "html5" : "formSubmit"].call(this);
+                };
+            }();
+
+            this.abort = function () {
+
+                return function () {
+                    if (this.__uploading == true) {}
                 };
             }();
 
