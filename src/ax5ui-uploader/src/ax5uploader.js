@@ -62,6 +62,36 @@
 
             cfg = this.config;
 
+            /**
+             * UI 상태변경 이벤트 처리자
+             * UI의 상태변경 : open, close, upload 등의 변경사항이 발생되면 onStateChanged 함수를 후출하여 이벤트를 처리
+             */
+            let onStateChanged = function (that) {
+
+                let state = {
+                    "open": function () {
+
+                    },
+                    "close": function () {
+
+                    },
+                    "upload": function () {
+
+                    }
+                };
+
+                if (cfg.onStateChanged) {
+                    cfg.onStateChanged.call(that, that);
+                }
+                else if (this.onStateChanged) {
+                    this.onStateChanged.call(that, that);
+                }
+
+                that = null;
+                return true;
+            };
+
+
             let onSelectFile = function (_evt) {
                 let files;
 
@@ -106,21 +136,6 @@
                     .off("change.ax5uploader")
                     .on("change.ax5uploader", (function (_evt) {
                         onSelectFile.call(this, _evt);
-                    }).bind(this));
-
-                this.$progressBox
-                    .off("click.ax5uploader")
-                    .on("click.ax5uploader", "button", (function (_evt) {
-                        let act = _evt.target.getAttribute("data-pregressbox-btn");
-                        let processor = {
-                            "upload": function () {
-                                this.send();
-                            },
-                            "abort": function () {
-                                this.abort();
-                            }
-                        };
-                        if (processor[act]) processor[act].call(this);
                     }).bind(this));
 
                 (function () {
@@ -253,6 +268,8 @@
 
                 this.$progressBox.css({top: -999});
                 if (append) {
+
+                    // progressBox를 append 할 타겟 엘리먼트 펀단 후 결정.
                     (function () {
                         if (cfg.viewport) {
                             return jQuery(cfg.viewport.selector);
@@ -260,6 +277,22 @@
                             return this.$target;
                         }
                     }).call(this).append(this.$progressBox);
+
+                    // progressBox 버튼에 이벤트 연결.
+                    this.$progressBox
+                        .off("click.ax5uploader")
+                        .on("click.ax5uploader", "button", (function (_evt) {
+                            let act = _evt.target.getAttribute("data-pregressbox-btn");
+                            let processor = {
+                                "upload": function () {
+                                    this.send();
+                                },
+                                "abort": function () {
+                                    this.abort();
+                                }
+                            };
+                            if (processor[act]) processor[act].call(this);
+                        }).bind(this));
                 }
                 setTimeout((function () {
                     _alignProgressBox.call(this);
@@ -267,7 +300,19 @@
             };
 
             let openProgressBox = (function () {
+                this.$progressBox.removeClass("destroy");
+                this.$progressUpload.removeAttr("disabled");
+                this.$progressAbort.removeAttr("disabled");
+
+                // apend & align progress box
                 alignProgressBox.call(this, "append");
+
+                // state change
+                onStateChanged.call(this, {
+                    self: this,
+                    state: "open"
+                });
+
                 if (cfg.manualUpload) {
 
                 } else {
@@ -278,7 +323,8 @@
             let closeProgressBox = (function () {
                 this.$progressBox.addClass("destroy");
                 setTimeout((function () {
-                    this.$progressBox.remove();
+                    this.$progressBox
+                        .remove();
                 }).bind(this), cfg.animateTime);
             }).bind(this);
 
@@ -300,6 +346,7 @@
 
             let uploaded = (function (res) {
                 console.log(res);
+                // todo : this.uploadedFiles.push
 
             }).bind(this);
 
@@ -316,6 +363,11 @@
             }).bind(this);
 
             let cancelUpload = (function () {
+
+                if (this.xhr) {
+                    this.xhr.abort();
+                }
+
                 this.__uploading = false; // 업로드 완료 상태처리
                 this.$progressUpload.removeAttr("disabled");
                 this.$progressAbort.attr("disabled", "disabled");
@@ -324,6 +376,8 @@
                     closeProgressBox();
                 }
 
+                this.$inputFile.get(0).value = "";
+                console.log("cancelUpload");
                 // update uploadedFiles display
             }).bind(this);
 
@@ -485,9 +539,9 @@
             this.abort = (function () {
 
                 return function () {
-                    if (this.__uploading == true) {
 
-                    }
+                    cancelUpload();
+
                 };
             })();
 
@@ -513,7 +567,7 @@
 
 // todo :
 // html5용 업로드 - 구현완료
-// abort
+// abort, 여러개의 파일이 올라가는 중간에 abort 하면 업로드된 파일은 두고. 안올라간 파일만 중지
 // uploaded files display, needs columnKeys
 // delete file
 // set uploded files
