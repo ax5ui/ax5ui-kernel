@@ -1015,6 +1015,7 @@
             .find('[data-ax5grid-cellholder]');
         var colGroup = this.colGroup;
         var col = colGroup[_colIndex];
+
         updateCell.html(getFieldValue.call(this, list, list[_dindex], _dindex, col));
 
         if (col.editor && col.editor.updateWith) {
@@ -1238,8 +1239,11 @@
             if (this.xvar.frozenColumnIndex > 0) {
                 if (this.xvar.frozenRowIndex > 0) {
                     // 상단 행고정
-                    replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
-
+                    replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                        paintStartRowIndex: 0,
+                        paintRowCount: this.xvar.frozenRowIndex,
+                        bodyTrHeight: this.xvar.bodyTrHeight
+                    });
                 }
                 replaceGroupTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
             }
@@ -1247,7 +1251,11 @@
             // body
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                    paintStartRowIndex: 0,
+                    paintRowCount: this.xvar.frozenRowIndex,
+                    bodyTrHeight: this.xvar.bodyTrHeight
+                });
             }
 
             replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);

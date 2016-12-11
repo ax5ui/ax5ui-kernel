@@ -16,6 +16,7 @@
     * [.removeRow([_dindex])](#ax5grid.removeRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateRow(_row, _dindex)](#ax5grid.updateRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.deleteRow(_dindex)](#ax5grid.deleteRow) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.setValue(_dindex, _key, _value)](#ax5grid.setValue) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.addColumn(_column, [_cindex])](#ax5grid.addColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.removeCloumn([_cindex])](#ax5grid.removeCloumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateColumn(_column, _cindex)](#ax5grid.updateColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -33,6 +34,7 @@
 Preferences of grid UI
 
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+**Parem**: <code>Function</code> _config.columns[].editor.disabled - disable editor  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -279,6 +281,21 @@ ax5Grid.deleteRow("first");
 ax5Grid.deleteRow("last");
 ax5Grid.deleteRow(1);
 ax5Grid.deleteRow("selected");
+```
+<a name="ax5grid.setValue"></a>
+
+### ax5grid.setValue(_dindex, _key, _value) ⇒ <code>[ax5grid](#ax5grid)</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param |
+| --- |
+| _dindex | 
+| _key | 
+| _value | 
+
+**Example**  
+```js
+ax5Grid.setValue(0, "price", 100);
 ```
 <a name="ax5grid.addColumn"></a>
 

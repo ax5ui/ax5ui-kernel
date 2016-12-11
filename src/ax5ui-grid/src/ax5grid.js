@@ -636,6 +636,7 @@
              * @param {String} _config.columns[].editor.type - text,number,money,date
              * @param {Object} _config.columns[].editor.config
              * @param {Array} _config.columns[].editor.updateWith
+             * @parem {Function} _config.columns[].editor.disabled - disable editor
              * @returns {ax5grid}
              * @example
              * ```js
@@ -1148,6 +1149,42 @@
                 GRID.scroller.resize.call(this);
                 return this;
             };
+
+            /**
+             * @method ax5grid.setValue
+             * @param _dindex
+             * @param _key
+             * @param _value
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.setValue(0, "price", 100);
+             * ```
+             */
+            this.setValue = function (_dindex, _key, _value) {
+                // getPanelname;
+                if (GRID.data.setValue.call(this, _dindex, _key, _value)) {
+                    let repaintCell = function (_panelName, _rows, __dindex, __key, __value) {
+                        for (let r = 0, rl = _rows.length; r < rl; r++) {
+                            for (let c = 0, cl = _rows[r].cols.length; c < cl; c++) {
+                                if (_rows[r].cols[c].key == __key) {
+                                    if (this.xvar.frozenRowIndex > __dindex) {
+                                        GRID.body.repaintCell.call(this, "top-" + _panelName, __dindex, r, c, __value);
+                                    } else {
+                                        GRID.body.repaintCell.call(this, _panelName + "-scroll", __dindex, r, c, __value);
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    repaintCell.call(this, "left-body", this.leftBodyRowData.rows, _dindex, _key, _value);
+                    repaintCell.call(this, "body", this.bodyRowData.rows, _dindex, _key, _value);
+
+                }
+
+                return this;
+            }
 
             /**
              * @method ax5grid.addColumn
