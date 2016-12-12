@@ -53,7 +53,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.50";
+        var version = "1.3.51";
 
         /**
          * ax5 library path
@@ -3304,8 +3304,11 @@ ax5.ui = function () {
         if (isArray(value)) {
             for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
                 if (value[j]) {
-                    value[j]['@i'] = j;
-                    value[j]['@first'] = j === 0;
+                    if (_typeof(value[j]) === 'object') {
+                        value[j]['@i'] = j;
+                        value[j]['@first'] = j === 0;
+                    }
+
                     buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
                 }
             }
