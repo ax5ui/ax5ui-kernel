@@ -13,8 +13,8 @@ $ax5modal-header-addon-btn-padding: 0px 2px !default;
 $ax5modal-border-radius: $panel-border-radius !default;
 $ax5modal-easing-time-open: 0.3s !default;
 $ax5modal-easing-time-close: 0.3s !default;
-$ax5modal-easing-open: $ease-out-back;
-$ax5modal-easing-close: $ease-out-back;
+$ax5modal-easing-open: $ease-out-back !default;
+$ax5modal-easing-close: $ease-out-back !default;
 
 //== modal resizer
 $ax5modal-resizer-bg: #ccc !default;

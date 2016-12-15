@@ -137,7 +137,7 @@
 
                     // 파트수집
                     this.$ = {
-                        "root": this.activeModal.find('[data-modal-els="root"]'),
+                        "root": this.activeModal,
                         "header": this.activeModal.find('[data-modal-els="header"]'),
                         "body": this.activeModal.find('[data-modal-els="body"]')
                     };

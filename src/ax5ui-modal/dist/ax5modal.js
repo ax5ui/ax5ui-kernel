@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "1.3.51"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5modal
@@ -135,7 +135,7 @@
 
                 // 파트수집
                 this.$ = {
-                    "root": this.activeModal.find('[data-modal-els="root"]'),
+                    "root": this.activeModal,
                     "header": this.activeModal.find('[data-modal-els="header"]'),
                     "body": this.activeModal.find('[data-modal-els="body"]')
                 };
