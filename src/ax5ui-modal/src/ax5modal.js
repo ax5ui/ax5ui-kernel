@@ -87,6 +87,7 @@
                 width: 300,
                 height: 400,
                 closeToEsc: true,
+                disableDrag: false,
                 animateTime: 250
             };
             this.activeModal = null;
@@ -211,7 +212,7 @@
                                 }
                             });
 
-                            if (!isButton) {
+                            if (!isButton && opts.disableDrag != true) {
                                 self.mousePosition = getMousePosition(e);
                                 moveModal.on.call(self);
                             }
@@ -413,6 +414,7 @@
             this.open = function (opts, callback) {
                 if (!this.activeModal) {
                     opts = self.modalConfig = jQuery.extend(true, {}, cfg, opts);
+                    console.log(opts.disableDrag);
                     open.call(this, opts, callback);
                 }
                 return this;
@@ -443,7 +445,7 @@
                                 if ($iframe) {
                                     var iframeObject = $iframe.get(0),
                                         idoc = (iframeObject.contentDocument) ? iframeObject.contentDocument : iframeObject.contentWindow.document;
- 
+
                                     try {
                                         $(idoc.body).children().each(function () {
                                             $(this).remove();
