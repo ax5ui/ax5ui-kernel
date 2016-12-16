@@ -31,6 +31,16 @@
                     "upload": "Upload",
                     "abort": "Abort"
                 },
+                columnKeys: {
+                    name: "name",
+                    type: "type",
+                    size: "size",
+                    uploadedName: "uploadedName",
+                    uploadedPath: "uploadedPath",
+                    downloadPath: "downloadPath",
+                    previewPath: "previewPath",
+                    thumbnail: "thumbnail"
+                },
                 animateTime: 100,
                 accept: "*/*", // 업로드 선택 파일 타입 설정
                 multiple: false, // 다중 파일 업로드
@@ -90,7 +100,6 @@
                 that = null;
                 return true;
             };
-
 
             let onSelectFile = function (_evt) {
                 let files;
@@ -268,7 +277,6 @@
 
                 this.$progressBox.css({top: -999});
                 if (append) {
-
                     // progressBox를 append 할 타겟 엘리먼트 펀단 후 결정.
                     (function () {
                         if (cfg.viewport) {
@@ -294,6 +302,7 @@
                             if (processor[act]) processor[act].call(this);
                         }).bind(this));
                 }
+
                 setTimeout((function () {
                     _alignProgressBox.call(this);
                 }).bind(this));
@@ -312,12 +321,6 @@
                     self: this,
                     state: "open"
                 });
-
-                if (cfg.manualUpload) {
-
-                } else {
-                    // 자동 업로드 이면.
-                }
             }).bind(this);
 
             let closeProgressBox = (function () {
@@ -329,9 +332,87 @@
             }).bind(this);
 
             let startUpload = (function () {
-                this.__uploading = true; // 업로드 시작 상태 처리
-                this.$progressUpload.attr("disabled", "disabled");
-                this.$progressAbort.removeAttr("disabled");
+
+                let processor = {
+                    "html5": function () {
+
+                        let uploadFile = this.selectedFiles.shift();
+                        if (!uploadFile) {
+                            // 업로드 종료
+                            uploadComplete();
+                            return this;
+                        }
+
+                        let formData = new FormData();
+                        //서버로 전송해야 할 추가 파라미터 정보 설정
+
+                        this.$target.find("input").each(function () {
+                            formData.append(this.name, this.value);
+                        });
+                        // 파일 아이템 추가
+                        formData.append(cfg.form.fileName, uploadFile);
+
+                        this.xhr = new XMLHttpRequest();
+                        this.xhr.open("post", cfg.form.action, true);
+
+                        this.xhr.onload = function (e) {
+                            let res = e.target.response;
+                            try {
+                                if (typeof res == "string") res = U.parseJson(res);
+                            } catch (e) {
+                                return false;
+                            }
+                            if(cfg.debug) console.log(res);
+
+                            if (res.error) {
+                                if(cfg.debug) console.log(res.error);
+                                return false;
+                            }
+
+                            uploaded(res);
+                            self.send();
+                        };
+
+                        this.xhr.upload.onprogress = function (e) {
+                            // console.log(e.loaded, e.total);
+                            updateProgressBar(e);
+                            if (U.isFunction(cfg.onprogress)) {
+                                cfg.onprogress.call({
+                                    loaded: e.loaded,
+                                    total: e.total
+                                }, e);
+                            }
+                        };
+                        this.xhr.send(formData);  // multipart/form-data
+
+                    },
+                    "form": function () {
+                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
+                        // iframe 생성
+                        let iframe = $('<iframe src="javascript:false;" name="" style="display:none;"></iframe>');
+                        // form 생성.
+
+                        $(document.body).append(iframe);
+                    }
+                };
+
+                if (this.__uploading === false) {
+                    // 전체 파일 사이즈 구하기
+                    let filesTotal = 0;
+                    this.selectedFiles.forEach(function (n) {
+                        filesTotal += n.size;
+                    });
+                    this.selectedFilesTotal = filesTotal;
+                    this.__loaded = 0;
+
+
+                    this.__uploading = true; // 업로드 시작 상태 처리
+                    this.$progressUpload.attr("disabled", "disabled");
+                    this.$progressAbort.removeAttr("disabled");
+                }
+
+                processor[ax5.info.supportFileApi ? "html5" : "form"].call(this);
+
             }).bind(this);
 
             let updateProgressBar = (function (e) {
@@ -345,9 +426,9 @@
             }).bind(this);
 
             let uploaded = (function (res) {
-                console.log(res);
+                if(cfg.debug) console.log(res);
+                this.uploadedFiles.push(res);
                 // todo : this.uploadedFiles.push
-
             }).bind(this);
 
             let uploadComplete = (function () {
@@ -364,13 +445,22 @@
 
             let cancelUpload = (function () {
 
-                if (this.xhr) {
-                    this.xhr.abort();
-                }
+                let processor = {
+                    "html5": function () {
+                        if (this.xhr) {
+                            this.xhr.abort();
+                        }
+                    },
+                    "form": function () {
+
+                    }
+                };
 
                 this.__uploading = false; // 업로드 완료 상태처리
                 this.$progressUpload.removeAttr("disabled");
                 this.$progressAbort.attr("disabled", "disabled");
+
+                processor[ax5.info.supportFileApi ? "html5" : "form"].call(this);
 
                 if (cfg.progressBox) {
                     closeProgressBox();
@@ -458,90 +548,16 @@
              */
             this.send = (function () {
 
-                let processor = {
-                    "html5": function () {
-
-                        let uploadFile = this.selectedFiles.shift();
-                        if (!uploadFile) {
-                            // 업로드 종료
-                            uploadComplete();
-                            return this;
-                        }
-
-                        let formData = new FormData();
-                        //서버로 전송해야 할 추가 파라미터 정보 설정
-
-                        this.$target.find("input").each(function () {
-                            formData.append(this.name, this.value);
-                        });
-                        // 파일 아이템 추가
-                        formData.append(cfg.form.fileName, uploadFile);
-
-                        this.xhr = new XMLHttpRequest();
-                        this.xhr.open("post", cfg.form.action, true);
-
-                        this.xhr.onload = function (e) {
-                            let res = e.target.response;
-                            try {
-                                if (typeof res == "string") res = U.parseJson(res);
-                            } catch (e) {
-                                console.log(e);
-                                return false;
-                            }
-                            if (res.error) {
-                                console.log(res.error);
-                                return false;
-                            }
-                            uploaded(res);
-                            self.send();
-                        };
-
-                        this.xhr.upload.onprogress = function (e) {
-                            // console.log(e.loaded, e.total);
-                            updateProgressBar(e);
-                            if (U.isFunction(cfg.onprogress)) {
-                                cfg.onprogress.call({
-                                    loaded: e.loaded,
-                                    total: e.total
-                                }, e);
-                            }
-                        };
-                        this.xhr.send(formData);  // multipart/form-data
-
-                    },
-                    "formSubmit": function () {
-                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
-                        // iframe 생성
-                        let iframe = $('<iframe src="javascript:false;" name="" style="display:none;"></iframe>');
-                        // form 생성.
-
-                        $(document.body).append(iframe);
-                    }
-                };
-
                 return function () {
-                    if (this.__uploading === false) {
-                        // 전체 파일 사이즈 구하기
-                        let filesTotal = 0;
-                        this.selectedFiles.forEach(function (n) {
-                            filesTotal += n.size;
-                        });
-                        this.selectedFilesTotal = filesTotal;
-                        this.__loaded = 0;
-
-                        // 업로드 시작
-                        startUpload();
-                    }
-                    processor[ax5.info.supportFileApi ? "html5" : "formSubmit"].call(this);
+                    // 업로드 시작
+                    startUpload();
                 }
             })();
 
             this.abort = (function () {
 
                 return function () {
-
                     cancelUpload();
-
                 };
             })();
 
@@ -567,7 +583,7 @@
 
 // todo :
 // html5용 업로드 - 구현완료
-// abort, 여러개의 파일이 올라가는 중간에 abort 하면 업로드된 파일은 두고. 안올라간 파일만 중지
+// abort, 여러개의 파일이 올라가는 중간에 abort 하면 업로드된 파일은 두고. 안올라간 파일만 중지 -- ok
 // uploaded files display, needs columnKeys
 // delete file
 // set uploded files
