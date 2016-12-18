@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "1.3.53"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5modal
@@ -393,7 +393,6 @@
             this.open = function (opts, callback) {
                 if (!this.activeModal) {
                     opts = self.modalConfig = jQuery.extend(true, {}, cfg, opts);
-                    console.log(opts.disableDrag);
                     open.call(this, opts, callback);
                 }
                 return this;

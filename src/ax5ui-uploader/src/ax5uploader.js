@@ -31,15 +31,17 @@
                     "upload": "Upload",
                     "abort": "Abort"
                 },
-                columnKeys: {
-                    name: "name",
-                    type: "type",
-                    size: "size",
-                    uploadedName: "uploadedName",
-                    uploadedPath: "uploadedPath",
-                    downloadPath: "downloadPath",
-                    previewPath: "previewPath",
-                    thumbnail: "thumbnail"
+                uploadedBox: {
+                    columnKeys: {
+                        name: "name",
+                        type: "type",
+                        size: "size",
+                        uploadedName: "uploadedName",
+                        uploadedPath: "uploadedPath",
+                        downloadPath: "downloadPath",
+                        previewPath: "previewPath",
+                        thumbnail: "thumbnail"
+                    }
                 },
                 animateTime: 100,
                 accept: "*/*", // 업로드 선택 파일 타입 설정
@@ -362,10 +364,10 @@
                             } catch (e) {
                                 return false;
                             }
-                            if(cfg.debug) console.log(res);
+                            if (cfg.debug) console.log(res);
 
                             if (res.error) {
-                                if(cfg.debug) console.log(res.error);
+                                if (cfg.debug) console.log(res.error);
                                 return false;
                             }
 
@@ -426,7 +428,7 @@
             }).bind(this);
 
             let uploaded = (function (res) {
-                if(cfg.debug) console.log(res);
+                if (cfg.debug) console.log(res);
                 this.uploadedFiles.push(res);
                 // todo : this.uploadedFiles.push
             }).bind(this);

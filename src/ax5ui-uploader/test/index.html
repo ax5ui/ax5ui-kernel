@@ -24,7 +24,11 @@
     <input type="hidden" name="param1" value="value1"/>
     <input type="hidden" name="param2" value="value2"/>
     <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택 (*/*)</button>
+    <div data-uploaded-box="upload1" data-ax5uploader-uploaded-box="inline">
+
+    </div>
 </div>
+
 
 <div style="height: 10px;"></div>
 
@@ -50,18 +54,27 @@
             manualUpload: true,
             direction: "left",
             progressBox: true,
-            columnKeys: {
-                name: "name",
-                type: "type",
-                size: "size",
-                uploadedName: "uploadedName",
-                uploadedPath: "uploadedPath",
-                downloadPath: "downloadPath",
-                previewPath: "previewPath",
-                thumbnail: "thumbnail"
+            uploadedBox: {
+                target: $('[data-uploaded-box="upload1"]'),
+                columnKeys: {
+                    name: "name",
+                    type: "type",
+                    size: "size",
+                    uploadedName: "uploadedName",
+                    uploadedPath: "uploadedPath",
+                    downloadPath: "downloadPath",
+                    previewPath: "previewPath",
+                    thumbnail: "thumbnail"
+                }
             },
             onprogress: function () {
 
+            },
+            onuploaded: function () {
+                
+            },
+            onuploadComplete: function () {
+                
             }
         });
 

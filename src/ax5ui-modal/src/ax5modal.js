@@ -414,7 +414,6 @@
             this.open = function (opts, callback) {
                 if (!this.activeModal) {
                     opts = self.modalConfig = jQuery.extend(true, {}, cfg, opts);
-                    console.log(opts.disableDrag);
                     open.call(this, opts, callback);
                 }
                 return this;
