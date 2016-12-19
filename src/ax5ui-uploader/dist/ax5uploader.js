@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "${VERSION}"
+        version: "1.3.54"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -33,15 +33,17 @@
                     "upload": "Upload",
                     "abort": "Abort"
                 },
-                columnKeys: {
-                    name: "name",
-                    type: "type",
-                    size: "size",
-                    uploadedName: "uploadedName",
-                    uploadedPath: "uploadedPath",
-                    downloadPath: "downloadPath",
-                    previewPath: "previewPath",
-                    thumbnail: "thumbnail"
+                uploadedBox: {
+                    columnKeys: {
+                        name: "name",
+                        type: "type",
+                        size: "size",
+                        uploadedName: "uploadedName",
+                        uploadedPath: "uploadedPath",
+                        downloadPath: "downloadPath",
+                        previewPath: "previewPath",
+                        thumbnail: "thumbnail"
+                    }
                 },
                 animateTime: 100,
                 accept: "*/*", // 업로드 선택 파일 타입 설정
@@ -409,7 +411,11 @@
             var uploaded = function (res) {
                 if (cfg.debug) console.log(res);
                 this.uploadedFiles.push(res);
-                // todo : this.uploadedFiles.push
+                if (U.isFunction(cfg.onuploaded)) {
+                    cfg.onuploaded.call({
+                        self: this
+                    }, res);
+                }
             }.bind(this);
 
             var uploadComplete = function () {
@@ -420,7 +426,11 @@
                 if (cfg.progressBox) {
                     closeProgressBox();
                 }
-
+                if (U.isFunction(cfg.onuploadComplete)) {
+                    cfg.onuploadComplete.call({
+                        self: this
+                    });
+                }
                 // update uploadedFiles display
             }.bind(this);
 
