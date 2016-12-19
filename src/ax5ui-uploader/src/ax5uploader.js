@@ -430,7 +430,11 @@
             let uploaded = (function (res) {
                 if (cfg.debug) console.log(res);
                 this.uploadedFiles.push(res);
-                // todo : this.uploadedFiles.push
+                if (U.isFunction(cfg.onuploaded)) {
+                    cfg.onuploaded.call({
+                        self: this
+                    }, res);
+                }
             }).bind(this);
 
             let uploadComplete = (function () {
@@ -441,7 +445,11 @@
                 if (cfg.progressBox) {
                     closeProgressBox();
                 }
-
+                if (U.isFunction(cfg.onuploadComplete)) {
+                    cfg.onuploadComplete.call({
+                        self: this
+                    });
+                }
                 // update uploadedFiles display
             }).bind(this);
 

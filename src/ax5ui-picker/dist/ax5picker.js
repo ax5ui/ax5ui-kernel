@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "1.3.53"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5picker
@@ -42,7 +42,7 @@
          */
         var ax5picker = function ax5picker() {
             var self = this,
-                cfg;
+                cfg = void 0;
 
             this.instanceId = ax5.getGuid();
             this.config = {
@@ -436,7 +436,7 @@
              */
             this.bind = function (item) {
                 var pickerConfig = {},
-                    queIdx;
+                    queIdx = void 0;
 
                 item = jQuery.extend(true, pickerConfig, cfg, item);
 
@@ -1029,7 +1029,7 @@ jQuery.fn.ax5picker = function () {
     var U = ax5.util;
 
     var pickerTmpl = function pickerTmpl() {
-        return "\n<div class=\"ax5-ui-picker {{theme}}\" id=\"{{id}}\" data-picker-els=\"root\">\n    {{#title}}\n        <div class=\"ax-picker-heading\">{{title}}</div>\n    {{/title}}\n    <div class=\"ax-picker-body\">\n        <div class=\"ax-picker-content\" data-picker-els=\"content\" style=\"width:{{contentWidth}}px;\"></div>\n        {{#btns}}\n            <div class=\"ax-picker-buttons\">\n            {{#btns}}\n                {{#@each}}\n                <button data-picker-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class=\"ax-picker-arrow\"></div>\n</div>\n";
+        return "\n<div class=\"ax5-ui-picker {{theme}}\" id=\"{{id}}\" data-picker-els=\"root\" {{#zIndex}}style=\"z-index:{{zIndex}};\"{{/zIndex}}>\n    {{#title}}\n        <div class=\"ax-picker-heading\">{{title}}</div>\n    {{/title}}\n    <div class=\"ax-picker-body\">\n        <div class=\"ax-picker-content\" data-picker-els=\"content\" style=\"width:{{contentWidth}}px;\"></div>\n        {{#btns}}\n            <div class=\"ax-picker-buttons\">\n            {{#btns}}\n                {{#@each}}\n                <button data-picker-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class=\"ax-picker-arrow\"></div>\n</div>\n";
     };
 
     PICKER.tmpl = {
