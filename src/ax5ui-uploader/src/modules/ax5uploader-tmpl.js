@@ -42,11 +42,28 @@
 `;
     };
 
+    let upoadedItem = function (columnKeys) {
+      return `
+{{#uploadedFiles}}
+<div data-ax5uploader-uploaded-item="{{@i}}">
+    <div class="uploaded-item-holder">
+        <div class="icon-download"></div>
+        <div class="icon-delete"></div>
+        <div class="file-name"></div>
+        <div class="file-ext"></div>
+        <div class="file-size"></div>
+    </div>
+</div>
+{{/uploadedFiles}}
+`;
+    };
+
     UPLOADER.tmpl = {
         "uploadProgress": uploadProgress,
         "inputFile": inputFile,
         "inputFileForm": inputFileForm,
         "progressBox": progressBox,
+        "upoadedItem": upoadedItem,
 
         get: function (tmplName, data, columnKeys) {
             return ax5.mustache.render(UPLOADER.tmpl[tmplName].call(this, columnKeys), data);

@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.54"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -69,6 +69,9 @@
             this.$fileSelector = null;
             /// 파일 드랍존
             this.$dropZone = null;
+            /// 파일 목록 표시박스
+            this.$uploadedBox = null;
+
             this.__uploading = false;
             this.selectedFiles = [];
             this.selectedFilesTotal = 0;
@@ -411,6 +414,8 @@
             var uploaded = function (res) {
                 if (cfg.debug) console.log(res);
                 this.uploadedFiles.push(res);
+                repaintUploadedBox(); // 업로드된 파일 출력
+
                 if (U.isFunction(cfg.onuploaded)) {
                     cfg.onuploaded.call({
                         self: this
@@ -460,6 +465,12 @@
                 // update uploadedFiles display
             }.bind(this);
 
+            var repaintUploadedBox = function () {
+                // uploadedBox 가 없다면 아무일도 하지 않음.
+                // onuploaded 함수 이벤트를 이용하여 개발자가 직접 업로드디 박스를 구현 한다고 이해 하자.
+                if (this.$uploadedBox === null) return this;
+            }.bind(this);
+
             this.init = function (_config) {
                 cfg = jQuery.extend(true, {}, cfg, _config);
                 if (!cfg.target) {
@@ -472,6 +483,11 @@
                 // 파일 드랍존은 옵션 사항.
                 if (cfg.dropZone) {
                     this.$dropZone = jQuery(cfg.dropZone);
+                }
+
+                // uploadedBox 옵션 사항
+                if (cfg.uploadedBox && cfg.uploadedBox.target) {
+                    this.$uploadedBox = jQuery(cfg.uploadedBox.target);
                 }
 
                 // target attribute data
@@ -593,11 +609,16 @@
         return "\n<div data-ax5uploader-progressbox=\"{{instanceId}}\" class=\"{{theme}}\">\n    <div class=\"ax-progressbox-body\">\n        <div class=\"ax-pregressbox-content\">\n            <div class=\"progress\">\n              <div class=\"progress-bar progress-bar-striped active\" role=\"progressbar\" style=\"width: 0\">\n                <span class=\"sr-only\">0% Complete</span>\n              </div>\n            </div>\n        </div>\n        {{#btns}}\n            <div class=\"ax-progressbox-buttons\">\n            {{#btns}}\n                {{#@each}}\n                <button data-pregressbox-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class=\"ax-progressbox-arrow\"></div>\n</div>\n";
     };
 
+    var upoadedItem = function upoadedItem(columnKeys) {
+        return "\n{{#uploadedFiles}}\n<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\">\n        <div class=\"icon-download\"></div>\n        <div class=\"icon-delete\"></div>\n        <div class=\"file-name\"></div>\n        <div class=\"file-ext\"></div>\n        <div class=\"file-size\"></div>\n    </div>\n</div>\n{{/uploadedFiles}}\n";
+    };
+
     UPLOADER.tmpl = {
         "uploadProgress": uploadProgress,
         "inputFile": inputFile,
         "inputFileForm": inputFileForm,
         "progressBox": progressBox,
+        "upoadedItem": upoadedItem,
 
         get: function get(tmplName, data, columnKeys) {
             return ax5.mustache.render(UPLOADER.tmpl[tmplName].call(this, columnKeys), data);

@@ -8,7 +8,7 @@
     //overflow: hidden;
     width: 200px;
 
-    .progress{
+    .progress {
         height: 12px;
         margin-bottom: 0;
     }
@@ -199,22 +199,39 @@
     }
 }
 
-
 [data-ax5uploader] {
     position: relative;
     [data-ax5uploader-button="selector"] {
         position: relative;
     }
+    [data-ax5uploader-uploaded-box] {
+        &[data-ax5uploader-uploaded-box="inline"] {
+            [data-ax5uploader-uploaded-item] {
+                .uploaded-item-holder {
+                    .icon-download {
+                    }
+                    .icon-delete {
+                    }
+                    .file-name {
+                    }
+                    .file-ext {
+                    }
+                    .file-size {
+                    }
+                }
+            }
+        }
+    }
 }
 
-[data-ax5uploader-input]{
+[data-ax5uploader-input] {
     position: absolute;
     left: -1000;
     top: -1000;
     opacity: 0;
 }
 
-[data-ax5uploader-progressbox]{
+[data-ax5uploader-progressbox] {
 
     @include ax-progressbox();
 

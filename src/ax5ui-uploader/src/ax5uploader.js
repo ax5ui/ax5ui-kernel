@@ -67,6 +67,9 @@
             this.$fileSelector = null;
             /// 파일 드랍존
             this.$dropZone = null;
+            /// 파일 목록 표시박스
+            this.$uploadedBox = null;
+
             this.__uploading = false;
             this.selectedFiles = [];
             this.selectedFilesTotal = 0;
@@ -430,6 +433,8 @@
             let uploaded = (function (res) {
                 if (cfg.debug) console.log(res);
                 this.uploadedFiles.push(res);
+                repaintUploadedBox(); // 업로드된 파일 출력
+
                 if (U.isFunction(cfg.onuploaded)) {
                     cfg.onuploaded.call({
                         self: this
@@ -481,6 +486,15 @@
                 // update uploadedFiles display
             }).bind(this);
 
+            let repaintUploadedBox = (function () {
+                // uploadedBox 가 없다면 아무일도 하지 않음.
+                // onuploaded 함수 이벤트를 이용하여 개발자가 직접 업로드디 박스를 구현 한다고 이해 하자.
+                if(this.$uploadedBox === null) return this;
+
+
+
+            }).bind(this);
+
 
             this.init = function (_config) {
                 cfg = jQuery.extend(true, {}, cfg, _config);
@@ -494,6 +508,11 @@
                 // 파일 드랍존은 옵션 사항.
                 if (cfg.dropZone) {
                     this.$dropZone = jQuery(cfg.dropZone);
+                }
+
+                // uploadedBox 옵션 사항
+                if (cfg.uploadedBox && cfg.uploadedBox.target) {
+                    this.$uploadedBox = jQuery(cfg.uploadedBox.target);
                 }
 
                 // target attribute data
