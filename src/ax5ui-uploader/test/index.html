@@ -54,10 +54,14 @@
             progressBox: true,
             uploadedBox: {
                 target: $('[data-uploaded-box="upload1"]'),
+                icon: {
+                    "download": '<i class="fa fa-download" aria-hidden="true"></i>',
+                    "delete": '<i class="fa fa-minus-circle" aria-hidden="true"></i>'
+                },
                 columnKeys: {
                     name: "name",
                     type: "type",
-                    size: "size",
+                    size: "fileSize",
                     uploadedName: "uploadedName",
                     uploadedPath: "uploadedPath",
                     downloadPath: "downloadPath",
@@ -75,10 +79,10 @@
 
             },
             onuploaded: function () {
-                
+
             },
             onuploadComplete: function () {
-                
+
             }
         });
 
@@ -93,6 +97,15 @@
             accept: ".png, .svg",
             onprogress: function () {
 
+            }
+        });
+
+
+        $.ajax({
+            url: "api/fileListLoad.php",
+            success: function (res) {
+                upload1.setUploadedFile(res);
+                //console.log(res);
             }
         });
 

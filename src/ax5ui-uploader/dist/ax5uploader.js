@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.55"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -469,6 +469,11 @@
                 // uploadedBox 가 없다면 아무일도 하지 않음.
                 // onuploaded 함수 이벤트를 이용하여 개발자가 직접 업로드디 박스를 구현 한다고 이해 하자.
                 if (this.$uploadedBox === null) return this;
+
+                this.$uploadedBox.html(UPLOADER.tmpl.get("upoadedBox", {
+                    uploadedFiles: this.uploadedFiles,
+                    icon: cfg.uploadedBox.icon
+                }, cfg.uploadedBox.columnKeys));
             }.bind(this);
 
             this.init = function (_config) {
@@ -488,6 +493,10 @@
                 // uploadedBox 옵션 사항
                 if (cfg.uploadedBox && cfg.uploadedBox.target) {
                     this.$uploadedBox = jQuery(cfg.uploadedBox.target);
+                    this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
+                        var uploadedItemIndex = $(this).parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item');
+                        console.log(uploadedItemIndex);
+                    });
                 }
 
                 // target attribute data
@@ -557,12 +566,27 @@
                 };
             }();
 
+            /**
+             * @method ax5uploader.abort
+             */
             this.abort = function () {
 
                 return function () {
                     cancelUpload();
                 };
             }();
+
+            /**
+             * @method ax5uploader.setUploadedFile
+             * @param {Array} files
+             */
+            this.setUploadedFile = function (files) {
+                if (U.isArray(files)) {
+                    this.uploadedFiles = files;
+                }
+                repaintUploadedBox();
+                return this;
+            };
 
             // 클래스 생성자
             this.main = function () {
@@ -585,9 +609,11 @@
 // todo :
 // html5용 업로드 - 구현완료
 // abort, 여러개의 파일이 올라가는 중간에 abort 하면 업로드된 파일은 두고. 안올라간 파일만 중지 -- ok
+// set uploded files
 // uploaded files display, needs columnKeys
 // delete file
-// set uploded files
+
+// dropFile support
 // ax5.ui.uploader.tmpl
 (function () {
 
@@ -609,8 +635,8 @@
         return "\n<div data-ax5uploader-progressbox=\"{{instanceId}}\" class=\"{{theme}}\">\n    <div class=\"ax-progressbox-body\">\n        <div class=\"ax-pregressbox-content\">\n            <div class=\"progress\">\n              <div class=\"progress-bar progress-bar-striped active\" role=\"progressbar\" style=\"width: 0\">\n                <span class=\"sr-only\">0% Complete</span>\n              </div>\n            </div>\n        </div>\n        {{#btns}}\n            <div class=\"ax-progressbox-buttons\">\n            {{#btns}}\n                {{#@each}}\n                <button data-pregressbox-btn=\"{{@key}}\" class=\"btn btn-default {{@value.theme}}\">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class=\"ax-progressbox-arrow\"></div>\n</div>\n";
     };
 
-    var upoadedItem = function upoadedItem(columnKeys) {
-        return "\n{{#uploadedFiles}}\n<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\">\n        <div class=\"icon-download\"></div>\n        <div class=\"icon-delete\"></div>\n        <div class=\"file-name\"></div>\n        <div class=\"file-ext\"></div>\n        <div class=\"file-size\"></div>\n    </div>\n</div>\n{{/uploadedFiles}}\n";
+    var upoadedBox = function upoadedBox(columnKeys) {
+        return "\n{{#uploadedFiles}}\n<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\" >\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"download\">{{{icon.download}}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filename\">{{" + columnKeys.name + "}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filesize\">({{#@fn_get_byte}}{{" + columnKeys.size + "}}{{/@fn_get_byte}})</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"delete\">{{{icon.delete}}}</div>\n    </div>\n</div>\n{{/uploadedFiles}}\n";
     };
 
     UPLOADER.tmpl = {
@@ -618,9 +644,14 @@
         "inputFile": inputFile,
         "inputFileForm": inputFileForm,
         "progressBox": progressBox,
-        "upoadedItem": upoadedItem,
+        "upoadedBox": upoadedBox,
 
         get: function get(tmplName, data, columnKeys) {
+            data["@fn_get_byte"] = function () {
+                return function (text, render) {
+                    return ax5.util.number(render(text), { round: 2, byte: true });
+                };
+            };
             return ax5.mustache.render(UPLOADER.tmpl[tmplName].call(this, columnKeys), data);
         }
     };

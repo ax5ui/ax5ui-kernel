@@ -204,19 +204,32 @@
     [data-ax5uploader-button="selector"] {
         position: relative;
     }
+
     [data-ax5uploader-uploaded-box] {
+
         &[data-ax5uploader-uploaded-box="inline"] {
+            margin: 5px auto;
             [data-ax5uploader-uploaded-item] {
+                display: inline-block;
+                border: $panel-bg;
+                margin: $ax5uploader-uploaded-item-margin;
                 .uploaded-item-holder {
-                    .icon-download {
+                    display: table;
+                    .uploaded-item-cell {
+                        display: table-cell;
+                        padding: $ax5uploader-uploaded-item-cell-padding;
                     }
-                    .icon-delete {
+                    [data-uploaded-item-cell="download"] {
+                        cursor: pointer;
                     }
-                    .file-name {
+                    [data-uploaded-item-cell="delete"] {
+                        cursor: pointer;
                     }
-                    .file-ext {
+                    [data-uploaded-item-cell="filename"] {
+
                     }
-                    .file-size {
+                    [data-uploaded-item-cell="filesize"] {
+
                     }
                 }
             }

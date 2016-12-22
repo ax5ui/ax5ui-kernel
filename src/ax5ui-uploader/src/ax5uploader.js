@@ -489,9 +489,14 @@
             let repaintUploadedBox = (function () {
                 // uploadedBox 가 없다면 아무일도 하지 않음.
                 // onuploaded 함수 이벤트를 이용하여 개발자가 직접 업로드디 박스를 구현 한다고 이해 하자.
-                if(this.$uploadedBox === null) return this;
+                if (this.$uploadedBox === null) return this;
 
-
+                this.$uploadedBox.html(
+                    UPLOADER.tmpl.get("upoadedBox", {
+                        uploadedFiles: this.uploadedFiles,
+                        icon: cfg.uploadedBox.icon
+                    }, cfg.uploadedBox.columnKeys)
+                );
 
             }).bind(this);
 
@@ -513,6 +518,10 @@
                 // uploadedBox 옵션 사항
                 if (cfg.uploadedBox && cfg.uploadedBox.target) {
                     this.$uploadedBox = jQuery(cfg.uploadedBox.target);
+                    this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
+                        var uploadedItemIndex = $(this).parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item');
+                        console.log(uploadedItemIndex);
+                    });
                 }
 
                 // target attribute data
@@ -583,12 +592,27 @@
                 }
             })();
 
+            /**
+             * @method ax5uploader.abort
+             */
             this.abort = (function () {
 
                 return function () {
                     cancelUpload();
                 };
             })();
+
+            /**
+             * @method ax5uploader.setUploadedFile
+             * @param {Array} files
+             */
+            this.setUploadedFile = function (files) {
+                if (U.isArray(files)) {
+                    this.uploadedFiles = files;
+                }
+                repaintUploadedBox();
+                return this;
+            };
 
             // 클래스 생성자
             this.main = (function () {
@@ -613,6 +637,8 @@
 // todo :
 // html5용 업로드 - 구현완료
 // abort, 여러개의 파일이 올라가는 중간에 abort 하면 업로드된 파일은 두고. 안올라간 파일만 중지 -- ok
+// set uploded files
 // uploaded files display, needs columnKeys
 // delete file
-// set uploded files
+
+// dropFile support

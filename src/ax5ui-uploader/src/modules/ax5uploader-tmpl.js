@@ -3,7 +3,7 @@
 
     let UPLOADER = ax5.ui.uploader;
 
-    let uploadProgress = function(columnKeys) {
+    let uploadProgress = function (columnKeys) {
         return `
         `;
     };
@@ -42,20 +42,20 @@
 `;
     };
 
-    let upoadedItem = function (columnKeys) {
-      return `
+    let upoadedBox = function (columnKeys) {
+        return `
 {{#uploadedFiles}}
 <div data-ax5uploader-uploaded-item="{{@i}}">
-    <div class="uploaded-item-holder">
-        <div class="icon-download"></div>
-        <div class="icon-delete"></div>
-        <div class="file-name"></div>
-        <div class="file-ext"></div>
-        <div class="file-size"></div>
+    <div class="uploaded-item-holder" >
+        <div class="uploaded-item-cell" data-uploaded-item-cell="download">{{{icon.download}}}</div>
+        <div class="uploaded-item-cell" data-uploaded-item-cell="filename">{{${columnKeys.name}}}</div>
+        <div class="uploaded-item-cell" data-uploaded-item-cell="filesize">({{#@fn_get_byte}}{{${columnKeys.size}}}{{/@fn_get_byte}})</div>
+        <div class="uploaded-item-cell" data-uploaded-item-cell="delete">{{{icon.delete}}}</div>
     </div>
 </div>
 {{/uploadedFiles}}
 `;
+
     };
 
     UPLOADER.tmpl = {
@@ -63,9 +63,14 @@
         "inputFile": inputFile,
         "inputFileForm": inputFileForm,
         "progressBox": progressBox,
-        "upoadedItem": upoadedItem,
+        "upoadedBox": upoadedBox,
 
         get: function (tmplName, data, columnKeys) {
+            data["@fn_get_byte"] = function() {
+                return function (text, render) {
+                    return ax5.util.number(render(text), {round: 2, byte: true});
+                }
+            };
             return ax5.mustache.render(UPLOADER.tmpl[tmplName].call(this, columnKeys), data);
         }
     };
