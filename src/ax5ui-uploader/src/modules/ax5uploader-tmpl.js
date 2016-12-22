@@ -44,16 +44,14 @@
 
     let upoadedBox = function (columnKeys) {
         return `
-{{#uploadedFiles}}
-<div data-ax5uploader-uploaded-item="{{@i}}">
+{{#uploadedFiles}}<div data-ax5uploader-uploaded-item="{{@i}}">
     <div class="uploaded-item-holder" >
         <div class="uploaded-item-cell" data-uploaded-item-cell="download">{{{icon.download}}}</div>
         <div class="uploaded-item-cell" data-uploaded-item-cell="filename">{{${columnKeys.name}}}</div>
         <div class="uploaded-item-cell" data-uploaded-item-cell="filesize">({{#@fn_get_byte}}{{${columnKeys.size}}}{{/@fn_get_byte}})</div>
         <div class="uploaded-item-cell" data-uploaded-item-cell="delete">{{{icon.delete}}}</div>
     </div>
-</div>
-{{/uploadedFiles}}
+</div>{{/uploadedFiles}}
 `;
 
     };

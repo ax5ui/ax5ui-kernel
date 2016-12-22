@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.56"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -494,8 +494,25 @@
                 if (cfg.uploadedBox && cfg.uploadedBox.target) {
                     this.$uploadedBox = jQuery(cfg.uploadedBox.target);
                     this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
-                        var uploadedItemIndex = $(this).parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item');
-                        console.log(uploadedItemIndex);
+                        var $this = jQuery(this),
+                            cellType = $this.attr("data-uploaded-item-cell"),
+                            uploadedItemIndex = $this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item'),
+                            that = {};
+
+                        if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
+                            that = {
+                                self: self,
+                                cellType: cellType,
+                                uploadedFiles: self.uploadedFiles,
+                                fileIndex: uploadedItemIndex
+                            };
+                            cfg.uploadedBox.onclick.call(that, that);
+                        }
+
+                        $this = null;
+                        cellType = null;
+                        uploadedItemIndex = null;
+                        that = null;
                     });
                 }
 
@@ -505,10 +522,6 @@
                         cfg = jQuery.extend(true, cfg, data);
                     }
                 }).call(this, U.parseJson(this.$target.attr("data-ax5uploader-config"), true));
-
-                // input container 추가
-                this.$inputContainer = jQuery('<div data-ax5uploader-input-container=""></div>');
-                this.$target.append(this.$inputContainer);
 
                 // detect element
                 /// fileSelector 수집
@@ -636,7 +649,7 @@
     };
 
     var upoadedBox = function upoadedBox(columnKeys) {
-        return "\n{{#uploadedFiles}}\n<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\" >\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"download\">{{{icon.download}}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filename\">{{" + columnKeys.name + "}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filesize\">({{#@fn_get_byte}}{{" + columnKeys.size + "}}{{/@fn_get_byte}})</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"delete\">{{{icon.delete}}}</div>\n    </div>\n</div>\n{{/uploadedFiles}}\n";
+        return "\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\" >\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"download\">{{{icon.download}}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filename\">{{" + columnKeys.name + "}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filesize\">({{#@fn_get_byte}}{{" + columnKeys.size + "}}{{/@fn_get_byte}})</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"delete\">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n";
     };
 
     UPLOADER.tmpl = {

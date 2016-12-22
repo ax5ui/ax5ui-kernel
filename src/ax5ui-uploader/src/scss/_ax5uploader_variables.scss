@@ -23,8 +23,20 @@ $ax5uploader-easing-time-close: 0.1s !default;
 $ax5uploader-arrow-size: 6px !default;
 $ax5uploader-arrow-border-width: 1px !default;
 
-$ax5uploader-uploaded-item-margin: 5px !default;
+$ax5uploader-uploaded-box-bg: #f3f3f3 !default;
+$ax5uploader-uploaded-box-border: 1px solid #eee !default;
+$ax5uploader-uploaded-box-border-radius: 0 !default;
+$ax5uploader-uploaded-box-margin: 10px 0 !default;
+$ax5uploader-uploaded-box-padding: 7px !default;
+
+$ax5uploader-uploaded-item-bg: #fff !default;
+$ax5uploader-uploaded-item-color: $btn-default-color !default;
+$ax5uploader-uploaded-item-border: 0px solid $btn-default-border !default;
+$ax5uploader-uploaded-item-border-radius: $border-radius-base !default;
+$ax5uploader-uploaded-item-padding: $padding-base-vertical $padding-base-horizontal !default;
+$ax5uploader-uploaded-item-margin: 3px !default;
 $ax5uploader-uploaded-item-cell-padding: 0 3px !default;
+$ax5uploader-uploaded-item-cell-hover-color: $brand-primary !default;
 
 //** Border color for elements within dialog
 $ax5uploader-default-text: $panel-default-text !default;

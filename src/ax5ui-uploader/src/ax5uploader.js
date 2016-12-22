@@ -519,8 +519,25 @@
                 if (cfg.uploadedBox && cfg.uploadedBox.target) {
                     this.$uploadedBox = jQuery(cfg.uploadedBox.target);
                     this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
-                        var uploadedItemIndex = $(this).parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item');
-                        console.log(uploadedItemIndex);
+                        let $this = jQuery(this),
+                            cellType = $this.attr("data-uploaded-item-cell"),
+                            uploadedItemIndex = $this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item'),
+                            that = {};
+
+                        if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
+                            that = {
+                                self: self,
+                                cellType: cellType,
+                                uploadedFiles: self.uploadedFiles,
+                                fileIndex: uploadedItemIndex
+                            };
+                            cfg.uploadedBox.onclick.call(that, that);
+                        }
+
+                        $this = null;
+                        cellType = null;
+                        uploadedItemIndex = null;
+                        that = null;
                     });
                 }
 
@@ -531,9 +548,6 @@
                     }
                 }).call(this, U.parseJson(this.$target.attr("data-ax5uploader-config"), true));
 
-                // input container 추가
-                this.$inputContainer = jQuery('<div data-ax5uploader-input-container=""></div>');
-                this.$target.append(this.$inputContainer);
 
                 // detect element
                 /// fileSelector 수집
