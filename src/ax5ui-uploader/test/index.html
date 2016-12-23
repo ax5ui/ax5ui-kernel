@@ -12,10 +12,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-dialog/dist/ax5dialog.css"/>
     <link rel="stylesheet" type="text/css" href="../dist/ax5uploader.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../../ax5core/dist/ax5core.js"></script>
+    <script src="../../ax5ui-dialog/dist/ax5dialog.js"></script>
     <script src="../dist/ax5uploader.js"></script>
 </head>
 <body style="padding: 50px;">
@@ -37,6 +39,7 @@
 </div>
 
 <script>
+    var dialog = new ax5.ui.dialog();
     var upload1 = new ax5.ui.uploader();
     var upload2 = new ax5.ui.uploader();
 
@@ -49,9 +52,10 @@
                 fileName: "fileData"
             },
             multiple: true,
-            manualUpload: true,
+            manualUpload: false,
             direction: "left",
             progressBox: true,
+            dropZone: $('[data-uploaded-box="upload1"]'),
             uploadedBox: {
                 target: $('[data-uploaded-box="upload1"]'),
                 icon: {
@@ -68,12 +72,35 @@
                     previewPath: "previewPath",
                     thumbnail: "thumbnail"
                 },
+                lang: {
+                    emptyList: '<div class="text-center">Drop files here or click to upload.</div>'
+                },
                 onchange: function () {
 
                 },
                 onclick: function () {
-                    console.log(this.cellType);
-                    console.log(this.uploadedFiles[this.fileIndex]);
+                    // console.log(this.cellType);
+                    var fileIndex = this.fileIndex;
+                    var file = this.uploadedFiles[fileIndex];
+                    if (this.cellType === "delete") {
+                        dialog.confirm({
+                            msg: "정말 삭제 하시겠습니까?"
+                        }, function () {
+                            if (this.key == "ok") {
+                                $.ajax({
+                                    method: "post",
+                                    url: "api/fileDelete.php",
+                                    data: {
+                                        uploadedPath: file.uploadedPath,
+                                        saveName: file.saveName
+                                    },
+                                    success: function (res) {
+                                        upload1.removeFile(fileIndex);
+                                    }
+                                });
+                            }
+                        });
+                    }
                 }
             },
             onprogress: function () {

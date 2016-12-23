@@ -1,11 +1,9 @@
 <?php
 header('Content-Type: application/json');
 
-// $_SERVER["DOCUMENT_ROOT"]
 $file_server_path = realpath(__FILE__);
 $server_path = str_replace(basename(__FILE__), "", $file_server_path);
 $upload_dir = $server_path . "files";
-//echo $upload_dir;
 
 if (!$dh = @opendir($upload_dir)) {
     return false;
@@ -22,7 +20,7 @@ while (($file = readdir($dh)) !== false) {
         "saveName": "' . ($file) . '",
         "type": "' . filetype($upload_dir . "/" . $file) . '",
         "fileSize": "' . filesize($upload_dir . "/" . $file) . '",
-        "uploadedPath": "//",
+        "uploadedPath": "' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $upload_dir) . '",
         "thumbUrl": "//"
     }';
 

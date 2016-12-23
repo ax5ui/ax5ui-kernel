@@ -101,7 +101,7 @@
                 return true;
             };
 
-            var onSelectFile = function onSelectFile(_evt) {
+            var onSelectFile = function (_evt) {
                 var files = void 0;
 
                 if (!ax5.info.supportFileApi) {
@@ -129,7 +129,7 @@
                 if (!cfg.manualUpload) {
                     this.send();
                 }
-            };
+            }.bind(this);
 
             var bindEvent = function bindEvent() {
                 this.$fileSelector.off("click.ax5uploader").on("click.ax5uploader", function () {
@@ -137,45 +137,43 @@
                 }.bind(this));
 
                 this.$inputFile.off("change.ax5uploader").on("change.ax5uploader", function (_evt) {
-                    onSelectFile.call(this, _evt);
+                    onSelectFile(_evt);
                 }.bind(this));
 
                 (function () {
                     // dropZone 설정 방식 변경
-                    return false;
-                    var dragZone = this.els["container"],
-                        preview_img = this.els["preview-img"],
-                        _this = this,
-                        timer;
+                    if (!this.$dropZone || !this.$dropZone.get(0)) return false;
 
-                    dragZone.get(0).addEventListener('dragover', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
+                    var timer = void 0;
 
-                        preview_img.hide();
-                        if (timer) clearTimeout(timer);
+                    this.$dropZone.on("click", function (e) {
+                        //console.log(e.target.getAttribute("data-ax5uploader-dropzone"));
+                        var isItemCell = ax5.util.findParentNode(e.target, function (target) {
+                            if (target.hasAttribute("data-uploaded-item-cell")) {
+                                return true;
+                            }
+                        });
 
-                        dragZone.addClass("dragover");
+                        if (!isItemCell) {
+                            // dropZone click
+                            self.$inputFile.trigger("click");
+                        }
+                    });
+
+                    this.$dropZone.get(0).addEventListener('dragover', function (e) {
+                        U.stopEvent(e);
+                        self.$dropZone.addClass("dragover");
                     }, false);
 
-                    dragZone.get(0).addEventListener('dragleave', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-
-                        if (timer) clearTimeout(timer);
-                        timer = setTimeout(function () {
-                            preview_img.show();
-                        }, 100);
-
-                        dragZone.removeClass("dragover");
+                    this.$dropZone.get(0).addEventListener('dragleave', function (e) {
+                        U.stopEvent(e);
+                        self.$dropZone.removeClass("dragover");
                     }, false);
 
-                    dragZone.get(0).addEventListener('drop', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-
-                        dragZone.removeClass("dragover");
-                        _this.__on_select_file(e || window.event);
+                    this.$dropZone.get(0).addEventListener('drop', function (e) {
+                        U.stopEvent(e);
+                        self.$dropZone.removeClass("dragover");
+                        onSelectFile(e || window.event);
                     }, false);
                 }).call(this);
             };
@@ -472,7 +470,8 @@
 
                 this.$uploadedBox.html(UPLOADER.tmpl.get("upoadedBox", {
                     uploadedFiles: this.uploadedFiles,
-                    icon: cfg.uploadedBox.icon
+                    icon: cfg.uploadedBox.icon,
+                    lang: cfg.uploadedBox.lang
                 }, cfg.uploadedBox.columnKeys));
             }.bind(this);
 
@@ -488,6 +487,7 @@
                 // 파일 드랍존은 옵션 사항.
                 if (cfg.dropZone) {
                     this.$dropZone = jQuery(cfg.dropZone);
+                    this.$dropZone.attr("data-ax5uploader-dropzone", this.instanceId);
                 }
 
                 // uploadedBox 옵션 사항
@@ -496,7 +496,7 @@
                     this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
                         var $this = jQuery(this),
                             cellType = $this.attr("data-uploaded-item-cell"),
-                            uploadedItemIndex = $this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item'),
+                            uploadedItemIndex = Number($this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item')),
                             that = {};
 
                         if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
@@ -565,38 +565,66 @@
                 alignLayout.call(this);
                 // 파일버튼 등에 이벤트 연결.
                 bindEvent.call(this);
+
+                return this;
             };
 
             /**
              * @method ax5uploader.send
+             * @returns {ax5uploader}
              *
              */
             this.send = function () {
-
                 return function () {
                     // 업로드 시작
                     startUpload();
+                    return this;
                 };
             }();
 
             /**
              * @method ax5uploader.abort
+             * @returns {ax5uploader}
              */
             this.abort = function () {
-
                 return function () {
                     cancelUpload();
+                    return this;
                 };
             }();
 
             /**
              * @method ax5uploader.setUploadedFile
              * @param {Array} files
+             * @returns {ax5uploader}
              */
-            this.setUploadedFile = function (files) {
-                if (U.isArray(files)) {
-                    this.uploadedFiles = files;
+            this.setUploadedFile = function (_files) {
+                if (U.isArray(_files)) {
+                    this.uploadedFiles = _files;
                 }
+                repaintUploadedBox();
+                return this;
+            };
+
+            /**
+             * @method ax5uploader.removeFile
+             * @param {Number} _index
+             * @returns {ax5uploader}
+             */
+            this.removeFile = function (_index) {
+                if (!isNaN(Number(_index))) {
+                    this.uploadedFiles.splice(_index, 1);
+                }
+                repaintUploadedBox();
+                return this;
+            };
+
+            /**
+             * @method ax5uploader.removeFileAll
+             * @returns {ax5uploader}
+             */
+            this.removeFileAll = function () {
+                this.uploadedFiles = [];
                 repaintUploadedBox();
                 return this;
             };
@@ -649,7 +677,7 @@
     };
 
     var upoadedBox = function upoadedBox(columnKeys) {
-        return "\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\" >\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"download\">{{{icon.download}}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filename\">{{" + columnKeys.name + "}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filesize\">({{#@fn_get_byte}}{{" + columnKeys.size + "}}{{/@fn_get_byte}})</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"delete\">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n";
+        return "\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\" >\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"download\">{{{icon.download}}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filename\">{{" + columnKeys.name + "}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filesize\">({{#@fn_get_byte}}{{" + columnKeys.size + "}}{{/@fn_get_byte}})</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"delete\">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n{{^uploadedFiles}}\n{{{lang.emptyList}}}\n{{/uploadedFiles}}\n";
     };
 
     UPLOADER.tmpl = {

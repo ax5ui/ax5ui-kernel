@@ -52,8 +52,10 @@
         <div class="uploaded-item-cell" data-uploaded-item-cell="delete">{{{icon.delete}}}</div>
     </div>
 </div>{{/uploadedFiles}}
+{{^uploadedFiles}}
+{{{lang.emptyList}}}
+{{/uploadedFiles}}
 `;
-
     };
 
     UPLOADER.tmpl = {

@@ -204,92 +204,102 @@
     [data-ax5uploader-button="selector"] {
         position: relative;
     }
+}
 
-    [data-ax5uploader-uploaded-box] {
-        background: $ax5uploader-uploaded-box-bg;
-        border: $ax5uploader-uploaded-box-border;
-        border-radius: $ax5uploader-uploaded-box-border-radius;
+[data-ax5uploader-uploaded-box] {
+    background: $ax5uploader-uploaded-box-bg;
+    border: $ax5uploader-uploaded-box-border;
+    border-radius: $ax5uploader-uploaded-box-border-radius;
+    margin: $ax5uploader-uploaded-box-margin;
+    padding: $ax5uploader-uploaded-box-padding;
+    min-height: $ax5uploader-uploaded-box-min-height;
+
+    &[data-ax5uploader-uploaded-box="inline"] {
         margin: $ax5uploader-uploaded-box-margin;
-        padding: $ax5uploader-uploaded-box-padding;
+        &:after{
+            content: " ";
+            display: block;
+            clear: both;
+        }
+        [data-ax5uploader-uploaded-item] {
+            display: block;
+            float:left;
+            color: $ax5uploader-uploaded-item-color;
+            border: $ax5uploader-uploaded-item-border;
+            border-radius: $ax5uploader-uploaded-item-border-radius;
+            padding: $ax5uploader-uploaded-item-padding;
+            margin: $ax5uploader-uploaded-item-margin;
+            background: $ax5uploader-uploaded-item-bg;
 
-        &[data-ax5uploader-uploaded-box="inline"] {
-            margin: $ax5uploader-uploaded-box-margin;
-            &:after{
-                content: " ";
-                display: block;
-                clear: both;
-            }
-            [data-ax5uploader-uploaded-item] {
-                display: block;
-                float:left;
+            &:hover,
+            &:focus,
+            &.focus {
                 color: $ax5uploader-uploaded-item-color;
-                border: $ax5uploader-uploaded-item-border;
-                border-radius: $ax5uploader-uploaded-item-border-radius;
-                padding: $ax5uploader-uploaded-item-padding;
-                margin: $ax5uploader-uploaded-item-margin;
-                background: $ax5uploader-uploaded-item-bg;
+                text-decoration: none;
+            }
 
-                &:hover,
-                &:focus,
-                &.focus {
-                    color: $ax5uploader-uploaded-item-color;
-                    text-decoration: none;
+            &:active,
+            &.active {
+                outline: 0;
+                background-image: none;
+                @include box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+            }
+
+            &.disabled,
+            &[disabled],
+            fieldset[disabled] & {
+                cursor: $cursor-disabled;
+                opacity: .65;
+                @include box-shadow(none);
+            }
+
+
+            .uploaded-item-holder {
+                display: table;
+                .uploaded-item-cell {
+                    display: table-cell;
+                    padding: $ax5uploader-uploaded-item-cell-padding;
                 }
+                @mixin item-cell-link($color){
 
-                &:active,
-                &.active {
-                    outline: 0;
-                    background-image: none;
-                    @include box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+                    &:hover,
+                    &:focus,
+                    &.focus {
+                        color: $color;
+                        text-decoration: none;
+                    }
+
+                    &:active,
+                    &.active {
+
+                    }
                 }
-
-                &.disabled,
-                &[disabled],
-                fieldset[disabled] & {
-                    cursor: $cursor-disabled;
-                    opacity: .65;
-                    @include box-shadow(none);
+                [data-uploaded-item-cell="download"] {
+                    cursor: pointer;
+                    @include item-cell-link($ax5uploader-uploaded-item-cell-hover-color);
                 }
+                [data-uploaded-item-cell="delete"] {
+                    cursor: pointer;
+                    @include item-cell-link($ax5uploader-uploaded-item-cell-hover-color);
+                }
+                [data-uploaded-item-cell="filename"] {
 
+                }
+                [data-uploaded-item-cell="filesize"] {
 
-                .uploaded-item-holder {
-                    display: table;
-                    .uploaded-item-cell {
-                        display: table-cell;
-                        padding: $ax5uploader-uploaded-item-cell-padding;
-                    }
-                    @mixin item-cell-link($color){
-
-                        &:hover,
-                        &:focus,
-                        &.focus {
-                            color: $color;
-                            text-decoration: none;
-                        }
-
-                        &:active,
-                        &.active {
-
-                        }
-                    }
-                    [data-uploaded-item-cell="download"] {
-                        cursor: pointer;
-                        @include item-cell-link($ax5uploader-uploaded-item-cell-hover-color);
-                    }
-                    [data-uploaded-item-cell="delete"] {
-                        cursor: pointer;
-                        @include item-cell-link($ax5uploader-uploaded-item-cell-hover-color);
-                    }
-                    [data-uploaded-item-cell="filename"] {
-
-                    }
-                    [data-uploaded-item-cell="filesize"] {
-
-                    }
                 }
             }
         }
     }
+}
+
+[data-ax5uploader-dropzone] {
+    background: $ax5uploader-dropzone-bg;
+    border: $ax5uploader-dropzone-border;
+    border-radius: $ax5uploader-dropzone-border-radius;
+    margin: $ax5uploader-dropzone-margin;
+    padding: $ax5uploader-dropzone-padding;
+    cursor: pointer;
 }
 
 [data-ax5uploader-input] {

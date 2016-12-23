@@ -1,11 +1,9 @@
 <?php
 header('Content-Type: application/json');
 
-// $_SERVER["DOCUMENT_ROOT"]
 $file_server_path = realpath(__FILE__);
 $server_path = str_replace(basename(__FILE__), "", $file_server_path);
 $upload_dir = $server_path . "files";
-//echo $upload_dir;
 
 $file_name = strtolower(basename($_FILES['fileData']['name'])); // 원래 파일명
 $file_ext = strtolower(substr(strrchr($file_name, "."), 1)); // 파일 확장자
@@ -31,7 +29,7 @@ if (move_uploaded_file($_FILES['fileData']['tmp_name'], $uploadfile)) {
     "type": "' . ($file_ext) . '",
     "saveName": "' . ($new_file_name) . '",
     "fileSize": "' . $file_size . '",
-    "uploadedPath": "//",
+    "uploadedPath": "' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $upload_dir) . '",
     "thumbUrl": "//"
 }';
 
