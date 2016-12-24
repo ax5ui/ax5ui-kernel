@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.58"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1410,6 +1410,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @returns {ax5grid}
              * @example
              * ```js
+             * firstGrid.focus("UP");
+             * firstGrid.focus("DOWN");
+             * firstGrid.focus("HOME");
+             * firstGrid.focus("END");
              * ```
              */
             this.focus = function (_pos) {

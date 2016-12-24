@@ -1432,6 +1432,10 @@
              * @returns {ax5grid}
              * @example
              * ```js
+             * firstGrid.focus("UP");
+             * firstGrid.focus("DOWN");
+             * firstGrid.focus("HOME");
+             * firstGrid.focus("END");
              * ```
              */
             this.focus = function (_pos) {

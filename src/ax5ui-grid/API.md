@@ -436,4 +436,8 @@ console.log(firstGrid.exportExcel());
 
 **Example**  
 ```js
+firstGrid.focus("UP");
+firstGrid.focus("DOWN");
+firstGrid.focus("HOME");
+firstGrid.focus("END");
 ```
