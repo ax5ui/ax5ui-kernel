@@ -1184,7 +1184,7 @@
                 }
 
                 return this;
-            }
+            };
 
             /**
              * @method ax5grid.addColumn
@@ -1193,7 +1193,7 @@
              * @returns {ax5grid}
              */
             this.addColumn = (function () {
-                var processor = {
+                let processor = {
                     "first": function (_column) {
                         this.config.columns = [].concat(_column).concat(this.config.columns);
                     },
@@ -1224,7 +1224,7 @@
              * @returns {ax5grid}
              */
             this.removeColumn = (function () {
-                var processor = {
+                let processor = {
                     "first": function (_cindex) {
                         this.config.columns.splice(_cindex, 1);
                     },
@@ -1288,8 +1288,8 @@
              * @returns {Object} sortInfo
              */
             this.getColumnSortInfo = function () {
-                var that = {sortInfo: []};
-                for (var k in this.sortInfo) {
+                let that = {sortInfo: []};
+                for (let k in this.sortInfo) {
                     that.sortInfo.push({
                         key: k,
                         orderBy: this.sortInfo[k].orderBy,
@@ -1298,7 +1298,7 @@
                 }
                 that.sortInfo.sort(function (a, b) {
                     return a.seq > b.seq;
-                })
+                });
                 return that.sortInfo;
             };
 
@@ -1339,11 +1339,12 @@
              * firstGrid.select(0);
              * firstGrid.select(0, {selected: true});
              * firstGrid.select(0, {selected: false});
+             * firstGrid.select(0, {selectedClear: true});
              * ```
              */
             this.select = function (_selectObject, _options) {
                 if (U.isNumber(_selectObject)) {
-                    var dindex = _selectObject;
+                    let dindex = _selectObject;
 
                     if (!this.config.multipleSelect) {
                         this.clearSelect();
@@ -1409,7 +1410,7 @@
              * ```
              */
             this.exportExcel = function (_fileName) {
-                var table = [];
+                let table = [];
                 table.push('<table border="1">');
                 table.push(GRID.header.getExcelString.call(this));
                 table.push(GRID.body.getExcelString.call(this));
@@ -1422,6 +1423,61 @@
                     GRID.excel.export.call(this, [table.join('')], _fileName);
                 }
 
+                return this;
+            };
+
+            /**
+             * @method ax5grid.focus
+             * @param {String|Number} _pos - UP, DOWN, LEFT, RIGHT, HOME, END
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * ```
+             */
+            this.focus = function (_pos) {
+                if (GRID.body.moveFocus.call(this, _pos)) {
+                    let focusedColumn;
+                    for (let c in this.focusedColumn) {
+                        focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                        break;
+                    }
+                    if (focusedColumn) {
+                        this.select(focusedColumn.dindex, {selectedClear: true});
+                    }
+                }
+                else {
+                    if (typeof this.selectedDataIndexs[0] === "undefined") {
+                        this.select(0);
+                    } else {
+                        let selectedIndex = this.selectedDataIndexs[0];
+                        let processor = {
+                            "UP": function () {
+                                if (selectedIndex > 0) {
+                                    this.select(selectedIndex - 1, {selectedClear: true});
+                                    GRID.body.moveFocus.call(this, selectedIndex - 1);
+                                }
+                            },
+                            "DOWN": function () {
+                                if (selectedIndex < this.list.length - 1) {
+                                    this.select(selectedIndex + 1, {selectedClear: true});
+                                    GRID.body.moveFocus.call(this, selectedIndex + 1);
+                                }
+                            },
+                            "HOME": function () {
+                                this.select(0, {selectedClear: true});
+                                GRID.body.moveFocus.call(this, 0);
+                            },
+                            "END": function () {
+                                this.select(this.list.length - 1, {selectedClear: true});
+                                GRID.body.moveFocus.call(this, this.list.length - 1);
+                            }
+                        };
+
+                        if (_pos in processor) {
+                            processor[_pos].call(this);
+                        }
+                    }
+                }
                 return this;
             };
 

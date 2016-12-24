@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.57"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1318,11 +1318,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * firstGrid.select(0);
              * firstGrid.select(0, {selected: true});
              * firstGrid.select(0, {selected: false});
+             * firstGrid.select(0, {selectedClear: true});
              * ```
              */
             this.select = function (_selectObject, _options) {
                 if (U.isNumber(_selectObject)) {
-                    var dindex = _selectObject;
+                    var _dindex2 = _selectObject;
 
                     if (!this.config.multipleSelect) {
                         this.clearSelect();
@@ -1332,8 +1333,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     }
 
-                    GRID.data.select.call(this, dindex, _options && _options.selected);
-                    GRID.body.updateRowState.call(this, ["selected"], dindex);
+                    GRID.data.select.call(this, _dindex2, _options && _options.selected);
+                    GRID.body.updateRowState.call(this, ["selected"], _dindex2);
                 }
                 return this;
             };
@@ -1400,6 +1401,64 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     GRID.excel.export.call(this, [table.join('')], _fileName);
                 }
 
+                return this;
+            };
+
+            /**
+             * @method ax5grid.focus
+             * @param {String|Number} _pos - UP, DOWN, LEFT, RIGHT, HOME, END
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * ```
+             */
+            this.focus = function (_pos) {
+                var _this = this;
+
+                if (GRID.body.moveFocus.call(this, _pos)) {
+                    var focusedColumn = void 0;
+                    for (var c in this.focusedColumn) {
+                        focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                        break;
+                    }
+                    if (focusedColumn) {
+                        this.select(focusedColumn.dindex, { selectedClear: true });
+                    }
+                } else {
+                    if (typeof this.selectedDataIndexs[0] === "undefined") {
+                        this.select(0);
+                    } else {
+                        (function () {
+                            var selectedIndex = _this.selectedDataIndexs[0];
+                            var processor = {
+                                "UP": function UP() {
+                                    if (selectedIndex > 0) {
+                                        this.select(selectedIndex - 1, { selectedClear: true });
+                                        GRID.body.moveFocus.call(this, selectedIndex - 1);
+                                    }
+                                },
+                                "DOWN": function DOWN() {
+                                    if (selectedIndex < this.list.length - 1) {
+                                        this.select(selectedIndex + 1, { selectedClear: true });
+                                        GRID.body.moveFocus.call(this, selectedIndex + 1);
+                                    }
+                                },
+                                "HOME": function HOME() {
+                                    this.select(0, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, 0);
+                                },
+                                "END": function END() {
+                                    this.select(this.list.length - 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, this.list.length - 1);
+                                }
+                            };
+
+                            if (_pos in processor) {
+                                processor[_pos].call(_this);
+                            }
+                        })();
+                    }
+                }
                 return this;
             };
 
@@ -2885,9 +2944,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var focus = {
             "UD": function UD(_dy) {
                 var moveResult = true,
-                    focusedColumn,
-                    originalColumn,
-                    while_i;
+                    focusedColumn = void 0,
+                    originalColumn = void 0,
+                    while_i = void 0;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -3416,11 +3475,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         };
         var getSum = function getSum(_colGroup, _bodyRow, _list) {
             var SS = [],
-                tri,
-                trl,
-                ci,
-                cl,
-                col;
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0;
 
             //SS.push('<table border="1">');
             for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
@@ -3885,9 +3944,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var selectAll = function selectAll(_selected, _options) {
-        var cfg = this.config;
+        var cfg = this.config,
+            dindex = this.list.length;
 
-        var dindex = this.list.length;
         if (typeof _selected === "undefined") {
             while (dindex--) {
                 if (this.list[dindex].__isGrouping) continue;
@@ -3929,9 +3988,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var sort = function sort(_sortInfo, _list) {
-        var self = this;
-        var list = _list || this.list;
-        var sortInfoArray = [];
+        var self = this,
+            list = _list || this.list,
+            sortInfoArray = [];
         var getKeyValue = function getKeyValue(_item, _key, _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
@@ -3952,8 +4011,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         var i = 0,
             l = sortInfoArray.length,
-            _a_val,
-            _b_val;
+            _a_val = void 0,
+            _b_val = void 0;
 
         list.sort(function (_a, _b) {
             for (i = 0; i < l; i++) {

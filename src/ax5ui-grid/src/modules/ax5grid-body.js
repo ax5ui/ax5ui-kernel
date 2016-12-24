@@ -1653,13 +1653,13 @@
         }
     };
 
-    var moveFocus = function (_position) {
-        var focus = {
+    let moveFocus = function (_position) {
+        let focus = {
             "UD": function (_dy) {
-                var moveResult = true,
+                let moveResult = true,
                     focusedColumn, originalColumn, while_i;
 
-                for (var c in this.focusedColumn) {
+                for (let c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
                     break;
                 }
@@ -1891,7 +1891,7 @@
             }
         };
 
-        var processor = {
+        let processor = {
             "UP": function () {
                 return focus["UD"].call(this, -1);
             },
@@ -2159,15 +2159,15 @@
         }
     };
 
-    var getExcelString = function () {
-        var cfg = this.config,
+    let getExcelString = function () {
+        let cfg = this.config,
             list = this.list,
             bodyRowData = this.bodyRowData,
             footSumData = this.footSumData,
             bodyGroupingData = this.bodyGroupingData;
 
         // body-scroll 의 포지션에 의존적이므로..
-        var getBody = function (_colGroup, _bodyRow, _groupRow, _list) {
+        let getBody = function (_colGroup, _bodyRow, _groupRow, _list) {
             var SS = [],
                 di, dl,
                 tri, trl,
@@ -2202,8 +2202,8 @@
             //SS.push('</table>');
             return SS.join('');
         };
-        var getSum = function (_colGroup, _bodyRow, _list) {
-            var SS = [],
+        let getSum = function (_colGroup, _bodyRow, _list) {
+            let SS = [],
                 tri, trl,
                 ci, cl,
                 col;
@@ -2225,7 +2225,7 @@
             return SS.join('');
         };
 
-        var po = [];
+        let po = [];
         po.push(getBody.call(this, this.headerColGroup, bodyRowData, bodyGroupingData, list));
         if (cfg.footSum) {
             // 바닥 요약

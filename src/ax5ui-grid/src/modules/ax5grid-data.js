@@ -384,12 +384,12 @@
         return _value;
     };
 
-    var clearSelect = function () {
+    let clearSelect = function () {
         this.selectedDataIndexs = [];
     };
 
-    var select = function (_dindex, _selected, _options) {
-        var cfg = this.config;
+    let select = function (_dindex, _selected, _options) {
+        let cfg = this.config;
 
         if (this.list[_dindex].__isGrouping) return false;
         if (this.list[_dindex][cfg.columnKeys.disableSelection]) return false;
@@ -419,9 +419,9 @@
     };
 
     var selectAll = function (_selected, _options) {
-        var cfg = this.config;
+        let cfg = this.config,
+            dindex = this.list.length;
 
-        var dindex = this.list.length;
         if (typeof _selected === "undefined") {
             while (dindex--) {
                 if (this.list[dindex].__isGrouping) continue;
@@ -462,31 +462,27 @@
         return this.list;
     };
 
-    var sort = function (_sortInfo, _list) {
-        var self = this;
-        var list = _list || this.list;
-        var sortInfoArray = [];
-        var getKeyValue = function (_item, _key, _value) {
+    let sort = function (_sortInfo, _list) {
+        let self = this, list = _list || this.list, sortInfoArray = [];
+        let getKeyValue = function (_item, _key, _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
                     _value = (Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";")).call(_item);
-                } catch (e) {
-
-                }
+                } catch (e) { }
             } else {
                 _value = _item[_key];
             }
             return _value;
         };
 
-        for (var k in _sortInfo) {
+        for (let k in _sortInfo) {
             sortInfoArray[_sortInfo[k].seq] = {key: k, order: _sortInfo[k].orderBy};
         }
         sortInfoArray = U.filter(sortInfoArray, function () {
             return typeof this !== "undefined";
         });
 
-        var i = 0, l = sortInfoArray.length, _a_val, _b_val;
+        let i = 0, l = sortInfoArray.length, _a_val, _b_val;
 
         list.sort(function (_a, _b) {
             for (i = 0; i < l; i++) {
@@ -513,7 +509,6 @@
             GRID.page.navigationUpdate.call(this);
             return this;
         }
-
     };
 
     GRID.data = {

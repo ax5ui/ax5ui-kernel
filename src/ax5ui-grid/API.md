@@ -27,6 +27,7 @@
     * [.clearSelect()](#ax5grid.clearSelect) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.selectAll(_options)](#ax5grid.selectAll) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.exportExcel(_fileName)](#ax5grid.exportExcel) ⇒ <code>[ax5grid](#ax5grid)</code> &#124; <code>String</code>
+    * [.focus(_pos)](#ax5grid.focus) ⇒ <code>[ax5grid](#ax5grid)</code>
 
 <a name="ax5grid.setConfig"></a>
 
@@ -377,6 +378,7 @@ ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
 firstGrid.select(0);
 firstGrid.select(0, {selected: true});
 firstGrid.select(0, {selected: false});
+firstGrid.select(0, {selectedClear: true});
 ```
 <a name="ax5grid.clearSelect"></a>
 
@@ -422,4 +424,16 @@ firstGrid.selectAll({selected: true, filter: function(){
 ```js
 firstGrid.exportExcel("grid-to-excel.xls");
 console.log(firstGrid.exportExcel());
+```
+<a name="ax5grid.focus"></a>
+
+### ax5grid.focus(_pos) ⇒ <code>[ax5grid](#ax5grid)</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| _pos | <code>String</code> &#124; <code>Number</code> | UP, DOWN, LEFT, RIGHT, HOME, END |
+
+**Example**  
+```js
 ```
