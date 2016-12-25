@@ -245,6 +245,7 @@ gulp.task('dist-all-in-one', function () {
     gulp.src(jsSrcs)
         .pipe(plumber({errorHandler: errorAlert}))
         .pipe(replace("${VERSION}", packageJSON.version))
+        .pipe(sourcemaps.init())
         .pipe(concat('ax5ui.all.js'))
         .pipe(babel({
             presets: ['es2015'],
@@ -253,6 +254,7 @@ gulp.task('dist-all-in-one', function () {
         .pipe(gulp.dest('dist/'))
         .pipe(concat('ax5ui.all.min.js'))
         .pipe(uglify())
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('dist/'));
 
     gulp.src(scssSrcs)
