@@ -623,11 +623,35 @@
             })();
 
             /**
-             * @method ax5uploader.setUploadedFile
-             * @param {Array} files
+             * @method ax5uploader.setUploadedFiles
+             * @param {Array} _files - JSON formatting can all be overridden in columnKeys.
              * @returns {ax5uploader}
+             * @example
+             * ```js
+             * var upload1 = new ax5.ui.uploader();
+             * upload1.setConfig({
+             *  ...
+             * });
+             *
+             *
+             * $.ajax({
+             *     url: "api/fileListLoad.php",
+             *     success: function (res) {
+             *         // res JSON format
+             *         // [{
+             *         // "name": "barcode-scan-ani.gif",
+             *         // "saveName": "barcode-scan-ani.gif",
+             *         // "type": "file",
+             *         // "fileSize": "3891664",
+             *         // "uploadedPath": "/ax5ui-uploader/test/api/files",
+             *         // "thumbUrl": ""
+             *         // }]
+             *         upload1.setUploadedFiles(res);
+             *     }
+             * });
+             * ```
              */
-            this.setUploadedFile = function (_files) {
+            this.setUploadedFiles = function (_files) {
                 if (U.isArray(_files)) {
                     this.uploadedFiles = _files;
                 }
@@ -636,9 +660,15 @@
             };
 
             /**
+             * Removes the object corresponding to the index passed to the argument from uploadedFiles.
              * @method ax5uploader.removeFile
              * @param {Number} _index
              * @returns {ax5uploader}
+             * @example
+             * ```js
+             * // The actual file is not deleted
+             * upload1.removeFile(fileIndex);
+             * ```
              */
             this.removeFile = function (_index) {
                 if (!isNaN(Number(_index))) {
@@ -649,8 +679,13 @@
             };
 
             /**
+             * Empty uploadedFiles
              * @method ax5uploader.removeFileAll
              * @returns {ax5uploader}
+             * @example
+             * ```js
+             *
+             * ```
              */
             this.removeFileAll = function () {
                 this.uploadedFiles = [];
