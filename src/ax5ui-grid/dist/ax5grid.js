@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.44"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -622,6 +622,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {String} _config.columns[].editor.type - text,number,money,date
              * @param {Object} _config.columns[].editor.config
              * @param {Array} _config.columns[].editor.updateWith
+             * @parem {Function} _config.columns[].editor.disabled - disable editor
              * @returns {ax5grid}
              * @example
              * ```js
@@ -1130,6 +1131,41 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
 
             /**
+             * @method ax5grid.setValue
+             * @param _dindex
+             * @param _key
+             * @param _value
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.setValue(0, "price", 100);
+             * ```
+             */
+            this.setValue = function (_dindex, _key, _value) {
+                // getPanelname;
+                if (GRID.data.setValue.call(this, _dindex, _key, _value)) {
+                    var repaintCell = function repaintCell(_panelName, _rows, __dindex, __key, __value) {
+                        for (var r = 0, rl = _rows.length; r < rl; r++) {
+                            for (var c = 0, cl = _rows[r].cols.length; c < cl; c++) {
+                                if (_rows[r].cols[c].key == __key) {
+                                    if (this.xvar.frozenRowIndex > __dindex) {
+                                        GRID.body.repaintCell.call(this, "top-" + _panelName, __dindex, r, c, __value);
+                                    } else {
+                                        GRID.body.repaintCell.call(this, _panelName + "-scroll", __dindex, r, c, __value);
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    repaintCell.call(this, "left-body", this.leftBodyRowData.rows, _dindex, _key, _value);
+                    repaintCell.call(this, "body", this.bodyRowData.rows, _dindex, _key, _value);
+                }
+
+                return this;
+            };
+
+            /**
              * @method ax5grid.addColumn
              * @param {Object} _column
              * @param {Number|String} [_cindex=last]
@@ -1282,11 +1318,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * firstGrid.select(0);
              * firstGrid.select(0, {selected: true});
              * firstGrid.select(0, {selected: false});
+             * firstGrid.select(0, {selectedClear: true});
              * ```
              */
             this.select = function (_selectObject, _options) {
                 if (U.isNumber(_selectObject)) {
-                    var dindex = _selectObject;
+                    var _dindex2 = _selectObject;
 
                     if (!this.config.multipleSelect) {
                         this.clearSelect();
@@ -1296,8 +1333,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     }
 
-                    GRID.data.select.call(this, dindex, _options && _options.selected);
-                    GRID.body.updateRowState.call(this, ["selected"], dindex);
+                    GRID.data.select.call(this, _dindex2, _options && _options.selected);
+                    GRID.body.updateRowState.call(this, ["selected"], _dindex2);
                 }
                 return this;
             };
@@ -1364,6 +1401,68 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     GRID.excel.export.call(this, [table.join('')], _fileName);
                 }
 
+                return this;
+            };
+
+            /**
+             * @method ax5grid.focus
+             * @param {String|Number} _pos - UP, DOWN, LEFT, RIGHT, HOME, END
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.focus("UP");
+             * firstGrid.focus("DOWN");
+             * firstGrid.focus("HOME");
+             * firstGrid.focus("END");
+             * ```
+             */
+            this.focus = function (_pos) {
+                var _this = this;
+
+                if (GRID.body.moveFocus.call(this, _pos)) {
+                    var focusedColumn = void 0;
+                    for (var c in this.focusedColumn) {
+                        focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                        break;
+                    }
+                    if (focusedColumn) {
+                        this.select(focusedColumn.dindex, { selectedClear: true });
+                    }
+                } else {
+                    if (typeof this.selectedDataIndexs[0] === "undefined") {
+                        this.select(0);
+                    } else {
+                        (function () {
+                            var selectedIndex = _this.selectedDataIndexs[0];
+                            var processor = {
+                                "UP": function UP() {
+                                    if (selectedIndex > 0) {
+                                        this.select(selectedIndex - 1, { selectedClear: true });
+                                        GRID.body.moveFocus.call(this, selectedIndex - 1);
+                                    }
+                                },
+                                "DOWN": function DOWN() {
+                                    if (selectedIndex < this.list.length - 1) {
+                                        this.select(selectedIndex + 1, { selectedClear: true });
+                                        GRID.body.moveFocus.call(this, selectedIndex + 1);
+                                    }
+                                },
+                                "HOME": function HOME() {
+                                    this.select(0, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, 0);
+                                },
+                                "END": function END() {
+                                    this.select(this.list.length - 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, this.list.length - 1);
+                                }
+                            };
+
+                            if (_pos in processor) {
+                                processor[_pos].call(_this);
+                            }
+                        })();
+                    }
+                }
                 return this;
             };
 
@@ -2016,7 +2115,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (_col.formatter) {
                     that.value = value;
                     if (U.isFunction(_col.formatter)) {
-                        return _col.collector.call(that);
+                        return _col.formatter.call(that);
                     } else {
                         return GRID.formatter[_col.formatter].call(that);
                     }
@@ -2315,6 +2414,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var updateCell = this.$["panel"][_panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + _rowIndex + '"][data-ax5grid-column-colindex="' + _colIndex + '"]').find('[data-ax5grid-cellholder]');
         var colGroup = this.colGroup;
         var col = colGroup[_colIndex];
+
         updateCell.html(getFieldValue.call(this, list, list[_dindex], _dindex, col));
 
         if (col.editor && col.editor.updateWith) {
@@ -2495,7 +2595,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (this.xvar.frozenColumnIndex > 0) {
                 if (this.xvar.frozenRowIndex > 0) {
                     // 상단 행고정
-                    replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                    replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                        paintStartRowIndex: 0,
+                        paintRowCount: this.xvar.frozenRowIndex,
+                        bodyTrHeight: this.xvar.bodyTrHeight
+                    });
                 }
                 replaceGroupTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
             }
@@ -2503,7 +2607,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             // body
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                    paintStartRowIndex: 0,
+                    paintRowCount: this.xvar.frozenRowIndex,
+                    bodyTrHeight: this.xvar.bodyTrHeight
+                });
             }
 
             replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
@@ -2523,9 +2631,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var repaintRow = function repaintRow(_dindex) {
-        var self = this;
-        var cfg = this.config;
-        var list = this.list;
+        var self = this,
+            cfg = this.config,
+            list = this.list;
         /// ~~~~~~
 
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
@@ -2839,10 +2947,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var moveFocus = function moveFocus(_position) {
         var focus = {
             "UD": function UD(_dy) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i;
+                var moveResult = true,
+                    focusedColumn = void 0,
+                    originalColumn = void 0,
+                    while_i = void 0;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -3095,9 +3203,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
-            var self = this;
-            var dindex, colIndex, rowIndex, panelName, colspan;
-            var col, editor;
+            var self = this,
+                dindex,
+                colIndex,
+                rowIndex,
+                panelName,
+                colspan,
+                col,
+                editor;
 
             // this.inlineEditing = {};
             for (var key in _focusedColumn) {
@@ -3322,19 +3435,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getExcelString = function getExcelString() {
-        var cfg = this.config;
-        var list = this.list;
-        var bodyRowData = this.bodyRowData;
-        var footSumData = this.footSumData;
-        var bodyGroupingData = this.bodyGroupingData;
+        var cfg = this.config,
+            list = this.list,
+            bodyRowData = this.bodyRowData,
+            footSumData = this.footSumData,
+            bodyGroupingData = this.bodyGroupingData;
 
         // body-scroll 의 포지션에 의존적이므로..
         var getBody = function getBody(_colGroup, _bodyRow, _groupRow, _list) {
-            var SS = [];
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col;
+            var SS = [],
+                di,
+                dl,
+                tri,
+                trl,
+                ci,
+                cl,
+                col;
 
             //SS.push('<table border="1">');
             for (di = 0, dl = _list.length; di < dl; di++) {
@@ -3349,34 +3465,35 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
 
                 for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
-                    SS.push('<tr>');
+                    SS.push('\n<tr>');
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
 
                         SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</td>');
                     }
-                    SS.push('</tr>');
+                    SS.push('\n</tr>');
                 }
             }
             //SS.push('</table>');
             return SS.join('');
         };
         var getSum = function getSum(_colGroup, _bodyRow, _list) {
-            var SS = [];
-            var tri, trl;
-            var ci, cl;
-            var col;
+            var SS = [],
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0;
 
             //SS.push('<table border="1">');
             for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
-                SS.push('<tr>');
+                SS.push('\n<tr>');
                 for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
                     col = _bodyRow.rows[tri].cols[ci];
                     SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', getSumFieldValue.call(this, _list, col), '</td>');
                 }
-                SS.push('</tr>');
+                SS.push('\n</tr>');
             }
-
             //SS.push('</table>');
 
             return SS.join('');
@@ -3474,7 +3591,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             l = _list.length;
         var returnList = [];
         var appendIndex = 0;
-        var dataRealRowCount;
+        var dataRealRowCount = 0;
 
         if (this.config.body.grouping) {
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
@@ -3534,12 +3651,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
                     this.deletedList.push(_list[i]);
                 } else if (_list[i]) {
-
                     if (_list[i][this.config.columnKeys.selected]) {
                         this.selectedDataIndexs.push(i);
                     }
                     // __index변수를 추가하여 lineNumber 에 출력합니다. (body getFieldValue 에서 출력함)
-                    dataRealRowCount = _list[i]["__index"] = i;
+                    _list[i]["__index"] = i;
+                    dataRealRowCount++;
                     returnList.push(_list[i]);
                 }
             }
@@ -3547,7 +3664,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         // 원본 데이터의 갯수
         // grouping은 제외하고 수집됨.
-        this.xvar.dataRealRowCount = dataRealRowCount + 1;
+        this.xvar.dataRealRowCount = dataRealRowCount;
         return returnList;
     };
 
@@ -3677,7 +3794,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (this.config.body.grouping) {
             list = initData.call(this, sort.call(this, this.sortInfo, list));
         } else if (Object.keys(this.sortInfo).length) {
-            list = sort.call(this, this.sortInfo, list);
+            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        } else {
+            list = initData.call(this, list);
         }
 
         this.list = list;
@@ -3829,9 +3948,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var selectAll = function selectAll(_selected, _options) {
-        var cfg = this.config;
+        var cfg = this.config,
+            dindex = this.list.length;
 
-        var dindex = this.list.length;
         if (typeof _selected === "undefined") {
             while (dindex--) {
                 if (this.list[dindex].__isGrouping) continue;
@@ -3873,9 +3992,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var sort = function sort(_sortInfo, _list) {
-        var self = this;
-        var list = _list || this.list;
-        var sortInfoArray = [];
+        var self = this,
+            list = _list || this.list,
+            sortInfoArray = [];
         var getKeyValue = function getKeyValue(_item, _key, _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
@@ -3896,8 +4015,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         var i = 0,
             l = sortInfoArray.length,
-            _a_val,
-            _b_val;
+            _a_val = void 0,
+            _b_val = void 0;
 
         list.sort(function (_a, _b) {
             for (i = 0; i < l; i++) {
@@ -5513,9 +5632,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
                 addC += colspan;
             }
-            addC -= 1;
+
             if (addC < this.columns.length + 1) {
-                for (var c = addC; c < this.columns.length + 1; c++) {
+                for (var c = addC; c < this.colGroup.length; c++) {
                     table.rows[r].cols.push({
                         colIndex: c + 1,
                         colspan: 1,

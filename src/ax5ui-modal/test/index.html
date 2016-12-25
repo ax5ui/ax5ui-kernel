@@ -84,8 +84,14 @@
                     break;
                 case "modal-open":
                     modal.open({
+                        position: {
+                            left: "center",
+                            top: "top",
+                            margin: 10
+                        },
                         width: 800,
                         height: 600,
+                        disableDrag: true,
                         fullScreen: function () {
                             return ($(window).width() < 600);
                         }

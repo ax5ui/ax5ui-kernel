@@ -108,7 +108,6 @@
         }
     };
 
-
     var pattern_date = {
         getEnterableKeyCodes: function (_opts) {
             var enterableKeyCodes = {

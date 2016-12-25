@@ -229,7 +229,7 @@
 // mixins --------------------------------------------- end
 
 .ax5modal {
-    @include animation(ax-modal $ax5modal-easing-time-open $ease-out-back forwards);
+    @include animation(ax-modal $ax5modal-easing-time-open $ax5modal-easing-open forwards);
     @include transform(translateZ(0px));
     //@include transition(all $ax5modal-easing-time-open linear);
 
@@ -254,7 +254,7 @@
     }
 
     &.destroy {
-        @include animation(ax-modal-destroy $ax5modal-easing-time-close $ease-out-back forwards);
+        @include animation(ax-modal-destroy $ax5modal-easing-time-close $ax5modal-easing-close forwards);
     }
 
     &.fullscreen {

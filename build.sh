@@ -1,27 +1,39 @@
 #!/usr/bin/env bash
-echo "Checkout Master Branch"
-git checkout master
-
-echo "Git Pull From Origin (branch master)"
-git pull origin master
 
 LOG=`git log --pretty=oneline --abbrev-commit -1`
 
 case "$LOG" in
-  *MAJOR@*) echo "Major Version"; VERSION=$(npm version major --force) ;;
-  *MINOR@*) echo "Minor version"; VERSION=$(npm version minor --force) ;;
-  *PATCH@*) echo "Patch Version"; VERSION=$(npm version patch --force) ;;
+  *MAJOR@*) echo "Major Version"; VERSION_TYPE="MAJOR";;
+  *MINOR@*) echo "Minor version"; VERSION_TYPE="MINOR";;
+  *PATCH@*) echo "Patch Version"; VERSION_TYPE="PATCH";;
 esac
 
-VERSION=$(echo $VERSION | cut -c 2-)
+if [ $VERSION_TYPE ]
+then
+    git checkout master
 
-npm install && gulp version
+    git pull origin master
 
-git add *
+    case "$VERSION_TYPE" in
+      *MAJOR*) VERSION=$(npm version major --force);;
+      *MINOR*) VERSION=$(npm version minor --force);;
+      *PATCH*) VERSION=$(npm version patch --force);;
+    esac
 
-echo "Git Commit & Push"
+    VERSION=$(echo $VERSION | cut -c 2-)
 
-git commit -m "$VERSION RELEASED" && git pull origin master && git push origin master
+    echo "VERSION : " $VERSION
+
+    echo "START VERSION UP PROCESS"
+
+    npm install && gulp version
+
+    git add *
+
+    echo "Git Commit & Push"
+
+    git commit -m "$VERSION RELEASED" && git pull origin master && git push origin master
+fi
 
 echo "Start git Subsplit"
 

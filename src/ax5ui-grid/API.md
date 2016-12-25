@@ -16,6 +16,7 @@
     * [.removeRow([_dindex])](#ax5grid.removeRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateRow(_row, _dindex)](#ax5grid.updateRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.deleteRow(_dindex)](#ax5grid.deleteRow) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.setValue(_dindex, _key, _value)](#ax5grid.setValue) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.addColumn(_column, [_cindex])](#ax5grid.addColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.removeCloumn([_cindex])](#ax5grid.removeCloumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateColumn(_column, _cindex)](#ax5grid.updateColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -26,6 +27,7 @@
     * [.clearSelect()](#ax5grid.clearSelect) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.selectAll(_options)](#ax5grid.selectAll) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.exportExcel(_fileName)](#ax5grid.exportExcel) ⇒ <code>[ax5grid](#ax5grid)</code> &#124; <code>String</code>
+    * [.focus(_pos)](#ax5grid.focus) ⇒ <code>[ax5grid](#ax5grid)</code>
 
 <a name="ax5grid.setConfig"></a>
 
@@ -33,6 +35,7 @@
 Preferences of grid UI
 
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+**Parem**: <code>Function</code> _config.columns[].editor.disabled - disable editor  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -280,6 +283,21 @@ ax5Grid.deleteRow("last");
 ax5Grid.deleteRow(1);
 ax5Grid.deleteRow("selected");
 ```
+<a name="ax5grid.setValue"></a>
+
+### ax5grid.setValue(_dindex, _key, _value) ⇒ <code>[ax5grid](#ax5grid)</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param |
+| --- |
+| _dindex | 
+| _key | 
+| _value | 
+
+**Example**  
+```js
+ax5Grid.setValue(0, "price", 100);
+```
 <a name="ax5grid.addColumn"></a>
 
 ### ax5grid.addColumn(_column, [_cindex]) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -360,6 +378,7 @@ ax5grid.setColumnSort({a:{seq:0, orderBy:"desc"}, b:{seq:1, orderBy:"asc"}});
 firstGrid.select(0);
 firstGrid.select(0, {selected: true});
 firstGrid.select(0, {selected: false});
+firstGrid.select(0, {selectedClear: true});
 ```
 <a name="ax5grid.clearSelect"></a>
 
@@ -405,4 +424,20 @@ firstGrid.selectAll({selected: true, filter: function(){
 ```js
 firstGrid.exportExcel("grid-to-excel.xls");
 console.log(firstGrid.exportExcel());
+```
+<a name="ax5grid.focus"></a>
+
+### ax5grid.focus(_pos) ⇒ <code>[ax5grid](#ax5grid)</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| _pos | <code>String</code> &#124; <code>Number</code> | UP, DOWN, LEFT, RIGHT, HOME, END |
+
+**Example**  
+```js
+firstGrid.focus("UP");
+firstGrid.focus("DOWN");
+firstGrid.focus("HOME");
+firstGrid.focus("END");
 ```

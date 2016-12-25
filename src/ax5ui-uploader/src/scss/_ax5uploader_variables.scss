@@ -1,57 +1,76 @@
-$ax5select-label-padding: 0px 7px;
-$ax5select-addon-icon-height: 4.5px;
-$ax5select-addon-icon-color: #444;
-$ax5select-addon-icon-padding-right: 7px;
+$ax5uploader-box-model: border-box !default;
+$ax5uploader-z-index: 1000 !default;
+$ax5uploader-bg: $panel-bg !default;
+$ax5uploader-inner-border: 1px solid !default;
+$ax5uploader-inner-border-color: $panel-inner-border !default;
 
-///== option group
-$ax5select-option-group-z-index: 2000 !default;
-$ax5select-option-group-box-model: border-box !default;
-$ax5select-option-group-bg: lighten(#eee, 5%) !default;
-$ax5select-option-group-inner-border: 1px solid !default;
-$ax5select-option-group-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.175) !default;
-$ax5select-option-group-border-radius: 5px !default;
-$ax5select-option-group-body-padding: 0px !default;
-$ax5select-option-group-heading-padding: $panel-heading-padding !default;
-$ax5select-option-group-buttons-padding: 10px 0px 5px 0px !default;
+$ax5uploader-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.175) !default;
+$ax5uploader-border-radius: 5px !default;
 
-$ax5select-option-group-easing-time-open: 0.1s !default;
-$ax5select-option-group-easing-time-close: 0.1s !default;
-$ax5select-option-group-arrow-size: 10px !default;
-$ax5select-option-group-arrow-border-width: 1px !default;
+$ax5uploader-body-padding: 10px !default;
+$ax5uploader-heading-padding: $panel-heading-padding !default;
+$ax5uploader-buttons-padding: 5px 0px 0px 0px !default;
+$ax5uploader-button-padding: 3px 7px !default;
+$ax5uploader-button-font-size: 0.8em !default;
 
-$ax5select-option-item-padding: 5px 0px;
-$ax5select-option-item-html-padding: 0px 5px;
-$ax5select-option-item-font-size: 13px;
-$ax5select-option-item-checkbox-width: 18px;
-$ax5select-option-item-handle-width: 14px;
+$ax5uploader-content-border: 0px solid !default;
+$ax5uploader-content-border-color: none !default;
+$ax5uploader-content-border-radius: 0px !default;
+$ax5uploader-content-padding: 0px !default;
 
-///~~ theme
-$ax5select-default-fore-color: $gray;
-$ax5select-default-back-color: #fff;
-$ax5select-default-border-color: #ccc;
-$ax5select-default-hover-type: darken, 10;
+$ax5uploader-easing-time-open: 0.1s !default;
+$ax5uploader-easing-time-close: 0.1s !default;
+$ax5uploader-arrow-size: 6px !default;
+$ax5uploader-arrow-border-width: 1px !default;
 
-$ax5select-primary-fore-color: $brand-primary;
-$ax5select-primary-back-color: $ax5select-option-group-bg;
-$ax5select-primary-border-color: #ccc;
-$ax5select-primary-hover-type: darken, 10;
+$ax5uploader-uploaded-box-bg: #f3f3f3 !default;
+$ax5uploader-uploaded-box-border: 1px solid #ccc !default;
+$ax5uploader-uploaded-box-border-radius: 5px !default;
+$ax5uploader-uploaded-box-margin: 10px 0 !default;
+$ax5uploader-uploaded-box-padding: 7px !default;
+$ax5uploader-uploaded-box-min-height: 100px !default;
 
-$ax5select-success-fore-color: $brand-success;
-$ax5select-success-back-color: $ax5select-option-group-bg;
-$ax5select-success-border-color: #ccc;
-$ax5select-success-hover-type: darken, 10;
+$ax5uploader-uploaded-item-bg: #fff !default;
+$ax5uploader-uploaded-item-color: $btn-default-color !default;
+$ax5uploader-uploaded-item-border: 0px solid $btn-default-border !default;
+$ax5uploader-uploaded-item-border-radius: $border-radius-base !default;
+$ax5uploader-uploaded-item-padding: $padding-base-vertical $padding-base-horizontal !default;
+$ax5uploader-uploaded-item-margin: 3px !default;
+$ax5uploader-uploaded-item-cell-padding: 0 3px !default;
+$ax5uploader-uploaded-item-cell-hover-color: $brand-primary !default;
 
-$ax5select-info-fore-color: $brand-info;
-$ax5select-info-back-color: $ax5select-option-group-bg;
-$ax5select-info-border-color: #ccc;
-$ax5select-info-hover-type: darken, 10;
+$ax5uploader-dropzone-bg: #f3f3f3 !default;
+$ax5uploader-dropzone-border: 2px dashed #0087F7 !default;
+$ax5uploader-dropzone-border-radius: 5px !default;
+$ax5uploader-dropzone-margin: 10px 0 !default;
+$ax5uploader-dropzone-padding: 7px !default;
+$ax5uploader-dropzone-min-height: 100px !default;
 
-$ax5select-warning-fore-color: $brand-warning;
-$ax5select-warning-back-color: $ax5select-option-group-bg;
-$ax5select-warning-border-color: #ccc;
-$ax5select-warning-hover-type: darken, 10;
+$ax5uploader-dropzone-dragover-bg: #fff !default;
+$ax5uploader-dropzone-dragover-border: 2px solid #0087F7 !default;
 
-$ax5select-danger-fore-color: $brand-danger;
-$ax5select-danger-back-color: $ax5select-option-group-bg;
-$ax5select-danger-border-color: #ccc;
-$ax5select-danger-hover-type: darken, 10;
+
+//** Border color for elements within dialog
+$ax5uploader-default-text: $panel-default-text !default;
+$ax5uploader-default-border-color: $panel-default-border !default;
+$ax5uploader-default-heading-bg: $panel-default-heading-bg !default;
+
+$ax5uploader-primary-text: $panel-primary-text !default;
+$ax5uploader-primary-border-color: $panel-primary-border !default;
+$ax5uploader-primary-heading-bg: $panel-primary-heading-bg !default;
+
+$ax5uploader-success-text: $panel-success-text !default;
+$ax5uploader-success-border-color: $panel-success-border !default;
+$ax5uploader-success-heading-bg: $panel-success-heading-bg !default;
+
+$ax5uploader-info-text: $panel-info-text !default;
+$ax5uploader-info-border-color: $panel-info-border !default;
+$ax5uploader-info-heading-bg: $panel-info-heading-bg !default;
+
+$ax5uploader-warning-text: $panel-warning-text !default;
+$ax5uploader-warning-border-color: $panel-warning-border !default;
+$ax5uploader-warning-heading-bg: $panel-warning-heading-bg !default;
+
+$ax5uploader-danger-text: $panel-danger-text !default;
+$ax5uploader-danger-border-color: $panel-danger-border !default;
+$ax5uploader-danger-heading-bg: $panel-danger-heading-bg !default;

@@ -20,6 +20,7 @@ picker.bind({
 );
 
 picker.bind({
+    zIndex: 5000,
     id: "my-picker-01",
     target: $("#input"),
     direction: "top",
@@ -40,6 +41,9 @@ picker.bind({
     }
 );
 ```
+
+### zIndex
+Type: `Number`
 
 ### id
 

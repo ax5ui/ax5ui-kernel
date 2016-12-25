@@ -39,8 +39,7 @@
          * ```
          */
         var ax5picker = function () {
-            var
-                self = this,
+            let self = this,
                 cfg;
 
             this.instanceId = ax5.getGuid();
@@ -72,8 +71,7 @@
 
             cfg = this.config;
 
-            var
-                onStateChanged = function (item, that) {
+            let onStateChanged = function (item, that) {
                     if (item && item.onStateChanged) {
                         item.onStateChanged.call(that, that);
                     }
@@ -451,8 +449,7 @@
              * ```
              */
             this.bind = function (item) {
-                var
-                    pickerConfig = {},
+                let pickerConfig = {},
                     queIdx;
 
                 item = jQuery.extend(true, pickerConfig, cfg, item);

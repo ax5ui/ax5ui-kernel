@@ -8,13 +8,19 @@
     <title>GRID</title>
 
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-mask/dist/ax5mask.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-calendar/dist/ax5calendar.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-mask/dist/ax5mask.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-calendar/dist/ax5calendar.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-picker/dist/ax5picker.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-select/dist/ax5select.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5grid.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/ax5core/dist/ax5core.js"></script>
+    <script src="../../ax5core/dist/ax5core.js"></script>
+    <script src="../../ax5ui-formatter/dist/ax5formatter.min.js"></script>
+    <script src="../../ax5ui-calendar/dist/ax5calendar.min.js"></script>
+    <script src="../../ax5ui-picker/dist/ax5picker.min.js"></script>
+    <script src="../../ax5ui-select/dist/ax5select.js"></script>
     <script src="../dist/ax5grid.js"></script>
 </head>
 <body style="padding: 20px;">
@@ -22,10 +28,6 @@
 <div style="position: relative;height:300px;" id="grid-parent">
     <div data-ax5grid="first-grid" data-ax5grid-config='{showLineNumber: false, showRowSelector: true}' style="height: 100%;"></div>
 </div>
-
-<div style="height: 10px;"></div>
-
-<div data-ax5grid="second-grid" data-ax5grid-config='{showLineNumber: false, showRowSelector: true}' style="height: 200px;"></div>
 
 <div style="padding: 5px;">
     <h3>height</h3>
@@ -40,6 +42,7 @@
     <button class="btn btn-default" data-grid-control="row-add2">add(no sort)</button>
     <button class="btn btn-default" data-grid-control="row-remove">remove</button>
     <button class="btn btn-default" data-grid-control="row-update">update</button>
+    <button class="btn btn-default" data-grid-control="row-delete">delete</button>
 </div>
 <div style="padding: 5px;">
     <h3>column</h3>
@@ -55,6 +58,18 @@
 <div style="padding: 5px;">
     <button class="btn btn-default" data-grid-control="excel">Excel</button>
 </div>
+<div style="padding: 5px;">
+    <button class="btn btn-default" data-grid-control="focus-up">focus-up</button>
+    <button class="btn btn-default" data-grid-control="focus-down">focus-down</button>
+    <button class="btn btn-default" data-grid-control="focus-home">focus-home</button>
+    <button class="btn btn-default" data-grid-control="focus-end">focus-end</button>
+</div>
+
+
+<div style="height: 10px;"></div>
+
+<div data-ax5grid="second-grid" data-ax5grid-config='{showLineNumber: false, showRowSelector: true}' style="height: 200px;"></div>
+
 <script>
 
 
@@ -73,7 +88,18 @@
     };
 
     var sampleData = [
-        {companyJson: {"대표자명": "----"}, a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A", __disable_selection__: true},
+        //{companyJson: {"대표자명": "----"}, a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A", __disable_selection__: true},
+        {companyJson: {"대표자명": "----"}, a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
+        {companyJson: {"대표자명": "위세라"}, a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "B01", price: 1400, amount: 5, cost: 7000, saleDt: "2016-08-29", customer: "황세진", saleType: "D"},
+        {companyJson: {"대표자명": "----"}, a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
+        {companyJson: {"대표자명": "위세라"}, a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
+        {companyJson: {"대표자명": "abcd"}, a: "A", b: "B01", price: 1400, amount: 5, cost: 7000, saleDt: "2016-08-29", customer: "황세진", saleType: "D"},
+        {companyJson: {"대표자명": "----"}, a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
         {companyJson: {"대표자명": "abcd"}, a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
         {companyJson: {"대표자명": "abcd"}, a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
         {companyJson: {"대표자명": "위세라"}, a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
@@ -99,6 +125,7 @@
                         this.self.select(this.dindex);
                     },
                     onDataChanged: function () {
+                        /*
                         var rowNum = this.dindex;
                         var gridData = this.list;
 
@@ -107,6 +134,7 @@
                             gridData[rowNum].cost = gridData[rowNum].price * gridData[rowNum].amount;
                             firstGrid.updateRow(gridData[rowNum], rowNum);
                         }, 1000);
+                        */
                     }
                 },
                 columns: [
@@ -166,12 +194,14 @@
             firstGrid.setData(sampleData);
             secondGrid.setData(sampleData);
 
+            /*
             firstGrid.selectAll({
                 filter: function () {
                     //console.log(this);
                     return this.b == "A01";
                 }
             });
+            */
 
             return this;
         },
@@ -199,7 +229,7 @@
             firstGrid.setHeight(height);
         });
 
-        $('[data-grid-control]').click(function () {
+        $('[data-grid-control]').on("mousedown", function (e) {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
                     firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true});
@@ -212,6 +242,10 @@
 
                 case "row-remove":
                     firstGrid.removeRow();
+                    break;
+
+                case "row-delete":
+                    firstGrid.deleteRow("selected");
                     break;
 
                 case "row-update":
@@ -231,17 +265,30 @@
                     break;
 
                 case "width-resize":
-
                     $("#grid-parent").css({width: 400});
                     ax5.ui.grid_instance.forEach(function (g) {
                         g.align();
                     });
-
                     break;
 
                 case "excel":
-
                     firstGrid.exportExcel("myExcel.xls");
+                    break;
+
+                case "focus-up":
+                    firstGrid.focus("UP");
+
+                    break;
+                case "focus-down":
+                    firstGrid.focus("DOWN");
+
+                    break;
+                case "focus-home":
+                    firstGrid.focus("HOME");
+
+                    break;
+                case "focus-end":
+                    firstGrid.focus("END");
 
                     break;
             }

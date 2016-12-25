@@ -53,7 +53,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.44";
+        var version = "1.3.58";
 
         /**
          * ax5 library path
@@ -249,6 +249,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         var supportTouch = win ? 'ontouchstart' in win || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 : false;
 
+        var supportFileApi = win ? win.FileReader && win.File && win.FileList && win.Blob : false;
+
         return {
             errorMsg: errorMsg,
             version: version,
@@ -259,6 +261,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             browser: browser,
             isBrowser: isBrowser,
             supportTouch: supportTouch,
+            supportFileApi: supportFileApi,
             wheelEnm: wheelEnm,
             urlUtil: urlUtil,
             getError: getError
@@ -2006,6 +2009,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * "&amp;" represents the & sign.
          * "&quot; represents the " mark.
          * [Character entity references](https://www.w3.org/TR/html401/charset.html#h-5.3)
+         * @method ax5.util.escapeHtml
          * @param {String} s
          * @returns {string}
          * @example
@@ -2036,6 +2040,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         /**
          * HTML 문자열을 unescape 처리합니다.
          * escapeHtml를 참고하세요.
+         * @method ax5.util.unescapeHtml
          * @param {String} s
          * @returns {string}
          * @example
@@ -2061,6 +2066,99 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         return match;
                 }
             });
+        }
+
+        /**
+         * @method ax5.util.string
+         * @param {String} tmpl
+         * @param {*} args
+         * @return {ax5string}
+         * @example
+         * ```js
+         * ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format("ASP", "ASP.NET");
+         * ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format(["ASP", "ASP.NET"]);
+         * ax5.util.stinrg("{0} counts").format(100);
+         * ```
+         */
+        function string(_string) {
+            function ax5string(_string) {
+                this.value = _string;
+                this.toString = function () {
+                    return this.value;
+                };
+                /**
+                 * @method ax5.util.string.format
+                 * @returns {*}
+                 */
+                this.format = function () {
+                    var args = [];
+                    for (var i = 0, l = arguments.length; i < l; i++) {
+                        args = args.concat(arguments[i]);
+                    }
+                    return this.value.replace(/{(\d+)}/g, function (match, number) {
+                        return typeof args[number] != 'undefined' ? args[number] : match;
+                    });
+                };
+                /**
+                 * @method ax5.util.string.escape
+                 * @returns {*}
+                 */
+                this.escape = function () {
+                    return escapeHtml(this.value);
+                };
+                /**
+                 * @method ax5.util.string.unescape
+                 * @returns {*}
+                 */
+                this.unescape = function () {
+                    return unescapeHtml(this.value);
+                };
+                /**
+                 * @method ax5.util.string.encode
+                 * @returns {*}
+                 */
+                this.encode = function () {
+                    return encode(this.value);
+                };
+                /**
+                 * @method ax5.util.string.decode
+                 * @returns {*}
+                 */
+                this.decode = function () {
+                    return decode(this.value);
+                };
+                /**
+                 * @method ax5.util.string.left
+                 * @param {String|Number} pos - 찾을 문자열 또는 포지션
+                 * @returns {*}
+                 */
+                this.left = function (_pos) {
+                    return left(this.value, _pos);
+                };
+                /**
+                 * @method ax5.util.string.right
+                 * @param {String|Number} pos - 찾을 문자열 또는 포지션
+                 * @returns {*}
+                 */
+                this.right = function (_pos) {
+                    return right(this.value, _pos);
+                };
+                /**
+                 * @method ax5.util.string.camelCase
+                 * @returns {*}
+                 */
+                this.camelCase = function () {
+                    return camelCase(this.value);
+                };
+                /**
+                 * @method ax5.util.string.snakeCase
+                 * @returns {*}
+                 */
+                this.snakeCase = function () {
+                    return snakeCase(this.value);
+                };
+            }
+            return new ax5string(_string);
         }
 
         return {
@@ -2116,7 +2214,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             selectRange: selectRange,
             debounce: debounce,
             escapeHtml: escapeHtml,
-            unescapeHtml: unescapeHtml
+            unescapeHtml: unescapeHtml,
+
+            string: string
         };
     }();
 
@@ -3204,8 +3304,11 @@ ax5.ui = function () {
         if (isArray(value)) {
             for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
                 if (value[j]) {
-                    value[j]['@i'] = j;
-                    value[j]['@first'] = j === 0;
+                    if (_typeof(value[j]) === 'object') {
+                        value[j]['@i'] = j;
+                        value[j]['@first'] = j === 0;
+                    }
+
                     buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
                 }
             }

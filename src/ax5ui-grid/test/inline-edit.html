@@ -14,19 +14,19 @@
     <title>GRID</title>
 
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="/ax5ui-mask/dist/ax5mask.css"/>
-    <link rel="stylesheet" type="text/css" href="/ax5ui-calendar/dist/ax5calendar.css"/>
-    <link rel="stylesheet" type="text/css" href="/ax5ui-picker/dist/ax5picker.css"/>
-    <link rel="stylesheet" type="text/css" href="/ax5ui-select/dist/ax5select.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-mask/dist/ax5mask.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-calendar/dist/ax5calendar.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-picker/dist/ax5picker.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-select/dist/ax5select.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5grid.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="/ax5core/dist/ax5core.js"></script>
-    <script src="/ax5ui-formatter/dist/ax5formatter.min.js"></script>
-    <script src="/ax5ui-calendar/dist/ax5calendar.min.js"></script>
-    <script src="/ax5ui-picker/dist/ax5picker.min.js"></script>
-    <script src="/ax5ui-select/dist/ax5select.js"></script>
+    <script src="../../ax5core/dist/ax5core.js"></script>
+    <script src="../../ax5ui-formatter/dist/ax5formatter.min.js"></script>
+    <script src="../../ax5ui-calendar/dist/ax5calendar.min.js"></script>
+    <script src="../../ax5ui-picker/dist/ax5picker.min.js"></script>
+    <script src="../../ax5ui-select/dist/ax5select.js"></script>
     <script src="../dist/ax5grid.js"></script>
 </head>
 <body style="padding: 20px;">
@@ -42,6 +42,8 @@
     <button class="btn btn-default" data-grid-control="row-remove">row remove</button>
     <button class="btn btn-default" data-grid-control="row-delete">row delete</button>
     <button class="btn btn-default" data-grid-control="row-update">row update</button>
+
+    <button class="btn btn-default" data-grid-control="cell-update">cell update</button>
 </div>
 <div style="padding: 10px;">
     <button class="btn btn-default" data-grid-control="column-add">column add</button>
@@ -91,8 +93,8 @@
         initView: function () {
             firstGrid.setConfig({
                 target: $('[data-ax5grid="first-grid"]'),
-                frozenColumnIndex: 0,
-                frozenRowIndex: 0,
+                frozenColumnIndex: 3,
+                frozenRowIndex: 1,
                 showLineNumber: true,
                 showRowSelector: true,
                 multipleSelect: true,
@@ -288,7 +290,9 @@
                 case "row-update":
                     firstGrid.updateRow($.extend({}, firstGrid.list[1], {price: 100, amount: 100, cost: 10000}), 1);
                     break;
-
+                case "cell-update":
+                    firstGrid.setValue(0, "price", 100);
+                    break;
                 case "column-add":
                     firstGrid.addColumn({key: "b", label: "필드B"});
                     break;
