@@ -53,7 +53,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.29";
+        var version = "1.3.58";
 
         /**
          * ax5 library path
@@ -249,6 +249,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         var supportTouch = win ? 'ontouchstart' in win || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0 : false;
 
+        var supportFileApi = win ? win.FileReader && win.File && win.FileList && win.Blob : false;
+
         return {
             errorMsg: errorMsg,
             version: version,
@@ -259,6 +261,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             browser: browser,
             isBrowser: isBrowser,
             supportTouch: supportTouch,
+            supportFileApi: supportFileApi,
             wheelEnm: wheelEnm,
             urlUtil: urlUtil,
             getError: getError
@@ -2006,6 +2009,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * "&amp;" represents the & sign.
          * "&quot; represents the " mark.
          * [Character entity references](https://www.w3.org/TR/html401/charset.html#h-5.3)
+         * @method ax5.util.escapeHtml
          * @param {String} s
          * @returns {string}
          * @example
@@ -2036,6 +2040,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         /**
          * HTML 문자열을 unescape 처리합니다.
          * escapeHtml를 참고하세요.
+         * @method ax5.util.unescapeHtml
          * @param {String} s
          * @returns {string}
          * @example
@@ -2061,6 +2066,99 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         return match;
                 }
             });
+        }
+
+        /**
+         * @method ax5.util.string
+         * @param {String} tmpl
+         * @param {*} args
+         * @return {ax5string}
+         * @example
+         * ```js
+         * ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format("ASP", "ASP.NET");
+         * ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format(["ASP", "ASP.NET"]);
+         * ax5.util.stinrg("{0} counts").format(100);
+         * ```
+         */
+        function string(_string) {
+            function ax5string(_string) {
+                this.value = _string;
+                this.toString = function () {
+                    return this.value;
+                };
+                /**
+                 * @method ax5.util.string.format
+                 * @returns {*}
+                 */
+                this.format = function () {
+                    var args = [];
+                    for (var i = 0, l = arguments.length; i < l; i++) {
+                        args = args.concat(arguments[i]);
+                    }
+                    return this.value.replace(/{(\d+)}/g, function (match, number) {
+                        return typeof args[number] != 'undefined' ? args[number] : match;
+                    });
+                };
+                /**
+                 * @method ax5.util.string.escape
+                 * @returns {*}
+                 */
+                this.escape = function () {
+                    return escapeHtml(this.value);
+                };
+                /**
+                 * @method ax5.util.string.unescape
+                 * @returns {*}
+                 */
+                this.unescape = function () {
+                    return unescapeHtml(this.value);
+                };
+                /**
+                 * @method ax5.util.string.encode
+                 * @returns {*}
+                 */
+                this.encode = function () {
+                    return encode(this.value);
+                };
+                /**
+                 * @method ax5.util.string.decode
+                 * @returns {*}
+                 */
+                this.decode = function () {
+                    return decode(this.value);
+                };
+                /**
+                 * @method ax5.util.string.left
+                 * @param {String|Number} pos - 찾을 문자열 또는 포지션
+                 * @returns {*}
+                 */
+                this.left = function (_pos) {
+                    return left(this.value, _pos);
+                };
+                /**
+                 * @method ax5.util.string.right
+                 * @param {String|Number} pos - 찾을 문자열 또는 포지션
+                 * @returns {*}
+                 */
+                this.right = function (_pos) {
+                    return right(this.value, _pos);
+                };
+                /**
+                 * @method ax5.util.string.camelCase
+                 * @returns {*}
+                 */
+                this.camelCase = function () {
+                    return camelCase(this.value);
+                };
+                /**
+                 * @method ax5.util.string.snakeCase
+                 * @returns {*}
+                 */
+                this.snakeCase = function () {
+                    return snakeCase(this.value);
+                };
+            }
+            return new ax5string(_string);
         }
 
         return {
@@ -2116,7 +2214,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             selectRange: selectRange,
             debounce: debounce,
             escapeHtml: escapeHtml,
-            unescapeHtml: unescapeHtml
+            unescapeHtml: unescapeHtml,
+
+            string: string
         };
     }();
 
@@ -2564,10 +2664,12 @@ ax5.info.errorMsg["ax5combobox"] = {
     var html = document.getElementsByTagName('html')[0];
     var body = document.getElementsByTagName('body')[0];
 
+    /*
     if (!window.innerWidth) window.innerWidth = html.clientWidth;
     if (!window.innerHeight) window.innerHeight = html.clientHeight;
     if (!window.scrollX) window.scrollX = window.pageXOffset || html.scrollLeft;
     if (!window.scrollY) window.scrollY = window.pageYOffset || html.scrollTop;
+    */
 }).call(window);
 /**
  * Refer to this by {@link ax5}.
@@ -3202,8 +3304,11 @@ ax5.ui = function () {
         if (isArray(value)) {
             for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
                 if (value[j]) {
-                    value[j]['@i'] = j;
-                    value[j]['@first'] = j === 0;
+                    if (_typeof(value[j]) === 'object') {
+                        value[j]['@i'] = j;
+                        value[j]['@first'] = j === 0;
+                    }
+
                     buffer += this.renderTokens(token[4], context.push(value[j]), partials, originalTemplate);
                 }
             }
@@ -3318,7 +3423,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "dialog",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5dialog
@@ -3855,7 +3960,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "mask",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5mask
@@ -4184,7 +4289,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "toast",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5toast
@@ -4546,7 +4651,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "modal",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5modal
@@ -4625,6 +4730,7 @@ ax5.ui = function () {
                 width: 300,
                 height: 400,
                 closeToEsc: true,
+                disableDrag: false,
                 animateTime: 250
             };
             this.activeModal = null;
@@ -4672,7 +4778,7 @@ ax5.ui = function () {
 
                 // 파트수집
                 this.$ = {
-                    "root": this.activeModal.find('[data-modal-els="root"]'),
+                    "root": this.activeModal,
                     "header": this.activeModal.find('[data-modal-els="header"]'),
                     "body": this.activeModal.find('[data-modal-els="body"]')
                 };
@@ -4745,7 +4851,7 @@ ax5.ui = function () {
                         }
                     });
 
-                    if (!isButton) {
+                    if (!isButton && opts.disableDrag != true) {
                         self.mousePosition = getMousePosition(e);
                         moveModal.on.call(self);
                     }
@@ -4848,22 +4954,23 @@ ax5.ui = function () {
                     self.__dx = 0; // 변화량 X
                     self.__dy = 0; // 변화량 Y
 
+                    if (!self.resizer) {
+                        // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
+                        self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
+                        self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
+                        self.resizerBg.css({ zIndex: modalZIndex });
+                        self.resizer.css({
+                            left: modalOffset.left,
+                            top: modalOffset.top,
+                            width: modalBox.width,
+                            height: modalBox.height,
+                            zIndex: modalZIndex + 1
+                        });
+                        jQuery(document.body).append(self.resizerBg).append(self.resizer);
+                        self.activeModal.addClass("draged");
+                    }
+
                     jQuery(document.body).bind(ENM["mousemove"] + ".ax5modal-" + cfg.id, function (e) {
-                        if (!self.resizer) {
-                            // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
-                            self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
-                            self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
-                            self.resizerBg.css({ zIndex: modalZIndex });
-                            self.resizer.css({
-                                left: modalOffset.left,
-                                top: modalOffset.top,
-                                width: modalBox.width,
-                                height: modalBox.height,
-                                zIndex: modalZIndex + 1
-                            });
-                            jQuery(document.body).append(self.resizerBg).append(self.resizer);
-                            self.activeModal.addClass("draged");
-                        }
                         self.resizer.css(getResizerPosition(e));
                     }).bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
                         moveModal.off.call(self);
@@ -4953,21 +5060,23 @@ ax5.ui = function () {
                         if (this.activeModal) {
 
                             // 프레임 제거
-                            var $iframe = this.$["iframe"]; // iframe jQuery Object
-                            if ($iframe) {
-                                var iframeObject = $iframe.get(0),
-                                    idoc = iframeObject.contentDocument ? iframeObject.contentDocument : iframeObject.contentWindow.document;
+                            if (opts.iframe) {
+                                var $iframe = this.$["iframe"]; // iframe jQuery Object
+                                if ($iframe) {
+                                    var iframeObject = $iframe.get(0),
+                                        idoc = iframeObject.contentDocument ? iframeObject.contentDocument : iframeObject.contentWindow.document;
 
-                                try {
-                                    $(idoc.body).children().each(function () {
-                                        $(this).remove();
-                                    });
-                                } catch (e) {}
-                                idoc.innerHTML = "";
-                                $iframe.attr('src', 'about:blank').remove();
+                                    try {
+                                        $(idoc.body).children().each(function () {
+                                            $(this).remove();
+                                        });
+                                    } catch (e) {}
+                                    idoc.innerHTML = "";
+                                    $iframe.attr('src', 'about:blank').remove();
 
-                                // force garbarge collection for IE only
-                                window.CollectGarbage && window.CollectGarbage();
+                                    // force garbarge collection for IE only
+                                    window.CollectGarbage && window.CollectGarbage();
+                                }
                             }
 
                             this.activeModal.remove();
@@ -5190,7 +5299,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "calendar",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
 
         /**
@@ -5201,6 +5310,7 @@ ax5.ui = function () {
          * 2014-06-21 tom : 시작
          * @example
          * ```js
+         * ax5.info.months = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월"];
          * ax5.info.weekNames = [
          *     {label: "일"},
          *     {label: "월"},
@@ -5280,7 +5390,7 @@ ax5.ui = function () {
                     yearHeading: "Choose the year",
                     monthHeading: "Choose the month",
                     yearTmpl: "%s",
-                    months: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                    months: ax5.info.months || ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
                     dayTmpl: "%s"
                 },
                 multipleSelect: false,
@@ -6251,7 +6361,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "picker",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5picker
@@ -6284,7 +6394,7 @@ ax5.ui = function () {
          */
         var ax5picker = function ax5picker() {
             var self = this,
-                cfg;
+                cfg = void 0;
 
             this.instanceId = ax5.getGuid();
             this.config = {
@@ -6480,6 +6590,7 @@ ax5.ui = function () {
                     };
 
                     // picker css(width, left, top) & direction 결정
+
                     if (!item.direction || item.direction === "" || item.direction === "auto") {
                         // set direction
                         pickerDirection = "top";
@@ -6677,7 +6788,7 @@ ax5.ui = function () {
              */
             this.bind = function (item) {
                 var pickerConfig = {},
-                    queIdx;
+                    queIdx = void 0;
 
                 item = jQuery.extend(true, pickerConfig, cfg, item);
 
@@ -7270,7 +7381,7 @@ jQuery.fn.ax5picker = function () {
     var U = ax5.util;
 
     var pickerTmpl = function pickerTmpl() {
-        return '\n<div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root">\n    {{#title}}\n        <div class="ax-picker-heading">{{title}}</div>\n    {{/title}}\n    <div class="ax-picker-body">\n        <div class="ax-picker-content" data-picker-els="content" style="width:{{contentWidth}}px;"></div>\n        {{#btns}}\n            <div class="ax-picker-buttons">\n            {{#btns}}\n                {{#@each}}\n                <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class="ax-picker-arrow"></div>\n</div>\n';
+        return '\n<div class="ax5-ui-picker {{theme}}" id="{{id}}" data-picker-els="root" {{#zIndex}}style="z-index:{{zIndex}};"{{/zIndex}}>\n    {{#title}}\n        <div class="ax-picker-heading">{{title}}</div>\n    {{/title}}\n    <div class="ax-picker-body">\n        <div class="ax-picker-content" data-picker-els="content" style="width:{{contentWidth}}px;"></div>\n        {{#btns}}\n            <div class="ax-picker-buttons">\n            {{#btns}}\n                {{#@each}}\n                <button data-picker-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class="ax-picker-arrow"></div>\n</div>\n';
     };
 
     PICKER.tmpl = {
@@ -7289,7 +7400,7 @@ jQuery.fn.ax5picker = function () {
 
     UI.addClass({
         className: "formatter",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         var TODAY = new Date();
         var setSelectionRange = function setSelectionRange(input, pos) {
@@ -7925,7 +8036,7 @@ jQuery.fn.ax5formatter = function () {
 
     UI.addClass({
         className: "menu",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5.ui.menu
@@ -8222,6 +8333,19 @@ jQuery.fn.ax5formatter = function () {
                     _activeMenu = null;
                 });
 
+                // mouse out
+                activeMenu.find('[data-menu-item-index]').bind("mouseout", function () {
+                    var depth = this.getAttribute("data-menu-item-depth"),
+                        index = this.getAttribute("data-menu-item-index"),
+                        path = this.getAttribute("data-menu-item-path"),
+                        _items;
+
+                    _items = self.queue[depth].data[cfg.columnKeys.items][index][cfg.columnKeys.items];
+                    if (_items && _items.length > 0) {} else {
+                        jQuery(this).removeClass("hover");
+                    }
+                });
+
                 // is Root
                 if (depth == 0) {
                     if (data.direction) activeMenu.addClass("direction-" + data.direction);
@@ -8469,8 +8593,11 @@ jQuery.fn.ax5formatter = function () {
                         };
                         items = filteringItem(items);
                     }
-                    popup.call(this, opt, items, 0); // 0 is seq of queue
-                    appEventAttach.call(this, true); // 이벤트 연결
+
+                    if (items.length) {
+                        popup.call(this, opt, items, 0); // 0 is seq of queue
+                        appEventAttach.call(this, true); // 이벤트 연결
+                    }
 
                     e = null;
                     //opt = null;
@@ -8736,7 +8863,7 @@ jQuery.fn.ax5formatter = function () {
 
     UI.addClass({
         className: "select",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5select
@@ -8798,6 +8925,7 @@ jQuery.fn.ax5formatter = function () {
 
             cfg = this.config;
 
+            var $window = jQuery(window);
             var ctrlKeys = {
                 "18": "KEY_ALT",
                 "8": "KEY_BACKSPACE",
@@ -8874,7 +9002,10 @@ jQuery.fn.ax5formatter = function () {
 
                 var item = this.queue[this.activeSelectQueueIndex],
                     pos = {},
-                    dim = {};
+                    positionMargin = 0,
+                    dim = {},
+                    pickerDim = {},
+                    pickerDirection;
 
                 if (append) jQuery(document.body).append(this.activeSelectOptionGroup);
 
@@ -8883,27 +9014,57 @@ jQuery.fn.ax5formatter = function () {
                     width: item.$target.outerWidth(),
                     height: item.$target.outerHeight()
                 };
+                pickerDim = {
+                    winWidth: Math.max($window.width(), jQuery(document.body).width()),
+                    winHeight: Math.max($window.height(), jQuery(document.body).height()),
+                    width: this.activeSelectOptionGroup.outerWidth(),
+                    height: this.activeSelectOptionGroup.outerHeight()
+                };
 
                 // picker css(width, left, top) & direction 결정
                 if (!item.direction || item.direction === "" || item.direction === "auto") {
                     // set direction
-                    item.direction = "top";
-                }
+                    pickerDirection = "top";
 
+                    if (pos.top - pickerDim.height - positionMargin < 0) {
+                        pickerDirection = "top";
+                    } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                        pickerDirection = "bottom";
+                    }
+                } else {
+                    pickerDirection = item.direction;
+                }
+                // todo : 표현할 공간이 없다면..
                 if (append) {
-                    this.activeSelectOptionGroup.addClass("direction-" + item.direction);
+                    this.activeSelectOptionGroup.addClass("direction-" + pickerDirection);
                 }
                 this.activeSelectOptionGroup.css(function () {
-                    if (item.direction == "top") {
+                    if (pickerDirection == "top") {
+                        if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+
+                            var newTop = pos.top + dim.height / 2 - pickerDim.height / 2;
+                            if (newTop + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                                newTop = 0;
+                            }
+                            if (newTop < 0) {
+                                newTop = 0;
+                            }
+
+                            return {
+                                left: pos.left,
+                                top: newTop,
+                                width: dim.width
+                            };
+                        }
                         return {
                             left: pos.left,
                             top: pos.top + dim.height + 1,
                             width: dim.width
                         };
-                    } else if (item.direction == "bottom") {
+                    } else if (pickerDirection == "bottom") {
                         return {
                             left: pos.left,
-                            top: pos.top - this.activeSelectOptionGroup.outerHeight() - 1,
+                            top: pos.top - pickerDim.height - 1,
                             width: dim.width
                         };
                     }
@@ -9874,7 +10035,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "grid",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5grid
@@ -9936,7 +10097,8 @@ jQuery.fn.ax5select = function () {
                 columnKeys: {
                     selected: '__selected__',
                     modified: '__modified__',
-                    deleted: '__deleted__'
+                    deleted: '__deleted__',
+                    disableSelection: '__disable_selection__'
                 }
             };
             this.xvar = {
@@ -10478,6 +10640,7 @@ jQuery.fn.ax5select = function () {
              * @param {String} _config.columns[].editor.type - text,number,money,date
              * @param {Object} _config.columns[].editor.config
              * @param {Array} _config.columns[].editor.updateWith
+             * @parem {Function} _config.columns[].editor.disabled - disable editor
              * @returns {ax5grid}
              * @example
              * ```js
@@ -10986,6 +11149,41 @@ jQuery.fn.ax5select = function () {
             };
 
             /**
+             * @method ax5grid.setValue
+             * @param _dindex
+             * @param _key
+             * @param _value
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.setValue(0, "price", 100);
+             * ```
+             */
+            this.setValue = function (_dindex, _key, _value) {
+                // getPanelname;
+                if (GRID.data.setValue.call(this, _dindex, _key, _value)) {
+                    var repaintCell = function repaintCell(_panelName, _rows, __dindex, __key, __value) {
+                        for (var r = 0, rl = _rows.length; r < rl; r++) {
+                            for (var c = 0, cl = _rows[r].cols.length; c < cl; c++) {
+                                if (_rows[r].cols[c].key == __key) {
+                                    if (this.xvar.frozenRowIndex > __dindex) {
+                                        GRID.body.repaintCell.call(this, "top-" + _panelName, __dindex, r, c, __value);
+                                    } else {
+                                        GRID.body.repaintCell.call(this, _panelName + "-scroll", __dindex, r, c, __value);
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    repaintCell.call(this, "left-body", this.leftBodyRowData.rows, _dindex, _key, _value);
+                    repaintCell.call(this, "body", this.bodyRowData.rows, _dindex, _key, _value);
+                }
+
+                return this;
+            };
+
+            /**
              * @method ax5grid.addColumn
              * @param {Object} _column
              * @param {Number|String} [_cindex=last]
@@ -11138,11 +11336,12 @@ jQuery.fn.ax5select = function () {
              * firstGrid.select(0);
              * firstGrid.select(0, {selected: true});
              * firstGrid.select(0, {selected: false});
+             * firstGrid.select(0, {selectedClear: true});
              * ```
              */
             this.select = function (_selectObject, _options) {
                 if (U.isNumber(_selectObject)) {
-                    var dindex = _selectObject;
+                    var _dindex2 = _selectObject;
 
                     if (!this.config.multipleSelect) {
                         this.clearSelect();
@@ -11152,8 +11351,8 @@ jQuery.fn.ax5select = function () {
                         }
                     }
 
-                    GRID.data.select.call(this, dindex, _options && _options.selected);
-                    GRID.body.updateRowState.call(this, ["selected"], dindex);
+                    GRID.data.select.call(this, _dindex2, _options && _options.selected);
+                    GRID.body.updateRowState.call(this, ["selected"], _dindex2);
                 }
                 return this;
             };
@@ -11197,6 +11396,94 @@ jQuery.fn.ax5select = function () {
                 return this;
             };
 
+            /**
+             * @method ax5grid.exportExcel
+             * @param {String} _fileName
+             * @returns {ax5grid|String}
+             * @example
+             * ```js
+             * firstGrid.exportExcel("grid-to-excel.xls");
+             * console.log(firstGrid.exportExcel());
+             * ```
+             */
+            this.exportExcel = function (_fileName) {
+                var table = [];
+                table.push('<table border="1">');
+                table.push(GRID.header.getExcelString.call(this));
+                table.push(GRID.body.getExcelString.call(this));
+                table.push('</table>');
+
+                if (typeof _fileName === "undefined") {
+                    return table.join('');
+                } else {
+                    GRID.excel.export.call(this, [table.join('')], _fileName);
+                }
+
+                return this;
+            };
+
+            /**
+             * @method ax5grid.focus
+             * @param {String|Number} _pos - UP, DOWN, LEFT, RIGHT, HOME, END
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.focus("UP");
+             * firstGrid.focus("DOWN");
+             * firstGrid.focus("HOME");
+             * firstGrid.focus("END");
+             * ```
+             */
+            this.focus = function (_pos) {
+                var _this2 = this;
+
+                if (GRID.body.moveFocus.call(this, _pos)) {
+                    var focusedColumn = void 0;
+                    for (var c in this.focusedColumn) {
+                        focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
+                        break;
+                    }
+                    if (focusedColumn) {
+                        this.select(focusedColumn.dindex, { selectedClear: true });
+                    }
+                } else {
+                    if (typeof this.selectedDataIndexs[0] === "undefined") {
+                        this.select(0);
+                    } else {
+                        (function () {
+                            var selectedIndex = _this2.selectedDataIndexs[0];
+                            var processor = {
+                                "UP": function UP() {
+                                    if (selectedIndex > 0) {
+                                        this.select(selectedIndex - 1, { selectedClear: true });
+                                        GRID.body.moveFocus.call(this, selectedIndex - 1);
+                                    }
+                                },
+                                "DOWN": function DOWN() {
+                                    if (selectedIndex < this.list.length - 1) {
+                                        this.select(selectedIndex + 1, { selectedClear: true });
+                                        GRID.body.moveFocus.call(this, selectedIndex + 1);
+                                    }
+                                },
+                                "HOME": function HOME() {
+                                    this.select(0, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, 0);
+                                },
+                                "END": function END() {
+                                    this.select(this.list.length - 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, this.list.length - 1);
+                                }
+                            };
+
+                            if (_pos in processor) {
+                                processor[_pos].call(_this2);
+                            }
+                        })();
+                    }
+                }
+                return this;
+            };
+
             // 클래스 생성자
             this.main = function () {
                 UI.grid_instance = UI.grid_instance || [];
@@ -11213,6 +11500,7 @@ jQuery.fn.ax5select = function () {
     GRID = ax5.ui.grid;
 })();
 
+// todo : excel export
 // todo : merge cells
 // todo : filter
 // todo : body menu
@@ -11455,7 +11743,7 @@ jQuery.fn.ax5select = function () {
         var self = this;
 
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            var panelName, attr, row, col, dindex, rowIndex, colIndex;
+            var panelName, attr, row, col, dindex, rowIndex, colIndex, disableSelection;
             var targetClick = {
                 "default": function _default(_column) {
                     var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
@@ -11499,6 +11787,9 @@ jQuery.fn.ax5select = function () {
                     }
                 },
                 "rowSelector": function rowSelector(_column) {
+                    if (self.list[_column.dindex][self.config.columnKeys.disableSelection]) {
+                        return false;
+                    }
 
                     if (!self.config.multipleSelect && self.selectedDataIndexs[0] !== _column.dindex) {
                         GRID.body.updateRowState.call(self, ["selectedClear"]);
@@ -11805,7 +12096,7 @@ jQuery.fn.ax5select = function () {
                 if (_col.formatter) {
                     that.value = value;
                     if (U.isFunction(_col.formatter)) {
-                        return _col.collector.call(that);
+                        return _col.formatter.call(that);
                     } else {
                         return GRID.formatter[_col.formatter].call(that);
                     }
@@ -11842,7 +12133,7 @@ jQuery.fn.ax5select = function () {
                 if (_col.formatter) {
                     that.value = value;
                     if (U.isFunction(_col.formatter)) {
-                        return _col.collector.call(that);
+                        return _col.formatter.call(that);
                     } else {
                         return GRID.formatter[_col.formatter].call(that);
                     }
@@ -11935,7 +12226,7 @@ jQuery.fn.ax5select = function () {
 
                 for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
 
-                    SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '">');
+                    SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
                         cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
@@ -12141,6 +12432,7 @@ jQuery.fn.ax5select = function () {
         var updateCell = this.$["panel"][_panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + _rowIndex + '"][data-ax5grid-column-colindex="' + _colIndex + '"]').find('[data-ax5grid-cellholder]');
         var colGroup = this.colGroup;
         var col = colGroup[_colIndex];
+
         updateCell.html(getFieldValue.call(this, list, list[_dindex], _dindex, col));
 
         if (col.editor && col.editor.updateWith) {
@@ -12321,7 +12613,11 @@ jQuery.fn.ax5select = function () {
             if (this.xvar.frozenColumnIndex > 0) {
                 if (this.xvar.frozenRowIndex > 0) {
                     // 상단 행고정
-                    replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                    replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                        paintStartRowIndex: 0,
+                        paintRowCount: this.xvar.frozenRowIndex,
+                        bodyTrHeight: this.xvar.bodyTrHeight
+                    });
                 }
                 replaceGroupTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
             }
@@ -12329,7 +12625,11 @@ jQuery.fn.ax5select = function () {
             // body
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                    paintStartRowIndex: 0,
+                    paintRowCount: this.xvar.frozenRowIndex,
+                    bodyTrHeight: this.xvar.bodyTrHeight
+                });
             }
 
             replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
@@ -12349,9 +12649,9 @@ jQuery.fn.ax5select = function () {
     };
 
     var repaintRow = function repaintRow(_dindex) {
-        var self = this;
-        var cfg = this.config;
-        var list = this.list;
+        var self = this,
+            cfg = this.config,
+            list = this.list;
         /// ~~~~~~
 
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
@@ -12625,6 +12925,14 @@ jQuery.fn.ax5select = function () {
     var scrollTo = function scrollTo(css, noRepaint) {
         var cfg = this.config;
 
+        if (this.isInlineEditing) {
+            for (var key in this.inlineEditing) {
+                //if(this.inlineEditing[key].editor.type === "select") {}
+                // 인라인 에디팅 인데 스크롤 이벤트가 발생하면 디액티브 처리
+                GRID.body.inlineEdit.deActive.call(this, "ESC", key);
+            }
+        }
+
         if (cfg.asidePanelWidth > 0 && "top" in css) {
             this.$.panel["aside-body-scroll"].css({ top: css.top });
         }
@@ -12657,10 +12965,10 @@ jQuery.fn.ax5select = function () {
     var moveFocus = function moveFocus(_position) {
         var focus = {
             "UD": function UD(_dy) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i;
+                var moveResult = true,
+                    focusedColumn = void 0,
+                    originalColumn = void 0,
+                    while_i = void 0;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -12913,9 +13221,14 @@ jQuery.fn.ax5select = function () {
 
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
-            var self = this;
-            var dindex, colIndex, rowIndex, panelName, colspan;
-            var col, editor;
+            var self = this,
+                dindex,
+                colIndex,
+                rowIndex,
+                panelName,
+                colspan,
+                col,
+                editor;
 
             // this.inlineEditing = {};
             for (var key in _focusedColumn) {
@@ -12977,6 +13290,7 @@ jQuery.fn.ax5select = function () {
                     return false;
                 }
                 this.inlineEditing[key] = {
+                    editor: editor,
                     panelName: panelName,
                     columnKey: key,
                     column: _focusedColumn[key],
@@ -13138,6 +13452,86 @@ jQuery.fn.ax5select = function () {
         }
     };
 
+    var getExcelString = function getExcelString() {
+        var cfg = this.config,
+            list = this.list,
+            bodyRowData = this.bodyRowData,
+            footSumData = this.footSumData,
+            bodyGroupingData = this.bodyGroupingData;
+
+        // body-scroll 의 포지션에 의존적이므로..
+        var getBody = function getBody(_colGroup, _bodyRow, _groupRow, _list) {
+            var SS = [],
+                di,
+                dl,
+                tri,
+                trl,
+                ci,
+                cl,
+                col;
+
+            //SS.push('<table border="1">');
+            for (di = 0, dl = _list.length; di < dl; di++) {
+                var isGroupingRow = false;
+                var rowTable;
+
+                if (_groupRow && "__isGrouping" in _list[di]) {
+                    rowTable = _groupRow;
+                    isGroupingRow = true;
+                } else {
+                    rowTable = _bodyRow;
+                }
+
+                for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+                    SS.push('\n<tr>');
+                    for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                        col = rowTable.rows[tri].cols[ci];
+
+                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</td>');
+                    }
+                    SS.push('\n</tr>');
+                }
+            }
+            //SS.push('</table>');
+            return SS.join('');
+        };
+        var getSum = function getSum(_colGroup, _bodyRow, _list) {
+            var SS = [],
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0;
+
+            //SS.push('<table border="1">');
+            for (tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                SS.push('\n<tr>');
+                for (ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    col = _bodyRow.rows[tri].cols[ci];
+                    SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', getSumFieldValue.call(this, _list, col), '</td>');
+                }
+                SS.push('\n</tr>');
+            }
+            //SS.push('</table>');
+
+            return SS.join('');
+        };
+
+        var po = [];
+        po.push(getBody.call(this, this.headerColGroup, bodyRowData, bodyGroupingData, list));
+        if (cfg.footSum) {
+            // 바닥 요약
+            po.push(getSum.call(this, this.headerColGroup, footSumData, list));
+        }
+
+        // right
+        if (cfg.rightSum) {
+            // todo : right 표현 정리
+        }
+
+        return po.join('');
+    };
+
     GRID.body = {
         init: init,
         repaint: repaint,
@@ -13148,7 +13542,8 @@ jQuery.fn.ax5select = function () {
         scrollTo: scrollTo,
         blur: blur,
         moveFocus: moveFocus,
-        inlineEdit: inlineEdit
+        inlineEdit: inlineEdit,
+        getExcelString: getExcelString
     };
 })();
 
@@ -13214,7 +13609,7 @@ jQuery.fn.ax5select = function () {
             l = _list.length;
         var returnList = [];
         var appendIndex = 0;
-        var dataRealRowCount;
+        var dataRealRowCount = 0;
 
         if (this.config.body.grouping) {
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
@@ -13274,12 +13669,12 @@ jQuery.fn.ax5select = function () {
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
                     this.deletedList.push(_list[i]);
                 } else if (_list[i]) {
-
                     if (_list[i][this.config.columnKeys.selected]) {
                         this.selectedDataIndexs.push(i);
                     }
                     // __index변수를 추가하여 lineNumber 에 출력합니다. (body getFieldValue 에서 출력함)
-                    dataRealRowCount = _list[i]["__index"] = i;
+                    _list[i]["__index"] = i;
+                    dataRealRowCount++;
                     returnList.push(_list[i]);
                 }
             }
@@ -13287,7 +13682,7 @@ jQuery.fn.ax5select = function () {
 
         // 원본 데이터의 갯수
         // grouping은 제외하고 수집됨.
-        this.xvar.dataRealRowCount = dataRealRowCount + 1;
+        this.xvar.dataRealRowCount = dataRealRowCount;
         return returnList;
     };
 
@@ -13417,7 +13812,9 @@ jQuery.fn.ax5select = function () {
         if (this.config.body.grouping) {
             list = initData.call(this, sort.call(this, this.sortInfo, list));
         } else if (Object.keys(this.sortInfo).length) {
-            list = sort.call(this, this.sortInfo, list);
+            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        } else {
+            list = initData.call(this, list);
         }
 
         this.list = list;
@@ -13542,6 +13939,7 @@ jQuery.fn.ax5select = function () {
         var cfg = this.config;
 
         if (this.list[_dindex].__isGrouping) return false;
+        if (this.list[_dindex][cfg.columnKeys.disableSelection]) return false;
 
         if (typeof _selected === "undefined") {
             if (this.list[_dindex][cfg.columnKeys.selected] = !this.list[_dindex][cfg.columnKeys.selected]) {
@@ -13568,11 +13966,9 @@ jQuery.fn.ax5select = function () {
     };
 
     var selectAll = function selectAll(_selected, _options) {
-        var cfg = this.config;
+        var cfg = this.config,
+            dindex = this.list.length;
 
-        console.log(_options);
-
-        var dindex = this.list.length;
         if (typeof _selected === "undefined") {
             while (dindex--) {
                 if (this.list[dindex].__isGrouping) continue;
@@ -13581,6 +13977,8 @@ jQuery.fn.ax5select = function () {
                         continue;
                     }
                 }
+                if (this.list[dindex][cfg.columnKeys.disableSelection]) continue;
+
                 if (this.list[dindex][cfg.columnKeys.selected] = !this.list[dindex][cfg.columnKeys.selected]) {
                     this.selectedDataIndexs.push(dindex);
                 }
@@ -13593,6 +13991,8 @@ jQuery.fn.ax5select = function () {
                         continue;
                     }
                 }
+                if (this.list[dindex][cfg.columnKeys.disableSelection]) continue;
+
                 if (this.list[dindex][cfg.columnKeys.selected] = _selected) {
                     this.selectedDataIndexs.push(dindex);
                 }
@@ -13610,9 +14010,19 @@ jQuery.fn.ax5select = function () {
     };
 
     var sort = function sort(_sortInfo, _list) {
-        var self = this;
-        var list = _list || this.list;
-        var sortInfoArray = [];
+        var self = this,
+            list = _list || this.list,
+            sortInfoArray = [];
+        var getKeyValue = function getKeyValue(_item, _key, _value) {
+            if (/[\.\[\]]/.test(_key)) {
+                try {
+                    _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(_item);
+                } catch (e) {}
+            } else {
+                _value = _item[_key];
+            }
+            return _value;
+        };
 
         for (var k in _sortInfo) {
             sortInfoArray[_sortInfo[k].seq] = { key: k, order: _sortInfo[k].orderBy };
@@ -13623,12 +14033,14 @@ jQuery.fn.ax5select = function () {
 
         var i = 0,
             l = sortInfoArray.length,
-            _a_val,
-            _b_val;
+            _a_val = void 0,
+            _b_val = void 0;
+
         list.sort(function (_a, _b) {
             for (i = 0; i < l; i++) {
-                _a_val = _a[sortInfoArray[i].key];
-                _b_val = _b[sortInfoArray[i].key];
+                _a_val = getKeyValue(_a, sortInfoArray[i].key);
+                _b_val = getKeyValue(_b, sortInfoArray[i].key);
+
                 if ((typeof _a_val === 'undefined' ? 'undefined' : _typeof(_a_val)) !== (typeof _b_val === 'undefined' ? 'undefined' : _typeof(_b_val))) {
                     _a_val = '' + _a_val;
                     _b_val = '' + _b_val;
@@ -13668,6 +14080,97 @@ jQuery.fn.ax5select = function () {
         sort: sort,
         initData: initData,
         clearGroupingData: clearGroupingData
+    };
+})();
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+// ax5.ui.grid.excel
+(function () {
+
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
+
+    var base64 = function base64(s) {
+        return window.btoa(unescape(encodeURIComponent(s)));
+    };
+    var uri = "data:application/vnd.ms-excel;base64,";
+
+    var getExcelTmpl = function getExcelTmpl() {
+        return '\uFEFF\n{{#tables}}{{{body}}}{{/tables}}\n';
+    };
+
+    var tableToExcel = function tableToExcel(table, fileName) {
+        var link, a, output;
+        var tables = [].concat(table);
+
+        output = ax5.mustache.render(getExcelTmpl(), {
+            worksheet: function () {
+                var arr = [];
+                tables.forEach(function (t, ti) {
+                    arr.push({ name: "Sheet" + (ti + 1) });
+                });
+                return arr;
+            }(),
+            tables: function () {
+                var arr = [];
+                tables.forEach(function (t, ti) {
+                    arr.push({ body: t });
+                });
+                return arr;
+            }()
+        });
+
+        var isChrome = navigator.userAgent.indexOf("Chrome") > -1;
+        var isSafari = !isChrome && navigator.userAgent.indexOf("Safari") > -1;
+
+        var isIE = /*@cc_on!@*/false || !!document.documentMode; // this works with IE10 and IE11 both :)
+        if (navigator.msSaveOrOpenBlob) {
+            var blob1 = new Blob([output], { type: "text/html" });
+            window.navigator.msSaveOrOpenBlob(blob1, fileName);
+        } else if (isSafari) {
+            // 사파리는 지원이 안되므로 그냥 테이블을 클립보드에 복사처리
+            //tables
+            var blankWindow = window.open('about:blank', this.id + '-excel-export', 'width=600,height=400');
+            blankWindow.document.write(output);
+            blankWindow = null;
+        } else {
+            if (isIE && typeof Blob === "undefined") {
+
+                //otherwise use the iframe and save
+                //requires a blank iframe on page called txtArea1
+                var $iframe = jQuery('<iframe id="' + this.id + '-excel-export" style="display:none"></iframe>');
+                jQuery(document.body).append($iframe);
+                var iframe = window[this.id + '-excel-export'];
+                iframe.document.open("text/html", "replace");
+                iframe.document.write(output);
+                iframe.document.close();
+                iframe.focus();
+                iframe.document.execCommand("SaveAs", true, fileName);
+                $iframe.remove();
+            } else {
+                // Attempt to use an alternative method
+                var anchor = document.body.appendChild(document.createElement("a"));
+
+                // If the [download] attribute is supported, try to use it
+                if ("download" in anchor) {
+                    anchor.download = fileName;
+                    //anchor.href = URL.createObjectURL( blob );
+                    anchor.href = uri + base64(output);
+                    anchor.click();
+                    document.body.removeChild(anchor);
+                }
+            }
+        }
+
+        return true;
+    };
+
+    GRID.excel = {
+        export: tableToExcel
     };
 })();
 // ax5.ui.grid.formatter
@@ -13761,7 +14264,6 @@ jQuery.fn.ax5select = function () {
                 self.selectAll({ selected: selected });
             } else {
                 if (key && col) {
-                    console.log(key, col);
                     if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
                         if (!col.sortFixed) toggleSort.call(self, col.key);
                     }
@@ -14019,12 +14521,37 @@ jQuery.fn.ax5select = function () {
         GRID.body.updateRowState.call(this, ["selected"], dindex);
     };
 
+    var getExcelString = function getExcelString() {
+        var cfg = this.config;
+        var colGroup = this.colGroup;
+        var headerData = this.headerData;
+
+        var getHeader = function getHeader(_colGroup, _bodyRow) {
+            var SS = [];
+            //SS.push('<table border="1">');
+            for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
+                SS.push('<tr>');
+                for (var ci = 0, cl = _bodyRow.rows[tri].cols.length; ci < cl; ci++) {
+                    var col = _bodyRow.rows[tri].cols[ci];
+                    SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', getFieldValue.call(this, col), '</td>');
+                }
+                SS.push('</tr>');
+            }
+            //SS.push('</table>');
+
+            return SS.join('');
+        };
+
+        return getHeader.call(this, colGroup, headerData);
+    };
+
     GRID.header = {
         init: init,
         repaint: repaint,
         scrollTo: scrollTo,
         toggleSort: toggleSort,
-        applySortStatus: applySortStatus
+        applySortStatus: applySortStatus,
+        getExcelString: getExcelString
     };
 })();
 // ax5.ui.grid.inlineEditor
@@ -14168,6 +14695,7 @@ jQuery.fn.ax5select = function () {
             var self = _root;
             _$el.data("binded-ax5ui", "ax5select");
             _$el.ax5select({
+                direction: "auto",
                 columnKeys: eConfig.columnKeys,
                 options: eConfig.options,
                 onStateChanged: function onStateChanged() {
@@ -14329,7 +14857,7 @@ jQuery.fn.ax5select = function () {
             fromRowIndex: U.number(fromRowIndex + 1, { "money": true }),
             toRowIndex: U.number(toRowIndex, { "money": true }),
             totalElements: U.number(totalElements, { "money": true }),
-            dataRowCount: totalElements !== this.xvar.dataRealRowCount ? this.xvar.dataRealRowCount : false
+            dataRowCount: totalElements !== this.xvar.dataRealRowCount ? U.number(this.xvar.dataRealRowCount, { "money": true }) : false
         }));
     };
 
@@ -14424,6 +14952,11 @@ jQuery.fn.ax5select = function () {
     var scrollBarMover = {
         "click": function click(track, bar, type, e) {
 
+            // 마우스 무브 완료 타임과 클릭타임 차이가 20 보다 작으면 클릭이벤트 막기.
+            if (new Date().getTime() - GRID.scroller.moveout_timer < 20) {
+                return false;
+            }
+
             var self = this,
                 trackOffset = track.offset(),
                 barBox = {
@@ -14481,7 +15014,7 @@ jQuery.fn.ax5select = function () {
             if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
             GRID.body.scrollTo.call(self, scrollPositon);
         },
-        "on": function on(track, bar, type) {
+        "on": function on(track, bar, type, e) {
             var self = this,
                 barOffset = bar.position(),
                 barBox = {
@@ -14553,6 +15086,9 @@ jQuery.fn.ax5select = function () {
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
+
+            GRID.scroller.moveout_timer = new Date().getTime();
+
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
 
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
@@ -14685,7 +15221,7 @@ jQuery.fn.ax5select = function () {
 
         this.$["scroller"]["vertical-bar"].on(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
-            scrollBarMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical");
+            scrollBarMover.on.call(this, this.$["scroller"]["vertical"], this.$["scroller"]["vertical-bar"], "vertical", e);
         }.bind(this)).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
@@ -14699,7 +15235,7 @@ jQuery.fn.ax5select = function () {
 
         this.$["scroller"]["horizontal-bar"].on(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
-            scrollBarMover.on.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal");
+            scrollBarMover.on.call(this, this.$["scroller"]["horizontal"], this.$["scroller"]["horizontal-bar"], "horizontal", e);
         }.bind(this)).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
@@ -14793,6 +15329,8 @@ jQuery.fn.ax5select = function () {
     };
 
     GRID.scroller = {
+        // 타이머
+        moveout_timer: new Date().getTime(),
         init: init,
         resize: resize
     };
@@ -15112,9 +15650,9 @@ jQuery.fn.ax5select = function () {
                 }
                 addC += colspan;
             }
-            addC -= 1;
+
             if (addC < this.columns.length + 1) {
-                for (var c = addC; c < this.columns.length + 1; c++) {
+                for (var c = addC; c < this.colGroup.length; c++) {
                     table.rows[r].cols.push({
                         colIndex: c + 1,
                         colspan: 1,
@@ -15232,7 +15770,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "mediaViewer",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5mediaViewer
@@ -15796,370 +16334,667 @@ jQuery.fn.ax5select = function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
+    var UPLOADER = void 0;
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
-        /**
-         * @class ax5uploader
-         * @classdesc
-         * @author tom@axisj.com
-         * @example
-         * ```js
-         * var upload = new ax5.ui.uploader();
-         * $(document.body).ready(function () {
-         *     upload.setConfig({
-         *         target: $("#user-info-profileImageUrl"),
-         *         file_types: "image/*",
-         *         empty_msg: "프로필 사진",
-         *         progress_theme: "basic",
-         *         upload_http: {
-         *             method: "POST",
-         *             url: "/api/v1/aws/s3/upload",
-         *             filename_param_key: "file",
-         *             data: {bucket: "gajago-user-profile", crop: true}
-         *         },
-         *         on_event: function (that) {
-         *             if (that.action == "fileselect") {
-         *                 //console.log(that.file);
-         *             }
-         *             else if (that.action == "uploaded") {
-         *                 //console.log(that);
-         *                 _root.form.profile_uploaded(that.file);
-         *             }
-         *             else if (that.action == "error") {
-         *                 alert(that.error.msg);
-         *             }
-         *         }
-         *     });
-         * });
-         * ```
-         */
+
         var ax5uploader = function ax5uploader() {
+            /**
+             * @class ax5uploader
+             * @classdesc
+             * @author tom@axisj.com
+             * @example
+             * ```js
+             *
+             * ```
+             */
             var self = this,
-                cfg;
+                cfg = void 0;
 
             this.instanceId = ax5.getGuid();
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
-                theme: 'default',
-                file_types: "*/*"
+                theme: 'default', // theme of uploader
+                lang: { // 업로더 버튼 랭귀지 설정
+                    "upload": "Upload",
+                    "abort": "Abort"
+                },
+                uploadedBox: {
+                    columnKeys: {
+                        name: "name",
+                        type: "type",
+                        size: "size",
+                        uploadedName: "uploadedName",
+                        uploadedPath: "uploadedPath",
+                        downloadPath: "downloadPath",
+                        previewPath: "previewPath",
+                        thumbnail: "thumbnail"
+                    }
+                },
+                animateTime: 100,
+                accept: "*/*", // 업로드 선택 파일 타입 설정
+                multiple: false, // 다중 파일 업로드
+                manualUpload: false, // 업로딩 시작 수동처리 여부
+                progressBox: true // 업로드 프로그래스 박스 사용여부 false 이면 업로드 진행바를 표시 하지 않습니다. 개발자가 onprogress 함수를 이용하여 직접 구현 해야 합니다.
             };
-            this.queue = [];
-            this.target = null;
-            this.selectedFile = null;
-            this.uploadedFile = null;
+            this.defaultBtns = {
+                "upload": { label: this.config.lang["upload"], theme: "btn-primary" },
+                "abort": { label: this.config.lang["abort"], theme: this.config.theme }
+            };
+
+            /// 업로드된 파일 큐
+            this.uploadedFiles = [];
+            /// 업로더 타겟
+            this.$target = null;
+            /// 업로드된 파일 정보들의 input 태그를 담아두는 컨테이너
+            this.$inputContainer = null;
+            /// input file 태그
+            this.$inputFile = null;
+            this.$inputFileForm = null;
+            /// 파일 선택버튼
+            this.$fileSelector = null;
+            /// 파일 드랍존
+            this.$dropZone = null;
+            /// 파일 목록 표시박스
+            this.$uploadedBox = null;
+
+            this.__uploading = false;
+            this.selectedFiles = [];
+            this.selectedFilesTotal = 0;
+            this.__loaded = 0;
 
             cfg = this.config;
 
-            this.init = function () {
+            /**
+             * UI 상태변경 이벤트 처리자
+             * UI의 상태변경 : open, close, upload 등의 변경사항이 발생되면 onStateChanged 함수를 후출하여 이벤트를 처리
+             */
+            var onStateChanged = function onStateChanged(that) {
 
-                this.target = $(cfg.target);
-                this.target.html(this.__get_layout());
-
-                this.els = {
-                    "container": this.target.find('[data-ui-els="container"]'),
-                    "preview": this.target.find('[data-ui-els="preview"]'),
-                    "preview-img": this.target.find('[data-ui-els="preview-img"]'),
-                    "input-file": this.target.find('[data-ui-els="input-file"]'),
-                    "progress": this.target.find('[data-ui-els="progress"]'),
-                    "progress-bar": this.target.find('[data-ui-els="progress-bar"]')
+                var state = {
+                    "open": function open() {},
+                    "close": function close() {},
+                    "upload": function upload() {}
                 };
 
-                this.els["preview"].bind("click", function () {
-                    this.__request_select_file();
+                if (cfg.onStateChanged) {
+                    cfg.onStateChanged.call(that, that);
+                } else if (this.onStateChanged) {
+                    this.onStateChanged.call(that, that);
+                }
+
+                that = null;
+                return true;
+            };
+
+            var onSelectFile = function (_evt) {
+                var files = void 0;
+
+                if (!ax5.info.supportFileApi) {
+                    // file API 지원 안되는 브라우저.
+                } else if ('dataTransfer' in _evt) {
+                    files = _evt.dataTransfer.files;
+                } else if ('target' in _evt) {
+                    files = _evt.target.files;
+                } else if (_evt) {
+                    files = _evt;
+                }
+
+                if (!files) return false;
+
+                /// selectedFiles에 현재 파일 정보 담아두기
+                if (length in files) {
+                    this.selectedFiles = U.toArray(files);
+                } else {
+                    this.selectedFiles = [files];
+                }
+
+                if (cfg.progressBox) {
+                    openProgressBox();
+                }
+                if (!cfg.manualUpload) {
+                    this.send();
+                }
+            }.bind(this);
+
+            var bindEvent = function bindEvent() {
+                this.$fileSelector.off("click.ax5uploader").on("click.ax5uploader", function () {
+                    this.$inputFile.trigger("click");
                 }.bind(this));
 
-                this.els["input-file"].bind("change", function (e) {
-                    this.__on_select_file(e || window.event);
+                this.$inputFile.off("change.ax5uploader").on("change.ax5uploader", function (_evt) {
+                    onSelectFile(_evt);
                 }.bind(this));
 
                 (function () {
+                    // dropZone 설정 방식 변경
+                    if (!this.$dropZone || !this.$dropZone.get(0)) return false;
 
-                    var dragZone = this.els["container"],
-                        preview_img = this.els["preview-img"],
-                        _this = this,
-                        timer;
+                    var timer = void 0;
 
-                    dragZone.get(0).addEventListener('dragover', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
+                    this.$dropZone.on("click", function (e) {
+                        //console.log(e.target.getAttribute("data-ax5uploader-dropzone"));
+                        var isItemCell = ax5.util.findParentNode(e.target, function (target) {
+                            if (target.hasAttribute("data-uploaded-item-cell")) {
+                                return true;
+                            }
+                        });
 
-                        preview_img.hide();
-                        if (timer) clearTimeout(timer);
+                        if (!isItemCell) {
+                            // dropZone click
+                            self.$inputFile.trigger("click");
+                        }
+                    });
 
-                        dragZone.addClass("dragover");
-                    }, false);
-                    dragZone.get(0).addEventListener('dragleave', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
-
-                        if (timer) clearTimeout(timer);
-                        timer = setTimeout(function () {
-                            preview_img.show();
-                        }, 100);
-
-                        dragZone.removeClass("dragover");
+                    this.$dropZone.get(0).addEventListener('dragover', function (e) {
+                        U.stopEvent(e);
+                        self.$dropZone.addClass("dragover");
                     }, false);
 
-                    dragZone.get(0).addEventListener('drop', function (e) {
-                        e.stopPropagation();
-                        e.preventDefault();
+                    this.$dropZone.get(0).addEventListener('dragleave', function (e) {
+                        U.stopEvent(e);
+                        self.$dropZone.removeClass("dragover");
+                    }, false);
 
-                        dragZone.removeClass("dragover");
-                        _this.__on_select_file(e || window.event);
+                    this.$dropZone.get(0).addEventListener('drop', function (e) {
+                        U.stopEvent(e);
+                        self.$dropZone.removeClass("dragover");
+                        onSelectFile(e || window.event);
                     }, false);
                 }).call(this);
+            };
+
+            var alignLayout = function alignLayout() {
+                // 상황이 좋지 않은경우 (만약 버튼 클릭으로 input file click이 되지 않는 다면 z-index값을 높여서 버튼위를 덮는다.)
+                /*
+                 var box = this.$fileSelector.position();
+                 box.width = this.$fileSelector.outerWidth();
+                 box.height = this.$fileSelector.outerHeight();
+                 this.$inputFile.css(box);
+                 */
+            };
+
+            var alignProgressBox = function alignProgressBox(append) {
+                var _alignProgressBox = function _alignProgressBox() {
+                    var $window = jQuery(window),
+                        $body = jQuery(document.body);
+                    var pos = {},
+                        positionMargin = 6,
+                        dim = {},
+                        pickerDim = {},
+                        pickerDirection = void 0;
+
+                    // cfg.viewport.selector
+
+                    pos = this.$progressBox.parent().get(0) == this.$target.get(0) ? this.$fileSelector.position() : this.$fileSelector.offset();
+                    dim = {
+                        width: this.$fileSelector.outerWidth(),
+                        height: this.$fileSelector.outerHeight()
+                    };
+                    pickerDim = {
+                        winWidth: Math.max($window.width(), $body.width()),
+                        winHeight: Math.max($window.height(), $body.height()),
+                        width: this.$progressBox.outerWidth(),
+                        height: this.$progressBox.outerHeight()
+                    };
+
+                    // picker css(width, left, top) & direction 결정
+                    if (!cfg.direction || cfg.direction === "" || cfg.direction === "auto") {
+                        // set direction
+                        pickerDirection = "top";
+                        if (pos.top - pickerDim.height - positionMargin < 0) {
+                            pickerDirection = "top";
+                        } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                            pickerDirection = "bottom";
+                        }
+                    } else {
+                        pickerDirection = cfg.direction;
+                    }
+
+                    if (append) {
+                        this.$progressBox.addClass("direction-" + pickerDirection);
+                    }
+
+                    var positionCSS = function () {
+                        var css = { left: 0, top: 0 };
+                        switch (pickerDirection) {
+                            case "top":
+                                css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
+                                css.top = pos.top + dim.height + positionMargin;
+                                break;
+                            case "bottom":
+                                css.left = pos.left + dim.width / 2 - pickerDim.width / 2;
+                                css.top = pos.top - pickerDim.height - positionMargin;
+                                break;
+                            case "left":
+                                css.left = pos.left + dim.width + positionMargin;
+                                css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
+                                break;
+                            case "right":
+                                css.left = pos.left - pickerDim.width - positionMargin;
+                                css.top = pos.top - pickerDim.height / 2 + dim.height / 2;
+                                break;
+                        }
+                        return css;
+                    }();
+
+                    (function () {
+                        if (pickerDirection == "top" || pickerDirection == "bottom") {
+                            if (positionCSS.left < 0) {
+                                positionCSS.left = positionMargin;
+                                this.$progressBoxArrow.css({ left: pos.left + dim.width / 2 - positionCSS.left });
+                            } else if (positionCSS.left + pickerDim.width > pickerDim.winWidth) {
+                                positionCSS.left = pickerDim.winWidth - pickerDim.width - positionMargin;
+                                this.$progressBoxArrow.css({ left: pos.left + dim.width / 2 - positionCSS.left });
+                            }
+                        }
+                    }).call(this);
+
+                    this.$progressBox.css(positionCSS);
+                };
+
+                this.$progressBox.css({ top: -999 });
+                if (append) {
+                    // progressBox를 append 할 타겟 엘리먼트 펀단 후 결정.
+                    (function () {
+                        if (cfg.viewport) {
+                            return jQuery(cfg.viewport.selector);
+                        } else {
+                            return this.$target;
+                        }
+                    }).call(this).append(this.$progressBox);
+
+                    // progressBox 버튼에 이벤트 연결.
+                    this.$progressBox.off("click.ax5uploader").on("click.ax5uploader", "button", function (_evt) {
+                        var act = _evt.target.getAttribute("data-pregressbox-btn");
+                        var processor = {
+                            "upload": function upload() {
+                                this.send();
+                            },
+                            "abort": function abort() {
+                                this.abort();
+                            }
+                        };
+                        if (processor[act]) processor[act].call(this);
+                    }.bind(this));
+                }
 
                 setTimeout(function () {
-                    this.__set_size_layout();
-                }.bind(this), 1);
+                    _alignProgressBox.call(this);
+                }.bind(this));
             };
 
-            this.__get_layout = function () {
-                var po = [],
-                    inputFileMultiple = "",
-                    // inputFileMultiple = 'multiple="multiple"',  support multifile
-                inputFileAccept = cfg.file_types;
+            var openProgressBox = function () {
+                this.$progressBox.removeClass("destroy");
+                this.$progressUpload.removeAttr("disabled");
+                this.$progressAbort.removeAttr("disabled");
 
-                po.push('<div class="ax5-ui-single-uploader ' + cfg.theme + '" data-ui-els="container">');
-                po.push('<div class="upload-preview" data-ui-els="preview">');
+                // apend & align progress box
+                alignProgressBox.call(this, "append");
 
-                po.push('<img class="upload-preview-img" data-ui-els="preview-img" src="" style="display:none;width:100%;height:100%;" />');
-                po.push('<span class="empty-msg">' + cfg.empty_msg + '<span>');
-                po.push('</div>');
-                po.push('<div class="ax5-ui-progress ' + (cfg.progress_theme || "") + '" data-ui-els="progress" style="display: none;"><div class="progress-bar" data-ui-els="progress-bar"></div></div>');
-                po.push('<input type="file" ' + inputFileMultiple + ' accept="' + inputFileAccept + '" capture="camera" data-ui-els="input-file" />');
+                // state change
+                onStateChanged.call(this, {
+                    self: this,
+                    state: "open"
+                });
+            }.bind(this);
 
-                po.push('</div>');
+            var closeProgressBox = function () {
+                this.$progressBox.addClass("destroy");
+                setTimeout(function () {
+                    this.$progressBox.remove();
+                }.bind(this), cfg.animateTime);
+            }.bind(this);
 
-                return po.join('');
-            };
+            var startUpload = function () {
 
-            this.__set_size_layout = this.align = function () {
-                var progress_margin = 20,
-                    progress_height = this.els["progress"].height(),
-                    ct_width = this.els["container"].width(),
-                    ct_height = this.els["container"].height();
+                var processor = {
+                    "html5": function html5() {
 
-                if (ct_width != 0 && ct_height != 0) {
-                    this.els["progress"].css({
-                        left: progress_margin,
-                        top: ct_height / 2 - progress_height / 2,
-                        width: ct_width - progress_margin * 2
-                    });
-                }
-                //this.els["preview-img"].css({width: ct_width, height: ct_height});
-            };
-
-            this.__request_select_file = function () {
-                if (cfg.before_select_file) {
-                    if (!cfg.before_select_file.call()) {
-                        return false; // 중지
-                    }
-                }
-
-                if (window.imagePicker) {
-                    window.imagePicker.getPictures(function (results) {
-                        for (var i = 0; i < results.length; i++) {
-                            console.log('Image URI: ' + results[i]);
+                        var uploadFile = this.selectedFiles.shift();
+                        if (!uploadFile) {
+                            // 업로드 종료
+                            uploadComplete();
+                            return this;
                         }
-                        _this.__on_select_file(results);
-                    }, function (error) {
-                        console.log('Error: ' + error);
-                    });
-                } else {
-                    this.els["input-file"].trigger("click");
-                }
-            };
 
-            this.__on_select_file = function (evt) {
-                var file,
-                    target_id = this.target.id,
-                    preview = this.els["preview-img"].get(0);
+                        var formData = new FormData();
+                        //서버로 전송해야 할 추가 파라미터 정보 설정
 
-                if ('dataTransfer' in evt) {
-                    file = evt.dataTransfer.files[0];
-                } else if ('target' in evt) {
-                    file = evt.target.files[0];
-                } else if (evt) {
-                    file = evt[0];
-                }
+                        this.$target.find("input").each(function () {
+                            formData.append(this.name, this.value);
+                        });
+                        // 파일 아이템 추가
+                        formData.append(cfg.form.fileName, uploadFile);
 
-                if (!file) return false;
-                // todo : size over check
+                        this.xhr = new XMLHttpRequest();
+                        this.xhr.open("post", cfg.form.action, true);
 
-                this.selected_file = file;
-                // 선택된 이미지 프리뷰 기능
-                (function (root) {
-                    root.els["preview-img"].css({ display: "block" });
-
-                    function setcss_preview(img, box_width, box_height) {
-                        var css = {};
-
-                        var image = new Image();
-                        image.src = img.src;
-                        image.onload = function () {
-                            // access image size here
-                            //console.log(this.width, this.height);
-                            if (this.width > this.height) {
-                                // 가로형
-                                if (this.height > box_height) {
-                                    css = {
-                                        width: this.width * (box_height / this.height), height: box_height
-                                    };
-                                    css.left = (box_width - css.width) / 2;
-                                } else {
-                                    css = {
-                                        width: this.width, height: this.height
-                                    };
-                                    css.top = (box_height - css.height) / 2;
-                                }
-                            } else {
-                                // 세로형
-                                if (this.width > box_width) {
-                                    css = {
-                                        height: this.height * (box_width / this.width), width: box_width
-                                    };
-                                    css.top = (box_height - css.height) / 2;
-                                } else {
-                                    css = {
-                                        width: this.width, height: this.height
-                                    };
-                                    css.left = (box_width - css.width) / 2;
-                                }
-                            }
-                            console.log(css);
-                            root.els["preview-img"].css(css);
-                        };
-                    }
-
-                    if (window.imagePicker) {
-                        preview.src = file;
-                        setcss_preview(preview, root.els["container"].width(), root.els["container"].height());
-                    } else {
-                        var reader = new FileReader(target_id);
-                        reader.onloadend = function () {
+                        this.xhr.onload = function (e) {
+                            var res = e.target.response;
                             try {
-                                preview.src = reader.result;
-                                setcss_preview(preview, root.els["container"].width(), root.els["container"].height());
-                            } catch (ex) {
-                                console.log(ex);
+                                if (typeof res == "string") res = U.parseJson(res);
+                            } catch (e) {
+                                return false;
+                            }
+                            if (cfg.debug) console.log(res);
+
+                            if (res.error) {
+                                if (cfg.debug) console.log(res.error);
+                                return false;
+                            }
+
+                            uploaded(res);
+                            self.send();
+                        };
+
+                        this.xhr.upload.onprogress = function (e) {
+                            // console.log(e.loaded, e.total);
+                            updateProgressBar(e);
+                            if (U.isFunction(cfg.onprogress)) {
+                                cfg.onprogress.call({
+                                    loaded: e.loaded,
+                                    total: e.total
+                                }, e);
                             }
                         };
-                        if (file) {
-                            reader.readAsDataURL(file);
-                        }
-                    }
-                })(this);
+                        this.xhr.send(formData); // multipart/form-data
+                    },
+                    "form": function form() {
+                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
+                        // iframe 생성
+                        var iframe = $('<iframe src="javascript:false;" name="" style="display:none;"></iframe>');
+                        // form 생성.
 
-                if (cfg.on_event) {
-                    var that = {
-                        action: "fileselect",
-                        file: file
-                    };
-                    cfg.on_event.call(that, that);
+                        $(document.body).append(iframe);
+                    }
+                };
+
+                if (this.__uploading === false) {
+                    // 전체 파일 사이즈 구하기
+                    var filesTotal = 0;
+                    this.selectedFiles.forEach(function (n) {
+                        filesTotal += n.size;
+                    });
+                    this.selectedFilesTotal = filesTotal;
+                    this.__loaded = 0;
+
+                    this.__uploading = true; // 업로드 시작 상태 처리
+                    this.$progressUpload.attr("disabled", "disabled");
+                    this.$progressAbort.removeAttr("disabled");
                 }
 
-                /// 파일 선택하면 업로드
-                // if(file) this.upload(file);
-            };
+                processor[ax5.info.supportFileApi ? "html5" : "form"].call(this);
+            }.bind(this);
 
-            this.upload = function () {
-                var _this = this;
-                if (!this.selected_file) {
-                    if (cfg.on_event) {
-                        var that = {
-                            action: "error",
-                            error: ax5.info.get_error("single-uploader", "460", "upload")
-                        };
-                        cfg.on_event.call(that, that);
-                    }
+            var updateProgressBar = function (e) {
+                this.__loaded += e.loaded;
+                this.$progressBar.css({ width: U.number(this.__loaded / this.selectedFilesTotal * 100, { round: 2 }) + '%' });
+                if (e.lengthComputable) {
+                    if (e.loaded >= e.total) {}
+                }
+            }.bind(this);
+
+            var uploaded = function (res) {
+                if (cfg.debug) console.log(res);
+                this.uploadedFiles.push(res);
+                repaintUploadedBox(); // 업로드된 파일 출력
+
+                if (U.isFunction(cfg.onuploaded)) {
+                    cfg.onuploaded.call({
+                        self: this
+                    }, res);
+                }
+            }.bind(this);
+
+            var uploadComplete = function () {
+                this.__uploading = false; // 업로드 완료 상태처리
+                this.$progressUpload.removeAttr("disabled");
+                this.$progressAbort.attr("disabled", "disabled");
+
+                if (cfg.progressBox) {
+                    closeProgressBox();
+                }
+                if (U.isFunction(cfg.onuploadComplete)) {
+                    cfg.onuploadComplete.call({
+                        self: this
+                    });
+                }
+                // update uploadedFiles display
+            }.bind(this);
+
+            var cancelUpload = function () {
+
+                var processor = {
+                    "html5": function html5() {
+                        if (this.xhr) {
+                            this.xhr.abort();
+                        }
+                    },
+                    "form": function form() {}
+                };
+
+                this.__uploading = false; // 업로드 완료 상태처리
+                this.$progressUpload.removeAttr("disabled");
+                this.$progressAbort.attr("disabled", "disabled");
+
+                processor[ax5.info.supportFileApi ? "html5" : "form"].call(this);
+
+                if (cfg.progressBox) {
+                    closeProgressBox();
+                }
+
+                this.$inputFile.get(0).value = "";
+                console.log("cancelUpload");
+                // update uploadedFiles display
+            }.bind(this);
+
+            var repaintUploadedBox = function () {
+                // uploadedBox 가 없다면 아무일도 하지 않음.
+                // onuploaded 함수 이벤트를 이용하여 개발자가 직접 업로드디 박스를 구현 한다고 이해 하자.
+                if (this.$uploadedBox === null) return this;
+
+                this.$uploadedBox.html(UPLOADER.tmpl.get("upoadedBox", {
+                    uploadedFiles: this.uploadedFiles,
+                    icon: cfg.uploadedBox.icon,
+                    lang: cfg.uploadedBox.lang
+                }, cfg.uploadedBox.columnKeys));
+            }.bind(this);
+
+            this.init = function (_config) {
+                cfg = jQuery.extend(true, {}, cfg, _config);
+                if (!cfg.target) {
+                    console.log(ax5.info.getError("ax5uploader", "401", "init"));
                     return this;
                 }
 
-                var formData = new FormData(),
-                    progress_bar = this.els["progress-bar"];
+                this.$target = jQuery(cfg.target);
 
-                this.els["progress"].css({ display: "block" });
-                progress_bar.css({ width: '0%' });
-
-                if (window.imagePicker) {
-                    formData.append(cfg.upload_http.filename_param_key, this.selected_file);
-                    // 다른 처리 방법 적용 필요
-                } else {
-                    formData.append(cfg.upload_http.filename_param_key, this.selected_file);
+                // 파일 드랍존은 옵션 사항.
+                if (cfg.dropZone) {
+                    this.$dropZone = jQuery(cfg.dropZone);
+                    this.$dropZone.attr("data-ax5uploader-dropzone", this.instanceId);
                 }
 
-                for (var k in cfg.upload_http.data) {
-                    formData.append(k, cfg.upload_http.data[k]);
-                }
+                // uploadedBox 옵션 사항
+                if (cfg.uploadedBox && cfg.uploadedBox.target) {
+                    this.$uploadedBox = jQuery(cfg.uploadedBox.target);
+                    this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
+                        var $this = jQuery(this),
+                            cellType = $this.attr("data-uploaded-item-cell"),
+                            uploadedItemIndex = Number($this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item')),
+                            that = {};
 
-                this.xhr = new XMLHttpRequest();
-                this.xhr.open(cfg.upload_http.method, cfg.upload_http.url, true);
-                this.xhr.onload = function (e) {
-                    var res = e.target.response;
-                    try {
-                        if (typeof res == "string") res = U.parseJson(res);
-                    } catch (e) {
-                        console.log(e);
-                        return false;
-                    }
-                    if (res.error) {
-                        console.log(res.error);
-                        return false;
-                    }
-                    _this.upload_complete(res);
-                };
-                this.xhr.upload.onprogress = function (e) {
-                    progress_bar.css({ width: U.number(e.loaded / e.total * 100, { round: 2 }) + '%' });
-                    if (e.lengthComputable) {
-                        if (e.loaded >= e.total) {
-                            //_this.upload_complete();
-                            setTimeout(function () {
-                                _this.els["progress"].css({ display: "none" });
-                            }, 300);
+                        if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
+                            that = {
+                                self: self,
+                                cellType: cellType,
+                                uploadedFiles: self.uploadedFiles,
+                                fileIndex: uploadedItemIndex
+                            };
+                            cfg.uploadedBox.onclick.call(that, that);
                         }
+
+                        $this = null;
+                        cellType = null;
+                        uploadedItemIndex = null;
+                        that = null;
+                    });
+                }
+
+                // target attribute data
+                (function (data) {
+                    if (U.isObject(data) && !data.error) {
+                        cfg = jQuery.extend(true, cfg, data);
                     }
+                }).call(this, U.parseJson(this.$target.attr("data-ax5uploader-config"), true));
+
+                // detect element
+                /// fileSelector 수집
+                this.$fileSelector = this.$target.find('[data-ax5uploader-button="selector"]');
+
+                if (this.$fileSelector.length === 0) {
+                    console.log(ax5.info.getError("ax5uploader", "402", "can not find file selector"));
+                    return this;
+                }
+
+                // input file 추가
+                this.$inputFile = jQuery(UPLOADER.tmpl.get.call(this, "inputFile", {
+                    instanceId: this.instanceId,
+                    multiple: cfg.multiple,
+                    accept: cfg.accept
+                }));
+
+                if (ax5.info.supportFileApi) {
+                    jQuery(document.body).append(this.$inputFile);
+                } else {
+                    this.$inputFileForm = jQuery(UPLOADER.tmpl.get.call(this, "inputFileForm", {
+                        instanceId: this.instanceId
+                    }));
+                    this.$inputFileForm.append(this.$inputFile);
+                    jQuery(document.body).append(this.$inputFileForm);
+                }
+
+                // btns 확인
+                cfg.btns = jQuery.extend({}, this.defaultBtns, cfg.btns);
+
+                this.$progressBox = jQuery(UPLOADER.tmpl.get.call(this, "progressBox", {
+                    instanceId: this.instanceId,
+                    btns: cfg.btns
+                }));
+                this.$progressBar = this.$progressBox.find('[role="progressbar"]');
+                this.$progressBoxArrow = this.$progressBox.find(".ax-progressbox-arrow");
+                this.$progressUpload = this.$progressBox.find('[data-pregressbox-btn="upload"]');
+                this.$progressAbort = this.$progressBox.find('[data-pregressbox-btn="abort"]');
+
+                // 레이아웃 정렬
+                alignLayout.call(this);
+                // 파일버튼 등에 이벤트 연결.
+                bindEvent.call(this);
+
+                return this;
+            };
+
+            /**
+             * @method ax5uploader.send
+             * @returns {ax5uploader}
+             *
+             */
+            this.send = function () {
+                return function () {
+                    // 업로드 시작
+                    startUpload();
+                    return this;
                 };
-                this.xhr.send(formData); // multipart/form-data
+            }();
+
+            /**
+             * @method ax5uploader.abort
+             * @returns {ax5uploader}
+             */
+            this.abort = function () {
+                return function () {
+                    cancelUpload();
+                    return this;
+                };
+            }();
+
+            /**
+             * @method ax5uploader.setUploadedFiles
+             * @param {Array} _files - JSON formatting can all be overridden in columnKeys.
+             * @returns {ax5uploader}
+             * @example
+             * ```js
+             * var upload1 = new ax5.ui.uploader();
+             * upload1.setConfig({
+             *  ...
+             * });
+             *
+             *
+             * $.ajax({
+             *     url: "api/fileListLoad.php",
+             *     success: function (res) {
+             *         // res JSON format
+             *         // [{
+             *         // "name": "barcode-scan-ani.gif",
+             *         // "saveName": "barcode-scan-ani.gif",
+             *         // "type": "file",
+             *         // "fileSize": "3891664",
+             *         // "uploadedPath": "/ax5ui-uploader/test/api/files",
+             *         // "thumbUrl": ""
+             *         // }]
+             *         upload1.setUploadedFiles(res);
+             *     }
+             * });
+             * ```
+             */
+            this.setUploadedFiles = function (_files) {
+                if (U.isArray(_files)) {
+                    this.uploadedFiles = _files;
+                }
+                repaintUploadedBox();
+                return this;
             };
 
-            this.upload_complete = function (res) {
-                this.selected_file = null;
-                this.uploaded_file = res;
-                this.els["container"].addClass("uploaded");
-
-                if (cfg.on_event) {
-                    var that = {
-                        action: "uploaded",
-                        file: res
-                    };
-                    cfg.on_event.call(that, that);
+            /**
+             * Removes the object corresponding to the index passed to the argument from uploadedFiles.
+             * @method ax5uploader.removeFile
+             * @param {Number} _index
+             * @returns {ax5uploader}
+             * @example
+             * ```js
+             * // The actual file is not deleted
+             * upload1.removeFile(fileIndex);
+             * ```
+             */
+            this.removeFile = function (_index) {
+                if (!isNaN(Number(_index))) {
+                    this.uploadedFiles.splice(_index, 1);
                 }
+                repaintUploadedBox();
+                return this;
             };
 
-            this.set_uploaded_file = function (file) {
-                this.uploaded_file = file;
-                if (this.uploaded_file) {
-                    this.els["container"].addClass("uploaded");
-                } else {
-                    this.els["container"].removeClass("uploaded");
-                }
-            };
-
-            this.set_preview_img = function (src) {
-                if (src) {
-                    this.els["preview-img"].attr({ "src": src }).show();
-                } else {
-                    this.els["preview-img"].attr({ "src": null }).hide();
-                }
+            /**
+             * Empty uploadedFiles
+             * @method ax5uploader.removeFileAll
+             * @returns {ax5uploader}
+             * @example
+             * ```js
+             *
+             * ```
+             */
+            this.removeFileAll = function () {
+                this.uploadedFiles = [];
+                repaintUploadedBox();
+                return this;
             };
 
             // 클래스 생성자
             this.main = function () {
-
                 UI.uploader_instance = UI.uploader_instance || [];
                 UI.uploader_instance.push(this);
 
@@ -16172,8 +17007,60 @@ jQuery.fn.ax5select = function () {
         };
         return ax5uploader;
     }());
+
+    UPLOADER = ax5.ui.uploader;
 })();
 
+// todo :
+// html5용 업로드 - 구현완료
+// abort, 여러개의 파일이 올라가는 중간에 abort 하면 업로드된 파일은 두고. 안올라간 파일만 중지 -- ok
+// set uploded files
+// uploaded files display, needs columnKeys
+// delete file
+
+// dropFile support
+// ax5.ui.uploader.tmpl
+(function () {
+
+    var UPLOADER = ax5.ui.uploader;
+
+    var uploadProgress = function uploadProgress(columnKeys) {
+        return '\n        ';
+    };
+
+    var inputFile = function inputFile(columnKeys) {
+        return '<input type="file" data-ax5uploader-input="{{instanceId}}" {{#multiple}}multiple{{/multiple}} accept="{{accept}}" />';
+    };
+
+    var inputFileForm = function inputFileForm(columnKeys) {
+        return '<form data-ax5uploader-form="{{instanceId}}" method="post" enctype="multipart/form-data"></form>';
+    };
+
+    var progressBox = function progressBox(columnKeys) {
+        return '\n<div data-ax5uploader-progressbox="{{instanceId}}" class="{{theme}}">\n    <div class="ax-progressbox-body">\n        <div class="ax-pregressbox-content">\n            <div class="progress">\n              <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0">\n                <span class="sr-only">0% Complete</span>\n              </div>\n            </div>\n        </div>\n        {{#btns}}\n            <div class="ax-progressbox-buttons">\n            {{#btns}}\n                {{#@each}}\n                <button data-pregressbox-btn="{{@key}}" class="btn btn-default {{@value.theme}}">{{@value.label}}</button>\n                {{/@each}}\n            {{/btns}}\n            </div>\n        {{/btns}}\n    </div>\n    <div class="ax-progressbox-arrow"></div>\n</div>\n';
+    };
+
+    var upoadedBox = function upoadedBox(columnKeys) {
+        return '\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item="{{@i}}">\n    <div class="uploaded-item-holder" >\n        <div class="uploaded-item-cell" data-uploaded-item-cell="download">{{{icon.download}}}</div>\n        <div class="uploaded-item-cell" data-uploaded-item-cell="filename">{{' + columnKeys.name + '}}</div>\n        <div class="uploaded-item-cell" data-uploaded-item-cell="filesize">({{#@fn_get_byte}}{{' + columnKeys.size + '}}{{/@fn_get_byte}})</div>\n        <div class="uploaded-item-cell" data-uploaded-item-cell="delete">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n{{^uploadedFiles}}\n{{{lang.emptyList}}}\n{{/uploadedFiles}}\n';
+    };
+
+    UPLOADER.tmpl = {
+        "uploadProgress": uploadProgress,
+        "inputFile": inputFile,
+        "inputFileForm": inputFileForm,
+        "progressBox": progressBox,
+        "upoadedBox": upoadedBox,
+
+        get: function get(tmplName, data, columnKeys) {
+            data["@fn_get_byte"] = function () {
+                return function (text, render) {
+                    return ax5.util.number(render(text), { round: 2, byte: true });
+                };
+            };
+            return ax5.mustache.render(UPLOADER.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
+})();
 // ax5.ui.combobox
 (function () {
 
@@ -16183,7 +17070,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "combobox",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5combobox
@@ -16239,6 +17126,7 @@ jQuery.fn.ax5select = function () {
 
             cfg = this.config;
 
+            var $window = jQuery(window);
             var ctrlKeys = {
                 "18": "KEY_ALT",
                 "8": "KEY_BACKSPACE",
@@ -16316,8 +17204,8 @@ jQuery.fn.ax5select = function () {
 
                             var displayTableHeight = item.$displayTable.outerHeight();
                             if (Math.abs(displayTableHeight - item.$target.height()) > displayTableHeightAdjust) {
-                                item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
-                                item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
+                                item.$target.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
+                                item.$display.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
                             }
                         }
                     }
@@ -16332,7 +17220,10 @@ jQuery.fn.ax5select = function () {
 
                 var item = this.queue[this.activecomboboxQueueIndex],
                     pos = {},
-                    dim = {};
+                    positionMargin = 0,
+                    dim = {},
+                    pickerDim = {},
+                    pickerDirection;
 
                 if (append) jQuery(document.body).append(this.activecomboboxOptionGroup);
 
@@ -16341,27 +17232,57 @@ jQuery.fn.ax5select = function () {
                     width: item.$target.outerWidth(),
                     height: item.$target.outerHeight()
                 };
+                pickerDim = {
+                    winWidth: Math.max($window.width(), jQuery(document.body).width()),
+                    winHeight: Math.max($window.height(), jQuery(document.body).height()),
+                    width: this.activecomboboxOptionGroup.outerWidth(),
+                    height: this.activecomboboxOptionGroup.outerHeight()
+                };
 
                 // picker css(width, left, top) & direction 결정
                 if (!item.direction || item.direction === "" || item.direction === "auto") {
                     // set direction
-                    item.direction = "top";
+                    pickerDirection = "top";
+
+                    if (pos.top - pickerDim.height - positionMargin < 0) {
+                        pickerDirection = "top";
+                    } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                        pickerDirection = "bottom";
+                    }
+                } else {
+                    pickerDirection = item.direction;
                 }
 
                 if (append) {
-                    this.activecomboboxOptionGroup.addClass("direction-" + item.direction);
+                    this.activecomboboxOptionGroup.addClass("direction-" + pickerDirection);
                 }
                 this.activecomboboxOptionGroup.css(function () {
-                    if (item.direction == "top") {
+                    if (pickerDirection == "top") {
+                        if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+
+                            var newTop = pos.top + dim.height / 2 - pickerDim.height / 2;
+                            if (newTop + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                                newTop = 0;
+                            }
+                            if (newTop < 0) {
+                                newTop = 0;
+                            }
+
+                            return {
+                                left: pos.left,
+                                top: newTop,
+                                width: dim.width
+                            };
+                        }
                         return {
                             left: pos.left,
                             top: pos.top + dim.height + 1,
                             width: dim.width
                         };
-                    } else if (item.direction == "bottom") {
+                    } else if (pickerDirection == "bottom") {
                         return {
                             left: pos.left,
-                            top: pos.top - this.activecomboboxOptionGroup.outerHeight() - 1,
+                            top: pos.top - pickerDim.height - 1,
                             width: dim.width
                         };
                     }
@@ -16387,45 +17308,23 @@ jQuery.fn.ax5select = function () {
                     this.close();
                     return this;
                 } else if (clickEl === "optionItem") {
+
                     setOptionSelect.call(this, item.id, {
                         index: {
                             gindex: target.getAttribute("data-option-group-index"),
                             index: target.getAttribute("data-option-index")
                         }
                     }, undefined, true);
-                    U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
+
+                    alignComboboxDisplay.call(this);
+                    alignComboboxOptionGroup.call(this);
+
                     if (!item.multiple) {
                         this.close();
                     }
-                } else {
-                    //open and display click
-                    //console.log(this.instanceId);
-                }
+                } else {}
 
                 return this;
-            },
-                onBodyKeyup = function onBodyKeyup(e) {
-                // 옵션 선택 후 키업
-                if (e.keyCode == ax5.info.eventKeys.ESC) {
-                    blurLabel.call(this, this.activecomboboxQueueIndex);
-                    this.close();
-                } else if (e.which == ax5.info.eventKeys.RETURN) {
-                    var values = [];
-                    var item = this.queue[this.activecomboboxQueueIndex];
-                    var childNodes = item.$displayLabel.get(0).childNodes;
-                    for (var i = 0, l = childNodes.length; i < l; i++) {
-                        var node = childNodes[i];
-                        // nodeType:1 - span, nodeType:3 - text
-                        if (node.nodeType in COMBOBOX.util.nodeTypeProcessor) {
-                            var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node);
-                            if (typeof value !== "undefined") values.push(value);
-                        }
-                    }
-
-                    setOptionSelect.call(this, item.id, values, true, true); // set Value
-                    focusLabel.call(this, this.activecomboboxQueueIndex);
-                    if (!item.multiple) this.close();
-                }
             },
                 getLabel = function getLabel(queIdx) {
                 var item = this.queue[queIdx];
@@ -16442,44 +17341,30 @@ jQuery.fn.ax5select = function () {
                 data.hasSelected = data.selected && data.selected.length > 0;
                 data.removeIcon = item.removeIcon;
 
-                try {
-                    //return ax5.mustache.render(COMBOBOX.tmpl["label"].call(this, item.columnKeys), data) + "&nbsp;";
-                    return COMBOBOX.tmpl.get.call(this, "label", data, item.columnKeys) + "&nbsp;";
-                } finally {
-                    data = null;
-                }
+                return COMBOBOX.tmpl.get.call(this, "label", data, item.columnKeys);
             },
-                syncLabel = function syncLabel(queIdx) {
-                var item = this.queue[queIdx],
-                    displayTableHeight;
-                item.$displayLabel.html(getLabel.call(this, queIdx));
-                item.$target.height('');
-                item.$display.height('');
+                printLabel = function printLabel(queIdx) {
+                var item = this.queue[queIdx];
 
-                // label 사이즈 체크
-                // console.log(item.$target.height(), item.$displayTable.outerHeight());
-                if (item.$target.height() < (displayTableHeight = item.$displayTable.outerHeight())) {
-                    var displayTableHeightAdjust = function () {
-                        return U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
-                    }();
-                    item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
-                    item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
-                }
+                item.$displayLabel.find('[data-ax5combobox-selected-label]').remove();
+                item.$displayLabelInput.before(getLabel.call(this, queIdx));
             },
                 focusLabel = function focusLabel(queIdx) {
+                if (this.queue[queIdx].disabled) return this;
+
                 this.queue[queIdx].$displayLabel.trigger("focus");
-                U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                this.queue[queIdx].$displayLabelInput.focus();
+            },
+                clearLabel = function clearLabel(queIdx) {
+                this.queue[queIdx].$displayLabelInput.val('');
             },
                 blurLabel = function blurLabel(queIdx) {
                 this.queue[queIdx].$displayLabel.trigger("blur");
+                this.queue[queIdx].$displayLabelInput.trigger("blur");
             },
                 onSearch = function onSearch(queIdx, searchWord) {
                 this.queue[queIdx].waitOptions = true;
-                /*
-                 this.activecomboboxOptionGroup.find('[data-els="content"]').html(
-                 jQuery(ax5.mustache.render(COMBOBOX.tmpl.options.call(this, this.queue[queIdx].columnKeys), this.queue[queIdx]))
-                 );
-                 */
+
                 this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "option", this.queue[queIdx], this.queue[queIdx].columnKeys)));
 
                 this.queue[queIdx].onSearch.call({
@@ -16519,11 +17404,7 @@ jQuery.fn.ax5select = function () {
                     data.multiple = item.multiple;
                     data.lang = item.lang;
                     data.options = item.options;
-                    /*
-                     this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
-                     ax5.mustache.render(COMBOBOX.tmpl.options.call(this, item.columnKeys), data))
-                     );
-                     */
+
                     this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)));
                 }.bind(this));
             },
@@ -16658,18 +17539,7 @@ jQuery.fn.ax5select = function () {
                             // optionGroup scroll check
 
                             if (typeof direction !== "undefined") {
-                                // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
-                                // 방향이 있으면 라벨 값을 수정
-
-                                var childNodes = item.$displayLabel.get(0).childNodes;
-                                var lastNode = childNodes[childNodes.length - 1];
-                                if (lastNode && lastNode.nodeType == '3') {
-                                    lastNode.nodeValue = item.indexedOptions[_focusIndex].text;
-                                    U.selectRange(item.$displayLabel, "end");
-                                } else if (lastNode && lastNode.nodeType == '1') {
-                                    jQuery(lastNode).after(item.indexedOptions[_focusIndex].text);
-                                    U.selectRange(item.$displayLabel, "end");
-                                }
+                                item.$displayLabelInput.val(item.options[_focusIndex].text);
                             }
                         }
                     }
@@ -16839,7 +17709,6 @@ jQuery.fn.ax5select = function () {
 
                         if (typeof setValueType === "undefined" || setValueType !== "justSetValue") {
                             syncComboboxOptions.call(this, queIdx, item.options);
-                            syncLabel.call(this, queIdx);
                             alignComboboxOptionGroup.call(this);
                         }
                     },
@@ -16858,7 +17727,6 @@ jQuery.fn.ax5select = function () {
                         });
 
                         syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
-                        syncLabel.call(this, queIdx);
                         alignComboboxOptionGroup.call(this);
                     },
                     'value': function value(queIdx, _value3, selected, setValueType) {
@@ -16885,7 +17753,6 @@ jQuery.fn.ax5select = function () {
                         }
                         if (typeof setValueType === "undefined" || setValueType !== "justSetValue") {
                             syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
-                            syncLabel.call(this, queIdx);
                             alignComboboxOptionGroup.call(this);
                         }
                     },
@@ -16913,7 +17780,6 @@ jQuery.fn.ax5select = function () {
                         }
                         if (typeof setValueType === "undefined" || setValueType !== "justSetValue") {
                             syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
-                            syncLabel.call(this, queIdx);
                             alignComboboxOptionGroup.call(this);
                         }
                     },
@@ -16946,11 +17812,9 @@ jQuery.fn.ax5select = function () {
                             clearSelected.call(this, queIdx);
                         }
                         processor.text.call(this, queIdx, value, selected, "justSetValue");
-                        syncLabel.call(this, queIdx);
                     } else {
                         if (value === null) {
                             processor.clear.call(this, queIdx);
-                            syncLabel.call(this, queIdx);
                         } else {
                             if (!this.queue[queIdx].multiple) {
                                 clearSelected.call(this, queIdx);
@@ -16961,12 +17825,12 @@ jQuery.fn.ax5select = function () {
                                     break;
                                 }
                             }
-
-                            syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
-                            syncLabel.call(this, queIdx);
-                            alignComboboxOptionGroup.call(this);
                         }
                     }
+
+                    syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
+                    printLabel.call(this, queIdx);
+                    focusLabel.call(this, queIdx);
 
                     if (typeof value !== "undefined") {
                         if (_option && !_option.noStateChange) {
@@ -17018,70 +17882,11 @@ jQuery.fn.ax5select = function () {
                 var bindComboboxTarget = function () {
                     var debouncedFocusWord = U.debounce(function (queIdx) {
                         if (this.activecomboboxQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
-
-                        var values = [];
-                        var searchWord = "";
-                        var item = this.queue[queIdx];
-                        var childNodes = item.$displayLabel.get(0).childNodes;
-
-                        for (var i = 0, l = childNodes.length; i < l; i++) {
-                            var node = childNodes[i];
-
-                            if (node.nodeType in COMBOBOX.util.nodeTypeProcessor) {
-                                var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, this.activecomboboxQueueIndex, node, true);
-                                if (typeof value === "undefined") {
-                                    //
-                                } else if (U.isString(value)) {
-                                    searchWord = value;
-                                    if (node.nodeType == '1' && node.getAttribute("data-ax5combobox-selected-text")) {
-                                        // 노드 타입인데 문자열이 리턴 되었다면 선택을 취소해야함.
-                                        searchWord = false; // 검색을 수행하지 않고 값을 변경하자.
-                                    } else {
-                                        values.push(value);
-                                    }
-                                } else {
-                                    values.push(value);
-                                }
-                            }
-                        }
-
-                        if (childNodes.length == 0) {
-                            setOptionSelect.call(this, item.id, null, undefined, "internal"); // clear value
-                        } else if (searchWord === false) {
-                            setOptionSelect.call(this, item.id, null, undefined, "internal"); // clear value
-                            setOptionSelect.call(this, item.id, values, undefined, "internal"); // set Value
-                            U.selectRange(item.$displayLabel, "end"); // label focus end
-                        } else if (searchWord != "") {
-                            focusWord.call(self, queIdx, searchWord);
-                        }
+                        focusWord.call(self, queIdx, this.queue[queIdx].$displayLabelInput.val());
                     }, 150);
 
                     var blurLabel = function blurLabel(queIdx) {
-                        var values = [];
-                        var item = this.queue[queIdx];
-                        var editingText;
-                        var childNodes = item.$displayLabel.get(0).childNodes;
-
-                        for (var i = 0, l = childNodes.length; i < l; i++) {
-                            var node = childNodes[i];
-                            if (node.nodeType == 1) {
-                                if (node.nodeType in COMBOBOX.util.nodeTypeProcessor) {
-
-                                    var value = COMBOBOX.util.nodeTypeProcessor[node.nodeType].call(this, queIdx, node, false);
-                                    if (typeof value === "undefined") {
-                                        //
-                                    } else if (U.isString(value)) {
-                                        //editingText = value;
-                                        //values.push(value);
-                                    } else {
-                                        values.push(value);
-                                    }
-                                }
-                            }
-                        }
-
-                        setOptionSelect.call(this, item.id, values, undefined, false); // set Value
-                        //if(item.selected.length != values.length){}
+                        clearLabel.call(this, queIdx);
                     };
 
                     var comboboxEvent = {
@@ -17107,11 +17912,16 @@ jQuery.fn.ax5select = function () {
                                             index: option['@index']
                                         }
                                     }, false, true);
+                                    alignComboboxDisplay.call(this);
+                                    alignComboboxOptionGroup.call(this);
                                     focusLabel.call(this, queIdx);
                                     U.stopEvent(e);
                                     return this;
                                 } else if (clickEl === "clear") {
                                     setOptionSelect.call(this, queIdx, { clear: true });
+                                    alignComboboxDisplay.call(this);
+                                    alignComboboxOptionGroup.call(this);
+                                    focusLabel.call(this, queIdx);
                                 }
                             } else {
                                 if (self.activecomboboxQueueIndex == queIdx) {
@@ -17121,11 +17931,7 @@ jQuery.fn.ax5select = function () {
                                     }
                                 } else {
                                     self.open(queIdx);
-
-                                    if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
-                                        this.queue[queIdx].$displayLabel.html(getLabel.call(this, queIdx));
-                                        focusLabel.call(this, queIdx);
-                                    }
+                                    focusLabel.call(this, queIdx);
                                 }
                             }
                         },
@@ -17147,14 +17953,46 @@ jQuery.fn.ax5select = function () {
                                 "38": "KEY_UP"
                             };
                             if (!disableCtrlKeys[e.which]) {
-                                debouncedFocusWord.call(this, queIdx);
+
+                                // backspace 감지 하여 input 값이 없으면 스탑이벤트 처리 할 것
+                                if (e.which == ax5.info.eventKeys.BACKSPACE && this.queue[queIdx].$displayLabelInput.val() == "") {
+                                    // 마지막 아이템을 제거.
+                                    if (this.queue[queIdx].selected.length > 0) {
+                                        var option = this.queue[queIdx].selected[this.queue[queIdx].selected.length - 1];
+                                        setOptionSelect.call(this, queIdx, {
+                                            index: {
+                                                gindex: option['@gindex'],
+                                                index: option['@index']
+                                            }
+                                        }, false, true);
+                                    }
+                                    alignComboboxDisplay.call(this);
+                                    alignComboboxOptionGroup.call(this);
+                                    U.stopEvent(e);
+                                } else {
+                                    debouncedFocusWord.call(this, queIdx);
+                                }
                             }
                         },
                         'keyDown': function keyDown(queIdx, e) {
                             if (e.which == ax5.info.eventKeys.ESC) {
+                                clearLabel.call(this, queIdx);
+                                this.close();
                                 U.stopEvent(e);
                             } else if (e.which == ax5.info.eventKeys.RETURN) {
-                                // display label에서 줄넘김막기위한 구문
+
+                                setOptionSelect.call(this, item.id, {
+                                    index: {
+                                        gindex: item.indexedOptions[item.optionFocusIndex]["@gindex"],
+                                        index: item.indexedOptions[item.optionFocusIndex]["@index"]
+                                    }
+                                }, undefined, true);
+                                clearLabel.call(this, queIdx);
+                                alignComboboxDisplay.call(this);
+
+                                this.close();
+                                //alignComboboxOptionGroup.call(this);
+
                                 U.stopEvent(e);
                             } else if (e.which == ax5.info.eventKeys.DOWN) {
                                 focusMove.call(this, queIdx, 1);
@@ -17201,6 +18039,7 @@ jQuery.fn.ax5select = function () {
                             item.$display = jQuery(COMBOBOX.tmpl.get.call(this, "comboboxDisplay", data, item.columnKeys));
                             item.$displayTable = item.$display.find('[data-els="display-table"]');
                             item.$displayLabel = item.$display.find('[data-ax5combobox-display="label"]');
+                            item.$displayLabelInput = item.$display.find('[data-ax5combobox-display="input"]');
 
                             if (item.$target.find("select").get(0)) {
                                 item.$select = item.$target.find("select");
@@ -17221,21 +18060,19 @@ jQuery.fn.ax5select = function () {
                             // 라벨에 사용자 입력 필드가 있으므로 displayInput은 필요 없음.
                             // select.options로 item.options를 만들어내거나 item.options로 select.options를 만들어냄
                             item.options = syncComboboxOptions.call(this, queIdx, item.options);
-
-                            alignComboboxDisplay.call(this);
                         } else {
                             item.$displayLabel.html(getLabel.call(this, queIdx));
                             item.options = syncComboboxOptions.call(this, queIdx, item.options);
-
-                            alignComboboxDisplay.call(this);
                         }
+
+                        alignComboboxDisplay.call(this);
 
                         item.$display.unbind('click.ax5combobox').bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
 
                         // combobox 태그에 대한 이벤트 감시
 
 
-                        item.$displayLabel.unbind("focus.ax5combobox").bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx)).unbind("blur.ax5combobox").bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx)).unbind('keyup.ax5combobox').bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5combobox").bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
+                        item.$displayLabelInput.unbind("focus.ax5combobox").bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx)).unbind("blur.ax5combobox").bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx)).unbind('keyup.ax5combobox').bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5combobox").bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
 
                         // select 태그에 대한 change 이벤트 감시
 
@@ -17247,6 +18084,7 @@ jQuery.fn.ax5select = function () {
                         return this;
                     };
                 }();
+
                 var comboboxConfig = {},
                     queIdx;
 
@@ -17325,9 +18163,8 @@ jQuery.fn.ax5select = function () {
                                 }
                             })(item, O);
 
-                            item.$display.find('[data-ax5combobox-display="label"]').html(getLabel.call(this, this.activecomboboxQueueIndex));
                             item.options = syncComboboxOptions.call(this, this.activecomboboxQueueIndex, O.options);
-
+                            printLabel.call(this, this.activecomboboxQueueIndex);
                             alignComboboxDisplay.call(this);
 
                             /// 템플릿에 전달할 오브젝트 선언
@@ -17416,12 +18253,6 @@ jQuery.fn.ax5select = function () {
                         }
                     }
 
-                    jQuery(window).bind("keyup.ax5combobox-" + this.instanceId, function (e) {
-                        e = e || window.event;
-                        onBodyKeyup.call(this, e);
-                        U.stopEvent(e);
-                    }.bind(this));
-
                     jQuery(window).bind("click.ax5combobox-" + this.instanceId, function (e) {
                         e = e || window.event;
                         onBodyClick.call(this, e);
@@ -17477,6 +18308,7 @@ jQuery.fn.ax5select = function () {
                 }
 
                 clearSelected.call(this, queIdx);
+
                 if (U.isArray(_value)) {
                     var _values = U.map(_value, function () {
                         return { value: this };
@@ -17484,8 +18316,12 @@ jQuery.fn.ax5select = function () {
                     setOptionSelect.call(this, queIdx, _values, _selected || true, { noStateChange: true });
                 } else if (U.isString(_value) || U.isNumber(_value)) {
                     setOptionSelect.call(this, queIdx, { value: _value }, _selected || true, { noStateChange: true });
+                } else {
+                    printLabel.call(this, queIdx);
                 }
-                //blurLabel.call(this, queIdx);
+
+                blurLabel.call(this, queIdx);
+                alignComboboxDisplay.call(this);
 
                 return this;
             };
@@ -17510,7 +18346,8 @@ jQuery.fn.ax5select = function () {
                 }
                 clearSelected.call(this, queIdx);
                 setOptionSelect.call(this, queIdx, _text, true, { noStateChange: true });
-                //blurLabel.call(this, queIdx);
+                blurLabel.call(this, queIdx);
+                alignComboboxDisplay.call(this);
 
                 return this;
             };
@@ -17540,6 +18377,7 @@ jQuery.fn.ax5select = function () {
                 item = this.queue[this.activecomboboxQueueIndex];
                 item.optionFocusIndex = -1;
                 item.$display.removeAttr("data-combobox-option-group-opened").trigger("focus");
+                item.$displayLabel.attr("contentEditable", "false");
 
                 this.activecomboboxOptionGroup.addClass("destroy");
 
@@ -17584,9 +18422,10 @@ jQuery.fn.ax5select = function () {
                 var queIdx = getQueIdx.call(this, _boundID);
 
                 if (typeof queIdx !== "undefined") {
+                    this.queue[queIdx].disabled = false;
                     if (this.queue[queIdx].$display[0]) {
-                        this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
                         this.queue[queIdx].$display.removeAttr("disabled");
+                        this.queue[queIdx].$displayLabelInput.removeAttr("disabled");
                     }
                     if (this.queue[queIdx].$select[0]) {
                         this.queue[queIdx].$select.removeAttr("disabled");
@@ -17610,9 +18449,10 @@ jQuery.fn.ax5select = function () {
                 var queIdx = getQueIdx.call(this, _boundID);
 
                 if (typeof queIdx !== "undefined") {
+                    this.queue[queIdx].disabled = true;
                     if (this.queue[queIdx].$display[0]) {
-                        this.queue[queIdx].$displayLabel.attr("contentEditable", "false");
                         this.queue[queIdx].$display.attr("disabled", "disabled");
+                        this.queue[queIdx].$displayLabelInput.attr("disabled", "disabled");
                     }
                     if (this.queue[queIdx].$select[0]) {
                         this.queue[queIdx].$select.attr("disabled", "disabled");
@@ -17735,11 +18575,15 @@ jQuery.fn.ax5combobox = function () {
     };
 
     var comboboxDisplay = function comboboxDisplay(columnKeys) {
-        return '\n            <div class="form-control {{formSize}} ax5combobox-display {{theme}}" \n            data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">\n                <div class="ax5combobox-display-table" data-els="display-table">\n                    <div data-ax5combobox-display="label-holder"> \n                    <a {{^tabIndex}}href="#ax5combobox-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n                    data-ax5combobox-display="label"\n                    contentEditable="true"\n                    spellcheck="false">{{{label}}}</a>\n                    </div>\n                    <div data-ax5combobox-display="addon"> \n                        {{#multiple}}{{#reset}}\n                        <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n                        {{/reset}}{{/multiple}}\n                        {{#icons}}\n                        <span class="addon-icon-closed">{{clesed}}</span>\n                        <span class="addon-icon-opened">{{opened}}</span>\n                        {{/icons}}\n                        {{^icons}}\n                        <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n                        <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n                        {{/icons}}\n                    </div>\n                </div>\n            </a>\n        ';
+        return '\n<div class="form-control {{formSize}} ax5combobox-display {{theme}}" \ndata-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">\n    <div class="ax5combobox-display-table" data-els="display-table">\n        <div data-ax5combobox-display="label-holder"> \n            <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n            data-ax5combobox-display="label"\n            spellcheck="false"><input type="text"data-ax5combobox-display="input" style="border:0px none;background: transparent;" /></a>\n        </div>\n        <div data-ax5combobox-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n            {{#icons}}\n            <span class="addon-icon-closed">{{clesed}}</span>\n            <span class="addon-icon-opened">{{opened}}</span>\n            {{/icons}}\n            {{^icons}}\n            <span class="addon-icon-closed"><span class="addon-icon-arrow"></span></span>\n            <span class="addon-icon-opened"><span class="addon-icon-arrow"></span></span>\n            {{/icons}}\n        </div>\n    </div>\n</div>\n        ';
     };
 
     var formSelect = function formSelect(columnKeys) {
         return '\n            <select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n        ';
+    };
+
+    var formSelectOptions = function formSelectOptions(columnKeys) {
+        return '\n{{#selected}}\n<option value="{{' + columnKeys.optionValue + '}}" selected="true">{{' + columnKeys.optionText + '}}</option>\n{{/selected}}\n';
     };
 
     var options = function options(columnKeys) {
@@ -17747,12 +18591,13 @@ jQuery.fn.ax5combobox = function () {
     };
 
     var label = function label(columnKeys) {
-        return '{{#selected}}<div tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}"><div data-ax5combobox-remove="true" data-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}';
+        return '{{#selected}}<div tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}"><div data-ax5combobox-remove="true" \ndata-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}';
     };
 
     COMBOBOX.tmpl = {
         "comboboxDisplay": comboboxDisplay,
         "formSelect": formSelect,
+        "formSelectOptions": formSelectOptions,
         "optionGroup": optionGroup,
         "options": options,
         "label": label,
@@ -17861,7 +18706,7 @@ jQuery.fn.ax5combobox = function () {
 
     UI.addClass({
         className: "layout",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5layout
@@ -18890,7 +19735,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "binder",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
 
         /**
@@ -19752,15 +20597,23 @@ jQuery.fn.ax5layout = function () {
                 this.view_target.find('[data-ax-path]').each(function () {
                     var dom = $(this),
                         dataPath = dom.attr("data-ax-path"),
-                        is_validate = dom.attr("data-ax-validate");
-                    if (is_validate) {
-                        var val = Function("", "return this" + get_real_path(dataPath) + ";").call(_this.model);
-                        if (typeof val === "undefined") val = "";
-                        var _val = val.toString();
+                        is_validate = dom.attr("data-ax-validate"),
+                        pattern = dom.attr("pattern");
 
-                        var is_error = false;
+                    if (is_validate) {
+                        var val, _val, is_error;
+
+                        val = Function("", "return this" + get_real_path(dataPath) + ";").call(_this.model);
+                        if (typeof val === "undefined") val = "";
+                        _val = val.toString();
+                        is_error = false;
+
                         if (is_validate == "required" && _val.trim() == "") {
                             is_error = true;
+                        } else if (is_validate == "pattern") {
+                            is_error = !new RegExp(pattern).test(_val);
+                        } else if (is_validate == "email") {
+                            is_error = !/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(_val);
                         } else if (!/\D.?/g.test(is_validate) && _val.trim().length < is_validate.number()) {
                             is_error = true;
                         }
@@ -19794,6 +20647,10 @@ jQuery.fn.ax5layout = function () {
                             var is_error = false;
                             if (is_validate == "required" && _val.trim() == "") {
                                 is_error = true;
+                            } else if (is_validate == "pattern") {
+                                is_error = !new RegExp(pattern).test(_val);
+                            } else if (is_validate == "email") {
+                                is_error = !/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(_val);
                             } else if (!/\D.?/g.test(is_validate) && _val.trim().length < is_validate.number()) {
                                 is_error = true;
                             }
@@ -19830,92 +20687,6 @@ jQuery.fn.ax5layout = function () {
         return ax5binder;
     }());
 })();
-// ax5.ui.multiUploader
-(function () {
-
-    var UI = ax5.ui;
-    var U = ax5.util;
-
-    UI.addClass({
-        className: "multiUploader",
-        version: "1.3.29"
-    }, function () {
-        /**
-         * @class ax5multiUploader
-         * @classdesc
-         * @author tom@axisj.com
-         * @example
-         * ```js
-         * var upload = new ax5.ui.uploader();
-         * $(document.body).ready(function () {
-         *     upload.setConfig({
-         *         target: $("#user-info-profileImageUrl"),
-         *         file_types: "image/*",
-         *         empty_msg: "프로필 사진",
-         *         progress_theme: "basic",
-         *         upload_http: {
-         *             method: "POST",
-         *             url: "/api/v1/aws/s3/upload",
-         *             filename_param_key: "file",
-         *             data: {bucket: "gajago-user-profile", crop: true}
-         *         },
-         *         on_event: function (that) {
-         *             if (that.action == "fileselect") {
-         *                 console.log(that.file);
-         *             }
-         *             else if (that.action == "uploaded") {
-         *                 _root.form.profile_uploaded(that.file);
-         *             }
-         *             else if (that.action == "error") {
-         *                 alert(that.error.msg);
-         *             }
-         *         }
-         *     });
-         * });
-         * ```
-         */
-        var ax5multiUploader = function ax5multiUploader() {
-            var self = this,
-                cfg;
-
-            this.instanceId = ax5.getGuid();
-            this.config = {
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
-                theme: 'default',
-                file_types: "*/*"
-            };
-            this.queue = [];
-            this.target = null;
-            this.selectedFile = null;
-            this.uploadedFile = null;
-
-            cfg = this.config;
-
-            this.init = function () {};
-
-            // 클래스 생성자
-            this.main = function () {
-
-                UI.multiUploader_instance = UI.multiUploader_instance || [];
-                UI.multiUploader_instance.push(this);
-
-                if (arguments && U.isObject(arguments[0])) {
-                    this.setConfig(arguments[0]);
-                } else {
-                    //this.init();
-                }
-            }.apply(this, arguments);
-        };
-        return ax5multiUploader;
-    }());
-})();
-
-/*
- * Copyright (c) 2016. tom@axisj.com
- * - github.com/thomasjang
- * - www.axisj.com
- */
-
 // ax5.ui.autocomplete
 (function () {
 
@@ -19925,7 +20696,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "autocomplete",
-        version: "1.3.29"
+        version: "1.3.58"
     }, function () {
         /**
          * @class ax5autocomplete
@@ -19997,6 +20768,7 @@ jQuery.fn.ax5layout = function () {
 
             cfg = this.config;
 
+            var $window = jQuery(window);
             var ctrlKeys = {
                 "18": "KEY_ALT",
                 //"8": "KEY_BACKSPACE",
@@ -20074,8 +20846,8 @@ jQuery.fn.ax5layout = function () {
 
                             var displayTableHeight = item.$displayTable.outerHeight();
                             if (Math.abs(displayTableHeight - item.$target.height()) > displayTableHeightAdjust) {
-                                item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
-                                item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
+                                item.$target.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
+                                item.$display.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
                             }
                         }
                     }
@@ -20086,12 +20858,16 @@ jQuery.fn.ax5layout = function () {
                 return this;
             },
                 alignAutocompleteOptionGroup = function alignAutocompleteOptionGroup(append) {
-                if (!this.activeautocompleteOptionGroup) return this;
+                if (append && !this.activeautocompleteOptionGroup) return this;
 
                 var item = this.queue[this.activeautocompleteQueueIndex],
                     pos = {},
-                    dim = {};
+                    positionMargin = 0,
+                    dim = {},
+                    pickerDim = {},
+                    pickerDirection;
 
+                if (!item) return this;
                 if (append) jQuery(document.body).append(this.activeautocompleteOptionGroup);
 
                 pos = item.$target.offset();
@@ -20099,27 +20875,57 @@ jQuery.fn.ax5layout = function () {
                     width: item.$target.outerWidth(),
                     height: item.$target.outerHeight()
                 };
+                pickerDim = {
+                    winWidth: Math.max($window.width(), jQuery(document.body).width()),
+                    winHeight: Math.max($window.height(), jQuery(document.body).height()),
+                    width: this.activeautocompleteOptionGroup.outerWidth(),
+                    height: this.activeautocompleteOptionGroup.outerHeight()
+                };
 
                 // picker css(width, left, top) & direction 결정
                 if (!item.direction || item.direction === "" || item.direction === "auto") {
                     // set direction
-                    item.direction = "top";
+                    pickerDirection = "top";
+
+                    if (pos.top - pickerDim.height - positionMargin < 0) {
+                        pickerDirection = "top";
+                    } else if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                        pickerDirection = "bottom";
+                    }
+                } else {
+                    pickerDirection = item.direction;
                 }
 
                 if (append) {
-                    this.activeautocompleteOptionGroup.addClass("direction-" + item.direction);
+                    this.activeautocompleteOptionGroup.addClass("direction-" + pickerDirection);
                 }
                 this.activeautocompleteOptionGroup.css(function () {
-                    if (item.direction == "top") {
+                    if (pickerDirection == "top") {
+                        if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
+
+                            var newTop = pos.top + pickerDim.height;
+                            if (newTop + pickerDim.height + positionMargin > pickerDim.winHeight) {
+                                newTop = 0;
+                            }
+                            if (newTop < 0) {
+                                newTop = 0;
+                            }
+
+                            return {
+                                left: pos.left,
+                                top: newTop,
+                                width: dim.width
+                            };
+                        }
                         return {
                             left: pos.left,
                             top: pos.top + dim.height + 1,
                             width: dim.width
                         };
-                    } else if (item.direction == "bottom") {
+                    } else if (pickerDirection == "bottom") {
                         return {
                             left: pos.left,
-                            top: pos.top - this.activeautocompleteOptionGroup.outerHeight() - 1,
+                            top: pos.top - pickerDim.height - 1,
                             width: dim.width
                         };
                     }
@@ -20150,40 +20956,14 @@ jQuery.fn.ax5layout = function () {
                             index: target.getAttribute("data-option-index")
                         }
                     }, undefined, "optionItemClick");
-
-                    U.selectRange(item.$displayLabel, "end"); // 포커스 end || selectAll
+                    alignAutocompleteDisplay.call(this);
+                    alignAutocompleteOptionGroup.call(this);
                     if (!item.multiple) {
                         this.close();
                     }
-                } else {
-                    //open and display click
-                    //console.log(this.instanceId);
-                }
+                } else {}
 
                 return this;
-            },
-                onBodyKeyup = function onBodyKeyup(e) {
-                // 옵션 선택 후 키업
-                if (e.keyCode == ax5.info.eventKeys.ESC) {
-                    blurLabel.call(this, this.activeautocompleteQueueIndex);
-                    this.close();
-                } else if (e.which == ax5.info.eventKeys.RETURN) {
-                    var values = [];
-                    var item = this.queue[this.activeautocompleteQueueIndex];
-                    var childNodes = item.$displayLabel.get(0).childNodes;
-                    for (var i = 0, l = childNodes.length; i < l; i++) {
-                        var node = childNodes[i];
-                        // nodeType:1 - span, nodeType:3 - text
-                        if (node.nodeType in AUTOCOMPLETE.util.nodeTypeProcessor) {
-                            var value = AUTOCOMPLETE.util.nodeTypeProcessor[node.nodeType].call(this, this.activeautocompleteQueueIndex, node);
-                            if (typeof value !== "undefined") values.push(value);
-                        }
-                    }
-
-                    setSelected.call(this, item.id, values, true); // set Value
-                    focusLabel.call(this, this.activeautocompleteQueueIndex);
-                    if (!item.multiple) this.close();
-                }
             },
                 getLabel = function getLabel(queIdx) {
                 var item = this.queue[queIdx];
@@ -20199,11 +20979,11 @@ jQuery.fn.ax5layout = function () {
                 data.selected = item.selected;
                 data.hasSelected = data.selected && data.selected.length > 0;
                 data.removeIcon = item.removeIcon;
-                return AUTOCOMPLETE.tmpl.get.call(this, "label", data, item.columnKeys) + "&nbsp;";
+
+                return AUTOCOMPLETE.tmpl.get.call(this, "label", data, item.columnKeys);
             },
                 syncLabel = function syncLabel(queIdx) {
-                var item = this.queue[queIdx],
-                    displayTableHeight;
+                var item = this.queue[queIdx];
 
                 if (!item.multiple && item.selected && item.selected.length > 0) {
                     item.selected = [].concat(item.selected[item.selected.length - 1]);
@@ -20216,23 +20996,21 @@ jQuery.fn.ax5layout = function () {
                 item.$select.html(AUTOCOMPLETE.tmpl.get.call(this, "formSelectOptions", {
                     selected: item.selected
                 }, item.columnKeys));
+            },
+                printLabel = function printLabel(queIdx) {
+                var item = this.queue[queIdx];
 
-                item.$displayLabel.html(getLabel.call(this, queIdx));
-                item.$target.height('');
-                item.$display.height('');
-
-                // label 사이즈 체크
-                if (item.$target.height() < (displayTableHeight = item.$displayTable.outerHeight())) {
-                    var displayTableHeightAdjust = function () {
-                        return U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
-                    }();
-                    item.$target.css({ height: displayTableHeight + displayTableHeightAdjust });
-                    item.$display.css({ height: displayTableHeight + displayTableHeightAdjust });
-                }
+                item.$displayLabel.find('[data-ax5autocomplete-selected-label]').remove();
+                item.$displayLabelInput.before(getLabel.call(this, queIdx));
             },
                 focusLabel = function focusLabel(queIdx) {
+                if (this.queue[queIdx].disabled) return this;
+
                 this.queue[queIdx].$displayLabel.trigger("focus");
-                U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                this.queue[queIdx].$displayLabelInput.focus();
+            },
+                clearLabel = function clearLabel(queIdx) {
+                this.queue[queIdx].$displayLabelInput.val('');
             },
                 blurLabel = function blurLabel(queIdx) {
                 this.queue[queIdx].$displayLabel.trigger("blur");
@@ -20284,6 +21062,11 @@ jQuery.fn.ax5layout = function () {
                     this.activeautocompleteOptionGroup.find('[data-els="content"]').html(jQuery(AUTOCOMPLETE.tmpl.get.call(this, "options", data, item.columnKeys)));
 
                     focusWord.call(this, this.activeautocompleteQueueIndex, searchWord);
+                    alignAutocompleteOptionGroup.call(this);
+
+                    setTimeout(function () {
+                        alignAutocompleteOptionGroup.call(this);
+                    }.bind(this));
                 }.bind(this));
             },
                 focusWord = function focusWord(queIdx, searchWord) {
@@ -20388,20 +21171,7 @@ jQuery.fn.ax5layout = function () {
                             // optionGroup scroll check
 
                             if (typeof direction !== "undefined") {
-                                /*
-                                 // 방향이 있으면 커서 업/다운 아니면 사용자 키보드 입력
-                                 // 방향이 있으면 라벨 값을 수정
-                                 var childNodes = item.$displayLabel.get(0).childNodes;
-                                 var lastNode = childNodes[childNodes.length - 1];
-                                 if (lastNode && lastNode.nodeType == '3') {
-                                 //lastNode.nodeValue = item.options[_focusIndex].text;
-                                 U.selectRange(item.$displayLabel, "end");
-                                 } else if (lastNode && lastNode.nodeType == '1') {
-                                 //jQuery(lastNode).after(item.options[_focusIndex].text);
-                                 U.selectRange(item.$displayLabel, "end");
-                                 }
-                                 */
-                                U.selectRange(item.$displayLabel, "end");
+                                item.$displayLabelInput.val(item.options[_focusIndex].text);
                             }
                         }
                     }
@@ -20438,6 +21208,11 @@ jQuery.fn.ax5layout = function () {
                         n.selected = false;
                     }
                 });
+
+                this.queue[queIdx].selected = [];
+                this.queue[queIdx].$select.html(AUTOCOMPLETE.tmpl.get.call(this, "formSelectOptions", {
+                    selected: this.queue[queIdx].selected
+                }, this.queue[queIdx].columnKeys));
             },
                 setSelected = function () {
                 var processor = {
@@ -20644,6 +21419,8 @@ jQuery.fn.ax5layout = function () {
                     }
 
                     syncLabel.call(this, queIdx);
+                    printLabel.call(this, queIdx);
+                    focusLabel.call(this, queIdx);
                     alignAutocompleteOptionGroup.call(this);
 
                     if (typeof value !== "undefined") {
@@ -20695,64 +21472,11 @@ jQuery.fn.ax5layout = function () {
                 var bindAutocompleteTarget = function () {
                     var debouncedFocusWord = U.debounce(function (queIdx) {
                         if (this.activeautocompleteQueueIndex == -1) return this; // 옵션박스가 닫힌상태이면 진행안함.
-
-                        var values = [];
-                        var searchWord = "";
-                        var resetSelected = false;
-                        var item = this.queue[queIdx];
-                        var childNodes = item.$displayLabel.get(0).childNodes;
-
-                        for (var i = 0, l = childNodes.length; i < l; i++) {
-                            var node = childNodes[i];
-
-                            if (node.nodeType in AUTOCOMPLETE.util.nodeTypeProcessor) {
-                                var value = AUTOCOMPLETE.util.nodeTypeProcessor[node.nodeType].call(this, this.activeautocompleteQueueIndex, node, true);
-                                if (typeof value === "undefined") {
-                                    //
-                                } else if (U.isString(value)) {
-                                    searchWord = value;
-                                } else {
-                                    if (value.removeSelectedIndex) {
-                                        resetSelected = true;
-                                    }
-                                    values.push(value);
-                                }
-                            }
-                        }
-
-                        if (childNodes.length == 0) {
-                            setSelected.call(this, item.id, null, undefined, "internal"); // clear value
-                        } else if (searchWord != "") {
-                            onSearch.call(self, queIdx, searchWord);
-                        } else if (resetSelected) {
-                            setSelected.call(this, item.id, values, undefined, "internal"); // set Value
-                            U.selectRange(item.$displayLabel, "end"); // label focus end
-                            self.close();
-                        }
+                        onSearch.call(self, queIdx, this.queue[queIdx].$displayLabelInput.val());
                     }, 150);
 
                     var blurLabel = function blurLabel(queIdx) {
-                        var values = [];
-                        var item = this.queue[queIdx];
-                        var editingText;
-                        var childNodes = item.$displayLabel.get(0).childNodes;
-
-                        for (var i = 0, l = childNodes.length; i < l; i++) {
-                            var node = childNodes[i];
-                            if (node.nodeType in AUTOCOMPLETE.util.nodeTypeProcessor) {
-                                var value = AUTOCOMPLETE.util.nodeTypeProcessor[node.nodeType].call(this, queIdx, node, true);
-                                if (typeof value === "undefined") {
-                                    //
-                                } else if (U.isString(value)) {
-                                    //editingText = value;
-                                    //values.push(value);
-                                } else {
-                                    values.push(value);
-                                }
-                            }
-                        }
-
-                        setSelected.call(this, item.id, values, undefined, "blurLabel"); // set Value
+                        clearLabel.call(this, queIdx);
                     };
 
                     var autocompleteEvent = {
@@ -20773,11 +21497,16 @@ jQuery.fn.ax5layout = function () {
                                     var removeIndex = target.getAttribute("data-ax5autocomplete-remove-index");
                                     this.queue[queIdx].selected.splice(removeIndex, 1);
                                     syncLabel.call(this, queIdx);
+                                    printLabel.call(this, queIdx);
                                     focusLabel.call(this, queIdx);
+                                    alignAutocompleteDisplay.call(this);
+                                    alignAutocompleteOptionGroup.call(this);
                                     U.stopEvent(e);
                                     return this;
                                 } else if (clickEl === "clear") {
                                     setSelected.call(this, queIdx, { clear: true });
+                                    alignAutocompleteDisplay.call(this);
+                                    alignAutocompleteOptionGroup.call(this);
                                 }
                             } else {
                                 if (self.activeautocompleteQueueIndex == queIdx) {
@@ -20786,10 +21515,7 @@ jQuery.fn.ax5layout = function () {
                                         self.close();
                                     }
                                 } else {
-                                    if (this.queue[queIdx].$displayLabel.text().replace(/^\W*|\W*$/g, '') == "") {
-                                        this.queue[queIdx].$displayLabel.html(getLabel.call(this, queIdx));
-                                        focusLabel.call(this, queIdx);
-                                    }
+                                    focusLabel.call(this, queIdx);
                                 }
                             }
                         },
@@ -20800,22 +21526,54 @@ jQuery.fn.ax5layout = function () {
                                 U.stopEvent(e);
                                 return this;
                             }
+                            if (e.which == ax5.info.eventKeys.TAB) {
+                                // nothing
+
+                                this.close();
+                                return this;
+                            }
                             if (self.activeautocompleteQueueIndex != queIdx) {
                                 // 닫힌 상태 인경우
-                                self.open(queIdx);
-                                U.stopEvent(e);
+                                self.open(queIdx); // open and align
                             }
                             if (ctrlKeys[e.which]) {
                                 U.stopEvent(e);
                             } else {
-                                debouncedFocusWord.call(this, queIdx);
+                                // backspace 감지 하여 input 값이 없으면 스탑이벤트 처리 할 것
+                                if (e.which == ax5.info.eventKeys.BACKSPACE && this.queue[queIdx].$displayLabelInput.val() == "") {
+                                    // 마지막 아이템을 제거.
+                                    this.queue[queIdx].selected.pop();
+                                    syncLabel.call(this, queIdx);
+                                    printLabel.call(this, queIdx);
+                                    focusLabel.call(this, queIdx);
+                                    alignAutocompleteDisplay.call(this);
+                                    alignAutocompleteOptionGroup.call(this);
+                                    U.stopEvent(e);
+                                } else {
+                                    debouncedFocusWord.call(this, queIdx);
+                                }
                             }
                         },
                         'keyDown': function keyDown(queIdx, e) {
                             if (e.which == ax5.info.eventKeys.ESC) {
+                                clearLabel.call(this, queIdx);
+                                this.close();
                                 U.stopEvent(e);
                             } else if (e.which == ax5.info.eventKeys.RETURN) {
-                                // display label에서 줄넘김막기위한 구문
+                                var inputValue = this.queue[queIdx].$displayLabelInput.val();
+                                if (item.optionFocusIndex > -1) {
+                                    setSelected.call(this, item.id, {
+                                        optionIndex: {
+                                            index: item.optionFocusIndex
+                                        }
+                                    }, undefined, "optionItemClick");
+                                } else if (inputValue != "") {
+                                    setSelected.call(this, queIdx, inputValue, true);
+                                }
+                                clearLabel.call(this, queIdx);
+                                alignAutocompleteDisplay.call(this);
+                                this.close();
+
                                 U.stopEvent(e);
                             } else if (e.which == ax5.info.eventKeys.DOWN) {
                                 focusMove.call(this, queIdx, 1);
@@ -20826,8 +21584,8 @@ jQuery.fn.ax5layout = function () {
                             }
                         },
                         'focus': function focus(queIdx, e) {
-                            //console.log(e);
-                            U.selectRange(this.queue[queIdx].$displayLabel, "end"); // 포커스 end || selectAll
+                            // console.log(e);
+
                         },
                         'blur': function blur(queIdx, e) {
                             blurLabel.call(this, queIdx);
@@ -20860,6 +21618,7 @@ jQuery.fn.ax5layout = function () {
                             item.$display = jQuery(AUTOCOMPLETE.tmpl.get.call(this, "autocompleteDisplay", data, item.columnKeys));
                             item.$displayTable = item.$display.find('[data-els="display-table"]');
                             item.$displayLabel = item.$display.find('[data-ax5autocomplete-display="label"]');
+                            item.$displayLabelInput = item.$display.find('[data-ax5autocomplete-display="input"]');
 
                             if (item.$target.find("select").get(0)) {
                                 item.$select = item.$target.find("select");
@@ -20875,20 +21634,17 @@ jQuery.fn.ax5layout = function () {
                             }
 
                             item.$target.append(item.$display);
-
-                            alignAutocompleteDisplay.call(this);
                         } else {
-                            item.$displayLabel.html(getLabel.call(this, queIdx));
-
-                            alignAutocompleteDisplay.call(this);
+                            printLabel.call(this, queIdx);
                         }
+
+                        alignAutocompleteDisplay.call(this);
 
                         item.$display.unbind('click.ax5autocomplete').bind('click.ax5autocomplete', autocompleteEvent.click.bind(this, queIdx));
 
                         // autocomplete 태그에 대한 이벤트 감시
 
-
-                        item.$displayLabel.unbind("focus.ax5autocomplete").bind("focus.ax5autocomplete", autocompleteEvent.focus.bind(this, queIdx)).unbind("blur.ax5autocomplete").bind("blur.ax5autocomplete", autocompleteEvent.blur.bind(this, queIdx)).unbind('keyup.ax5autocomplete').bind('keyup.ax5autocomplete', autocompleteEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5autocomplete").bind("keydown.ax5autocomplete", autocompleteEvent.keyDown.bind(this, queIdx));
+                        item.$displayLabelInput.off("focus.ax5autocomplete").on("focus.ax5autocomplete", autocompleteEvent.focus.bind(this, queIdx)).off("blur.ax5autocomplete").on("blur.ax5autocomplete", autocompleteEvent.blur.bind(this, queIdx)).off("keydown.ax5autocomplete").on("keydown.ax5autocomplete", autocompleteEvent.keyUp.bind(this, queIdx)).off("keyup.ax5autocomplete").on("keyup.ax5autocomplete", autocompleteEvent.keyDown.bind(this, queIdx));
 
                         // select 태그에 대한 change 이벤트 감시
 
@@ -21018,12 +21774,6 @@ jQuery.fn.ax5layout = function () {
                         }
                     }
 
-                    jQuery(window).bind("keyup.ax5autocomplete-" + this.instanceId, function (e) {
-                        e = e || window.event;
-                        onBodyKeyup.call(this, e);
-                        U.stopEvent(e);
-                    }.bind(this));
-
                     jQuery(window).bind("click.ax5autocomplete-" + this.instanceId, function (e) {
                         e = e || window.event;
                         onBodyClick.call(this, e);
@@ -21062,18 +21812,21 @@ jQuery.fn.ax5layout = function () {
                     return;
                 }
 
-                this.queue[queIdx].selected = [];
                 clearSelected.call(this, queIdx);
+
                 if (U.isArray(_value)) {
                     var _values = U.map(_value, function () {
                         return { value: this };
                     });
                     setSelected.call(this, queIdx, _values, true, { noStateChange: true });
                 } else if (U.isObject(_value)) {
-                    console.log(_value);
                     setSelected.call(this, queIdx, { value: _value }, true, { noStateChange: true });
+                } else {
+                    printLabel.call(this, queIdx);
                 }
+
                 blurLabel.call(this, queIdx);
+                alignAutocompleteDisplay.call(this);
 
                 return this;
             };
@@ -21099,6 +21852,7 @@ jQuery.fn.ax5layout = function () {
                 clearSelected.call(this, queIdx);
                 setSelected.call(this, queIdx, _text, true, { noStateChange: true });
                 blurLabel.call(this, queIdx);
+                alignAutocompleteDisplay.call(this);
 
                 return this;
             };
@@ -21172,9 +21926,10 @@ jQuery.fn.ax5layout = function () {
                 var queIdx = getQueIdx.call(this, _boundID);
 
                 if (typeof queIdx !== "undefined") {
+                    this.queue[queIdx].disable = false;
                     if (this.queue[queIdx].$display[0]) {
-                        this.queue[queIdx].$displayLabel.attr("contentEditable", "true");
                         this.queue[queIdx].$display.removeAttr("disabled");
+                        this.queue[queIdx].$displayLabelInput.removeAttr("disabled");
                     }
                     if (this.queue[queIdx].$select[0]) {
                         this.queue[queIdx].$select.removeAttr("disabled");
@@ -21198,9 +21953,10 @@ jQuery.fn.ax5layout = function () {
                 var queIdx = getQueIdx.call(this, _boundID);
 
                 if (typeof queIdx !== "undefined") {
+                    this.queue[queIdx].disable = true;
                     if (this.queue[queIdx].$display[0]) {
-                        this.queue[queIdx].$displayLabel.attr("contentEditable", "false");
                         this.queue[queIdx].$display.attr("disabled", "disabled");
+                        this.queue[queIdx].$displayLabelInput.attr("disabled", "disabled");
                     }
                     if (this.queue[queIdx].$select[0]) {
                         this.queue[queIdx].$select.attr("disabled", "disabled");
@@ -21311,6 +22067,9 @@ jQuery.fn.ax5autocomplete = function () {
         return this;
     };
 }();
+
+// todo : editable 지원.
+// 아이템 박스 안에서 제거 할때 디스플레이 정렬
 // ax5.ui.autocomplete.tmpl
 (function () {
     var AUTOCOMPLETE = ax5.ui.autocomplete;
@@ -21321,7 +22080,7 @@ jQuery.fn.ax5autocomplete = function () {
     };
 
     var autocompleteDisplay = function autocompleteDisplay(columnKeys) {
-        return ' \n<div class="form-control {{formSize}} ax5autocomplete-display {{theme}}" \ndata-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">\n    <div class="ax5autocomplete-display-table" data-els="display-table">\n        <div data-ax5autocomplete-display="label-holder"> \n        <a {{^tabIndex}}href="#ax5autocomplete-{{id}}" {{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n        data-ax5autocomplete-display="label"\n        contentEditable="true"\n        spellcheck="false">{{{label}}}</a>\n        </div>\n        <div data-ax5autocomplete-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n';
+        return ' \n<input tabindex="-1" type="text" data-input-dummy="" style="display: none;" />\n<div class="form-control {{formSize}} ax5autocomplete-display {{theme}}" \ndata-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">\n    <div class="ax5autocomplete-display-table" data-els="display-table">\n        <div data-ax5autocomplete-display="label-holder"> \n        <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n        data-ax5autocomplete-display="label"\n        spellcheck="false"><input type="text"data-ax5autocomplete-display="input" style="border:0px none;background: transparent;" /></a>\n        </div>\n        <div data-ax5autocomplete-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n';
     };
 
     var formSelect = function formSelect(columnKeys) {
@@ -21351,79 +22110,5 @@ jQuery.fn.ax5autocomplete = function () {
         get: function get(tmplName, data, columnKeys) {
             return ax5.mustache.render(AUTOCOMPLETE.tmpl[tmplName].call(this, columnKeys), data);
         }
-    };
-})();
-// ax5.ui.autocomplete.util
-(function () {
-
-    var AUTOCOMPLETE = ax5.ui.autocomplete;
-    var U = ax5.util;
-
-    var nodeTypeProcessor = {
-        '1': function _(queIdx, node, editable) {
-            var cfg = this.config;
-            var textNode = node;
-
-            if ($(node).find("span").get(0)) {
-                textNode = $(node).find("span").get(0);
-            }
-
-            var text = (textNode.textContent || textNode.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
-            var item = this.queue[queIdx];
-
-            var selectedIndex, option;
-
-            if (item.selected && item.selected.length > 0) {
-                if (node.getAttribute("data-ax5autocomplete-selected-text") == text) {
-                    selectedIndex = node.getAttribute("data-ax5autocomplete-selected-label");
-                    option = item.selected[selectedIndex];
-                    return {
-                        selectedIndex: {
-                            index: option["@index"],
-                            value: option[cfg.columnKeys.optionValue]
-                        }
-                    };
-                } else {
-                    selectedIndex = node.getAttribute("data-ax5autocomplete-selected-label");
-                    option = item.selected[selectedIndex];
-                    return {
-                        removeSelectedIndex: {
-                            index: option["@index"],
-                            value: option[cfg.columnKeys.optionValue]
-                        }
-                    };
-                }
-            }
-        },
-        '3': function _(queIdx, node, editable) {
-            var cfg = this.config;
-            var text = (node.textContent || node.innerText).replace(/^[\s\r\n\t]*|[\s\r\n\t]*$/g, '');
-            var item = this.queue[queIdx];
-
-            if (text != "") {
-                if (editable) {
-                    return text;
-                } else {
-                    var $option;
-                    if (item.optionFocusIndex > -1) $option = this.activeautocompleteOptionGroup.find('[data-option-focus-index="' + item.optionFocusIndex + '"]');
-                    if (item.optionFocusIndex > -1 && $option.get(0) && $option.attr("data-option-value")) {
-                        return {
-                            optionIndex: {
-                                gindex: $option.attr("data-option-group-index"),
-                                index: $option.attr("data-option-index")
-                            }
-                        };
-                    } else {
-                        return item.editable ? text : undefined;
-                    }
-                }
-            } else {
-                return undefined;
-            }
-        }
-    };
-
-    AUTOCOMPLETE.util = {
-        nodeTypeProcessor: nodeTypeProcessor
     };
 })();
