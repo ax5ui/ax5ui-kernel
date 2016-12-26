@@ -299,15 +299,14 @@
             return !_top_is_end || !_left_is_end;
         },
         "on": function () {
-            var self = this,
+            let self = this,
                 _body_scroll_position = self.$["panel"]["body-scroll"].position(),
                 _panel_height = self.$["panel"]["body"].height(),
                 _panel_width = self.$["panel"]["body"].width(),
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
                 getContentPosition = function (e) {
-                    var mouseObj = GRID.util.getMousePosition(e);
-                    var newLeft, newTop;
+                    let mouseObj = GRID.util.getMousePosition(e), newLeft, newTop;
 
                     self.xvar.__x_da = mouseObj.clientX - self.xvar.mousePosition.clientX;
                     self.xvar.__y_da = mouseObj.clientY - self.xvar.mousePosition.clientY;
@@ -336,24 +335,29 @@
                     }
                 };
 
+
             this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
             this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.touchmoved = false;
 
             jQuery(document.body)
-                .bind("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
-                    var css = getContentPosition(e);
+                .on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+                    let css = getContentPosition(e);
                     GRID.header.scrollTo.call(self, {left: css.left});
                     GRID.body.scrollTo.call(self, css, "noRepaint");
                     resize.call(self);
                     U.stopEvent(e);
+                    self.xvar.touchmoved = true;
                 })
-                .bind("touchend" + ".ax5grid-" + this.instanceId, function (e) {
-                    var css = getContentPosition(e);
-                    GRID.header.scrollTo.call(self, {left: css.left});
-                    GRID.body.scrollTo.call(self, css);
-                    resize.call(self);
-                    U.stopEvent(e);
-                    scrollContentMover.off.call(self);
+                .on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
+                    if(self.xvar.touchmoved) {
+                        let css = getContentPosition(e);
+                        GRID.header.scrollTo.call(self, {left: css.left});
+                        GRID.body.scrollTo.call(self, css);
+                        resize.call(self);
+                        U.stopEvent(e);
+                        scrollContentMover.off.call(self);
+                    }
                 });
 
             jQuery(document.body)
@@ -364,8 +368,8 @@
         "off": function () {
 
             jQuery(document.body)
-                .unbind("touchmove" + ".ax5grid-" + this.instanceId)
-                .unbind("touchend" + ".ax5grid-" + this.instanceId);
+                .off("touchmove" + ".ax5grid-" + this.instanceId)
+                .off("touchend" + ".ax5grid-" + this.instanceId);
 
             jQuery(document.body)
                 .removeAttr('unselectable')
@@ -442,6 +446,7 @@
                     self.xvar.mousePosition = GRID.util.getMousePosition(e);
                     scrollContentMover.on.call(self);
                 });
+
         }
     };
 

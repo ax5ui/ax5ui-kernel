@@ -1863,6 +1863,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             self.xvar.dataHoveredIndex = dindex;
         });
         this.$["container"]["body"].on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
+            if (self.xvar.touchmoved) return false;
             if (this.getAttribute("data-ax5grid-column-rowIndex")) {
                 columnSelector.on.call(self, {
                     panelName: this.getAttribute("data-ax5grid-panel-name"),
@@ -2148,6 +2149,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var bodyGroupingData = this.bodyGroupingData;
         var bodyAlign = cfg.body.align;
         var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+        if (document.addEventListener && ax5.info.supportTouch) {
+            paintRowCount = paintRowCount * 2;
+        }
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
         this.$.livePanelKeys = [];
 
@@ -2179,6 +2183,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             }();
 
+            if (isScrolled) {
+                SS.push('<div style="font-size:0;line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+            }
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -2258,9 +2265,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
             SS.push('</table>');
 
-            if (isScrolled) {
-                _elTarget.css({ paddingTop: (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight });
-            }
             _elTarget.empty().get(0).innerHTML = SS.join('');
 
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
@@ -2393,7 +2397,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         //todo : repaintBody 에서 footSum 데이터 예외처리
-
         // right
         if (cfg.rightSum) {
             // todo : right 표현 정리
@@ -2933,7 +2936,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         if (!noRepaint && "top" in css) {
             repaint.call(this);
-        }
+        } else {}
     };
 
     var blur = function blur() {
@@ -5135,8 +5138,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
                 getContentPosition = function getContentPosition(e) {
-                var mouseObj = GRID.util.getMousePosition(e);
-                var newLeft, newTop;
+                var mouseObj = GRID.util.getMousePosition(e),
+                    newLeft = void 0,
+                    newTop = void 0;
 
                 self.xvar.__x_da = mouseObj.clientX - self.xvar.mousePosition.clientX;
                 self.xvar.__y_da = mouseObj.clientY - self.xvar.mousePosition.clientY;
@@ -5167,27 +5171,31 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
             this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.touchmoved = false;
 
-            jQuery(document.body).bind("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+            jQuery(document.body).on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
                 var css = getContentPosition(e);
                 GRID.header.scrollTo.call(self, { left: css.left });
                 GRID.body.scrollTo.call(self, css, "noRepaint");
                 resize.call(self);
                 U.stopEvent(e);
-            }).bind("touchend" + ".ax5grid-" + this.instanceId, function (e) {
-                var css = getContentPosition(e);
-                GRID.header.scrollTo.call(self, { left: css.left });
-                GRID.body.scrollTo.call(self, css);
-                resize.call(self);
-                U.stopEvent(e);
-                scrollContentMover.off.call(self);
+                self.xvar.touchmoved = true;
+            }).on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
+                if (self.xvar.touchmoved) {
+                    var css = getContentPosition(e);
+                    GRID.header.scrollTo.call(self, { left: css.left });
+                    GRID.body.scrollTo.call(self, css);
+                    resize.call(self);
+                    U.stopEvent(e);
+                    scrollContentMover.off.call(self);
+                }
             });
 
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
 
-            jQuery(document.body).unbind("touchmove" + ".ax5grid-" + this.instanceId).unbind("touchend" + ".ax5grid-" + this.instanceId);
+            jQuery(document.body).off("touchmove" + ".ax5grid-" + this.instanceId).off("touchend" + ".ax5grid-" + this.instanceId);
 
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
         }

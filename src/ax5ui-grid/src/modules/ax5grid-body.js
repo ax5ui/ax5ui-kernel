@@ -412,6 +412,7 @@
         });
         this.$["container"]["body"]
             .on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
+                if(self.xvar.touchmoved) return false;
                 if (this.getAttribute("data-ax5grid-column-rowIndex")) {
                     columnSelector.on.call(self, {
                         panelName: this.getAttribute("data-ax5grid-panel-name"),
@@ -701,6 +702,9 @@
         var bodyGroupingData = this.bodyGroupingData;
         var bodyAlign = cfg.body.align;
         var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+        if (document.addEventListener && ax5.info.supportTouch) {
+            paintRowCount = paintRowCount * 2;
+        }
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
         this.$.livePanelKeys = [];
 
@@ -732,6 +736,9 @@
                 }
             })();
 
+            if (isScrolled) {
+                SS.push('<div style="font-size:0;line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+            }
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -837,9 +844,6 @@
             }
             SS.push('</table>');
 
-            if (isScrolled) {
-                _elTarget.css({paddingTop: (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight});
-            }
             _elTarget.empty().get(0).innerHTML = SS.join('');
 
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
@@ -947,6 +951,7 @@
             bodyTrHeight: this.xvar.bodyTrHeight
         };
 
+
         // aside
         if (cfg.asidePanelWidth > 0) {
             if (this.xvar.frozenRowIndex > 0) {
@@ -991,7 +996,6 @@
         }
 
         //todo : repaintBody 에서 footSum 데이터 예외처리
-
         // right
         if (cfg.rightSum) {
             // todo : right 표현 정리
@@ -1623,7 +1627,6 @@
             }
         }
 
-
         if (cfg.asidePanelWidth > 0 && "top" in css) {
             this.$.panel["aside-body-scroll"].css({top: css.top});
         }
@@ -1642,6 +1645,8 @@
 
         if (!noRepaint && "top" in css) {
             repaint.call(this);
+        } else {
+
         }
     };
 
