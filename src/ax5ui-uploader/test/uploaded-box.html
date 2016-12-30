@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../dist/ax5uploader.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/jquery-direct/dist/jquery-direct.js"></script>
+    <script src="bower_components/jquery-direct/dist/jquery-direct.min.js"></script>
     <script src="../../ax5core/dist/ax5core.js"></script>
     <script src="../../ax5ui-dialog/dist/ax5dialog.js"></script>
     <script src="../dist/ax5uploader.js"></script>
@@ -27,7 +27,7 @@
     <input type="hidden" name="param1" value="value1"/>
     <input type="hidden" name="param2" value="value2"/>
     <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택 (*/*)</button>
-    <div data-uploaded-box="upload1" data-ax5uploader-uploaded-box="inline"></div>
+    <div data-uploaded-box="upload1" data-ax5uploader-uploaded-box="block"></div>
 </div>
 
 <div style="padding: 5px;" data-btn-wrap="">
@@ -36,6 +36,7 @@
     <button class="btn btn-default" data-upload-btn="removeFileAll">removeFileAll</button>
 </div>
 
+
 <script>
     var dialog = new ax5.ui.dialog();
     var upload1 = new ax5.ui.uploader();
@@ -43,7 +44,6 @@
     $(function () {
 
         upload1.setConfig({
-            debug: true,
             target: $('[data-ax5uploader="upload1"]'),
             form: {
                 action: "api/fileUpload.php",
@@ -127,45 +127,15 @@
             }
         });
 
+
         $('[data-btn-wrap]').clickAttr(this, "data-upload-btn", {
             "getUploadedFiles": function () {
                 console.log("getUploadedFiles");
-                console.log(ax5.util.deepCopy(upload1.uploadedFiles));
             },
             "removeFileAll": function () {
                 console.log("removeFileAll");
-
-                var deleteFileByQueue = function (queue, queIdx, success) {
-                    var file = queue[queIdx];
-                    if (file) {
-                        $.ajax({
-                            method: "post",
-                            url: "api/fileDelete.php",
-                            data: {
-                                uploadedPath: file.uploadedPath,
-                                saveName: file.saveName
-                            },
-                            success: function (res) {
-                                deleteFileByQueue(queue, queIdx + 1, success);
-                            }
-                        });
-                    }
-                    else {
-                        success();
-                    }
-                };
-
-                deleteFileByQueue(
-                    ax5.util.deepCopy(upload1.uploadedFiles),
-                    0,
-                    function () {
-                        // success
-                        upload1.removeFileAll();
-                    }
-                );
             }
         });
-
     });
 </script>
 

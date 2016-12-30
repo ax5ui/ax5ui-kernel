@@ -9,7 +9,7 @@
     };
 
     let inputFile = function (columnKeys) {
-        return `<input type="file" data-ax5uploader-input="{{instanceId}}" {{#multiple}}multiple{{/multiple}} accept="{{accept}}" />`;
+        return `<input type="file" data-ax5uploader-input="{{instanceId}}" name="{{name}}" {{#multiple}}multiple{{/multiple}} accept="{{accept}}" />`;
     };
 
     let inputFileForm = function (columnKeys) {
@@ -45,7 +45,7 @@
     let upoadedBox = function (columnKeys) {
         return `
 {{#uploadedFiles}}<div data-ax5uploader-uploaded-item="{{@i}}">
-    <div class="uploaded-item-holder" >
+    <div class="uploaded-item-holder">
         <div class="uploaded-item-cell" data-uploaded-item-cell="download">{{{icon.download}}}</div>
         <div class="uploaded-item-cell" data-uploaded-item-cell="filename">{{${columnKeys.name}}}</div>
         <div class="uploaded-item-cell" data-uploaded-item-cell="filesize">({{#@fn_get_byte}}{{${columnKeys.size}}}{{/@fn_get_byte}})</div>

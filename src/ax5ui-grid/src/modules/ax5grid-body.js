@@ -682,48 +682,52 @@
         }
     };
 
-    var repaint = function (_reset) {
-        var cfg = this.config;
-        var list = this.list;
+    let repaint = function (_reset) {
+        let cfg = this.config,
+            list = this.list;
+
+        /// repaint reset 타입이면 고정컬럼을 재조정
         if (_reset) {
             resetFrozenColumn.call(this);
+            // 틀고정 이 변경되면 출력 시작 인덱스 값을 초기화
             this.xvar.paintStartRowIndex = undefined;
         }
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+
+        /// 출력시작 인덱스
+        let paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
-        var isFirstPaint = (typeof this.xvar.paintStartRowIndex === "undefined");
-        var asideBodyRowData = this.asideBodyRowData;
-        var leftBodyRowData = this.leftBodyRowData;
-        var bodyRowData = this.bodyRowData;
-        var leftFootSumData = this.leftFootSumData;
-        var footSumData = this.footSumData;
-        var asideBodyGroupingData = this.asideBodyGroupingData;
-        var leftBodyGroupingData = this.leftBodyGroupingData;
-        var bodyGroupingData = this.bodyGroupingData;
-        var bodyAlign = cfg.body.align;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+
+        let isFirstPaint = (typeof this.xvar.paintStartRowIndex === "undefined"),
+            asideBodyRowData = this.asideBodyRowData,
+            leftBodyRowData = this.leftBodyRowData,
+            bodyRowData = this.bodyRowData,
+            leftFootSumData = this.leftFootSumData,
+            footSumData = this.footSumData,
+            asideBodyGroupingData = this.asideBodyGroupingData,
+            leftBodyGroupingData = this.leftBodyGroupingData,
+            bodyGroupingData = this.bodyGroupingData,
+            bodyAlign = cfg.body.align,
+            paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+
         if (document.addEventListener && ax5.info.supportTouch) {
             paintRowCount = paintRowCount * 2;
         }
+
+        /// 스크롤 컨텐츠의 높이 : 그리드 스크롤의 실제 크기와는 관계 없이 데이터 갯수에 따라 스크롤 컨텐츠 높이값 구해서 저장해두기.
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
+        /// 사용된 패널들의 키 모음
         this.$.livePanelKeys = [];
 
-        // body-scroll 의 포지션에 의존적이므로..
-        var repaintBody = function (_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
-            var _elTarget = this.$.panel[_elTargetKey];
+        // 그리드 바디 영역 페인트 함수
+        let repaintBody = function (_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
+            let _elTarget = this.$.panel[_elTargetKey];
 
             if (!isFirstPaint && !_scrollConfig) {
                 this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
                 return false;
             }
 
-            var SS = [];
-            var cgi, cgl;
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
-            var isScrolled = (function () {
+            let SS = [], cgi, cgl, di, dl, tri, trl, ci, cl, col, cellHeight, colAlign, isScrolled = (function () {
                 // 스크롤값이 변경되거나 처음 호출되었습니까?
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
                     _scrollConfig = {
@@ -748,7 +752,7 @@
             SS.push('</colgroup>');
 
             for (di = _scrollConfig.paintStartRowIndex, dl = (function () {
-                var len;
+                let len;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
                     len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
@@ -756,9 +760,7 @@
                 return len;
             })(); di < dl; di++) {
 
-                var isGroupingRow = false;
-                var rowTable;
-
+                let isGroupingRow = false, rowTable;
                 if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
                     isGroupingRow = true;
@@ -788,7 +790,7 @@
                             'data-ax5grid-column-colIndex="' + col.colIndex + '" ',
                             'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
                             (function (_focusedColumn, _selectedColumn) {
-                                var attrs = "";
+                                let attrs = "";
                                 if (_focusedColumn) {
                                     attrs += 'data-ax5grid-column-focused="true" ';
                                 }
@@ -800,7 +802,7 @@
                             'colspan="' + col.colspan + '" ',
                             'rowspan="' + col.rowspan + '" ',
                             'class="' + (function (_col) {
-                                var tdCSS_class = "";
+                                let tdCSS_class = "";
                                 if (_col.styleClass) {
                                     if (U.isFunction(_col.styleClass)) {
                                         tdCSS_class += _col.styleClass.call({
@@ -820,7 +822,7 @@
                             'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                         SS.push((function (_cellHeight) {
-                            var lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
+                            let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
                             if (!col.multiLine) {
                                 _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                             }
@@ -830,6 +832,7 @@
                                 '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
 
                         })(cellHeight), (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
+
                         SS.push('</td>');
                     }
                     SS.push('<td ',
@@ -844,24 +847,24 @@
             }
             SS.push('</table>');
 
+            if (isScrolled && _list.length) {
+                SS.push('<div style="font-size:0;line-height:0;height: ' + (_list.length - di) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+            }
+
             _elTarget.empty().get(0).innerHTML = SS.join('');
 
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
-        var repaintSum = function (_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
-            var _elTarget = this.$.panel[_elTargetKey];
+        let repaintSum = function (_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
+            let _elTarget = this.$.panel[_elTargetKey];
 
             if (!isFirstPaint && !_scrollConfig) {
                 this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
                 return false;
             }
 
-            var SS = [];
-            var cgi, cgl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            let SS = [], cgi, cgl, tri, trl, ci, cl, col, cellHeight, colAlign;
 
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
@@ -945,12 +948,11 @@
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
-        var scrollConfig = {
+        let scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
             paintRowCount: paintRowCount,
             bodyTrHeight: this.xvar.bodyTrHeight
         };
-
 
         // aside
         if (cfg.asidePanelWidth > 0) {

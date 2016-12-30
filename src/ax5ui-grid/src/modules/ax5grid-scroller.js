@@ -248,7 +248,7 @@
     };
     var scrollContentMover = {
         "wheel": function (delta) {
-            var self = this,
+            let self = this,
                 _body_scroll_position = self.$["panel"]["body-scroll"].position(),
                 _panel_height = self.$["panel"]["body"].height(),
                 _panel_width = self.$["panel"]["body"].width(),
@@ -259,9 +259,9 @@
                 return false;
             }
 
-            var newLeft, newTop;
-            var _top_is_end = false;
-            var _left_is_end = false;
+            let newLeft, newTop,
+                _top_is_end = false,
+                _left_is_end = false;
 
             newLeft = _body_scroll_position.left - delta.x;
             newTop = _body_scroll_position.top - delta.y;
@@ -342,6 +342,7 @@
 
             jQuery(document.body)
                 .on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+
                     let css = getContentPosition(e);
                     GRID.header.scrollTo.call(self, {left: css.left});
                     GRID.body.scrollTo.call(self, css, "noRepaint");
@@ -379,9 +380,8 @@
     };
 
     var init = function () {
-        var self = this;
-        //this.config.scroller.size
-        var margin = this.config.scroller.trackPadding;
+        let self = this,
+            margin = this.config.scroller.trackPadding;
 
         this.$["scroller"]["vertical-bar"].css({width: this.config.scroller.size - (margin + 1), left: margin / 2});
         this.$["scroller"]["horizontal-bar"].css({height: this.config.scroller.size - (margin + 1), top: margin / 2});
@@ -421,8 +421,8 @@
             }).bind(this));
 
         this.$["container"]["body"].on('mousewheel DOMMouseScroll', (function (e) {
-            var E = e.originalEvent;
-            var delta = {x: 0, y: 0};
+            let E = e.originalEvent, delta = {x: 0, y: 0};
+
             if (E.detail) {
                 delta.y = E.detail * 10;
             } else {
@@ -446,7 +446,6 @@
                     self.xvar.mousePosition = GRID.util.getMousePosition(e);
                     scrollContentMover.on.call(self);
                 });
-
         }
     };
 
@@ -459,7 +458,6 @@
             _content_width = this.xvar.scrollContentWidth,
             verticalScrollBarHeight = _panel_height * _vertical_scroller_height / _content_height,
             horizontalScrollBarWidth = _panel_width * _horizontal_scroller_width / _content_width;
-
 
         if (verticalScrollBarHeight < this.config.scroller.barMinSize) verticalScrollBarHeight = this.config.scroller.barMinSize;
         if (horizontalScrollBarWidth < this.config.scroller.barMinSize) horizontalScrollBarWidth = this.config.scroller.barMinSize;

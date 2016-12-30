@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.59"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -2130,32 +2130,42 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var repaint = function repaint(_reset) {
-        var cfg = this.config;
-        var list = this.list;
+        var cfg = this.config,
+            list = this.list;
+
+        /// repaint reset 타입이면 고정컬럼을 재조정
         if (_reset) {
             resetFrozenColumn.call(this);
+            // 틀고정 이 변경되면 출력 시작 인덱스 값을 초기화
             this.xvar.paintStartRowIndex = undefined;
         }
+
+        /// 출력시작 인덱스
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
-        var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
-        var asideBodyRowData = this.asideBodyRowData;
-        var leftBodyRowData = this.leftBodyRowData;
-        var bodyRowData = this.bodyRowData;
-        var leftFootSumData = this.leftFootSumData;
-        var footSumData = this.footSumData;
-        var asideBodyGroupingData = this.asideBodyGroupingData;
-        var leftBodyGroupingData = this.leftBodyGroupingData;
-        var bodyGroupingData = this.bodyGroupingData;
-        var bodyAlign = cfg.body.align;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+
+        var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined",
+            asideBodyRowData = this.asideBodyRowData,
+            leftBodyRowData = this.leftBodyRowData,
+            bodyRowData = this.bodyRowData,
+            leftFootSumData = this.leftFootSumData,
+            footSumData = this.footSumData,
+            asideBodyGroupingData = this.asideBodyGroupingData,
+            leftBodyGroupingData = this.leftBodyGroupingData,
+            bodyGroupingData = this.bodyGroupingData,
+            bodyAlign = cfg.body.align,
+            paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+
         if (document.addEventListener && ax5.info.supportTouch) {
             paintRowCount = paintRowCount * 2;
         }
+
+        /// 스크롤 컨텐츠의 높이 : 그리드 스크롤의 실제 크기와는 관계 없이 데이터 갯수에 따라 스크롤 컨텐츠 높이값 구해서 저장해두기.
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
+        /// 사용된 패널들의 키 모음
         this.$.livePanelKeys = [];
 
-        // body-scroll 의 포지션에 의존적이므로..
+        // 그리드 바디 영역 페인트 함수
         var repaintBody = function repaintBody(_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
             var _elTarget = this.$.panel[_elTargetKey];
 
@@ -2164,13 +2174,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return false;
             }
 
-            var SS = [];
-            var cgi, cgl;
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
-            var isScrolled = function () {
+            var SS = [],
+                cgi = void 0,
+                cgl = void 0,
+                di = void 0,
+                dl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0,
+                isScrolled = function () {
                 // 스크롤값이 변경되거나 처음 호출되었습니까?
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
                     _scrollConfig = {
@@ -2195,7 +2211,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             SS.push('</colgroup>');
 
             for (di = _scrollConfig.paintStartRowIndex, dl = function () {
-                var len;
+                var len = void 0;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
                     len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
@@ -2203,9 +2219,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return len;
             }(); di < dl; di++) {
 
-                var isGroupingRow = false;
-                var rowTable;
-
+                var isGroupingRow = false,
+                    rowTable = void 0;
                 if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
                     isGroupingRow = true;
@@ -2257,6 +2272,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                             return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
                         }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
+
                         SS.push('</td>');
                     }
                     SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
@@ -2264,6 +2280,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             }
             SS.push('</table>');
+
+            if (isScrolled && _list.length) {
+                SS.push('<div style="font-size:0;line-height:0;height: ' + (_list.length - di) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+            }
 
             _elTarget.empty().get(0).innerHTML = SS.join('');
 
@@ -2278,11 +2298,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return false;
             }
 
-            var SS = [];
-            var cgi, cgl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            var SS = [],
+                cgi = void 0,
+                cgl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0;
 
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
@@ -3591,10 +3616,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var initData = function initData(_list) {
         this.selectedDataIndexs = [];
         var i = 0,
-            l = _list.length;
-        var returnList = [];
-        var appendIndex = 0;
-        var dataRealRowCount = 0;
+            l = _list.length,
+            returnList = [],
+            appendIndex = 0,
+            dataRealRowCount = 0;
 
         if (this.config.body.grouping) {
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
@@ -3607,9 +3632,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             });
             var gi = 0,
                 gl = groupingKeys.length,
-                compareString,
+                compareString = void 0,
                 appendRow = [],
-                ari;
+                ari = void 0;
             for (; i < l + 1; i++) {
                 gi = 0;
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
@@ -3817,7 +3842,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      */
     var deleteRow = function deleteRow(_dindex) {
         var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
-
         var processor = {
             "first": function first() {
                 list[0][this.config.columnKeys.deleted] = true;
@@ -5092,9 +5116,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return false;
             }
 
-            var newLeft, newTop;
-            var _top_is_end = false;
-            var _left_is_end = false;
+            var newLeft = void 0,
+                newTop = void 0,
+                _top_is_end = false,
+                _left_is_end = false;
 
             newLeft = _body_scroll_position.left - delta.x;
             newTop = _body_scroll_position.top - delta.y;
@@ -5174,6 +5199,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.xvar.touchmoved = false;
 
             jQuery(document.body).on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+
                 var css = getContentPosition(e);
                 GRID.header.scrollTo.call(self, { left: css.left });
                 GRID.body.scrollTo.call(self, css, "noRepaint");
@@ -5202,9 +5228,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var init = function init() {
-        var self = this;
-        //this.config.scroller.size
-        var margin = this.config.scroller.trackPadding;
+        var self = this,
+            margin = this.config.scroller.trackPadding;
 
         this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
         this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
@@ -5238,8 +5263,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }.bind(this));
 
         this.$["container"]["body"].on('mousewheel DOMMouseScroll', function (e) {
-            var E = e.originalEvent;
-            var delta = { x: 0, y: 0 };
+            var E = e.originalEvent,
+                delta = { x: 0, y: 0 };
+
             if (E.detail) {
                 delta.y = E.detail * 10;
             } else {

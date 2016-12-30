@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.59"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -83,7 +83,7 @@
              * UI 상태변경 이벤트 처리자
              * UI의 상태변경 : open, close, upload 등의 변경사항이 발생되면 onStateChanged 함수를 후출하여 이벤트를 처리
              */
-            var onStateChanged = function onStateChanged(that) {
+            var bound_onStateChanged = function (that) {
 
                 var state = {
                     "open": function open() {},
@@ -99,13 +99,15 @@
 
                 that = null;
                 return true;
-            };
+            }.bind(this);
 
-            var onSelectFile = function (_evt) {
+            var bound_onSelectFile = function (_evt) {
                 var files = void 0;
 
                 if (!ax5.info.supportFileApi) {
                     // file API 지원 안되는 브라우저.
+                    // input file에 multiple 지원 안됨 그러므로 단일 파일 처리만 하면 됨.
+                    files = { path: _evt.target.value };
                 } else if ('dataTransfer' in _evt) {
                     files = _evt.dataTransfer.files;
                 } else if ('target' in _evt) {
@@ -124,21 +126,47 @@
                 }
 
                 if (cfg.progressBox) {
-                    openProgressBox();
+                    bound_openProgressBox();
                 }
                 if (!cfg.manualUpload) {
                     this.send();
                 }
             }.bind(this);
 
-            var bindEvent = function bindEvent() {
+            var bound_bindEvent = function () {
                 this.$fileSelector.off("click.ax5uploader").on("click.ax5uploader", function () {
                     this.$inputFile.trigger("click");
                 }.bind(this));
 
                 this.$inputFile.off("change.ax5uploader").on("change.ax5uploader", function (_evt) {
-                    onSelectFile(_evt);
+                    bound_onSelectFile(_evt);
                 }.bind(this));
+
+                (function () {
+                    if (!this.$uploadedBox || !this.$uploadedBox.get(0)) return false;
+
+                    this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
+                        var $this = jQuery(this),
+                            cellType = $this.attr("data-uploaded-item-cell"),
+                            uploadedItemIndex = Number($this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item')),
+                            that = {};
+
+                        if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
+                            that = {
+                                self: self,
+                                cellType: cellType,
+                                uploadedFiles: self.uploadedFiles,
+                                fileIndex: uploadedItemIndex
+                            };
+                            cfg.uploadedBox.onclick.call(that, that);
+                        }
+
+                        $this = null;
+                        cellType = null;
+                        uploadedItemIndex = null;
+                        that = null;
+                    });
+                }).call(this);
 
                 (function () {
                     // dropZone 설정 방식 변경
@@ -149,7 +177,8 @@
                     this.$dropZone.on("click", function (e) {
                         //console.log(e.target.getAttribute("data-ax5uploader-dropzone"));
                         var isItemCell = ax5.util.findParentNode(e.target, function (target) {
-                            if (target.hasAttribute("data-uploaded-item-cell")) {
+                            console.log(target);
+                            if (target.hasAttribute("data-uploaded-item-cell") || target.hasAttribute("data-ax5uploader-uploaded-item")) {
                                 return true;
                             }
                         });
@@ -173,12 +202,12 @@
                     this.$dropZone.get(0).addEventListener('drop', function (e) {
                         U.stopEvent(e);
                         self.$dropZone.removeClass("dragover");
-                        onSelectFile(e || window.event);
+                        bound_onSelectFile(e || window.event);
                     }, false);
                 }).call(this);
-            };
+            }.bind(this);
 
-            var alignLayout = function alignLayout() {
+            var bound_alignLayout = function () {
                 // 상황이 좋지 않은경우 (만약 버튼 클릭으로 input file click이 되지 않는 다면 z-index값을 높여서 버튼위를 덮는다.)
                 /*
                  var box = this.$fileSelector.position();
@@ -186,9 +215,9 @@
                  box.height = this.$fileSelector.outerHeight();
                  this.$inputFile.css(box);
                  */
-            };
+            }.bind(this);
 
-            var alignProgressBox = function alignProgressBox(append) {
+            var bound_alignProgressBox = function (append) {
                 var _alignProgressBox = function _alignProgressBox() {
                     var $window = jQuery(window),
                         $body = jQuery(document.body);
@@ -296,31 +325,31 @@
                 setTimeout(function () {
                     _alignProgressBox.call(this);
                 }.bind(this));
-            };
+            }.bind(this);
 
-            var openProgressBox = function () {
+            var bound_openProgressBox = function () {
                 this.$progressBox.removeClass("destroy");
                 this.$progressUpload.removeAttr("disabled");
                 this.$progressAbort.removeAttr("disabled");
 
                 // apend & align progress box
-                alignProgressBox.call(this, "append");
+                bound_alignProgressBox("append");
 
                 // state change
-                onStateChanged.call(this, {
+                bound_onStateChanged({
                     self: this,
                     state: "open"
                 });
             }.bind(this);
 
-            var closeProgressBox = function () {
+            var bound_closeProgressBox = function () {
                 this.$progressBox.addClass("destroy");
                 setTimeout(function () {
                     this.$progressBox.remove();
                 }.bind(this), cfg.animateTime);
             }.bind(this);
 
-            var startUpload = function () {
+            var bound_startUpload = function () {
 
                 var processor = {
                     "html5": function html5() {
@@ -328,7 +357,7 @@
                         var uploadFile = this.selectedFiles.shift();
                         if (!uploadFile) {
                             // 업로드 종료
-                            uploadComplete();
+                            bound_uploadComplete();
                             return this;
                         }
 
@@ -358,13 +387,13 @@
                                 return false;
                             }
 
-                            uploaded(res);
+                            bound_uploaded(res);
                             self.send();
                         };
 
                         this.xhr.upload.onprogress = function (e) {
                             // console.log(e.loaded, e.total);
-                            updateProgressBar(e);
+                            bound_updateProgressBar(e);
                             if (U.isFunction(cfg.onprogress)) {
                                 cfg.onprogress.call({
                                     loaded: e.loaded,
@@ -375,12 +404,41 @@
                         this.xhr.send(formData); // multipart/form-data
                     },
                     "form": function form() {
-                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
-                        // iframe 생성
-                        var iframe = $('<iframe src="javascript:false;" name="" style="display:none;"></iframe>');
-                        // form 생성.
 
-                        $(document.body).append(iframe);
+                        /// i'm busy
+                        this.__uploading = true;
+
+                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
+                        var $iframe = jQuery('<iframe src="javascript:false;" name="ax5uploader-' + this.instanceId + '-iframe" style="display:none;"></iframe>');
+                        jQuery(document.body).append($iframe);
+
+                        // onload 이벤트 핸들러
+                        // action에서 파일을 받아 처리한 결과값을 텍스트로 출력한다고 가정하고 iframe의 내부 데이터를 결과값으로 callback 호출
+                        $iframe.load(function () {
+                            var doc = this.contentWindow ? this.contentWindow.document : this.contentDocument ? this.contentDocument : this.document,
+                                root = doc.documentElement ? doc.documentElement : doc.body,
+                                result = root.textContent ? root.textContent : root.innerText,
+                                res = void 0;
+
+                            try {
+                                res = JSON.parse(result);
+                            } catch (e) {
+                                res = {
+                                    error: "Syntax error",
+                                    body: result
+                                };
+                            }
+
+                            if (cfg.debug) console.log(res);
+                            if (res.error) {
+                                console.log(res);
+                            } else {
+                                bound_uploaded(res);
+                                //$frameUpload.remove();
+                            }
+                        });
+
+                        this.$inputFileForm.attr("target", 'ax5uploader-' + this.instanceId + '-iframe').attr("action", cfg.form.action).submit();
                     }
                 };
 
@@ -401,7 +459,7 @@
                 processor[ax5.info.supportFileApi ? "html5" : "form"].call(this);
             }.bind(this);
 
-            var updateProgressBar = function (e) {
+            var bound_updateProgressBar = function (e) {
                 this.__loaded += e.loaded;
                 this.$progressBar.css({ width: U.number(this.__loaded / this.selectedFilesTotal * 100, { round: 2 }) + '%' });
                 if (e.lengthComputable) {
@@ -409,10 +467,10 @@
                 }
             }.bind(this);
 
-            var uploaded = function (res) {
+            var bound_uploaded = function (res) {
                 if (cfg.debug) console.log(res);
                 this.uploadedFiles.push(res);
-                repaintUploadedBox(); // 업로드된 파일 출력
+                bound_repaintUploadedBox(); // 업로드된 파일 출력
 
                 if (U.isFunction(cfg.onuploaded)) {
                     cfg.onuploaded.call({
@@ -421,13 +479,13 @@
                 }
             }.bind(this);
 
-            var uploadComplete = function () {
+            var bound_uploadComplete = function () {
                 this.__uploading = false; // 업로드 완료 상태처리
                 this.$progressUpload.removeAttr("disabled");
                 this.$progressAbort.attr("disabled", "disabled");
 
                 if (cfg.progressBox) {
-                    closeProgressBox();
+                    bound_closeProgressBox();
                 }
                 if (U.isFunction(cfg.onuploadComplete)) {
                     cfg.onuploadComplete.call({
@@ -437,7 +495,7 @@
                 // update uploadedFiles display
             }.bind(this);
 
-            var cancelUpload = function () {
+            var bound_cancelUpload = function () {
 
                 var processor = {
                     "html5": function html5() {
@@ -455,7 +513,7 @@
                 processor[ax5.info.supportFileApi ? "html5" : "form"].call(this);
 
                 if (cfg.progressBox) {
-                    closeProgressBox();
+                    bound_closeProgressBox();
                 }
 
                 this.$inputFile.get(0).value = "";
@@ -463,7 +521,7 @@
                 // update uploadedFiles display
             }.bind(this);
 
-            var repaintUploadedBox = function () {
+            var bound_repaintUploadedBox = function () {
                 // uploadedBox 가 없다면 아무일도 하지 않음.
                 // onuploaded 함수 이벤트를 이용하여 개발자가 직접 업로드디 박스를 구현 한다고 이해 하자.
                 if (this.$uploadedBox === null) return this;
@@ -493,27 +551,6 @@
                 // uploadedBox 옵션 사항
                 if (cfg.uploadedBox && cfg.uploadedBox.target) {
                     this.$uploadedBox = jQuery(cfg.uploadedBox.target);
-                    this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
-                        var $this = jQuery(this),
-                            cellType = $this.attr("data-uploaded-item-cell"),
-                            uploadedItemIndex = Number($this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item')),
-                            that = {};
-
-                        if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
-                            that = {
-                                self: self,
-                                cellType: cellType,
-                                uploadedFiles: self.uploadedFiles,
-                                fileIndex: uploadedItemIndex
-                            };
-                            cfg.uploadedBox.onclick.call(that, that);
-                        }
-
-                        $this = null;
-                        cellType = null;
-                        uploadedItemIndex = null;
-                        that = null;
-                    });
                 }
 
                 // target attribute data
@@ -536,7 +573,8 @@
                 this.$inputFile = jQuery(UPLOADER.tmpl.get.call(this, "inputFile", {
                     instanceId: this.instanceId,
                     multiple: cfg.multiple,
-                    accept: cfg.accept
+                    accept: cfg.accept,
+                    name: cfg.form.fileName
                 }));
 
                 if (ax5.info.supportFileApi) {
@@ -562,9 +600,9 @@
                 this.$progressAbort = this.$progressBox.find('[data-pregressbox-btn="abort"]');
 
                 // 레이아웃 정렬
-                alignLayout.call(this);
+                bound_alignLayout();
                 // 파일버튼 등에 이벤트 연결.
-                bindEvent.call(this);
+                bound_bindEvent();
 
                 return this;
             };
@@ -577,7 +615,7 @@
             this.send = function () {
                 return function () {
                     // 업로드 시작
-                    startUpload();
+                    bound_startUpload();
                     return this;
                 };
             }();
@@ -588,7 +626,7 @@
              */
             this.abort = function () {
                 return function () {
-                    cancelUpload();
+                    bound_cancelUpload();
                     return this;
                 };
             }();
@@ -626,7 +664,7 @@
                 if (U.isArray(_files)) {
                     this.uploadedFiles = _files;
                 }
-                repaintUploadedBox();
+                bound_repaintUploadedBox();
                 return this;
             };
 
@@ -645,7 +683,7 @@
                 if (!isNaN(Number(_index))) {
                     this.uploadedFiles.splice(_index, 1);
                 }
-                repaintUploadedBox();
+                bound_repaintUploadedBox();
                 return this;
             };
 
@@ -660,7 +698,7 @@
              */
             this.removeFileAll = function () {
                 this.uploadedFiles = [];
-                repaintUploadedBox();
+                bound_repaintUploadedBox();
                 return this;
             };
 
@@ -700,7 +738,7 @@
     };
 
     var inputFile = function inputFile(columnKeys) {
-        return "<input type=\"file\" data-ax5uploader-input=\"{{instanceId}}\" {{#multiple}}multiple{{/multiple}} accept=\"{{accept}}\" />";
+        return "<input type=\"file\" data-ax5uploader-input=\"{{instanceId}}\" name=\"{{name}}\" {{#multiple}}multiple{{/multiple}} accept=\"{{accept}}\" />";
     };
 
     var inputFileForm = function inputFileForm(columnKeys) {
@@ -712,7 +750,7 @@
     };
 
     var upoadedBox = function upoadedBox(columnKeys) {
-        return "\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\" >\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"download\">{{{icon.download}}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filename\">{{" + columnKeys.name + "}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filesize\">({{#@fn_get_byte}}{{" + columnKeys.size + "}}{{/@fn_get_byte}})</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"delete\">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n{{^uploadedFiles}}\n{{{lang.emptyList}}}\n{{/uploadedFiles}}\n";
+        return "\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\">\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"download\">{{{icon.download}}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filename\">{{" + columnKeys.name + "}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filesize\">({{#@fn_get_byte}}{{" + columnKeys.size + "}}{{/@fn_get_byte}})</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"delete\">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n{{^uploadedFiles}}\n{{{lang.emptyList}}}\n{{/uploadedFiles}}\n";
     };
 
     UPLOADER.tmpl = {
