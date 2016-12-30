@@ -13,7 +13,7 @@
     };
 
     let inputFileForm = function (columnKeys) {
-        return `<form data-ax5uploader-form="{{instanceId}}" method="post" enctype="multipart/form-data"></form>`;
+        return `<form data-ax5uploader-form="{{instanceId}}" name="ax5uploader-{{instanceId}}-form" method="post" enctype="multipart/form-data"></form>`;
     };
 
     let progressBox = function (columnKeys) {
@@ -53,7 +53,8 @@
     </div>
 </div>{{/uploadedFiles}}
 {{^uploadedFiles}}
-{{{lang.emptyList}}}
+{{#supportFileApi}}{{{lang.supportedHTML5_emptyListMsg}}}{{/supportFileApi}}
+{{^supportFileApi}}{{{lang.emptyListMsg}}}{{/supportFileApi}}
 {{/uploadedFiles}}
 `;
     };

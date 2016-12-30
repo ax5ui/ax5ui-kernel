@@ -43,7 +43,7 @@
     $(function () {
 
         upload1.setConfig({
-            debug: true,
+            //debug: true,
             target: $('[data-ax5uploader="upload1"]'),
             form: {
                 action: "api/fileUpload.php",
@@ -71,7 +71,8 @@
                     thumbnail: "thumbnail"
                 },
                 lang: {
-                    emptyList: '<div class="text-center">Drop files here or click to upload.</div>'
+                    supportedHTML5_emptyListMsg: '<div class="text-center">Drop files here or click to upload.</div>',
+                    emptyListMsg: '<div class="text-center">Empty of List.</div>'
                 },
                 onchange: function () {
 
@@ -123,46 +124,54 @@
             url: "api/fileListLoad.php",
             success: function (res) {
                 upload1.setUploadedFiles(res);
-                //console.log(res);
             }
         });
 
         $('[data-btn-wrap]').clickAttr(this, "data-upload-btn", {
             "getUploadedFiles": function () {
-                console.log("getUploadedFiles");
-                console.log(ax5.util.deepCopy(upload1.uploadedFiles));
+                var files = ax5.util.deepCopy(upload1.uploadedFiles);
+                console.log(files);
+                console.log(JSON.stringify(files));
             },
             "removeFileAll": function () {
-                console.log("removeFileAll");
 
-                var deleteFileByQueue = function (queue, queIdx, success) {
-                    var file = queue[queIdx];
-                    if (file) {
-                        $.ajax({
-                            method: "post",
-                            url: "api/fileDelete.php",
-                            data: {
-                                uploadedPath: file.uploadedPath,
-                                saveName: file.saveName
-                            },
-                            success: function (res) {
-                                deleteFileByQueue(queue, queIdx + 1, success);
+                dialog.confirm({
+                    title: "AX5UI",
+                    msg: "정말 삭제 하시겠습니까?"
+                }, function () {
+                    if (this.key == "ok") {
+
+                        var deleteFileByQueue = function (queue, queIdx, success) {
+                            var file = queue[queIdx];
+                            if (file) {
+                                $.ajax({
+                                    method: "post",
+                                    url: "api/fileDelete.php",
+                                    data: {
+                                        uploadedPath: file.uploadedPath,
+                                        saveName: file.saveName
+                                    },
+                                    success: function (res) {
+                                        deleteFileByQueue(queue, queIdx + 1, success);
+                                    }
+                                });
                             }
-                        });
-                    }
-                    else {
-                        success();
-                    }
-                };
+                            else {
+                                success();
+                            }
+                        };
 
-                deleteFileByQueue(
-                    ax5.util.deepCopy(upload1.uploadedFiles),
-                    0,
-                    function () {
-                        // success
-                        upload1.removeFileAll();
+                        deleteFileByQueue(
+                            ax5.util.deepCopy(upload1.uploadedFiles),
+                            0,
+                            function () {
+                                // success
+                                upload1.removeFileAll();
+                            }
+                        );
+
                     }
-                );
+                });
             }
         });
 
