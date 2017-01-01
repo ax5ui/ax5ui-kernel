@@ -51,8 +51,10 @@
             },
             multiple: true,
             manualUpload: false,
-            direction: "left",
+
             progressBox: true,
+            progressBoxDirection: "left",
+
             dropZone: $('[data-uploaded-box="upload1"]'),
             uploadedBox: {
                 target: $('[data-uploaded-box="upload1"]'),
@@ -108,6 +110,11 @@
                             break;
                     }
                 }
+            },
+
+            validateSelectedFiles: function () {
+                console.log(this);
+                return true;
             },
             onprogress: function () {
 

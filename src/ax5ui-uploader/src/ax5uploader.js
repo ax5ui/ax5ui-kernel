@@ -283,7 +283,7 @@
                     };
 
                     // picker css(width, left, top) & direction 결정
-                    if (!cfg.direction || cfg.direction === "" || cfg.direction === "auto") {
+                    if (!cfg.progressBoxDirection || cfg.progressBoxDirection === "" || cfg.progressBoxDirection === "auto") {
                         // set direction
                         pickerDirection = "top";
                         if (pos.top - pickerDim.height - positionMargin < 0) {
@@ -292,7 +292,7 @@
                             pickerDirection = "bottom";
                         }
                     } else {
-                        pickerDirection = cfg.direction;
+                        pickerDirection = cfg.progressBoxDirection;
                     }
 
                     if (append) {
@@ -609,11 +609,11 @@
 
             }).bind(this);
 
-            let bound_attachFileTag = (function(){
-                if(this.$inputFile && this.$inputFile.get(0)){
+            let bound_attachFileTag = (function () {
+                if (this.$inputFile && this.$inputFile.get(0)) {
                     this.$inputFile.remove();
                 }
-                if(this.$inputFileForm && this.$inputFileForm.get(0)){
+                if (this.$inputFileForm && this.$inputFileForm.get(0)) {
                     this.$inputFileForm.remove();
                 }
 
@@ -644,6 +644,43 @@
 
             }).bind(this);
 
+            /**
+             * Preferences of uploader UI
+             * @method ax5uploader.setConfig
+             * @param {Object} _config - 클래스 속성값
+             * @param {Element} _config.target
+             * @param {Object} _config.form
+             * @param {String} _config.form.action - upload URL
+             * @param {String} _config.form.fileName - The name key of the upload file
+             * @param {Boolean} [_config.multiple=false] - Whether multiple files. In a browser where fileApi is not supported (eg IE9), it only works with false.
+             * @param {Boolean} [_config.manualUpload=false] - Whether to automatically upload when a file is selected.
+             * @param {Boolean} [_config.progressBox=true] - Whether to use progressBox
+             * @param {String} [_config.progressBoxDirection=auto] - ProgressBox display direction
+             * @param {Element} [_config.dropZone]
+             * @param {Object} [_config.uploadedBox]
+             * @param {Element} [_config.uploadedBox.target]
+             * @param {Element} [_config.uploadedBox.icon]
+             * @param {Object} [_config.uploadedBox.columnKeys]
+             * @param {String} [_config.uploadedBox.columnKeys.name]
+             * @param {String} [_config.uploadedBox.columnKeys.type]
+             * @param {String} [_config.uploadedBox.columnKeys.size]
+             * @param {String} [_config.uploadedBox.columnKeys.uploadedName]
+             * @param {String} [_config.uploadedBox.columnKeys.downloadPath]
+             * @param {Object} [_config.uploadedBox.lang]
+             * @param {String} [_config.uploadedBox.lang.supportedHTML5_emptyListMsg]
+             * @param {String} [_config.uploadedBox.lang.emptyListMsg]
+             * @param {Function} [_config.uploadedBox.onchange]
+             * @param {Function} [_config.uploadedBox.onclick]
+             * @param {Function} [_config.validateSelectedFiles]
+             * @param {Function} [_config.onprogress]
+             * @param {Function} [_config.onuploaded]
+             * @param {Function} [_config.onuploadComplete]
+             * @returns {ax5uploader}
+             * @example
+             * ```js
+             *
+             * ```
+             */
             this.init = function (_config) {
                 cfg = jQuery.extend(true, {}, cfg, _config);
                 if (!cfg.target) {
@@ -715,6 +752,19 @@
             this.send = (function () {
                 return function () {
                     // 업로드 시작
+                    if (U.isFunction(cfg.validateSelectedFiles)) {
+                        let that = {
+                            self: this,
+                            uploadedFiles: this.uploadedFiles,
+                            selectedFiles: this.selectedFiles
+                        };
+                        if (!cfg.validateSelectedFiles.call(that, that)) {
+                            bound_cancelUpload();
+                            return false;
+                            // 전송처리 안함.
+                        }
+                    }
+
                     bound_startUpload();
                     return this;
                 }
@@ -813,6 +863,7 @@
                 bound_repaintUploadedBox();
                 return this;
             };
+
 
             // 클래스 생성자
             this.main = (function () {
