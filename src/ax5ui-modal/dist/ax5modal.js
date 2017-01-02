@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "1.3.61"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5modal
@@ -57,7 +57,7 @@
          */
         var ax5modal = function ax5modal() {
             var self = this,
-                cfg,
+                cfg = void 0,
                 ENM = {
                 "mousedown": ax5.info.supportTouch ? "touchstart" : "mousedown",
                 "mousemove": ax5.info.supportTouch ? "touchmove" : "mousemove",
@@ -92,6 +92,7 @@
                 animateTime: 250
             };
             this.activeModal = null;
+            this.watingModal = false;
             this.$ = {}; // UI inside of the jQuery object store
 
             cfg = this.config; // extended config copy cfg
@@ -129,7 +130,7 @@
                 return MODAL.tmpl.get.call(this, "content", data, {});
             },
                 open = function open(opts, callback) {
-                var that;
+                var that = void 0;
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
                 this.activeModal = jQuery('#' + opts.id);
@@ -183,7 +184,10 @@
                 }
 
                 if (callback) callback.call(that);
-                onStateChanged.call(this, opts, that);
+
+                if (!this.watingModal) {
+                    onStateChanged.call(this, opts, that);
+                }
 
                 // bind key event
                 if (opts.closeToEsc) {
@@ -219,7 +223,7 @@
                 });
             },
                 btnOnClick = function btnOnClick(e, opts, callback, target, k) {
-                var that;
+                var that = void 0;
                 if (e.srcElement) e.target = e.srcElement;
 
                 target = U.findParentNode(e.target, function (target) {
@@ -273,16 +277,16 @@
             },
                 moveModal = {
                 "on": function on() {
-                    var modalZIndex = this.activeModal.css("z-index");
-                    var modalOffset = this.activeModal.position();
-                    var modalBox = {
+                    var modalZIndex = this.activeModal.css("z-index"),
+                        modalOffset = this.activeModal.position(),
+                        modalBox = {
                         width: this.activeModal.outerWidth(), height: this.activeModal.outerHeight()
-                    };
-                    var windowBox = {
+                    },
+                        windowBox = {
                         width: jQuery(window).width(),
                         height: jQuery(window).height()
-                    };
-                    var getResizerPosition = function getResizerPosition(e) {
+                    },
+                        getResizerPosition = function getResizerPosition(e) {
                         self.__dx = e.clientX - self.mousePosition.clientX;
                         self.__dy = e.clientY - self.mousePosition.clientY;
 
@@ -340,7 +344,6 @@
                 },
                 "off": function off() {
                     var setModalPosition = function setModalPosition() {
-                        //console.log(this.activeModal.offset(), this.__dx);
                         var box = this.activeModal.offset();
                         box.left += this.__dx - $(document).scrollLeft();
                         box.top += this.__dy - $(document).scrollTop();
@@ -390,10 +393,18 @@
              * my_modal.open();
              * ```
              */
-            this.open = function (opts, callback) {
+            this.open = function (opts, callback, tryCount) {
+                if (typeof tryCount === "undefined") tryCount = 0;
                 if (!this.activeModal) {
                     opts = self.modalConfig = jQuery.extend(true, {}, cfg, opts);
                     open.call(this, opts, callback);
+                    this.watingModal = false;
+                } else if (tryCount < 3) {
+                    // 3번까지 재 시도
+                    this.watingModal = true;
+                    setTimeout(function () {
+                        this.open(opts, callback, tryCount + 1);
+                    }.bind(this), cfg.animateTime);
                 }
                 return this;
             };
@@ -440,10 +451,13 @@
                             this.activeModal.remove();
                             this.activeModal = null;
                         }
-                        onStateChanged.call(this, opts, {
-                            self: this,
-                            state: "close"
-                        });
+                        // 모달 오픈 대기중이면 닫기 상태 전달 안함.
+                        if (!this.watingModal) {
+                            onStateChanged.call(this, opts, {
+                                self: this,
+                                state: "close"
+                            });
+                        }
                     }.bind(this), cfg.animateTime);
                 }
 

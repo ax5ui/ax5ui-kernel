@@ -46,7 +46,8 @@
             this.instanceId = ax5.getGuid();
             this.config = {
                 theme: '',
-                target: jQuery(document.body).get(0)
+                target: jQuery(document.body).get(0),
+                animateTime: 250
             };
             this.maskContent = '';
             this.status = "off";
@@ -260,7 +261,6 @@
                         jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
                     };
 
-
                     if (_delay) {
                         setTimeout((function () {
                             _close.call(this);
@@ -271,7 +271,37 @@
                 }
                 return this;
             };
-            //== class body end
+
+            /**
+             * @method ax5mask.fadeOut
+             * @returns {ax5mask}
+             */
+            this.fadeOut = function () {
+                if (this.$mask) {
+                    var _close = function () {
+                        this.status = "off";
+                        this.$mask.remove();
+                        this.$target.removeClass("ax-masking");
+
+                        onStateChanged.call(this, null, {
+                            self: this,
+                            state: "close"
+                        });
+
+                        jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
+                    };
+
+
+                    this.$mask.addClass("fade-out");
+
+
+
+                    setTimeout((function () {
+                        _close.call(this);
+                    }).bind(this), cfg.animateTime);
+                }
+                return this;
+            };
 
             /**
              * @method ax5mask.align
