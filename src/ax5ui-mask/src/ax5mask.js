@@ -248,7 +248,7 @@
              */
             this.close = function (_delay) {
                 if (this.$mask) {
-                    var _close = function () {
+                    let _close = function () {
                         this.status = "off";
                         this.$mask.remove();
                         this.$target.removeClass("ax-masking");
@@ -278,7 +278,7 @@
              */
             this.fadeOut = function () {
                 if (this.$mask) {
-                    var _close = function () {
+                    let _close = function () {
                         this.status = "off";
                         this.$mask.remove();
                         this.$target.removeClass("ax-masking");
@@ -293,9 +293,6 @@
 
 
                     this.$mask.addClass("fade-out");
-
-
-
                     setTimeout((function () {
                         _close.call(this);
                     }).bind(this), cfg.animateTime);

@@ -1,47 +1,27 @@
-<!DOCTYPE html>
-<!--
-  ~ Copyright (c) 2016. tom@axisj.com
-  ~ - github.com/thomasjang
-  ~ - www.axisj.com
-  -->
+describe('ax5uploader TEST', function () {
+    var upload1;
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../../ax5ui-dialog/dist/ax5dialog.css"/>
-    <link rel="stylesheet" type="text/css" href="../dist/ax5uploader.css"/>
-
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/jquery-direct/dist/jquery-direct.js"></script>
-    <script src="../../ax5core/dist/ax5core.js"></script>
-    <script src="../../ax5ui-dialog/dist/ax5dialog.js"></script>
-    <script src="../dist/ax5uploader.js"></script>
-</head>
-<body style="padding: 50px;">
-
+    var tmpl = `
 <div data-ax5uploader="upload1">
     <input type="hidden" name="param1" value="value1"/>
     <input type="hidden" name="param2" value="value2"/>
     <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택 (*/*)</button>
     <div data-uploaded-box="upload1" data-ax5uploader-uploaded-box="inline"></div>
-</div>
+</div>`;
 
-<div style="padding: 5px;" data-btn-wrap="">
-    <h3>control</h3>
-    <button class="btn btn-default" data-upload-btn="getUploadedFiles">getUploadedFiles</button>
-    <button class="btn btn-default" data-upload-btn="removeFileAll">removeFileAll</button>
-</div>
+    $(document.body).append(tmpl);
 
-<script>
-    var dialog = new ax5.ui.dialog();
-    var upload1 = new ax5.ui.uploader();
+    it('new ax5uploader', function (done) {
+        try {
+            upload1 = new ax5.ui.uploader();
+            done();
+        } catch (e) {
+            done(e);
+        }
+    });
 
-    $(function () {
-
+    it('uploader setConfig check target', function (done) {
+        
         upload1.setConfig({
             //debug: true,
             target: $('[data-ax5uploader="upload1"]'),
@@ -113,7 +93,6 @@
             },
 
             validateSelectedFiles: function () {
-                console.log(this);
                 return true;
             },
             onprogress: function () {
@@ -127,65 +106,31 @@
             }
         });
 
-        return;
-
-        $.ajax({
-            url: "api/fileListLoad.php",
-            success: function (res) {
-                upload1.setUploadedFiles(res);
-            }
-        });
-
-        $('[data-btn-wrap]').clickAttr(this, "data-upload-btn", {
-            "getUploadedFiles": function () {
-                var files = ax5.util.deepCopy(upload1.uploadedFiles);
-                console.log(files);
-                console.log(JSON.stringify(files));
-            },
-            "removeFileAll": function () {
-
-                dialog.confirm({
-                    title: "AX5UI",
-                    msg: "정말 삭제 하시겠습니까?"
-                }, function () {
-                    if (this.key == "ok") {
-
-                        var deleteFileByQueue = function (queue, queIdx, success) {
-                            var file = queue[queIdx];
-                            if (file) {
-                                $.ajax({
-                                    method: "post",
-                                    url: "api/fileDelete.php",
-                                    data: {
-                                        uploadedPath: file.uploadedPath,
-                                        saveName: file.saveName
-                                    },
-                                    success: function (res) {
-                                        deleteFileByQueue(queue, queIdx + 1, success);
-                                    }
-                                });
-                            }
-                            else {
-                                success();
-                            }
-                        };
-
-                        deleteFileByQueue(
-                            ax5.util.deepCopy(upload1.uploadedFiles),
-                            0,
-                            function () {
-                                // success
-                                upload1.removeFileAll();
-                            }
-                        );
-
-                    }
-                });
-            }
-        });
-
+        done( upload1.$target instanceof jQuery ? "" : "$target find error" );
     });
-</script>
 
-</body>
-</html>
+    it('uploader setConfig check dropZone', function (done) {
+        done( upload1.$dropZone instanceof jQuery ? "" : "dropZone find error" );
+    });
+
+    it('uploader setConfig check uploadedBox', function (done) {
+        done( upload1.$uploadedBox instanceof jQuery ? "" : "uploadedBox find error" );
+    });
+
+    it('uploader API send()', function (done) {
+        done(upload1.send() == upload1 ? "" : "send API error");
+    });
+    it('uploader API abort()', function (done) {
+        done(upload1.abort() == upload1 ? "" : "abort API error");
+    });
+    it('uploader API setUploadedFiles()', function (done) {
+        done(upload1.setUploadedFiles() == upload1 ? "" : "setUploadedFiles API error");
+    });
+    it('uploader API removeFile()', function (done) {
+        done(upload1.removeFile() == upload1 ? "" : "removeFile API error");
+    });
+    it('uploader API removeFileAll()', function (done) {
+        done(upload1.removeFileAll() == upload1 ? "" : "removeFileAll API error");
+    });
+
+});

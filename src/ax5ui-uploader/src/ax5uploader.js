@@ -741,6 +741,7 @@
                 // 파일버튼 등에 이벤트 연결.
                 bound_bindEvent();
 
+                bound_repaintUploadedBox();
                 return this;
             };
 

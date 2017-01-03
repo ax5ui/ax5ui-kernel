@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2017. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 // Karma configuration
 // Generated on Wed Sep 21 2016 00:37:04 GMT+0900 (KST)
 
@@ -15,7 +21,8 @@ module.exports = function (config) {
             'https://code.jquery.com/jquery-1.12.3.min.js',
             'https://cdn.rawgit.com/shouldjs/should.js/master/should.js',
             'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
-            'dist/ax5core.js',
+            'https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js',
+            'dist/ax5uploader.min.js',
             'test/test.*.js'
         ],
         // list of files to exclude

@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.62"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -703,6 +703,7 @@
                 // 파일버튼 등에 이벤트 연결.
                 bound_bindEvent();
 
+                bound_repaintUploadedBox();
                 return this;
             };
 
