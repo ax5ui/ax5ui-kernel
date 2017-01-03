@@ -522,9 +522,8 @@
         }
     };
 
-    var getFieldValue = function (_list, _item, _index, _col, _value) {
-        var _key = _col.key;
-        var tagsToReplace = {
+    var getFieldValue = function (_list, _item, _index, _col, _value, _returnPlainText) {
+        let _key = _col.key, tagsToReplace = {
             '<': '&lt;',
             '>': '&gt;'
         };
@@ -544,7 +543,7 @@
                 })(_col.editor)) {
 
                 _value = _value || GRID.data.getValue.call(this, _index, _key);
-
+                
                 if (U.isFunction(_col.editor.disabled)) {
                     if (_col.editor.disabled.call({
                             list: _list,
@@ -558,7 +557,7 @@
                 }
 
                 // print editor
-                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
+                return _returnPlainText ? _value : GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
             }
             if (_col.formatter) {
                 var that = {
@@ -2169,13 +2168,13 @@
     let getExcelString = function () {
         let cfg = this.config,
             list = this.list,
-            bodyRowData = this.bodyRowData,
-            footSumData = this.footSumData,
-            bodyGroupingData = this.bodyGroupingData;
+            bodyRowData = this.bodyRowTable,
+            footSumData = this.footSumTable,
+            bodyGroupingData = this.bodyGroupingTable;
 
         // body-scroll 의 포지션에 의존적이므로..
         let getBody = function (_colGroup, _bodyRow, _groupRow, _list) {
-            var SS = [],
+            let SS = [],
                 di, dl,
                 tri, trl,
                 ci, cl,
@@ -2183,8 +2182,7 @@
 
             //SS.push('<table border="1">');
             for (di = 0, dl = _list.length; di < dl; di++) {
-                var isGroupingRow = false;
-                var rowTable;
+                let isGroupingRow = false, rowTable;
 
                 if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
@@ -2201,7 +2199,7 @@
                         SS.push('<td ',
                             'colspan="' + col.colspan + '" ',
                             'rowspan="' + col.rowspan + '" ',
-                            '>', (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</td>');
+                            '>', (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, undefined, "text"), '</td>');
                     }
                     SS.push('\n</tr>');
                 }

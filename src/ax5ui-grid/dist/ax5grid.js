@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.65"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1974,9 +1974,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value) {
-        var _key = _col.key;
-        var tagsToReplace = {
+    var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value, _returnPlainText) {
+        var _key = _col.key,
+            tagsToReplace = {
             '<': '&lt;',
             '>': '&gt;'
         };
@@ -2008,7 +2008,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
 
                 // print editor
-                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
+                return _returnPlainText ? _value : GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
             }
             if (_col.formatter) {
                 var that = {
@@ -3465,25 +3465,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var getExcelString = function getExcelString() {
         var cfg = this.config,
             list = this.list,
-            bodyRowData = this.bodyRowData,
-            footSumData = this.footSumData,
-            bodyGroupingData = this.bodyGroupingData;
+            bodyRowData = this.bodyRowTable,
+            footSumData = this.footSumTable,
+            bodyGroupingData = this.bodyGroupingTable;
 
         // body-scroll 의 포지션에 의존적이므로..
         var getBody = function getBody(_colGroup, _bodyRow, _groupRow, _list) {
             var SS = [],
-                di,
-                dl,
-                tri,
-                trl,
-                ci,
-                cl,
-                col;
+                di = void 0,
+                dl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0;
 
             //SS.push('<table border="1">');
             for (di = 0, dl = _list.length; di < dl; di++) {
-                var isGroupingRow = false;
-                var rowTable;
+                var isGroupingRow = false,
+                    rowTable = void 0;
 
                 if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
@@ -3497,7 +3497,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
 
-                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</td>');
+                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, undefined, "text"), '</td>');
                     }
                     SS.push('\n</tr>');
                 }
@@ -4260,10 +4260,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var self = this;
 
         this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            var key = this.getAttribute("data-ax5grid-column-key");
-            var colIndex = this.getAttribute("data-ax5grid-column-colindex");
-            var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
-            var col = self.colGroup[colIndex];
+            var key = this.getAttribute("data-ax5grid-column-key"),
+                colIndex = this.getAttribute("data-ax5grid-column-colindex"),
+                rowIndex = this.getAttribute("data-ax5grid-column-rowindex"),
+                col = self.colGroup[colIndex];
 
             if (key === "__checkbox_header__") {
                 var selected = this.getAttribute("data-ax5grid-selected");
@@ -4295,8 +4295,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var resetFrozenColumn = function resetFrozenColumn() {
-        var cfg = this.config;
-        var dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+        var cfg = this.config,
+            dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
         this.asideHeaderData = function (dataTable) {
             var colGroup = [];
             var data = { rows: [] };
@@ -4342,10 +4342,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getFieldValue = function getFieldValue(_col) {
-        var cfg = this.config;
-        var colGroup = this.colGroup;
-        var _key = _col.key;
-        var tagsToReplace = {
+        var cfg = this.config,
+            colGroup = this.colGroup,
+            _key = _col.key,
+            tagsToReplace = {
             '<': '&lt;',
             '>': '&gt;'
         };
@@ -4358,24 +4358,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var repaint = function repaint(_reset) {
-        var cfg = this.config;
-        var colGroup = this.colGroup;
+        var cfg = this.config,
+            colGroup = this.colGroup;
+
         if (_reset) {
             resetFrozenColumn.call(this);
             this.xvar.paintStartRowIndex = undefined;
         }
-        var asideHeaderData = this.asideHeaderData;
-        var leftHeaderData = this.leftHeaderData;
-        var headerData = this.headerData;
-        var headerAlign = cfg.header.align;
+        var asideHeaderData = this.asideHeaderData,
+            leftHeaderData = this.leftHeaderData,
+            headerData = this.headerData,
+            headerAlign = cfg.header.align;
 
         // this.asideColGroup : asideHeaderData에서 처리 함.
         this.leftHeaderColGroup = colGroup.slice(0, this.config.frozenColumnIndex);
         this.headerColGroup = colGroup.slice(this.config.frozenColumnIndex);
 
         var repaintHeader = function repaintHeader(_elTarget, _colGroup, _bodyRow) {
-            var tableWidth = 0;
-            var SS = [];
+            var tableWidth = 0,
+                SS = [];
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -4439,9 +4440,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             /// append column-resizer
             (function () {
-                var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth;
-                var resizerLeft = 0;
-                var AS = [];
+                var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth,
+                    resizerLeft = 0,
+                    AS = [];
+
                 for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
                     var col = _colGroup[cgi];
                     if (!U.isNothing(col.colIndex)) {
@@ -4473,9 +4475,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var toggleSort = function toggleSort(_key) {
-        var sortOrder = "";
-        var sortInfo = {};
-        var seq = 0;
+        var sortOrder = "",
+            sortInfo = {},
+            seq = 0;
 
         for (var k in this.sortInfo) {
             if (this.sortInfo[k].fixed) {
@@ -4531,11 +4533,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getExcelString = function getExcelString() {
-        var cfg = this.config;
-        var colGroup = this.colGroup;
-        var headerData = this.headerData;
-
-        var getHeader = function getHeader(_colGroup, _bodyRow) {
+        var cfg = this.config,
+            colGroup = this.colGroup,
+            headerData = this.headerTable,
+            getHeader = function getHeader(_colGroup, _bodyRow) {
             var SS = [];
             //SS.push('<table border="1">');
             for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {

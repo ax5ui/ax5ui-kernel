@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-grid.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-grid)
 [![npm version](https://badge.fury.io/js/ax5ui-grid.svg)](https://badge.fury.io/js/ax5ui-grid)
 
 # ax5ui-grid
