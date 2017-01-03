@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "${VERSION}"
+        version: "1.3.65"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -192,7 +192,7 @@
                     var timer = void 0;
 
                     this.$dropZone.parent().on("click", "[data-ax5uploader-dropzone]", function (e) {
-                        if (this == e.target) {
+                        if (this == e.target || $.contains(this, e.target)) {
                             if (U.isFunction(cfg.dropZone.onclick)) {
                                 cfg.dropZone.onclick.call({
                                     self: self

@@ -53,7 +53,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.64";
+        var version = "1.3.65";
 
         /**
          * ax5 library path
