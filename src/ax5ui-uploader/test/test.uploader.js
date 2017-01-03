@@ -34,7 +34,9 @@ describe('ax5uploader TEST', function () {
             progressBox: true,
             progressBoxDirection: "left",
 
-            dropZone: $('[data-uploaded-box="upload1"]'),
+            dropZone: {
+                target: $('[data-uploaded-box="upload1"]')
+            },
             uploadedBox: {
                 target: $('[data-uploaded-box="upload1"]'),
                 icon: {
