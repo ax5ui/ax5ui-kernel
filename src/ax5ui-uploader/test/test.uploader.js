@@ -1,13 +1,12 @@
 describe('ax5uploader TEST', function () {
     var upload1;
 
-    var tmpl = `
-<div data-ax5uploader="upload1">
-    <input type="hidden" name="param1" value="value1"/>
-    <input type="hidden" name="param2" value="value2"/>
-    <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택 (*/*)</button>
-    <div data-uploaded-box="upload1" data-ax5uploader-uploaded-box="inline"></div>
-</div>`;
+    var tmpl = '<div data-ax5uploader="upload1">' +
+        '<input type="hidden" name="param1" value="value1"/>' +
+        '<input type="hidden" name="param2" value="value2"/>' +
+        '<button data-ax5uploader-button="selector" class="btn btn-primary">파일선택 (*/*)</button>' +
+        '<div data-uploaded-box="upload1" data-ax5uploader-uploaded-box="inline"></div>' +
+        '</div>';
 
     $(document.body).append(tmpl);
 
@@ -21,7 +20,7 @@ describe('ax5uploader TEST', function () {
     });
 
     it('uploader setConfig check target', function (done) {
-        
+
         upload1.setConfig({
             //debug: true,
             target: $('[data-ax5uploader="upload1"]'),
@@ -106,15 +105,15 @@ describe('ax5uploader TEST', function () {
             }
         });
 
-        done( upload1.$target instanceof jQuery ? "" : "$target find error" );
+        done(upload1.$target instanceof jQuery ? "" : "$target find error");
     });
 
     it('uploader setConfig check dropZone', function (done) {
-        done( upload1.$dropZone instanceof jQuery ? "" : "dropZone find error" );
+        done(upload1.$dropZone instanceof jQuery ? "" : "dropZone find error");
     });
 
     it('uploader setConfig check uploadedBox', function (done) {
-        done( upload1.$uploadedBox instanceof jQuery ? "" : "uploadedBox find error" );
+        done(upload1.$uploadedBox instanceof jQuery ? "" : "uploadedBox find error");
     });
 
     it('uploader API send()', function (done) {
