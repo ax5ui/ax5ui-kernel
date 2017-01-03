@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.64"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {

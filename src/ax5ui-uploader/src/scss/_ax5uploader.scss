@@ -204,6 +204,20 @@
     [data-ax5uploader-button="selector"] {
         position: relative;
     }
+
+    [data-ax5uploader-dropzone] {
+        background: $ax5uploader-dropzone-bg;
+        border: $ax5uploader-dropzone-border;
+        border-radius: $ax5uploader-dropzone-border-radius;
+        margin: $ax5uploader-dropzone-margin;
+        padding: $ax5uploader-dropzone-padding;
+        cursor: pointer;
+        &.dragover{
+            background: $ax5uploader-dropzone-dragover-bg;
+            border: $ax5uploader-dropzone-dragover-border;
+            opacity: 0.6;
+        }
+    }
 }
 
 [data-ax5uploader-uploaded-box] {
@@ -298,20 +312,6 @@
         [data-ax5uploader-uploaded-item] {
             display: block;
             float:left;
-        }
-    }
-
-    [data-ax5uploader-dropzone] {
-        background: $ax5uploader-dropzone-bg;
-        border: $ax5uploader-dropzone-border;
-        border-radius: $ax5uploader-dropzone-border-radius;
-        margin: $ax5uploader-dropzone-margin;
-        padding: $ax5uploader-dropzone-padding;
-        cursor: pointer;
-        &.dragover{
-            background: $ax5uploader-dropzone-dragover-bg;
-            border: $ax5uploader-dropzone-dragover-border;
-            opacity: 0.6;
         }
     }
 }
