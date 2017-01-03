@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.63"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -191,34 +191,53 @@
 
                     var timer = void 0;
 
-                    this.$dropZone.on("click", function (e) {
-                        //console.log(e.target.getAttribute("data-ax5uploader-dropzone"));
-                        var isItemCell = ax5.util.findParentNode(e.target, function (target) {
-                            if (cfg.debug) console.log(target);
-                            if (target.hasAttribute("data-uploaded-item-cell") || target.hasAttribute("data-ax5uploader-uploaded-item")) {
-                                return true;
+                    this.$dropZone.parent().on("click", "[data-ax5uploader-dropzone]", function (e) {
+                        if (this == e.target) {
+                            if (U.isFunction(cfg.dropZone.onclick)) {
+                                cfg.dropZone.onclick.call({
+                                    self: self
+                                });
+                            } else {
+                                self.$inputFile.trigger("click");
                             }
-                        });
-
-                        if (!isItemCell) {
-                            // dropZone click
-                            self.$inputFile.trigger("click");
                         }
                     });
 
                     this.$dropZone.get(0).addEventListener('dragover', function (e) {
                         U.stopEvent(e);
-                        self.$dropZone.addClass("dragover");
+
+                        if (U.isFunction(cfg.dropZone.ondragover)) {
+                            cfg.dropZone.ondragover.call({
+                                self: self
+                            });
+                        } else {
+                            self.$dropZone.addClass("dragover");
+                        }
                     }, false);
 
                     this.$dropZone.get(0).addEventListener('dragleave', function (e) {
                         U.stopEvent(e);
-                        self.$dropZone.removeClass("dragover");
+
+                        if (U.isFunction(cfg.dropZone.ondragover)) {
+                            cfg.dropZone.ondragout.call({
+                                self: self
+                            });
+                        } else {
+                            self.$dropZone.removeClass("dragover");
+                        }
                     }, false);
 
                     this.$dropZone.get(0).addEventListener('drop', function (e) {
                         U.stopEvent(e);
-                        self.$dropZone.removeClass("dragover");
+
+                        if (U.isFunction(cfg.dropZone.ondrop)) {
+                            cfg.dropZone.ondrop.call({
+                                self: self
+                            });
+                        } else {
+                            self.$dropZone.removeClass("dragover");
+                        }
+
                         bound_onSelectFile(e || window.event);
                     }, false);
                 }).call(this);
@@ -410,6 +429,13 @@
 
                             if (res.error) {
                                 if (cfg.debug) console.log(res.error);
+                                if (U.isFunction(cfg.onuploaderror)) {
+                                    cfg.onuploaderror.call({
+                                        self: this,
+                                        error: res.error
+                                    }, res);
+                                }
+                                self.send();
                                 return false;
                             }
 
@@ -617,10 +643,16 @@
              * @param {String} _config.form.action - upload URL
              * @param {String} _config.form.fileName - The name key of the upload file
              * @param {Boolean} [_config.multiple=false] - Whether multiple files. In a browser where fileApi is not supported (eg IE9), it only works with false.
+             * @param {String} [_config.accept=""] - accept mimeType (http://www.w3schools.com/TAgs/att_input_accept.asp)
              * @param {Boolean} [_config.manualUpload=false] - Whether to automatically upload when a file is selected.
              * @param {Boolean} [_config.progressBox=true] - Whether to use progressBox
              * @param {String} [_config.progressBoxDirection=auto] - ProgressBox display direction
-             * @param {Element} [_config.dropZone]
+             * @param {Object} [_config.dropZone]
+             * @param {Element} [_config.dropZone.target]
+             * @param {Function} [_config.dropZone.onclick]
+             * @param {Function} [_config.dropZone.ondragover]
+             * @param {Function} [_config.dropZone.ondragout]
+             * @param {Function} [_config.dropZone.ondrop]
              * @param {Object} [_config.uploadedBox]
              * @param {Element} [_config.uploadedBox.target]
              * @param {Element} [_config.uploadedBox.icon]
@@ -636,9 +668,10 @@
              * @param {Function} [_config.uploadedBox.onchange]
              * @param {Function} [_config.uploadedBox.onclick]
              * @param {Function} [_config.validateSelectedFiles]
-             * @param {Function} [_config.onprogress]
-             * @param {Function} [_config.onuploaded]
-             * @param {Function} [_config.onuploadComplete]
+             * @param {Function} [_config.onprogress] - return loaded, total
+             * @param {Function} [_config.onuploaded] - return self
+             * @param {Function} [_config.onuploaderror] - return self, error
+             * @param {Function} [_config.onuploadComplete] - return self
              * @returns {ax5uploader}
              * @example
              * ```js
@@ -655,8 +688,8 @@
                 this.$target = jQuery(cfg.target);
 
                 // 파일 드랍존은 옵션 사항.
-                if (cfg.dropZone && ax5.info.supportFileApi) {
-                    this.$dropZone = jQuery(cfg.dropZone);
+                if (cfg.dropZone && cfg.dropZone.target && ax5.info.supportFileApi) {
+                    this.$dropZone = jQuery(cfg.dropZone.target);
                     this.$dropZone.attr("data-ax5uploader-dropzone", this.instanceId);
                 }
 
@@ -823,6 +856,18 @@
                 this.uploadedFiles = [];
                 bound_repaintUploadedBox();
                 return this;
+            };
+
+            /**
+             * @method ax5uploader.selectFile
+             * @returns {Boolean}
+             */
+            this.selectFile = function () {
+                if (ax5.info.supportFileApi) {
+                    this.$inputFile.trigger("click");
+                    return true;
+                }
+                return false;
             };
 
             // 클래스 생성자

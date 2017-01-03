@@ -11,6 +11,7 @@
     * [.setUploadedFiles(_files)](#ax5uploader.setUploadedFiles) ⇒ <code>[ax5uploader](#ax5uploader)</code>
     * [.removeFile(_index)](#ax5uploader.removeFile) ⇒ <code>[ax5uploader](#ax5uploader)</code>
     * [.removeFileAll()](#ax5uploader.removeFileAll) ⇒ <code>[ax5uploader](#ax5uploader)</code>
+    * [.selectFile()](#ax5uploader.selectFile) ⇒ <code>Boolean</code>
 
 <a name="ax5uploader.setConfig"></a>
 
@@ -27,10 +28,16 @@ Preferences of uploader UI
 | _config.form.action | <code>String</code> |  | upload URL |
 | _config.form.fileName | <code>String</code> |  | The name key of the upload file |
 | [_config.multiple] | <code>Boolean</code> | <code>false</code> | Whether multiple files. In a browser where fileApi is not supported (eg IE9), it only works with false. |
+| [_config.accept] | <code>String</code> | <code>&quot;&quot;</code> | accept mimeType (http://www.w3schools.com/TAgs/att_input_accept.asp) |
 | [_config.manualUpload] | <code>Boolean</code> | <code>false</code> | Whether to automatically upload when a file is selected. |
 | [_config.progressBox] | <code>Boolean</code> | <code>true</code> | Whether to use progressBox |
 | [_config.progressBoxDirection] | <code>String</code> | <code>auto</code> | ProgressBox display direction |
-| [_config.dropZone] | <code>Element</code> |  |  |
+| [_config.dropZone] | <code>Object</code> |  |  |
+| [_config.dropZone.target] | <code>Element</code> |  |  |
+| [_config.dropZone.onclick] | <code>function</code> |  |  |
+| [_config.dropZone.ondragover] | <code>function</code> |  |  |
+| [_config.dropZone.ondragout] | <code>function</code> |  |  |
+| [_config.dropZone.ondrop] | <code>function</code> |  |  |
 | [_config.uploadedBox] | <code>Object</code> |  |  |
 | [_config.uploadedBox.target] | <code>Element</code> |  |  |
 | [_config.uploadedBox.icon] | <code>Element</code> |  |  |
@@ -46,9 +53,10 @@ Preferences of uploader UI
 | [_config.uploadedBox.onchange] | <code>function</code> |  |  |
 | [_config.uploadedBox.onclick] | <code>function</code> |  |  |
 | [_config.validateSelectedFiles] | <code>function</code> |  |  |
-| [_config.onprogress] | <code>function</code> |  |  |
-| [_config.onuploaded] | <code>function</code> |  |  |
-| [_config.onuploadComplete] | <code>function</code> |  |  |
+| [_config.onprogress] | <code>function</code> |  | return loaded, total |
+| [_config.onuploaded] | <code>function</code> |  | return self |
+| [_config.onuploaderror] | <code>function</code> |  | return self, error |
+| [_config.onuploadComplete] | <code>function</code> |  | return self |
 
 **Example**  
 ```js
@@ -121,3 +129,7 @@ Empty uploadedFiles
 ```js
 
 ```
+<a name="ax5uploader.selectFile"></a>
+
+### ax5uploader.selectFile() ⇒ <code>Boolean</code>
+**Kind**: static method of <code>[ax5uploader](#ax5uploader)</code>  

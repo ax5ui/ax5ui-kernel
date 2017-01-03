@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  ~ Copyright (c) 2016. tom@axisj.com
+  ~ Copyright (c) 2017. tom@axisj.com
   ~ - github.com/thomasjang
   ~ - www.axisj.com
   -->
@@ -20,6 +20,12 @@
     <script src="../../ax5core/dist/ax5core.js"></script>
     <script src="../../ax5ui-dialog/dist/ax5dialog.js"></script>
     <script src="../dist/ax5uploader.js"></script>
+
+    <style>
+        body.dragover{
+            border: 3px dashed #ccc;
+        }
+    </style>
 </head>
 <body style="padding: 50px;">
 
@@ -43,7 +49,7 @@
     $(function () {
 
         upload1.setConfig({
-            //debug: true,
+            debug: true,
             target: $('[data-ax5uploader="upload1"]'),
             form: {
                 action: "http://api-demo.ax5.io/api/v1/ax5uploader",
@@ -51,12 +57,27 @@
             },
             multiple: true,
             manualUpload: false,
-            accept: "*/*",
+
             progressBox: true,
             progressBoxDirection: "left",
 
             dropZone: {
-                target: $('[data-uploaded-box="upload1"]')
+                target: $(document.body),
+                onclick: function () {
+                    return;
+                    if(!this.self.selectFile()){
+                        console.log("파일 선택 지원 안됨");
+                    }
+                },
+                ondragover: function () {
+                    this.self.$dropZone.addClass("dragover");
+                },
+                ondragout: function () {
+                    this.self.$dropZone.removeClass("dragover");
+                },
+                ondrop: function () {
+                    
+                }
             },
             uploadedBox: {
                 target: $('[data-uploaded-box="upload1"]'),
@@ -65,7 +86,7 @@
                     "delete": '<i class="fa fa-minus-circle" aria-hidden="true"></i>'
                 },
                 columnKeys: {
-                    name: "name",
+                    name: "fileName",
                     type: "type",
                     size: "fileSize",
                     uploadedName: "uploadedName",
