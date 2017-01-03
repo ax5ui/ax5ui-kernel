@@ -1,4 +1,4 @@
-describe('ax5uploader TEST', function () {
+describe('ax5autocomplete TEST', function () {
     var myUI;
 
     var tmpl = '<div class="form-group">' +

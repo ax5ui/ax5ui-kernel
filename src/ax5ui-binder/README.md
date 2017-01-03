@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-binder.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-binder)
 [![npm version](https://badge.fury.io/js/ax5ui-binder.svg)](https://badge.fury.io/js/ax5ui-binder)
 
 # ax5ui-binder
