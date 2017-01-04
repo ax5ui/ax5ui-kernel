@@ -53,7 +53,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.58";
+        var version = "1.3.66";
 
         /**
          * ax5 library path
@@ -3423,7 +3423,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "dialog",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5dialog
@@ -3960,7 +3960,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "mask",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5mask
@@ -3999,7 +3999,8 @@ ax5.ui = function () {
             this.instanceId = ax5.getGuid();
             this.config = {
                 theme: '',
-                target: jQuery(document.body).get(0)
+                target: jQuery(document.body).get(0),
+                animateTime: 250
             };
             this.maskContent = '';
             this.status = "off";
@@ -4197,31 +4198,65 @@ ax5.ui = function () {
              * ```
              */
             this.close = function (_delay) {
+                var _this2 = this;
+
                 if (this.$mask) {
-                    var _close = function _close() {
-                        this.status = "off";
-                        this.$mask.remove();
-                        this.$target.removeClass("ax-masking");
+                    (function () {
+                        var _close = function _close() {
+                            this.status = "off";
+                            this.$mask.remove();
+                            this.$target.removeClass("ax-masking");
 
-                        onStateChanged.call(this, null, {
-                            self: this,
-                            state: "close"
-                        });
+                            onStateChanged.call(this, null, {
+                                self: this,
+                                state: "close"
+                            });
 
-                        jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
-                    };
+                            jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
+                        };
 
-                    if (_delay) {
-                        setTimeout(function () {
-                            _close.call(this);
-                        }.bind(this), _delay);
-                    } else {
-                        _close.call(this);
-                    }
+                        if (_delay) {
+                            setTimeout(function () {
+                                _close.call(this);
+                            }.bind(_this2), _delay);
+                        } else {
+                            _close.call(_this2);
+                        }
+                    })();
                 }
                 return this;
             };
-            //== class body end
+
+            /**
+             * @method ax5mask.fadeOut
+             * @returns {ax5mask}
+             */
+            this.fadeOut = function () {
+                var _this3 = this;
+
+                if (this.$mask) {
+                    (function () {
+                        var _close = function _close() {
+                            this.status = "off";
+                            this.$mask.remove();
+                            this.$target.removeClass("ax-masking");
+
+                            onStateChanged.call(this, null, {
+                                self: this,
+                                state: "close"
+                            });
+
+                            jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
+                        };
+
+                        _this3.$mask.addClass("fade-out");
+                        setTimeout(function () {
+                            _close.call(this);
+                        }.bind(_this3), cfg.animateTime);
+                    })();
+                }
+                return this;
+            };
 
             /**
              * @method ax5mask.align
@@ -4289,7 +4324,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "toast",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5toast
@@ -4651,7 +4686,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "modal",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5modal
@@ -4699,7 +4734,7 @@ ax5.ui = function () {
          */
         var ax5modal = function ax5modal() {
             var self = this,
-                cfg,
+                cfg = void 0,
                 ENM = {
                 "mousedown": ax5.info.supportTouch ? "touchstart" : "mousedown",
                 "mousemove": ax5.info.supportTouch ? "touchmove" : "mousemove",
@@ -4734,6 +4769,7 @@ ax5.ui = function () {
                 animateTime: 250
             };
             this.activeModal = null;
+            this.watingModal = false;
             this.$ = {}; // UI inside of the jQuery object store
 
             cfg = this.config; // extended config copy cfg
@@ -4771,7 +4807,7 @@ ax5.ui = function () {
                 return MODAL.tmpl.get.call(this, "content", data, {});
             },
                 open = function open(opts, callback) {
-                var that;
+                var that = void 0;
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
                 this.activeModal = jQuery('#' + opts.id);
@@ -4825,7 +4861,10 @@ ax5.ui = function () {
                 }
 
                 if (callback) callback.call(that);
-                onStateChanged.call(this, opts, that);
+
+                if (!this.watingModal) {
+                    onStateChanged.call(this, opts, that);
+                }
 
                 // bind key event
                 if (opts.closeToEsc) {
@@ -4861,7 +4900,7 @@ ax5.ui = function () {
                 });
             },
                 btnOnClick = function btnOnClick(e, opts, callback, target, k) {
-                var that;
+                var that = void 0;
                 if (e.srcElement) e.target = e.srcElement;
 
                 target = U.findParentNode(e.target, function (target) {
@@ -4915,16 +4954,16 @@ ax5.ui = function () {
             },
                 moveModal = {
                 "on": function on() {
-                    var modalZIndex = this.activeModal.css("z-index");
-                    var modalOffset = this.activeModal.position();
-                    var modalBox = {
+                    var modalZIndex = this.activeModal.css("z-index"),
+                        modalOffset = this.activeModal.position(),
+                        modalBox = {
                         width: this.activeModal.outerWidth(), height: this.activeModal.outerHeight()
-                    };
-                    var windowBox = {
+                    },
+                        windowBox = {
                         width: jQuery(window).width(),
                         height: jQuery(window).height()
-                    };
-                    var getResizerPosition = function getResizerPosition(e) {
+                    },
+                        getResizerPosition = function getResizerPosition(e) {
                         self.__dx = e.clientX - self.mousePosition.clientX;
                         self.__dy = e.clientY - self.mousePosition.clientY;
 
@@ -4982,7 +5021,6 @@ ax5.ui = function () {
                 },
                 "off": function off() {
                     var setModalPosition = function setModalPosition() {
-                        //console.log(this.activeModal.offset(), this.__dx);
                         var box = this.activeModal.offset();
                         box.left += this.__dx - $(document).scrollLeft();
                         box.top += this.__dy - $(document).scrollTop();
@@ -5032,10 +5070,18 @@ ax5.ui = function () {
              * my_modal.open();
              * ```
              */
-            this.open = function (opts, callback) {
+            this.open = function (opts, callback, tryCount) {
+                if (typeof tryCount === "undefined") tryCount = 0;
                 if (!this.activeModal) {
                     opts = self.modalConfig = jQuery.extend(true, {}, cfg, opts);
                     open.call(this, opts, callback);
+                    this.watingModal = false;
+                } else if (tryCount < 3) {
+                    // 3번까지 재 시도
+                    this.watingModal = true;
+                    setTimeout(function () {
+                        this.open(opts, callback, tryCount + 1);
+                    }.bind(this), cfg.animateTime);
                 }
                 return this;
             };
@@ -5082,10 +5128,13 @@ ax5.ui = function () {
                             this.activeModal.remove();
                             this.activeModal = null;
                         }
-                        onStateChanged.call(this, opts, {
-                            self: this,
-                            state: "close"
-                        });
+                        // 모달 오픈 대기중이면 닫기 상태 전달 안함.
+                        if (!this.watingModal) {
+                            onStateChanged.call(this, opts, {
+                                self: this,
+                                state: "close"
+                            });
+                        }
                     }.bind(this), cfg.animateTime);
                 }
 
@@ -5299,7 +5348,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "calendar",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
 
         /**
@@ -6361,7 +6410,7 @@ ax5.ui = function () {
 
     UI.addClass({
         className: "picker",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5picker
@@ -7400,7 +7449,7 @@ jQuery.fn.ax5picker = function () {
 
     UI.addClass({
         className: "formatter",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         var TODAY = new Date();
         var setSelectionRange = function setSelectionRange(input, pos) {
@@ -8036,7 +8085,7 @@ jQuery.fn.ax5formatter = function () {
 
     UI.addClass({
         className: "menu",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5.ui.menu
@@ -8863,7 +8912,7 @@ jQuery.fn.ax5formatter = function () {
 
     UI.addClass({
         className: "select",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5select
@@ -10035,7 +10084,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "grid",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5grid
@@ -11435,7 +11484,7 @@ jQuery.fn.ax5select = function () {
              * ```
              */
             this.focus = function (_pos) {
-                var _this2 = this;
+                var _this4 = this;
 
                 if (GRID.body.moveFocus.call(this, _pos)) {
                     var focusedColumn = void 0;
@@ -11451,7 +11500,7 @@ jQuery.fn.ax5select = function () {
                         this.select(0);
                     } else {
                         (function () {
-                            var selectedIndex = _this2.selectedDataIndexs[0];
+                            var selectedIndex = _this4.selectedDataIndexs[0];
                             var processor = {
                                 "UP": function UP() {
                                     if (selectedIndex > 0) {
@@ -11476,7 +11525,7 @@ jQuery.fn.ax5select = function () {
                             };
 
                             if (_pos in processor) {
-                                processor[_pos].call(_this2);
+                                processor[_pos].call(_this4);
                             }
                         })();
                     }
@@ -11881,6 +11930,7 @@ jQuery.fn.ax5select = function () {
             self.xvar.dataHoveredIndex = dindex;
         });
         this.$["container"]["body"].on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
+            if (self.xvar.touchmoved) return false;
             if (this.getAttribute("data-ax5grid-column-rowIndex")) {
                 columnSelector.on.call(self, {
                     panelName: this.getAttribute("data-ax5grid-panel-name"),
@@ -11991,9 +12041,9 @@ jQuery.fn.ax5select = function () {
         }
     };
 
-    var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value) {
-        var _key = _col.key;
-        var tagsToReplace = {
+    var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value, _returnPlainText) {
+        var _key = _col.key,
+            tagsToReplace = {
             '<': '&lt;',
             '>': '&gt;'
         };
@@ -12025,7 +12075,7 @@ jQuery.fn.ax5select = function () {
                 }
 
                 // print editor
-                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
+                return _returnPlainText ? _value : GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
             }
             if (_col.formatter) {
                 var that = {
@@ -12147,29 +12197,42 @@ jQuery.fn.ax5select = function () {
     };
 
     var repaint = function repaint(_reset) {
-        var cfg = this.config;
-        var list = this.list;
+        var cfg = this.config,
+            list = this.list;
+
+        /// repaint reset 타입이면 고정컬럼을 재조정
         if (_reset) {
             resetFrozenColumn.call(this);
+            // 틀고정 이 변경되면 출력 시작 인덱스 값을 초기화
             this.xvar.paintStartRowIndex = undefined;
         }
+
+        /// 출력시작 인덱스
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
-        var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
-        var asideBodyRowData = this.asideBodyRowData;
-        var leftBodyRowData = this.leftBodyRowData;
-        var bodyRowData = this.bodyRowData;
-        var leftFootSumData = this.leftFootSumData;
-        var footSumData = this.footSumData;
-        var asideBodyGroupingData = this.asideBodyGroupingData;
-        var leftBodyGroupingData = this.leftBodyGroupingData;
-        var bodyGroupingData = this.bodyGroupingData;
-        var bodyAlign = cfg.body.align;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+
+        var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined",
+            asideBodyRowData = this.asideBodyRowData,
+            leftBodyRowData = this.leftBodyRowData,
+            bodyRowData = this.bodyRowData,
+            leftFootSumData = this.leftFootSumData,
+            footSumData = this.footSumData,
+            asideBodyGroupingData = this.asideBodyGroupingData,
+            leftBodyGroupingData = this.leftBodyGroupingData,
+            bodyGroupingData = this.bodyGroupingData,
+            bodyAlign = cfg.body.align,
+            paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+
+        if (document.addEventListener && ax5.info.supportTouch) {
+            paintRowCount = paintRowCount * 2;
+        }
+
+        /// 스크롤 컨텐츠의 높이 : 그리드 스크롤의 실제 크기와는 관계 없이 데이터 갯수에 따라 스크롤 컨텐츠 높이값 구해서 저장해두기.
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
+        /// 사용된 패널들의 키 모음
         this.$.livePanelKeys = [];
 
-        // body-scroll 의 포지션에 의존적이므로..
+        // 그리드 바디 영역 페인트 함수
         var repaintBody = function repaintBody(_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
             var _elTarget = this.$.panel[_elTargetKey];
 
@@ -12178,13 +12241,19 @@ jQuery.fn.ax5select = function () {
                 return false;
             }
 
-            var SS = [];
-            var cgi, cgl;
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
-            var isScrolled = function () {
+            var SS = [],
+                cgi = void 0,
+                cgl = void 0,
+                di = void 0,
+                dl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0,
+                isScrolled = function () {
                 // 스크롤값이 변경되거나 처음 호출되었습니까?
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
                     _scrollConfig = {
@@ -12197,6 +12266,9 @@ jQuery.fn.ax5select = function () {
                 }
             }();
 
+            if (isScrolled) {
+                SS.push('<div style="font-size:0;line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+            }
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -12206,7 +12278,7 @@ jQuery.fn.ax5select = function () {
             SS.push('</colgroup>');
 
             for (di = _scrollConfig.paintStartRowIndex, dl = function () {
-                var len;
+                var len = void 0;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
                     len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
@@ -12214,9 +12286,8 @@ jQuery.fn.ax5select = function () {
                 return len;
             }(); di < dl; di++) {
 
-                var isGroupingRow = false;
-                var rowTable;
-
+                var isGroupingRow = false,
+                    rowTable = void 0;
                 if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
                     isGroupingRow = true;
@@ -12268,6 +12339,7 @@ jQuery.fn.ax5select = function () {
 
                             return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
                         }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
+
                         SS.push('</td>');
                     }
                     SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
@@ -12276,9 +12348,10 @@ jQuery.fn.ax5select = function () {
             }
             SS.push('</table>');
 
-            if (isScrolled) {
-                _elTarget.css({ paddingTop: (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight });
+            if (isScrolled && _list.length) {
+                SS.push('<div style="font-size:0;line-height:0;height: ' + (_list.length - di) * _scrollConfig.bodyTrHeight + 'px;"></div>');
             }
+
             _elTarget.empty().get(0).innerHTML = SS.join('');
 
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
@@ -12292,11 +12365,16 @@ jQuery.fn.ax5select = function () {
                 return false;
             }
 
-            var SS = [];
-            var cgi, cgl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            var SS = [],
+                cgi = void 0,
+                cgl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0;
 
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
@@ -12411,7 +12489,6 @@ jQuery.fn.ax5select = function () {
         }
 
         //todo : repaintBody 에서 footSum 데이터 예외처리
-
         // right
         if (cfg.rightSum) {
             // todo : right 표현 정리
@@ -12951,7 +13028,7 @@ jQuery.fn.ax5select = function () {
 
         if (!noRepaint && "top" in css) {
             repaint.call(this);
-        }
+        } else {}
     };
 
     var blur = function blur() {
@@ -13455,25 +13532,25 @@ jQuery.fn.ax5select = function () {
     var getExcelString = function getExcelString() {
         var cfg = this.config,
             list = this.list,
-            bodyRowData = this.bodyRowData,
-            footSumData = this.footSumData,
-            bodyGroupingData = this.bodyGroupingData;
+            bodyRowData = this.bodyRowTable,
+            footSumData = this.footSumTable,
+            bodyGroupingData = this.bodyGroupingTable;
 
         // body-scroll 의 포지션에 의존적이므로..
         var getBody = function getBody(_colGroup, _bodyRow, _groupRow, _list) {
             var SS = [],
-                di,
-                dl,
-                tri,
-                trl,
-                ci,
-                cl,
-                col;
+                di = void 0,
+                dl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0;
 
             //SS.push('<table border="1">');
             for (di = 0, dl = _list.length; di < dl; di++) {
-                var isGroupingRow = false;
-                var rowTable;
+                var isGroupingRow = false,
+                    rowTable = void 0;
 
                 if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
@@ -13487,7 +13564,7 @@ jQuery.fn.ax5select = function () {
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
 
-                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</td>');
+                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, undefined, "text"), '</td>');
                     }
                     SS.push('\n</tr>');
                 }
@@ -13606,10 +13683,10 @@ jQuery.fn.ax5select = function () {
     var initData = function initData(_list) {
         this.selectedDataIndexs = [];
         var i = 0,
-            l = _list.length;
-        var returnList = [];
-        var appendIndex = 0;
-        var dataRealRowCount = 0;
+            l = _list.length,
+            returnList = [],
+            appendIndex = 0,
+            dataRealRowCount = 0;
 
         if (this.config.body.grouping) {
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
@@ -13622,9 +13699,9 @@ jQuery.fn.ax5select = function () {
             });
             var gi = 0,
                 gl = groupingKeys.length,
-                compareString,
+                compareString = void 0,
                 appendRow = [],
-                ari;
+                ari = void 0;
             for (; i < l + 1; i++) {
                 gi = 0;
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
@@ -13832,7 +13909,6 @@ jQuery.fn.ax5select = function () {
      */
     var deleteRow = function deleteRow(_dindex) {
         var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
-
         var processor = {
             "first": function first() {
                 list[0][this.config.columnKeys.deleted] = true;
@@ -14251,10 +14327,10 @@ jQuery.fn.ax5select = function () {
         var self = this;
 
         this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            var key = this.getAttribute("data-ax5grid-column-key");
-            var colIndex = this.getAttribute("data-ax5grid-column-colindex");
-            var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
-            var col = self.colGroup[colIndex];
+            var key = this.getAttribute("data-ax5grid-column-key"),
+                colIndex = this.getAttribute("data-ax5grid-column-colindex"),
+                rowIndex = this.getAttribute("data-ax5grid-column-rowindex"),
+                col = self.colGroup[colIndex];
 
             if (key === "__checkbox_header__") {
                 var selected = this.getAttribute("data-ax5grid-selected");
@@ -14286,8 +14362,8 @@ jQuery.fn.ax5select = function () {
     };
 
     var resetFrozenColumn = function resetFrozenColumn() {
-        var cfg = this.config;
-        var dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+        var cfg = this.config,
+            dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
         this.asideHeaderData = function (dataTable) {
             var colGroup = [];
             var data = { rows: [] };
@@ -14333,10 +14409,10 @@ jQuery.fn.ax5select = function () {
     };
 
     var getFieldValue = function getFieldValue(_col) {
-        var cfg = this.config;
-        var colGroup = this.colGroup;
-        var _key = _col.key;
-        var tagsToReplace = {
+        var cfg = this.config,
+            colGroup = this.colGroup,
+            _key = _col.key,
+            tagsToReplace = {
             '<': '&lt;',
             '>': '&gt;'
         };
@@ -14349,24 +14425,25 @@ jQuery.fn.ax5select = function () {
     };
 
     var repaint = function repaint(_reset) {
-        var cfg = this.config;
-        var colGroup = this.colGroup;
+        var cfg = this.config,
+            colGroup = this.colGroup;
+
         if (_reset) {
             resetFrozenColumn.call(this);
             this.xvar.paintStartRowIndex = undefined;
         }
-        var asideHeaderData = this.asideHeaderData;
-        var leftHeaderData = this.leftHeaderData;
-        var headerData = this.headerData;
-        var headerAlign = cfg.header.align;
+        var asideHeaderData = this.asideHeaderData,
+            leftHeaderData = this.leftHeaderData,
+            headerData = this.headerData,
+            headerAlign = cfg.header.align;
 
         // this.asideColGroup : asideHeaderData에서 처리 함.
         this.leftHeaderColGroup = colGroup.slice(0, this.config.frozenColumnIndex);
         this.headerColGroup = colGroup.slice(this.config.frozenColumnIndex);
 
         var repaintHeader = function repaintHeader(_elTarget, _colGroup, _bodyRow) {
-            var tableWidth = 0;
-            var SS = [];
+            var tableWidth = 0,
+                SS = [];
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -14430,9 +14507,10 @@ jQuery.fn.ax5select = function () {
 
             /// append column-resizer
             (function () {
-                var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth;
-                var resizerLeft = 0;
-                var AS = [];
+                var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth,
+                    resizerLeft = 0,
+                    AS = [];
+
                 for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
                     var col = _colGroup[cgi];
                     if (!U.isNothing(col.colIndex)) {
@@ -14464,9 +14542,9 @@ jQuery.fn.ax5select = function () {
     };
 
     var toggleSort = function toggleSort(_key) {
-        var sortOrder = "";
-        var sortInfo = {};
-        var seq = 0;
+        var sortOrder = "",
+            sortInfo = {},
+            seq = 0;
 
         for (var k in this.sortInfo) {
             if (this.sortInfo[k].fixed) {
@@ -14522,11 +14600,10 @@ jQuery.fn.ax5select = function () {
     };
 
     var getExcelString = function getExcelString() {
-        var cfg = this.config;
-        var colGroup = this.colGroup;
-        var headerData = this.headerData;
-
-        var getHeader = function getHeader(_colGroup, _bodyRow) {
+        var cfg = this.config,
+            colGroup = this.colGroup,
+            headerData = this.headerTable,
+            getHeader = function getHeader(_colGroup, _bodyRow) {
             var SS = [];
             //SS.push('<table border="1">');
             for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
@@ -15107,9 +15184,10 @@ jQuery.fn.ax5select = function () {
                 return false;
             }
 
-            var newLeft, newTop;
-            var _top_is_end = false;
-            var _left_is_end = false;
+            var newLeft = void 0,
+                newTop = void 0,
+                _top_is_end = false,
+                _left_is_end = false;
 
             newLeft = _body_scroll_position.left - delta.x;
             newTop = _body_scroll_position.top - delta.y;
@@ -15153,8 +15231,9 @@ jQuery.fn.ax5select = function () {
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
                 getContentPosition = function getContentPosition(e) {
-                var mouseObj = GRID.util.getMousePosition(e);
-                var newLeft, newTop;
+                var mouseObj = GRID.util.getMousePosition(e),
+                    newLeft = void 0,
+                    newTop = void 0;
 
                 self.xvar.__x_da = mouseObj.clientX - self.xvar.mousePosition.clientX;
                 self.xvar.__y_da = mouseObj.clientY - self.xvar.mousePosition.clientY;
@@ -15185,36 +15264,40 @@ jQuery.fn.ax5select = function () {
 
             this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
             this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.touchmoved = false;
 
-            jQuery(document.body).bind("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+            jQuery(document.body).on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+
                 var css = getContentPosition(e);
                 GRID.header.scrollTo.call(self, { left: css.left });
                 GRID.body.scrollTo.call(self, css, "noRepaint");
                 resize.call(self);
                 U.stopEvent(e);
-            }).bind("touchend" + ".ax5grid-" + this.instanceId, function (e) {
-                var css = getContentPosition(e);
-                GRID.header.scrollTo.call(self, { left: css.left });
-                GRID.body.scrollTo.call(self, css);
-                resize.call(self);
-                U.stopEvent(e);
-                scrollContentMover.off.call(self);
+                self.xvar.touchmoved = true;
+            }).on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
+                if (self.xvar.touchmoved) {
+                    var css = getContentPosition(e);
+                    GRID.header.scrollTo.call(self, { left: css.left });
+                    GRID.body.scrollTo.call(self, css);
+                    resize.call(self);
+                    U.stopEvent(e);
+                    scrollContentMover.off.call(self);
+                }
             });
 
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
 
-            jQuery(document.body).unbind("touchmove" + ".ax5grid-" + this.instanceId).unbind("touchend" + ".ax5grid-" + this.instanceId);
+            jQuery(document.body).off("touchmove" + ".ax5grid-" + this.instanceId).off("touchend" + ".ax5grid-" + this.instanceId);
 
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
         }
     };
 
     var init = function init() {
-        var self = this;
-        //this.config.scroller.size
-        var margin = this.config.scroller.trackPadding;
+        var self = this,
+            margin = this.config.scroller.trackPadding;
 
         this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
         this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
@@ -15248,8 +15331,9 @@ jQuery.fn.ax5select = function () {
         }.bind(this));
 
         this.$["container"]["body"].on('mousewheel DOMMouseScroll', function (e) {
-            var E = e.originalEvent;
-            var delta = { x: 0, y: 0 };
+            var E = e.originalEvent,
+                delta = { x: 0, y: 0 };
+
             if (E.detail) {
                 delta.y = E.detail * 10;
             } else {
@@ -15770,7 +15854,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "mediaViewer",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5mediaViewer
@@ -16338,7 +16422,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -16412,7 +16496,7 @@ jQuery.fn.ax5select = function () {
              * UI 상태변경 이벤트 처리자
              * UI의 상태변경 : open, close, upload 등의 변경사항이 발생되면 onStateChanged 함수를 후출하여 이벤트를 처리
              */
-            var onStateChanged = function onStateChanged(that) {
+            var bound_onStateChanged = function (that) {
 
                 var state = {
                     "open": function open() {},
@@ -16428,13 +16512,15 @@ jQuery.fn.ax5select = function () {
 
                 that = null;
                 return true;
-            };
+            }.bind(this);
 
-            var onSelectFile = function (_evt) {
+            var bound_onSelectFile = function (_evt) {
                 var files = void 0;
 
                 if (!ax5.info.supportFileApi) {
                     // file API 지원 안되는 브라우저.
+                    // input file에 multiple 지원 안됨 그러므로 단일 파일 처리만 하면 됨.
+                    files = { path: _evt.target.value };
                 } else if ('dataTransfer' in _evt) {
                     files = _evt.dataTransfer.files;
                 } else if ('target' in _evt) {
@@ -16453,71 +16539,143 @@ jQuery.fn.ax5select = function () {
                 }
 
                 if (cfg.progressBox) {
-                    openProgressBox();
+                    bound_openProgressBox();
                 }
                 if (!cfg.manualUpload) {
                     this.send();
                 }
+
+                if (!ax5.info.supportFileApi) {
+                    bound_alignLayout(false);
+                }
             }.bind(this);
 
-            var bindEvent = function bindEvent() {
+            var bound_bindEvent = function () {
                 this.$fileSelector.off("click.ax5uploader").on("click.ax5uploader", function () {
                     this.$inputFile.trigger("click");
                 }.bind(this));
 
-                this.$inputFile.off("change.ax5uploader").on("change.ax5uploader", function (_evt) {
-                    onSelectFile(_evt);
-                }.bind(this));
+                if (!ax5.info.supportFileApi) {
+                    this.$fileSelector.off("mouseover.ax5uploader").on("mouseover.ax5uploader", function () {
+                        bound_alignLayout(true);
+                    }.bind(this));
+
+                    this.$inputFile.off("mouseover.ax5uploader").on("mouseover.ax5uploader", function () {
+                        this.$fileSelector.addClass("active");
+                    }.bind(this));
+
+                    this.$inputFile.off("mouseout.ax5uploader").on("mouseout.ax5uploader", function () {
+                        this.$fileSelector.removeClass("active");
+
+                        bound_alignLayout(false);
+                    }.bind(this));
+                }
+
+                (function () {
+                    if (!this.$uploadedBox || !this.$uploadedBox.get(0)) return false;
+
+                    this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
+                        var $this = jQuery(this),
+                            cellType = $this.attr("data-uploaded-item-cell"),
+                            uploadedItemIndex = Number($this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item')),
+                            that = {};
+
+                        if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
+                            that = {
+                                self: self,
+                                cellType: cellType,
+                                uploadedFiles: self.uploadedFiles,
+                                fileIndex: uploadedItemIndex
+                            };
+                            cfg.uploadedBox.onclick.call(that, that);
+                        }
+
+                        $this = null;
+                        cellType = null;
+                        uploadedItemIndex = null;
+                        that = null;
+                    });
+                }).call(this);
 
                 (function () {
                     // dropZone 설정 방식 변경
+                    if (!ax5.info.supportFileApi) return false;
                     if (!this.$dropZone || !this.$dropZone.get(0)) return false;
 
                     var timer = void 0;
 
-                    this.$dropZone.on("click", function (e) {
-                        //console.log(e.target.getAttribute("data-ax5uploader-dropzone"));
-                        var isItemCell = ax5.util.findParentNode(e.target, function (target) {
-                            if (target.hasAttribute("data-uploaded-item-cell")) {
-                                return true;
+                    this.$dropZone.parent().on("click", "[data-ax5uploader-dropzone]", function (e) {
+                        if (this == e.target || $.contains(this, e.target)) {
+                            if (U.isFunction(cfg.dropZone.onclick)) {
+                                cfg.dropZone.onclick.call({
+                                    self: self
+                                });
+                            } else {
+                                self.$inputFile.trigger("click");
                             }
-                        });
-
-                        if (!isItemCell) {
-                            // dropZone click
-                            self.$inputFile.trigger("click");
                         }
                     });
 
                     this.$dropZone.get(0).addEventListener('dragover', function (e) {
                         U.stopEvent(e);
-                        self.$dropZone.addClass("dragover");
+
+                        if (U.isFunction(cfg.dropZone.ondragover)) {
+                            cfg.dropZone.ondragover.call({
+                                self: self
+                            });
+                        } else {
+                            self.$dropZone.addClass("dragover");
+                        }
                     }, false);
 
                     this.$dropZone.get(0).addEventListener('dragleave', function (e) {
                         U.stopEvent(e);
-                        self.$dropZone.removeClass("dragover");
+
+                        if (U.isFunction(cfg.dropZone.ondragover)) {
+                            cfg.dropZone.ondragout.call({
+                                self: self
+                            });
+                        } else {
+                            self.$dropZone.removeClass("dragover");
+                        }
                     }, false);
 
                     this.$dropZone.get(0).addEventListener('drop', function (e) {
                         U.stopEvent(e);
-                        self.$dropZone.removeClass("dragover");
-                        onSelectFile(e || window.event);
+
+                        if (U.isFunction(cfg.dropZone.ondrop)) {
+                            cfg.dropZone.ondrop.call({
+                                self: self
+                            });
+                        } else {
+                            self.$dropZone.removeClass("dragover");
+                        }
+
+                        bound_onSelectFile(e || window.event);
                     }, false);
                 }).call(this);
-            };
+            }.bind(this);
 
-            var alignLayout = function alignLayout() {
+            var bound_alignLayout = function (_TF) {
                 // 상황이 좋지 않은경우 (만약 버튼 클릭으로 input file click이 되지 않는 다면 z-index값을 높여서 버튼위를 덮는다.)
-                /*
-                 var box = this.$fileSelector.position();
-                 box.width = this.$fileSelector.outerWidth();
-                 box.height = this.$fileSelector.outerHeight();
-                 this.$inputFile.css(box);
-                 */
-            };
+                if (_TF) {
+                    if (!ax5.info.supportFileApi) {
+                        // ie9에서 inputFile을 직접 클릭하지 않으면 submit 오류발생함. submit access denied
+                        // 그래서 버튼위에 inputFile을 올려두어야 함. (position값을 이용하면 편하지만..)
+                        // 그런데 form을 안에두면 또 다른 이중폼 문제 발생소지 ㅜㅜ 불가피하게 버튼의 offset 값을 이용.
+                        var box = this.$fileSelector.offset();
+                        box.width = this.$fileSelector.outerWidth();
+                        box.height = this.$fileSelector.outerHeight();
+                        this.$inputFile.css(box);
+                    }
+                } else {
+                    this.$inputFile.css({
+                        left: -1000, top: -1000
+                    });
+                }
+            }.bind(this);
 
-            var alignProgressBox = function alignProgressBox(append) {
+            var bound_alignProgressBox = function (append) {
                 var _alignProgressBox = function _alignProgressBox() {
                     var $window = jQuery(window),
                         $body = jQuery(document.body);
@@ -16542,7 +16700,7 @@ jQuery.fn.ax5select = function () {
                     };
 
                     // picker css(width, left, top) & direction 결정
-                    if (!cfg.direction || cfg.direction === "" || cfg.direction === "auto") {
+                    if (!cfg.progressBoxDirection || cfg.progressBoxDirection === "" || cfg.progressBoxDirection === "auto") {
                         // set direction
                         pickerDirection = "top";
                         if (pos.top - pickerDim.height - positionMargin < 0) {
@@ -16551,7 +16709,7 @@ jQuery.fn.ax5select = function () {
                             pickerDirection = "bottom";
                         }
                     } else {
-                        pickerDirection = cfg.direction;
+                        pickerDirection = cfg.progressBoxDirection;
                     }
 
                     if (append) {
@@ -16625,31 +16783,31 @@ jQuery.fn.ax5select = function () {
                 setTimeout(function () {
                     _alignProgressBox.call(this);
                 }.bind(this));
-            };
+            }.bind(this);
 
-            var openProgressBox = function () {
+            var bound_openProgressBox = function () {
                 this.$progressBox.removeClass("destroy");
                 this.$progressUpload.removeAttr("disabled");
                 this.$progressAbort.removeAttr("disabled");
 
                 // apend & align progress box
-                alignProgressBox.call(this, "append");
+                bound_alignProgressBox("append");
 
                 // state change
-                onStateChanged.call(this, {
+                bound_onStateChanged({
                     self: this,
                     state: "open"
                 });
             }.bind(this);
 
-            var closeProgressBox = function () {
+            var bound_closeProgressBox = function () {
                 this.$progressBox.addClass("destroy");
                 setTimeout(function () {
                     this.$progressBox.remove();
                 }.bind(this), cfg.animateTime);
             }.bind(this);
 
-            var startUpload = function () {
+            var bound_startUpload = function () {
 
                 var processor = {
                     "html5": function html5() {
@@ -16657,7 +16815,7 @@ jQuery.fn.ax5select = function () {
                         var uploadFile = this.selectedFiles.shift();
                         if (!uploadFile) {
                             // 업로드 종료
-                            uploadComplete();
+                            bound_uploadComplete();
                             return this;
                         }
 
@@ -16684,16 +16842,23 @@ jQuery.fn.ax5select = function () {
 
                             if (res.error) {
                                 if (cfg.debug) console.log(res.error);
+                                if (U.isFunction(cfg.onuploaderror)) {
+                                    cfg.onuploaderror.call({
+                                        self: this,
+                                        error: res.error
+                                    }, res);
+                                }
+                                self.send();
                                 return false;
                             }
 
-                            uploaded(res);
+                            bound_uploaded(res);
                             self.send();
                         };
 
                         this.xhr.upload.onprogress = function (e) {
                             // console.log(e.loaded, e.total);
-                            updateProgressBar(e);
+                            bound_updateProgressBar(e);
                             if (U.isFunction(cfg.onprogress)) {
                                 cfg.onprogress.call({
                                     loaded: e.loaded,
@@ -16704,12 +16869,51 @@ jQuery.fn.ax5select = function () {
                         this.xhr.send(formData); // multipart/form-data
                     },
                     "form": function form() {
-                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
-                        // iframe 생성
-                        var iframe = $('<iframe src="javascript:false;" name="" style="display:none;"></iframe>');
-                        // form 생성.
 
-                        $(document.body).append(iframe);
+                        /// i'm busy
+                        this.__uploading = true;
+
+                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
+                        var $iframe = jQuery('<iframe src="javascript:false;" name="ax5uploader-' + this.instanceId + '-iframe" style="display:none;"></iframe>');
+                        jQuery(document.body).append($iframe);
+
+                        // onload 이벤트 핸들러
+                        // action에서 파일을 받아 처리한 결과값을 텍스트로 출력한다고 가정하고 iframe의 내부 데이터를 결과값으로 callback 호출
+                        $iframe.load(function () {
+                            var doc = this.contentWindow ? this.contentWindow.document : this.contentDocument ? this.contentDocument : this.document,
+                                root = doc.documentElement ? doc.documentElement : doc.body,
+                                result = root.textContent ? root.textContent : root.innerText,
+                                res = void 0;
+
+                            try {
+                                res = JSON.parse(result);
+                            } catch (e) {
+                                res = {
+                                    error: "Syntax error",
+                                    body: result
+                                };
+                            }
+
+                            if (cfg.debug) console.log(res);
+                            if (res.error) {
+                                console.log(res);
+                            } else {
+                                bound_uploaded(res);
+                                $iframe.remove();
+
+                                setTimeout(function () {
+                                    bound_uploadComplete();
+                                }, 300);
+                            }
+                        });
+
+                        this.$inputFileForm.attr("target", 'ax5uploader-' + this.instanceId + '-iframe').attr("action", cfg.form.action).submit();
+
+                        this.selectedFilesTotal = 1;
+                        bound_updateProgressBar({
+                            loaded: 1,
+                            total: 1
+                        });
                     }
                 };
 
@@ -16730,7 +16934,7 @@ jQuery.fn.ax5select = function () {
                 processor[ax5.info.supportFileApi ? "html5" : "form"].call(this);
             }.bind(this);
 
-            var updateProgressBar = function (e) {
+            var bound_updateProgressBar = function (e) {
                 this.__loaded += e.loaded;
                 this.$progressBar.css({ width: U.number(this.__loaded / this.selectedFilesTotal * 100, { round: 2 }) + '%' });
                 if (e.lengthComputable) {
@@ -16738,10 +16942,10 @@ jQuery.fn.ax5select = function () {
                 }
             }.bind(this);
 
-            var uploaded = function (res) {
+            var bound_uploaded = function (res) {
                 if (cfg.debug) console.log(res);
                 this.uploadedFiles.push(res);
-                repaintUploadedBox(); // 업로드된 파일 출력
+                bound_repaintUploadedBox(); // 업로드된 파일 출력
 
                 if (U.isFunction(cfg.onuploaded)) {
                     cfg.onuploaded.call({
@@ -16750,13 +16954,13 @@ jQuery.fn.ax5select = function () {
                 }
             }.bind(this);
 
-            var uploadComplete = function () {
+            var bound_uploadComplete = function () {
                 this.__uploading = false; // 업로드 완료 상태처리
                 this.$progressUpload.removeAttr("disabled");
                 this.$progressAbort.attr("disabled", "disabled");
 
                 if (cfg.progressBox) {
-                    closeProgressBox();
+                    bound_closeProgressBox();
                 }
                 if (U.isFunction(cfg.onuploadComplete)) {
                     cfg.onuploadComplete.call({
@@ -16764,9 +16968,12 @@ jQuery.fn.ax5select = function () {
                     });
                 }
                 // update uploadedFiles display
+
+                /// reset inputFile
+                bound_attachFileTag();
             }.bind(this);
 
-            var cancelUpload = function () {
+            var bound_cancelUpload = function () {
 
                 var processor = {
                     "html5": function html5() {
@@ -16784,15 +16991,18 @@ jQuery.fn.ax5select = function () {
                 processor[ax5.info.supportFileApi ? "html5" : "form"].call(this);
 
                 if (cfg.progressBox) {
-                    closeProgressBox();
+                    bound_closeProgressBox();
                 }
 
-                this.$inputFile.get(0).value = "";
-                console.log("cancelUpload");
+                //this.$inputFile.val("");
+                /// reset inputFile
+                bound_attachFileTag();
+
+                if (cfg.debug) console.log("cancelUpload");
                 // update uploadedFiles display
             }.bind(this);
 
-            var repaintUploadedBox = function () {
+            var bound_repaintUploadedBox = function () {
                 // uploadedBox 가 없다면 아무일도 하지 않음.
                 // onuploaded 함수 이벤트를 이용하여 개발자가 직접 업로드디 박스를 구현 한다고 이해 하자.
                 if (this.$uploadedBox === null) return this;
@@ -16800,10 +17010,87 @@ jQuery.fn.ax5select = function () {
                 this.$uploadedBox.html(UPLOADER.tmpl.get("upoadedBox", {
                     uploadedFiles: this.uploadedFiles,
                     icon: cfg.uploadedBox.icon,
-                    lang: cfg.uploadedBox.lang
+                    lang: cfg.uploadedBox.lang,
+                    supportFileApi: !!ax5.info.supportFileApi
                 }, cfg.uploadedBox.columnKeys));
             }.bind(this);
 
+            var bound_attachFileTag = function () {
+                if (this.$inputFile && this.$inputFile.get(0)) {
+                    this.$inputFile.remove();
+                }
+                if (this.$inputFileForm && this.$inputFileForm.get(0)) {
+                    this.$inputFileForm.remove();
+                }
+
+                this.$inputFile = jQuery(UPLOADER.tmpl.get.call(this, "inputFile", {
+                    instanceId: this.instanceId,
+                    multiple: cfg.multiple,
+                    accept: cfg.accept,
+                    name: cfg.form.fileName
+                }));
+
+                if (ax5.info.supportFileApi) {
+                    jQuery(document.body).append(this.$inputFile);
+                } else {
+                    this.$fileSelector.attr("tabindex", -1);
+                    this.$inputFileForm = jQuery(UPLOADER.tmpl.get.call(this, "inputFileForm", {
+                        instanceId: this.instanceId
+                    }));
+
+                    this.$inputFileForm.append(this.$inputFile);
+                    jQuery(document.body).append(this.$inputFileForm);
+                }
+
+                this.$inputFile.off("change.ax5uploader").on("change.ax5uploader", function (_evt) {
+                    bound_onSelectFile(_evt);
+                }.bind(this));
+            }.bind(this);
+
+            /**
+             * Preferences of uploader UI
+             * @method ax5uploader.setConfig
+             * @param {Object} _config - 클래스 속성값
+             * @param {Element} _config.target
+             * @param {Object} _config.form
+             * @param {String} _config.form.action - upload URL
+             * @param {String} _config.form.fileName - The name key of the upload file
+             * @param {Boolean} [_config.multiple=false] - Whether multiple files. In a browser where fileApi is not supported (eg IE9), it only works with false.
+             * @param {String} [_config.accept=""] - accept mimeType (http://www.w3schools.com/TAgs/att_input_accept.asp)
+             * @param {Boolean} [_config.manualUpload=false] - Whether to automatically upload when a file is selected.
+             * @param {Boolean} [_config.progressBox=true] - Whether to use progressBox
+             * @param {String} [_config.progressBoxDirection=auto] - ProgressBox display direction
+             * @param {Object} [_config.dropZone]
+             * @param {Element} [_config.dropZone.target]
+             * @param {Function} [_config.dropZone.onclick]
+             * @param {Function} [_config.dropZone.ondragover]
+             * @param {Function} [_config.dropZone.ondragout]
+             * @param {Function} [_config.dropZone.ondrop]
+             * @param {Object} [_config.uploadedBox]
+             * @param {Element} [_config.uploadedBox.target]
+             * @param {Element} [_config.uploadedBox.icon]
+             * @param {Object} [_config.uploadedBox.columnKeys]
+             * @param {String} [_config.uploadedBox.columnKeys.name]
+             * @param {String} [_config.uploadedBox.columnKeys.type]
+             * @param {String} [_config.uploadedBox.columnKeys.size]
+             * @param {String} [_config.uploadedBox.columnKeys.uploadedName]
+             * @param {String} [_config.uploadedBox.columnKeys.downloadPath]
+             * @param {Object} [_config.uploadedBox.lang]
+             * @param {String} [_config.uploadedBox.lang.supportedHTML5_emptyListMsg]
+             * @param {String} [_config.uploadedBox.lang.emptyListMsg]
+             * @param {Function} [_config.uploadedBox.onchange]
+             * @param {Function} [_config.uploadedBox.onclick]
+             * @param {Function} [_config.validateSelectedFiles]
+             * @param {Function} [_config.onprogress] - return loaded, total
+             * @param {Function} [_config.onuploaded] - return self
+             * @param {Function} [_config.onuploaderror] - return self, error
+             * @param {Function} [_config.onuploadComplete] - return self
+             * @returns {ax5uploader}
+             * @example
+             * ```js
+             *
+             * ```
+             */
             this.init = function (_config) {
                 cfg = jQuery.extend(true, {}, cfg, _config);
                 if (!cfg.target) {
@@ -16814,35 +17101,14 @@ jQuery.fn.ax5select = function () {
                 this.$target = jQuery(cfg.target);
 
                 // 파일 드랍존은 옵션 사항.
-                if (cfg.dropZone) {
-                    this.$dropZone = jQuery(cfg.dropZone);
+                if (cfg.dropZone && cfg.dropZone.target && ax5.info.supportFileApi) {
+                    this.$dropZone = jQuery(cfg.dropZone.target);
                     this.$dropZone.attr("data-ax5uploader-dropzone", this.instanceId);
                 }
 
                 // uploadedBox 옵션 사항
                 if (cfg.uploadedBox && cfg.uploadedBox.target) {
                     this.$uploadedBox = jQuery(cfg.uploadedBox.target);
-                    this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
-                        var $this = jQuery(this),
-                            cellType = $this.attr("data-uploaded-item-cell"),
-                            uploadedItemIndex = Number($this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item')),
-                            that = {};
-
-                        if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
-                            that = {
-                                self: self,
-                                cellType: cellType,
-                                uploadedFiles: self.uploadedFiles,
-                                fileIndex: uploadedItemIndex
-                            };
-                            cfg.uploadedBox.onclick.call(that, that);
-                        }
-
-                        $this = null;
-                        cellType = null;
-                        uploadedItemIndex = null;
-                        that = null;
-                    });
                 }
 
                 // target attribute data
@@ -16862,21 +17128,7 @@ jQuery.fn.ax5select = function () {
                 }
 
                 // input file 추가
-                this.$inputFile = jQuery(UPLOADER.tmpl.get.call(this, "inputFile", {
-                    instanceId: this.instanceId,
-                    multiple: cfg.multiple,
-                    accept: cfg.accept
-                }));
-
-                if (ax5.info.supportFileApi) {
-                    jQuery(document.body).append(this.$inputFile);
-                } else {
-                    this.$inputFileForm = jQuery(UPLOADER.tmpl.get.call(this, "inputFileForm", {
-                        instanceId: this.instanceId
-                    }));
-                    this.$inputFileForm.append(this.$inputFile);
-                    jQuery(document.body).append(this.$inputFileForm);
-                }
+                bound_attachFileTag();
 
                 // btns 확인
                 cfg.btns = jQuery.extend({}, this.defaultBtns, cfg.btns);
@@ -16890,11 +17142,14 @@ jQuery.fn.ax5select = function () {
                 this.$progressUpload = this.$progressBox.find('[data-pregressbox-btn="upload"]');
                 this.$progressAbort = this.$progressBox.find('[data-pregressbox-btn="abort"]');
 
-                // 레이아웃 정렬
-                alignLayout.call(this);
+                // file API가 지원되지 않는 브라우저는 중지 기능 제공 못함.
+                if (!ax5.info.supportFileApi) {
+                    this.$progressAbort.hide();
+                }
                 // 파일버튼 등에 이벤트 연결.
-                bindEvent.call(this);
+                bound_bindEvent();
 
+                bound_repaintUploadedBox();
                 return this;
             };
 
@@ -16906,7 +17161,20 @@ jQuery.fn.ax5select = function () {
             this.send = function () {
                 return function () {
                     // 업로드 시작
-                    startUpload();
+                    if (U.isFunction(cfg.validateSelectedFiles)) {
+                        var that = {
+                            self: this,
+                            uploadedFiles: this.uploadedFiles,
+                            selectedFiles: this.selectedFiles
+                        };
+                        if (!cfg.validateSelectedFiles.call(that, that)) {
+                            bound_cancelUpload();
+                            return false;
+                            // 전송처리 안함.
+                        }
+                    }
+
+                    bound_startUpload();
                     return this;
                 };
             }();
@@ -16917,7 +17185,11 @@ jQuery.fn.ax5select = function () {
              */
             this.abort = function () {
                 return function () {
-                    cancelUpload();
+                    if (!ax5.info.supportFileApi) {
+                        alert("This browser not supported abort method");
+                        return this;
+                    }
+                    bound_cancelUpload();
                     return this;
                 };
             }();
@@ -16955,7 +17227,13 @@ jQuery.fn.ax5select = function () {
                 if (U.isArray(_files)) {
                     this.uploadedFiles = _files;
                 }
-                repaintUploadedBox();
+                if (U.isString(_files)) {
+                    try {
+                        this.uploadedFiles = JSON.parse(_files);
+                    } catch (e) {}
+                }
+
+                bound_repaintUploadedBox();
                 return this;
             };
 
@@ -16974,7 +17252,7 @@ jQuery.fn.ax5select = function () {
                 if (!isNaN(Number(_index))) {
                     this.uploadedFiles.splice(_index, 1);
                 }
-                repaintUploadedBox();
+                bound_repaintUploadedBox();
                 return this;
             };
 
@@ -16989,8 +17267,20 @@ jQuery.fn.ax5select = function () {
              */
             this.removeFileAll = function () {
                 this.uploadedFiles = [];
-                repaintUploadedBox();
+                bound_repaintUploadedBox();
                 return this;
+            };
+
+            /**
+             * @method ax5uploader.selectFile
+             * @returns {Boolean}
+             */
+            this.selectFile = function () {
+                if (ax5.info.supportFileApi) {
+                    this.$inputFile.trigger("click");
+                    return true;
+                }
+                return false;
             };
 
             // 클래스 생성자
@@ -17029,11 +17319,11 @@ jQuery.fn.ax5select = function () {
     };
 
     var inputFile = function inputFile(columnKeys) {
-        return '<input type="file" data-ax5uploader-input="{{instanceId}}" {{#multiple}}multiple{{/multiple}} accept="{{accept}}" />';
+        return '<input type="file" data-ax5uploader-input="{{instanceId}}" name="{{name}}" {{#multiple}}multiple{{/multiple}} accept="{{accept}}" />';
     };
 
     var inputFileForm = function inputFileForm(columnKeys) {
-        return '<form data-ax5uploader-form="{{instanceId}}" method="post" enctype="multipart/form-data"></form>';
+        return '<form data-ax5uploader-form="{{instanceId}}" name="ax5uploader-{{instanceId}}-form" method="post" enctype="multipart/form-data"></form>';
     };
 
     var progressBox = function progressBox(columnKeys) {
@@ -17041,7 +17331,7 @@ jQuery.fn.ax5select = function () {
     };
 
     var upoadedBox = function upoadedBox(columnKeys) {
-        return '\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item="{{@i}}">\n    <div class="uploaded-item-holder" >\n        <div class="uploaded-item-cell" data-uploaded-item-cell="download">{{{icon.download}}}</div>\n        <div class="uploaded-item-cell" data-uploaded-item-cell="filename">{{' + columnKeys.name + '}}</div>\n        <div class="uploaded-item-cell" data-uploaded-item-cell="filesize">({{#@fn_get_byte}}{{' + columnKeys.size + '}}{{/@fn_get_byte}})</div>\n        <div class="uploaded-item-cell" data-uploaded-item-cell="delete">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n{{^uploadedFiles}}\n{{{lang.emptyList}}}\n{{/uploadedFiles}}\n';
+        return '\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item="{{@i}}">\n    <div class="uploaded-item-holder">\n        <div class="uploaded-item-cell" data-uploaded-item-cell="download">{{{icon.download}}}</div>\n        <div class="uploaded-item-cell" data-uploaded-item-cell="filename">{{' + columnKeys.name + '}}</div>\n        <div class="uploaded-item-cell" data-uploaded-item-cell="filesize">({{#@fn_get_byte}}{{' + columnKeys.size + '}}{{/@fn_get_byte}})</div>\n        <div class="uploaded-item-cell" data-uploaded-item-cell="delete">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n{{^uploadedFiles}}\n{{#supportFileApi}}{{{lang.supportedHTML5_emptyListMsg}}}{{/supportFileApi}}\n{{^supportFileApi}}{{{lang.emptyListMsg}}}{{/supportFileApi}}\n{{/uploadedFiles}}\n';
     };
 
     UPLOADER.tmpl = {
@@ -17070,7 +17360,7 @@ jQuery.fn.ax5select = function () {
 
     UI.addClass({
         className: "combobox",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5combobox
@@ -18706,7 +18996,7 @@ jQuery.fn.ax5combobox = function () {
 
     UI.addClass({
         className: "layout",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5layout
@@ -19735,7 +20025,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "binder",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
 
         /**
@@ -20696,7 +20986,7 @@ jQuery.fn.ax5layout = function () {
 
     UI.addClass({
         className: "autocomplete",
-        version: "1.3.58"
+        version: "1.3.66"
     }, function () {
         /**
          * @class ax5autocomplete
@@ -22080,7 +22370,7 @@ jQuery.fn.ax5autocomplete = function () {
     };
 
     var autocompleteDisplay = function autocompleteDisplay(columnKeys) {
-        return ' \n<input tabindex="-1" type="text" data-input-dummy="" style="display: none;" />\n<div class="form-control {{formSize}} ax5autocomplete-display {{theme}}" \ndata-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">\n    <div class="ax5autocomplete-display-table" data-els="display-table">\n        <div data-ax5autocomplete-display="label-holder"> \n        <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n        data-ax5autocomplete-display="label"\n        spellcheck="false"><input type="text"data-ax5autocomplete-display="input" style="border:0px none;background: transparent;" /></a>\n        </div>\n        <div data-ax5autocomplete-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n';
+        return ' \n<input tabindex="-1" type="text" data-input-dummy="" style="display: none;" />\n<div class="form-control {{formSize}} ax5autocomplete-display {{theme}}" \ndata-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">\n    <div class="ax5autocomplete-display-table" data-els="display-table">\n        <div data-ax5autocomplete-display="label-holder"> \n        <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n        data-ax5autocomplete-display="label"\n        spellcheck="false"><input type="text"data-ax5autocomplete-display="input" style="border:0px none;" /></a>\n        </div>\n        <div data-ax5autocomplete-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n';
     };
 
     var formSelect = function formSelect(columnKeys) {

@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-kernel.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-kernel)
+
 ![ax5ui preview](src/preview.png)
 
 # What is it!!
