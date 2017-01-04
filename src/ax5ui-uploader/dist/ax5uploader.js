@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.66"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -192,13 +192,16 @@
                     var timer = void 0;
 
                     this.$dropZone.parent().on("click", "[data-ax5uploader-dropzone]", function (e) {
-                        if (this == e.target || $.contains(this, e.target)) {
-                            if (U.isFunction(cfg.dropZone.onclick)) {
-                                cfg.dropZone.onclick.call({
-                                    self: self
-                                });
-                            } else {
-                                self.$inputFile.trigger("click");
+                        var $target = jQuery(e.target);
+                        if ($target.parents('[data-ax5uploader-uploaded-item]').length == 0 && !$target.attr('data-ax5uploader-uploaded-item')) {
+                            if (this == e.target || $.contains(this, e.target)) {
+                                if (U.isFunction(cfg.dropZone.onclick)) {
+                                    cfg.dropZone.onclick.call({
+                                        self: self
+                                    });
+                                } else {
+                                    self.$inputFile.trigger("click");
+                                }
                             }
                         }
                     });
@@ -600,6 +603,10 @@
                     lang: cfg.uploadedBox.lang,
                     supportFileApi: !!ax5.info.supportFileApi
                 }, cfg.uploadedBox.columnKeys));
+                this.$uploadedBox.find("img").on("error", function () {
+                    //this.src = "";
+                    $(this).parent().addClass("no-image");
+                });
             }.bind(this);
 
             var bound_attachFileTag = function () {
@@ -918,7 +925,7 @@
     };
 
     var upoadedBox = function upoadedBox(columnKeys) {
-        return "\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-holder\">\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"download\">{{{icon.download}}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filename\">{{" + columnKeys.name + "}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filesize\">({{#@fn_get_byte}}{{" + columnKeys.size + "}}{{/@fn_get_byte}})</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"delete\">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n{{^uploadedFiles}}\n{{#supportFileApi}}{{{lang.supportedHTML5_emptyListMsg}}}{{/supportFileApi}}\n{{^supportFileApi}}{{{lang.emptyListMsg}}}{{/supportFileApi}}\n{{/uploadedFiles}}\n";
+        return "\n{{#uploadedFiles}}<div data-ax5uploader-uploaded-item=\"{{@i}}\">\n    <div class=\"uploaded-item-preview\">\n        {{#" + columnKeys.thumbnail + "}}<img src=\"" + columnKeys.apiServerUrl + "{{" + columnKeys.thumbnail + "}}\">{{/" + columnKeys.thumbnail + "}}\n    </div>\n    <div class=\"uploaded-item-holder\">\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"download\">{{{icon.download}}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filename\">{{" + columnKeys.name + "}}</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"filesize\">({{#@fn_get_byte}}{{" + columnKeys.size + "}}{{/@fn_get_byte}})</div>\n        <div class=\"uploaded-item-cell\" data-uploaded-item-cell=\"delete\">{{{icon.delete}}}</div>\n    </div>\n</div>{{/uploadedFiles}}\n{{^uploadedFiles}}\n{{#supportFileApi}}{{{lang.supportedHTML5_emptyListMsg}}}{{/supportFileApi}}\n{{^supportFileApi}}{{{lang.emptyListMsg}}}{{/supportFileApi}}\n{{/uploadedFiles}}\n";
     };
 
     UPLOADER.tmpl = {

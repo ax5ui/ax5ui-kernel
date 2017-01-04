@@ -208,13 +208,16 @@
 
                     this.$dropZone.parent()
                         .on("click", "[data-ax5uploader-dropzone]", function (e) {
-                            if (this == e.target || $.contains(this, e.target)) {
-                                if(U.isFunction(cfg.dropZone.onclick)) {
-                                    cfg.dropZone.onclick.call({
-                                        self: self
-                                    });
-                                }else{
-                                    self.$inputFile.trigger("click");
+                            let $target = jQuery(e.target);
+                            if($target.parents('[data-ax5uploader-uploaded-item]').length == 0 && !$target.attr('data-ax5uploader-uploaded-item')) {
+                                if (this == e.target || $.contains(this, e.target)) {
+                                    if (U.isFunction(cfg.dropZone.onclick)) {
+                                        cfg.dropZone.onclick.call({
+                                            self: self
+                                        });
+                                    } else {
+                                        self.$inputFile.trigger("click");
+                                    }
                                 }
                             }
                         });
@@ -633,6 +636,11 @@
                         supportFileApi: !!ax5.info.supportFileApi
                     }, cfg.uploadedBox.columnKeys)
                 );
+                this.$uploadedBox.find("img").on("error", function () {
+                   //this.src = "";
+                   $(this).parent().addClass("no-image");
+                });
+                
             }).bind(this);
 
             let bound_attachFileTag = (function () {
