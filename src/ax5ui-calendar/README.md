@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-calendar.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-calendar)
 [![npm version](https://badge.fury.io/js/ax5ui-calendar.svg)](https://badge.fury.io/js/ax5ui-calendar)
 
 # ax5ui-calendar

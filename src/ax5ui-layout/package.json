@@ -21,6 +21,9 @@
 		"ax5ui-layout",
 		"javascript ui"
 	],
+	"scripts": {
+		"test": "karma start karma.conf.js"
+	},
 	"devDependencies": {
 		"jquery": "^3.1.1",
 		"karma": "^1.3.0",

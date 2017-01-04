@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016. tom@axisj.com
+ * Copyright (c) 2017. tom@axisj.com
  * - github.com/thomasjang
  * - www.axisj.com
  */
@@ -22,7 +22,7 @@ module.exports = function (config) {
             'https://cdn.rawgit.com/shouldjs/should.js/master/should.js',
             'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
             'https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js',
-            'dist/ax5dialog.js',
+            'dist/ax5calendar.min.js',
             'test/test.*.js'
         ],
         // list of files to exclude
@@ -45,8 +45,8 @@ module.exports = function (config) {
         autoWatch: true,
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        //browsers: ['Chrome', 'Firefox', 'PhantomJS'],
-        browsers: ['Chrome', 'Firefox', 'PhantomJS'],
+        //browsers: ['PhantomJS'],
+        browsers: ['Chrome', 'Firefox'],
         customLaunchers: {
             Chrome_travis_ci: {
                 base: 'Chrome',
