@@ -9,14 +9,46 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'node_modules/jquery/dist/jquery.min.js',
-            'node_modules/lodash/lodash.min.js',
-            'node_modules/should/should.js',
-            'dist/ax5ui.all.css',
-            'dist/ax5ui.all.min.js',
+            'https://code.jquery.com/jquery-1.12.3.min.js',
+            'https://cdn.rawgit.com/shouldjs/should.js/master/should.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
+
+            'src/ax5core/dist/ax5core.min.js',
+            'src/ax5ui-autocomplete/dist/ax5autocomplete.min.js',
+            'src/ax5ui-binder/dist/ax5binder.min.js',
+            'src/ax5ui-calendar/dist/ax5calendar.min.js',
+            'src/ax5ui-combobox/dist/ax5combobox.min.js',
+            'src/ax5ui-dialog/dist/ax5dialog.min.js',
+            'src/ax5ui-formatter/dist/ax5formatter.min.js',
+            'src/ax5ui-grid/dist/ax5grid.min.js',
+            'src/ax5ui-layout/dist/ax5layout.min.js',
+            'src/ax5ui-mask/dist/ax5mask.min.js',
+            'src/ax5ui-media-viewer/dist/ax5media-viewer.min.js',
+            'src/ax5ui-menu/dist/ax5menu.min.js',
+            'src/ax5ui-modal/dist/ax5modal.min.js',
+            'src/ax5ui-picker/dist/ax5picker.min.js',
+            'src/ax5ui-select/dist/ax5select.min.js',
+            'src/ax5ui-toast/dist/ax5toast.min.js',
+            'src/ax5ui-uploader/dist/ax5uploader.min.js',
+
+
             'src/ax5core/test/test.*.js',
             'src/ax5ui-autocomplete/test/test.*.js',
-            'src/ax5ui-binder/test/test.*.js'
+            'src/ax5ui-binder/test/test.*.js',
+            'src/ax5ui-calendar/test/test.*.js',
+            'src/ax5ui-combobox/test/test.*.js',
+            'src/ax5ui-dialog/test/test.*.js',
+            'src/ax5ui-formatter/test/test.*.js',
+            'src/ax5ui-grid/test/test.*.js',
+            'src/ax5ui-layout/test/test.*.js',
+            'src/ax5ui-mask/test/test.*.js',
+            'src/ax5ui-media-viewer/test/test.*.js',
+            'src/ax5ui-menu/test/test.*.js',
+            'src/ax5ui-modal/test/test.*.js',
+            'src/ax5ui-picker/test/test.*.js',
+            'src/ax5ui-select/test/test.*.js',
+            'src/ax5ui-toast/test/test.*.js',
+            'src/ax5ui-uploader/test/test.*.js'
         ],
         // list of files to exclude
         exclude: [],
