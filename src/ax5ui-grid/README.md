@@ -1,13 +1,16 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-grid.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-grid)
 [![npm version](https://badge.fury.io/js/ax5ui-grid.svg)](https://badge.fury.io/js/ax5ui-grid)
 
+
+
 # ax5ui-grid
 "grid" displays data in a table format with various options provided for configuration.
+
+![ax5grid](src/ax5grid.gif)
 
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 > * _[ax5core](http://ax5.io/ax5core)_
-> * _[bootstrap](http://getbootstrap.com/)_
 
 
 ### Install with bower
