@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.67"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1498,9 +1498,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var columnSelect = {
         focusClear: function focusClear() {
-            var self = this;
+            var self = this,
+                _column = void 0;
             for (var c in self.focusedColumn) {
-                var _column = self.focusedColumn[c];
+                _column = self.focusedColumn[c];
                 if (_column) {
                     self.$.panel[_column.panelName].find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]').find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]').removeAttr('data-ax5grid-column-focused');
                 }
@@ -1508,9 +1509,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             self.focusedColumn = {};
         },
         clear: function clear() {
-            var self = this;
+            var self = this,
+                _column = void 0;
             for (var c in self.selectedColumn) {
-                var _column = self.selectedColumn[c];
+                _column = self.selectedColumn[c];
                 if (_column) {
                     self.$.panel[_column.panelName].find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]').find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]').removeAttr('data-ax5grid-column-selected');
                 }
@@ -1662,10 +1664,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var updateRowState = function updateRowState(_states, _dindex, _data) {
-        var self = this;
-        var cfg = this.config;
-
-        var processor = {
+        var self = this,
+            cfg = this.config,
+            processor = {
             "selected": function selected(_dindex) {
                 var i = this.$.livePanelKeys.length;
                 while (i--) {
@@ -1707,14 +1708,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var updateRowStateAll = function updateRowStateAll(_states, _data) {
-        var self = this;
-        var cfg = this.config;
-
-        var processor = {
+        var self = this,
+            cfg = this.config,
+            processor = {
             "selected": function selected(_dindex) {
                 GRID.body.repaint.call(this, true);
             }
         };
+
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
             processor[_state].call(self, _data);
@@ -1725,8 +1726,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var self = this;
 
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            var panelName, attr, row, col, dindex, rowIndex, colIndex, disableSelection;
-            var targetClick = {
+            var panelName = void 0,
+                attr = void 0,
+                row = void 0,
+                col = void 0,
+                dindex = void 0,
+                rowIndex = void 0,
+                colIndex = void 0,
+                disableSelection = void 0,
+                targetClick = {
                 "default": function _default(_column) {
                     var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
                     var that = {
@@ -1807,8 +1815,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         });
         this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
-            var panelName, attr, row, col, dindex, rowIndex, colIndex;
-            var targetClick = {
+            var panelName = void 0,
+                attr = void 0,
+                row = void 0,
+                col = void 0,
+                dindex = void 0,
+                rowIndex = void 0,
+                colIndex = void 0,
+                targetClick = {
                 "default": function _default(_column) {
 
                     if (this.isInlineEditing) {
@@ -1853,9 +1867,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         });
         this.$["container"]["body"].on("mouseover", "tr", function () {
-            return;
-            var dindex = this.getAttribute("data-ax5grid-tr-data-index");
-            var i = self.$.livePanelKeys.length;
+            return; // 사용안함. 나중을 위해 그냥 두자
+            var dindex = this.getAttribute("data-ax5grid-tr-data-index"),
+                i = self.$.livePanelKeys.length;
             while (i--) {
                 if (typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
                 self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
@@ -1882,8 +1896,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var resetFrozenColumn = function resetFrozenColumn() {
-        var cfg = this.config;
-        var dividedBodyRowObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.xvar.frozenColumnIndex);
+        var cfg = this.config,
+            dividedBodyRowObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.xvar.frozenColumnIndex);
         this.asideBodyRowData = function (dataTable) {
             var data = { rows: [] };
             for (var i = 0, l = dataTable.rows.length; i < l; i++) {
@@ -2041,8 +2055,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getGroupingValue = function getGroupingValue(_item, _index, _col) {
-        var value,
-            that,
+        var value = void 0,
+            that = void 0,
             _key = _col.key,
             _label = _col.label;
 
@@ -2105,8 +2119,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var that = {
                     key: _key,
                     list: _list
-                };
-                var value;
+                },
+                    value = void 0;
+
                 if (U.isFunction(_col.collector)) {
                     value = _col.collector.call(that);
                 } else {
@@ -2435,13 +2450,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var repaintCell = function repaintCell(_panelName, _dindex, _rowIndex, _colIndex, _newValue) {
-        var self = this;
-        var cfg = this.config;
-        var list = this.list;
+        var self = this,
+            cfg = this.config,
+            list = this.list;
 
-        var updateCell = this.$["panel"][_panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + _rowIndex + '"][data-ax5grid-column-colindex="' + _colIndex + '"]').find('[data-ax5grid-cellholder]');
-        var colGroup = this.colGroup;
-        var col = colGroup[_colIndex];
+        var updateCell = this.$["panel"][_panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + _rowIndex + '"][data-ax5grid-column-colindex="' + _colIndex + '"]').find('[data-ax5grid-cellholder]'),
+            colGroup = this.colGroup,
+            col = colGroup[_colIndex];
 
         updateCell.html(getFieldValue.call(this, list, list[_dindex], _dindex, col));
 
@@ -2449,10 +2464,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             col.editor.updateWith.forEach(function (updateColumnKey) {
                 colGroup.forEach(function (col) {
                     if (col.key == updateColumnKey) {
-                        var rowIndex = col.rowIndex;
-                        var colIndex = col.colIndex;
-                        var panelName = GRID.util.findPanelByColumnIndex.call(self, _dindex, colIndex, rowIndex).panelName;
-                        var updateWithCell = self.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+                        var rowIndex = col.rowIndex,
+                            colIndex = col.colIndex,
+                            panelName = GRID.util.findPanelByColumnIndex.call(self, _dindex, colIndex, rowIndex).panelName,
+                            updateWithCell = self.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+
                         updateWithCell.html(getFieldValue.call(self, list, list[_dindex], _dindex, col));
                     }
                 });
@@ -2461,28 +2477,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         /// ~~~~~~
 
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
-        var leftFootSumData = this.leftFootSumData;
-        var footSumData = this.footSumData;
-        var asideBodyGroupingData = this.asideBodyGroupingData;
-        var leftBodyGroupingData = this.leftBodyGroupingData;
-        var bodyGroupingData = this.bodyGroupingData;
-        var bodyAlign = cfg.body.align;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
-        var scrollConfig = {
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex,
+            leftFootSumData = this.leftFootSumData,
+            footSumData = this.footSumData,
+            asideBodyGroupingData = this.asideBodyGroupingData,
+            leftBodyGroupingData = this.leftBodyGroupingData,
+            bodyGroupingData = this.bodyGroupingData,
+            bodyAlign = cfg.body.align,
+            paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1,
+            scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
             paintRowCount: paintRowCount,
             bodyTrHeight: this.xvar.bodyTrHeight
         };
 
         var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
-            var _elTarget = this.$.panel[_elTargetKey];
-
-            var SS = [];
-            var cgi, cgl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            var _elTarget = this.$.panel[_elTargetKey],
+                SS = [],
+                cgi = void 0,
+                cgl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0;
 
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
@@ -2547,15 +2567,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return true;
         };
         var replaceGroupTr = function replaceGroupTr(_elTargetKey, _colGroup, _groupRow, _list, _scrollConfig) {
-            var _elTarget = this.$.panel[_elTargetKey];
-            var SS = [];
-            var cgi, cgl;
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            var _elTarget = this.$.panel[_elTargetKey],
+                SS = [],
+                di = void 0,
+                dl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0;
+
             for (di = _scrollConfig.paintStartRowIndex, dl = function () {
-                var len;
+                var len = void 0;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
                     len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
@@ -3497,7 +3522,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
 
-                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, undefined, "text"), '</td>');
+                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, undefined, "text"), '&nbsp;</td>');
                     }
                     SS.push('\n</tr>');
                 }

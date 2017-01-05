@@ -330,6 +330,14 @@
             padding: 0;
             background: transparent;
 
+
+            &:active,
+            &.active {
+                outline: 0;
+                background-image: none;
+                @include box-shadow(none);
+            }
+
             .uploaded-item-preview {
                 display: block;
                 &.no-image{
