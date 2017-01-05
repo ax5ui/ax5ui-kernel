@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.68"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -3158,10 +3158,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return moveResult;
             },
             "INDEX": function INDEX(_dindex) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i;
+                var moveResult = true,
+                    focusedColumn = void 0,
+                    originalColumn = void 0,
+                    while_i = void 0;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);

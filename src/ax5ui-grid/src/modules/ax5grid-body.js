@@ -1824,12 +1824,11 @@
                 return moveResult;
             },
             "INDEX": function (_dindex) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i;
+                let moveResult = true,
+                    focusedColumn, originalColumn,
+                    while_i;
 
-                for (var c in this.focusedColumn) {
+                for (let c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
                     break;
                 }
@@ -1867,7 +1866,7 @@
                     while_i++;
                 }
 
-                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                let nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
                 focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
