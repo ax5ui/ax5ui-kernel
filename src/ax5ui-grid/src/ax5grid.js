@@ -7,9 +7,9 @@
 // ax5.ui.grid
 (function () {
 
-    var UI = ax5.ui;
-    var U = ax5.util;
-    var GRID;
+    let UI = ax5.ui,
+        U = ax5.util,
+        GRID;
 
     UI.addClass({
         className: "grid",
@@ -24,10 +24,19 @@
          * var myGrid = new ax5.ui.grid();
          * ```
          */
-        var ax5grid = function () {
-            var
-                self = this,
-                cfg;
+        let ax5grid = function () {
+            let self = this,
+                cfg,
+                ctrlKeys = {
+                    "33": "KEY_PAGEUP",
+                    "34": "KEY_PAGEDOWN",
+                    "35": "KEY_END",
+                    "36": "KEY_HOME",
+                    "37": "KEY_LEFT",
+                    "38": "KEY_UP",
+                    "39": "KEY_RIGHT",
+                    "40": "KEY_DOWN"
+                };
 
             this.instanceId = ax5.getGuid();
             this.config = {
@@ -59,7 +68,8 @@
                     columnHeight: 26,
                     columnPadding: 3,
                     columnBorderWidth: 1,
-                    grouping: false
+                    grouping: false,
+                    mergeCells: false
                 },
                 rightSum: false,
                 footSum: false,
@@ -128,8 +138,7 @@
 
             cfg = this.config;
 
-            var
-                onStateChanged = function (_opts, _that) {
+            let onStateChanged = function (_opts, _that) {
                     if (_opts && _opts.onStateChanged) {
                         _opts.onStateChanged.call(_that, _that);
                     }
@@ -141,7 +150,7 @@
                 initGrid = function () {
                     // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
 
-                    var data = {
+                    let data = {
                         instanceId: this.id
                     };
 
@@ -217,10 +226,10 @@
                     // 바디에 표현될 한줄의 높이를 계산합니다.
                     this.xvar.bodyTrHeight = this.bodyRowTable.rows.length * this.config.body.columnHeight;
 
-                    var colGroupMap = {};
-                    for (var r = 0, rl = this.headerTable.rows.length; r < rl; r++) {
-                        var row = this.headerTable.rows[r];
-                        for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                    let colGroupMap = {};
+                    for (let r = 0, rl = this.headerTable.rows.length; r < rl; r++) {
+                        let row = this.headerTable.rows[r];
+                        for (let c = 0, cl = row.cols.length; c < cl; c++) {
                             colGroupMap[row.cols[c].colIndex] = jQuery.extend({}, row.cols[c]);
                         }
                     }
@@ -247,17 +256,15 @@
                 },
                 resetColGroupWidth = function () {
                     /// !! 그리드 target의 크기가 변경되면 이 함수를 호출하려 this.colGroup의 _width 값을 재 계산 하여야 함. [tom]
-                    var CT_WIDTH = this.$["container"]["root"].width() - (function () {
-                            var width = 0;
-                            if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
-                            if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
-                            return width;
-                        })();
-                    var totalWidth = 0;
-                    var computedWidth;
-                    var autoWidthColgroupIndexs = [];
-                    var colGroup = this.colGroup;
-                    var i, l;
+                    let CT_WIDTH = this.$["container"]["root"].width() - (function () {
+                                let width = 0;
+                                if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
+                                if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
+                                return width;
+                            })(),
+                        totalWidth = 0, computedWidth, autoWidthColgroupIndexs = [],
+                        colGroup = this.colGroup,
+                        i, l;
 
                     for (i = 0, l = colGroup.length; i < l; i++) {
                         if (U.isNumber(colGroup[i].width)) {
@@ -284,23 +291,22 @@
                     }
                 },
                 initBodyGroup = function (_grouping) {
-                    var grouping = jQuery.extend({}, _grouping);
+                    let grouping = jQuery.extend({}, _grouping);
                     if ("by" in grouping && "columns" in grouping) {
-
                         this.bodyGrouping = {
                             by: grouping.by,
                             columns: grouping.columns
                         };
                         this.bodyGroupingTable = GRID.util.makeBodyGroupingTable.call(this, this.bodyGrouping.columns);
                         this.sortInfo = (function () {
-                            var sortInfo = {};
-                            for (var k = 0, kl = this.bodyGrouping.by.length; k < kl; k++) {
+                            let sortInfo = {};
+                            for (let k = 0, kl = this.bodyGrouping.by.length; k < kl; k++) {
                                 sortInfo[this.bodyGrouping.by[k]] = {
                                     orderBy: "asc",
                                     seq: k,
                                     fixed: true
                                 };
-                                for (var c = 0, cl = this.colGroup.length; c < cl; c++) {
+                                for (let c = 0, cl = this.colGroup.length; c < cl; c++) {
                                     if (this.colGroup[c].key === this.bodyGrouping.by[k]) {
                                         this.colGroup[c].sort = "asc";
                                         this.colGroup[c].sortFixed = true;
@@ -315,52 +321,45 @@
                 },
                 alignGrid = function (_isFirst) {
                     // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하는 아규먼트
-                    var CT_WIDTH = this.$["container"]["root"].width();
-                    var CT_HEIGHT = this.$["container"]["root"].height();
-                    var CT_INNER_WIDTH = CT_WIDTH;
-                    var CT_INNER_HEIGHT = CT_HEIGHT;
+                    let CT_WIDTH = this.$["container"]["root"].width(),
+                        CT_HEIGHT = this.$["container"]["root"].height(),
+                        CT_INNER_WIDTH = CT_WIDTH,
+                        CT_INNER_HEIGHT = CT_HEIGHT,
+                        asidePanelWidth = cfg.asidePanelWidth = (function () {
+                            let width = 0;
+                            if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
+                            if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
+                            return width;
+                        })(),
+                        frozenPanelWidth = cfg.frozenPanelWidth = (function (colGroup, endIndex) {
+                            let width = 0;
+                            for (let i = 0, l = endIndex; i < l; i++) {
+                                width += colGroup[i]._width;
+                            }
+                            return width;
+                        })(this.colGroup, cfg.frozenColumnIndex),
+                        verticalScrollerWidth, horizontalScrollerHeight, bodyHeight;
 
-                    var asidePanelWidth = cfg.asidePanelWidth = (function () {
-                        var width = 0;
-
-                        if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
-                        if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
-                        return width;
-                    })();
-
-                    var frozenPanelWidth = cfg.frozenPanelWidth = (function (colGroup, endIndex) {
-                        var width = 0;
-                        for (var i = 0, l = endIndex; i < l; i++) {
-                            width += colGroup[i]._width;
-                        }
-                        return width;
-                    })(this.colGroup, cfg.frozenColumnIndex);
-
-                    var rightPanelWidth = 0; // todo : 우측 함계컬럼 넘비 계산
-
-                    var frozenRowHeight = (function (bodyTrHeight) {
-                        return cfg.frozenRowIndex * bodyTrHeight;
-                    })(this.xvar.bodyTrHeight);
-
-                    var footSumHeight = (function (bodyTrHeight) {
-                        return this.footSumColumns.length * bodyTrHeight;
-                    }).call(this, this.xvar.bodyTrHeight);
-
-                    var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
-                    var pageHeight = (cfg.page.display) ? cfg.page.height : 0;
-
-                    // 데이터의 길이가 body보다 높을때. 수직 스크롤러 활성화
-                    var verticalScrollerWidth, horizontalScrollerHeight;
+                    // todo : 우측 함계컬럼 넘비 계산
+                    let rightPanelWidth = 0,
+                        frozenRowHeight = (function (bodyTrHeight) {
+                            return cfg.frozenRowIndex * bodyTrHeight;
+                        })(this.xvar.bodyTrHeight),
+                        footSumHeight = (function (bodyTrHeight) {
+                            return this.footSumColumns.length * bodyTrHeight;
+                        }).call(this, this.xvar.bodyTrHeight),
+                        headerHeight = this.headerTable.rows.length * cfg.header.columnHeight,
+                        pageHeight = (cfg.page.display) ? cfg.page.height : 0;
 
                     (function () {
                         verticalScrollerWidth = ((CT_HEIGHT - headerHeight - pageHeight - footSumHeight) < this.list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
                         // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
                         horizontalScrollerHeight = (function () {
-                            var totalColGroupWidth = 0;
+                            let totalColGroupWidth = 0;
                             // aside 빼고 너비
                             // 수직 스크롤이 있으면 또 빼고 비교
-                            var bodyWidth = CT_WIDTH - asidePanelWidth - verticalScrollerWidth;
-                            for (var i = 0, l = this.colGroup.length; i < l; i++) {
+                            let bodyWidth = CT_WIDTH - asidePanelWidth - verticalScrollerWidth;
+                            for (let i = 0, l = this.colGroup.length; i < l; i++) {
                                 totalColGroupWidth += this.colGroup[i]._width;
                             }
                             return (totalColGroupWidth > bodyWidth) ? this.config.scroller.size : 0;
@@ -376,11 +375,11 @@
                     // 수직 스크롤러의 높이 결정.
                     CT_INNER_HEIGHT = CT_HEIGHT - pageHeight - horizontalScrollerHeight;
 
-                    var bodyHeight = CT_INNER_HEIGHT - headerHeight;
+                    bodyHeight = CT_INNER_HEIGHT - headerHeight;
 
-                    var panelDisplayProcess = function (panel, vPosition, hPosition, containerType) {
-                        var css = {};
-                        var isHide = false;
+                    let panelDisplayProcess = function (panel, vPosition, hPosition, containerType) {
+                        let css = {},
+                            isHide = false;
 
                         switch (hPosition) {
                             case "aside":
@@ -468,9 +467,9 @@
                         panel.css(css);
                         return this;
                     };
-                    var scrollerDisplayProcess = function (panel, scrollerWidth, scrollerHeight, containerType) {
-                        var css = {};
-                        var isHide = false;
+                    let scrollerDisplayProcess = function (panel, scrollerWidth, scrollerHeight, containerType) {
+                        let css = {},
+                            isHide = false;
 
                         switch (containerType) {
                             case "vertical":
@@ -547,8 +546,8 @@
                     GRID.header.repaint.call(this);
 
                     if (U.isFunction(this.config.remoteSort)) {
-                        var that = {sortInfo: []};
-                        for (var k in _sortInfo) {
+                        let that = {sortInfo: []};
+                        for (let k in _sortInfo) {
                             that.sortInfo.push({
                                 key: k,
                                 orderBy: _sortInfo[k].orderBy,
@@ -581,7 +580,6 @@
                         GRID.scroller.resize.call(this);
                     }
                 };
-
             /// private end
 
             /**
@@ -606,6 +604,7 @@
              * @param {Number} [_config.header.columnPadding=3]
              * @param {Number} [_config.header.columnBorderWidth=1]
              * @param {Object} [_config.body]
+             * @param {String|Array} [_config.body.mergeCells=false] -
              * @param {String} [_config.body.align]
              * @param {Number} [_config.body.columnHeight=25]
              * @param {Number} [_config.body.columnPadding=3]
@@ -725,7 +724,7 @@
                     }
                 }).call(this, U.parseJson(this.$target.attr("data-ax5grid-config"), true));
 
-                var grid = this.config = cfg;
+                let grid = this.config = cfg;
 
                 if (!this.config.height) {
                     this.config.height = this.$target.height();
@@ -775,13 +774,13 @@
                 }.bind(this));
 
                 jQuery(document.body).on("click.ax5grid-" + this.id, (function (e) {
-                    var isPickerClick = false;
-                    var target = U.findParentNode(e.target, function (_target) {
-                        if (isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")) {
-                            return true;
-                        }
-                        return _target.getAttribute("data-ax5grid-container") === "root";
-                    });
+                    let isPickerClick = false,
+                        target = U.findParentNode(e.target, function (_target) {
+                            if (isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")) {
+                                return true;
+                            }
+                            return _target.getAttribute("data-ax5grid-container") === "root";
+                        });
 
                     if (target && target.getAttribute("data-ax5grid-instance") === this.id) {
                         self.focused = true;
@@ -791,16 +790,6 @@
                     }
                 }).bind(this));
 
-                var ctrlKeys = {
-                    "33": "KEY_PAGEUP",
-                    "34": "KEY_PAGEDOWN",
-                    "35": "KEY_END",
-                    "36": "KEY_HOME",
-                    "37": "KEY_LEFT",
-                    "38": "KEY_UP",
-                    "39": "KEY_RIGHT",
-                    "40": "KEY_DOWN"
-                };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
                     if (self.focused) {
                         if (self.isInlineEditing) {
@@ -880,7 +869,7 @@
              * @return {ax5grid}
              */
             this.keyDown = (function () {
-                var processor = {
+                let processor = {
                     "KEY_UP": function () {
                         GRID.body.moveFocus.call(this, "UP");
                     },
@@ -952,15 +941,13 @@
              * @returns {Boolean} copysuccess
              */
             this.copySelect = function () {
-                var copysuccess;
-                var $clipBoard = this.$["form"]["clipboard"];
-                var copyTextArray = [];
-                var copyText = "";
+                let copysuccess,
+                    $clipBoard = this.$["form"]["clipboard"],
+                    copyTextArray = [], copyText = "",
+                    _rowIndex, _colIndex, _dindex, _di = 0;
 
-                var _rowIndex, _colIndex, _dindex;
-                var _di = 0;
-                for (var c in this.selectedColumn) {
-                    var _column = this.selectedColumn[c];
+                for (let c in this.selectedColumn) {
+                    let _column = this.selectedColumn[c];
 
                     if (_column) {
                         if (typeof _dindex === "undefined") {
@@ -976,7 +963,7 @@
                         if (!copyTextArray[_di]) {
                             copyTextArray[_di] = [];
                         }
-                        var originalColumn = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
+                        let originalColumn = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
                         if (originalColumn) {
                             if (this.list[_column.dindex].__isGrouping) {
                                 copyTextArray[_di].push(this.list[_column.dindex][_column.colIndex]);
@@ -1124,6 +1111,7 @@
              */
             this.updateRow = function (_row, _dindex) {
                 GRID.data.update.call(this, _row, _dindex);
+                // todo : mergeCells 옵션에 따라 예외처리
                 GRID.body.repaintRow.call(this, _dindex);
                 return this;
             };
@@ -1501,7 +1489,6 @@
     GRID = ax5.ui.grid;
 })();
 
-// todo : excel export
 // todo : merge cells
 // todo : filter
 // todo : body menu
