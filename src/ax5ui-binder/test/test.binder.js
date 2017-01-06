@@ -73,5 +73,35 @@ describe('ax5binder TEST', function () {
 
         done(myUI.get("email") == "brant" ? "" : "onchange input value");
     });
+});
 
+describe('Operate list item TEST', function(){
+    var myUI;
+    beforeEach(function(){
+        myUI = new ax5.ui.binder();
+        myUI.setModel({
+            "list": [{A: 1}, {A: 2}]
+        }, jQuery(document["binder-form"]));
+    });
+
+    it('add item ax5binder', function (done) {
+        myUI.add("list", {A: 3});
+        done(myUI.get("list[2][A]") === 3 && myUI.get("list[2]" + "__ADDED__") === true ? "" : "add item error");
+    });
+
+    it('remove item ax5binder', function (done) {
+        myUI.remove("list", 1);
+        done(myUI.get("list[1]" + "__DELETED__") === true ? "" : "remove item error");
+    });
+
+    it('remove added item ax5binder', function (done) {
+        myUI.add("list", {A: 3});
+        myUI.remove("list", 2);
+        done(myUI.get("list").length === 2 && myUI.get("list[1][A]") === 2 ? "" : "remove added item error");
+    });
+
+    it('update item ax5binder', function (done) {
+        myUI.update("list", 1, {A: 3});
+        done(myUI.get("list[1][A]") === 3 ? "" : "update item error");
+    });
 });
