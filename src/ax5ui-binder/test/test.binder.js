@@ -65,7 +65,6 @@ describe('ax5binder TEST', function () {
         done(myUI.get("sex") == "M" ? "" : "set error");
     });
 
-
     it('onchange input value ax5binder', function (done) {
         jQuery('[data-ax-path="email"]')
             .val("brant")
@@ -73,10 +72,40 @@ describe('ax5binder TEST', function () {
 
         done(myUI.get("email") == "brant" ? "" : "onchange input value");
     });
+
+    it('validate[required] ax5binder', function (done) {
+        jQuery('[data-ax-path="email"]')
+            .attr("data-ax-validate", "required")
+            .val("")
+            .trigger("change");
+
+        done(myUI.validate().error[0].type == "required" ? "" : "validate error");
+    });
+
+    it('validate[pattern] ax5binder', function (done) {
+        jQuery('[data-ax-path="email"]')
+            .attr("data-ax-validate", "pattern")
+            .attr("pattern", "[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$")
+            .val("test@mail.")
+            .trigger("change");
+
+        done(myUI.validate().error[0].type == "pattern" ? "" : "validate error");
+    });
+
+    it('validate[email] ax5binder', function (done) {
+        jQuery('[data-ax-path="email"]')
+            .attr("data-ax-validate", "email")
+            .val("test@mail.")
+            .trigger("change");
+
+        done(myUI.validate().error[0].type == "email" ? "" : "validate error");
+    });
+
 });
 
 describe('Operate list item TEST', function(){
     var myUI;
+
     beforeEach(function(){
         myUI = new ax5.ui.binder();
         myUI.setModel({
