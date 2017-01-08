@@ -248,7 +248,7 @@
     };
     var scrollContentMover = {
         "wheel": function (delta) {
-            var self = this,
+            let self = this,
                 _body_scroll_position = self.$["panel"]["body-scroll"].position(),
                 _panel_height = self.$["panel"]["body"].height(),
                 _panel_width = self.$["panel"]["body"].width(),
@@ -259,9 +259,9 @@
                 return false;
             }
 
-            var newLeft, newTop;
-            var _top_is_end = false;
-            var _left_is_end = false;
+            let newLeft, newTop,
+                _top_is_end = false,
+                _left_is_end = false;
 
             newLeft = _body_scroll_position.left - delta.x;
             newTop = _body_scroll_position.top - delta.y;
@@ -299,15 +299,14 @@
             return !_top_is_end || !_left_is_end;
         },
         "on": function () {
-            var self = this,
+            let self = this,
                 _body_scroll_position = self.$["panel"]["body-scroll"].position(),
                 _panel_height = self.$["panel"]["body"].height(),
                 _panel_width = self.$["panel"]["body"].width(),
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
                 getContentPosition = function (e) {
-                    var mouseObj = GRID.util.getMousePosition(e);
-                    var newLeft, newTop;
+                    let mouseObj = GRID.util.getMousePosition(e), newLeft, newTop;
 
                     self.xvar.__x_da = mouseObj.clientX - self.xvar.mousePosition.clientX;
                     self.xvar.__y_da = mouseObj.clientY - self.xvar.mousePosition.clientY;
@@ -336,24 +335,30 @@
                     }
                 };
 
+
             this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
             this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.touchmoved = false;
 
             jQuery(document.body)
-                .bind("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
-                    var css = getContentPosition(e);
+                .on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+
+                    let css = getContentPosition(e);
                     GRID.header.scrollTo.call(self, {left: css.left});
                     GRID.body.scrollTo.call(self, css, "noRepaint");
                     resize.call(self);
                     U.stopEvent(e);
+                    self.xvar.touchmoved = true;
                 })
-                .bind("touchend" + ".ax5grid-" + this.instanceId, function (e) {
-                    var css = getContentPosition(e);
-                    GRID.header.scrollTo.call(self, {left: css.left});
-                    GRID.body.scrollTo.call(self, css);
-                    resize.call(self);
-                    U.stopEvent(e);
-                    scrollContentMover.off.call(self);
+                .on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
+                    if(self.xvar.touchmoved) {
+                        let css = getContentPosition(e);
+                        GRID.header.scrollTo.call(self, {left: css.left});
+                        GRID.body.scrollTo.call(self, css);
+                        resize.call(self);
+                        U.stopEvent(e);
+                        scrollContentMover.off.call(self);
+                    }
                 });
 
             jQuery(document.body)
@@ -364,8 +369,8 @@
         "off": function () {
 
             jQuery(document.body)
-                .unbind("touchmove" + ".ax5grid-" + this.instanceId)
-                .unbind("touchend" + ".ax5grid-" + this.instanceId);
+                .off("touchmove" + ".ax5grid-" + this.instanceId)
+                .off("touchend" + ".ax5grid-" + this.instanceId);
 
             jQuery(document.body)
                 .removeAttr('unselectable')
@@ -375,9 +380,8 @@
     };
 
     var init = function () {
-        var self = this;
-        //this.config.scroller.size
-        var margin = this.config.scroller.trackPadding;
+        let self = this,
+            margin = this.config.scroller.trackPadding;
 
         this.$["scroller"]["vertical-bar"].css({width: this.config.scroller.size - (margin + 1), left: margin / 2});
         this.$["scroller"]["horizontal-bar"].css({height: this.config.scroller.size - (margin + 1), top: margin / 2});
@@ -417,8 +421,8 @@
             }).bind(this));
 
         this.$["container"]["body"].on('mousewheel DOMMouseScroll', (function (e) {
-            var E = e.originalEvent;
-            var delta = {x: 0, y: 0};
+            let E = e.originalEvent, delta = {x: 0, y: 0};
+
             if (E.detail) {
                 delta.y = E.detail * 10;
             } else {
@@ -454,7 +458,6 @@
             _content_width = this.xvar.scrollContentWidth,
             verticalScrollBarHeight = _panel_height * _vertical_scroller_height / _content_height,
             horizontalScrollBarWidth = _panel_width * _horizontal_scroller_width / _content_width;
-
 
         if (verticalScrollBarHeight < this.config.scroller.barMinSize) verticalScrollBarHeight = this.config.scroller.barMinSize;
         if (horizontalScrollBarWidth < this.config.scroller.barMinSize) horizontalScrollBarWidth = this.config.scroller.barMinSize;

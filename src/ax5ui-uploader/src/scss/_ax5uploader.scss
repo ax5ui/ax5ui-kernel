@@ -204,6 +204,20 @@
     [data-ax5uploader-button="selector"] {
         position: relative;
     }
+
+    [data-ax5uploader-dropzone] {
+        background: $ax5uploader-dropzone-bg;
+        border: $ax5uploader-dropzone-border;
+        border-radius: $ax5uploader-dropzone-border-radius;
+        margin: $ax5uploader-dropzone-margin;
+        padding: $ax5uploader-dropzone-padding;
+        cursor: pointer;
+        &.dragover {
+            background: $ax5uploader-dropzone-dragover-bg;
+            border: $ax5uploader-dropzone-dragover-border;
+            opacity: 0.6;
+        }
+    }
 }
 
 [data-ax5uploader-uploaded-box] {
@@ -214,16 +228,11 @@
     padding: $ax5uploader-uploaded-box-padding;
     min-height: $ax5uploader-uploaded-box-min-height;
 
-    &[data-ax5uploader-uploaded-box="inline"] {
+    &[data-ax5uploader-uploaded-box] {
         margin: $ax5uploader-uploaded-box-margin;
-        &:after{
-            content: " ";
-            display: block;
-            clear: both;
-        }
+
         [data-ax5uploader-uploaded-item] {
             display: block;
-            float:left;
             color: $ax5uploader-uploaded-item-color;
             border: $ax5uploader-uploaded-item-border;
             border-radius: $ax5uploader-uploaded-item-border-radius;
@@ -242,7 +251,7 @@
             &.active {
                 outline: 0;
                 background-image: none;
-                @include box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+                @include box-shadow(inset 0 3px 5px rgba(0, 0, 0, .125));
             }
 
             &.disabled,
@@ -253,15 +262,17 @@
                 @include box-shadow(none);
             }
 
-
+            .uploaded-item-preview {
+                display: none;
+            }
             .uploaded-item-holder {
                 display: table;
+
                 .uploaded-item-cell {
                     display: table-cell;
                     padding: $ax5uploader-uploaded-item-cell-padding;
                 }
-                @mixin item-cell-link($color){
-
+                @mixin item-cell-link($color) {
                     &:hover,
                     &:focus,
                     &.focus {
@@ -288,30 +299,111 @@
                 [data-uploaded-item-cell="filesize"] {
 
                 }
+
+            }
+        }
+    }
+
+    &[data-ax5uploader-uploaded-box="inline"] {
+        &:after {
+            content: " ";
+            display: block;
+            clear: both;
+        }
+        [data-ax5uploader-uploaded-item] {
+            display: block;
+            float: left;
+        }
+    }
+
+    &[data-ax5uploader-uploaded-box="thumbnail"] {
+        &:after {
+            content: " ";
+            display: block;
+            clear: both;
+        }
+
+        [data-ax5uploader-uploaded-item] {
+            display: block;
+            float: left;
+            width: $ax5uploader-uploaded-item-preview-width;
+            padding: 0;
+            background: transparent;
+
+
+            &:active,
+            &.active {
+                outline: 0;
+                background-image: none;
+                @include box-shadow(none);
+            }
+
+            .uploaded-item-preview {
+                display: block;
+                &.no-image{
+                    width: $ax5uploader-uploaded-item-preview-width;
+                    height: $ax5uploader-uploaded-item-preview-height;
+                    border: $ax5uploader-uploaded-item-border;
+                    border-radius: $ax5uploader-uploaded-item-border-radius;
+                    @include ax-background(20deg, #66b4fb, #ff78b2);
+                    text-align: center;
+                    line-height: $ax5uploader-uploaded-item-preview-height;
+                    color: #fff;
+                    &:before{
+
+                        content: 'No Image';
+                    }
+                    img{
+                        display: none;
+                    }
+                }
+                img {
+                    width: $ax5uploader-uploaded-item-preview-width;
+                    height: $ax5uploader-uploaded-item-preview-height;
+                    border: $ax5uploader-uploaded-item-border;
+                    border-radius: $ax5uploader-uploaded-item-border-radius;
+                }
+            }
+            .uploaded-item-holder {
+                position: relative;
+                display: block;
+                //padding-top: 30px;
+                .uploaded-item-cell {
+                    display: block;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                [data-uploaded-item-cell="download"] {
+                    position: absolute;
+                    left: $ax5uploader-uploaded-item-preview-cell-padding;
+                    top: -$ax5uploader-uploaded-item-preview-height + $ax5uploader-uploaded-item-preview-cell-padding;
+                    cursor: pointer;
+                    background: #fff;
+                    border-radius: $ax5uploader-uploaded-item-border-radius;
+                }
+                [data-uploaded-item-cell="delete"] {
+                    position: absolute;
+                    right: $ax5uploader-uploaded-item-preview-cell-padding;
+                    top: -$ax5uploader-uploaded-item-preview-height + $ax5uploader-uploaded-item-preview-cell-padding;
+                    cursor: pointer;
+                    background: #fff;
+                    border-radius: $ax5uploader-uploaded-item-border-radius;
+                }
+                [data-uploaded-item-cell="filename"] {
+                    padding-top: $ax5uploader-uploaded-item-preview-cell-padding;
+                }
             }
         }
     }
 }
 
-[data-ax5uploader-dropzone] {
-    background: $ax5uploader-dropzone-bg;
-    border: $ax5uploader-dropzone-border;
-    border-radius: $ax5uploader-dropzone-border-radius;
-    margin: $ax5uploader-dropzone-margin;
-    padding: $ax5uploader-dropzone-padding;
-    cursor: pointer;
-    &.dragover{
-        background: $ax5uploader-dropzone-dragover-bg;
-        border: $ax5uploader-dropzone-dragover-border;
-        opacity: 0.6;
-    }
-}
-
 [data-ax5uploader-input] {
     position: absolute;
-    left: -1000;
-    top: -1000;
+    left: -1000px;
+    top: -1000px;
     opacity: 0;
+    cursor: pointer;
 }
 
 [data-ax5uploader-progressbox] {

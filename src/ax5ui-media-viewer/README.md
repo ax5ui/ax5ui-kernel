@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-media-viewer.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-media-viewer)
 [![npm version](https://badge.fury.io/js/ax5ui-media-viewer.svg)](https://badge.fury.io/js/ax5ui-media-viewer)
 
 # ax5ui-media-viewer

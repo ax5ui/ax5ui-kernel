@@ -1,13 +1,14 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-uploader.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-uploader)
 [![npm version](https://badge.fury.io/js/ax5ui-uploader.svg)](https://badge.fury.io/js/ax5ui-uploader)
 
 # ax5ui-uploader
 "uploader" allows users to upload single or multiple files with item selection.
 
+![ax5uploader](src/ax5uploader.gif)
+
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 > * _[ax5core](http://ax5.io/ax5core)_
-> * _[bootstrap](http://getbootstrap.com/)_
-
 
 ### Install with bower
 ```sh
@@ -58,8 +59,103 @@ https://cdn.rawgit.com/ax5ui/ax5ui-uploader/master/dist/ax5uploader.min.js
 ```
 
 ### Basic Usage
-```js
+```html
+<div data-ax5uploader="upload1">
+    <input type="hidden" name="param1" value="value1"/>
+    <input type="hidden" name="param2" value="value2"/>
+    <button data-ax5uploader-button="selector" class="btn btn-primary">파일선택 (*/*)</button>
+    <div data-uploaded-box="upload1" data-ax5uploader-uploaded-box="inline"></div>
+</div>
+```
 
+```js
+$(function () {
+    var upload1 = new ax5.ui.uploader();
+    upload1.setConfig({
+        //debug: true,
+        target: $('[data-ax5uploader="upload1"]'),
+        form: {
+            action: "api/fileUpload.php",
+            fileName: "fileData"
+        },
+        multiple: true,
+        manualUpload: false,
+        direction: "left",
+        progressBox: true,
+        dropZone: $('[data-uploaded-box="upload1"]'),
+        uploadedBox: {
+            target: $('[data-uploaded-box="upload1"]'),
+            icon: {
+                "download": '<i class="fa fa-download" aria-hidden="true"></i>',
+                "delete": '<i class="fa fa-minus-circle" aria-hidden="true"></i>'
+            },
+            columnKeys: {
+                name: "name",
+                type: "type",
+                size: "fileSize",
+                uploadedName: "uploadedName",
+                uploadedPath: "uploadedPath",
+                downloadPath: "downloadPath",
+                previewPath: "previewPath",
+                thumbnail: "thumbnail"
+            },
+            lang: {
+                supportedHTML5_emptyListMsg: '<div class="text-center">Drop files here or click to upload.</div>',
+                emptyListMsg: '<div class="text-center">Empty of List.</div>'
+            },
+            onchange: function () {
+
+            },
+            onclick: function () {
+                // console.log(this.cellType);
+                var fileIndex = this.fileIndex;
+                var file = this.uploadedFiles[fileIndex];
+                switch (this.cellType) {
+                    case "delete":
+                        dialog.confirm({
+                            title: "AX5UI",
+                            msg: "정말 삭제 하시겠습니까?"
+                        }, function () {
+                            if (this.key == "ok") {
+                                $.ajax({
+                                    method: "post",
+                                    url: "api/fileDelete.php",
+                                    data: {
+                                        uploadedPath: file.uploadedPath,
+                                        saveName: file.saveName
+                                    },
+                                    success: function (res) {
+                                        upload1.removeFile(fileIndex);
+                                    }
+                                });
+                            }
+                        });
+                        break;
+
+                    case "download":
+                        window.open(file.uploadedPath + "/" + file.saveName, "_blank", "width=600, height=600");
+                        break;
+                }
+            }
+        },
+        onprogress: function () {
+
+        },
+        onuploaded: function () {
+
+        },
+        onuploadComplete: function () {
+
+        }
+    });
+
+    $.ajax({
+        url: "api/fileListLoad.php",
+        success: function (res) {
+            upload1.setUploadedFiles(res);
+        }
+    });
+});
 ```
 
 - - -

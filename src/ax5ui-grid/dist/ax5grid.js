@@ -11,9 +11,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid
 (function () {
 
-    var UI = ax5.ui;
-    var U = ax5.util;
-    var GRID;
+    var UI = ax5.ui,
+        U = ax5.util,
+        GRID = void 0;
 
     UI.addClass({
         className: "grid",
@@ -30,7 +30,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         var ax5grid = function ax5grid() {
             var self = this,
-                cfg;
+                cfg = void 0,
+                ctrlKeys = {
+                "33": "KEY_PAGEUP",
+                "34": "KEY_PAGEDOWN",
+                "35": "KEY_END",
+                "36": "KEY_HOME",
+                "37": "KEY_LEFT",
+                "38": "KEY_UP",
+                "39": "KEY_RIGHT",
+                "40": "KEY_DOWN"
+            };
 
             this.instanceId = ax5.getGuid();
             this.config = {
@@ -62,7 +72,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     columnHeight: 26,
                     columnPadding: 3,
                     columnBorderWidth: 1,
-                    grouping: false
+                    grouping: false,
+                    mergeCells: false
                 },
                 rightSum: false,
                 footSum: false,
@@ -253,12 +264,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
                     if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
                     return width;
-                }();
-                var totalWidth = 0;
-                var computedWidth;
-                var autoWidthColgroupIndexs = [];
-                var colGroup = this.colGroup;
-                var i, l;
+                }(),
+                    totalWidth = 0,
+                    computedWidth = void 0,
+                    autoWidthColgroupIndexs = [],
+                    colGroup = this.colGroup,
+                    i = void 0,
+                    l = void 0;
 
                 for (i = 0, l = colGroup.length; i < l; i++) {
                     if (U.isNumber(colGroup[i].width)) {
@@ -287,7 +299,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 initBodyGroup = function initBodyGroup(_grouping) {
                 var grouping = jQuery.extend({}, _grouping);
                 if ("by" in grouping && "columns" in grouping) {
-
                     this.bodyGrouping = {
                         by: grouping.by,
                         columns: grouping.columns
@@ -316,42 +327,37 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             },
                 alignGrid = function alignGrid(_isFirst) {
                 // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하는 아규먼트
-                var CT_WIDTH = this.$["container"]["root"].width();
-                var CT_HEIGHT = this.$["container"]["root"].height();
-                var CT_INNER_WIDTH = CT_WIDTH;
-                var CT_INNER_HEIGHT = CT_HEIGHT;
-
-                var asidePanelWidth = cfg.asidePanelWidth = function () {
+                var CT_WIDTH = this.$["container"]["root"].width(),
+                    CT_HEIGHT = this.$["container"]["root"].height(),
+                    CT_INNER_WIDTH = CT_WIDTH,
+                    CT_INNER_HEIGHT = CT_HEIGHT,
+                    asidePanelWidth = cfg.asidePanelWidth = function () {
                     var width = 0;
-
                     if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
                     if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
                     return width;
-                }();
-
-                var frozenPanelWidth = cfg.frozenPanelWidth = function (colGroup, endIndex) {
+                }(),
+                    frozenPanelWidth = cfg.frozenPanelWidth = function (colGroup, endIndex) {
                     var width = 0;
                     for (var i = 0, l = endIndex; i < l; i++) {
                         width += colGroup[i]._width;
                     }
                     return width;
-                }(this.colGroup, cfg.frozenColumnIndex);
+                }(this.colGroup, cfg.frozenColumnIndex),
+                    verticalScrollerWidth = void 0,
+                    horizontalScrollerHeight = void 0,
+                    bodyHeight = void 0;
 
-                var rightPanelWidth = 0; // todo : 우측 함계컬럼 넘비 계산
-
-                var frozenRowHeight = function (bodyTrHeight) {
+                // todo : 우측 함계컬럼 넘비 계산
+                var rightPanelWidth = 0,
+                    frozenRowHeight = function (bodyTrHeight) {
                     return cfg.frozenRowIndex * bodyTrHeight;
-                }(this.xvar.bodyTrHeight);
-
-                var footSumHeight = function (bodyTrHeight) {
+                }(this.xvar.bodyTrHeight),
+                    footSumHeight = function (bodyTrHeight) {
                     return this.footSumColumns.length * bodyTrHeight;
-                }.call(this, this.xvar.bodyTrHeight);
-
-                var headerHeight = this.headerTable.rows.length * cfg.header.columnHeight;
-                var pageHeight = cfg.page.display ? cfg.page.height : 0;
-
-                // 데이터의 길이가 body보다 높을때. 수직 스크롤러 활성화
-                var verticalScrollerWidth, horizontalScrollerHeight;
+                }.call(this, this.xvar.bodyTrHeight),
+                    headerHeight = this.headerTable.rows.length * cfg.header.columnHeight,
+                    pageHeight = cfg.page.display ? cfg.page.height : 0;
 
                 (function () {
                     verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
@@ -377,11 +383,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // 수직 스크롤러의 높이 결정.
                 CT_INNER_HEIGHT = CT_HEIGHT - pageHeight - horizontalScrollerHeight;
 
-                var bodyHeight = CT_INNER_HEIGHT - headerHeight;
+                bodyHeight = CT_INNER_HEIGHT - headerHeight;
 
                 var panelDisplayProcess = function panelDisplayProcess(panel, vPosition, hPosition, containerType) {
-                    var css = {};
-                    var isHide = false;
+                    var css = {},
+                        isHide = false;
 
                     switch (hPosition) {
                         case "aside":
@@ -468,8 +474,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     return this;
                 };
                 var scrollerDisplayProcess = function scrollerDisplayProcess(panel, scrollerWidth, scrollerHeight, containerType) {
-                    var css = {};
-                    var isHide = false;
+                    var css = {},
+                        isHide = false;
 
                     switch (containerType) {
                         case "vertical":
@@ -567,7 +573,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     GRID.scroller.resize.call(this);
                 }
             };
-
             /// private end
 
             /**
@@ -592,6 +597,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Number} [_config.header.columnPadding=3]
              * @param {Number} [_config.header.columnBorderWidth=1]
              * @param {Object} [_config.body]
+             * @param {String|Array} [_config.body.mergeCells=false] -
              * @param {String} [_config.body.align]
              * @param {Number} [_config.body.columnHeight=25]
              * @param {Number} [_config.body.columnPadding=3]
@@ -761,8 +767,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }.bind(this));
 
                 jQuery(document.body).on("click.ax5grid-" + this.id, function (e) {
-                    var isPickerClick = false;
-                    var target = U.findParentNode(e.target, function (_target) {
+                    var isPickerClick = false,
+                        target = U.findParentNode(e.target, function (_target) {
                         if (isPickerClick = _target.getAttribute("data-ax5grid-inline-edit-picker")) {
                             return true;
                         }
@@ -777,16 +783,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }.bind(this));
 
-                var ctrlKeys = {
-                    "33": "KEY_PAGEUP",
-                    "34": "KEY_PAGEDOWN",
-                    "35": "KEY_END",
-                    "36": "KEY_HOME",
-                    "37": "KEY_LEFT",
-                    "38": "KEY_UP",
-                    "39": "KEY_RIGHT",
-                    "40": "KEY_DOWN"
-                };
                 jQuery(window).on("keydown.ax5grid-" + this.instanceId, function (e) {
                     if (self.focused) {
                         if (self.isInlineEditing) {
@@ -932,13 +928,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @returns {Boolean} copysuccess
              */
             this.copySelect = function () {
-                var copysuccess;
-                var $clipBoard = this.$["form"]["clipboard"];
-                var copyTextArray = [];
-                var copyText = "";
+                var copysuccess = void 0,
+                    $clipBoard = this.$["form"]["clipboard"],
+                    copyTextArray = [],
+                    copyText = "",
+                    _rowIndex = void 0,
+                    _colIndex = void 0,
+                    _dindex = void 0,
+                    _di = 0;
 
-                var _rowIndex, _colIndex, _dindex;
-                var _di = 0;
                 for (var c in this.selectedColumn) {
                     var _column = this.selectedColumn[c];
 
@@ -1104,6 +1102,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              */
             this.updateRow = function (_row, _dindex) {
                 GRID.data.update.call(this, _row, _dindex);
+                // todo : mergeCells 옵션에 따라 예외처리
                 GRID.body.repaintRow.call(this, _dindex);
                 return this;
             };
@@ -1482,7 +1481,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
-// todo : excel export
 // todo : merge cells
 // todo : filter
 // todo : body menu
@@ -1493,14 +1491,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.body
 (function () {
 
-    var GRID = ax5.ui.grid;
-    var U = ax5.util;
+    var GRID = ax5.ui.grid,
+        U = ax5.util;
 
     var columnSelect = {
         focusClear: function focusClear() {
-            var self = this;
+            var self = this,
+                _column = void 0;
             for (var c in self.focusedColumn) {
-                var _column = self.focusedColumn[c];
+                _column = self.focusedColumn[c];
                 if (_column) {
                     self.$.panel[_column.panelName].find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]').find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]').removeAttr('data-ax5grid-column-focused');
                 }
@@ -1508,9 +1507,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             self.focusedColumn = {};
         },
         clear: function clear() {
-            var self = this;
+            var self = this,
+                _column = void 0;
             for (var c in self.selectedColumn) {
-                var _column = self.selectedColumn[c];
+                _column = self.selectedColumn[c];
                 if (_column) {
                     self.$.panel[_column.panelName].find('[data-ax5grid-tr-data-index="' + _column.dindex + '"]').find('[data-ax5grid-column-rowindex="' + _column.rowIndex + '"][data-ax5grid-column-colindex="' + _column.colIndex + '"]').removeAttr('data-ax5grid-column-selected');
                 }
@@ -1662,10 +1662,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var updateRowState = function updateRowState(_states, _dindex, _data) {
-        var self = this;
-        var cfg = this.config;
-
-        var processor = {
+        var self = this,
+            cfg = this.config,
+            processor = {
             "selected": function selected(_dindex) {
                 var i = this.$.livePanelKeys.length;
                 while (i--) {
@@ -1700,6 +1699,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.$.panel[panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowIndex="' + rowIndex + '"][data-ax5grid-column-colIndex="' + colIndex + '"]').find('[data-ax5grid-editor="checkbox"]').attr("data-ax5grid-checked", '' + _data.checked);
             }
         };
+
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
             processor[_state].call(self, _dindex, _data);
@@ -1707,14 +1707,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var updateRowStateAll = function updateRowStateAll(_states, _data) {
-        var self = this;
-        var cfg = this.config;
-
-        var processor = {
+        var self = this,
+            cfg = this.config,
+            processor = {
             "selected": function selected(_dindex) {
                 GRID.body.repaint.call(this, true);
             }
         };
+
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
             processor[_state].call(self, _data);
@@ -1725,8 +1725,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var self = this;
 
         this.$["container"]["body"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            var panelName, attr, row, col, dindex, rowIndex, colIndex, disableSelection;
-            var targetClick = {
+            var panelName = void 0,
+                attr = void 0,
+                row = void 0,
+                col = void 0,
+                dindex = void 0,
+                rowIndex = void 0,
+                colIndex = void 0,
+                disableSelection = void 0,
+                targetClick = {
                 "default": function _default(_column) {
                     var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
                     var that = {
@@ -1807,8 +1814,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         });
         this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
-            var panelName, attr, row, col, dindex, rowIndex, colIndex;
-            var targetClick = {
+            var panelName = void 0,
+                attr = void 0,
+                row = void 0,
+                col = void 0,
+                dindex = void 0,
+                rowIndex = void 0,
+                colIndex = void 0,
+                targetClick = {
                 "default": function _default(_column) {
 
                     if (this.isInlineEditing) {
@@ -1819,8 +1832,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     }
 
-                    var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
-                    var value = "";
+                    var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
+                        value = "";
                     if (column) {
                         if (!self.list[dindex].__isGrouping) {
                             value = GRID.data.getValue.call(self, dindex, column.key);
@@ -1852,17 +1865,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 });
             }
         });
-        this.$["container"]["body"].on("mouseover", "tr", function () {
-            return;
-            var dindex = this.getAttribute("data-ax5grid-tr-data-index");
-            var i = self.$.livePanelKeys.length;
-            while (i--) {
-                if (typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
-                self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
-            }
-            self.xvar.dataHoveredIndex = dindex;
-        });
+
+        /* 사용안함. 나중을 위해 그냥 두자
+         this.$["container"]["body"].on("mouseover", "tr", function () {
+         let dindex = this.getAttribute("data-ax5grid-tr-data-index"),
+         i = self.$.livePanelKeys.length;
+         while (i--) {
+         if (typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
+         self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
+         }
+         self.xvar.dataHoveredIndex = dindex;
+         });
+         */
         this.$["container"]["body"].on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
+            if (self.xvar.touchmoved) return false;
             if (this.getAttribute("data-ax5grid-column-rowIndex")) {
                 columnSelector.on.call(self, {
                     panelName: this.getAttribute("data-ax5grid-panel-name"),
@@ -1881,8 +1897,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var resetFrozenColumn = function resetFrozenColumn() {
-        var cfg = this.config;
-        var dividedBodyRowObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.xvar.frozenColumnIndex);
+        var cfg = this.config,
+            dividedBodyRowObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyRowTable, this.xvar.frozenColumnIndex);
+
         this.asideBodyRowData = function (dataTable) {
             var data = { rows: [] };
             for (var i = 0, l = dataTable.rows.length; i < l; i++) {
@@ -1973,9 +1990,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value) {
-        var _key = _col.key;
-        var tagsToReplace = {
+    var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value, _returnPlainText) {
+        var _key = _col.key,
+            tagsToReplace = {
             '<': '&lt;',
             '>': '&gt;'
         };
@@ -2007,7 +2024,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
 
                 // print editor
-                return GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
+                return _returnPlainText ? _value : GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
             }
             if (_col.formatter) {
                 var that = {
@@ -2040,8 +2057,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getGroupingValue = function getGroupingValue(_item, _index, _col) {
-        var value,
-            that,
+        var value = void 0,
+            that = void 0,
             _key = _col.key,
             _label = _col.label;
 
@@ -2104,8 +2121,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var that = {
                     key: _key,
                     list: _list
-                };
-                var value;
+                },
+                    value = void 0;
+
                 if (U.isFunction(_col.collector)) {
                     value = _col.collector.call(that);
                 } else {
@@ -2129,29 +2147,51 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var repaint = function repaint(_reset) {
-        var cfg = this.config;
-        var list = this.list;
+        var cfg = this.config,
+            list = this.list;
+
+        /// repaint reset 타입이면 고정컬럼을 재조정
         if (_reset) {
             resetFrozenColumn.call(this);
+            // 틀고정 이 변경되면 출력 시작 인덱스 값을 초기화
             this.xvar.paintStartRowIndex = undefined;
         }
+
+        /// 출력시작 인덱스
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
-        var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
-        var asideBodyRowData = this.asideBodyRowData;
-        var leftBodyRowData = this.leftBodyRowData;
-        var bodyRowData = this.bodyRowData;
-        var leftFootSumData = this.leftFootSumData;
-        var footSumData = this.footSumData;
-        var asideBodyGroupingData = this.asideBodyGroupingData;
-        var leftBodyGroupingData = this.leftBodyGroupingData;
-        var bodyGroupingData = this.bodyGroupingData;
-        var bodyAlign = cfg.body.align;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+
+        var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined",
+            asideBodyRowData = this.asideBodyRowData,
+            leftBodyRowData = this.leftBodyRowData,
+            bodyRowData = this.bodyRowData,
+            leftFootSumData = this.leftFootSumData,
+            footSumData = this.footSumData,
+            asideBodyGroupingData = this.asideBodyGroupingData,
+            leftBodyGroupingData = this.leftBodyGroupingData,
+            bodyGroupingData = this.bodyGroupingData,
+            bodyAlign = cfg.body.align,
+            paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+
+        if (document.addEventListener && ax5.info.supportTouch) {
+            paintRowCount = paintRowCount * 2;
+        }
+
+        /// 스크롤 컨텐츠의 높이 : 그리드 스크롤의 실제 크기와는 관계 없이 데이터 갯수에 따라 스크롤 컨텐츠 높이값 구해서 저장해두기.
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
+        /// 사용된 패널들의 키 모음
         this.$.livePanelKeys = [];
 
-        // body-scroll 의 포지션에 의존적이므로..
+        // 그리드 바디 영역 페인트 함수
+        /**
+         * @param _elTargetKey
+         * @param _colGroup
+         * @param _bodyRow
+         * @param _groupRow
+         * @param _list
+         * @param [_scrollConfig]
+         * @returns {boolean}
+         */
         var repaintBody = function repaintBody(_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
             var _elTarget = this.$.panel[_elTargetKey];
 
@@ -2160,13 +2200,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return false;
             }
 
-            var SS = [];
-            var cgi, cgl;
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
-            var isScrolled = function () {
+            var SS = [],
+                cgi = void 0,
+                cgl = void 0,
+                di = void 0,
+                dl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0,
+                isScrolled = function () {
                 // 스크롤값이 변경되거나 처음 호출되었습니까?
                 if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
                     _scrollConfig = {
@@ -2179,6 +2225,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             }();
 
+            if (isScrolled) {
+                SS.push('<div style="font-size:0;line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+            }
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -2188,7 +2237,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             SS.push('</colgroup>');
 
             for (di = _scrollConfig.paintStartRowIndex, dl = function () {
-                var len;
+                var len = void 0;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
                     len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
@@ -2196,9 +2245,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return len;
             }(); di < dl; di++) {
 
-                var isGroupingRow = false;
-                var rowTable;
-
+                var isGroupingRow = false,
+                    rowTable = void 0;
                 if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
                     isGroupingRow = true;
@@ -2250,6 +2298,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                             return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
                         }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
+
                         SS.push('</td>');
                     }
                     SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
@@ -2258,14 +2307,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
             SS.push('</table>');
 
-            if (isScrolled) {
-                _elTarget.css({ paddingTop: (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight });
+            if (isScrolled && _list.length) {
+                SS.push('<div style="font-size:0;line-height:0;height: ' + (_list.length - di) * _scrollConfig.bodyTrHeight + 'px;"></div>');
             }
+
             _elTarget.empty().get(0).innerHTML = SS.join('');
 
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
+
+        /**
+         * @param _elTargetKey
+         * @param _colGroup
+         * @param _bodyRow
+         * @param _list
+         * @param [_scrollConfig]
+         * @returns {boolean}
+         */
         var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
             var _elTarget = this.$.panel[_elTargetKey];
 
@@ -2274,11 +2333,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return false;
             }
 
-            var SS = [];
-            var cgi, cgl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            var SS = [],
+                cgi = void 0,
+                cgl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0;
 
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
@@ -2343,6 +2407,88 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
+
+        /**
+         * @param _elTargetKey
+         * @param _colGroup
+         * @param _bodyRow
+         * @param _list
+         * @param [_scrollConfig]
+         * @returns {boolean}
+         */
+        var mergeCellsBody = function mergeCellsBody(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
+            // todo : merge 대상중에 예외처리 대상 제외하기. (checkbox 빼주자). 또? // editor 가 있으면 머지 하면 안됨.
+            var tblRowMaps = [];
+            var _elTarget = this.$.panel[_elTargetKey];
+            var token = {},
+                hasMergeTd = void 0;
+            //console.log(_elTarget);
+
+            // 테이블의 td들을 수잡하여 저장해두고 스크립트로 반복하여 정리.
+            var tableTrs = _elTarget.find("tr");
+            for (var ri = 0, rl = tableTrs.length; ri < rl; ri++) {
+                var tableTrTds = void 0,
+                    trMaps = void 0;
+
+                if (!tableTrs[ri].getAttribute("data-ax5grid-grouping-tr")) {
+                    tableTrTds = tableTrs[ri].childNodes;
+                    trMaps = [];
+                    for (var ci = 0, cl = tableTrTds.length; ci < cl; ci++) {
+                        var tdObj = {
+                            "$": jQuery(tableTrTds[ci])
+                        };
+
+                        if (tdObj["$"].attr("data-ax5grid-column-col") != "null") {
+                            tdObj.dindex = tdObj["$"].attr("data-ax5grid-data-index");
+                            tdObj.tri = tdObj["$"].attr("data-ax5grid-column-row");
+                            tdObj.ci = tdObj["$"].attr("data-ax5grid-column-col");
+                            tdObj.rowIndex = tdObj["$"].attr("data-ax5grid-column-rowIndex");
+                            tdObj.colIndex = tdObj["$"].attr("data-ax5grid-column-colIndex");
+                            tdObj.rowspan = tdObj["$"].attr("rowspan");
+                            tdObj.text = tdObj["$"].text();
+                            trMaps.push(tdObj);
+                        }
+
+                        tdObj = null;
+                    }
+                    tblRowMaps.push(trMaps);
+                }
+            }
+
+            // 두줄이상 일 때 의미가 있으니.
+            if (tblRowMaps.length > 1) {
+                hasMergeTd = false;
+                for (var _ri = 0, _rl = tblRowMaps.length; _ri < _rl; _ri++) {
+                    for (var _ci = 0, _cl = tblRowMaps[_ri].length; _ci < _cl; _ci++) {
+                        // 앞줄과 값이 같다면.
+                        if (token[_ci] && token[_ci].text == tblRowMaps[_ri][_ci].text) {
+                            tblRowMaps[_ri][_ci].rowspan = 0;
+                            tblRowMaps[token[_ci].ri][_ci].rowspan++;
+                            hasMergeTd = true;
+                        } else {
+                            token[_ci] = {
+                                ri: _ri,
+                                ci: _ci,
+                                text: tblRowMaps[_ri][_ci].text
+                            };
+                        }
+                    }
+                }
+
+                // rowspan을 다 구했으면 적용합니다.
+                if (hasMergeTd) {
+                    for (var _ri2 = 0, _rl2 = tblRowMaps.length; _ri2 < _rl2; _ri2++) {
+                        for (var _ci2 = 0, _cl2 = tblRowMaps[_ri2].length; _ci2 < _cl2; _ci2++) {
+                            if (tblRowMaps[_ri2][_ci2].rowspan == 0) {
+                                tblRowMaps[_ri2][_ci2]["$"].remove();
+                            } else {
+                                tblRowMaps[_ri2][_ci2]["$"].attr("rowspan", tblRowMaps[_ri2][_ci2].rowspan);
+                            }
+                        }
+                    }
+                }
+            }
+        };
         var scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
             paintRowCount: paintRowCount,
@@ -2363,7 +2509,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 //repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, list);
             }
         }
-
         // left
         if (this.xvar.frozenColumnIndex > 0) {
             if (this.xvar.frozenRowIndex > 0) {
@@ -2378,7 +2523,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
             }
         }
-
         // body
         if (this.xvar.frozenRowIndex > 0) {
             // 상단 행고정
@@ -2387,16 +2531,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
 
+        // 바닥 요약
         if (cfg.footSum && this.needToPaintSum) {
-            // 바닥 요약
             repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
         }
-
-        //todo : repaintBody 에서 footSum 데이터 예외처리
-
         // right
-        if (cfg.rightSum) {
-            // todo : right 표현 정리
+        if (cfg.rightSum) {}
+        // todo : right 표현 정리
+
+
+        /// mergeCells
+        if (cfg.body.mergeCells && this.list.length) {
+            // left
+            if (this.xvar.frozenColumnIndex > 0) {
+                if (this.xvar.frozenRowIndex > 0) {
+                    // 상단 행고정
+                    // console.log(this.leftHeaderColGroup, leftBodyRowData);
+                    mergeCellsBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, list.slice(0, this.xvar.frozenRowIndex));
+                }
+                mergeCellsBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, scrollConfig);
+            }
+
+            // body
+            if (this.xvar.frozenRowIndex > 0) {
+                // 상단 행고정
+                mergeCellsBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, list.slice(0, this.xvar.frozenRowIndex));
+            }
+            mergeCellsBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, scrollConfig);
         }
 
         this.xvar.paintStartRowIndex = paintStartRowIndex;
@@ -2407,13 +2568,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var repaintCell = function repaintCell(_panelName, _dindex, _rowIndex, _colIndex, _newValue) {
-        var self = this;
-        var cfg = this.config;
-        var list = this.list;
+        var self = this,
+            cfg = this.config,
+            list = this.list;
 
-        var updateCell = this.$["panel"][_panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + _rowIndex + '"][data-ax5grid-column-colindex="' + _colIndex + '"]').find('[data-ax5grid-cellholder]');
-        var colGroup = this.colGroup;
-        var col = colGroup[_colIndex];
+        var updateCell = this.$["panel"][_panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + _rowIndex + '"][data-ax5grid-column-colindex="' + _colIndex + '"]').find('[data-ax5grid-cellholder]'),
+            colGroup = this.colGroup,
+            col = colGroup[_colIndex];
 
         updateCell.html(getFieldValue.call(this, list, list[_dindex], _dindex, col));
 
@@ -2421,10 +2582,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             col.editor.updateWith.forEach(function (updateColumnKey) {
                 colGroup.forEach(function (col) {
                     if (col.key == updateColumnKey) {
-                        var rowIndex = col.rowIndex;
-                        var colIndex = col.colIndex;
-                        var panelName = GRID.util.findPanelByColumnIndex.call(self, _dindex, colIndex, rowIndex).panelName;
-                        var updateWithCell = self.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+                        var rowIndex = col.rowIndex,
+                            colIndex = col.colIndex,
+                            panelName = GRID.util.findPanelByColumnIndex.call(self, _dindex, colIndex, rowIndex).panelName,
+                            updateWithCell = self.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+
                         updateWithCell.html(getFieldValue.call(self, list, list[_dindex], _dindex, col));
                     }
                 });
@@ -2433,28 +2595,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         /// ~~~~~~
 
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
-        var leftFootSumData = this.leftFootSumData;
-        var footSumData = this.footSumData;
-        var asideBodyGroupingData = this.asideBodyGroupingData;
-        var leftBodyGroupingData = this.leftBodyGroupingData;
-        var bodyGroupingData = this.bodyGroupingData;
-        var bodyAlign = cfg.body.align;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
-        var scrollConfig = {
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex,
+            leftFootSumData = this.leftFootSumData,
+            footSumData = this.footSumData,
+            asideBodyGroupingData = this.asideBodyGroupingData,
+            leftBodyGroupingData = this.leftBodyGroupingData,
+            bodyGroupingData = this.bodyGroupingData,
+            bodyAlign = cfg.body.align,
+            paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1,
+            scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
             paintRowCount: paintRowCount,
             bodyTrHeight: this.xvar.bodyTrHeight
         };
 
         var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
-            var _elTarget = this.$.panel[_elTargetKey];
-
-            var SS = [];
-            var cgi, cgl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            var _elTarget = this.$.panel[_elTargetKey],
+                SS = [],
+                cgi = void 0,
+                cgl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0;
 
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
@@ -2519,15 +2685,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return true;
         };
         var replaceGroupTr = function replaceGroupTr(_elTargetKey, _colGroup, _groupRow, _list, _scrollConfig) {
-            var _elTarget = this.$.panel[_elTargetKey];
-            var SS = [];
-            var cgi, cgl;
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            var _elTarget = this.$.panel[_elTargetKey],
+                SS = [],
+                di = void 0,
+                dl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0;
+
             for (di = _scrollConfig.paintStartRowIndex, dl = function () {
-                var len;
+                var len = void 0;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
                     len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
@@ -2636,31 +2807,35 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             list = this.list;
         /// ~~~~~~
 
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
-        var asideBodyRowData = this.asideBodyRowData;
-        var leftBodyRowData = this.leftBodyRowData;
-        var bodyRowData = this.bodyRowData;
-        var leftFootSumData = this.leftFootSumData;
-        var footSumData = this.footSumData;
-        var asideBodyGroupingData = this.asideBodyGroupingData;
-        var leftBodyGroupingData = this.leftBodyGroupingData;
-        var bodyGroupingData = this.bodyGroupingData;
-        var bodyAlign = cfg.body.align;
-        var paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
-        var scrollConfig = {
+        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex,
+            asideBodyRowData = this.asideBodyRowData,
+            leftBodyRowData = this.leftBodyRowData,
+            bodyRowData = this.bodyRowData,
+            leftFootSumData = this.leftFootSumData,
+            footSumData = this.footSumData,
+            asideBodyGroupingData = this.asideBodyGroupingData,
+            leftBodyGroupingData = this.leftBodyGroupingData,
+            bodyGroupingData = this.bodyGroupingData,
+            bodyAlign = cfg.body.align,
+            paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1,
+            scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
             paintRowCount: paintRowCount,
             bodyTrHeight: this.xvar.bodyTrHeight
         };
 
         var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list) {
-            var _elTarget = this.$.panel[_elTargetKey];
-
-            var SS = [];
-            var cgi, cgl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            var _elTarget = this.$.panel[_elTargetKey],
+                SS = [],
+                cgi = void 0,
+                cgl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0;
 
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
@@ -2725,15 +2900,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return true;
         };
         var replaceGroupTr = function replaceGroupTr(_elTargetKey, _colGroup, _groupRow, _list, _scrollConfig) {
-            var _elTarget = this.$.panel[_elTargetKey];
-            var SS = [];
-            var cgi, cgl;
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
+            var _elTarget = this.$.panel[_elTargetKey],
+                SS = [],
+                di = void 0,
+                dl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0;
+
             for (di = _scrollConfig.paintStartRowIndex, dl = function () {
-                var len;
+                var len = void 0;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
                     len = _scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex;
@@ -2795,14 +2975,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         };
         var replaceTr = function replaceTr(_elTargetKey, _colGroup, _bodyRow, _list, di) {
-            var _elTarget = this.$.panel[_elTargetKey];
-            var SS = [];
-            var cgi, cgl;
-            var di, dl;
-            var tri, trl;
-            var ci, cl;
-            var col, cellHeight, colAlign;
-            var rowTable = _bodyRow;
+            var _elTarget = this.$.panel[_elTargetKey],
+                SS = [],
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0,
+                cellHeight = void 0,
+                colAlign = void 0,
+                rowTable = _bodyRow;
+
             for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
                 for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                     col = rowTable.rows[tri].cols[ci];
@@ -2850,7 +3033,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
             }
 
-            //_elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').html(SS.join(''));
             _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
         };
 
@@ -2887,7 +3069,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // 상단 행고정
                 replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
             }
-
             replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
         }
 
@@ -2933,7 +3114,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         if (!noRepaint && "top" in css) {
             repaint.call(this);
-        }
+        } else {}
     };
 
     var blur = function blur() {
@@ -3105,10 +3286,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return moveResult;
             },
             "INDEX": function INDEX(_dindex) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i;
+                var moveResult = true,
+                    focusedColumn = void 0,
+                    originalColumn = void 0,
+                    while_i = void 0;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -3437,25 +3618,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var getExcelString = function getExcelString() {
         var cfg = this.config,
             list = this.list,
-            bodyRowData = this.bodyRowData,
-            footSumData = this.footSumData,
-            bodyGroupingData = this.bodyGroupingData;
+            bodyRowData = this.bodyRowTable,
+            footSumData = this.footSumTable,
+            bodyGroupingData = this.bodyGroupingTable;
 
         // body-scroll 의 포지션에 의존적이므로..
         var getBody = function getBody(_colGroup, _bodyRow, _groupRow, _list) {
             var SS = [],
-                di,
-                dl,
-                tri,
-                trl,
-                ci,
-                cl,
-                col;
+                di = void 0,
+                dl = void 0,
+                tri = void 0,
+                trl = void 0,
+                ci = void 0,
+                cl = void 0,
+                col = void 0;
 
             //SS.push('<table border="1">');
             for (di = 0, dl = _list.length; di < dl; di++) {
-                var isGroupingRow = false;
-                var rowTable;
+                var isGroupingRow = false,
+                    rowTable = void 0;
 
                 if (_groupRow && "__isGrouping" in _list[di]) {
                     rowTable = _groupRow;
@@ -3469,7 +3650,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
 
-                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</td>');
+                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, undefined, "text"), '&nbsp;</td>');
                     }
                     SS.push('\n</tr>');
                 }
@@ -3529,6 +3710,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 })();
 
+/**
+ * todo : mergeCells - false, true, "key", ["key1", "key2"]
+ */
 // ax5.ui.grid.collector
 (function () {
 
@@ -3588,10 +3772,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var initData = function initData(_list) {
         this.selectedDataIndexs = [];
         var i = 0,
-            l = _list.length;
-        var returnList = [];
-        var appendIndex = 0;
-        var dataRealRowCount = 0;
+            l = _list.length,
+            returnList = [],
+            appendIndex = 0,
+            dataRealRowCount = 0;
 
         if (this.config.body.grouping) {
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
@@ -3604,9 +3788,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             });
             var gi = 0,
                 gl = groupingKeys.length,
-                compareString,
+                compareString = void 0,
                 appendRow = [],
-                ari;
+                ari = void 0;
             for (; i < l + 1; i++) {
                 gi = 0;
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
@@ -3814,7 +3998,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      */
     var deleteRow = function deleteRow(_dindex) {
         var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
-
         var processor = {
             "first": function first() {
                 list[0][this.config.columnKeys.deleted] = true;
@@ -4233,10 +4416,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var self = this;
 
         this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
-            var key = this.getAttribute("data-ax5grid-column-key");
-            var colIndex = this.getAttribute("data-ax5grid-column-colindex");
-            var rowIndex = this.getAttribute("data-ax5grid-column-rowindex");
-            var col = self.colGroup[colIndex];
+            var key = this.getAttribute("data-ax5grid-column-key"),
+                colIndex = this.getAttribute("data-ax5grid-column-colindex"),
+                rowIndex = this.getAttribute("data-ax5grid-column-rowindex"),
+                col = self.colGroup[colIndex];
 
             if (key === "__checkbox_header__") {
                 var selected = this.getAttribute("data-ax5grid-selected");
@@ -4268,8 +4451,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var resetFrozenColumn = function resetFrozenColumn() {
-        var cfg = this.config;
-        var dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+        var cfg = this.config,
+            dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
         this.asideHeaderData = function (dataTable) {
             var colGroup = [];
             var data = { rows: [] };
@@ -4315,10 +4498,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getFieldValue = function getFieldValue(_col) {
-        var cfg = this.config;
-        var colGroup = this.colGroup;
-        var _key = _col.key;
-        var tagsToReplace = {
+        var cfg = this.config,
+            colGroup = this.colGroup,
+            _key = _col.key,
+            tagsToReplace = {
             '<': '&lt;',
             '>': '&gt;'
         };
@@ -4331,24 +4514,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var repaint = function repaint(_reset) {
-        var cfg = this.config;
-        var colGroup = this.colGroup;
+        var cfg = this.config,
+            colGroup = this.colGroup;
+
         if (_reset) {
             resetFrozenColumn.call(this);
             this.xvar.paintStartRowIndex = undefined;
         }
-        var asideHeaderData = this.asideHeaderData;
-        var leftHeaderData = this.leftHeaderData;
-        var headerData = this.headerData;
-        var headerAlign = cfg.header.align;
+        var asideHeaderData = this.asideHeaderData,
+            leftHeaderData = this.leftHeaderData,
+            headerData = this.headerData,
+            headerAlign = cfg.header.align;
 
         // this.asideColGroup : asideHeaderData에서 처리 함.
         this.leftHeaderColGroup = colGroup.slice(0, this.config.frozenColumnIndex);
         this.headerColGroup = colGroup.slice(this.config.frozenColumnIndex);
 
         var repaintHeader = function repaintHeader(_elTarget, _colGroup, _bodyRow) {
-            var tableWidth = 0;
-            var SS = [];
+            var tableWidth = 0,
+                SS = [];
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -4412,9 +4596,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             /// append column-resizer
             (function () {
-                var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth;
-                var resizerLeft = 0;
-                var AS = [];
+                var resizerHeight = cfg.header.columnHeight * _bodyRow.rows.length - cfg.header.columnBorderWidth,
+                    resizerLeft = 0,
+                    AS = [];
+
                 for (var cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
                     var col = _colGroup[cgi];
                     if (!U.isNothing(col.colIndex)) {
@@ -4446,9 +4631,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var toggleSort = function toggleSort(_key) {
-        var sortOrder = "";
-        var sortInfo = {};
-        var seq = 0;
+        var sortOrder = "",
+            sortInfo = {},
+            seq = 0;
 
         for (var k in this.sortInfo) {
             if (this.sortInfo[k].fixed) {
@@ -4504,11 +4689,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getExcelString = function getExcelString() {
-        var cfg = this.config;
-        var colGroup = this.colGroup;
-        var headerData = this.headerData;
-
-        var getHeader = function getHeader(_colGroup, _bodyRow) {
+        var cfg = this.config,
+            colGroup = this.colGroup,
+            headerData = this.headerTable,
+            getHeader = function getHeader(_colGroup, _bodyRow) {
             var SS = [];
             //SS.push('<table border="1">');
             for (var tri = 0, trl = _bodyRow.rows.length; tri < trl; tri++) {
@@ -5089,9 +5273,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return false;
             }
 
-            var newLeft, newTop;
-            var _top_is_end = false;
-            var _left_is_end = false;
+            var newLeft = void 0,
+                newTop = void 0,
+                _top_is_end = false,
+                _left_is_end = false;
 
             newLeft = _body_scroll_position.left - delta.x;
             newTop = _body_scroll_position.top - delta.y;
@@ -5135,8 +5320,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
                 getContentPosition = function getContentPosition(e) {
-                var mouseObj = GRID.util.getMousePosition(e);
-                var newLeft, newTop;
+                var mouseObj = GRID.util.getMousePosition(e),
+                    newLeft = void 0,
+                    newTop = void 0;
 
                 self.xvar.__x_da = mouseObj.clientX - self.xvar.mousePosition.clientX;
                 self.xvar.__y_da = mouseObj.clientY - self.xvar.mousePosition.clientY;
@@ -5167,36 +5353,40 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
             this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.touchmoved = false;
 
-            jQuery(document.body).bind("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+            jQuery(document.body).on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
+
                 var css = getContentPosition(e);
                 GRID.header.scrollTo.call(self, { left: css.left });
                 GRID.body.scrollTo.call(self, css, "noRepaint");
                 resize.call(self);
                 U.stopEvent(e);
-            }).bind("touchend" + ".ax5grid-" + this.instanceId, function (e) {
-                var css = getContentPosition(e);
-                GRID.header.scrollTo.call(self, { left: css.left });
-                GRID.body.scrollTo.call(self, css);
-                resize.call(self);
-                U.stopEvent(e);
-                scrollContentMover.off.call(self);
+                self.xvar.touchmoved = true;
+            }).on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
+                if (self.xvar.touchmoved) {
+                    var css = getContentPosition(e);
+                    GRID.header.scrollTo.call(self, { left: css.left });
+                    GRID.body.scrollTo.call(self, css);
+                    resize.call(self);
+                    U.stopEvent(e);
+                    scrollContentMover.off.call(self);
+                }
             });
 
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
 
-            jQuery(document.body).unbind("touchmove" + ".ax5grid-" + this.instanceId).unbind("touchend" + ".ax5grid-" + this.instanceId);
+            jQuery(document.body).off("touchmove" + ".ax5grid-" + this.instanceId).off("touchend" + ".ax5grid-" + this.instanceId);
 
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
         }
     };
 
     var init = function init() {
-        var self = this;
-        //this.config.scroller.size
-        var margin = this.config.scroller.trackPadding;
+        var self = this,
+            margin = this.config.scroller.trackPadding;
 
         this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
         this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
@@ -5230,8 +5420,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }.bind(this));
 
         this.$["container"]["body"].on('mousewheel DOMMouseScroll', function (e) {
-            var E = e.originalEvent;
-            var delta = { x: 0, y: 0 };
+            var E = e.originalEvent,
+                delta = { x: 0, y: 0 };
+
             if (E.detail) {
                 delta.y = E.detail * 10;
             } else {

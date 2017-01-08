@@ -14,7 +14,7 @@ module.exports = function (config) {
         files: [
             'https://code.jquery.com/jquery-1.12.3.min.js',
             'https://cdn.rawgit.com/shouldjs/should.js/master/should.js',
-            'https://cdn.rawgit.com/lodash/lodash/master/dist/lodash.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
             'dist/ax5core.js',
             'test/test.*.js'
         ],

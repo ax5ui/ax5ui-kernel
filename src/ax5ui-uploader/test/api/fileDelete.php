@@ -1,5 +1,9 @@
 <?php
-header('Content-Type: application/json');
+if (preg_match('/(?i)msie [5-9]/', $_SERVER['HTTP_USER_AGENT'])) {
+
+} else {
+    header('Content-Type: application/json');
+}
 
 $file_server_path = realpath(__FILE__);
 $server_path = str_replace(basename(__FILE__), "", $file_server_path);

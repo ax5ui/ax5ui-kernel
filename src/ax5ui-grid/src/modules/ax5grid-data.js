@@ -22,15 +22,15 @@
         return returnList;
     };
 
-    var initData = function (_list) {
+    let initData = function (_list) {
         this.selectedDataIndexs = [];
-        var i = 0, l = _list.length;
-        var returnList = [];
-        var appendIndex = 0;
-        var dataRealRowCount = 0;
+        let i = 0, l = _list.length,
+            returnList = [],
+            appendIndex = 0,
+            dataRealRowCount = 0;
 
         if (this.config.body.grouping) {
-            var groupingKeys = U.map(this.bodyGrouping.by, function () {
+            let groupingKeys = U.map(this.bodyGrouping.by, function () {
                 return {
                     key: this,
                     compareString: "",
@@ -38,7 +38,7 @@
                     list: []
                 }
             });
-            var gi = 0, gl = groupingKeys.length, compareString, appendRow = [], ari;
+            let gi = 0, gl = groupingKeys.length, compareString, appendRow = [], ari;
             for (; i < l + 1; i++) {
                 gi = 0;
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
@@ -101,8 +101,8 @@
         return returnList;
     };
 
-    var set = function (data) {
-        var self = this;
+    let set = function (data) {
+        let self = this;
 
         if (U.isArray(data)) {
             this.page = null;
@@ -129,16 +129,16 @@
         return this;
     };
 
-    var get = function (_type) {
+    let get = function (_type) {
         return {
             list: this.list,
             page: this.page
         };
     };
 
-    var getList = function (_type) {
-        var returnList = [];
-        var i = 0, l = this.list.length;
+    let getList = function (_type) {
+        let returnList = [];
+        let i = 0, l = this.list.length;
         switch (_type) {
             case "modified":
                 for (; i < l; i++) {
@@ -164,9 +164,9 @@
         return returnList;
     };
 
-    var add = function (_row, _dindex, _options) {
-        var list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
-        var processor = {
+    let add = function (_row, _dindex, _options) {
+        let list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
+        let processor = {
             "first": function () {
                 list = [].concat(_row).concat(list);
             },
@@ -214,9 +214,9 @@
      * list에서 완전 제거 하는 경우 사용.
      * ax5grid.data.remove
      */
-    var remove = function (_dindex) {
-        var list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
-        var processor = {
+    let remove = function (_dindex) {
+        let list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
+        let processor = {
             "first": function () {
                 list.splice(_dindex, 1);
             },
@@ -269,10 +269,9 @@
      * list에서 deleted 처리 repaint
      * ax5grid.data.deleteRow
      */
-    var deleteRow = function (_dindex) {
-        var list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
-
-        var processor = {
+    let deleteRow = function (_dindex) {
+        let list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
+        let processor = {
             "first": function () {
                 list[0][this.config.columnKeys.deleted] = true;
             },
@@ -326,7 +325,7 @@
         return this;
     };
 
-    var update = function (_row, _dindex) {
+    let update = function (_row, _dindex) {
         if (!U.isNumber(_dindex)) {
             throw 'invalid argument _dindex';
         }
@@ -339,8 +338,8 @@
         }
     };
 
-    var setValue = function (_dindex, _key, _value) {
-        var originalValue = getValue.call(this, _dindex, _key);
+    let setValue = function (_dindex, _key, _value) {
+        let originalValue = getValue.call(this, _dindex, _key);
         this.needToPaintSum = true;
 
         if (originalValue !== _value) {
@@ -371,7 +370,7 @@
         return true;
     };
 
-    var getValue = function (_dindex, _key, _value) {
+    let getValue = function (_dindex, _key, _value) {
         if (/[\.\[\]]/.test(_key)) {
             try {
                 _value = (Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";")).call(this.list[_dindex]);
@@ -418,7 +417,7 @@
         return this.list[_dindex][cfg.columnKeys.selected];
     };
 
-    var selectAll = function (_selected, _options) {
+    let selectAll = function (_selected, _options) {
         let cfg = this.config,
             dindex = this.list.length;
 

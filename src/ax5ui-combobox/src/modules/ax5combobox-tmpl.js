@@ -23,7 +23,7 @@ data-ax5combobox-display="{{id}}" data-ax5combobox-instance="{{instanceId}}">
         <div data-ax5combobox-display="label-holder"> 
             <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}
             data-ax5combobox-display="label"
-            spellcheck="false"><input type="text"data-ax5combobox-display="input" style="border:0px none;background: transparent;" /></a>
+            spellcheck="false"><input type="text"data-ax5combobox-display="input" style="border:0 none;" /></a>
         </div>
         <div data-ax5combobox-display="addon"> 
             {{#multiple}}{{#reset}}

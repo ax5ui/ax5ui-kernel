@@ -54,8 +54,7 @@
          * ```
          */
         var ax5modal = function () {
-            var
-                self = this,
+            let self = this,
                 cfg,
                 ENM = {
                     "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
@@ -63,7 +62,7 @@
                     "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
                 },
                 getMousePosition = function (e) {
-                    var mouseObj = e;
+                    let mouseObj = e;
                     if ('changedTouches' in e) {
                         mouseObj = e.changedTouches[0];
                     }
@@ -91,12 +90,12 @@
                 animateTime: 250
             };
             this.activeModal = null;
+            this.watingModal = false;
             this.$ = {}; // UI inside of the jQuery object store
 
             cfg = this.config; // extended config copy cfg
 
-            var
-                onStateChanged = function (opts, that) {
+            let onStateChanged = function (opts, that) {
                     if (opts && opts.onStateChanged) {
                         opts.onStateChanged.call(that, that);
                     }
@@ -106,16 +105,15 @@
                     return true;
                 },
                 getContent = function (modalId, opts) {
-                    var
-                        data = {
-                            modalId: modalId,
-                            theme: opts.theme,
-                            header: opts.header,
-                            fullScreen: (opts.fullScreen ? "fullscreen" : ""),
-                            styles: "",
-                            iframe: opts.iframe,
-                            iframeLoadingMsg: opts.iframeLoadingMsg
-                        };
+                    let data = {
+                        modalId: modalId,
+                        theme: opts.theme,
+                        header: opts.header,
+                        fullScreen: (opts.fullScreen ? "fullscreen" : ""),
+                        styles: "",
+                        iframe: opts.iframe,
+                        iframeLoadingMsg: opts.iframeLoadingMsg
+                    };
 
                     if (opts.zIndex) {
                         data.styles += "z-index:" + opts.zIndex + ";";
@@ -131,7 +129,7 @@
                     return MODAL.tmpl.get.call(this, "content", data, {});
                 },
                 open = function (opts, callback) {
-                    var that;
+                    let that;
                     jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
                     this.activeModal = jQuery('#' + opts.id);
@@ -185,7 +183,10 @@
                     }
 
                     if (callback) callback.call(that);
-                    onStateChanged.call(this, opts, that);
+
+                    if (!this.watingModal) {
+                        onStateChanged.call(this, opts, that);
+                    }
 
                     // bind key event
                     if (opts.closeToEsc) {
@@ -206,7 +207,7 @@
                             if (opts.isFullScreen) return false;
 
                             /// 이벤트 필터링 추가 : 버튼엘리먼트로 부터 발생된 이벤트이면 moveModal 시작하지 않도록 필터링
-                            var isButton = U.findParentNode(e.target, function (_target) {
+                            let isButton = U.findParentNode(e.target, function (_target) {
                                 if (_target.getAttribute("data-modal-header-btn")) {
                                     return true;
                                 }
@@ -223,7 +224,7 @@
                         });
                 },
                 btnOnClick = function (e, opts, callback, target, k) {
-                    var that;
+                    let that;
                     if (e.srcElement) e.target = e.srcElement;
 
                     target = U.findParentNode(e.target, function (target) {
@@ -277,43 +278,43 @@
                 },
                 moveModal = {
                     "on": function () {
-                        var modalZIndex = this.activeModal.css("z-index");
-                        var modalOffset = this.activeModal.position();
-                        var modalBox = {
-                            width: this.activeModal.outerWidth(), height: this.activeModal.outerHeight()
-                        };
-                        var windowBox = {
-                            width: jQuery(window).width(),
-                            height: jQuery(window).height()
-                        };
-                        var getResizerPosition = function (e) {
-                            self.__dx = e.clientX - self.mousePosition.clientX;
-                            self.__dy = e.clientY - self.mousePosition.clientY;
+                        let modalZIndex = this.activeModal.css("z-index"),
+                            modalOffset = this.activeModal.position(),
+                            modalBox = {
+                                width: this.activeModal.outerWidth(), height: this.activeModal.outerHeight()
+                            },
+                            windowBox = {
+                                width: jQuery(window).width(),
+                                height: jQuery(window).height()
+                            },
+                            getResizerPosition = function (e) {
+                                self.__dx = e.clientX - self.mousePosition.clientX;
+                                self.__dy = e.clientY - self.mousePosition.clientY;
 
-                            var minX = 0;
-                            var maxX = windowBox.width - modalBox.width;
-                            var minY = 0;
-                            var maxY = windowBox.height - modalBox.height;
+                                var minX = 0;
+                                var maxX = windowBox.width - modalBox.width;
+                                var minY = 0;
+                                var maxY = windowBox.height - modalBox.height;
 
-                            if (minX > modalOffset.left + self.__dx) {
-                                self.__dx = -modalOffset.left;
-                            }
-                            else if (maxX < modalOffset.left + self.__dx) {
-                                self.__dx = (maxX) - modalOffset.left;
-                            }
+                                if (minX > modalOffset.left + self.__dx) {
+                                    self.__dx = -modalOffset.left;
+                                }
+                                else if (maxX < modalOffset.left + self.__dx) {
+                                    self.__dx = (maxX) - modalOffset.left;
+                                }
 
-                            if (minY > modalOffset.top + self.__dy) {
-                                self.__dy = -modalOffset.top;
-                            }
-                            else if (maxY < modalOffset.top + self.__dy) {
-                                self.__dy = (maxY) - modalOffset.top;
-                            }
+                                if (minY > modalOffset.top + self.__dy) {
+                                    self.__dy = -modalOffset.top;
+                                }
+                                else if (maxY < modalOffset.top + self.__dy) {
+                                    self.__dy = (maxY) - modalOffset.top;
+                                }
 
-                            return {
-                                left: modalOffset.left + self.__dx + $(document).scrollLeft(),
-                                top: modalOffset.top + self.__dy + $(document).scrollTop()
+                                return {
+                                    left: modalOffset.left + self.__dx + $(document).scrollLeft(),
+                                    top: modalOffset.top + self.__dy + $(document).scrollTop()
+                                };
                             };
-                        };
 
                         self.__dx = 0; // 변화량 X
                         self.__dy = 0; // 변화량 Y
@@ -353,9 +354,8 @@
                             .on('selectstart', false);
                     },
                     "off": function () {
-                        var setModalPosition = function () {
-                            //console.log(this.activeModal.offset(), this.__dx);
-                            var box = this.activeModal.offset();
+                        let setModalPosition = function () {
+                            let box = this.activeModal.offset();
                             box.left += this.__dx - $(document).scrollLeft();
                             box.top += this.__dy - $(document).scrollTop();
                             this.activeModal.css(box);
@@ -411,10 +411,19 @@
              * my_modal.open();
              * ```
              */
-            this.open = function (opts, callback) {
+            this.open = function (opts, callback, tryCount) {
+                if (typeof tryCount === "undefined") tryCount = 0;
                 if (!this.activeModal) {
                     opts = self.modalConfig = jQuery.extend(true, {}, cfg, opts);
                     open.call(this, opts, callback);
+                    this.watingModal = false;
+                }
+                else if (tryCount < 3) {
+                    // 3번까지 재 시도
+                    this.watingModal = true;
+                    setTimeout((function () {
+                        this.open(opts, callback, tryCount + 1);
+                    }).bind(this), cfg.animateTime);
                 }
                 return this;
             };
@@ -465,11 +474,13 @@
                             this.activeModal.remove();
                             this.activeModal = null;
                         }
-                        onStateChanged.call(this, opts, {
-                            self: this,
-                            state: "close"
-                        });
-
+                        // 모달 오픈 대기중이면 닫기 상태 전달 안함.
+                        if (!this.watingModal) {
+                            onStateChanged.call(this, opts, {
+                                self: this,
+                                state: "close"
+                            });
+                        }
                     }).bind(this), cfg.animateTime);
                 }
 

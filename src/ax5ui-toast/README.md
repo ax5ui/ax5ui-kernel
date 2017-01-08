@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-toast.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-toast)
 [![npm version](https://badge.fury.io/js/ax5ui-toast.svg)](https://badge.fury.io/js/ax5ui-toast)
 
 # ax5ui-toast

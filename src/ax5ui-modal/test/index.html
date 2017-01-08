@@ -21,6 +21,8 @@
 <button class="btn btn-danger" data-btn-action="modal-open">Modal open</button>
 <button class="btn btn-danger" data-btn-action="modal-close">Modal close</button>
 
+<button class="btn btn-danger" data-btn-action="modal-close-open">Modal close & open</button>
+
 <div style="height: 1000px;"></div>
 
 <script>
@@ -53,7 +55,7 @@
         }
     });
     modal.onStateChanged = function () {
-        //console.log(this);
+        console.log(this);
     };
 
     function modalCallBack() {
@@ -86,12 +88,12 @@
                     modal.open({
                         position: {
                             left: "center",
-                            top: "top",
+                            top: "middle",
                             margin: 10
                         },
                         width: 800,
                         height: 600,
-                        disableDrag: true,
+                        disableDrag: false,
                         fullScreen: function () {
                             return ($(window).width() < 600);
                         }
@@ -104,6 +106,24 @@
                     break;
                 case "set-modal-full":
                     modal.setModalConfig({fullScreen: true});
+                    break;
+                case "modal-close-open":
+                    modal.close();
+                    modal.open({
+                        position: {
+                            left: "center",
+                            top: "middle",
+                            margin: 10
+                        },
+                        width: 800,
+                        height: 600,
+                        disableDrag: false,
+                        fullScreen: function () {
+                            return ($(window).width() < 600);
+                        }
+                    }, function(){
+                        this.$.body.append('<h1>div contents</h1>');
+                    });
                     break;
             }
         });

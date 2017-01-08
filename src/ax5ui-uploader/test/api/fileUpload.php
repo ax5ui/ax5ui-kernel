@@ -1,5 +1,10 @@
 <?php
-header('Content-Type: application/json');
+if (preg_match('/(?i)msie [5-9]/', $_SERVER['HTTP_USER_AGENT'])) {
+
+} else {
+    // header('Content-Type: application/json'); // IE 9 버전에서 JSON 다운로드 되어버림..
+}
+
 
 $file_server_path = realpath(__FILE__);
 $server_path = str_replace(basename(__FILE__), "", $file_server_path);
@@ -24,7 +29,7 @@ $uploadfile = $upload_dir . "/" . basename($new_file_name);
 //print_r($_FILES); //파일정보 출력 메소드
 if (move_uploaded_file($_FILES['fileData']['tmp_name'], $uploadfile)) {
 
-    echo '{
+echo '{
     "name": "' . ($file_name) . '",
     "type": "' . ($file_ext) . '",
     "saveName": "' . ($new_file_name) . '",
@@ -34,9 +39,10 @@ if (move_uploaded_file($_FILES['fileData']['tmp_name'], $uploadfile)) {
 }';
 
 } else {
+
     echo '{
-    "error": true
-}';
+        "error": true
+    }';
 
 }
 ?>

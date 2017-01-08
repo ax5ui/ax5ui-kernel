@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-mask.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-mask)
 [![npm version](https://badge.fury.io/js/ax5ui-mask.svg)](https://badge.fury.io/js/ax5ui-mask)
 
 # ax5ui-mask

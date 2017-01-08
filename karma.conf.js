@@ -1,74 +1,92 @@
-// Karma configuration
-// Generated on Wed Sep 28 2016 23:32:27 GMT+0900 (KST)
+module.exports = function (config) {
+    var configuration = {
+        // base path that will be used to resolve all patterns (eg. files, exclude)
+        basePath: '',
 
-module.exports = function(config) {
-  config.set({
+        // frameworks to use
+        // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
+        frameworks: ['mocha'],
 
-    // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+        // list of files / patterns to load in the browser
+        files: [
+            'https://code.jquery.com/jquery-1.12.3.min.js',
+            'https://cdn.rawgit.com/shouldjs/should.js/master/should.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
 
-
-    // frameworks to use
-    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha'],
-
-
-    // list of files / patterns to load in the browser
-    files: [
-      'node_modules/jquery/dist/jquery.min.js',
-      'node_modules/lodash/lodash.min.js',
-      'node_modules/should/should.js',
-      'dist/ax5ui.all.css',
-      'dist/ax5ui.all.min.js',
-      'src/**/test/test.*.js'
-    ],
-
-
-    // list of files to exclude
-    exclude: [
-    ],
-
-
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
+            'src/ax5core/dist/ax5core.min.js',
+            'src/ax5ui-autocomplete/dist/ax5autocomplete.min.js',
+            'src/ax5ui-binder/dist/ax5binder.min.js',
+            'src/ax5ui-calendar/dist/ax5calendar.min.js',
+            'src/ax5ui-combobox/dist/ax5combobox.min.js',
+            'src/ax5ui-dialog/dist/ax5dialog.min.js',
+            'src/ax5ui-formatter/dist/ax5formatter.min.js',
+            'src/ax5ui-grid/dist/ax5grid.min.js',
+            'src/ax5ui-layout/dist/ax5layout.min.js',
+            'src/ax5ui-mask/dist/ax5mask.min.js',
+            'src/ax5ui-media-viewer/dist/ax5media-viewer.min.js',
+            'src/ax5ui-menu/dist/ax5menu.min.js',
+            'src/ax5ui-modal/dist/ax5modal.min.js',
+            'src/ax5ui-picker/dist/ax5picker.min.js',
+            'src/ax5ui-select/dist/ax5select.min.js',
+            'src/ax5ui-toast/dist/ax5toast.min.js',
+            'src/ax5ui-uploader/dist/ax5uploader.min.js',
 
 
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+            'src/ax5core/test/test.*.js',
+            'src/ax5ui-autocomplete/test/test.*.js',
+            'src/ax5ui-binder/test/test.*.js',
+            'src/ax5ui-calendar/test/test.*.js',
+            'src/ax5ui-combobox/test/test.*.js',
+            'src/ax5ui-dialog/test/test.*.js',
+            'src/ax5ui-formatter/test/test.*.js',
+            'src/ax5ui-grid/test/test.*.js',
+            'src/ax5ui-layout/test/test.*.js',
+            'src/ax5ui-mask/test/test.*.js',
+            'src/ax5ui-media-viewer/test/test.*.js',
+            'src/ax5ui-menu/test/test.*.js',
+            'src/ax5ui-modal/test/test.*.js',
+            'src/ax5ui-picker/test/test.*.js',
+            'src/ax5ui-select/test/test.*.js',
+            'src/ax5ui-toast/test/test.*.js',
+            'src/ax5ui-uploader/test/test.*.js'
+        ],
+        // list of files to exclude
+        exclude: [],
+        // preprocess matching files before serving them to the browser
+        // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        preprocessors: {},
+        // test results reporter to use
+        // possible values: 'dots', 'progress'
+        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+        reporters: ['progress'],
+        // web server port
+        port: 9876,
+        // enable / disable colors in the output (reporters and logs)
+        colors: true,
+        // level of logging
+        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+        logLevel: config.LOG_INFO,
+        // enable / disable watching file and executing tests whenever any file changes
+        autoWatch: true,
+        // start these browsers
+        // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+        //browsers: ['PhantomJS'],
+        browsers: ['Chrome'],
+        customLaunchers: {
+            Chrome_travis_ci: {
+                base: 'Chrome',
+                flags: ['--no-sandbox']
+            }
+        },
+        singleRun: true,
+        concurrency: Infinity
+    };
 
+    if (process.env.TRAVIS) {
+        configuration.browsers = ['PhantomJS'];
+    }
 
-    // web server port
-    port: 9876,
-
-
-    // enable / disable colors in the output (reporters and logs)
-    colors: true,
-
-
-    // level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
-
-
-    // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
-
-
-    // start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
-
-
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
-
-    // Concurrency level
-    // how many browser should be started simultaneous
-    concurrency: Infinity
-  })
+    config.set(configuration);
 }
+
+

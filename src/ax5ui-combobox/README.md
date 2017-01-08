@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-combobox.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-combobox)
 [![npm version](https://badge.fury.io/js/ax5ui-combobox.svg)](https://badge.fury.io/js/ax5ui-combobox)
 
 # ax5ui-combobox

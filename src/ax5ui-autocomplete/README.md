@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/ax5ui/ax5ui-autocomplete.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-autocomplete)
 [![npm version](https://badge.fury.io/js/ax5ui-autocomplete.svg)](https://badge.fury.io/js/ax5ui-autocomplete)
 
 # ax5ui-autocomplete

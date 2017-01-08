@@ -20,8 +20,7 @@
              *
              * ```
              */
-            let self = this,
-                cfg;
+            let self = this, cfg;
 
             this.instanceId = ax5.getGuid();
             this.config = {
@@ -81,7 +80,7 @@
              * UI 상태변경 이벤트 처리자
              * UI의 상태변경 : open, close, upload 등의 변경사항이 발생되면 onStateChanged 함수를 후출하여 이벤트를 처리
              */
-            let onStateChanged = function (that) {
+            let bound_onStateChanged = (function (that) {
 
                 let state = {
                     "open": function () {
@@ -104,13 +103,15 @@
 
                 that = null;
                 return true;
-            };
+            }).bind(this);
 
-            let onSelectFile = (function (_evt) {
+            let bound_onSelectFile = (function (_evt) {
                 let files;
 
                 if (!ax5.info.supportFileApi) {
                     // file API 지원 안되는 브라우저.
+                    // input file에 multiple 지원 안됨 그러므로 단일 파일 처리만 하면 됨.
+                    files = {path: _evt.target.value};
                 }
                 else if ('dataTransfer' in _evt) {
                     files = _evt.dataTransfer.files;
@@ -132,78 +133,158 @@
                 }
 
                 if (cfg.progressBox) {
-                    openProgressBox();
+                    bound_openProgressBox();
                 }
                 if (!cfg.manualUpload) {
                     this.send();
                 }
+
+                if (!ax5.info.supportFileApi) {
+                    bound_alignLayout(false);
+                }
             }).bind(this);
 
-            let bindEvent = function () {
+            let bound_bindEvent = (function () {
                 this.$fileSelector
                     .off("click.ax5uploader")
                     .on("click.ax5uploader", (function () {
                         this.$inputFile.trigger("click");
                     }).bind(this));
 
-                this.$inputFile
-                    .off("change.ax5uploader")
-                    .on("change.ax5uploader", (function (_evt) {
-                        onSelectFile(_evt);
-                    }).bind(this));
+                if (!ax5.info.supportFileApi) {
+                    this.$fileSelector
+                        .off("mouseover.ax5uploader")
+                        .on("mouseover.ax5uploader", (function () {
+                            bound_alignLayout(true);
+                        }).bind(this));
+
+                    this.$inputFile
+                        .off("mouseover.ax5uploader")
+                        .on("mouseover.ax5uploader", (function () {
+                            this.$fileSelector.addClass("active");
+                        }).bind(this));
+
+                    this.$inputFile
+                        .off("mouseout.ax5uploader")
+                        .on("mouseout.ax5uploader", (function () {
+                            this.$fileSelector.removeClass("active");
+
+                            bound_alignLayout(false);
+                        }).bind(this));
+                }
+
+                (function () {
+                    if (!this.$uploadedBox || !this.$uploadedBox.get(0)) return false;
+
+                    this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
+                        let $this = jQuery(this),
+                            cellType = $this.attr("data-uploaded-item-cell"),
+                            uploadedItemIndex = Number($this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item')),
+                            that = {};
+
+                        if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
+                            that = {
+                                self: self,
+                                cellType: cellType,
+                                uploadedFiles: self.uploadedFiles,
+                                fileIndex: uploadedItemIndex
+                            };
+                            cfg.uploadedBox.onclick.call(that, that);
+                        }
+
+                        $this = null;
+                        cellType = null;
+                        uploadedItemIndex = null;
+                        that = null;
+                    });
+                }).call(this);
 
                 (function () {
                     // dropZone 설정 방식 변경
-                    if(!this.$dropZone || !this.$dropZone.get(0)) return false;
+                    if (!ax5.info.supportFileApi)  return false;
+                    if (!this.$dropZone || !this.$dropZone.get(0)) return false;
 
                     let timer;
 
-                    this.$dropZone
-                        .on("click", function (e) {
-                            //console.log(e.target.getAttribute("data-ax5uploader-dropzone"));
-                            let isItemCell = ax5.util.findParentNode(e.target, function(target){
-                                if(target.hasAttribute("data-uploaded-item-cell")){
-                                    return true;
+                    this.$dropZone.parent()
+                        .on("click", "[data-ax5uploader-dropzone]", function (e) {
+                            let $target = jQuery(e.target);
+                            if($target.parents('[data-ax5uploader-uploaded-item]').length == 0 && !$target.attr('data-ax5uploader-uploaded-item')) {
+                                if (this == e.target || $.contains(this, e.target)) {
+                                    if (U.isFunction(cfg.dropZone.onclick)) {
+                                        cfg.dropZone.onclick.call({
+                                            self: self
+                                        });
+                                    } else {
+                                        self.$inputFile.trigger("click");
+                                    }
                                 }
-                            });
-
-                            if(!isItemCell){
-                                // dropZone click
-                                self.$inputFile.trigger("click");
                             }
                         });
 
-
                     this.$dropZone.get(0).addEventListener('dragover', function (e) {
                         U.stopEvent(e);
-                        self.$dropZone.addClass("dragover");
+                        
+                        if(U.isFunction(cfg.dropZone.ondragover)) {
+                            cfg.dropZone.ondragover.call({
+                                self: self
+                            });
+                        }else{
+                            self.$dropZone.addClass("dragover");
+                        }
+
                     }, false);
 
                     this.$dropZone.get(0).addEventListener('dragleave', function (e) {
                         U.stopEvent(e);
-                        self.$dropZone.removeClass("dragover");
+
+                        if(U.isFunction(cfg.dropZone.ondragover)) {
+                            cfg.dropZone.ondragout.call({
+                                self: self
+                            });
+                        }else{
+                            self.$dropZone.removeClass("dragover");
+                        }
+
                     }, false);
 
                     this.$dropZone.get(0).addEventListener('drop', function (e) {
                         U.stopEvent(e);
-                        self.$dropZone.removeClass("dragover");
-                        onSelectFile(e || window.event);
+
+                        if(U.isFunction(cfg.dropZone.ondrop)) {
+                            cfg.dropZone.ondrop.call({
+                                self: self
+                            });
+                        }else{
+                            self.$dropZone.removeClass("dragover");
+                        }
+
+                        bound_onSelectFile(e || window.event);
                     }, false);
 
                 }).call(this);
-            };
+            }).bind(this);
 
-            let alignLayout = function () {
+            let bound_alignLayout = (function (_TF) {
                 // 상황이 좋지 않은경우 (만약 버튼 클릭으로 input file click이 되지 않는 다면 z-index값을 높여서 버튼위를 덮는다.)
-                /*
-                 var box = this.$fileSelector.position();
-                 box.width = this.$fileSelector.outerWidth();
-                 box.height = this.$fileSelector.outerHeight();
-                 this.$inputFile.css(box);
-                 */
-            };
+                if (_TF) {
+                    if (!ax5.info.supportFileApi) {
+                        // ie9에서 inputFile을 직접 클릭하지 않으면 submit 오류발생함. submit access denied
+                        // 그래서 버튼위에 inputFile을 올려두어야 함. (position값을 이용하면 편하지만..)
+                        // 그런데 form을 안에두면 또 다른 이중폼 문제 발생소지 ㅜㅜ 불가피하게 버튼의 offset 값을 이용.
+                        let box = this.$fileSelector.offset();
+                        box.width = this.$fileSelector.outerWidth();
+                        box.height = this.$fileSelector.outerHeight();
+                        this.$inputFile.css(box);
+                    }
+                } else {
+                    this.$inputFile.css({
+                        left: -1000, top: -1000
+                    });
+                }
+            }).bind(this);
 
-            let alignProgressBox = function (append) {
+            let bound_alignProgressBox = (function (append) {
                 let _alignProgressBox = function () {
                     let $window = jQuery(window), $body = jQuery(document.body);
                     let pos = {}, positionMargin = 6,
@@ -225,7 +306,7 @@
                     };
 
                     // picker css(width, left, top) & direction 결정
-                    if (!cfg.direction || cfg.direction === "" || cfg.direction === "auto") {
+                    if (!cfg.progressBoxDirection || cfg.progressBoxDirection === "" || cfg.progressBoxDirection === "auto") {
                         // set direction
                         pickerDirection = "top";
                         if (pos.top - pickerDim.height - positionMargin < 0) {
@@ -234,7 +315,7 @@
                             pickerDirection = "bottom";
                         }
                     } else {
-                        pickerDirection = cfg.direction;
+                        pickerDirection = cfg.progressBoxDirection;
                     }
 
                     if (append) {
@@ -312,24 +393,24 @@
                 setTimeout((function () {
                     _alignProgressBox.call(this);
                 }).bind(this));
-            };
+            }).bind(this);
 
-            let openProgressBox = (function () {
+            let bound_openProgressBox = (function () {
                 this.$progressBox.removeClass("destroy");
                 this.$progressUpload.removeAttr("disabled");
                 this.$progressAbort.removeAttr("disabled");
 
                 // apend & align progress box
-                alignProgressBox.call(this, "append");
+                bound_alignProgressBox("append");
 
                 // state change
-                onStateChanged.call(this, {
+                bound_onStateChanged({
                     self: this,
                     state: "open"
                 });
             }).bind(this);
 
-            let closeProgressBox = (function () {
+            let bound_closeProgressBox = (function () {
                 this.$progressBox.addClass("destroy");
                 setTimeout((function () {
                     this.$progressBox
@@ -337,7 +418,7 @@
                 }).bind(this), cfg.animateTime);
             }).bind(this);
 
-            let startUpload = (function () {
+            let bound_startUpload = (function () {
 
                 let processor = {
                     "html5": function () {
@@ -345,7 +426,7 @@
                         let uploadFile = this.selectedFiles.shift();
                         if (!uploadFile) {
                             // 업로드 종료
-                            uploadComplete();
+                            bound_uploadComplete();
                             return this;
                         }
 
@@ -372,16 +453,23 @@
 
                             if (res.error) {
                                 if (cfg.debug) console.log(res.error);
+                                if (U.isFunction(cfg.onuploaderror)) {
+                                    cfg.onuploaderror.call({
+                                        self: this,
+                                        error: res.error
+                                    }, res);
+                                }
+                                self.send();
                                 return false;
                             }
 
-                            uploaded(res);
+                            bound_uploaded(res);
                             self.send();
                         };
 
                         this.xhr.upload.onprogress = function (e) {
                             // console.log(e.loaded, e.total);
-                            updateProgressBar(e);
+                            bound_updateProgressBar(e);
                             if (U.isFunction(cfg.onprogress)) {
                                 cfg.onprogress.call({
                                     loaded: e.loaded,
@@ -393,12 +481,55 @@
 
                     },
                     "form": function () {
-                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
-                        // iframe 생성
-                        let iframe = $('<iframe src="javascript:false;" name="" style="display:none;"></iframe>');
-                        // form 생성.
 
-                        $(document.body).append(iframe);
+                        /// i'm busy
+                        this.__uploading = true;
+
+                        // 폼과 iframe을 만들어 페이지 아래에 삽입 후 업로드
+                        let $iframe = jQuery('<iframe src="javascript:false;" name="ax5uploader-' + this.instanceId + '-iframe" style="display:none;"></iframe>');
+                        jQuery(document.body).append($iframe);
+
+                        // onload 이벤트 핸들러
+                        // action에서 파일을 받아 처리한 결과값을 텍스트로 출력한다고 가정하고 iframe의 내부 데이터를 결과값으로 callback 호출
+                        $iframe.load(function () {
+                            let doc = this.contentWindow ? this.contentWindow.document : (this.contentDocument ? this.contentDocument : this.document),
+                                root = doc.documentElement ? doc.documentElement : doc.body,
+                                result = root.textContent ? root.textContent : root.innerText,
+                                res;
+
+                            try {
+                                res = JSON.parse(result);
+                            } catch (e) {
+                                res = {
+                                    error: "Syntax error",
+                                    body: result
+                                };
+                            }
+
+                            if (cfg.debug) console.log(res);
+                            if (res.error) {
+                                console.log(res);
+                            }
+                            else {
+                                bound_uploaded(res);
+                                $iframe.remove();
+
+                                setTimeout(function () {
+                                    bound_uploadComplete();
+                                }, 300);
+                            }
+                        });
+
+                        this.$inputFileForm
+                            .attr("target", 'ax5uploader-' + this.instanceId + '-iframe')
+                            .attr("action", cfg.form.action)
+                            .submit();
+
+                        this.selectedFilesTotal = 1;
+                        bound_updateProgressBar({
+                            loaded: 1,
+                            total: 1
+                        });
                     }
                 };
 
@@ -411,7 +542,6 @@
                     this.selectedFilesTotal = filesTotal;
                     this.__loaded = 0;
 
-
                     this.__uploading = true; // 업로드 시작 상태 처리
                     this.$progressUpload.attr("disabled", "disabled");
                     this.$progressAbort.removeAttr("disabled");
@@ -421,7 +551,7 @@
 
             }).bind(this);
 
-            let updateProgressBar = (function (e) {
+            let bound_updateProgressBar = (function (e) {
                 this.__loaded += e.loaded;
                 this.$progressBar.css({width: U.number(this.__loaded / this.selectedFilesTotal * 100, {round: 2}) + '%'});
                 if (e.lengthComputable) {
@@ -431,10 +561,10 @@
                 }
             }).bind(this);
 
-            let uploaded = (function (res) {
+            let bound_uploaded = (function (res) {
                 if (cfg.debug) console.log(res);
                 this.uploadedFiles.push(res);
-                repaintUploadedBox(); // 업로드된 파일 출력
+                bound_repaintUploadedBox(); // 업로드된 파일 출력
 
                 if (U.isFunction(cfg.onuploaded)) {
                     cfg.onuploaded.call({
@@ -443,13 +573,13 @@
                 }
             }).bind(this);
 
-            let uploadComplete = (function () {
+            let bound_uploadComplete = (function () {
                 this.__uploading = false; // 업로드 완료 상태처리
                 this.$progressUpload.removeAttr("disabled");
                 this.$progressAbort.attr("disabled", "disabled");
 
                 if (cfg.progressBox) {
-                    closeProgressBox();
+                    bound_closeProgressBox();
                 }
                 if (U.isFunction(cfg.onuploadComplete)) {
                     cfg.onuploadComplete.call({
@@ -457,9 +587,12 @@
                     });
                 }
                 // update uploadedFiles display
+
+                /// reset inputFile
+                bound_attachFileTag();
             }).bind(this);
 
-            let cancelUpload = (function () {
+            let bound_cancelUpload = (function () {
 
                 let processor = {
                     "html5": function () {
@@ -479,15 +612,18 @@
                 processor[ax5.info.supportFileApi ? "html5" : "form"].call(this);
 
                 if (cfg.progressBox) {
-                    closeProgressBox();
+                    bound_closeProgressBox();
                 }
 
-                this.$inputFile.get(0).value = "";
-                console.log("cancelUpload");
+                //this.$inputFile.val("");
+                /// reset inputFile
+                bound_attachFileTag();
+
+                if (cfg.debug) console.log("cancelUpload");
                 // update uploadedFiles display
             }).bind(this);
 
-            let repaintUploadedBox = (function () {
+            let bound_repaintUploadedBox = (function () {
                 // uploadedBox 가 없다면 아무일도 하지 않음.
                 // onuploaded 함수 이벤트를 이용하여 개발자가 직접 업로드디 박스를 구현 한다고 이해 하자.
                 if (this.$uploadedBox === null) return this;
@@ -496,12 +632,96 @@
                     UPLOADER.tmpl.get("upoadedBox", {
                         uploadedFiles: this.uploadedFiles,
                         icon: cfg.uploadedBox.icon,
-                        lang: cfg.uploadedBox.lang
+                        lang: cfg.uploadedBox.lang,
+                        supportFileApi: !!ax5.info.supportFileApi
                     }, cfg.uploadedBox.columnKeys)
                 );
+                this.$uploadedBox.find("img").on("error", function () {
+                   //this.src = "";
+                   $(this).parent().addClass("no-image");
+                });
+                
+            }).bind(this);
+
+            let bound_attachFileTag = (function () {
+                if (this.$inputFile && this.$inputFile.get(0)) {
+                    this.$inputFile.remove();
+                }
+                if (this.$inputFileForm && this.$inputFileForm.get(0)) {
+                    this.$inputFileForm.remove();
+                }
+
+                this.$inputFile = jQuery(UPLOADER.tmpl.get.call(this, "inputFile", {
+                    instanceId: this.instanceId,
+                    multiple: cfg.multiple,
+                    accept: cfg.accept,
+                    name: cfg.form.fileName
+                }));
+
+                if (ax5.info.supportFileApi) {
+                    jQuery(document.body).append(this.$inputFile);
+                } else {
+                    this.$fileSelector.attr("tabindex", -1);
+                    this.$inputFileForm = jQuery(UPLOADER.tmpl.get.call(this, "inputFileForm", {
+                        instanceId: this.instanceId
+                    }));
+
+                    this.$inputFileForm.append(this.$inputFile);
+                    jQuery(document.body).append(this.$inputFileForm);
+                }
+
+                this.$inputFile
+                    .off("change.ax5uploader")
+                    .on("change.ax5uploader", (function (_evt) {
+                        bound_onSelectFile(_evt);
+                    }).bind(this));
 
             }).bind(this);
 
+            /**
+             * Preferences of uploader UI
+             * @method ax5uploader.setConfig
+             * @param {Object} _config - 클래스 속성값
+             * @param {Element} _config.target
+             * @param {Object} _config.form
+             * @param {String} _config.form.action - upload URL
+             * @param {String} _config.form.fileName - The name key of the upload file
+             * @param {Boolean} [_config.multiple=false] - Whether multiple files. In a browser where fileApi is not supported (eg IE9), it only works with false.
+             * @param {String} [_config.accept=""] - accept mimeType (http://www.w3schools.com/TAgs/att_input_accept.asp)
+             * @param {Boolean} [_config.manualUpload=false] - Whether to automatically upload when a file is selected.
+             * @param {Boolean} [_config.progressBox=true] - Whether to use progressBox
+             * @param {String} [_config.progressBoxDirection=auto] - ProgressBox display direction
+             * @param {Object} [_config.dropZone]
+             * @param {Element} [_config.dropZone.target]
+             * @param {Function} [_config.dropZone.onclick]
+             * @param {Function} [_config.dropZone.ondragover]
+             * @param {Function} [_config.dropZone.ondragout]
+             * @param {Function} [_config.dropZone.ondrop]
+             * @param {Object} [_config.uploadedBox]
+             * @param {Element} [_config.uploadedBox.target]
+             * @param {Element} [_config.uploadedBox.icon]
+             * @param {Object} [_config.uploadedBox.columnKeys]
+             * @param {String} [_config.uploadedBox.columnKeys.name]
+             * @param {String} [_config.uploadedBox.columnKeys.type]
+             * @param {String} [_config.uploadedBox.columnKeys.size]
+             * @param {String} [_config.uploadedBox.columnKeys.uploadedName]
+             * @param {String} [_config.uploadedBox.columnKeys.downloadPath]
+             * @param {Object} [_config.uploadedBox.lang]
+             * @param {String} [_config.uploadedBox.lang.supportedHTML5_emptyListMsg]
+             * @param {String} [_config.uploadedBox.lang.emptyListMsg]
+             * @param {Function} [_config.uploadedBox.onchange]
+             * @param {Function} [_config.uploadedBox.onclick]
+             * @param {Function} [_config.validateSelectedFiles]
+             * @param {Function} [_config.onprogress] - return loaded, total
+             * @param {Function} [_config.onuploaded] - return self
+             * @param {Function} [_config.onuploaderror] - return self, error
+             * @param {Function} [_config.onuploadComplete] - return self
+             * @returns {ax5uploader}
+             * @example
+             * ```js
+             *
+             * ```
+             */
             this.init = function (_config) {
                 cfg = jQuery.extend(true, {}, cfg, _config);
                 if (!cfg.target) {
@@ -512,8 +732,8 @@
                 this.$target = jQuery(cfg.target);
 
                 // 파일 드랍존은 옵션 사항.
-                if (cfg.dropZone) {
-                    this.$dropZone = jQuery(cfg.dropZone);
+                if (cfg.dropZone && cfg.dropZone.target && ax5.info.supportFileApi) {
+                    this.$dropZone = jQuery(cfg.dropZone.target);
                     this.$dropZone
                         .attr("data-ax5uploader-dropzone", this.instanceId);
                 }
@@ -521,27 +741,6 @@
                 // uploadedBox 옵션 사항
                 if (cfg.uploadedBox && cfg.uploadedBox.target) {
                     this.$uploadedBox = jQuery(cfg.uploadedBox.target);
-                    this.$uploadedBox.on("click", "[data-uploaded-item-cell]", function () {
-                        let $this = jQuery(this),
-                            cellType = $this.attr("data-uploaded-item-cell"),
-                            uploadedItemIndex = Number($this.parents('[data-ax5uploader-uploaded-item]').attr('data-ax5uploader-uploaded-item')),
-                            that = {};
-
-                        if (cfg.uploadedBox && cfg.uploadedBox.onclick) {
-                            that = {
-                                self: self,
-                                cellType: cellType,
-                                uploadedFiles: self.uploadedFiles,
-                                fileIndex: uploadedItemIndex
-                            };
-                            cfg.uploadedBox.onclick.call(that, that);
-                        }
-
-                        $this = null;
-                        cellType = null;
-                        uploadedItemIndex = null;
-                        that = null;
-                    });
                 }
 
                 // target attribute data
@@ -562,21 +761,7 @@
                 }
 
                 // input file 추가
-                this.$inputFile = jQuery(UPLOADER.tmpl.get.call(this, "inputFile", {
-                    instanceId: this.instanceId,
-                    multiple: cfg.multiple,
-                    accept: cfg.accept
-                }));
-
-                if (ax5.info.supportFileApi) {
-                    jQuery(document.body).append(this.$inputFile);
-                } else {
-                    this.$inputFileForm = jQuery(UPLOADER.tmpl.get.call(this, "inputFileForm", {
-                        instanceId: this.instanceId
-                    }));
-                    this.$inputFileForm.append(this.$inputFile);
-                    jQuery(document.body).append(this.$inputFileForm);
-                }
+                bound_attachFileTag();
 
                 // btns 확인
                 cfg.btns = jQuery.extend({}, this.defaultBtns, cfg.btns);
@@ -590,11 +775,14 @@
                 this.$progressUpload = this.$progressBox.find('[data-pregressbox-btn="upload"]');
                 this.$progressAbort = this.$progressBox.find('[data-pregressbox-btn="abort"]');
 
-                // 레이아웃 정렬
-                alignLayout.call(this);
+                // file API가 지원되지 않는 브라우저는 중지 기능 제공 못함.
+                if (!ax5.info.supportFileApi) {
+                    this.$progressAbort.hide();
+                }
                 // 파일버튼 등에 이벤트 연결.
-                bindEvent.call(this);
+                bound_bindEvent();
 
+                bound_repaintUploadedBox();
                 return this;
             };
 
@@ -606,7 +794,20 @@
             this.send = (function () {
                 return function () {
                     // 업로드 시작
-                    startUpload();
+                    if (U.isFunction(cfg.validateSelectedFiles)) {
+                        let that = {
+                            self: this,
+                            uploadedFiles: this.uploadedFiles,
+                            selectedFiles: this.selectedFiles
+                        };
+                        if (!cfg.validateSelectedFiles.call(that, that)) {
+                            bound_cancelUpload();
+                            return false;
+                            // 전송처리 안함.
+                        }
+                    }
+
+                    bound_startUpload();
                     return this;
                 }
             })();
@@ -617,7 +818,11 @@
              */
             this.abort = (function () {
                 return function () {
-                    cancelUpload();
+                    if (!ax5.info.supportFileApi) {
+                        alert("This browser not supported abort method");
+                        return this;
+                    }
+                    bound_cancelUpload();
                     return this;
                 };
             })();
@@ -655,7 +860,15 @@
                 if (U.isArray(_files)) {
                     this.uploadedFiles = _files;
                 }
-                repaintUploadedBox();
+                if (U.isString(_files)) {
+                    try {
+                        this.uploadedFiles = JSON.parse(_files);
+                    } catch (e) {
+
+                    }
+                }
+
+                bound_repaintUploadedBox();
                 return this;
             };
 
@@ -674,7 +887,7 @@
                 if (!isNaN(Number(_index))) {
                     this.uploadedFiles.splice(_index, 1);
                 }
-                repaintUploadedBox();
+                bound_repaintUploadedBox();
                 return this;
             };
 
@@ -689,8 +902,20 @@
              */
             this.removeFileAll = function () {
                 this.uploadedFiles = [];
-                repaintUploadedBox();
+                bound_repaintUploadedBox();
                 return this;
+            };
+
+            /**
+             * @method ax5uploader.selectFile
+             * @returns {Boolean}
+             */
+            this.selectFile = function () {
+                if (ax5.info.supportFileApi) {
+                    this.$inputFile.trigger("click");
+                    return true;
+                }
+                return false;
             };
 
             // 클래스 생성자
