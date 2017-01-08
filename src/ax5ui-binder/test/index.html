@@ -136,7 +136,6 @@
                     {{^@first}}
                     <button class="btn btn-default btn-sm" type="button" data-ax-repeat-click="remove">-</button>
                     {{/@first}}
-
                 </td>
                 <td>
                     <input type="text" name="input-text" id="name-{{@i}}" data-ax-item-path="name" data-ax-validate="required"
@@ -198,26 +197,24 @@
 
                 </td>
                 <td>
-
                     {{#child}}
                     {{^__DELETED__}}
                     <input type="text" name="text" data-ax-item-path="child[{{@i}}].name" value=""
-                           class="form-control W50"/>
+                           class="form-control input-sm" style="display: inline-block;width: 70px;"/>
 
                     {{#@first}}
-                    <button class="btn btn-default btn-sm" type="button" data-ax-repeat-child="child"
+                    <button class="btn btn-primary btn-sm" type="button" data-ax-repeat-child="child"
                             data-ax-repeat-child-c-index="{{@i}}" data-ax-repeat-click="add">+
                     </button>
                     {{/@first}}
                     {{^@first}}
-                    <button class="btn btn-default btn-sm" type="button" data-ax-repeat-child="child"
+                    <button class="btn btn-primary btn-sm" type="button" data-ax-repeat-child="child"
                             data-ax-repeat-child-c-index="{{@i}}" data-ax-repeat-click="remove">-
                     </button>
                     {{/@first}}
 
                     {{/__DELETED__}}
                     {{/child}}
-
                 </td>
                 <td>
                     <label>

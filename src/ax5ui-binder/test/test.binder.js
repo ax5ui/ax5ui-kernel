@@ -71,10 +71,12 @@ describe('ax5binder TEST', function () {
         done(myUI.get("email") == "brant" ? "" : "onchange input value");
     });
 
+    /*
     it('focus ax5binder', function (done) {
         myUI.focus("email");
         done(jQuery('[data-ax-path="email"]').is(':focus') ? "" : "focus error");
     });
+    */
 
     it('validate[required] ax5binder', function (done) {
         jQuery('[data-ax-path="email"]')
