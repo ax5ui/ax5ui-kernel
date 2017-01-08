@@ -18,8 +18,8 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'https://code.jquery.com/jquery-1.12.3.min.js',
-            'https://cdn.rawgit.com/shouldjs/should.js/master/should.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/should.js/11.1.2/should.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
             'https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js',
             'dist/ax5calendar.min.js',
