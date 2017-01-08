@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  ~ Copyright (c) 2016. tom@axisj.com
+  ~ Copyright (c) 2017. tom@axisj.com
   ~ - github.com/thomasjang
   ~ - www.axisj.com
   -->
@@ -82,7 +82,7 @@
 
     var sampleData = [
         {a: "A", b: "A<A", price: 1000, amount: null, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y", __disable_selection__: true},
-        {a: "A", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
+        {a: "A", b: "C01", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
         {a: "A", b: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
         {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
         {a: "A", b: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
@@ -108,33 +108,12 @@
                     columnHeight: 28
                 },
                 body: {
+                    mergeCells: true,
                     align: "center",
                     columnHeight: 28,
                     onClick: function () {
                         // console.log(this);
                         // this.self.select(this.dindex);
-                    },
-                    grouping: {
-                        by: ["b"],
-                        columns: [
-                            {
-                                label: function () {
-                                    return this.groupBy.labels.join(", ") + " 합계";
-                                }, colspan: 2
-                            },
-                            {key: "price", collector: "avg", formatter: "money", align: "right"},
-                            {key: "amount", collector: "sum", formatter: "money", align: "right"},
-                            {
-                                key: "cost", collector: function () {
-                                var value = 0;
-                                this.list.forEach(function (n) {
-                                    if (!n.__isGrouping) value += (n.price * n.amount);
-                                });
-                                return ax5.util.number(value, {"money": 1});
-                            }, align: "right"
-                            },
-                            {label: "~~~", colspan: 3}
-                        ]
                     }
                 },
                 page: {

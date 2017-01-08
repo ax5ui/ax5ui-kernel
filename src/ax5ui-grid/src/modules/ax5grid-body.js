@@ -403,16 +403,16 @@
         });
 
         /* 사용안함. 나중을 위해 그냥 두자
-        this.$["container"]["body"].on("mouseover", "tr", function () {
-            let dindex = this.getAttribute("data-ax5grid-tr-data-index"),
-                i = self.$.livePanelKeys.length;
-            while (i--) {
-                if (typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
-                self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
-            }
-            self.xvar.dataHoveredIndex = dindex;
-        });
-        */
+         this.$["container"]["body"].on("mouseover", "tr", function () {
+         let dindex = this.getAttribute("data-ax5grid-tr-data-index"),
+         i = self.$.livePanelKeys.length;
+         while (i--) {
+         if (typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
+         self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
+         }
+         self.xvar.dataHoveredIndex = dindex;
+         });
+         */
         this.$["container"]["body"]
             .on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
                 if (self.xvar.touchmoved) return false;
@@ -723,6 +723,15 @@
         this.$.livePanelKeys = [];
 
         // 그리드 바디 영역 페인트 함수
+        /**
+         * @param _elTargetKey
+         * @param _colGroup
+         * @param _bodyRow
+         * @param _groupRow
+         * @param _list
+         * @param [_scrollConfig]
+         * @returns {boolean}
+         */
         let repaintBody = function (_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
             let _elTarget = this.$.panel[_elTargetKey];
 
@@ -862,6 +871,15 @@
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
+
+        /**
+         * @param _elTargetKey
+         * @param _colGroup
+         * @param _bodyRow
+         * @param _list
+         * @param [_scrollConfig]
+         * @returns {boolean}
+         */
         let repaintSum = function (_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
             let _elTarget = this.$.panel[_elTargetKey];
 
@@ -954,6 +972,88 @@
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
+
+        /**
+         * @param _elTargetKey
+         * @param _colGroup
+         * @param _bodyRow
+         * @param _list
+         * @param [_scrollConfig]
+         * @returns {boolean}
+         */
+        let mergeCellsBody = function (_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
+            // todo : merge 대상중에 예외처리 대상 제외하기. (checkbox 빼주자). 또? // editor 가 있으면 머지 하면 안됨.
+            let tblRowMaps = [];
+            let _elTarget = this.$.panel[_elTargetKey];
+            let token = {}, hasMergeTd;
+            //console.log(_elTarget);
+
+            // 테이블의 td들을 수잡하여 저장해두고 스크립트로 반복하여 정리.
+            let tableTrs = _elTarget.find("tr");
+            for (let ri = 0, rl = tableTrs.length; ri < rl; ri++) {
+                let tableTrTds, trMaps;
+
+                if (!tableTrs[ri].getAttribute("data-ax5grid-grouping-tr")) {
+                    tableTrTds = tableTrs[ri].childNodes;
+                    trMaps = [];
+                    for (let ci = 0, cl = tableTrTds.length; ci < cl; ci++) {
+                        let tdObj = {
+                            "$": jQuery(tableTrTds[ci])
+                        };
+
+                        if (tdObj["$"].attr("data-ax5grid-column-col") != "null") {
+                            tdObj.dindex = tdObj["$"].attr("data-ax5grid-data-index");
+                            tdObj.tri = tdObj["$"].attr("data-ax5grid-column-row");
+                            tdObj.ci = tdObj["$"].attr("data-ax5grid-column-col");
+                            tdObj.rowIndex = tdObj["$"].attr("data-ax5grid-column-rowIndex");
+                            tdObj.colIndex = tdObj["$"].attr("data-ax5grid-column-colIndex");
+                            tdObj.rowspan = tdObj["$"].attr("rowspan");
+                            tdObj.text = tdObj["$"].text();
+                            trMaps.push(tdObj);
+                        }
+
+                        tdObj = null;
+                    }
+                    tblRowMaps.push(trMaps);
+                }
+
+            }
+
+            // 두줄이상 일 때 의미가 있으니.
+            if (tblRowMaps.length > 1) {
+                hasMergeTd = false;
+                for (let ri = 0, rl = tblRowMaps.length; ri < rl; ri++) {
+                    for (let ci = 0, cl = tblRowMaps[ri].length; ci < cl; ci++) {
+                        // 앞줄과 값이 같다면.
+                        if (token[ci] && token[ci].text == tblRowMaps[ri][ci].text) {
+                            tblRowMaps[ri][ci].rowspan = 0;
+                            tblRowMaps[token[ci].ri][ci].rowspan++;
+                            hasMergeTd = true;
+                        } else {
+                            token[ci] = {
+                                ri: ri,
+                                ci: ci,
+                                text: tblRowMaps[ri][ci].text
+                            };
+                        }
+                    }
+                }
+
+                // rowspan을 다 구했으면 적용합니다.
+                if (hasMergeTd) {
+                    for (let ri = 0, rl = tblRowMaps.length; ri < rl; ri++) {
+                        for (let ci = 0, cl = tblRowMaps[ri].length; ci < cl; ci++) {
+                            if (tblRowMaps[ri][ci].rowspan == 0) {
+                                tblRowMaps[ri][ci]["$"].remove();
+                            } else {
+                                tblRowMaps[ri][ci]["$"].attr("rowspan", tblRowMaps[ri][ci].rowspan);
+                            }
+                        }
+                    }
+                }
+            }
+
+        };
         let scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
             paintRowCount: paintRowCount,
@@ -974,7 +1074,6 @@
                 //repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, list);
             }
         }
-
         // left
         if (this.xvar.frozenColumnIndex > 0) {
             if (this.xvar.frozenRowIndex > 0) {
@@ -989,7 +1088,6 @@
                 repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
             }
         }
-
         // body
         if (this.xvar.frozenRowIndex > 0) {
             // 상단 행고정
@@ -998,20 +1096,31 @@
 
         repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
 
+        // 바닥 요약
         if (cfg.footSum && this.needToPaintSum) {
-            // 바닥 요약
             repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
         }
-
-        //todo : repaintBody 에서 footSum 데이터 예외처리
         // right
         if (cfg.rightSum) {
             // todo : right 표현 정리
         }
 
+        /// mergeCells
+        if (cfg.body.mergeCells && this.list.length) {
+            // left
+            if (this.xvar.frozenColumnIndex > 0) {
+                if (this.xvar.frozenRowIndex > 0) { // 상단 행고정
+                    // console.log(this.leftHeaderColGroup, leftBodyRowData);
+                    mergeCellsBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, list.slice(0, this.xvar.frozenRowIndex));
+                }
+                mergeCellsBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, scrollConfig);
+            }
 
-        if (cfg.body.mergeCells) {
-
+            // body
+            if (this.xvar.frozenRowIndex > 0) { // 상단 행고정
+                mergeCellsBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, list.slice(0, this.xvar.frozenRowIndex));
+            }
+            mergeCellsBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, scrollConfig);
         }
 
         this.xvar.paintStartRowIndex = paintStartRowIndex;
