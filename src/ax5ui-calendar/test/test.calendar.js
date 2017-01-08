@@ -63,6 +63,42 @@ describe('ax5.calendar TEST', function () {
         } else {
             done("error setConfig");
         }
+    });
 
+    it('changeMode ax5calendar', function(done) {
+        myCalendar = new ax5.ui.calendar();
+        myCalendar.setConfig({
+            target: document.getElementById("calendar-target"),
+            theme: 'info',
+            displayDate: myDate,
+            control: {},
+            mode: 'day',
+            selectMode: 'day',
+            dateFormat: 'yyyy-mm-dd',
+            dimensions: {},
+            animateTime: 250,
+            lang: {
+                yearHeading: '2016',
+                monthHeading: '09',
+                yearTmpl: '%s',
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                dayTmpl: '%s'
+            },
+            selectable: '',
+            marker: {},
+            multipleSelect: false,
+            onClick: function () {
+                alert('success');
+            },
+            onStateChanged: function () {
+                console.log('onStateChanged');
+            }
+        });
+
+        myCalendar.changeMode("m");
+
+        setTimeout(function () {
+            done(myCalendar.$["body"].hasClass("fadein") ? "" : "changeMode error");
+        }, myCalendar.config.animateTime);
     });
 });

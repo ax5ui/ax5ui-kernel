@@ -49,7 +49,6 @@ describe('ax5binder TEST', function () {
         done(myUI.get("email") == "tom@axisj.com" ? "" : "setModel error");
     });
 
-
     it('set[select] ax5binder', function (done) {
         myUI.set("select", "A");
         done(myUI.get("select") == "A" ? "" : "set error");
@@ -71,6 +70,12 @@ describe('ax5binder TEST', function () {
             .trigger("change");
 
         done(myUI.get("email") == "brant" ? "" : "onchange input value");
+    });
+
+    it('focus ax5binder', function (done) {
+        myUI.focus("email");
+
+        done(jQuery('[data-ax-path="email"]').is(':focus') ? "" : "focus error");
     });
 
     it('validate[required] ax5binder', function (done) {
@@ -100,7 +105,6 @@ describe('ax5binder TEST', function () {
 
         done(myUI.validate().error[0].type == "email" ? "" : "validate error");
     });
-
 });
 
 describe('Operate list item TEST', function(){
