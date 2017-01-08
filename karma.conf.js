@@ -31,7 +31,6 @@ module.exports = function (config) {
             'src/ax5ui-toast/dist/ax5toast.min.js',
             'src/ax5ui-uploader/dist/ax5uploader.min.js',
 
-
             'src/ax5core/test/test.*.js',
             'src/ax5ui-autocomplete/test/test.*.js',
             'src/ax5ui-binder/test/test.*.js',
