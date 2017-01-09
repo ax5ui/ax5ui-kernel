@@ -224,7 +224,7 @@
 
         attached();
 
-        $(document).bind("contextmenu", function (e) {
+        $(document.body).on("contextmenu", function (e) {
             /*
              menu.popup(e, {theme:"danger", filter: function(){
              return true;
@@ -235,7 +235,7 @@
                 return this.type != 1;
             }});
 
-            ax5.util.stopEvent(e);
+            ax5.util.stopEvent(e.originalEvent);
             // e || {left: 'Number', top: 'Number', direction: '', width: 'Number'}
         });
     });
