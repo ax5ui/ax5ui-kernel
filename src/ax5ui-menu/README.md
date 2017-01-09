@@ -5,6 +5,8 @@
 # ax5ui-menu
 "menu" displays a list of items in a hierarchical structure.
 
+![ax5menu](src/ax5menu.gif)
+
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 > * _[ax5core](http://ax5.io/ax5core)_
