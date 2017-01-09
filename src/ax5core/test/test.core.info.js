@@ -1,7 +1,4 @@
 describe('ax5.info TEST', function() {
-    it('ax5.info.version expect x.x.x', function() {
-        ax5.info.version.should.match(/\d+\.\d+\.\d+/);
-    });
 
     it('ax5.info.eventKeys expect {BACKSPACE: 8, ...}', function() {
         var expect = {

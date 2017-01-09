@@ -442,7 +442,6 @@
                                     }
                                     break;
                                 default:
-
                                     css["top"] = frozenRowHeight;
                                     css["height"] = bodyHeight - frozenRowHeight - footSumHeight;
 

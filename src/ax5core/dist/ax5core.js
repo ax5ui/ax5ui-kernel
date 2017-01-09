@@ -8,10 +8,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     // root of function
 
     var root = this,
-        win = this;
-    var doc = win ? win.document : null,
-        docElem = win ? win.document.documentElement : null;
-    var reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
+        win = this,
+        doc = win ? win.document : null,
+        docElem = win ? win.document.documentElement : null,
+        reIsJson = /^(["'](\\.|[^"\\\n\r])*?["']|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/,
         reMs = /^-ms-/,
         reSnakeCase = /[\-_]([\da-z])/gi,
         reCamelCase = /([A-Z])/g,
@@ -26,9 +26,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     /** @namespace {Object} ax5 */
     ax5 = {},
-        info,
-        U,
-        dom;
+        info = void 0,
+        U = void 0,
+        dom = void 0;
 
     /**
      * guid
@@ -49,11 +49,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @namespace ax5.info
      */
     ax5.info = info = function () {
+        var _arguments = arguments;
+
         /**
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.70";
+        var version = "${VERSION}";
 
         /**
          * ax5 library path
@@ -72,7 +74,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ```
          */
         var onerror = function onerror() {
-            console.error(U.toArray(arguments).join(":"));
+            console.error(U.toArray(_arguments).join(":"));
         };
 
         /**
@@ -293,7 +295,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         function each(O, _fn) {
             if (isNothing(O)) return [];
-            var key,
+            var key = void 0,
                 i = 0,
                 l = O.length,
                 isObj = l === undefined || typeof O === "function";
@@ -340,11 +342,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         function map(O, _fn) {
             if (isNothing(O)) return [];
-            var key,
+            var key = void 0,
                 i = 0,
                 l = O.length,
                 results = [],
-                fnResult;
+                fnResult = void 0;
             if (isObject(O)) {
                 for (key in O) {
                     if (typeof O[key] != "undefined") {
@@ -398,11 +400,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         function search(O, _fn) {
             if (isNothing(O)) return -1;
-            var key,
-                i = 0,
-                l = O.length;
             if (isObject(O)) {
-                for (key in O) {
+                for (var key in O) {
                     if (typeof O[key] != "undefined" && isFunction(_fn) && _fn.call(O[key], key, O[key])) {
                         return key;
                         break;
@@ -412,7 +411,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }
             } else {
-                for (; i < l;) {
+                for (var i = 0, l = O.length; i < l; i++) {
                     if (typeof O[i] != "undefined" && isFunction(_fn) && _fn.call(O[i], i, O[i])) {
                         return i;
                         break;
@@ -420,7 +419,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         return i;
                         break;
                     }
-                    i++;
                 }
             }
             return -1;
@@ -454,7 +452,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ```
          */
         function sum(O, defaultValue, _fn) {
-            var i, l, tokenValue;
+            var i = void 0,
+                l = void 0,
+                tokenValue = void 0;
             if (isFunction(defaultValue) && typeof _fn === "undefined") {
                 _fn = defaultValue;
                 defaultValue = 0;
@@ -505,7 +505,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ```
          */
         function avg(O, defaultValue, _fn) {
-            var i, l, tokenValue;
+            var i = void 0,
+                l = void 0,
+                tokenValue = void 0;
             if (isFunction(defaultValue) && typeof _fn === "undefined") {
                 _fn = defaultValue;
                 defaultValue = 0;
@@ -2158,6 +2160,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     return snakeCase(this.value);
                 };
             }
+
             return new ax5string(_string);
         }
 

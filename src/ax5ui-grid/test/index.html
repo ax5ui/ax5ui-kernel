@@ -71,8 +71,6 @@
 <div data-ax5grid="second-grid" data-ax5grid-config='{showLineNumber: false, showRowSelector: true}' style="height: 200px;"></div>
 
 <script>
-
-
     var firstGrid = new ax5.ui.grid();
     var secondGrid = new ax5.ui.grid();
 
@@ -144,6 +142,9 @@
                     {key: "customer", label: "고객명"},
                     {key: "saleType", label: "판매타입"}
                 ]
+            });
+            firstGrid.setColumnSort({
+                b: {orderBy: "desc", seq: 0}
             });
 
             secondGrid.setConfig({
