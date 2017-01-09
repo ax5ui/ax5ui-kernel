@@ -46,9 +46,28 @@ describe('ax5combobox TEST', function () {
 
             }
         });
-
         done();
     });
 
+    it('setValue combobox', function (done) {
+        myUI.setValue($('[data-ax5combobox="combobox1"]'), 2);
+        var selectedItem = myUI.getSelectedOption($('[data-ax5combobox="combobox1"]'))[0];
 
+        if (selectedItem.value == 2 && selectedItem.selected) {
+            done();
+        } else {
+            done("setValue error");
+        }
+    });
+
+    it('setText combobox', function (done) {
+        myUI.setText($('[data-ax5combobox="combobox1"]'), "number");
+        var selectedItem = myUI.getSelectedOption($('[data-ax5combobox="combobox1"]'))[0];
+
+        if (selectedItem.text == "number" && selectedItem.selected) {
+            done();
+        } else {
+            done("setText error");
+        }
+    });
 });

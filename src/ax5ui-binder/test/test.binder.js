@@ -71,12 +71,10 @@ describe('ax5binder TEST', function () {
         done(myUI.get("email") == "brant" ? "" : "onchange input value");
     });
 
-    /*
     it('focus ax5binder', function (done) {
         myUI.focus("email");
-        done(jQuery('[data-ax-path="email"]').is(':focus') ? "" : "focus error");
+        done(document.querySelector('[data-ax-path="email"]') === document.activeElement ? "" : "focus error");
     });
-    */
 
     it('validate[required] ax5binder', function (done) {
         jQuery('[data-ax-path="email"]')
@@ -107,7 +105,7 @@ describe('ax5binder TEST', function () {
     });
 });
 
-describe('Operate list item TEST', function(){
+describe('Manipulate list item TEST', function(){
     var myUI;
     var tmpl = '<form class name="binder-list-form" onsubmit="return false;" style="border: 1px solid #ccc;padding: 10px;border-radius: 10px;">' +
         '<div data-ax-repeat="list">' +
