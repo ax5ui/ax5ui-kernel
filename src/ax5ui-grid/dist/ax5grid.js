@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.72"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -3989,6 +3989,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             list = initData.call(this, sort.call(this, this.sortInfo, list));
         } else if (_options && _options.sort && Object.keys(this.sortInfo).length) {
             list = sort.call(this, this.sortInfo, list);
+        } else {
+            list = initData.call(this, list);
         }
 
         this.list = list;

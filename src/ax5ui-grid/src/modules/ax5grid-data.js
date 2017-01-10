@@ -198,6 +198,8 @@
                 this.sortInfo,
                 list
             );
+        } else {
+            list = initData.call(this, list);
         }
 
         this.list = list;
@@ -466,7 +468,8 @@
             if (/[\.\[\]]/.test(_key)) {
                 try {
                     _value = (Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";")).call(_item);
-                } catch (e) { }
+                } catch (e) {
+                }
             } else {
                 _value = _item[_key];
             }
@@ -527,5 +530,4 @@
         initData: initData,
         clearGroupingData: clearGroupingData
     };
-
 })();
