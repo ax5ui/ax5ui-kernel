@@ -2457,58 +2457,67 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             // 두줄이상 일 때 의미가 있으니.
             if (tblRowMaps.length > 1) {
                 hasMergeTd = false;
-                for (var _ri = 0, _rl = tblRowMaps.length; _ri < _rl; _ri++) {
-                    var _loop = function _loop(_ci, _cl) {
 
+                var _loop = function _loop(_ri, _rl) {
+                    var prevTokenColIndexs = [];
+
+                    var _loop2 = function _loop2(_ci2, _cl2) {
                         // 적용 하려는 컬럼에 editor 속성이 없다면 머지 대상입니다.
-                        if (!_colGroup[_ci].editor && function () {
+                        if (!_colGroup[_ci2].editor && function () {
                             if (U.isArray(cfg.body.mergeCells)) {
-                                return ax5.util.search(cfg.body.mergeCells, _colGroup[_ci].key) > -1;
+                                return ax5.util.search(cfg.body.mergeCells, _colGroup[_ci2].key) > -1;
                             } else {
                                 return true;
                             }
                         }()) {
+
                             // 앞줄과 값이 같다면.
-                            if (token[_ci] && token[_ci].text == tblRowMaps[_ri][_ci].text) {
-                                tblRowMaps[_ri][_ci].rowspan = 0;
-                                tblRowMaps[token[_ci].ri][_ci].rowspan++;
+                            if (token[_ci2] && function () {
+                                if (prevTokenColIndexs.length > 0) {
+                                    var hasFalse = true;
+                                    prevTokenColIndexs.forEach(function (ti) {
+                                        if (tblRowMaps[_ri - 1][ti].text != tblRowMaps[_ri][ti].text) {
+                                            hasFalse = false;
+                                        }
+                                    });
+                                    return hasFalse;
+                                } else {
+                                    return true;
+                                }
+                            }() && token[_ci2].text == tblRowMaps[_ri][_ci2].text) {
+                                tblRowMaps[_ri][_ci2].rowspan = 0;
+                                tblRowMaps[token[_ci2].ri][_ci2].rowspan++;
                                 hasMergeTd = true;
                             } else {
-                                token[_ci] = {
+                                token[_ci2] = {
                                     ri: _ri,
-                                    ci: _ci,
-                                    text: tblRowMaps[_ri][_ci].text
+                                    ci: _ci2,
+                                    text: tblRowMaps[_ri][_ci2].text
                                 };
                             }
+
+                            prevTokenColIndexs.push(_ci2);
                         }
                     };
 
-                    for (var _ci = 0, _cl = tblRowMaps[_ri].length; _ci < _cl; _ci++) {
-                        _loop(_ci, _cl);
+                    for (var _ci2 = 0, _cl2 = tblRowMaps[_ri].length; _ci2 < _cl2; _ci2++) {
+                        _loop2(_ci2, _cl2);
                     }
+                };
+
+                for (var _ri = 0, _rl = tblRowMaps.length; _ri < _rl; _ri++) {
+                    _loop(_ri, _rl);
                 }
 
                 // rowspan을 다 구했으면 적용합니다.
                 if (hasMergeTd) {
                     for (var _ri2 = 0, _rl2 = tblRowMaps.length; _ri2 < _rl2; _ri2++) {
-                        var _loop2 = function _loop2(_ci2, _cl2) {
-                            if (!_colGroup[_ci2].editor && function () {
-                                if (U.isArray(cfg.body.mergeCells)) {
-                                    return ax5.util.search(cfg.body.mergeCells, _colGroup[_ci2].key) > -1;
-                                } else {
-                                    return true;
-                                }
-                            }()) {
-                                if (tblRowMaps[_ri2][_ci2].rowspan == 0) {
-                                    tblRowMaps[_ri2][_ci2]["$"].remove();
-                                } else {
-                                    tblRowMaps[_ri2][_ci2]["$"].attr("rowspan", tblRowMaps[_ri2][_ci2].rowspan).addClass("merged");
-                                }
+                        for (var _ci = 0, _cl = tblRowMaps[_ri2].length; _ci < _cl; _ci++) {
+                            if (tblRowMaps[_ri2][_ci].rowspan == 0) {
+                                tblRowMaps[_ri2][_ci]["$"].remove();
+                            } else if (tblRowMaps[_ri2][_ci].rowspan > 1) {
+                                tblRowMaps[_ri2][_ci]["$"].attr("rowspan", tblRowMaps[_ri2][_ci].rowspan).addClass("merged");
                             }
-                        };
-
-                        for (var _ci2 = 0, _cl2 = tblRowMaps[_ri2].length; _ci2 < _cl2; _ci2++) {
-                            _loop2(_ci2, _cl2);
                         }
                     }
                 }

@@ -1019,12 +1019,13 @@
 
             }
 
+
             // 두줄이상 일 때 의미가 있으니.
             if (tblRowMaps.length > 1) {
                 hasMergeTd = false;
                 for (let ri = 0, rl = tblRowMaps.length; ri < rl; ri++) {
+                    let prevTokenColIndexs = [];
                     for (let ci = 0, cl = tblRowMaps[ri].length; ci < cl; ci++) {
-
                         // 적용 하려는 컬럼에 editor 속성이 없다면 머지 대상입니다.
                         if (!_colGroup[ci].editor && (() => {
                                 if (U.isArray(cfg.body.mergeCells)) {
@@ -1033,8 +1034,21 @@
                                     return true;
                                 }
                             })()) {
+
                             // 앞줄과 값이 같다면.
-                            if (token[ci] && token[ci].text == tblRowMaps[ri][ci].text) {
+                            if (token[ci] && (() => {
+                                    if (prevTokenColIndexs.length > 0) {
+                                        let hasFalse = true;
+                                        prevTokenColIndexs.forEach(function (ti) {
+                                            if (tblRowMaps[ri - 1][ti].text != tblRowMaps[ri][ti].text) {
+                                                hasFalse = false;
+                                            }
+                                        });
+                                        return hasFalse;
+                                    } else {
+                                        return true;
+                                    }
+                                })() && token[ci].text == tblRowMaps[ri][ci].text) {
                                 tblRowMaps[ri][ci].rowspan = 0;
                                 tblRowMaps[token[ci].ri][ci].rowspan++;
                                 hasMergeTd = true;
@@ -1045,6 +1059,8 @@
                                     text: tblRowMaps[ri][ci].text
                                 };
                             }
+
+                            prevTokenColIndexs.push(ci);
                         }
                     }
                 }
@@ -1053,20 +1069,12 @@
                 if (hasMergeTd) {
                     for (let ri = 0, rl = tblRowMaps.length; ri < rl; ri++) {
                         for (let ci = 0, cl = tblRowMaps[ri].length; ci < cl; ci++) {
-                            if (!_colGroup[ci].editor && (() => {
-                                    if (U.isArray(cfg.body.mergeCells)) {
-                                        return ax5.util.search(cfg.body.mergeCells, _colGroup[ci].key) > -1;
-                                    } else {
-                                        return true;
-                                    }
-                                })()) {
-                                if (tblRowMaps[ri][ci].rowspan == 0) {
-                                    tblRowMaps[ri][ci]["$"].remove();
-                                } else {
-                                    tblRowMaps[ri][ci]["$"]
-                                        .attr("rowspan", tblRowMaps[ri][ci].rowspan)
-                                        .addClass("merged");
-                                }
+                            if (tblRowMaps[ri][ci].rowspan == 0) {
+                                tblRowMaps[ri][ci]["$"].remove();
+                            } else if (tblRowMaps[ri][ci].rowspan > 1) {
+                                tblRowMaps[ri][ci]["$"]
+                                    .attr("rowspan", tblRowMaps[ri][ci].rowspan)
+                                    .addClass("merged");
                             }
                         }
                     }
