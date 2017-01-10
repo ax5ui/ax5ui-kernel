@@ -70,4 +70,14 @@ describe('ax5combobox TEST', function () {
             done("setText error");
         }
     });
+
+    it('disable combobox', function (done) {
+        myUI.disable($('[data-ax5combobox="combobox1"]'));
+        done(myUI.queue[0].$display.attr("disabled") === "disabled" ? "" : "disabled error");
+    });
+
+    it('enable combobox', function (done) {
+        myUI.enable($('[data-ax5combobox="combobox1"]'));
+        done(typeof myUI.queue[0].$display.attr("disabled") === "undefined" ? "" : "enable error");
+    });
 });
