@@ -1111,6 +1111,7 @@
             this.updateRow = function (_row, _dindex) {
                 GRID.data.update.call(this, _row, _dindex);
                 // todo : mergeCells 옵션에 따라 예외처리
+
                 GRID.body.repaintRow.call(this, _dindex);
                 return this;
             };

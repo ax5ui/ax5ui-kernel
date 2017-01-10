@@ -1536,6 +1536,13 @@
                 SS = [],
                 di, dl, tri, trl, ci, cl, col, cellHeight, colAlign;
 
+            if (typeof _scrollConfig === "undefined" || typeof _scrollConfig['paintStartRowIndex'] === "undefined") {
+                _scrollConfig = {
+                    paintStartRowIndex: 0,
+                    paintRowCount: _list.length
+                };
+            }
+
             for (di = _scrollConfig.paintStartRowIndex, dl = (function () {
                 let len;
                 len = _list.length;
@@ -1697,38 +1704,43 @@
 
         // left
         if (this.xvar.frozenColumnIndex > 0) {
-            if (this.xvar.frozenRowIndex > 0) {
+            if (this.xvar.frozenRowIndex > _dindex) {
                 // 상단 행고정
-                replaceTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, list, _dindex);
+                replaceTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, list.slice(0, this.xvar.frozenRowIndex), _dindex);
+            } else {
+                replaceTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, _dindex);
             }
-            replaceTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, _dindex);
+
         }
 
         // body
-        if (this.xvar.frozenRowIndex > 0) {
+        if (this.xvar.frozenRowIndex > _dindex) {
             // 상단 행고정
-            replaceTr.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, list, _dindex);
+            replaceTr.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, list.slice(0, this.xvar.frozenRowIndex), _dindex);
+        } else {
+            replaceTr.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, _dindex);
         }
 
-        replaceTr.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, _dindex);
 
         // body.grouping tr 다시 그리기..
         if (cfg.body.grouping) {
             // left
             if (this.xvar.frozenColumnIndex > 0) {
-                if (this.xvar.frozenRowIndex > 0) {
+                if (this.xvar.frozenRowIndex > _dindex) {
                     // 상단 행고정
                     replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                } else {
+                    replaceGroupTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
                 }
-                replaceGroupTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
             }
 
             // body
-            if (this.xvar.frozenRowIndex > 0) {
+            if (this.xvar.frozenRowIndex > _dindex) {
                 // 상단 행고정
                 replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+            } else {
+                replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
             }
-            replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
         }
 
         if (this.xvar.frozenColumnIndex > 0) {
