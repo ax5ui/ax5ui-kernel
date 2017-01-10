@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "select",
-        version: "1.3.72"
+        version: "1.3.73"
     }, function () {
         /**
          * @class ax5select
