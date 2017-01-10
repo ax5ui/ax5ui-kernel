@@ -235,6 +235,11 @@
             }
         }
     }
+
+    // mergeCells 대상 컬럼 배경생 통일.
+    td.merged{
+        background: $ax5grid-row-bg-1;
+    }
 }
 
 @mixin gridPanel($container) {
