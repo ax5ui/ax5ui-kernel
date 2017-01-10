@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "layout",
-        version: "1.3.71"
+        version: "1.3.72"
     }, function () {
         /**
          * @class ax5layout
