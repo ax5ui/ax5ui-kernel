@@ -154,6 +154,14 @@ var PATHS = {
         dest: "src/ax5ui-autocomplete/dist",
         scss: "ax5autocomplete.scss",
         js: "ax5autocomplete"
+    },
+    "ax5ui-dashboard": {
+        isPlugin: true,
+        root: "src/ax5ui-dashboard",
+        src: "src/ax5ui-dashboard/src",
+        dest: "src/ax5ui-dashboard/dist",
+        scss: "ax5dashboard.scss",
+        js: "ax5dashboard"
     }
 };
 
