@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.73"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1481,7 +1481,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
-// todo : merge cells
 // todo : filter
 // todo : body menu
 // todo : column reorder
@@ -1735,8 +1734,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 disableSelection = void 0,
                 targetClick = {
                 "default": function _default(_column) {
-                    var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
-                    var that = {
+                    var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
+                        that = {
                         self: self,
                         page: self.page,
                         list: self.list,
@@ -1750,9 +1749,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     if (column.editor && column.editor.type == "checkbox") {
                         // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
-                        var value = GRID.data.getValue.call(self, _column.dindex, column.key);
+                        var value = GRID.data.getValue.call(self, _column.dindex, column.key),
+                            checked = void 0,
+                            newValue = void 0;
 
-                        var checked, newValue;
                         if (column.editor.config && column.editor.config.trueValue) {
                             if (checked = !(value == column.editor.config.trueValue)) {
                                 newValue = column.editor.config.trueValue;
@@ -2417,7 +2417,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * @returns {boolean}
          */
         var mergeCellsBody = function mergeCellsBody(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
-            // todo : merge 대상중에 예외처리 대상 제외하기. (checkbox 빼주자). 또? // editor 가 있으면 머지 하면 안됨.
             var tblRowMaps = [];
             var _elTarget = this.$.panel[_elTargetKey];
             var token = {},
@@ -3761,18 +3760,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         getExcelString: getExcelString
     };
 })();
-
-/**
- * todo : mergeCells - false, true, "key", ["key1", "key2"]
- */
 // ax5.ui.grid.collector
 (function () {
 
-    var GRID = ax5.ui.grid;
-    var U = ax5.util;
+    var GRID = ax5.ui.grid,
+        U = ax5.util;
+
     var sum = function sum() {
-        var value = 0;
-        var i = this.list.length;
+        var value = 0,
+            i = this.list.length;
         while (i--) {
             if (!("__groupingList" in this.list[i])) {
                 value += U.number(this.list[i][this.key]);
@@ -3781,8 +3777,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return value;
     };
     var avg = function avg() {
-        var value = 0;
-        var i = this.list.length,
+        var value = 0,
+            i = this.list.length,
             listLength = 0;
         while (i--) {
             if (!("__groupingList" in this.list[i])) {
@@ -4310,21 +4306,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.excel
 (function () {
 
-    var GRID = ax5.ui.grid;
-    var U = ax5.util;
+    var GRID = ax5.ui.grid,
+        U = ax5.util;
 
     var base64 = function base64(s) {
         return window.btoa(unescape(encodeURIComponent(s)));
-    };
-    var uri = "data:application/vnd.ms-excel;base64,";
-
-    var getExcelTmpl = function getExcelTmpl() {
+    },
+        uri = "data:application/vnd.ms-excel;base64,",
+        getExcelTmpl = function getExcelTmpl() {
         return "\uFEFF\n{{#tables}}{{{body}}}{{/tables}}\n";
     };
 
     var tableToExcel = function tableToExcel(table, fileName) {
-        var link, a, output;
-        var tables = [].concat(table);
+        var link = void 0,
+            a = void 0,
+            output = void 0,
+            tables = [].concat(table);
 
         output = ax5.mustache.render(getExcelTmpl(), {
             worksheet: function () {
@@ -4343,27 +4340,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }()
         });
 
-        var isChrome = navigator.userAgent.indexOf("Chrome") > -1;
-        var isSafari = !isChrome && navigator.userAgent.indexOf("Safari") > -1;
+        var isChrome = navigator.userAgent.indexOf("Chrome") > -1,
+            isSafari = !isChrome && navigator.userAgent.indexOf("Safari") > -1,
+            isIE = /*@cc_on!@*/false || !!document.documentMode; // this works with IE10 and IE11 both :)
 
-        var isIE = /*@cc_on!@*/false || !!document.documentMode; // this works with IE10 and IE11 both :)
+        var blob1 = void 0,
+            blankWindow = void 0,
+            $iframe = void 0,
+            iframe = void 0,
+            anchor = void 0;
+
         if (navigator.msSaveOrOpenBlob) {
-            var blob1 = new Blob([output], { type: "text/html" });
+            blob1 = new Blob([output], { type: "text/html" });
             window.navigator.msSaveOrOpenBlob(blob1, fileName);
         } else if (isSafari) {
             // 사파리는 지원이 안되므로 그냥 테이블을 클립보드에 복사처리
             //tables
-            var blankWindow = window.open('about:blank', this.id + '-excel-export', 'width=600,height=400');
+            blankWindow = window.open('about:blank', this.id + '-excel-export', 'width=600,height=400');
             blankWindow.document.write(output);
             blankWindow = null;
         } else {
             if (isIE && typeof Blob === "undefined") {
-
                 //otherwise use the iframe and save
                 //requires a blank iframe on page called txtArea1
-                var $iframe = jQuery('<iframe id="' + this.id + '-excel-export" style="display:none"></iframe>');
+                $iframe = jQuery('<iframe id="' + this.id + '-excel-export" style="display:none"></iframe>');
                 jQuery(document.body).append($iframe);
-                var iframe = window[this.id + '-excel-export'];
+
+                iframe = window[this.id + '-excel-export'];
                 iframe.document.open("text/html", "replace");
                 iframe.document.write(output);
                 iframe.document.close();
@@ -4372,7 +4375,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 $iframe.remove();
             } else {
                 // Attempt to use an alternative method
-                var anchor = document.body.appendChild(document.createElement("a"));
+                anchor = document.body.appendChild(document.createElement("a"));
 
                 // If the [download] attribute is supported, try to use it
                 if ("download" in anchor) {
@@ -4395,8 +4398,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.formatter
 (function () {
 
-    var GRID = ax5.ui.grid;
-    var U = ax5.util;
+    var GRID = ax5.ui.grid,
+        U = ax5.util;
+
     var money = function money() {
         return U.number(this.value, { "money": true });
     };
@@ -4408,8 +4412,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.header
 (function () {
 
-    var GRID = ax5.ui.grid;
-    var U = ax5.util;
+    var GRID = ax5.ui.grid,
+        U = ax5.util;
 
     var columnResizerEvent = {
         "on": function on(_columnResizer, _colIndex) {
@@ -4969,8 +4973,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.page
 (function () {
 
-    var GRID = ax5.ui.grid;
-    var U = ax5.util;
+    var GRID = ax5.ui.grid,
+        U = ax5.util;
 
     var onclickPageMove = function onclickPageMove(_act) {
         var callback = function callback(_pageNo) {
@@ -5895,26 +5899,26 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var makeBodyGroupingTable = function makeBodyGroupingTable(_bodyGroupingColumns) {
         var table = {
             rows: []
-        };
+        },
+            r = 0,
+            addC = 0;
 
-        var r = 0;
         table.rows[r] = { cols: [] };
-        var addC = 0;
-        for (var c = 0, cl = _bodyGroupingColumns.length; c < cl; c++) {
+        for (var _c = 0, cl = _bodyGroupingColumns.length; _c < cl; _c++) {
             if (addC > this.columns.length) break;
-            var colspan = _bodyGroupingColumns[c].colspan || 1;
-            if (_bodyGroupingColumns[c].label || _bodyGroupingColumns[c].key) {
+            var colspan = _bodyGroupingColumns[_c].colspan || 1;
+            if (_bodyGroupingColumns[_c].label || _bodyGroupingColumns[_c].key) {
                 table.rows[r].cols.push({
                     colspan: colspan,
                     rowspan: 1,
                     rowIndex: 0,
                     colIndex: addC,
                     columnAttr: "default",
-                    align: _bodyGroupingColumns[c].align,
-                    label: _bodyGroupingColumns[c].label,
-                    key: _bodyGroupingColumns[c].key,
-                    collector: _bodyGroupingColumns[c].collector,
-                    formatter: _bodyGroupingColumns[c].formatter
+                    align: _bodyGroupingColumns[_c].align,
+                    label: _bodyGroupingColumns[_c].label,
+                    key: _bodyGroupingColumns[_c].key,
+                    collector: _bodyGroupingColumns[_c].collector,
+                    formatter: _bodyGroupingColumns[_c].formatter
                 });
             } else {
                 table.rows[r].cols.push({
@@ -5944,9 +5948,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var findPanelByColumnIndex = function findPanelByColumnIndex(_dindex, _colIndex, _rowIndex) {
-        var _containerPanelName;
-        var _isScrollPanel = false;
-        var _panels = [];
+        var _containerPanelName = void 0,
+            _isScrollPanel = false,
+            _panels = [];
 
         if (this.xvar.frozenRowIndex > _dindex) _panels.push("top");
         if (this.xvar.frozenColumnIndex > _colIndex) _panels.push("left");
@@ -5966,8 +5970,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getRealPathForDataItem = function getRealPathForDataItem(_dataPath) {
-        var path = [];
-        var _path = [].concat(_dataPath.split(/[\.\[\]]/g));
+        var path = [],
+            _path = [].concat(_dataPath.split(/[\.\[\]]/g));
+
         _path.forEach(function (n) {
             if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
         });

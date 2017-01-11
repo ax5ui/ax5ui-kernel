@@ -1,8 +1,8 @@
 // ax5.ui.grid.header
 (function () {
 
-    var GRID = ax5.ui.grid;
-    var U = ax5.util;
+    let GRID = ax5.ui.grid,
+        U = ax5.util;
 
     var columnResizerEvent = {
         "on": function (_columnResizer, _colIndex) {

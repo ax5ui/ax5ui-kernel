@@ -382,6 +382,8 @@
         border: $ax5grid-border;
         overflow: hidden;
 
+
+
         [data-ax5grid-container="hidden"] {
             @include gridBoxModal();
             position: absolute;

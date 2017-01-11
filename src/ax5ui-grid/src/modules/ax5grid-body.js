@@ -272,8 +272,8 @@
                 row, col, dindex, rowIndex, colIndex, disableSelection,
                 targetClick = {
                     "default": function (_column) {
-                        var column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex];
-                        var that = {
+                        let column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
+                            that = {
                             self: self,
                             page: self.page,
                             list: self.list,
@@ -286,9 +286,9 @@
                         };
 
                         if (column.editor && column.editor.type == "checkbox") { // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
-                            var value = GRID.data.getValue.call(self, _column.dindex, column.key);
+                            let value = GRID.data.getValue.call(self, _column.dindex, column.key),
+                                checked, newValue;
 
-                            var checked, newValue;
                             if (column.editor.config && column.editor.config.trueValue) {
                                 if (checked = !(value == column.editor.config.trueValue)) {
                                     newValue = column.editor.config.trueValue;
@@ -483,7 +483,7 @@
                 for (let i = 0, l = dataTable.rows.length; i < l; i++) {
                     data.rows[i] = {cols: []};
                     if (i === 0) {
-                        var col = {
+                        let col = {
                             label: "",
                             colspan: 1,
                             rowspan: dataTable.rows.length,
@@ -982,7 +982,6 @@
          * @returns {boolean}
          */
         let mergeCellsBody = function (_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
-            // todo : merge 대상중에 예외처리 대상 제외하기. (checkbox 빼주자). 또? // editor 가 있으면 머지 하면 안됨.
             let tblRowMaps = [];
             let _elTarget = this.$.panel[_elTargetKey];
             let token = {}, hasMergeTd;
@@ -2394,8 +2393,3 @@
         getExcelString: getExcelString
     };
 })();
-
-
-/**
- * todo : mergeCells - false, true, "key", ["key1", "key2"]
- */

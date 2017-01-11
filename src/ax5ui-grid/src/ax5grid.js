@@ -1489,7 +1489,6 @@
     GRID = ax5.ui.grid;
 })();
 
-// todo : merge cells
 // todo : filter
 // todo : body menu
 // todo : column reorder

@@ -109,6 +109,7 @@
                     field.colspan = colspan;
                 } else {
 
+
                 }
             }
 
@@ -261,8 +262,8 @@
         return map;
     };
 
-    var makeFootSumTable = function (_footSumColumns) {
-        var table = {
+    let makeFootSumTable = function (_footSumColumns) {
+        let table = {
             rows: []
         };
 
@@ -310,17 +311,15 @@
         return table;
     };
 
-    var makeBodyGroupingTable = function (_bodyGroupingColumns) {
-        var table = {
+    let makeBodyGroupingTable = function (_bodyGroupingColumns) {
+        let table = {
             rows: []
-        };
+        }, r = 0, addC = 0;
 
-        var r = 0;
         table.rows[r] = {cols: []};
-        var addC = 0;
-        for (var c = 0, cl = _bodyGroupingColumns.length; c < cl; c++) {
+        for (let c = 0, cl = _bodyGroupingColumns.length; c < cl; c++) {
             if (addC > this.columns.length) break;
-            var colspan = _bodyGroupingColumns[c].colspan || 1;
+            let colspan = _bodyGroupingColumns[c].colspan || 1;
             if (_bodyGroupingColumns[c].label || _bodyGroupingColumns[c].key) {
                 table.rows[r].cols.push({
                     colspan: colspan,
@@ -361,10 +360,10 @@
         return table;
     };
 
-    var findPanelByColumnIndex = function (_dindex, _colIndex, _rowIndex) {
-        var _containerPanelName;
-        var _isScrollPanel = false;
-        var _panels = [];
+    let findPanelByColumnIndex = function (_dindex, _colIndex, _rowIndex) {
+        let _containerPanelName,
+            _isScrollPanel = false,
+            _panels = [];
 
         if (this.xvar.frozenRowIndex > _dindex) _panels.push("top");
         if (this.xvar.frozenColumnIndex > _colIndex) _panels.push("left");
@@ -383,9 +382,10 @@
         }
     };
 
-    var getRealPathForDataItem = function (_dataPath) {
-        var path = [];
-        var _path = [].concat(_dataPath.split(/[\.\[\]]/g));
+    let getRealPathForDataItem = function (_dataPath) {
+        let path = [],
+            _path = [].concat(_dataPath.split(/[\.\[\]]/g));
+
         _path.forEach(function (n) {
             if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
         });
