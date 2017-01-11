@@ -49,6 +49,16 @@ describe('ax5combobox TEST', function () {
         done();
     });
 
+    it('open combobox', function (done) {
+        myUI.open($('[data-ax5combobox="combobox1"]'));
+        done(myUI.queue[0].$display.attr("data-combobox-option-group-opened") === "true" ? "" : "open error");
+    });
+
+    it('close combobox', function (done) {
+        myUI.close($('[data-ax5combobox="combobox1"]'));
+        done(typeof myUI.queue[0].$display.attr("data-combobox-option-group-opened") === "undefined" ? "" : "close error");
+    });
+
     it('setValue combobox', function (done) {
         myUI.setValue($('[data-ax5combobox="combobox1"]'), 2);
         var selectedItem = myUI.getSelectedOption($('[data-ax5combobox="combobox1"]'))[0];
