@@ -71,7 +71,6 @@ describe('ax5autocomplete TEST', function () {
         );
     });
 
-
     it('setText & getSelectedOption autocomplete', function (done) {
         myUI.setText($('[data-ax5autocomplete="ui1"]'), "ax5select");
         var values = myUI.getSelectedOption($('[data-ax5autocomplete="ui1"]'));
@@ -81,4 +80,23 @@ describe('ax5autocomplete TEST', function () {
         );
     });
 
+    it('disable autocomplete', function (done) {
+        myUI.disable($('[data-ax5autocomplete="ui1"]'));
+        done(myUI.queue[0].$display.attr("disabled") === "disabled" ? "" : "error disable");
+    });
+
+    it('enable autocomplete', function (done) {
+        myUI.enable($('[data-ax5autocomplete="ui1"]'));
+        done(typeof myUI.queue[0].$display.attr("disabled") === "undefined" ? "" : "error enable");
+    });
+
+    it('open autocomplete', function (done) {
+        myUI.open($('[data-ax5autocomplete="ui1"]'));
+        done(myUI.queue[0].$display.attr("data-autocomplete-option-group-opened") === "true" ? "" : "error open");
+    });
+
+    it('close autocomplete', function (done) {
+        myUI.close($('[data-ax5autocomplete="ui1"]'));
+        done(typeof myUI.queue[0].$display.attr("data-autocomplete-option-group-opened") === "undefined" ? "" : "error close");
+    });
 });
