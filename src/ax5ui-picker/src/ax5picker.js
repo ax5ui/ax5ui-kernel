@@ -225,7 +225,7 @@
                 alignPicker = function (append) {
                     if (!this.activePicker) return this;
 
-                    var _alignPicker = function (item) {
+                    let _alignPicker = function (item) {
                         var $window = jQuery(window), $body = jQuery(document.body);
                         var pos = {}, positionMargin = 12,
                             dim = {}, pickerDim = {},
@@ -300,12 +300,13 @@
                         this.activePicker
                             .css(positionCSS);
                     };
+                    let item = this.queue[this.activePickerQueueIndex];
 
-                    var item = this.queue[this.activePickerQueueIndex];
+                    if (append) {
+                        this.activePicker.css({top: -999});
+                        jQuery(document.body).append(this.activePicker);
+                    }
 
-                    this.activePicker.css({top: -999});
-
-                    if (append) jQuery(document.body).append(this.activePicker);
                     setTimeout((function () {
                         _alignPicker.call(this, item);
                     }).bind(this));
