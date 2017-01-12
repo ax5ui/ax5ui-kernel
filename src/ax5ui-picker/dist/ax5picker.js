@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "1.3.73"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5picker
@@ -292,12 +292,13 @@
 
                     this.activePicker.css(positionCSS);
                 };
-
                 var item = this.queue[this.activePickerQueueIndex];
 
-                this.activePicker.css({ top: -999 });
+                if (append) {
+                    this.activePicker.css({ top: -999 });
+                    jQuery(document.body).append(this.activePicker);
+                }
 
-                if (append) jQuery(document.body).append(this.activePicker);
                 setTimeout(function () {
                     _alignPicker.call(this, item);
                 }.bind(this));
