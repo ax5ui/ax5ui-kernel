@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "binder",
-        version: "1.3.74"
+        version: "1.3.75"
     }, function () {
 
         /**
