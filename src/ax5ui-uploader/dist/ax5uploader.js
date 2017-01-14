@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.74"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -181,6 +181,11 @@
                         cellType = null;
                         uploadedItemIndex = null;
                         that = null;
+                    });
+
+                    this.$uploadedBox.on("dragstart", function (e) {
+                        U.stopEvent(e);
+                        return false;
                     });
                 }).call(this);
 

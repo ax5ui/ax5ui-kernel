@@ -197,6 +197,14 @@
                         uploadedItemIndex = null;
                         that = null;
                     });
+
+                    this.$uploadedBox
+                        .on("dragstart", function (e) {
+                            U.stopEvent(e);
+                            return false;
+                        });
+
+
                 }).call(this);
 
                 (function () {
