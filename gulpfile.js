@@ -155,13 +155,13 @@ var PATHS = {
         scss: "ax5autocomplete.scss",
         js: "ax5autocomplete"
     },
-    "ax5ui-dashboard": {
+    "ax5ui-docker": {
         isPlugin: true,
-        root: "src/ax5ui-dashboard",
-        src: "src/ax5ui-dashboard/src",
-        dest: "src/ax5ui-dashboard/dist",
-        scss: "ax5dashboard.scss",
-        js: "ax5dashboard"
+        root: "src/ax5ui-docker",
+        src: "src/ax5ui-docker/src",
+        dest: "src/ax5ui-docker/dist",
+        scss: "ax5docker.scss",
+        js: "ax5docker"
     }
 };
 

@@ -22,7 +22,7 @@ module.exports = function (config) {
             'https://cdnjs.cloudflare.com/ajax/libs/should.js/11.1.2/should.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
             'https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js',
-            'dist/ax5dashboard.min.js',
+            'dist/ax5docker.min.js',
             'test/test.*.js'
         ],
         // list of files to exclude
