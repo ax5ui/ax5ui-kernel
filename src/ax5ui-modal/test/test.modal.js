@@ -105,13 +105,13 @@ describe('ax5.ui.modal open, close TEST', function () {
 
     it('modal open test', function (done) {
         myModal.open();
-        done($.aeei.equal(that.state, "open") ? "" : "open error");
+        done(that.state === "open" ? "" : "open error");
     });
 
     it('modal close test', function (done) {
         myModal.close();
         setTimeout(function () {
-            done($.aeei.equal(that.state, "close") ? "" : "close error");
+            done(that.state === "close" ? "" : "close error");
         }, myModal.config.animateTime);
     });
 });
