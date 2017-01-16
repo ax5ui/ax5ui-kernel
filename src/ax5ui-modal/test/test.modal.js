@@ -94,8 +94,8 @@ describe('ax5.ui.modal.setConfig TEST', function () {
 });
 /* end ax5.ui.setConfig */
 
-/* ax5.modal.open, close */
-describe('ax5.ui.modal open, close TEST', function () {
+/* ax5.modal.method... */
+describe('ax5.ui.modal method TEST', function () {
     var that;
     var myModal = new ax5.ui.modal({
         onStateChanged: function () {
@@ -105,14 +105,24 @@ describe('ax5.ui.modal open, close TEST', function () {
 
     it('modal open test', function (done) {
         myModal.open();
-        done(that.state === "open" ? "" : "open error");
+        done(ae.equalAll("open", that.state));
     });
 
     it('modal close test', function (done) {
         myModal.close();
         setTimeout(function () {
-            done(that.state === "close" ? "" : "close error");
+            done(ae.equalAll("close", that.state));
         }, myModal.config.animateTime);
     });
+
+    it('modal minimize test', function (done) {
+        myModal.minimize();
+        done(ae.equalAll("minimize", that.state));
+    });
+
+    it('modal maximize test', function (done) {
+        myModal.maximize();
+        done(ae.equalAll("restore", that.state));
+    });
 });
-/* end ax5.modal.open, close */
+/* end ax5.modal.method... */
