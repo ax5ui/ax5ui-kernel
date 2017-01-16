@@ -24,8 +24,16 @@
 <body style="padding: 50px;">
 
 
+<div data-ax5docker="docker1" style="width:600px;height: 600px;"></div>
+
 <script>
     $(function () {
+
+        var myDocker = new ax5.ui.docker();
+        myDocker.setConfig({
+            target: $('[data-ax5docker="docker1"]'),
+            panels: []
+        });
 
     });
 </script>

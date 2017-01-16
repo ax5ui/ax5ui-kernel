@@ -29,7 +29,11 @@
                 cfg;
 
             this.instanceId = ax5.getGuid();
-            this.config = {};
+            this.config = {
+
+            };
+            // 패널 정보
+            this.panels = [];
             cfg = this.config;
 
             /**
