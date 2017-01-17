@@ -120,9 +120,21 @@ describe('ax5.ui.modal method TEST', function () {
         done(ae.equalAll("minimize", that.state));
     });
 
+    it('modal already minimize test', function (done) {
+        that = "";
+        myModal.minimize();
+        done(ae.equalAll("", that));
+    });
+
     it('modal maximize test', function (done) {
         myModal.maximize();
         done(ae.equalAll("restore", that.state));
+    });
+
+    it('modal already maximize test', function (done) {
+        that = "";
+        myModal.maximize();
+        done(ae.equalAll("", that));
     });
 });
 /* end ax5.modal.method... */
