@@ -3,13 +3,13 @@
 // ax5.ui.select
 (function () {
 
-    var UI = ax5.ui;
-    var U = ax5.util;
-    var SELECT;
+    var UI = ax5.ui,
+        U = ax5.util,
+        SELECT = void 0;
 
     UI.addClass({
         className: "select",
-        version: "1.3.76"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5select
@@ -42,7 +42,7 @@
          */
         var ax5select = function ax5select() {
             var self = this,
-                cfg;
+                cfg = void 0;
 
             this.instanceId = ax5.getGuid();
             this.config = {
@@ -71,8 +71,8 @@
 
             cfg = this.config;
 
-            var $window = jQuery(window);
-            var ctrlKeys = {
+            var $window = jQuery(window),
+                ctrlKeys = {
                 "18": "KEY_ALT",
                 "8": "KEY_BACKSPACE",
                 "17": "KEY_CONTROL",
@@ -124,7 +124,7 @@
             },
                 alignSelectDisplay = function alignSelectDisplay() {
                 var i = this.queue.length,
-                    w;
+                    w = void 0;
                 while (i--) {
                     if (this.queue[i].$display) {
                         w = Math.max(this.queue[i].$select.outerWidth(), U.number(this.queue[i].minWidth));
@@ -151,7 +151,7 @@
                     positionMargin = 0,
                     dim = {},
                     pickerDim = {},
-                    pickerDirection;
+                    pickerDirection = void 0;
 
                 if (append) jQuery(document.body).append(this.activeSelectOptionGroup);
 
@@ -223,7 +223,7 @@
                     clickEl = "display";
 
                 target = U.findParentNode(e.target, function (target) {
-                    if (target.getAttribute("data-option-value")) {
+                    if (target.getAttribute("data-option-value") || target.getAttribute("data-option-value") == "") {
                         clickEl = "optionItem";
                         return true;
                     } else if (item.$target.get(0) == target) {
@@ -273,8 +273,8 @@
                 }
             },
                 getLabel = function getLabel(queIdx) {
-                var item = this.queue[queIdx];
-                var labels = [];
+                var item = this.queue[queIdx],
+                    labels = [];
 
                 if (U.isArray(item.selected) && item.selected.length > 0) {
                     item.selected.forEach(function (n) {
@@ -311,7 +311,7 @@
                 var options = [],
                     i = -1,
                     l = this.queue[queIdx].indexedOptions.length - 1,
-                    n;
+                    n = void 0;
                 if (searchWord) {
                     while (l - i++) {
                         n = this.queue[queIdx].indexedOptions[i];
@@ -345,7 +345,11 @@
                 }
             },
                 focusMove = function focusMove(queIdx, direction, findex) {
-                var _focusIndex, _prevFocusIndex, focusOptionEl, optionGroupScrollContainer;
+                var _focusIndex = void 0,
+                    _prevFocusIndex = void 0,
+                    focusOptionEl = void 0,
+                    optionGroupScrollContainer = void 0;
+
                 if (this.activeSelectOptionGroup && this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
 
                     if (typeof findex !== "undefined") {
@@ -433,8 +437,8 @@
                     }
                 };
                 return function (queIdx) {
-                    var item = this.queue[queIdx];
-                    var data = {};
+                    var item = this.queue[queIdx],
+                        data = {};
                     item.selected = [];
 
                     if (!item.$display) {
@@ -506,11 +510,12 @@
                 };
 
                 return function (queIdx, options) {
-                    var item = this.queue[queIdx];
-                    var po,
-                        elementOptions,
-                        newOptions,
+                    var item = this.queue[queIdx],
+                        po = void 0,
+                        elementOptions = void 0,
+                        newOptions = void 0,
                         focusIndex = 0;
+
                     setSelected.call(this, queIdx, false); // item.selected 초기화
 
                     if (options) {
@@ -521,7 +526,7 @@
                         po = [];
                         item.options.forEach(function (O, OIndex) {
                             if (O.optgroup) {
-                                // todo
+
                                 O['@gindex'] = OIndex;
                                 O.options.forEach(function (OO, OOIndex) {
                                     OO['@index'] = OOIndex;
@@ -636,7 +641,7 @@
              */
             this.bind = function (item) {
                 var selectConfig = {},
-                    queIdx;
+                    queIdx = void 0;
 
                 item = jQuery.extend(true, selectConfig, cfg, item);
 
@@ -741,11 +746,11 @@
                     /**
                      * open select from the outside
                      */
-                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
-                    var item = this.queue[queIdx];
-                    var data = {},
-                        focusTop,
-                        selectedOptionEl;
+                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID),
+                        item = this.queue[queIdx],
+                        data = {},
+                        focusTop = void 0,
+                        selectedOptionEl = void 0;
 
                     if (item.$display.attr("disabled")) return this;
 
@@ -869,8 +874,8 @@
                     } else {
                         return selected;
                     }
-                };
-                var clearSelected = function clearSelected(queIdx) {
+                },
+                    clearSelected = function clearSelected(queIdx) {
                     this.queue[queIdx].options.forEach(function (n) {
                         if (n.optgroup) {
                             n.options.forEach(function (nn) {
@@ -880,9 +885,8 @@
                             n.selected = false;
                         }
                     });
-                };
-
-                var processor = {
+                },
+                    processor = {
                     'index': function index(queIdx, value, selected) {
                         // 클래스 내부에서 호출된 형태, 그런 이유로 옵션그룹에 대한 상태를 변경 하고 있다.
                         var item = this.queue[queIdx];
@@ -926,8 +930,8 @@
                         });
                     },
                     'value': function value(queIdx, _value, selected) {
-                        var item = this.queue[queIdx];
-                        var optionIndex = U.search(item.options, function () {
+                        var item = this.queue[queIdx],
+                            optionIndex = U.search(item.options, function () {
                             return this[item.columnKeys.optionValue] == _value;
                         });
                         if (optionIndex > -1) {
@@ -941,8 +945,8 @@
                         syncLabel.call(this, queIdx);
                     },
                     'text': function text(queIdx, value, selected) {
-                        var item = this.queue[queIdx];
-                        var optionIndex = U.search(item.options, function () {
+                        var item = this.queue[queIdx],
+                            optionIndex = U.search(item.options, function () {
                             return this[item.columnKeys.optionText] == value;
                         });
                         if (optionIndex > -1) {

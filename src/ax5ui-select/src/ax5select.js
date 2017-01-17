@@ -1,9 +1,9 @@
 // ax5.ui.select
 (function () {
 
-    var UI = ax5.ui;
-    var U = ax5.util;
-    var SELECT;
+    let UI = ax5.ui,
+        U = ax5.util,
+        SELECT;
 
     UI.addClass({
         className: "select",
@@ -40,9 +40,8 @@
          * });
          * ```
          */
-        var ax5select = function () {
-            var
-                self = this,
+        let ax5select = function () {
+            let self = this,
                 cfg;
 
             this.instanceId = ax5.getGuid();
@@ -72,8 +71,7 @@
 
             cfg = this.config;
 
-            var $window = jQuery(window);
-            var
+            let $window = jQuery(window),
                 ctrlKeys = {
                     "18": "KEY_ALT",
                     "8": "KEY_BACKSPACE",
@@ -127,7 +125,7 @@
                     return true;
                 },
                 alignSelectDisplay = function () {
-                    var i = this.queue.length, w;
+                    let i = this.queue.length, w;
                     while (i--) {
                         if (this.queue[i].$display) {
                             w = Math.max(this.queue[i].$select.outerWidth(), U.number(this.queue[i].minWidth));
@@ -149,7 +147,7 @@
                 alignSelectOptionGroup = function (append) {
                     if (!this.activeSelectOptionGroup) return this;
 
-                    var item = this.queue[this.activeSelectQueueIndex],
+                    let item = this.queue[this.activeSelectQueueIndex],
                         pos = {}, positionMargin = 0,
                         dim = {}, pickerDim = {},
                         pickerDirection;
@@ -195,7 +193,7 @@
                                     if (newTop + pickerDim.height + positionMargin > pickerDim.winHeight) {
                                         newTop = 0;
                                     }
-                                    if(newTop < 0){
+                                    if (newTop < 0) {
                                         newTop = 0;
                                     }
 
@@ -223,13 +221,11 @@
                 onBodyClick = function (e, target) {
                     if (!this.activeSelectOptionGroup) return this;
 
-                    var
-                        item = this.queue[this.activeSelectQueueIndex],
-                        clickEl = "display"
-                        ;
+                    let item = this.queue[this.activeSelectQueueIndex],
+                        clickEl = "display";
 
                     target = U.findParentNode(e.target, function (target) {
-                        if (target.getAttribute("data-option-value")) {
+                        if (target.getAttribute("data-option-value") || target.getAttribute("data-option-value") == "") {
                             clickEl = "optionItem";
                             return true;
                         }
@@ -267,7 +263,7 @@
                     }
                     else if (e.which == ax5.info.eventKeys.RETURN) {
                         if (this.queue[this.activeSelectQueueIndex].optionFocusIndex > -1) { // 아이템에 포커스가 활성화 된 후, 마우스 이벤트 이면 무시
-                            var $option = this.activeSelectOptionGroup.find('[data-option-focus-index="' + this.queue[this.activeSelectQueueIndex].optionFocusIndex + '"]');
+                            let $option = this.activeSelectOptionGroup.find('[data-option-focus-index="' + this.queue[this.activeSelectQueueIndex].optionFocusIndex + '"]');
                             this.val(this.queue[this.activeSelectQueueIndex].id, {
                                 index: {
                                     gindex: $option.attr("data-option-group-index"),
@@ -282,8 +278,8 @@
                     }
                 },
                 getLabel = function (queIdx) {
-                    var item = this.queue[queIdx];
-                    var labels = [];
+                    let item = this.queue[queIdx],
+                        labels = [];
 
                     if (U.isArray(item.selected) && item.selected.length > 0) {
                         item.selected.forEach(function (n) {
@@ -306,7 +302,7 @@
 
                     return (function () {
                         if (item.multiple && labels.length > 1) {
-                            var data = {
+                            let data = {
                                 label: labels[0],
                                 length: labels.length - 1
                             };
@@ -322,7 +318,7 @@
                         .html(getLabel.call(this, queIdx));
                 },
                 focusWord = function (queIdx, searchWord) {
-                    var options = [], i = -1, l = this.queue[queIdx].indexedOptions.length - 1, n;
+                    let options = [], i = -1, l = this.queue[queIdx].indexedOptions.length - 1, n;
                     if (searchWord) {
                         while (l - i++) {
                             n = this.queue[queIdx].indexedOptions[i];
@@ -330,7 +326,7 @@
                                 options = [{'@findex': n['@findex'], optionsSort: 0}];
                                 break;
                             } else {
-                                var sort = ('' + n.value).toLowerCase().search(searchWord.toLowerCase());
+                                let sort = ('' + n.value).toLowerCase().search(searchWord.toLowerCase());
                                 if (sort > -1) {
                                     options.push({'@findex': n['@findex'], optionsSort: sort});
                                     if (options.length > 2) break;
@@ -356,10 +352,11 @@
                     }
                 },
                 focusMove = function (queIdx, direction, findex) {
-                    var _focusIndex,
+                    let _focusIndex,
                         _prevFocusIndex,
                         focusOptionEl,
                         optionGroupScrollContainer;
+
                     if (this.activeSelectOptionGroup && this.queue[queIdx].options && this.queue[queIdx].options.length > 0) {
 
                         if (typeof findex !== "undefined") {
@@ -404,12 +401,12 @@
                     }
                 },
                 bindSelectTarget = (function () {
-                    var focusWordCall = U.debounce(function (searchWord, queIdx) {
+                    let focusWordCall = U.debounce(function (searchWord, queIdx) {
                         focusWord.call(self, queIdx, searchWord);
                         self.queue[queIdx].$displayInput.val('');
                     }, 300);
 
-                    var selectEvent = {
+                    let selectEvent = {
                         'click': function (queIdx, e) {
                             var target = U.findParentNode(e.target, function (target) {
                                 if (target.getAttribute("data-selected-clear")) {
@@ -460,8 +457,8 @@
                         }
                     };
                     return function (queIdx) {
-                        var item = this.queue[queIdx];
-                        var data = {};
+                        let item = this.queue[queIdx],
+                            data = {};
                         item.selected = [];
 
                         if (!item.$display) {
@@ -541,7 +538,7 @@
                     };
                 })(),
                 syncSelectOptions = (function () {
-                    var setSelected = function (queIdx, O) {
+                    let setSelected = function (queIdx, O) {
                         if (!O) {
                             this.queue[queIdx].selected = [];
                         }
@@ -552,8 +549,9 @@
                     };
 
                     return function (queIdx, options) {
-                        var item = this.queue[queIdx];
-                        var po, elementOptions, newOptions, focusIndex = 0;
+                        let item = this.queue[queIdx],
+                            po, elementOptions, newOptions, focusIndex = 0;
+
                         setSelected.call(this, queIdx, false); // item.selected 초기화
 
                         if (options) {
@@ -564,7 +562,7 @@
                             po = [];
                             item.options.forEach(function (O, OIndex) {
                                 if (O.optgroup) {
-                                    // todo
+
                                     O['@gindex'] = OIndex;
                                     O.options.forEach(function (OO, OOIndex) {
                                         OO['@index'] = OOIndex;
@@ -685,10 +683,8 @@
              * @returns {ax5select}
              */
             this.bind = function (item) {
-                var
-                    selectConfig = {},
+                let selectConfig = {},
                     queIdx;
-
 
                 item = jQuery.extend(true, selectConfig, cfg, item);
 
@@ -746,7 +742,7 @@
              */
             this.open = (function () {
 
-                var onExpand = function (item) {
+                let onExpand = function (item) {
                     item.onExpand.call({
                         self: this,
                         item: item
@@ -796,9 +792,9 @@
                     /**
                      * open select from the outside
                      */
-                    var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
-                    var item = this.queue[queIdx];
-                    var data = {}, focusTop, selectedOptionEl;
+                    let queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID),
+                        item = this.queue[queIdx],
+                        data = {}, focusTop, selectedOptionEl;
 
                     if (item.$display.attr("disabled")) return this;
 
@@ -919,123 +915,122 @@
             this.val = (function () {
 
                 // todo : val 함수 리팩토링 필요
-                var getSelected = function (_item, o, selected) {
-                    if (typeof selected === "undefined") {
-                        return (_item.multiple) ? !o : true;
-                    } else {
-                        return selected;
-                    }
-                };
-                var clearSelected = function (queIdx) {
-                    this.queue[queIdx].options.forEach(function (n) {
-                        if (n.optgroup) {
-                            n.options.forEach(function (nn) {
-                                nn.selected = false;
-                            });
+                let getSelected = function (_item, o, selected) {
+                        if (typeof selected === "undefined") {
+                            return (_item.multiple) ? !o : true;
+                        } else {
+                            return selected;
                         }
-                        else {
-                            n.selected = false;
-                        }
-                    });
-                };
-
-                var processor = {
-                    'index': function (queIdx, value, selected) {
-                        // 클래스 내부에서 호출된 형태, 그런 이유로 옵션그룹에 대한 상태를 변경 하고 있다.
-                        var item = this.queue[queIdx];
-
-                        /*
-                         if (U.isArray(value.index)) {
-                         value.index.forEach(function (n) {
-                         item.options[n][item.columnKeys.optionSelected] = getSelected(item, item.options[n][item.columnKeys.optionSelected], selected);
-                         self.activeSelectOptionGroup
-                         .find('[data-option-index="' + n + '"]')
-                         .attr("data-option-selected", item.options[n][item.columnKeys.optionSelected].toString());
-                         });
-                         }
-                         else {
-                         }
-                         */
-                        if (U.isString(value.index.gindex)) {
-                            item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected], selected);
-                            self.activeSelectOptionGroup
-                                .find('[data-option-group-index="' + value.index.gindex + '"][data-option-index="' + value.index.index + '"]')
-                                .attr("data-option-selected", item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected].toString());
-                        }
-                        else {
-                            item.options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.index][item.columnKeys.optionSelected], selected);
-                            self.activeSelectOptionGroup
-                                .find('[data-option-index="' + value.index.index + '"]')
-                                .attr("data-option-selected", item.options[value.index.index][item.columnKeys.optionSelected].toString());
-
-                        }
-
-                        syncSelectOptions.call(this, queIdx, item.options);
-                        syncLabel.call(this, queIdx);
-                        alignSelectOptionGroup.call(this);
                     },
-                    'arr': function (queIdx, values, selected) {
-                        values.forEach(function (value) {
-                            if (U.isString(value) || U.isNumber(value)) {
-                                processor.value.call(self, queIdx, value, selected);
+                    clearSelected = function (queIdx) {
+                        this.queue[queIdx].options.forEach(function (n) {
+                            if (n.optgroup) {
+                                n.options.forEach(function (nn) {
+                                    nn.selected = false;
+                                });
                             }
                             else {
-                                for (var key in processor) {
-                                    if (value[key]) {
-                                        processor[key].call(self, queIdx, value, selected);
-                                        break;
-                                    }
-                                }
+                                n.selected = false;
                             }
                         });
                     },
-                    'value': function (queIdx, value, selected) {
-                        var item = this.queue[queIdx];
-                        var optionIndex = U.search(item.options, function () {
-                            return this[item.columnKeys.optionValue] == value;
-                        });
-                        if (optionIndex > -1) {
-                            item.options[optionIndex][item.columnKeys.optionSelected] = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
-                        }
-                        else {
-                            console.log(ax5.info.getError("ax5select", "501", "val"));
-                            return;
-                        }
+                    processor = {
+                        'index': function (queIdx, value, selected) {
+                            // 클래스 내부에서 호출된 형태, 그런 이유로 옵션그룹에 대한 상태를 변경 하고 있다.
+                            let item = this.queue[queIdx];
 
-                        syncSelectOptions.call(this, queIdx, item.options);
-                        syncLabel.call(this, queIdx);
-                    },
-                    'text': function (queIdx, value, selected) {
-                        var item = this.queue[queIdx];
-                        var optionIndex = U.search(item.options, function () {
-                            return this[item.columnKeys.optionText] == value;
-                        });
-                        if (optionIndex > -1) {
-                            item.options[optionIndex][item.columnKeys.optionSelected] = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
-                        }
-                        else {
-                            console.log(ax5.info.getError("ax5select", "501", "val"));
-                            return;
-                        }
+                            /*
+                             if (U.isArray(value.index)) {
+                             value.index.forEach(function (n) {
+                             item.options[n][item.columnKeys.optionSelected] = getSelected(item, item.options[n][item.columnKeys.optionSelected], selected);
+                             self.activeSelectOptionGroup
+                             .find('[data-option-index="' + n + '"]')
+                             .attr("data-option-selected", item.options[n][item.columnKeys.optionSelected].toString());
+                             });
+                             }
+                             else {
+                             }
+                             */
+                            if (U.isString(value.index.gindex)) {
+                                item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected], selected);
+                                self.activeSelectOptionGroup
+                                    .find('[data-option-group-index="' + value.index.gindex + '"][data-option-index="' + value.index.index + '"]')
+                                    .attr("data-option-selected", item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected].toString());
+                            }
+                            else {
+                                item.options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.index][item.columnKeys.optionSelected], selected);
+                                self.activeSelectOptionGroup
+                                    .find('[data-option-index="' + value.index.index + '"]')
+                                    .attr("data-option-selected", item.options[value.index.index][item.columnKeys.optionSelected].toString());
 
-                        syncSelectOptions.call(this, queIdx, item.options);
-                        syncLabel.call(this, queIdx);
-                    },
-                    'clear': function (queIdx) {
-                        clearSelected.call(this, queIdx);
-                        syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
-                        syncLabel.call(this, queIdx);
+                            }
 
-                        if (this.activeSelectOptionGroup) {
-                            this.activeSelectOptionGroup
-                                .find('[data-option-index]')
-                                .attr("data-option-selected", "false");
+                            syncSelectOptions.call(this, queIdx, item.options);
+                            syncLabel.call(this, queIdx);
+                            alignSelectOptionGroup.call(this);
+                        },
+                        'arr': function (queIdx, values, selected) {
+                            values.forEach(function (value) {
+                                if (U.isString(value) || U.isNumber(value)) {
+                                    processor.value.call(self, queIdx, value, selected);
+                                }
+                                else {
+                                    for (var key in processor) {
+                                        if (value[key]) {
+                                            processor[key].call(self, queIdx, value, selected);
+                                            break;
+                                        }
+                                    }
+                                }
+                            });
+                        },
+                        'value': function (queIdx, value, selected) {
+                            let item = this.queue[queIdx],
+                                optionIndex = U.search(item.options, function () {
+                                    return this[item.columnKeys.optionValue] == value;
+                                });
+                            if (optionIndex > -1) {
+                                item.options[optionIndex][item.columnKeys.optionSelected] = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
+                            }
+                            else {
+                                console.log(ax5.info.getError("ax5select", "501", "val"));
+                                return;
+                            }
+
+                            syncSelectOptions.call(this, queIdx, item.options);
+                            syncLabel.call(this, queIdx);
+                        },
+                        'text': function (queIdx, value, selected) {
+                            let item = this.queue[queIdx],
+                                optionIndex = U.search(item.options, function () {
+                                    return this[item.columnKeys.optionText] == value;
+                                });
+                            if (optionIndex > -1) {
+                                item.options[optionIndex][item.columnKeys.optionSelected] = getSelected(item, item.options[optionIndex][item.columnKeys.optionSelected], selected);
+                            }
+                            else {
+                                console.log(ax5.info.getError("ax5select", "501", "val"));
+                                return;
+                            }
+
+                            syncSelectOptions.call(this, queIdx, item.options);
+                            syncLabel.call(this, queIdx);
+                        },
+                        'clear': function (queIdx) {
+                            clearSelected.call(this, queIdx);
+                            syncSelectOptions.call(this, queIdx, this.queue[queIdx].options);
+                            syncLabel.call(this, queIdx);
+
+                            if (this.activeSelectOptionGroup) {
+                                this.activeSelectOptionGroup
+                                    .find('[data-option-index]')
+                                    .attr("data-option-selected", "false");
+                            }
                         }
-                    }
-                };
+                    };
 
                 return function (boundID, value, selected, internal) {
-                    var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
+                    let queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
                     if (queIdx === -1) {
                         console.log(ax5.info.getError("ax5select", "402", "val"));
                         return;
@@ -1129,7 +1124,7 @@
             };
 
             this.enable = function (boundID) {
-                var queIdx = getQueIdx.call(this, boundID);
+                let queIdx = getQueIdx.call(this, boundID);
                 this.queue[queIdx].$display.removeAttr("disabled");
                 this.queue[queIdx].$select.removeAttr("disabled");
 
@@ -1142,7 +1137,7 @@
             };
 
             this.disable = function (boundID) {
-                var queIdx = getQueIdx.call(this, boundID);
+                let queIdx = getQueIdx.call(this, boundID);
                 this.queue[queIdx].$display.attr("disabled", "disabled");
                 this.queue[queIdx].$select.attr("disabled", "disabled");
 
@@ -1173,7 +1168,7 @@ ax5.ui.select_instance = new ax5.ui.select();
 jQuery.fn.ax5select = (function () {
     return function (config) {
         if (ax5.util.isString(arguments[0])) {
-            var methodName = arguments[0];
+            let methodName = arguments[0];
 
             switch (methodName) {
                 case "open":
@@ -1201,7 +1196,7 @@ jQuery.fn.ax5select = (function () {
         else {
             if (typeof config == "undefined") config = {};
             jQuery.each(this, function () {
-                var defaultConfig = {
+                let defaultConfig = {
                     target: this
                 };
                 config = jQuery.extend({}, config, defaultConfig);
