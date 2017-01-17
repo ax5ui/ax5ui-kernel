@@ -23,7 +23,7 @@ module.exports = function (config) {
             'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
             'https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js',
             'dist/ax5modal.min.js',
-            'https://rawgit.com/aeei/aejs/master/dist/ae.min.js',
+            'https://rawgit.com/aeei/jquery-plugin/master/dist/jquery-plugin.min.js',
             'test/test.*.js'
         ],
         // list of files to exclude
