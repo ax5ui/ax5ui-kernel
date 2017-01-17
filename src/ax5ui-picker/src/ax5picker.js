@@ -314,9 +314,7 @@
                 onBodyClick = function (e, target) {
                     if (!this.activePicker) return this;
 
-                    var
-                        item = this.queue[this.activePickerQueueIndex]
-                        ;
+                    let item = this.queue[this.activePickerQueueIndex];
 
                     target = U.findParentNode(e.target, function (target) {
                         if (target.getAttribute("data-picker-els")) {
@@ -327,7 +325,6 @@
                         }
                     });
                     if (!target) {
-                        //console.log("i'm not picker");
                         this.close();
                         return this;
                     }
@@ -552,9 +549,10 @@
                 };
 
                 return function (boundID, inputIndex, val) {
-                    var queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
-                    var item = this.queue[queIdx];
-                    var _input;
+
+                    let queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID),
+                        item = this.queue[queIdx],
+                        _input;
 
                     if (item) {
 
@@ -640,17 +638,28 @@
                         item.pickerContent.find('[data-calendar-target]').each(function () {
 
                             // calendarConfig extend ~
-                            var
-                                idx = this.getAttribute("data-calendar-target"),
+                            let idx = this.getAttribute("data-calendar-target"),
                                 dValue = input.get(idx).value,
-                                d = ax5.util.date(dValue);
+                                d = ax5.util.date(dValue),
+                                dateConvert = {
+                                    "year"(_d) {
+                                        return ax5.util.date(_d, {"return":"yyyy"})
+                                    },
+                                    "month"(_d){
+                                        return ax5.util.date(_d, {"return":"yyyy-MM"})
+                                    },
+                                    "day"(_d){
+                                        return _d
+                                    }
+                                };
 
                             calendarConfig.displayDate = d;
                             if (dValue) calendarConfig.selection = [d];
                             calendarConfig = jQuery.extend(true, calendarConfig, item.content.config || {});
+
                             calendarConfig.target = this;
                             calendarConfig.onClick = function () {
-                                self.setContentValue(item.id, idx, this.date);
+                                self.setContentValue(item.id, idx, dateConvert[calendarConfig.mode](this.date));
                             };
 
                             item.pickerCalendar.push({

@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "1.3.75"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5picker
@@ -316,7 +316,6 @@
                     }
                 });
                 if (!target) {
-                    //console.log("i'm not picker");
                     this.close();
                     return this;
                 }
@@ -536,9 +535,10 @@
                 };
 
                 return function (boundID, inputIndex, val) {
-                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
-                    var item = this.queue[queIdx];
-                    var _input;
+
+                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID),
+                        item = this.queue[queIdx],
+                        _input = void 0;
 
                     if (item) {
 
@@ -623,14 +623,26 @@
                             // calendarConfig extend ~
                             var idx = this.getAttribute("data-calendar-target"),
                                 dValue = input.get(idx).value,
-                                d = ax5.util.date(dValue);
+                                d = ax5.util.date(dValue),
+                                dateConvert = {
+                                "year": function year(_d) {
+                                    return ax5.util.date(_d, { "return": "yyyy" });
+                                },
+                                "month": function month(_d) {
+                                    return ax5.util.date(_d, { "return": "yyyy-MM" });
+                                },
+                                "day": function day(_d) {
+                                    return _d;
+                                }
+                            };
 
                             calendarConfig.displayDate = d;
                             if (dValue) calendarConfig.selection = [d];
                             calendarConfig = jQuery.extend(true, calendarConfig, item.content.config || {});
+
                             calendarConfig.target = this;
                             calendarConfig.onClick = function () {
-                                self.setContentValue(item.id, idx, this.date);
+                                self.setContentValue(item.id, idx, dateConvert[calendarConfig.mode](this.date));
                             };
 
                             item.pickerCalendar.push({

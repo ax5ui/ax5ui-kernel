@@ -5,8 +5,8 @@
     <title>Title</title>
 
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-mask/dist/ax5mask.css"/>
-    <link rel="stylesheet" type="text/css" href="bower_components/ax5ui-calendar/dist/ax5calendar.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-mask/dist/ax5mask.css"/>
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-calendar/dist/ax5calendar.css"/>
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5picker.css"/>
 
@@ -14,7 +14,7 @@
     <script src="bower_components/ax5core/dist/ax5core.js"></script>
     <script src="bower_components/ax5ui-mask/dist/ax5mask.min.js"></script>
     <script src="../../ax5ui-calendar/dist/ax5calendar.js"></script>
-    <script src="bower_components/ax5ui-formatter/dist/ax5formatter.js"></script>
+    <script src="../../ax5ui-formatter/dist/ax5formatter.js"></script>
     <script src="../dist/ax5picker.js"></script>
 </head>
 <body style="padding: 10px;">
@@ -166,12 +166,16 @@
             disableChangeTrigger: false,
             content: {
                 type: 'date',
+                config: {
+                    mode: "month",
+                    selectMode: "month"
+                },
                 formatter: {
-                    pattern: 'date'
+                    pattern: 'date(month)'
                 }
             },
             onStateChanged: function () {
-                console.log(this.values);
+                //console.log(this.values);
             }
         });
 

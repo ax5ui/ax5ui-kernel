@@ -3,6 +3,8 @@
 
     var FORMATTER = ax5.ui.formatter;
     var U = ax5.util;
+    var TODAY = new Date();
+
     var ctrlKeys = {
         "18": "KEY_ALT",
         "8": "KEY_BACKSPACE",
@@ -122,6 +124,10 @@
 
             if (_opts.patternArgument == "time") {
                 regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?\-?([0-9]{1,2})? ?([0-9]{1,2})?:?([0-9]{1,2})?:?([0-9]{1,2})?.*$/;
+            }else if(_opts.patternArgument == "year"){
+                regExpPattern = /^([0-9]{0,4})?.*$/;
+            }else if(_opts.patternArgument == "month"){
+                regExpPattern = /^([0-9]{4})\-?([0-9]{1,2})?.*$/;
             }
 
             var matchedPattern = val.match(regExpPattern),
@@ -159,26 +165,53 @@
                 };
 
             returnValue = val.replace(regExpPattern, function (a, b) {
-                var nval = [inspectValue(arguments[1], "Y", eType)];
-                if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
-                if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
-                if (_opts.patternArgument == "time") {
+                var nval = [];
+
+                if (_opts.patternArgument == "year") {
+                    nval.push(inspectValue(arguments[1], "Y", eType));
+                }
+                else if (_opts.patternArgument == "month") {
+                    nval.push(inspectValue(arguments[1], "Y", eType));
+                    if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
+                }
+                else if (_opts.patternArgument == "time") {
+                    nval.push(inspectValue(arguments[1], "Y", eType));
+                    if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
+                    if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
                     if (arguments[4] || eType) nval.push(' ' + inspectValue(arguments[4], "h", eType));
                     if (arguments[5] || eType) nval.push(':' + inspectValue(arguments[5], "m", eType));
                     if (arguments[6] || eType) nval.push(':' + inspectValue(arguments[6], "s", eType));
+                }
+                else{
+                    nval.push(inspectValue(arguments[1], "Y", eType));
+                    if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
+                    if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
                 }
                 return nval.join('');
             });
 
             if (eType == 'blur' && !matchedPattern) {
                 returnValue = (function () {
-                    var nval = [inspectValue(returnValue, "Y", eType)];
-                    nval.push('-' + inspectValue(0, "M", eType));
-                    nval.push('-' + inspectValue(0, "D", eType, arguments));
-                    if (_opts.patternArgument == "time") {
+                    var nval = [];
+
+                    if (_opts.patternArgument == "year") {
+                        nval.push(inspectValue(0, "Y", eType));
+                    }
+                    else if (_opts.patternArgument == "month") {
+                        nval.push(inspectValue(0, "Y", eType));
+                        nval.push('-' + inspectValue(0, "M", eType));
+                    }
+                    else if (_opts.patternArgument == "time") {
+                        nval.push(inspectValue(0, "Y", eType));
+                        nval.push('-' + inspectValue(0, "M", eType));
+                        nval.push('-' + inspectValue(0, "D", eType, arguments));
                         nval.push(' ' + inspectValue(0, "h", eType));
                         nval.push(':' + inspectValue(0, "m", eType));
                         nval.push(':' + inspectValue(0, "s", eType));
+                    }else{
+                        nval.push(inspectValue(0, "Y", eType));
+                        nval.push('-' + inspectValue(0, "M", eType));
+                        nval.push('-' + inspectValue(0, "D", eType, arguments));
                     }
                     return nval.join('');
                 })();
