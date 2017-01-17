@@ -515,6 +515,7 @@
 
                             return _val;
                         } else if (_inputIndex == 1) {
+
                             if (values.length > 1) {
                                 // 값 검증
                                 diffDay = ax5.util.dday(values[1], { today: values[0] });
@@ -604,17 +605,17 @@
                         return true;
                     },
                     'date': function date(queIdx) {
-                        var item = this.queue[queIdx];
-                        var html = [];
+                        var item = this.queue[queIdx],
+                            html = [],
+                            calendarConfig = jQuery.extend({}, cfg.calendar, { displayDate: new Date() }),
+                            input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : item.$target.find('input[type]');
+
                         for (var i = 0; i < item.inputLength; i++) {
                             html.push('<div ' + 'style="width:' + U.cssNumber(item.content.width) + ';float:left;" ' + 'class="ax-picker-content-box" ' + 'data-calendar-target="' + i + '"></div>');
                             if (i < item.inputLength - 1) html.push('<div style="width:' + item.content.margin + 'px;float:left;height: 5px;"></div>');
                         }
                         html.push('<div style="clear:both;"></div>');
                         item.pickerContent.html(html.join(''));
-
-                        var calendarConfig = jQuery.extend({}, cfg.calendar, { displayDate: new Date() });
-                        var input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : item.$target.find('input[type]');
 
                         // calendar bind
                         item.pickerCalendar = [];
@@ -637,12 +638,13 @@
                             };
 
                             calendarConfig.displayDate = d;
-                            if (dValue) calendarConfig.selection = [d];
-                            calendarConfig = jQuery.extend(true, calendarConfig, item.content.config || {});
 
+                            if (dValue) calendarConfig.selection = [d];
+
+                            calendarConfig = jQuery.extend(true, calendarConfig, item.content.config || {});
                             calendarConfig.target = this;
                             calendarConfig.onClick = function () {
-                                self.setContentValue(item.id, idx, dateConvert[calendarConfig.mode](this.date));
+                                self.setContentValue(item.id, idx, dateConvert[calendarConfig.mode || "day"](this.date));
                             };
 
                             item.pickerCalendar.push({
@@ -653,8 +655,8 @@
                         });
                     },
                     'secure-num': function secureNum(queIdx) {
-                        var item = this.queue[queIdx];
-                        var html = [];
+                        var item = this.queue[queIdx],
+                            html = [];
                         for (var i = 0; i < item.inputLength; i++) {
                             html.push('<div ' + 'style="width:' + U.cssNumber(item.content.width) + ';float:left;" ' + 'class="ax-picker-content-box" ' + 'data-secure-num-target="' + i + '"></div>');
                             if (i < item.inputLength - 1) html.push('<div style="width:' + item.content.margin + 'px;float:left;height: 5px;"></div>');
@@ -759,17 +761,18 @@
 
                         // secure-num bind
                         item.pickerContent.find('[data-keyboard-target]').each(function () {
-                            var idx = this.getAttribute("data-keyboard-target");
-                            var $this = $(this);
-                            var isShiftKey = false;
-                            var toggleShift = function toggleShift() {
+                            var idx = this.getAttribute("data-keyboard-target"),
+                                $this = $(this),
+                                isShiftKey = false,
+                                toggleShift = function toggleShift() {
                                 isShiftKey = !isShiftKey;
                                 $this.html(getKeyBoard(isShiftKey));
                             };
+
                             $this.html(getKeyBoard(isShiftKey)).on("mousedown", '[data-keyboard-value]', function () {
-                                var act = this.getAttribute("data-keyboard-value");
-                                var _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(idx));
-                                var val = _input.val();
+                                var act = this.getAttribute("data-keyboard-value"),
+                                    _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(idx)),
+                                    val = _input.val();
 
                                 switch (act) {
                                     case "back":
@@ -800,8 +803,8 @@
                         });
                     },
                     'numpad': function numpad(queIdx) {
-                        var item = this.queue[queIdx];
-                        var html = [];
+                        var item = this.queue[queIdx],
+                            html = [];
                         for (var i = 0; i < item.inputLength; i++) {
                             html.push('<div ' + 'style="width:' + U.cssNumber(item.content.width) + ';float:left;" ' + 'class="ax-picker-content-box" ' + 'data-numpad-target="' + i + '"></div>');
                             if (i < item.inputLength - 1) html.push('<div style="width:' + item.content.margin + 'px;float:left;height: 5px;"></div>');
@@ -812,12 +815,15 @@
                         // secure-num bind
                         item.pickerContent.find('[data-numpad-target]').each(function () {
                             var idx = this.getAttribute("data-numpad-target"),
-                                po = [];
-
-                            var keyArray = item.content.config.keyArray || [{ value: "7" }, { value: "8" }, { value: "9" }, { label: "BS", fn: "back" }, { value: "4" }, { value: "5" }, { value: "6" }, { label: "CLS", fn: "clear" }, { value: "1" }, { value: "2" }, { value: "3" }, { value: "" }, { value: "." }, { value: "0" }, { value: "" }, { label: "OK", fn: "enter" }];
+                                po = [],
+                                keyArray = item.content.config.keyArray || [{ value: "7" }, { value: "8" }, { value: "9" }, { label: "BS", fn: "back" }, { value: "4" }, { value: "5" }, { value: "6" }, { label: "CLS", fn: "clear" }, { value: "1" }, { value: "2" }, { value: "3" }, { value: "" }, { value: "." }, { value: "0" }, { value: "" }, { label: "OK", fn: "enter" }];
 
                             keyArray.forEach(function (n) {
-                                var keyValue, keyLabel, btnWrapStyle, btnTheme, btnStyle;
+                                var keyValue = void 0,
+                                    keyLabel = void 0,
+                                    btnWrapStyle = void 0,
+                                    btnTheme = void 0,
+                                    btnStyle = void 0;
 
                                 if (n.fn) {
                                     keyValue = n.fn;
@@ -840,10 +846,10 @@
                             po.push('<div style="clear:both;"></div>');
 
                             $(this).html(po.join('')).on("mousedown", '[data-numpad-value]', function () {
-                                var act = this.getAttribute("data-numpad-value");
-                                var _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(idx));
-                                var val = _input.val();
-                                var state = "";
+                                var act = this.getAttribute("data-numpad-value"),
+                                    _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(idx)),
+                                    val = _input.val(),
+                                    state = "";
 
                                 switch (act) {
                                     case "back":
@@ -879,8 +885,8 @@
                 };
 
                 return function (boundID, tryCount) {
-                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
-                    var item = this.queue[queIdx];
+                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID),
+                        item = this.queue[queIdx];
 
                     /**
                      다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문

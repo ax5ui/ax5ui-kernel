@@ -1377,8 +1377,9 @@
         function localDate(yy, mm, dd, hh, mi, ss) {
             var utcD, localD;
             localD = new Date();
-            if (typeof hh === "undefined") hh = 23;
-            if (typeof mi === "undefined") mi = 59;
+            if (mm < 0) mm = 0;
+            if (typeof hh === "undefined") hh = 12;
+            if (typeof mi === "undefined") mi = 0;
             utcD = new Date(Date.UTC(yy, mm, dd || 1, hh, mi, ss || 0));
 
             if (mm == 0 && dd == 1 && utcD.getUTCHours() + (utcD.getTimezoneOffset() / 60) < 0) {

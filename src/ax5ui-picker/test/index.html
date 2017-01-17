@@ -11,8 +11,8 @@
     <link rel="stylesheet" type="text/css" href="../dist/ax5picker.css"/>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/ax5core/dist/ax5core.js"></script>
-    <script src="bower_components/ax5ui-mask/dist/ax5mask.min.js"></script>
+    <script src="../../ax5core/dist/ax5core.js"></script>
+    <script src="../../ax5ui-mask/dist/ax5mask.min.js"></script>
     <script src="../../ax5ui-calendar/dist/ax5calendar.js"></script>
     <script src="../../ax5ui-formatter/dist/ax5formatter.js"></script>
     <script src="../dist/ax5picker.js"></script>
@@ -167,15 +167,15 @@
             content: {
                 type: 'date',
                 config: {
-                    mode: "month",
-                    selectMode: "month"
+                    mode: "year",
+                    selectMode: "year"
                 },
                 formatter: {
-                    pattern: 'date(month)'
+                    pattern: 'date(year)'
                 }
             },
             onStateChanged: function () {
-                //console.log(this.values);
+                console.log(this.values);
             }
         });
 
