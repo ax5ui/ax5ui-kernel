@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "dialog",
-        version: "1.3.76"
+        version: "1.3.77"
     }, function () {
         /**
          * @class ax5dialog
