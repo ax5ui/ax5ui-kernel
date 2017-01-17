@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "${VERSION}"
+        version: "1.3.76"
     }, function () {
 
         /**
@@ -32,6 +32,8 @@
 
             this.instanceId = ax5.getGuid();
             this.config = {};
+            // 패널 정보
+            this.panels = [];
             cfg = this.config;
 
             /**
