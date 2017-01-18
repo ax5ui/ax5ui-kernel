@@ -123,3 +123,11 @@ $hack_ie67: '.';
 		@include linear-gradient($pos, $g1, $g2);
 	}
 }
+
+// Opacity
+@mixin opacity($opacity) {
+	opacity: $opacity;
+	// IE8 filter
+	$opacity-ie: ($opacity * 100);
+	filter: alpha(opacity=$opacity-ie);
+}
