@@ -3,8 +3,8 @@ describe('ax5.util.date TEST', function () {
     //Usage 01
     it('ax5.util.date("2013-01-01")', function () {
         var date = new Date(2013, 0, 1);
-        date.setHours(23);
-        date.setMinutes(59);
+        date.setHours(12);
+        date.setMinutes(0);
         should.deepEqual(ax5.util.date('2013-01-01'), date);
     });
 
@@ -19,7 +19,7 @@ describe('ax5.util.date TEST', function () {
 
     //Usage 03
     it('ax5.util.date("1919-03-01", {add:{d:10}, return:"yyyy/MM/dd hh:mm:ss"})', function () {
-        should.deepEqual(ax5.util.date("1919-03-01", {add: {d: 10}, return: "yyyy/MM/dd hh:mm:ss"}), '1919/03/11 23:59:00');
+        should.deepEqual(ax5.util.date("1919-03-01", {add: {d: 10}, return: "yyyy/MM/dd hh:mm:ss"}), '1919/03/11 12:00:00');
     });
 
 
