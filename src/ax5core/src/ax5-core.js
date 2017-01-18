@@ -1405,12 +1405,11 @@
          * ```
          */
         function date(d, cond) {
-            var yy, mm, dd, hh, mi,
+            let yy, mm, dd, hh, mi,
                 aDateTime, aTimes, aTime, aDate,
-                utcD, localD,
-                va;
-            var ISO_8601 = /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/i;
-            var ISO_8601_FULL = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
+                va,
+                ISO_8601 = /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/i,
+                ISO_8601_FULL = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
 
             if (isString(d)) {
                 if (d.length == 0) {
@@ -1453,16 +1452,13 @@
                     d = new Date();
                 }
             }
-
-            if (typeof cond === "undefined") {
+            if (typeof cond === "undefined" || typeof d === "undefined") {
                 return d;
             }
             else {
-
                 if ("add" in cond) {
                     d = (function (_d, opts) {
-                        var
-                            yy, mm, dd, mxdd,
+                        let yy, mm, dd, mxdd,
                             DyMilli = ((1000 * 60) * 60) * 24;
 
                         if (typeof opts["d"] !== "undefined") {
@@ -1484,11 +1480,9 @@
                         return _d;
                     })(new Date(d), cond["add"]);
                 }
-
                 if ("set" in cond) {
                     d = (function (_d, opts) {
-                        var
-                            yy, mm, dd,
+                        let yy, mm, dd,
                             processor = {
                                 "firstDayOfMonth": function (date) {
                                     yy = date.getFullYear();
@@ -1510,10 +1504,11 @@
                         }
                     })(new Date(d), cond["set"]);
                 }
-
                 if ("return" in cond) {
                     return (function () {
-                        var fStr = cond["return"], nY, nM, nD, nH, nMM, nS, nDW;
+
+                        let fStr = cond["return"], nY, nM, nD, nH, nMM, nS, nDW,
+                            yre, regY, mre, regM, dre, regD, hre, regH, mire, regMI, sre, regS, dwre, regDW;
 
                         nY = d.getUTCFullYear();
                         nM = setDigit(d.getMonth() + 1, 2);
@@ -1523,27 +1518,27 @@
                         nS = setDigit(d.getSeconds(), 2);
                         nDW = d.getDay();
 
-                        var yre = /[^y]*(yyyy)[^y]*/gi;
+                        yre = /[^y]*(yyyy)[^y]*/gi;
                         yre.exec(fStr);
-                        var regY = RegExp.$1;
-                        var mre = /[^m]*(MM)[^m]*/g;
+                        regY = RegExp.$1;
+                        mre = /[^m]*(MM)[^m]*/g;
                         mre.exec(fStr);
-                        var regM = RegExp.$1;
-                        var dre = /[^d]*(dd)[^d]*/gi;
+                        regM = RegExp.$1;
+                        dre = /[^d]*(dd)[^d]*/gi;
                         dre.exec(fStr);
-                        var regD = RegExp.$1;
-                        var hre = /[^h]*(hh)[^h]*/gi;
+                        regD = RegExp.$1;
+                        hre = /[^h]*(hh)[^h]*/gi;
                         hre.exec(fStr);
-                        var regH = RegExp.$1;
-                        var mire = /[^m]*(mm)[^i]*/g;
+                        regH = RegExp.$1;
+                        mire = /[^m]*(mm)[^i]*/g;
                         mire.exec(fStr);
-                        var regMI = RegExp.$1;
-                        var sre = /[^s]*(ss)[^s]*/gi;
+                        regMI = RegExp.$1;
+                        sre = /[^s]*(ss)[^s]*/gi;
                         sre.exec(fStr);
-                        var regS = RegExp.$1;
-                        var dwre = /[^d]*(dw)[^w]*/gi;
+                        regS = RegExp.$1;
+                        dwre = /[^d]*(dw)[^w]*/gi;
                         dwre.exec(fStr);
-                        var regDW = RegExp.$1;
+                        regDW = RegExp.$1;
 
                         if (regY === "yyyy") {
                             fStr = fStr.replace(regY, right(nY, regY.length));

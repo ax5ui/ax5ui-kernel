@@ -55,7 +55,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.78";
+        var version = "${VERSION}";
 
         /**
          * ax5 library path
@@ -1356,9 +1356,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ```
          */
         function date(d, cond) {
-            var yy, mm, dd, hh, mi, aDateTime, aTimes, aTime, aDate, utcD, localD, va;
-            var ISO_8601 = /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/i;
-            var ISO_8601_FULL = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
+            var yy = void 0,
+                mm = void 0,
+                dd = void 0,
+                hh = void 0,
+                mi = void 0,
+                aDateTime = void 0,
+                aTimes = void 0,
+                aTime = void 0,
+                aDate = void 0,
+                va = void 0,
+                ISO_8601 = /^\d{4}(-\d\d(-\d\d(T\d\d:\d\d(:\d\d)?(\.\d+)?(([+-]\d\d:\d\d)|Z)?)?)?)?$/i,
+                ISO_8601_FULL = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
 
             if (isString(d)) {
                 if (d.length == 0) {
@@ -1393,17 +1402,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     d = new Date();
                 }
             }
-
-            if (typeof cond === "undefined") {
+            if (typeof cond === "undefined" || typeof d === "undefined") {
                 return d;
             } else {
-
                 if ("add" in cond) {
                     d = function (_d, opts) {
-                        var yy,
-                            mm,
-                            dd,
-                            mxdd,
+                        var yy = void 0,
+                            mm = void 0,
+                            dd = void 0,
+                            mxdd = void 0,
                             DyMilli = 1000 * 60 * 60 * 24;
 
                         if (typeof opts["d"] !== "undefined") {
@@ -1423,12 +1430,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         return _d;
                     }(new Date(d), cond["add"]);
                 }
-
                 if ("set" in cond) {
                     d = function (_d, opts) {
-                        var yy,
-                            mm,
-                            dd,
+                        var yy = void 0,
+                            mm = void 0,
+                            dd = void 0,
                             processor = {
                             "firstDayOfMonth": function firstDayOfMonth(date) {
                                 yy = date.getFullYear();
@@ -1450,17 +1456,31 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     }(new Date(d), cond["set"]);
                 }
-
                 if ("return" in cond) {
                     return function () {
+
                         var fStr = cond["return"],
-                            nY,
-                            nM,
-                            nD,
-                            nH,
-                            nMM,
-                            nS,
-                            nDW;
+                            nY = void 0,
+                            nM = void 0,
+                            nD = void 0,
+                            nH = void 0,
+                            nMM = void 0,
+                            nS = void 0,
+                            nDW = void 0,
+                            yre = void 0,
+                            regY = void 0,
+                            mre = void 0,
+                            regM = void 0,
+                            dre = void 0,
+                            regD = void 0,
+                            hre = void 0,
+                            regH = void 0,
+                            mire = void 0,
+                            regMI = void 0,
+                            sre = void 0,
+                            regS = void 0,
+                            dwre = void 0,
+                            regDW = void 0;
 
                         nY = d.getUTCFullYear();
                         nM = setDigit(d.getMonth() + 1, 2);
@@ -1470,27 +1490,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         nS = setDigit(d.getSeconds(), 2);
                         nDW = d.getDay();
 
-                        var yre = /[^y]*(yyyy)[^y]*/gi;
+                        yre = /[^y]*(yyyy)[^y]*/gi;
                         yre.exec(fStr);
-                        var regY = RegExp.$1;
-                        var mre = /[^m]*(MM)[^m]*/g;
+                        regY = RegExp.$1;
+                        mre = /[^m]*(MM)[^m]*/g;
                         mre.exec(fStr);
-                        var regM = RegExp.$1;
-                        var dre = /[^d]*(dd)[^d]*/gi;
+                        regM = RegExp.$1;
+                        dre = /[^d]*(dd)[^d]*/gi;
                         dre.exec(fStr);
-                        var regD = RegExp.$1;
-                        var hre = /[^h]*(hh)[^h]*/gi;
+                        regD = RegExp.$1;
+                        hre = /[^h]*(hh)[^h]*/gi;
                         hre.exec(fStr);
-                        var regH = RegExp.$1;
-                        var mire = /[^m]*(mm)[^i]*/g;
+                        regH = RegExp.$1;
+                        mire = /[^m]*(mm)[^i]*/g;
                         mire.exec(fStr);
-                        var regMI = RegExp.$1;
-                        var sre = /[^s]*(ss)[^s]*/gi;
+                        regMI = RegExp.$1;
+                        sre = /[^s]*(ss)[^s]*/gi;
                         sre.exec(fStr);
-                        var regS = RegExp.$1;
-                        var dwre = /[^d]*(dw)[^w]*/gi;
+                        regS = RegExp.$1;
+                        dwre = /[^d]*(dw)[^w]*/gi;
                         dwre.exec(fStr);
-                        var regDW = RegExp.$1;
+                        regDW = RegExp.$1;
 
                         if (regY === "yyyy") {
                             fStr = fStr.replace(regY, right(nY, regY.length));

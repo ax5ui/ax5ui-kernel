@@ -138,7 +138,9 @@
                 columns: [
                     {key: "b", label: "필드B", align: "center"},
                     {key: "companyJson.대표자명", label: "대표자명", width: 100, align: "center"},
-                    {key: "saleDt", label: "판매일자", width: "*", align: "center"},
+                    {key: "saleDt", label: "판매일자", width: "*", align: "center", editor: "text", formatter: function formatter() {
+                        return ax5.util.date(this.value, {"return":'yyyy/MM/dd'});
+                    }},
                     {key: "customer", label: "고객명"},
                     {key: "saleType", label: "판매타입"}
                 ]
@@ -233,7 +235,8 @@
         $('[data-grid-control]').on("mousedown", function (e) {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true});
+                    //firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true});
+                    firstGrid.addRow({}, "last", {sort: true});
                     break;
 
                 case "row-add2":
