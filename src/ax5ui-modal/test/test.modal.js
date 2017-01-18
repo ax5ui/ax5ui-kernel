@@ -136,5 +136,17 @@ describe('ax5.ui.modal method TEST', function () {
         myModal.maximize();
         done(ae.equalAll("", that));
     });
+
+    it('modal css test', function (done) {
+        myModal.open();
+        myModal.css({"background-color": "rgb(0, 0, 0)"});
+        myModal.close();
+        done(ae.equalAll("rgb(0, 0, 0)", myModal.activeModal.css("background-color")));
+    });
+
+    it('modal setModalConfig test', function (done) {
+        myModal.setModalConfig({ animateTime: 300 });
+        done(ae.equalAll(300, myModal.modalConfig.animateTime));
+    });
 });
 /* end ax5.modal.method... */
