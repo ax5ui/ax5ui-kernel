@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.78"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1481,12 +1481,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
-// todo : filter
+// todo : destroy
 // todo : body menu
+// todo : filter
 // todo : column reorder
 // todo : editor 필수값 속성 지정
-
-
 // ax5.ui.grid.body
 (function () {
 

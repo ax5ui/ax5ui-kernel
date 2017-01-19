@@ -29,11 +29,32 @@
 <script>
     $(function () {
 
-        var myDocker = new ax5.ui.docker();
-        myDocker.setConfig({
-            target: $('[data-ax5docker="docker1"]'),
-            panels: []
+        var myDocker = new ax5.ui.docker({
+            target: $('[data-ax5docker="docker1"]')
         });
+        myDocker.setPanels([
+            {
+                type: "stack", // type : row, col, stack
+                panels: [
+                    {
+                        type: "panel",
+                        name: "my name",
+                        header: {
+                            btns: "my name"
+                        },
+                        body: ""
+                    },
+                    {
+                        type: "panel",
+                        name: "my name 2",
+                        header: {
+                            btns: "my name"
+                        },
+                        body: ""
+                    }
+                ]
+            }
+        ]);
 
 
     });

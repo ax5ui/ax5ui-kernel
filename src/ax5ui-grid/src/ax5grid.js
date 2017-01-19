@@ -1489,10 +1489,8 @@
     GRID = ax5.ui.grid;
 })();
 
-// todo : filter
+// todo : destroy
 // todo : body menu
+// todo : filter
 // todo : column reorder
 // todo : editor 필수값 속성 지정
-
-
-
