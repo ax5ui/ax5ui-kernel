@@ -97,56 +97,56 @@ describe('ax5.ui.modal.setConfig TEST', function () {
 /* ax5.modal.method... */
 describe('ax5.ui.modal method TEST', function () {
     var that;
-    var myModal = new ax5.ui.modal({
+    var myUI = new ax5.ui.modal({
         onStateChanged: function () {
             that = this;
         }
     });
 
     it('modal open test', function (done) {
-        myModal.open();
+        myUI.open();
         done(ae.equalAll("open", that.state));
     });
 
     it('modal close test', function (done) {
-        myModal.close();
+        myUI.close();
         setTimeout(function () {
             done(ae.equalAll("close", that.state));
-        }, myModal.config.animateTime);
+        }, myUI.config.animateTime);
     });
 
     it('modal minimize test', function (done) {
-        myModal.minimize();
+        myUI.minimize();
         done(ae.equalAll("minimize", that.state));
     });
 
     it('modal already minimize test', function (done) {
         that = "";
-        myModal.minimize();
+        myUI.minimize();
         done(ae.equalAll("", that));
     });
 
     it('modal maximize test', function (done) {
-        myModal.maximize();
+        myUI.maximize();
         done(ae.equalAll("restore", that.state));
     });
 
     it('modal already maximize test', function (done) {
         that = "";
-        myModal.maximize();
+        myUI.maximize();
         done(ae.equalAll("", that));
     });
 
     it('modal css test', function (done) {
-        myModal.open();
-        myModal.css({"background-color": "rgb(0, 0, 0)"});
-        myModal.close();
-        done(ae.equalAll("rgb(0, 0, 0)", myModal.activeModal.css("background-color")));
+        myUI.open();
+        myUI.css({"background-color": "rgb(0, 0, 0)"});
+        myUI.close();
+        done(ae.equalAll("rgb(0, 0, 0)", myUI.activeModal.css("background-color")));
     });
 
     it('modal setModalConfig test', function (done) {
-        myModal.setModalConfig({ animateTime: 300 });
-        done(ae.equalAll(300, myModal.modalConfig.animateTime));
+        myUI.setModalConfig({ animateTime: 300 });
+        done(ae.equalAll(300, myUI.modalConfig.animateTime));
     });
 });
 /* end ax5.modal.method... */
