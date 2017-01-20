@@ -661,7 +661,7 @@
                             calendarConfig = jQuery.extend(true, calendarConfig, item.content.config || {});
                             calendarConfig.target = this;
                             calendarConfig.onClick = function () {
-                                self.setContentValue(item.id, idx, dateConvert[calendarConfig.mode||"day"](this.date));
+                                self.setContentValue(item.id, idx, dateConvert[calendarConfig.selectMode || "day"](this.date));
                             };
 
                             item.pickerCalendar.push({
