@@ -53,7 +53,7 @@ describe('ax5.ui.select method TEST', function () {
     var myUI = new ax5.ui.select();
     var that;
 
-    before(function ()  {
+    before(function () {
         var options = [];
         options.push({value: "1", text: "string"});
         options.push({value: "2", text: "number"});
@@ -84,7 +84,6 @@ describe('ax5.ui.select method TEST', function () {
     });
 
     it('select open test', function (done) {
-        console.log(myUI);
         myUI.open($('[data-ax5select="select2"]'));
         done(ae.equalAll("open", that.state));
     });
@@ -94,5 +93,25 @@ describe('ax5.ui.select method TEST', function () {
         setTimeout(function () {
             done(ae.equalAll("close", that.state));
         }, myUI.config.animateTime);
+    });
+
+    it('select val test', function (done) {
+        var val = myUI.val($('[data-ax5select="select2"]'))[0];
+        done(
+            ae.equalAll("1", val.value)
+            && ae.equalAll("string", val.text)
+        );
+    });
+
+    it('select update test', function (done) {
+        myUI.update({
+            target      : $('[data-ax5select="select1"]'),
+            theme       : "danger",
+            animateTime : 200
+        });
+        done(
+            ae.equalAll("danger", myUI.queue[1].theme)
+            && ae.equalAll(200, myUI.queue[1].animateTime)
+        );
     });
 });
