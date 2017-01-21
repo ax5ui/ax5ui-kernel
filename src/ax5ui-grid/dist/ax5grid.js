@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.80"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -215,7 +215,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 };
 
-                this.$["container"]["root"].css({ height: this.config.height });
+                this.$["container"]["root"].css({ height: this.config.height || this.config._height });
 
                 return this;
             },
@@ -327,6 +327,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             },
                 alignGrid = function alignGrid(_isFirst) {
                 // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하는 아규먼트
+
+                if (!this.config.height) {
+                    this.$["container"]["root"].css({ height: this.config._height = this.$target.height() });
+                }
+
                 var CT_WIDTH = this.$["container"]["root"].width(),
                     CT_HEIGHT = this.$["container"]["root"].height(),
                     CT_INNER_WIDTH = CT_WIDTH,
@@ -719,7 +724,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var grid = this.config = cfg;
 
                 if (!this.config.height) {
-                    this.config.height = this.$target.height();
+                    this.config._height = this.$target.height();
                 }
 
                 if (!this.id) this.id = this.$target.data("data-ax5grid-id");
