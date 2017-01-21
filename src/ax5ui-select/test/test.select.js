@@ -105,13 +105,30 @@ describe('ax5.ui.select method TEST', function () {
 
     it('select update test', function (done) {
         myUI.update({
-            target      : $('[data-ax5select="select1"]'),
+            target      : $('[data-ax5select="select2"]'),
             theme       : "danger",
             animateTime : 200
         });
         done(
-            ae.equalAll("danger", myUI.queue[1].theme)
-            && ae.equalAll(200, myUI.queue[1].animateTime)
+            ae.equalAll("danger", myUI.queue[0].theme)
+            && ae.equalAll(200, myUI.queue[0].animateTime)
+        );
+    });
+
+    it('select disable test', function (done) {
+        myUI.disable($('[data-ax5select="select2"]'));
+        console.log(myUI);
+        done(
+            ae.equalAll("disabled", myUI.queue[0].$display.attr("disabled"))
+            && ae.equalAll("disabled", myUI.queue[0].$select.attr("disabled"))
+        );
+    });
+
+    it('select enable test', function (done) {
+        myUI.enable($('[data-ax5select="select2"]'));
+        done(
+            ae.equalAll("undefined", typeof myUI.queue[0].$display.attr("disabled"))
+            && ae.equalAll("undefined", typeof myUI.queue[0].$select.attr("disabled"))
         );
     });
 });
