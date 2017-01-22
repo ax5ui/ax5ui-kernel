@@ -105,7 +105,7 @@ describe('ax5binder TEST', function () {
     });
 });
 
-describe('Manipulate list item TEST', function(){
+describe('Manipulate list item TEST', function () {
     var myUI;
     var tmpl = '<form class name="binder-list-form" onsubmit="return false;" style="border: 1px solid #ccc;padding: 10px;border-radius: 10px;">' +
         '<div data-ax-repeat="list">' +
@@ -116,14 +116,14 @@ describe('Manipulate list item TEST', function(){
         '</form>';
 
     $(document.body).append(tmpl);
-        myUI = new ax5.ui.binder();
-        myUI.setModel({
-            "list": [{A: 1}, {A: 2}]
-        }, jQuery(document["binder-list-form"]));
+    myUI = new ax5.ui.binder();
+    myUI.setModel({
+        "list": [{A: 1}, {A: 2}, {A: [{a: 1}, {a: 2}, {a: 3}]}]
+    }, jQuery(document["binder-list-form"]));
 
     it('add item ax5binder', function (done) {
         myUI.add("list", {A: 3});
-        done(myUI.get("list[2][A]") === 3 && myUI.get("list[2]" + "__ADDED__") === true ? "" : "add item error");
+        done(myUI.get("list[3][A]") === 3 && myUI.get("list[3]" + "__ADDED__") === true ? "" : "add item error");
     });
 
     it('remove item ax5binder', function (done) {
@@ -133,12 +133,27 @@ describe('Manipulate list item TEST', function(){
 
     it('remove added item ax5binder', function (done) {
         myUI.add("list", {A: 3});
-        myUI.remove("list", 2);
-        done(myUI.get("list").length === 3 && myUI.get("list[1][A]") === 2 ? "" : "remove added item error");
+        myUI.remove("list", 3);
+        done(myUI.get("list").length === 4 && myUI.get("list[3][A]") === 3 ? "" : "remove added item error");
     });
 
     it('update item ax5binder', function (done) {
         myUI.update("list", 1, {A: 3});
         done(myUI.get("list[1][A]") === 3 ? "" : "update item error");
+    });
+
+    it('childAdd item ax5binder', function (done) {
+        myUI.childAdd("list", 2, "A", {d: 4});
+        done(myUI.get("list[2][A][3][d]") === 4 ? "" : "childAdd item error");
+    });
+
+    it('childAdd item ax5binder', function (done) {
+        myUI.childAdd("list", 2, "A", {d: 4});
+        done(myUI.get("list[2][A][3][d]") === 4 ? "" : "childAdd item error");
+    });
+
+    it('childRemove item ax5binder', function (done) {
+        myUI.childRemove("list", 2, "A", 3);
+        done(myUI.get("list[2][A]").length === 4 ? "" : "childRemove item error");
     });
 });
