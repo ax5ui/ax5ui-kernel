@@ -121,14 +121,14 @@ describe('Manipulate list item TEST', function () {
         "list": [{A: 1}, {A: 2}, {A: [{a: 1}, {a: 2}, {a: 3}]}]
     }, jQuery(document["binder-list-form"]));
 
-    it('add item ax5binder', function (done) {
+    it('add ax5binder', function (done) {
         myUI.add("list", {A: 3});
-        done(myUI.get("list[3][A]") === 3 && myUI.get("list[3]" + "__ADDED__") === true ? "" : "add item error");
+        done(myUI.get("list[3][A]") === 3 && myUI.get("list[3]" + "__ADDED__") === true ? "" : "add error");
     });
 
-    it('remove item ax5binder', function (done) {
+    it('remove ax5binder', function (done) {
         myUI.remove("list", 1);
-        done(myUI.get("list[1]" + "__DELETED__") === true ? "" : "remove item error");
+        done(myUI.get("list[1]" + "__DELETED__") === true ? "" : "remove error");
     });
 
     it('remove added item ax5binder', function (done) {
@@ -137,23 +137,33 @@ describe('Manipulate list item TEST', function () {
         done(myUI.get("list").length === 4 && myUI.get("list[3][A]") === 3 ? "" : "remove added item error");
     });
 
-    it('update item ax5binder', function (done) {
+    it('update ax5binder', function (done) {
         myUI.update("list", 1, {A: 3});
-        done(myUI.get("list[1][A]") === 3 ? "" : "update item error");
+        done(myUI.get("list[1][A]") === 3 ? "" : "update error");
     });
 
-    it('childAdd item ax5binder', function (done) {
+    it('childAdd ax5binder', function (done) {
         myUI.childAdd("list", 2, "A", {d: 4});
-        done(myUI.get("list[2][A][3][d]") === 4 ? "" : "childAdd item error");
+        done(myUI.get("list[2][A][3][d]") === 4 ? "" : "childAdd error");
     });
 
-    it('childAdd item ax5binder', function (done) {
+    it('childAdd ax5binder', function (done) {
         myUI.childAdd("list", 2, "A", {d: 4});
-        done(myUI.get("list[2][A][3][d]") === 4 ? "" : "childAdd item error");
+        done(myUI.get("list[2][A][3][d]") === 4 ? "" : "childAdd error");
     });
 
-    it('childRemove item ax5binder', function (done) {
+    it('childRemove ax5binder', function (done) {
         myUI.childRemove("list", 2, "A", 3);
-        done(myUI.get("list[2][A]").length === 4 ? "" : "childRemove item error");
+        done(myUI.get("list[2][A]").length === 4 ? "" : "childRemove error");
+    });
+
+    it('childUpdate ax5binder', function (done) {
+        myUI.childUpdate("list", 2, "A", 3, {d: 5});
+        done(myUI.get("list[2][A][3][d]") === 5 ? "" : "childUpdate error");
+    });
+
+    it('childSet ax5ui', function (done) {
+        myUI.childSet("list", 2, "A", [{a: 10}, {b: 20}]);
+        done(myUI.get("list[2][A]").length === 2 && myUI.get("list[2][A][0][a]") === 10 ? "" : "childSet error");
     });
 });

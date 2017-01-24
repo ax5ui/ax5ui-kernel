@@ -46,9 +46,13 @@ describe('ax5select TEST', function () {
         });
         done();
     });
+
+    after(function () {
+        $('[data-ax5select="select1"]').remove();
+    });
 });
 
-/* ax5.modal.method... */
+/* ax5.select.method... */
 describe('ax5.ui.select method TEST', function () {
     var myUI = new ax5.ui.select();
     var that;
@@ -95,11 +99,20 @@ describe('ax5.ui.select method TEST', function () {
         }, myUI.config.animateTime);
     });
 
-    it('select val test', function (done) {
+    it('select setValue', function(done){
         var val = myUI.val($('[data-ax5select="select2"]'))[0];
         done(
             ae.equalAll("1", val.value)
             && ae.equalAll("string", val.text)
+        );
+    });
+
+    it('select getValue', function(done){
+        myUI.val($('[data-ax5select="select2"]'), "3");
+        var val = myUI.val($('[data-ax5select="select2"]'))[0];
+        done(
+            ae.equalAll("3", val.value)
+            && ae.equalAll("substr", val.text)
         );
     });
 
@@ -117,7 +130,6 @@ describe('ax5.ui.select method TEST', function () {
 
     it('select disable test', function (done) {
         myUI.disable($('[data-ax5select="select2"]'));
-        console.log(myUI);
         done(
             ae.equalAll("disabled", myUI.queue[0].$display.attr("disabled"))
             && ae.equalAll("disabled", myUI.queue[0].$select.attr("disabled"))
@@ -130,5 +142,9 @@ describe('ax5.ui.select method TEST', function () {
             ae.equalAll("undefined", typeof myUI.queue[0].$display.attr("disabled"))
             && ae.equalAll("undefined", typeof myUI.queue[0].$select.attr("disabled"))
         );
+    });
+
+    after(function () {
+        $('[data-ax5select="select2"]').remove();
     });
 });
