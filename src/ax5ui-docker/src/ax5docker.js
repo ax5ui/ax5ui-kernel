@@ -35,11 +35,68 @@
             };
             // 패널 정보
             this.panels = [];
+            this.$panels = [];
+
             cfg = this.config;
 
+
             let repaintPanels = () => {
-                console.log(this.config.target);
-                this.$target.html(DOCKER.tmpl.get("panels", {panels: this.panels}));
+                let getPanelProcessor = {
+                    stack(_pane, _parent){
+                        return jQuery('<div data-ax5docker-pane="">' +
+                            '<ul></ul>' +
+                            '<div data-ax5docker-pane-item-views=""></div>' +
+                            '</div>');
+                    },
+                    row(_pane, _parent){
+                        return jQuery('<div data-ax5docker-pane-axis="row"></div>');
+                    },
+                    column(_pane, _parent){
+                        return jQuery('<div data-ax5docker-pane-axis="column"></div>');
+                    },
+                    panel(_pane, _parent){
+                        if (_parent.type == "stack") {
+                            return {
+                                name: _pane.name,
+                                header: _pane.header,
+                                body: _pane.body
+                            }
+                        }
+                        else {
+                            return jQuery('<div data-ax5docker-pane="">' +
+                                '<ul></ul>' +
+                                '<div data-ax5docker-pane-item-views=""></div>' +
+                                '</div>');
+                        }
+                    }
+                };
+
+                // $parent dom 으로 삽입하는 방식으로 변경해야 하겠음..
+                let getPanels = (panels, parent) => {
+                    let $dom;
+                    let $childs;
+                    if (panels && panels.length) {
+                        for (let pi = 0, pl = panels.length; pi < pl; pi++) {
+                            $dom = getPanelProcessor[panels[pi].type](panels[pi], parent);
+                            if (parent == null || parent.type !== "stack") {
+                                $childs = getPanels(panels[pi].panels, panels[pi]);
+                                if ($childs) $dom.append($childs);
+                            } else {
+                                // 
+                                console.log("stack type");
+                                console.log($dom);
+                            }
+                        }
+
+                        return $dom;
+                    } else {
+                        return false;
+                    }
+                };
+
+                let $dom = jQuery('<div data-ax5docker-panes=""></div>');
+                $dom.append(getPanels(this.panels, null));
+                this.$target.html($dom);
             };
 
 
@@ -62,7 +119,7 @@
                 this.onStateChanged = cfg.onStateChanged;
                 this.onClick = cfg.onClick;
                 this.onLoad = cfg.onLoad;
-                this.onDataChanged = cfg.body.onDataChanged;
+                this.onDataChanged = cfg.onDataChanged;
 
                 // 패널 다시 그리기
                 repaintPanels();

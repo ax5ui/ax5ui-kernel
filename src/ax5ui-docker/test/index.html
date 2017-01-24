@@ -31,7 +31,29 @@
         var myDocker = new ax5.ui.docker();
         myDocker.setConfig({
             target: $('[data-ax5docker="docker1"]'),
-            panels: []
+            panels: [
+                {
+                    type: "stack", // type : row, column, stack
+                    panels: [
+                        {
+                            type: "panel",
+                            name: "my name",
+                            header: {
+                                btns: "my name"
+                            },
+                            body: ""
+                        },
+                        {
+                            type: "panel",
+                            name: "my name 2",
+                            header: {
+                                btns: "my name"
+                            },
+                            body: ""
+                        }
+                    ]
+                }
+            ]
         });
 
 

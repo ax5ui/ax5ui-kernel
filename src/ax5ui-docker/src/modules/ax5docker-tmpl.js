@@ -5,7 +5,12 @@
 
     let panels = function (columnKeys) {
         return ` 
-        
+{{#panels}}
+{{#panels}}
+{{/panels}}
+{{^panels}}
+{{/panels}}
+{{/panels}}
         `;
     };
 

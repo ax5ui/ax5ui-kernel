@@ -17,11 +17,13 @@
         @include default-flex-box();
 
         [data-ax5docker-pane] {
+            @include default-flex-box();
+            @include flex-direction(column);
             ul[data-ax5docker-pane-tabs] {
 
             }
             [data-ax5docker-pane-item-views] {
-
+                @include flex(1);
             }
         }
         [data-ax5docker-resize-handle] {
