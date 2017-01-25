@@ -41,37 +41,12 @@
 
 
             let repaintPanels = () => {
-                let getDomProcessor = {
-                    stack($parent, parent, panels){
-                        return jQuery('<div data-ax5docker-pane="">' +
-                            '<ul></ul>' +
-                            '<div data-ax5docker-pane-item-views=""></div>' +
-                            '</div>');
-                    },
-                    row($parent, parent, panels){
-                        return jQuery('<div data-ax5docker-pane-axis="row"></div>');
-                    },
-                    column($parent, parent, panels){
-                        return jQuery('<div data-ax5docker-pane-axis="column"></div>');
-                    },
-                    panel($parent, parent, panels){
-                        if (_parent.type == "stack") {
-                            return $parent;
-                        }
-                        else {
-                            return jQuery('<div data-ax5docker-pane="">' +
-                                '<ul></ul>' +
-                                '<div data-ax5docker-pane-item-views=""></div>' +
-                                '</div>');
-                        }
-                    }
-                };
-
                 let appendProcessor = {
                     stack($parent, myself, parent){
+                        let $dom;
 
-                        let $dom = jQuery('<div data-ax5docker-pane="">' +
-                            '<ul></ul>' +
+                        $dom = jQuery('<div data-ax5docker-pane="">' +
+                            '<ul data-ax5docker-pane-tabs=""></ul>' +
                             '<div data-ax5docker-pane-item-views=""></div>' +
                             '</div>');
                         $parent.append($dom);
@@ -81,34 +56,51 @@
                                 appendProcessor[P.type]($dom, P, myself);
                             });
                         }
-
                     },
                     panel($parent, myself, parent){
+                        let $dom, $item, $label;
 
-                        let $dom, $item;
+                        $label = jQuery('<li>' + myself.name + '</li>');
+                        $item = jQuery('<div data-ax5docker-pane-item=""></div>');
+
                         if (parent.type == "stack") {
-                            $item = jQuery('<div data-ax5docker-pane-item=""></div>');
+                            $parent.find('[data-ax5docker-pane-tabs]').append($label);
                             $parent.find('[data-ax5docker-pane-item-views]').append($item);
                         } else {
                             $dom = jQuery('<div data-ax5docker-pane="">' +
-                                '<ul></ul>' +
+                                '<ul data-ax5docker-pane-tabs=""></ul>' +
                                 '<div data-ax5docker-pane-item-views=""></div>' +
                                 '</div>');
-                            $item = jQuery('<div data-ax5docker-pane-item=""></div>');
-                            // panel
+
+                            $dom.find('[data-ax5docker-pane-tabs]').append($label);
                             $dom.find('[data-ax5docker-pane-item-views]').append($item);
 
                             $parent.append($dom);
                         }
                     },
                     row($parent, myself, parent){
-                        if (!U.isArray(panels)) return false;
-                        let $dom =jQuery('<div data-ax5docker-pane-axis="row"></div>');
+                        let $dom;
 
+                        $dom = jQuery('<div data-ax5docker-pane-axis="row"></div>');
+                        $parent.append($dom);
+
+                        if (U.isArray(myself.panels)) {
+                            myself.panels.forEach(function (P) {
+                                appendProcessor[P.type]($dom, P, myself);
+                            });
+                        }
                     },
                     columns($parent, myself, parent){
-                        if (!U.isArray(panels)) return false;
-                        return jQuery('<div data-ax5docker-pane-axis="column"></div>');
+                        let $dom;
+
+                        $dom = jQuery('<div data-ax5docker-pane-axis="column"></div>');
+                        $parent.append($dom);
+
+                        if (U.isArray(myself.panels)) {
+                            myself.panels.forEach(function (P) {
+                                appendProcessor[P.type]($dom, P, myself);
+                            });
+                        }
                     }
                 };
 
