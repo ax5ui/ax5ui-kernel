@@ -20,6 +20,12 @@
     <script src="../../ax5core/dist/ax5core.js"></script>
     <script src="../../ax5ui-docker/dist/ax5docker.js"></script>
     <script src="../dist/ax5docker.js"></script>
+
+    <style>
+        body * {
+            font-size: 11px;
+        }
+    </style>
 </head>
 <body style="padding: 50px;">
 
@@ -31,31 +37,37 @@
         var myDocker = new ax5.ui.docker();
         myDocker.setConfig({
             target: $('[data-ax5docker="docker1"]'),
+            icons: {
+                close: '<i class="fa fa-times" aria-hidden="true"></i>'
+            },
             panels: [
                 {
-                    type: "row", // type : row, column, stack
+                    type: "stack", // type : row, column, stack
                     panels: [
                         {
                             type: "panel",
                             name: "my name",
-                            header: {
-                                btns: "my name"
-                            },
-                            body: ""
+                            moduleName: "",
+                            moduleState: {}
                         },
                         {
                             type: "panel",
                             name: "my name 2",
-                            header: {
-                                btns: "my name"
-                            },
-                            body: ""
+                            moduleName: "",
+                            moduleState: {}
                         }
                     ]
                 }
             ]
         });
 
+        myDocker.addModule({
+            "content": {
+                init: function (container, state) {
+
+                }
+            }
+        });
 
     });
 </script>

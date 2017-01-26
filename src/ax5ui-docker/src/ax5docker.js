@@ -37,13 +37,20 @@
             this.panels = [];
             this.$panels = [];
 
+            // 패널의 컨텐츠 모듈
+            this.modules = {};
+
             cfg = this.config;
 
             let repaintPanels = () => {
 
+                let buildPanel = () => {
+
+                };
+
                 let appendProcessor = {
-                    stack($parent, myself, parent){
-                        let $dom;
+                    stack($parent, parent, myself){
+                        let $dom, activeIndex = -1;
 
                         $dom = jQuery('<div data-ax5docker-pane="">' +
                             '<ul data-ax5docker-pane-tabs=""></ul>' +
@@ -52,20 +59,34 @@
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
-                            myself.panels.forEach(function (P) {
-                                appendProcessor[P.type]($dom, P, myself);
+                            myself.panels.forEach(function (P, pIndex) {
+                                if (myself.active) activeIndex = pIndex;
+                            });
+                            if (activeIndex === -1) activeIndex = 0;
+                            myself.panels[activeIndex].active = true;
+
+                            myself.panels.forEach(function (P, pIndex) {
+                                appendProcessor[P.type]($dom, myself, P, pIndex);
                             });
                         }
 
                         $dom = null;
+                        activeIndex = null;
                     },
-                    panel($parent, myself, parent){
+                    panel($parent, parent, myself, pIndex){
                         let $dom, $item, $label;
 
-                        $label = jQuery('<li>' + myself.name + '</li>');
-                        $item = jQuery('<div data-ax5docker-pane-item=""></div>');
+                        $label = jQuery('<li data-ax5docker-pane-tab="' + pIndex + '">' +
+                            '<div class="title">' + myself.name + '</div>' +
+                            '<div class="close-icon">'+ cfg.icons.close +'</div>' +
+                            '</li>');
+                        $item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '"></div>');
 
-                        if (parent.type == "stack") {
+                        if (parent && parent.type == "stack") {
+                            if (myself.active) {
+                                $label.addClass("active");
+                                $item.addClass("active");
+                            }
                             $parent.find('[data-ax5docker-pane-tabs]').append($label);
                             $parent.find('[data-ax5docker-pane-item-views]').append($item);
                         } else {
@@ -73,6 +94,9 @@
                                 '<ul data-ax5docker-pane-tabs=""></ul>' +
                                 '<div data-ax5docker-pane-item-views=""></div>' +
                                 '</div>');
+
+                            $label.addClass("active");
+                            $item.addClass("active");
 
                             $dom.find('[data-ax5docker-pane-tabs]').append($label);
                             $dom.find('[data-ax5docker-pane-item-views]').append($item);
@@ -84,12 +108,12 @@
                         $item = null;
                         $label = null;
                     },
-                    resizeHandel($parent, myself, parent){
+                    resizeHandel($parent, parent, myself){
                         let $dom = jQuery('<div data-ax5docker-resize-handle=""></div>');
                         $parent.append($dom);
                         $dom = null;
                     },
-                    row($parent, myself, parent){
+                    row($parent, parent, myself){
                         let $dom;
 
                         $dom = jQuery('<div data-ax5docker-pane-axis="row"></div>');
@@ -97,24 +121,23 @@
 
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, pIndex) {
-                                if (pIndex > 0) {
-                                    appendProcessor["resizeHandel"]($dom, P, myself);
-                                }
-                                appendProcessor[P.type]($dom, P, myself);
+                                if (pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself);
+                                appendProcessor[P.type]($dom, myself, P);
                             });
                         }
 
                         $dom = null;
                     },
-                    columns($parent, myself, parent){
+                    column($parent, parent, myself){
                         let $dom;
 
                         $dom = jQuery('<div data-ax5docker-pane-axis="column"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
-                            myself.panels.forEach(function (P) {
-                                appendProcessor[P.type]($dom, P, myself);
+                            myself.panels.forEach(function (P, pIndex) {
+                                if (pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself);
+                                appendProcessor[P.type]($dom, myself, P);
                             });
                         }
 
@@ -123,7 +146,7 @@
                 };
 
                 let $root = jQuery('<div data-ax5docker-panes=""></div>');
-                appendProcessor[this.panels[0].type]($root, this.panels[0], null);
+                appendProcessor[this.panels[0].type]($root, null, this.panels[0], 0);
                 this.$target.html($root);
 
                 $root = null;
@@ -164,6 +187,13 @@
 
                 // 패널 다시 그리기
                 repaintPanels();
+                return this;
+            };
+
+            this.addModule = function (modules) {
+                if(U.isObject(modules)) {
+                    jQuery.extend(true, this.modules, modules);
+                }
                 return this;
             };
 

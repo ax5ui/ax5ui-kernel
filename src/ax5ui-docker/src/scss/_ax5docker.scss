@@ -1,3 +1,6 @@
+
+
+
 @mixin default-flex-box() {
     position: relative;
     @include display(flex);
@@ -20,16 +23,116 @@
             @include default-flex-box();
             @include flex-direction(column);
             ul[data-ax5docker-pane-tabs] {
+                @include default-flex-box();
+                @include flex(none);
+                position: relative;
+                padding: 0;
+                margin: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+                background: $ax5docker-tab-bg;
+                list-style: none;
+                height: $ax5docker-tab-height;
+                line-height: $ax5docker-tab-height;
+                -webkit-user-select: none;
 
+                &::-webkit-scrollbar{
+                    display: none;
+                }
+                &:before{
+                    content: ' ';
+                    display: block;
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    border-bottom: 1px solid $ax5docker-border-color;
+                }
+                li{
+                    position: relative;
+                    display: inline-block;
+                    @include flex(1);
+
+                    list-style: none;
+                    background: $ax5docker-tab-item-bg;
+                    max-width: 10em;
+                    min-width: 6em;
+                    height: $ax5docker-tab-height;
+                    border-left: 1px solid $ax5docker-border-color;
+                    border-right: 1px solid $ax5docker-border-color;
+
+                    -webkit-user-drag: element;
+                    -webkit-user-select: none;
+
+                    @include transition(max-width 0.25s ease-in-out);
+
+                    .title{
+                        text-align: center;
+                        margin: 0 1em;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                    .close-icon{
+                        @include transform(scale(0));
+                        position: absolute;
+                        top: ($ax5docker-tab-height - ($ax5docker-tab-height / 1.5)) / 2;
+                        right: ($ax5docker-tab-height - ($ax5docker-tab-height / 1.5)) / 2;
+                        z-index: 2;
+                        width: $ax5docker-tab-height / 1.5;
+                        height: $ax5docker-tab-height / 1.5;
+                        line-height: $ax5docker-tab-height / 1.5;
+                        overflow: hidden;
+                        font-size: $ax5docker-tab-height / 2;
+                        text-align: center;
+                        border-radius: 3px;
+                        @include transition(transform 0.08s);
+                        &:hover{
+                            background: #000;
+                            color: #fff;
+                        }
+                    }
+
+                    &:before{
+                        content: ' ';
+                        display: block;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        border-top: 1px solid $ax5docker-border-color;
+                    }
+
+                    &.active{
+                        background: $ax5docker-tab-active-item-bg;
+                    }
+                    &:hover{
+                        .close-icon{
+                            @include transform(scale(1));
+                        }
+                    }
+                }
             }
             [data-ax5docker-pane-item-views] {
-                @include flex(1);
+                @include default-flex-box();
+                [data-ax5docker-pane-item]{
+                    display: none;
+                    background: $ax5docker-pane-item-bg;
+                    border-left: 1px solid $ax5docker-border-color;
+                    border-right: 1px solid $ax5docker-border-color;
+                    border-bottom: 1px solid $ax5docker-border-color;
+                    &.active{
+                        display: block;
+                        @include flex(1);
+                    }
+                }
             }
         }
         [data-ax5docker-resize-handle] {
             position: relative;
             width: initial;
             height: initial;
+            background: $ax5docker-tab-bg;
             &:before {
                 content: "";
                 position: absolute;
@@ -42,6 +145,7 @@
             &[data-ax5docker-pane-axis="row"] {
                 @include flex-direction(row);
                 > [data-ax5docker-resize-handle] {
+                    width: 2px;
                     &:before {
                         width: 8px;
                         left: -4px;
