@@ -44,6 +44,7 @@
             cfg = this.config;
 
             var repaintPanels = function repaintPanels() {
+
                 var appendProcessor = {
                     stack: function stack($parent, myself, parent) {
                         var $dom = void 0;
@@ -56,6 +57,8 @@
                                 appendProcessor[P.type]($dom, P, myself);
                             });
                         }
+
+                        $dom = null;
                     },
                     panel: function panel($parent, myself, parent) {
                         var $dom = void 0,
@@ -76,6 +79,15 @@
 
                             $parent.append($dom);
                         }
+
+                        $dom = null;
+                        $item = null;
+                        $label = null;
+                    },
+                    resizeHandel: function resizeHandel($parent, myself, parent) {
+                        var $dom = jQuery('<div data-ax5docker-resize-handle=""></div>');
+                        $parent.append($dom);
+                        $dom = null;
                     },
                     row: function row($parent, myself, parent) {
                         var $dom = void 0;
@@ -84,10 +96,15 @@
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
-                            myself.panels.forEach(function (P) {
+                            myself.panels.forEach(function (P, pIndex) {
+                                if (pIndex > 0) {
+                                    appendProcessor["resizeHandel"]($dom, P, myself);
+                                }
                                 appendProcessor[P.type]($dom, P, myself);
                             });
                         }
+
+                        $dom = null;
                     },
                     columns: function columns($parent, myself, parent) {
                         var $dom = void 0;
@@ -100,13 +117,16 @@
                                 appendProcessor[P.type]($dom, P, myself);
                             });
                         }
+
+                        $dom = null;
                     }
                 };
 
                 var $root = jQuery('<div data-ax5docker-panes=""></div>');
                 appendProcessor[_this.panels[0].type]($root, _this.panels[0], null);
-
                 _this.$target.html($root);
+
+                $root = null;
             };
 
             /**

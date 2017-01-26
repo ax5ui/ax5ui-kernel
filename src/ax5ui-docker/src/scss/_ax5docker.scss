@@ -27,6 +27,9 @@
             }
         }
         [data-ax5docker-resize-handle] {
+            position: relative;
+            width: initial;
+            height: initial;
             &:before {
                 content: "";
                 position: absolute;
