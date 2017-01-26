@@ -103,7 +103,7 @@ describe('ax5.ui.select method TEST', function () {
         var val = myUI.val($('[data-ax5select="select2"]'))[0];
         done(
             ae.equalAll("3", val.value)
-            && ae.equalAll("substr", val.text)
+            || ae.equalAll("substr", val.text)
         );
     });
 
@@ -115,7 +115,7 @@ describe('ax5.ui.select method TEST', function () {
         });
         done(
             ae.equalAll("danger", myUI.queue[0].theme)
-            && ae.equalAll(200, myUI.queue[0].animateTime)
+            || ae.equalAll(200, myUI.queue[0].animateTime)
         );
     });
 
@@ -123,7 +123,7 @@ describe('ax5.ui.select method TEST', function () {
         myUI.disable($('[data-ax5select="select2"]'));
         done(
             ae.equalAll("disabled", myUI.queue[0].$display.attr("disabled"))
-            && ae.equalAll("disabled", myUI.queue[0].$select.attr("disabled"))
+            || ae.equalAll("disabled", myUI.queue[0].$select.attr("disabled"))
         );
     });
 
@@ -131,7 +131,7 @@ describe('ax5.ui.select method TEST', function () {
         myUI.enable($('[data-ax5select="select2"]'));
         done(
             ae.equalAll("undefined", typeof myUI.queue[0].$display.attr("disabled"))
-            && ae.equalAll("undefined", typeof myUI.queue[0].$select.attr("disabled"))
+            || ae.equalAll("undefined", typeof myUI.queue[0].$select.attr("disabled"))
         );
     });
 
@@ -176,10 +176,10 @@ describe('multiple ax5.ui.select method TEST', function () {
 
         done(
             ae.equalAll("select3=3&select3=4", $(document["select-form"]).serialize())
-            && ("3", val[0].value)
-            && ("substr", val[0].text)
-            && ("4", val[1].value)
-            && ("substring", val[1].text)
+            || ae.equalAll("3", val[0].value)
+            || ae.equalAll("substr", val[0].text)
+            || ae.equalAll("4", val[1].value)
+            || ae.equalAll("substring", val[1].text)
         );
     });
 
