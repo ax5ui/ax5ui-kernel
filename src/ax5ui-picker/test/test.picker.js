@@ -6,14 +6,19 @@
 
 describe('ax5picker TEST', function () {
     var myUI;
+    var tmpl;
 
-    var tmpl = '<div class="input-group" data-ax5picker="basic">' +
-        '<input type="text" class="form-control" placeholder>' +
-        '<span class="input-group-addon"><i class="fa fa-calculator"></i></span>' +
-        '</div>';
+    beforeEach(function () {
+        tmpl = '<div class="input-group" data-ax5picker="basic">' +
+            '<input type="text" class="form-control" placeholder>' +
+            '<span class="input-group-addon"><i class="fa fa-calculator"></i></span>' +
+            '</div>';
+        $(document.body).append(tmpl);
+    });
 
-    $(document.body).append(tmpl);
-
+    afterEach(function () {
+        $('[data-ax5picker="basic"]').remove();
+    });
 
     ///
     it('new ax5picker', function (done) {
@@ -24,7 +29,6 @@ describe('ax5picker TEST', function () {
             done(e);
         }
     });
-
 
     it('bind select', function (done) {
         myUI.bind({
@@ -65,9 +69,119 @@ describe('ax5picker TEST', function () {
                 }
             }
         });
-
         done();
     });
 
+    it('bind select type [date]', function (done) {
+        myUI.bind({
+            target: $('[data-ax5picker="basic"]'),
+            direction: "top",
+            content: {
+                width: 270,
+                margin: 10,
+                type: 'date',
+                config: {
+                    control: {
+                        left: '<i class="fa fa-chevron-left"></i>',
+                        yearTmpl: '%s',
+                        monthTmpl: '%s',
+                        right: '<i class="fa fa-chevron-right"></i>'
+                    },
+                    lang: {
+                        yearTmpl: "%s년",
+                        months: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+                        dayTmpl: "%s"
+                    }
+                },
+                formatter: {
+                    pattern: 'date'
+                }
+            },
+            onStateChanged: function () {
 
+            }
+        });
+        done(ae.equalAll("date", myUI.queue[1].content.type));
+    });
+
+     it('bind select type [secure-num]', function (done) {
+        myUI.bind({
+            target: $('[data-ax5picker="basic"]'),
+            direction: "top",
+            content: {
+                width: 200,
+                margin: 10,
+                type: 'secure-num',
+                config: {
+                    btnWrapStyle: "padding:3px;width:25%;",
+                    btnStyle: "width:100%",
+                    btnTheme: "info btn-sm",
+                    specialBtnTheme: " btn-sm"
+                },
+                formatter: {
+                    pattern: 'number'
+                }
+            },
+            onStateChanged: function () {
+                if (this.state == "open") {
+                    this.item.target.val('');
+                }
+                else {
+                    if (this.value && this.value.length > 3) {
+                        picker.close();
+                    }
+                }
+            }
+        });
+         done(ae.equalAll("secure-num", myUI.queue[2].content.type));
+     });
+
+     it('bind select type [keyboard]', function (done) {
+        myUI.bind({
+            target: $('[data-ax5picker="basic"]'),
+            direction: "auto",
+            content: {
+                width: 550,
+                margin: 10,
+                type: 'keyboard',
+                config: {
+                    btnWrapStyle: "padding:2px;",
+                    btnStyle: "width: 35px;",
+                    btnTheme: "primary",
+                    specialBtnWrapStyle: "padding:2px;",
+                    specialBtnStyle: "",
+                    specialBtnTheme: " "
+                }
+            },
+            onStateChanged: function () {
+            }
+        });
+        done(ae.equalAll('keyboard', myUI.queue[3].content.type));
+     });
+
+     it('bind select type [numpad]', function (done) {
+         myUI.bind({
+             target: $('[data-ax5picker="basic"]'),
+             direction: "auto",
+             content: {
+                 width: 200,
+                 margin: 10,
+                 type: 'numpad',
+                 config: {
+                     btnWrapStyle: "padding:3px;width:25%;",
+                     btnStyle: "width:100%",
+                     btnTheme: "primary",
+                     specialBtnWrapStyle: "padding:3px;width:25%;",
+                     specialBtnStyle: "width:100%;padding-left:0px;padding-right:0px;",
+                     specialBtnTheme: ""
+                 },
+                 formatter: {
+                     pattern: 'number'
+                 }
+             },
+             onStateChanged: function () {
+             }
+         });
+         done(ae.equalAll('numpad', myUI.queue[4].content.type));
+     });
 });
