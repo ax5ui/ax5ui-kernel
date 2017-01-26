@@ -64,6 +64,8 @@
                         '$element': _pane.$item
                     };
 
+                    console.log(_this.modules);
+
                     if (_pane.moduleName in _this.modules && 'init' in _this.modules[_pane.moduleName]) {
                         _this.modules[_pane.moduleName].init(moduleContainer, moduleState);
                     } else {
@@ -193,9 +195,6 @@
                 this.onClick = cfg.onClick;
                 this.onLoad = cfg.onLoad;
                 this.onDataChanged = cfg.onDataChanged;
-
-                // 패널 다시 그리기
-                repaintPanels();
             };
             /**
              * @method ax5docker.setPanels
@@ -215,6 +214,11 @@
                     jQuery.extend(true, this.modules, modules);
                 }
                 return this;
+            };
+
+            this.repaint = function () {
+                // 패널 다시 그리기
+                repaintPanels();
             };
 
             // 클래스 생성자
