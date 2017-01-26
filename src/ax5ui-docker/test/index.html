@@ -47,13 +47,13 @@
                         {
                             type: "panel",
                             name: "my name",
-                            moduleName: "",
+                            moduleName: "content",
                             moduleState: {}
                         },
                         {
                             type: "panel",
                             name: "my name 2",
-                            moduleName: "",
+                            moduleName: "content",
                             moduleState: {}
                         }
                     ]
@@ -64,7 +64,7 @@
         myDocker.addModule({
             "content": {
                 init: function (container, state) {
-
+                    container["$element"].html("111");
                 }
             }
         });

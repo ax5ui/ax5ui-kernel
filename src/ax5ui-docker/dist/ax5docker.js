@@ -39,16 +39,37 @@
             };
             // 패널 정보
             this.panels = [];
-            this.$panels = [];
+            this.panelId = 0;
 
             // 패널의 컨텐츠 모듈
             this.modules = {};
 
             cfg = this.config;
 
+            var getPanelId = function getPanelId() {
+                return _this.panelId++;
+            };
+
+            var defaultModuleInit = function defaultModuleInit(container, state) {
+                container["$element"].html(state.name);
+            };
+
             var repaintPanels = function repaintPanels() {
 
-                var buildPanel = function buildPanel() {};
+                var buildPanel = function buildPanel(_pane) {
+                    var moduleState = jQuery.extend(_pane.moduleState, {
+                        name: _pane.name
+                    }),
+                        moduleContainer = {
+                        '$element': _pane.$item
+                    };
+
+                    if (_pane.moduleName in _this.modules && 'init' in _this.modules[_pane.moduleName]) {
+                        _this.modules[_pane.moduleName].init(moduleContainer, moduleState);
+                    } else {
+                        defaultModuleInit(moduleContainer, moduleState);
+                    }
+                };
 
                 var appendProcessor = {
                     stack: function stack($parent, parent, myself) {
@@ -79,23 +100,27 @@
                             $label = void 0;
 
                         $label = jQuery('<li data-ax5docker-pane-tab="' + pIndex + '">' + '<div class="title">' + myself.name + '</div>' + '<div class="close-icon">' + cfg.icons.close + '</div>' + '</li>');
-                        $item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '"></div>');
+
+                        if (!myself.$item) {
+                            myself.$item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '" data-ax5docker-pane-id="' + getPanelId() + '"></div>');
+                            buildPanel(myself);
+                        }
 
                         if (parent && parent.type == "stack") {
                             if (myself.active) {
                                 $label.addClass("active");
-                                $item.addClass("active");
+                                myself.$item.addClass("active");
                             }
                             $parent.find('[data-ax5docker-pane-tabs]').append($label);
-                            $parent.find('[data-ax5docker-pane-item-views]').append($item);
+                            $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
                         } else {
                             $dom = jQuery('<div data-ax5docker-pane="">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
 
                             $label.addClass("active");
-                            $item.addClass("active");
+                            myself.$item.addClass("active");
 
                             $dom.find('[data-ax5docker-pane-tabs]').append($label);
-                            $dom.find('[data-ax5docker-pane-item-views]').append($item);
+                            $dom.find('[data-ax5docker-pane-item-views]').append(myself.$item);
 
                             $parent.append($dom);
                         }
