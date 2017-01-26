@@ -23,7 +23,6 @@ describe('ax5select TEST', function () {
 
     $(document.body).append(tmpl);
 
-
     ///
     it('new ax5select', function (done) {
         try {
@@ -99,15 +98,7 @@ describe('ax5.ui.select method TEST', function () {
         }, myUI.config.animateTime);
     });
 
-    it('select setValue', function(done){
-        var val = myUI.val($('[data-ax5select="select2"]'))[0];
-        done(
-            ae.equalAll("1", val.value)
-            && ae.equalAll("string", val.text)
-        );
-    });
-
-    it('select getValue', function(done){
+    it('select setValue / getValue', function (done) {
         myUI.val($('[data-ax5select="select2"]'), "3");
         var val = myUI.val($('[data-ax5select="select2"]'))[0];
         done(
@@ -118,9 +109,9 @@ describe('ax5.ui.select method TEST', function () {
 
     it('select update test', function (done) {
         myUI.update({
-            target      : $('[data-ax5select="select2"]'),
-            theme       : "danger",
-            animateTime : 200
+            target: $('[data-ax5select="select2"]'),
+            theme: "danger",
+            animateTime: 200
         });
         done(
             ae.equalAll("danger", myUI.queue[0].theme)
@@ -146,5 +137,53 @@ describe('ax5.ui.select method TEST', function () {
 
     after(function () {
         $('[data-ax5select="select2"]').remove();
+    });
+});
+
+describe('multiple ax5.ui.select method TEST', function () {
+    var myUI = new ax5.ui.select();
+
+    before(function () {
+        var options = [];
+        options.push({value: "1", text: "string"});
+        options.push({value: "2", text: "number"});
+        options.push({value: "3", text: "substr"});
+        options.push({value: "4", text: "substring"});
+        options.push({value: "search", text: "search"});
+        options.push({value: "parseInt", text: "parseInt"});
+        options.push({value: "toFixed", text: "toFixed"});
+        options.push({value: "min", text: "min"});
+        options.push({value: "max", text: "max"});
+
+        var tmpl = '<form name="select-form">' +
+            '<div class="form-group">' +
+            '<div data-ax5select="select3" data-ax5select-config="{}"></div>' +
+            '</div>' +
+            '</form>';
+
+        $(document.body).append(tmpl);
+
+        myUI.bind({
+            target: $('[data-ax5select="select3"]'),
+            multiple: true,
+            options: options
+        });
+    });
+
+    it('select multiple setValue / getvalue', function (done) {
+        myUI.val($('[data-ax5select="select3"]'), ["3", "4"], true);
+        var val = myUI.val($('[data-ax5select="select3"]'));
+
+        done(
+            ae.equalAll("select3=3&select3=4", $(document["select-form"]).serialize())
+            && ("3", val[0].value)
+            && ("substr", val[0].text)
+            && ("4", val[1].value)
+            && ("substring", val[1].text)
+        );
+    });
+
+    after(function () {
+        $(document["select-form"]).remove();
     });
 });
