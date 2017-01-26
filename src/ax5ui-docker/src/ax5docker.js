@@ -51,7 +51,6 @@
             };
 
             const repaintPanels = () => {
-
                 const buildPanel = (_pane) => {
                     let moduleState = jQuery.extend(_pane.moduleState, {
                             name: _pane.name
@@ -59,9 +58,6 @@
                         moduleContainer = {
                             '$element': _pane.$item
                         };
-
-                    console.log(this.modules);
-                    
                     if (_pane.moduleName in this.modules && 'init' in this.modules[_pane.moduleName]) {
                         this.modules[_pane.moduleName].init(moduleContainer, moduleState);
                     } else {
@@ -104,11 +100,11 @@
 
                         if (!myself.$item) {
                             myself.$item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '" data-ax5docker-pane-id="' + getPanelId() + '"></div>');
-                            buildPanel(myself);
                         }
 
                         if (parent && parent.type == "stack") {
                             if (myself.active) {
+                                buildPanel(myself);
                                 $label.addClass("active");
                                 myself.$item.addClass("active");
                             }
@@ -120,6 +116,7 @@
                                 '<div data-ax5docker-pane-item-views=""></div>' +
                                 '</div>');
 
+                            buildPanel(myself);
                             $label.addClass("active");
                             myself.$item.addClass("active");
 
@@ -140,7 +137,9 @@
                     },
                     row($parent, parent, myself){
                         let $dom;
-
+                        if (parent && parent.type == "stack") {
+                            throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
+                        }
                         $dom = jQuery('<div data-ax5docker-pane-axis="row"></div>');
                         $parent.append($dom);
 
@@ -155,7 +154,9 @@
                     },
                     column($parent, parent, myself){
                         let $dom;
-
+                        if (parent && parent.type == "stack") {
+                            throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
+                        }
                         $dom = jQuery('<div data-ax5docker-pane-axis="column"></div>');
                         $parent.append($dom);
 
@@ -237,3 +238,10 @@
     })());
 
 })();
+
+// todo : active 된 패널만 표시하기 -- ok
+// todo : row > stack 구현 -- ok
+// todo : stack 패널 active change
+// todo : resize
+// todo : 패널 추가 / 삭제 / 재구성
+// todo : 패널 drag & drop
