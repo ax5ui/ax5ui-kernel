@@ -104,7 +104,7 @@ describe('ax5picker TEST', function () {
         done(ae.equalAll("date", myUI.queue[1].content.type));
     });
 
-     it('bind select type [secure-num]', function (done) {
+    it('bind select type [secure-num]', function (done) {
         myUI.bind({
             target: $('[data-ax5picker="basic"]'),
             direction: "top",
@@ -133,10 +133,10 @@ describe('ax5picker TEST', function () {
                 }
             }
         });
-         done(ae.equalAll("secure-num", myUI.queue[2].content.type));
-     });
+        done(ae.equalAll("secure-num", myUI.queue[2].content.type));
+    });
 
-     it('bind select type [keyboard]', function (done) {
+    it('bind select type [keyboard]', function (done) {
         myUI.bind({
             target: $('[data-ax5picker="basic"]'),
             direction: "auto",
@@ -157,31 +157,83 @@ describe('ax5picker TEST', function () {
             }
         });
         done(ae.equalAll('keyboard', myUI.queue[3].content.type));
-     });
+    });
 
-     it('bind select type [numpad]', function (done) {
-         myUI.bind({
-             target: $('[data-ax5picker="basic"]'),
-             direction: "auto",
-             content: {
-                 width: 200,
-                 margin: 10,
-                 type: 'numpad',
-                 config: {
-                     btnWrapStyle: "padding:3px;width:25%;",
-                     btnStyle: "width:100%",
-                     btnTheme: "primary",
-                     specialBtnWrapStyle: "padding:3px;width:25%;",
-                     specialBtnStyle: "width:100%;padding-left:0px;padding-right:0px;",
-                     specialBtnTheme: ""
-                 },
-                 formatter: {
-                     pattern: 'number'
-                 }
-             },
-             onStateChanged: function () {
-             }
-         });
-         done(ae.equalAll('numpad', myUI.queue[4].content.type));
-     });
+    it('bind select type [numpad]', function (done) {
+        myUI.bind({
+            target: $('[data-ax5picker="basic"]'),
+            direction: "auto",
+            content: {
+                width: 200,
+                margin: 10,
+                type: 'numpad',
+                config: {
+                    btnWrapStyle: "padding:3px;width:25%;",
+                    btnStyle: "width:100%",
+                    btnTheme: "primary",
+                    specialBtnWrapStyle: "padding:3px;width:25%;",
+                    specialBtnStyle: "width:100%;padding-left:0px;padding-right:0px;",
+                    specialBtnTheme: ""
+                },
+                formatter: {
+                    pattern: 'number'
+                }
+            },
+            onStateChanged: function () {
+            }
+        });
+        done(ae.equalAll('numpad', myUI.queue[4].content.type));
+    });
+});
+
+describe('ax5picker method TEST', function () {
+    var myUI = new ax5.ui.picker();
+    var tmpl = '<div class="input-group" data-ax5picker="basic2">' +
+        '<input type="text" class="form-control" placeholder>' +
+        '<span class="input-group-addon"><i class="fa fa-calculator"></i></span>' +
+        '</div>';
+    var that;
+
+    $(document.body).append(tmpl);
+
+    myUI.bind({
+        target: $('[data-ax5picker="basic2"]'),
+        theme: 'default',
+        direction: "auto",
+        content: {
+            width: 200,
+            margin: 10,
+            type: 'numpad',
+            config: {
+                btnWrapStyle: "padding:3px;width:25%;",
+                btnStyle: "width:100%",
+                btnTheme: "primary",
+                specialBtnWrapStyle: "padding:3px;width:25%;",
+                specialBtnStyle: "width:100%;padding-left:0px;padding-right:0px;",
+                specialBtnTheme: ""
+            },
+            formatter: {
+                pattern: 'number'
+            }
+        },
+        onStateChanged: function () {
+            that = this;
+        }
+    });
+
+    it('picker open test', function (done) {
+        myUI.open($('[data-ax5picker="basic2"]'));
+        done(ae.equalAll("open", that.state));
+    });
+
+    it('picker close test', function (done) {
+        myUI.close($('[data-ax5picker="basic2"]'));
+        setTimeout(function () {
+            done(ae.equalAll("close", that.state));
+        }, myUI.config.animateTime);
+    });
+
+    after(function () {
+        $('[data-ax5picker="basic2"]').remove();
+    });
 });
