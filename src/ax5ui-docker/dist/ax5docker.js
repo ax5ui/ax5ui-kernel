@@ -173,6 +173,14 @@
                 appendProcessor[_this.panels[0].type]($root, null, _this.panels[0], 0);
                 _this.$target.html($root);
 
+                _this.$target.off("click").on("click", "[data-ax5docker-pane-tab] .close-icon", function (e) {
+                    console.log("close icon");
+                    U.stopEvent(e);
+                }).on("click", "[data-ax5docker-pane-tab]", function (e) {
+                    //console.log(e.originalEvent.target);
+                    console.log("click pane-tab");
+                    U.stopEvent(e);
+                });
                 $root = null;
             };
 
