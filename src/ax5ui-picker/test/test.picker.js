@@ -233,6 +233,15 @@ describe('ax5picker method TEST', function () {
         }, myUI.config.animateTime);
     });
 
+    it('picker setContentValue', function (done) {
+        myUI.setContentValue($('[data-ax5picker="basic2"]'), 0, 10);
+        done(
+            ae.equalAll("changeValue", that.state)
+            || ae.equalAll(10, that.value)
+            || ae.equalAll(0, that.inputIndex)
+        );
+    });
+
     after(function () {
         $('[data-ax5picker="basic2"]').remove();
     });
