@@ -66,10 +66,15 @@
                 };
 
                 const appendProcessor = {
-                    stack($parent, parent, myself){
-                        let $dom, activeIndex = -1;
+                    stack($parent, parent, myself, pIndex){
 
-                        $dom = jQuery('<div data-ax5docker-pane="">' +
+                        let $dom, activeIndex = -1;
+                        let panelPath = [];
+                        if (parent && typeof parent.panelPath !== "undefined") panelPath.push(parent.panelPath);
+                        if (typeof myself.panelPath === "undefined") myself.panelPath = pIndex || 0;
+                        panelPath.push(myself.panelPath);
+
+                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + panelPath.join(".") + '">' +
                             '<ul data-ax5docker-pane-tabs=""></ul>' +
                             '<div data-ax5docker-pane-item-views=""></div>' +
                             '</div>');
@@ -82,8 +87,8 @@
                             if (activeIndex === -1) activeIndex = 0;
                             myself.panels[activeIndex].active = true;
 
-                            myself.panels.forEach(function (P, pIndex) {
-                                appendProcessor[P.type]($dom, myself, P, pIndex);
+                            myself.panels.forEach(function (P, _pIndex) {
+                                appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
 
@@ -135,8 +140,13 @@
                         $parent.append($dom);
                         $dom = null;
                     },
-                    row($parent, parent, myself){
+                    row($parent, parent, myself, pIndex){
                         let $dom;
+                        let panelPath = [];
+                        if (parent && typeof parent.panelPath !== "undefined") panelPath.push(parent.panelPath);
+                        if (typeof myself.panelPath === "undefined") myself.panelPath = pIndex || 0;
+                        panelPath.push(myself.panelPath);
+
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
@@ -144,26 +154,31 @@
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
-                            myself.panels.forEach(function (P, pIndex) {
-                                if (pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself);
-                                appendProcessor[P.type]($dom, myself, P);
+                            myself.panels.forEach(function (P, _pIndex) {
+                                if (_pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself, _pIndex);
+                                appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
 
                         $dom = null;
                     },
-                    column($parent, parent, myself){
+                    column($parent, parent, myself, pIndex){
                         let $dom;
+                        let panelPath = [];
+                        if (parent && typeof parent.panelPath !== "undefined") panelPath.push(parent.panelPath);
+                        if (typeof myself.panelPath === "undefined") myself.panelPath = pIndex || 0;
+                        panelPath.push(myself.panelPath);
+
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="column"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-path="' + panelPath.join(".") + '"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
-                            myself.panels.forEach(function (P, pIndex) {
-                                if (pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself);
-                                appendProcessor[P.type]($dom, myself, P);
+                            myself.panels.forEach(function (P, _pIndex) {
+                                if (pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself, _pIndex);
+                                appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
 
