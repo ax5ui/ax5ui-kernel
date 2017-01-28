@@ -50,6 +50,16 @@
                 container["$element"].html(state.name);
             };
 
+            const getPanelPath = (parent, pIndex) => {
+                let paths = [];
+                if (parent && typeof parent.panelPath !== "undefined") {
+                    paths.push(parent.panelPath);
+                }
+
+                paths.push(pIndex || 0);
+                return paths.join(".");
+            };
+
             const repaintPanels = () => {
                 const buildPanel = (_pane) => {
                     let moduleState = jQuery.extend(_pane.moduleState, {
@@ -69,12 +79,9 @@
                     stack($parent, parent, myself, pIndex){
 
                         let $dom, activeIndex = -1;
-                        let panelPath = [];
-                        if (parent && typeof parent.panelPath !== "undefined") panelPath.push(parent.panelPath);
-                        if (typeof myself.panelPath === "undefined") myself.panelPath = pIndex || 0;
-                        panelPath.push(myself.panelPath);
+                        myself.panelPath = getPanelPath(parent, pIndex);
 
-                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + panelPath.join(".") + '">' +
+                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' +
                             '<ul data-ax5docker-pane-tabs=""></ul>' +
                             '<div data-ax5docker-pane-item-views=""></div>' +
                             '</div>');
@@ -96,44 +103,42 @@
                         activeIndex = null;
                     },
                     panel($parent, parent, myself, pIndex){
-                        let $dom, $item, $label;
-
-                        $label = jQuery('<li data-ax5docker-pane-tab="' + pIndex + '">' +
+                        let $dom;
+                        myself.panelPath = getPanelPath(parent, pIndex);
+                        myself.$label = jQuery('<li data-ax5docker-pane-tab="' + pIndex + '" data-ax5docker-path="' + myself.panelPath + '">' +
                             '<div class="title">' + myself.name + '</div>' +
                             '<div class="close-icon">' + cfg.icons.close + '</div>' +
                             '</li>');
 
                         if (!myself.$item) {
-                            myself.$item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '" data-ax5docker-pane-id="' + getPanelId() + '"></div>');
+                            myself.$item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '" data-ax5docker-pane-id="' + getPanelId() + '" data-ax5docker-path="' + myself.panelPath + '"></div>');
                         }
 
                         if (parent && parent.type == "stack") {
                             if (myself.active) {
                                 buildPanel(myself);
-                                $label.addClass("active");
+                                myself.$label.addClass("active");
                                 myself.$item.addClass("active");
                             }
-                            $parent.find('[data-ax5docker-pane-tabs]').append($label);
+                            $parent.find('[data-ax5docker-pane-tabs]').append(myself.$label);
                             $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
                         } else {
-                            $dom = jQuery('<div data-ax5docker-pane="">' +
+                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' +
                                 '<ul data-ax5docker-pane-tabs=""></ul>' +
                                 '<div data-ax5docker-pane-item-views=""></div>' +
                                 '</div>');
 
                             buildPanel(myself);
-                            $label.addClass("active");
+                            myself.$label.addClass("active");
                             myself.$item.addClass("active");
 
-                            $dom.find('[data-ax5docker-pane-tabs]').append($label);
+                            $dom.find('[data-ax5docker-pane-tabs]').append(myself.$label);
                             $dom.find('[data-ax5docker-pane-item-views]').append(myself.$item);
 
                             $parent.append($dom);
                         }
 
                         $dom = null;
-                        $item = null;
-                        $label = null;
                     },
                     resizeHandel($parent, parent, myself){
                         let $dom = jQuery('<div data-ax5docker-resize-handle=""></div>');
@@ -142,15 +147,11 @@
                     },
                     row($parent, parent, myself, pIndex){
                         let $dom;
-                        let panelPath = [];
-                        if (parent && typeof parent.panelPath !== "undefined") panelPath.push(parent.panelPath);
-                        if (typeof myself.panelPath === "undefined") myself.panelPath = pIndex || 0;
-                        panelPath.push(myself.panelPath);
-
+                        myself.panelPath = getPanelPath(parent, pIndex);
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="row"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="row" data-ax5docker-path="' + myself.panelPath + '"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -164,15 +165,11 @@
                     },
                     column($parent, parent, myself, pIndex){
                         let $dom;
-                        let panelPath = [];
-                        if (parent && typeof parent.panelPath !== "undefined") panelPath.push(parent.panelPath);
-                        if (typeof myself.panelPath === "undefined") myself.panelPath = pIndex || 0;
-                        panelPath.push(myself.panelPath);
-
+                        myself.panelPath = getPanelPath(parent, pIndex);
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-path="' + panelPath.join(".") + '"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-path="' + myself.panelPath + '"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -200,6 +197,9 @@
                     .on("click", "[data-ax5docker-pane-tab]", function (e) {
                         //console.log(e.originalEvent.target);
                         console.log("click pane-tab");
+
+                        console.log($(this).parents('[data-ax5docker-pane]'));
+
                         U.stopEvent(e);
                     });
                 $root = null;
