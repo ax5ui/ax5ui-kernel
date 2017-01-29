@@ -13,6 +13,7 @@
     * [.getList(_type)](#ax5grid.getList) ⇒ <code>Array</code>
     * [.setHeight(_height)](#ax5grid.setHeight) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.addRow(_row, [_dindex], [_options])](#ax5grid.addRow) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.appendToList(_list)](#ax5grid.appendToList) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.removeRow([_dindex])](#ax5grid.removeRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateRow(_row, _dindex)](#ax5grid.updateRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.deleteRow(_dindex)](#ax5grid.deleteRow) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -58,6 +59,7 @@ Preferences of grid UI
 | [_config.header.columnPadding] | <code>Number</code> | <code>3</code> |  |
 | [_config.header.columnBorderWidth] | <code>Number</code> | <code>1</code> |  |
 | [_config.body] | <code>Object</code> |  |  |
+| [_config.body.mergeCells] | <code>String</code> &#124; <code>Array</code> | <code>false</code> | - |
 | [_config.body.align] | <code>String</code> |  |  |
 | [_config.body.columnHeight] | <code>Number</code> | <code>25</code> |  |
 | [_config.body.columnPadding] | <code>Number</code> | <code>3</code> |  |
@@ -240,6 +242,20 @@ ax5Grid.setHeight(height);
 **Example**  
 ```js
 ax5Grid.addRow($.extend({}, {...}), "first");
+```
+<a name="ax5grid.appendToList"></a>
+
+### ax5grid.appendToList(_list) ⇒ <code>[ax5grid](#ax5grid)</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param |
+| --- |
+| _list | 
+
+**Example**  
+```js
+ax5Grid.appendToList([{},{},{}]);
+ax5Grid.appendToList([{},{},{}]);
 ```
 <a name="ax5grid.removeRow"></a>
 

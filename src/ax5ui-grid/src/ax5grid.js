@@ -42,6 +42,10 @@
             this.config = {
                 theme: 'default',
                 animateTime: 250,
+                debounceTime: 250,
+                appendDebouncer: null,
+                appendProgressIcon: '...',
+                appendProgress: false,
 
                 // 틀고정 속성
                 frozenColumnIndex: 0,
@@ -1083,6 +1087,25 @@
                 GRID.body.repaint.call(this, "reset");
                 GRID.body.moveFocus.call(this, (this.config.body.grouping) ? "START" : "END");
                 GRID.scroller.resize.call(this);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.appendToList
+             * @param _list
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.appendToList([{},{},{}]);
+             * ax5Grid.appendToList([{},{},{}]);
+             * ```
+             */
+            this.appendToList = function (_list) {
+                GRID.data.append.call(this, _list, (function(){
+                    alignGrid.call(this);
+                    GRID.body.repaint.call(this);
+                    GRID.scroller.resize.call(this);
+                }).bind(this));
                 return this;
             };
 

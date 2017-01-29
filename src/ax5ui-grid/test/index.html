@@ -112,6 +112,9 @@
                 sortable: true,
                 multiSort: true,
                 multipleSelect: false,
+
+                appendProgressIcon: '<i class="fa fa-circle-o-notch fa-spin fa-fw"></i>',
+
                 /*
                 remoteSort: function () {
                     console.log(JSON.stringify(this.sortInfo, null, '\t'));
@@ -236,7 +239,8 @@
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
                     //firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true});
-                    firstGrid.addRow({}, "last", {sort: true});
+                    //firstGrid.addRow([{},{}], "last", {sort: true});
+                    firstGrid.appendToList([{},{}]);
                     break;
 
                 case "row-add2":

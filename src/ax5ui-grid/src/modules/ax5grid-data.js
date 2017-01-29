@@ -194,9 +194,11 @@
                 )
             );
         } else if (_options && _options.sort && Object.keys(this.sortInfo).length) {
-            list = sort.call(this,
-                this.sortInfo,
-                list
+            list = initData.call(this,
+                sort.call(this,
+                    this.sortInfo,
+                    list
+                )
             );
         } else {
             list = initData.call(this, list);
@@ -512,6 +514,41 @@
         }
     };
 
+    let append = function (_list, _callback) {
+        let self = this;
+        this.list = this.list.concat([].concat(_list));
+
+        this.appendProgress = true;
+
+        GRID.page.statusUpdate.call(this);
+        if (this.appendDebouncer) clearTimeout(this.appendDebouncer);
+        this.appendDebouncer = setTimeout(function () {
+            appendIdle.call(self);
+            _callback();
+        }, this.config.debounceTime);
+
+        // todo : append bounce animation
+    };
+
+    let appendIdle = function () {
+        this.appendProgress = false;
+        if (this.config.body.grouping) {
+            this.list = initData.call(this,
+                sort.call(this,
+                    this.sortInfo,
+                    this.list
+                )
+            );
+        } else {
+            this.list = initData.call(this, this.list);
+        }
+
+        this.needToPaintSum = true;
+        this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
+        this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        GRID.page.navigationUpdate.call(this);
+    };
+
     GRID.data = {
         init: init,
         set: set,
@@ -528,6 +565,7 @@
         update: update,
         sort: sort,
         initData: initData,
-        clearGroupingData: clearGroupingData
+        clearGroupingData: clearGroupingData,
+        append: append
     };
 })();
