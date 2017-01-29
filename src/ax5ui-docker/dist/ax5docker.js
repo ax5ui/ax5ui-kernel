@@ -60,24 +60,36 @@
                     paths.push(parent.panelPath);
                 }
 
-                paths.push(pIndex || 0);
+                paths.push('panels[' + (pIndex || 0) + ']');
                 return paths.join(".");
             };
 
-            var repaintPanels = function repaintPanels() {
-                var buildPanel = function buildPanel(_pane) {
-                    var moduleState = jQuery.extend(_pane.moduleState, {
-                        name: _pane.name
-                    }),
-                        moduleContainer = {
-                        '$element': _pane.$item
-                    };
-                    if (_pane.moduleName in _this.modules && 'init' in _this.modules[_pane.moduleName]) {
-                        _this.modules[_pane.moduleName].init(moduleContainer, moduleState);
-                    } else {
-                        defaultModuleInit(moduleContainer, moduleState);
-                    }
+            var getPanel = function getPanel(_root, _panelPath) {
+                var path = [],
+                    _path = [].concat(_panelPath.split(/[\.\[\]]/g));
+                _path.forEach(function (n) {
+                    if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+                });
+
+                // return (Function("val", "this" + _path.join('') + " = val;")).call(this.model, value);
+                return Function("", "return this" + path.join('') + ";").call(_root);
+            };
+
+            var buildPanel = function buildPanel(_pane) {
+                var moduleState = jQuery.extend(_pane.moduleState, {
+                    name: _pane.name
+                }),
+                    moduleContainer = {
+                    '$element': _pane.$item
                 };
+                if (_pane.moduleName in _this.modules && 'init' in _this.modules[_pane.moduleName]) {
+                    _this.modules[_pane.moduleName].init(moduleContainer, moduleState);
+                } else {
+                    defaultModuleInit(moduleContainer, moduleState);
+                }
+            };
+
+            var repaintPanels = function repaintPanels() {
 
                 var appendProcessor = {
                     stack: function stack($parent, parent, myself, pIndex) {
@@ -188,14 +200,40 @@
                     U.stopEvent(e);
                 }).on("click", "[data-ax5docker-pane-tab]", function (e) {
                     //console.log(e.originalEvent.target);
-                    console.log("click pane-tab");
+                    //console.log("click pane-tab");
+                    //console.log($(this).parents('[data-ax5docker-pane]'));
 
-                    console.log($(this).parents('[data-ax5docker-pane]'));
+                    changeActivePanel(this);
 
                     U.stopEvent(e);
                 });
                 $root = null;
             };
+
+            var changeActivePanel = function changeActivePanel(clickedLabel) {
+                var $clickedLabel = jQuery(clickedLabel),
+                    $pane = $clickedLabel.parents('[data-ax5docker-pane]'),
+                    labelIndex = $clickedLabel.attr("data-ax5docker-pane-tab");
+
+                if ($clickedLabel.hasClass("active")) {
+                    return false;
+                } else {
+                    $pane.find(".active").removeClass("active");
+                    //labelIndex
+
+                    $pane.find('[data-ax5docker-pane-tab="' + labelIndex + '"]').addClass("active");
+                    $pane.find('[data-ax5docker-pane-item="' + labelIndex + '"]').addClass("active");
+
+                    // let pane = getPanel(this, $pane.attr("data-ax5docker-path"));
+                    // todo : build 여부 판단후 build 실행
+                    var panel = getPanel(_this, $clickedLabel.attr("data-ax5docker-path"));
+                    buildPanel(panel);
+                    // buildPanel 여부 판단.
+                    //myself.$item 이 필요해..
+                }
+            };
+
+            var closePanel = function closePanel() {};
 
             /**
              * @method ax5docker.setConfig
@@ -257,7 +295,7 @@
 
 // todo : active 된 패널만 표시하기 -- ok
 // todo : row > stack 구현 -- ok
-// todo : stack 패널 active change
+// todo : stack 패널 active change -- ok
 // todo : resize
 // todo : 패널 추가 / 삭제 / 재구성
 // todo : 패널 drag & drop
