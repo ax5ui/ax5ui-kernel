@@ -44,6 +44,7 @@
                 animateTime: 250,
                 debounceTime: 250,
                 appendDebouncer: null,
+                appendDebounceTimes: 0,
                 appendProgressIcon: '...',
                 appendProgress: false,
 

@@ -48,6 +48,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 animateTime: 250,
                 debounceTime: 250,
                 appendDebouncer: null,
+                appendDebounceTimes: 0,
                 appendProgressIcon: '...',
                 appendProgress: false,
 
@@ -4310,10 +4311,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.list = this.list.concat([].concat(_list));
 
         this.appendProgress = true;
-
         GRID.page.statusUpdate.call(this);
-        if (this.appendDebouncer) clearTimeout(this.appendDebouncer);
+
+        if (this.appendDebouncer) {
+            if (self.appendDebounceTimes < this.config.debounceTime / 10) {
+                clearTimeout(this.appendDebouncer);
+                self.appendDebounceTimes++;
+            } else {
+                self.appendDebounceTimes = 0;
+                appendIdle.call(self);
+                _callback();
+                return false;
+            }
+        }
+
         this.appendDebouncer = setTimeout(function () {
+            self.appendDebounceTimes = 0;
             appendIdle.call(self);
             _callback();
         }, this.config.debounceTime);
