@@ -187,38 +187,43 @@ describe('ax5picker TEST', function () {
 });
 
 describe('ax5picker method TEST', function () {
-    var myUI = new ax5.ui.picker();
-    var tmpl = '<div class="input-group" data-ax5picker="basic2">' +
-        '<input type="text" class="form-control" placeholder>' +
-        '<span class="input-group-addon"><i class="fa fa-calculator"></i></span>' +
-        '</div>';
+    var myUI;
+    var tmpl;
     var that;
 
-    $(document.body).append(tmpl);
+    before(function () {
+        myUI = new ax5.ui.picker();
+        tmpl = '<div class="input-group" data-ax5picker="basic2">' +
+            '<input type="text" class="form-control" placeholder>' +
+            '<span class="input-group-addon"><i class="fa fa-calculator"></i></span>' +
+            '</div>';
 
-    myUI.bind({
-        target: $('[data-ax5picker="basic2"]'),
-        theme: 'default',
-        direction: "auto",
-        content: {
-            width: 200,
-            margin: 10,
-            type: 'numpad',
-            config: {
-                btnWrapStyle: "padding:3px;width:25%;",
-                btnStyle: "width:100%",
-                btnTheme: "primary",
-                specialBtnWrapStyle: "padding:3px;width:25%;",
-                specialBtnStyle: "width:100%;padding-left:0px;padding-right:0px;",
-                specialBtnTheme: ""
+        $(document.body).append(tmpl);
+
+        myUI.bind({
+            target: $('[data-ax5picker="basic2"]'),
+            theme: 'default',
+            direction: "auto",
+            content: {
+                width: 200,
+                margin: 10,
+                type: 'numpad',
+                config: {
+                    btnWrapStyle: "padding:3px;width:25%;",
+                    btnStyle: "width:100%",
+                    btnTheme: "primary",
+                    specialBtnWrapStyle: "padding:3px;width:25%;",
+                    specialBtnStyle: "width:100%;padding-left:0px;padding-right:0px;",
+                    specialBtnTheme: ""
+                },
+                formatter: {
+                    pattern: 'number'
+                }
             },
-            formatter: {
-                pattern: 'number'
+            onStateChanged: function () {
+                that = this;
             }
-        },
-        onStateChanged: function () {
-            that = this;
-        }
+        });
     });
 
     it('picker open test', function (done) {

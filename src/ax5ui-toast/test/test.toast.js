@@ -1,11 +1,11 @@
-describe('ax5.ui.toast TEST', function() {
-	it('toast.push("message", callback)' , function(done){
+describe('ax5.ui.toast TEST', function () {
+    it('toast.push("message", callback)', function (done) {
         var message = 'Toast message';
         var toast = new ax5.ui.toast({
             containerPosition: 'top-right',
             displayTime: 0,
             animateTime: 0,
-            onStateChanged: function(){
+            onStateChanged: function () {
                 var $toastEl = $('#' + this.toastId);
                 if (this.state == 'open') {
                     $toastEl.find('.ax-toast-body').text().should.equal(message);
@@ -19,15 +19,15 @@ describe('ax5.ui.toast TEST', function() {
         toast.push(message, function () {
             should(this.toastId).String();
         });
-	});
+    });
 
-    it('toast.confirm("message", callback)' , function(done){
+    it('toast.confirm("message", callback)', function (done) {
         var message = 'Toast message';
         var toast = new ax5.ui.toast({
             containerPosition: 'top-right',
             displayTime: 0,
             animateTime: 0,
-            onStateChanged: function(){
+            onStateChanged: function () {
                 var $toastEl = $('#' + this.toastId);
                 if (this.state == 'open') {
                     $toastEl.find('.ax-toast-body').text().should.equal(message);
@@ -42,8 +42,37 @@ describe('ax5.ui.toast TEST', function() {
             should(this.toastId).String();
         });
 
-        setTimeout(function(){
+        setTimeout(function () {
             $('[data-ax-toast-btn="ok"]').click();
         }, 20);
-	});
+    });
+});
+
+describe('ax5toast method TEST', function () {
+    var that;
+    var myUI = new ax5.ui.toast({
+        displayTime: 100,
+        animateTime: 100,
+        onStateChanged: function () {
+            that = this;
+        }
+    });
+
+    it('toast push open test', function (done) {
+        myUI.push('message');
+        done(
+            ae.equalAll('message', that.self.queue[0].msg)
+            || ae.equalAll('open', that.state)
+        );
+    });
+
+    it('toast push close test', function (done) {
+        myUI.push('message');
+        setTimeout(function () {
+            done(
+                ae.equalAll(0, that.self.queue.length)
+                || ae.equalAll('close', that.state)
+            );
+        }, myUI.config.animateTime + myUI.config.displayTime);
+    });
 });
