@@ -75,15 +75,17 @@
                 return Function("", "return this" + path.join('') + ";").call(_root);
             };
 
-            var buildPanel = function buildPanel(_pane) {
-                var moduleState = jQuery.extend(_pane.moduleState, {
-                    name: _pane.name
+            var buildPanel = function buildPanel(_panel) {
+                var moduleState = jQuery.extend(_panel.moduleState, {
+                    name: _panel.name
                 }),
                     moduleContainer = {
-                    '$element': _pane.$item
+                    '$element': _panel.$item
                 };
-                if (_pane.moduleName in _this.modules && 'init' in _this.modules[_pane.moduleName]) {
-                    _this.modules[_pane.moduleName].init(moduleContainer, moduleState);
+
+                _panel.builded = true;
+                if (_panel.moduleName in _this.modules && 'init' in _this.modules[_panel.moduleName]) {
+                    _this.modules[_panel.moduleName].init(moduleContainer, moduleState);
                 } else {
                     defaultModuleInit(moduleContainer, moduleState);
                 }
@@ -227,6 +229,8 @@
                     // let pane = getPanel(this, $pane.attr("data-ax5docker-path"));
                     // todo : build 여부 판단후 build 실행
                     var panel = getPanel(_this, $clickedLabel.attr("data-ax5docker-path"));
+                    console.log(panel.builded);
+
                     buildPanel(panel);
                     // buildPanel 여부 판단.
                     //myself.$item 이 필요해..
