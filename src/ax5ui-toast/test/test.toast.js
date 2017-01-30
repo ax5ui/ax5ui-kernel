@@ -50,12 +50,20 @@ describe('ax5.ui.toast TEST', function () {
 
 describe('ax5toast method TEST', function () {
     var that;
-    var myUI = new ax5.ui.toast({
-        displayTime: 100,
-        animateTime: 100,
-        onStateChanged: function () {
-            that = this;
-        }
+    var myUI;
+
+    beforeEach(function () {
+        myUI = new ax5.ui.toast({
+            displayTime: 100,
+            animateTime: 100,
+            onStateChanged: function () {
+                that = this;
+            }
+        });
+    });
+
+    afterEach(function () {
+        myUI = null;
     });
 
     it('toast push open test', function (done) {
@@ -73,6 +81,25 @@ describe('ax5toast method TEST', function () {
                 ae.equalAll(0, that.self.queue.length)
                 || ae.equalAll('close', that.state)
             );
-        }, myUI.config.animateTime + myUI.config.displayTime);
+        }, myUI.config.animateTime + myUI.config.displayTime + 10);
+    });
+
+    it('toast confirm open test', function (done) {
+        myUI.confirm('message');
+        done(
+            ae.equalAll('message', that.self.queue[0].msg)
+            || ae.equalAll('open', that.state)
+        );
+    });
+
+    it('toast confirm close test', function (done) {
+        myUI.confirm('message');
+        $('[data-ax-toast-btn="ok"]').click();
+        setTimeout(function () {
+            done(
+                ae.equalAll(0, that.self.queue.length)
+                || ae.equalAll('close', that.state)
+            );
+        }, myUI.config.animateTime + myUI.config.displayTime + 10);
     });
 });
