@@ -35,7 +35,7 @@
                     "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
                 },
                 getMousePosition = function (e) {
-                    var mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
+                    let mouseObj = ('changedTouches' in e.originalEvent) ? e.originalEvent.changedTouches[0] : e;
                     return {
                         clientX: mouseObj.clientX,
                         clientY: mouseObj.clientY
@@ -59,8 +59,7 @@
 
             cfg = this.config;
 
-            var
-                onStateChanged = function (opts, that) {
+            var onStateChanged = function (opts, that) {
                     if (opts && opts.onStateChanged) {
                         opts.onStateChanged.call(that, that);
                     }
