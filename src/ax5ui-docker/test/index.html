@@ -22,14 +22,18 @@
     <script src="../dist/ax5docker.js"></script>
 
     <style>
+        html, body {
+            height: 100%;
+        }
+
         body * {
             font-size: 11px;
         }
     </style>
 </head>
-<body style="padding: 50px;">
+<body style="">
 
-<div data-ax5docker="docker1" style="height: 600px;background: #dddddd;"></div>
+<div data-ax5docker="docker1" style="height: 100%;background: #dddddd;"></div>
 
 <script>
     $(function () {
@@ -42,7 +46,7 @@
             },
             panels: [
                 {
-                    type: "column", // type : row, column, stack
+                    type: "row", // type : row, column, stack
                     panels: [
                         {
                             type: "stack",
@@ -75,7 +79,23 @@
                         }
                     ]
                 }
-            ]
+            ],
+            control: {
+                before: function (that, callback) {
+                    if (that.controlType === "destroy") {
+                        if (confirm("정말 삭제 할까요?")) {
+                            setTimeout(function () {
+                                callback();
+                            }, 300);
+
+                            return;
+                        }
+                    }else{
+                        callback();
+                        return;
+                    }
+                }
+            }
         });
 
         myDocker.addModule({
@@ -83,6 +103,15 @@
                 init: function (container, state) {
                     console.log(state.name);
                     container["$element"].html(JSON.stringify(state));
+                },
+                active: function (container, state) {
+                    console.log(state, "active");
+                },
+                deactive: function (container, state) {
+                    console.log(state, "deactive");
+                },
+                destroy: function (container, state) {
+                    console.log(state, "destroy");
                 }
             }
         });

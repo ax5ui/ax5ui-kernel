@@ -31,7 +31,8 @@
             this.config = {
                 theme: 'default',
                 animateTime: 250,
-                columnKeys: {}
+                columnKeys: {},
+                control: {}
             };
             // 패널 정보
             this.panels = [];
@@ -43,51 +44,116 @@
             cfg = this.config;
 
             const getPanelId = () => {
-                return this.panelId++;
-            };
+                    return this.panelId++;
+                },
+                defaultModule = {
+                    init(container, state){
+                        container["$element"].html(state.name);
+                    },
+                    active(container, state){
 
-            const defaultModuleInit = (container, state) => {
-                container["$element"].html(state.name);
-            };
+                    },
+                    deactive(container, state){
 
-            const getPanelPath = (parent, pIndex) => {
-                let paths = [];
-                if (parent && typeof parent.panelPath !== "undefined") {
-                    paths.push(parent.panelPath);
-                }
+                    },
+                    destroy(container, state){
 
-                paths.push('panels[' + (pIndex || 0) + ']');
-                return paths.join(".");
-            };
+                    }
+                },
+                getPanelPath = (parent, pIndex) => {
+                    let paths = [];
+                    if (parent && typeof parent.panelPath !== "undefined") {
+                        paths.push(parent.panelPath);
+                    }
 
-            const getPanel = (_root, _panelPath) => {
-                let path = [], _path = [].concat(_panelPath.split(/[\.\[\]]/g));
-                _path.forEach(function (n) {
-                    if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
-                });
+                    paths.push('panels[' + (pIndex || 0) + ']');
+                    return paths.join(".");
+                },
+                getPanel = (_root, _panelPath) => {
+                    let path = [], _path = [].concat(_panelPath.split(/[\.\[\]]/g));
+                    _path.forEach(function (n) {
+                        if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+                    });
 
-                // return (Function("val", "this" + _path.join('') + " = val;")).call(this.model, value);
-                return (Function("", "return this" + path.join('') + ";")).call(_root);
-            };
+                    return (Function("", "return this" + path.join('') + ";")).call(_root);
+                    // return (Function("val", "this" + _path.join('') + " = val;")).call(this.model, value);
+                },
+                setPanel = (_root, _panelPath, _value) => {
+                    let path = [], _path = [].concat(_panelPath.split(/[\.\[\]]/g));
+                    _path.forEach(function (n) {
+                        if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+                    });
 
-            const buildPanel = (_panel) => {
+                    return (Function("val", "this" + path.join('') + " = val;")).call(_root, _value);
+                };
+
+            const controlPanel = (_panel, _control) => {
                 let moduleState = jQuery.extend(_panel.moduleState, {
                         name: _panel.name
                     }),
                     moduleContainer = {
                         '$element': _panel.$item
-                    };
+                    },
+                    module;
 
-                _panel.builded = true;
-                if (_panel.moduleName in this.modules && 'init' in this.modules[_panel.moduleName]) {
-                    this.modules[_panel.moduleName].init(moduleContainer, moduleState);
-                } else {
-                    defaultModuleInit(moduleContainer, moduleState);
+                let processor = {
+                    init: () => {
+                        _panel.builded = true;
+                        module = (_panel.moduleName in this.modules && 'init' in this.modules[_panel.moduleName]) ? this.modules[_panel.moduleName] : defaultModule;
+                        module.init(moduleContainer, moduleState);
+                    },
+                    active: () => {
+                        module = (_panel.moduleName in this.modules && 'active' in this.modules[_panel.moduleName]) ? this.modules[_panel.moduleName] : defaultModule;
+                        module.active(moduleContainer, moduleState);
+                    },
+                    deactive: () => {
+                        module = (_panel.moduleName in this.modules && 'deactive' in this.modules[_panel.moduleName]) ? this.modules[_panel.moduleName] : defaultModule;
+                        module.deactive(moduleContainer, moduleState);
+                    },
+                    destroy: () => {
+                        module = (_panel.moduleName in this.modules && 'destroy' in this.modules[_panel.moduleName]) ? this.modules[_panel.moduleName] : defaultModule;
+                        module.destroy(moduleContainer, moduleState);
+
+                        _panel.$label.remove();
+                        _panel.$item.remove();
+
+                        // 패널 데이터 제거.
+                        setPanel(this, _panel.panelPath, null);
+
+                        // 현재 패널 정보를 검사하여 패널 정보를 재 구성합니다.
+                        inspectionPanel();
+                    }
+                };
+
+                // 사용자정의 함수 control.before, control.after에 전달할 인자 = that
+                let that = {
+                    panel: _panel,
+                    controlType: _control
+                };
+
+                // 비동기 처리 상황에 대응하기 위해 runProcessor를 별도 처리
+                let runProcessor = () => {
+                    processor[_control]();
+                    module = null;
+
+                    if (U.isFunction(cfg.control.after)) {
+                        cfg.control.after.call(that, that);
+                    }
+                };
+
+                if (processor[_control]) {
+                    if (U.isFunction(cfg.control.before)) {
+                        cfg.control.before.call(that, that, function () {
+                            runProcessor();
+                        });
+                    }
+                    else {
+                        runProcessor();
+                    }
                 }
             };
 
             const repaintPanels = () => {
-
                 const appendProcessor = {
                     stack($parent, parent, myself, pIndex){
 
@@ -129,7 +195,7 @@
 
                         if (parent && parent.type == "stack") {
                             if (myself.active) {
-                                buildPanel(myself);
+                                controlPanel(myself, "init");
                                 myself.$label.addClass("active");
                                 myself.$item.addClass("active");
                             }
@@ -141,7 +207,7 @@
                                 '<div data-ax5docker-pane-item-views=""></div>' +
                                 '</div>');
 
-                            buildPanel(myself);
+                            controlPanel(myself, "init");
                             myself.$label.addClass("active");
                             myself.$item.addClass("active");
 
@@ -203,25 +269,26 @@
                 this.$target
                     .off("click")
                     .on("click", "[data-ax5docker-pane-tab] .close-icon", function (e) {
-                        console.log("close icon");
+                        closePanel($(this).parents('[data-ax5docker-pane-tab]'));
                         U.stopEvent(e);
                     })
                     .on("click", "[data-ax5docker-pane-tab]", function (e) {
-                        //console.log(e.originalEvent.target);
-                        //console.log("click pane-tab");
-                        //console.log($(this).parents('[data-ax5docker-pane]'));
-
                         changeActivePanel(this);
-
                         U.stopEvent(e);
                     });
                 $root = null;
             };
 
+            /**
+             * 액티브 패널 변경(stack인 상황에서)
+             * @param clickedLabel
+             * @returns {boolean}
+             */
             const changeActivePanel = (clickedLabel) => {
                 let $clickedLabel = jQuery(clickedLabel),
                     $pane = $clickedLabel.parents('[data-ax5docker-pane]'),
-                    labelIndex = $clickedLabel.attr("data-ax5docker-pane-tab");
+                    labelIndex = $clickedLabel.attr("data-ax5docker-pane-tab"),
+                    panel = getPanel(this, $clickedLabel.attr("data-ax5docker-path"));
 
                 if ($clickedLabel.hasClass("active")) {
                     return false;
@@ -232,19 +299,41 @@
                     $pane.find('[data-ax5docker-pane-tab="' + labelIndex + '"]').addClass("active");
                     $pane.find('[data-ax5docker-pane-item="' + labelIndex + '"]').addClass("active");
 
-                    // let pane = getPanel(this, $pane.attr("data-ax5docker-path"));
-                    // todo : build 여부 판단후 build 실행
-                    let panel = getPanel(this, $clickedLabel.attr("data-ax5docker-path"));
-                    console.log(panel.builded);
 
-                    buildPanel(panel);
-                    // buildPanel 여부 판단.
-                    //myself.$item 이 필요해..
+                    controlPanel(panel, panel.builded ? "active" : "init");
                 }
+                return this;
             };
 
-            const closePanel = () => {
+            /**
+             * 패널 삭제하기
+             * @param clickedLabel
+             * @returns {ax5docker}
+             */
+            const closePanel = (clickedLabel) => {
+                let $clickedLabel = jQuery(clickedLabel),
+                    panelPath = $clickedLabel.attr("data-ax5docker-path"),
+                    panel = getPanel(this, panelPath);
 
+                controlPanel(panel, "destroy");
+                return this;
+            };
+
+            const inspectionPanel = () => {
+                // console.log(this.$target.find('[data-ax5docker-pane]'));
+                console.log(this.panels);
+
+                const panels = [];
+                const processor = {
+                    stack(){},
+                    panel(){},
+                    row(){},
+                    column(){},
+                };
+
+                processor[this.panels[0].type](panels, this.panels[0]);
+                this.panels = panels;
+                repaintPanels();
             };
 
             /**
@@ -268,6 +357,7 @@
                 this.onLoad = cfg.onLoad;
                 this.onDataChanged = cfg.onDataChanged;
             };
+
             /**
              * @method ax5docker.setPanels
              * @returns {ax5docker}
@@ -281,6 +371,11 @@
                 return this;
             };
 
+            /**
+             * @method ax5docker.addModule
+             * @param modules
+             * @returns {ax5docker}
+             */
             this.addModule = function (modules) {
                 if (U.isObject(modules)) {
                     jQuery.extend(true, this.modules, modules);
@@ -310,6 +405,7 @@
 // todo : active 된 패널만 표시하기 -- ok
 // todo : row > stack 구현 -- ok
 // todo : stack 패널 active change -- ok
-// todo : resize
-// todo : 패널 추가 / 삭제 / 재구성
+// todo : 패널삭제하기
+// todo : 패널추가하기
+// todo : 패널 재구성
 // todo : 패널 drag & drop
