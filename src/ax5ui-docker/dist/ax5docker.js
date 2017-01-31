@@ -308,18 +308,97 @@
 
             var inspectionPanel = function inspectionPanel() {
                 // console.log(this.$target.find('[data-ax5docker-pane]'));
-                console.log(_this.panels);
-
                 var panels = [];
                 var processor = {
-                    stack: function stack() {},
-                    panel: function panel() {},
-                    row: function row() {},
-                    column: function column() {}
+                    stack: function stack(myself) {
+                        if (!U.isArray(myself.panels)) return false;
+
+                        var newObj = {
+                            type: "stack",
+                            panels: []
+                        };
+
+                        myself.panels.forEach(function (P, _pIndex) {
+                            if (P) {
+                                newObj.panels.push(P);
+                            }
+                        });
+
+                        if (newObj.panels.length < 2) {
+                            newObj = newObj.panels[0];
+                        }
+
+                        if (U.isArray(newObj.panels)) {
+                            for (var p = 0, pl = newObj.panels.length; p < pl; p++) {
+                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
+                            }
+                        }
+
+                        return newObj;
+                    },
+                    panel: function panel(myself) {
+                        //console.log(myself);
+                        return myself;
+                    },
+                    row: function row(myself) {
+
+                        if (!U.isArray(myself.panels)) return false;
+
+                        var newObj = {
+                            type: "row",
+                            panels: []
+                        };
+
+                        myself.panels.forEach(function (P, _pIndex) {
+                            if (P) {
+                                newObj.panels.push(P);
+                            }
+                        });
+
+                        if (newObj.panels.length < 2) {
+                            newObj = newObj.panels[0];
+                        }
+
+                        if (U.isArray(newObj.panels)) {
+                            for (var p = 0, pl = newObj.panels.length; p < pl; p++) {
+                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
+                            }
+                        }
+
+                        return newObj;
+                    },
+                    column: function column(myself) {
+                        if (!U.isArray(myself.panels)) return false;
+
+                        var newObj = {
+                            type: "column",
+                            panels: []
+                        };
+
+                        myself.panels.forEach(function (P, _pIndex) {
+                            if (P) {
+                                newObj.panels.push(P);
+                            }
+                        });
+
+                        if (newObj.panels.length < 2) {
+                            newObj = newObj.panels[0];
+                        }
+
+                        if (U.isArray(newObj.panels)) {
+                            for (var p = 0, pl = newObj.panels.length; p < pl; p++) {
+                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
+                            }
+                        }
+
+                        return newObj;
+                    }
                 };
 
-                processor[_this.panels[0].type](panels, _this.panels[0]);
-                _this.panels = panels;
+                _this.panels[0] = processor[_this.panels[0].type](_this.panels[0]);
+
+                console.log(_this.panels[0]);
+
                 repaintPanels();
             };
 
@@ -390,7 +469,7 @@
 // todo : active 된 패널만 표시하기 -- ok
 // todo : row > stack 구현 -- ok
 // todo : stack 패널 active change -- ok
-// todo : 패널삭제하기
+// todo : 패널삭제하기 -- ok
 // todo : 패널추가하기
 // todo : 패널 재구성
 // todo : 패널 drag & drop

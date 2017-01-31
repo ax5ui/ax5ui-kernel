@@ -321,18 +321,97 @@
 
             const inspectionPanel = () => {
                 // console.log(this.$target.find('[data-ax5docker-pane]'));
-                console.log(this.panels);
-
                 const panels = [];
                 const processor = {
-                    stack(){},
-                    panel(){},
-                    row(){},
-                    column(){},
+                    stack(myself){
+                        if (!U.isArray(myself.panels)) return false;
+
+                        let newObj = {
+                            type: "stack",
+                            panels: []
+                        };
+
+                        myself.panels.forEach(function (P, _pIndex) {
+                            if (P) {
+                                newObj.panels.push(P);
+                            }
+                        });
+
+                        if (newObj.panels.length < 2) {
+                            newObj = newObj.panels[0];
+                        }
+
+                        if(U.isArray(newObj.panels)) {
+                            for (let p = 0, pl = newObj.panels.length; p < pl; p++) {
+                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
+                            }
+                        }
+
+                        return newObj;
+                    },
+                    panel(myself){
+                        //console.log(myself);
+                        return myself;
+                    },
+                    row(myself){
+
+                        if (!U.isArray(myself.panels)) return false;
+
+                        let newObj = {
+                            type: "row",
+                            panels: []
+                        };
+
+                        myself.panels.forEach(function (P, _pIndex) {
+                            if (P) {
+                                newObj.panels.push(P);
+                            }
+                        });
+
+                        if (newObj.panels.length < 2) {
+                            newObj = newObj.panels[0];
+                        }
+
+                        if(U.isArray(newObj.panels)) {
+                            for (let p = 0, pl = newObj.panels.length; p < pl; p++) {
+                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
+                            }
+                        }
+
+                        return newObj;
+                    },
+                    column(myself){
+                        if (!U.isArray(myself.panels)) return false;
+
+                        let newObj = {
+                            type: "column",
+                            panels: []
+                        };
+
+                        myself.panels.forEach(function (P, _pIndex) {
+                            if (P) {
+                                newObj.panels.push(P);
+                            }
+                        });
+
+                        if (newObj.panels.length < 2) {
+                            newObj = newObj.panels[0];
+                        }
+
+                        if(U.isArray(newObj.panels)) {
+                            for (let p = 0, pl = newObj.panels.length; p < pl; p++) {
+                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
+                            }
+                        }
+
+                        return newObj;
+                    },
                 };
 
-                processor[this.panels[0].type](panels, this.panels[0]);
-                this.panels = panels;
+                this.panels[0] = processor[this.panels[0].type](this.panels[0]);
+
+                console.log(this.panels[0]);
+                
                 repaintPanels();
             };
 
@@ -405,7 +484,7 @@
 // todo : active 된 패널만 표시하기 -- ok
 // todo : row > stack 구현 -- ok
 // todo : stack 패널 active change -- ok
-// todo : 패널삭제하기
+// todo : 패널삭제하기 -- ok
 // todo : 패널추가하기
 // todo : 패널 재구성
 // todo : 패널 drag & drop

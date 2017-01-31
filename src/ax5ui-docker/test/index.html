@@ -101,7 +101,6 @@
         myDocker.addModule({
             "content": {
                 init: function (container, state) {
-                    console.log(state.name);
                     container["$element"].html(JSON.stringify(state));
                 },
                 active: function (container, state) {
