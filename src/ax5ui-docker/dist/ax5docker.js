@@ -67,24 +67,24 @@
                 paths.push('panels[' + (pIndex || 0) + ']');
                 return paths.join(".");
             },
-                getPanel = function getPanel(_root, _panelPath) {
+                getPanel = function getPanel(_panelPath) {
                 var path = [],
                     _path = [].concat(_panelPath.split(/[\.\[\]]/g));
                 _path.forEach(function (n) {
                     if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
                 });
 
-                return Function("", "return this" + path.join('') + ";").call(_root);
+                return Function("", "return this" + path.join('') + ";").call(_this);
                 // return (Function("val", "this" + _path.join('') + " = val;")).call(this.model, value);
             },
-                setPanel = function setPanel(_root, _panelPath, _value) {
+                setPanel = function setPanel(_panelPath, _value) {
                 var path = [],
                     _path = [].concat(_panelPath.split(/[\.\[\]]/g));
                 _path.forEach(function (n) {
                     if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
                 });
 
-                return Function("val", "this" + path.join('') + " = val;").call(_root, _value);
+                return Function("val", "this" + path.join('') + " = val;").call(_this, _value);
             };
 
             var controlPanel = function controlPanel(_panel, _control) {
@@ -103,10 +103,16 @@
                         module.init(moduleContainer, moduleState);
                     },
                     active: function active() {
+                        _panel.active = true;
+                        _panel.$label.addClass("active");
+                        _panel.$item.addClass("active");
                         module = _panel.moduleName in _this.modules && 'active' in _this.modules[_panel.moduleName] ? _this.modules[_panel.moduleName] : defaultModule;
                         module.active(moduleContainer, moduleState);
                     },
                     deactive: function deactive() {
+                        _panel.active = false;
+                        _panel.$label.removeClass("active");
+                        _panel.$item.removeClass("active");
                         module = _panel.moduleName in _this.modules && 'deactive' in _this.modules[_panel.moduleName] ? _this.modules[_panel.moduleName] : defaultModule;
                         module.deactive(moduleContainer, moduleState);
                     },
@@ -114,14 +120,10 @@
                         module = _panel.moduleName in _this.modules && 'destroy' in _this.modules[_panel.moduleName] ? _this.modules[_panel.moduleName] : defaultModule;
                         module.destroy(moduleContainer, moduleState);
 
-                        _panel.$label.remove();
-                        _panel.$item.remove();
-
                         // 패널 데이터 제거.
-                        setPanel(_this, _panel.panelPath, null);
-
+                        setPanel(_panel.panelPath, null);
                         // 현재 패널 정보를 검사하여 패널 정보를 재 구성합니다.
-                        inspectionPanel();
+                        arrangePanel();
                     }
                 };
 
@@ -165,7 +167,7 @@
 
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, pIndex) {
-                                if (myself.active) activeIndex = pIndex;
+                                if (P.active) activeIndex = pIndex;
                             });
                             if (activeIndex === -1) activeIndex = 0;
                             myself.panels[activeIndex].active = true;
@@ -189,18 +191,16 @@
 
                         if (parent && parent.type == "stack") {
                             if (myself.active) {
-                                controlPanel(myself, "init");
-                                myself.$label.addClass("active");
-                                myself.$item.addClass("active");
+                                if (!myself.builded) controlPanel(myself, "init");
+                                controlPanel(myself, "active");
                             }
                             $parent.find('[data-ax5docker-pane-tabs]').append(myself.$label);
                             $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
                         } else {
                             $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
 
-                            controlPanel(myself, "init");
-                            myself.$label.addClass("active");
-                            myself.$item.addClass("active");
+                            if (!myself.builded) controlPanel(myself, "init");
+                            controlPanel(myself, "active");
 
                             $dom.find('[data-ax5docker-pane-tabs]').append(myself.$label);
                             $dom.find('[data-ax5docker-pane-item-views]').append(myself.$item);
@@ -254,14 +254,14 @@
                 };
 
                 var $root = jQuery('<div data-ax5docker-panes=""></div>');
-                appendProcessor[_this.panels[0].type]($root, null, _this.panels[0], 0);
+                if (_this.panels[0]) appendProcessor[_this.panels[0].type]($root, null, _this.panels[0], 0);
                 _this.$target.html($root);
 
                 _this.$target.off("click").on("click", "[data-ax5docker-pane-tab] .close-icon", function (e) {
                     closePanel($(this).parents('[data-ax5docker-pane-tab]'));
                     U.stopEvent(e);
                 }).on("click", "[data-ax5docker-pane-tab]", function (e) {
-                    changeActivePanel(this);
+                    changeActiveStackPanel(this);
                     U.stopEvent(e);
                 });
                 $root = null;
@@ -272,22 +272,24 @@
              * @param clickedLabel
              * @returns {boolean}
              */
-            var changeActivePanel = function changeActivePanel(clickedLabel) {
+            var changeActiveStackPanel = function changeActiveStackPanel(clickedLabel) {
                 var $clickedLabel = jQuery(clickedLabel),
                     $pane = $clickedLabel.parents('[data-ax5docker-pane]'),
                     labelIndex = $clickedLabel.attr("data-ax5docker-pane-tab"),
-                    panel = getPanel(_this, $clickedLabel.attr("data-ax5docker-path"));
+                    pane = getPanel($pane.attr("data-ax5docker-path")),
+                    panel = getPanel($clickedLabel.attr("data-ax5docker-path"));
 
                 if ($clickedLabel.hasClass("active")) {
                     return false;
                 } else {
-                    $pane.find(".active").removeClass("active");
-                    //labelIndex
+                    for (var p = 0, pl = pane.panels.length; p < pl; p++) {
+                        if (pane.panels[p].active) {
+                            controlPanel(pane.panels[p], "deactive");
+                        }
+                    }
 
-                    $pane.find('[data-ax5docker-pane-tab="' + labelIndex + '"]').addClass("active");
-                    $pane.find('[data-ax5docker-pane-item="' + labelIndex + '"]').addClass("active");
-
-                    controlPanel(panel, panel.builded ? "active" : "init");
+                    if (!panel.builded) controlPanel(panel, "init");
+                    controlPanel(panel, "active");
                 }
                 return _this;
             };
@@ -300,13 +302,17 @@
             var closePanel = function closePanel(clickedLabel) {
                 var $clickedLabel = jQuery(clickedLabel),
                     panelPath = $clickedLabel.attr("data-ax5docker-path"),
-                    panel = getPanel(_this, panelPath);
+                    panel = getPanel(panelPath);
 
                 controlPanel(panel, "destroy");
                 return _this;
             };
 
-            var inspectionPanel = function inspectionPanel() {
+            /**
+             * 패널중에 null이 된 요소를 찾아 panels를 정리 합니다.
+             * @returns {*}
+             */
+            var arrangePanel = function arrangePanel() {
                 // console.log(this.$target.find('[data-ax5docker-pane]'));
                 var panels = [];
                 var processor = {
@@ -395,9 +401,11 @@
                     }
                 };
 
-                _this.panels[0] = processor[_this.panels[0].type](_this.panels[0]);
-
-                console.log(_this.panels[0]);
+                if (_this.panels[0]) {
+                    _this.panels[0] = processor[_this.panels[0].type](_this.panels[0]);
+                } else {
+                    _this.panels = [];
+                }
 
                 repaintPanels();
             };
@@ -469,9 +477,8 @@
 // todo : active 된 패널만 표시하기 -- ok
 // todo : row > stack 구현 -- ok
 // todo : stack 패널 active change -- ok
-// todo : 패널삭제하기 -- ok
+// todo : 패널삭제하기 -- ok ~ active 패널 정리.. -- ok
 // todo : 패널추가하기
-// todo : 패널 재구성
 // todo : 패널 drag & drop
 
 // ax5.ui.docker.tmpl

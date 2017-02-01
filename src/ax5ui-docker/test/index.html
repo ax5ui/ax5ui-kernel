@@ -36,9 +36,10 @@
 <div data-ax5docker="docker1" style="height: 100%;background: #dddddd;"></div>
 
 <script>
+    var myDocker = new ax5.ui.docker();
+
     $(function () {
 
-        var myDocker = new ax5.ui.docker();
         myDocker.setConfig({
             target: $('[data-ax5docker="docker1"]'),
             icons: {
@@ -102,6 +103,7 @@
             "content": {
                 init: function (container, state) {
                     container["$element"].html(JSON.stringify(state));
+                    console.log(state, "init");
                 },
                 active: function (container, state) {
                     console.log(state, "active");
