@@ -31,9 +31,15 @@
         }
     </style>
 </head>
-<body style="">
+<body style="padding: 10px;">
 
-<div data-ax5docker="docker1" style="height: 100%;background: #dddddd;"></div>
+<div data-ax5docker="docker1" style="height: 80%;background: #dddddd;"></div>
+
+<div style="padding: 5px;">
+    <button class="btn btn-default" data-docker-control="add-panel-0">add Panel(0)</button>
+    <button class="btn btn-default" data-docker-control="add-panel-0-0">add Panel(0.0)</button>
+    <button class="btn btn-default" data-docker-control="add-panel-0-0-0">add Panel(0.0.0)</button>
+</div>
 
 <script>
     var myDocker = new ax5.ui.docker();
@@ -91,7 +97,7 @@
 
                             return;
                         }
-                    }else{
+                    } else {
                         callback();
                         return;
                     }
@@ -119,6 +125,40 @@
 
         myDocker.repaint();
 
+        $('[data-docker-control]').click(function () {
+            switch (this.getAttribute("data-docker-control")) {
+                case "add-panel-0":
+                    myDocker.addPanel("0", "right", {
+                        type: "panel",
+                        name: "my name add",
+                        moduleName: "content",
+                        moduleState: {
+                            data1: "data add"
+                        }
+                    });
+                    break;
+                case "add-panel-0-0":
+                    myDocker.addPanel("0.0", "right", {
+                        type: "panel",
+                        name: "my name add",
+                        moduleName: "content",
+                        moduleState: {
+                            data1: "data add"
+                        }
+                    });
+                    break;
+                case "add-panel-0-0-0":
+                    myDocker.addPanel("0.0.0", "right", {
+                        type: "panel",
+                        name: "my name add",
+                        moduleName: "content",
+                        moduleState: {
+                            data1: "data add"
+                        }
+                    });
+                    break;
+            }
+        });
     });
 </script>
 

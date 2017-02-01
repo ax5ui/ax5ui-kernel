@@ -457,9 +457,27 @@
                 return this;
             };
 
+            /**
+             * repaint panels of docker
+             * @method ax5docker.repaint
+             * @returns {ax5docker}
+             */
             this.repaint = function () {
                 // 패널 다시 그리기
                 repaintPanels();
+                return this;
+            };
+
+            /**
+             * @method ax5docker.addPanel
+             * @param _addPath
+             * @param _appPosition
+             * @param _panel
+             * @returns {ax5docker}
+             */
+            this.addPanel = function (_addPath, _appPosition, _panel) {
+
+                return this;
             };
 
             // 클래스 생성자
