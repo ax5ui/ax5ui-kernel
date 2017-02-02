@@ -5,7 +5,6 @@
 
 /* ax5.calendar.setConfig */
 describe('ax5.calendar TEST', function () {
-
     var myCalendar;
     var myDate = new Date();
 
@@ -65,40 +64,28 @@ describe('ax5.calendar TEST', function () {
         }
     });
 
-    it('changeMode ax5calendar', function(done) {
-        myCalendar = new ax5.ui.calendar();
-        myCalendar.setConfig({
-            target: document.getElementById("calendar-target"),
-            theme: 'info',
-            displayDate: myDate,
-            control: {},
-            mode: 'day',
-            selectMode: 'day',
-            dateFormat: 'yyyy-mm-dd',
-            dimensions: {},
-            animateTime: 250,
-            lang: {
-                yearHeading: '2016',
-                monthHeading: '09',
-                yearTmpl: '%s',
-                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                dayTmpl: '%s'
-            },
-            selectable: '',
-            marker: {},
-            multipleSelect: false,
-            onClick: function () {
-                alert('success');
-            },
-            onStateChanged: function () {
-                console.log('onStateChanged');
-            }
-        });
-
-        myCalendar.changeMode("m");
+    it('calendar changeMode', function (done) {
+        myCalendar.changeMode("month");
 
         setTimeout(function () {
-            done(myCalendar.$["body"].hasClass("fadein") ? "" : "changeMode error");
+            console.log(myCalendar);
+            done(myCalendar.config.mode == 'month' ? "" : "error changeMode");
         }, myCalendar.config.animateTime);
+    });
+
+    it('calendar getSelection', function (done) {
+        var select = myCalendar.getSelection();
+        done(ax5.util.isArray(select) && select.length == 0 ? "" : "error getSelection");
+    });
+
+    it('calendar setSelection', function (done) {
+        var today = ax5.util.date(myDate, {return: "yyyy-MM-dd"});
+        myCalendar.setSelection([today]);
+        var select = myCalendar.getSelection();
+        done(ax5.util.isArray(select) && select[0] == today ? "" : "error setSelection");
+    });
+
+    after(function () {
+        $("#calendar-target").remove();
     });
 });
