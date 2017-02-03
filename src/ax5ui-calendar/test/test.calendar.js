@@ -7,6 +7,12 @@
 describe('ax5.calendar TEST', function () {
     var myCalendar;
     var myDate = new Date();
+    var _c_date = ax5.util.date;
+    var mySelectable = [
+        _c_date(myDate, {'add': {d: -1}, return: 'yyyy-MM-dd'}),
+        _c_date(myDate, {'add': {d: 0}, return: 'yyyy-MM-dd'}),
+        _c_date(myDate, {'add': {d: 1}, return: 'yyyy-MM-dd'})
+    ];
 
     var tmpl = '<div id="calendar-target" style="' +
         'width:300px;border:1px solid #ccc;border-radius: 5px;padding: 5px;overflow: hidden;"></div>';
@@ -26,7 +32,7 @@ describe('ax5.calendar TEST', function () {
             control: {},
             mode: 'day',
             selectMode: 'day',
-            dateFormat: 'yyyy-mm-dd',
+            dateFormat: 'yyyy-MM-dd',
             dimensions: {},
             animateTime: 250,
             lang: {
@@ -50,7 +56,7 @@ describe('ax5.calendar TEST', function () {
         if (
             (myCalendar.config.theme == 'info') &&
             (myCalendar.config.animateTime == 250) &&
-            (myCalendar.config.dateFormat == 'yyyy-mm-dd') &&
+            (myCalendar.config.dateFormat == 'yyyy-MM-dd') &&
             (myCalendar.config.selectMode == 'day') &&
             (myCalendar.config.displayDate == myDate) &&
             (myCalendar.config.lang.months[0] == 'January') &&
@@ -83,6 +89,21 @@ describe('ax5.calendar TEST', function () {
         myCalendar.setSelection([today]);
         var select = myCalendar.getSelection();
         done(ax5.util.isArray(select) && select[0] == today ? "" : "error setSelection");
+    });
+
+    it('calendar setSelectable[arr]', function (done) {
+        _c_date = ax5.util.date;
+        myCalendar.setSelectable(mySelectable);
+        done(ae.equalAll(mySelectable, Object.keys(myCalendar.selectableMap)));
+    });
+
+    it('calendar setSelectable[range]', function (done) {
+        myCalendar.setSelectable({
+            range: [
+                {from: _c_date(myDate, {'add': {d: -1}}), to: _c_date(myDate, {'add': {d: 1}})}
+            ]
+        });
+        done(ae.equalAll(mySelectable, Object.keys(myCalendar.selectableMap)));
     });
 
     after(function () {
