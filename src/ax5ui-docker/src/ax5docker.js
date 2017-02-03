@@ -75,8 +75,11 @@
                         if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
                     });
 
-                    return (Function("", "return this" + path.join('') + ";")).call(this);
-                    // return (Function("val", "this" + _path.join('') + " = val;")).call(this.model, value);
+                    try {
+                        return (Function("", "return this" + path.join('') + ";")).call(this);
+                    } catch (e) {
+                        return;
+                    }
                 },
                 setPanel = (_panelPath, _value) => {
                     let path = [], _path = [].concat(_panelPath.split(/[\.\[\]]/g));
@@ -483,11 +486,44 @@
             /**
              * @method ax5docker.addPanel
              * @param _addPath
-             * @param _appPosition
+             * @param _addType
              * @param _panel
              * @returns {ax5docker}
              */
-            this.addPanel = function (_addPath, _appPosition, _panel) {
+            this.addPanel = function (_addPath, _addType, _panel) {
+                if (_addPath == "undefined") _addPath = "0";
+                _addPath = _addPath
+                    .replace(/[a-zA-Z\[\]]+/g, "")
+                    .replace(/(\d+)/g, function (a, b) {
+                        return "panels[" + a + "]";
+                    });
+
+                let pane = getPanel(_addPath);
+
+                console.log(pane);
+
+                let addProcessor = {
+                    "stack"(){
+
+                    },
+                    "row-left"(){
+
+                    },
+                    "row-right"(){
+
+                    },
+                    "column-top"(){
+
+                    },
+                    "column-bottom"(){
+
+                    }
+                };
+
+
+                if (_addType in addProcessor) {
+                    addProcessor[_addType].call(this, pane, _panel);
+                }
 
                 return this;
             };

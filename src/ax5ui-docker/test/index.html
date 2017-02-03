@@ -36,9 +36,11 @@
 <div data-ax5docker="docker1" style="height: 80%;background: #dddddd;"></div>
 
 <div style="padding: 5px;">
-    <button class="btn btn-default" data-docker-control="add-panel-0">add Panel(0)</button>
-    <button class="btn btn-default" data-docker-control="add-panel-0-0">add Panel(0.0)</button>
-    <button class="btn btn-default" data-docker-control="add-panel-0-0-0">add Panel(0.0.0)</button>
+    <button class="btn btn-default" data-docker-control="add-panel-0-stack">add Panel(0) / stack</button>
+    <button class="btn btn-default" data-docker-control="add-panel-0-0-row-left">add Panel(0.0) / row-left</button>
+    <button class="btn btn-default" data-docker-control="add-panel-0-0-row-right">add Panel(0.0) / row-right</button>
+    <button class="btn btn-default" data-docker-control="add-panel-0-0-column-top">add Panel(0.0) / column-top</button>
+    <button class="btn btn-default" data-docker-control="add-panel-0-0-0-column-bottom">add Panel(0.0.0) / column-bottom</button>
 </div>
 
 <script>
@@ -127,8 +129,8 @@
 
         $('[data-docker-control]').click(function () {
             switch (this.getAttribute("data-docker-control")) {
-                case "add-panel-0":
-                    myDocker.addPanel("0", "right", {
+                case "add-panel-0-stack":
+                    myDocker.addPanel("0", "stack", {
                         type: "panel",
                         name: "my name add",
                         moduleName: "content",
@@ -137,8 +139,8 @@
                         }
                     });
                     break;
-                case "add-panel-0-0":
-                    myDocker.addPanel("0.0", "right", {
+                case "add-panel-0-0-row-left":
+                    myDocker.addPanel("0.0", "row-left", {
                         type: "panel",
                         name: "my name add",
                         moduleName: "content",
@@ -147,8 +149,28 @@
                         }
                     });
                     break;
-                case "add-panel-0-0-0":
-                    myDocker.addPanel("0.0.0", "right", {
+                case "add-panel-0-0-row-right":
+                    myDocker.addPanel("0.0", "row-right", {
+                        type: "panel",
+                        name: "my name add",
+                        moduleName: "content",
+                        moduleState: {
+                            data1: "data add"
+                        }
+                    });
+                    break;
+                case "add-panel-0-0-column-top":
+                    myDocker.addPanel("0.0", "column-top", {
+                        type: "panel",
+                        name: "my name add",
+                        moduleName: "content",
+                        moduleState: {
+                            data1: "data add"
+                        }
+                    });
+                    break;
+                case "add-panel-0-0-0-column-bottom":
+                    myDocker.addPanel("0.0.0", "column-bottom", {
                         type: "panel",
                         name: "my name add",
                         moduleName: "content",

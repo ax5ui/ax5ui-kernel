@@ -74,8 +74,11 @@
                     if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
                 });
 
-                return Function("", "return this" + path.join('') + ";").call(_this);
-                // return (Function("val", "this" + _path.join('') + " = val;")).call(this.model, value);
+                try {
+                    return Function("", "return this" + path.join('') + ";").call(_this);
+                } catch (e) {
+                    return;
+                }
             },
                 setPanel = function setPanel(_panelPath, _value) {
                 var path = [],
@@ -471,11 +474,31 @@
             /**
              * @method ax5docker.addPanel
              * @param _addPath
-             * @param _appPosition
+             * @param _addType
              * @param _panel
              * @returns {ax5docker}
              */
-            this.addPanel = function (_addPath, _appPosition, _panel) {
+            this.addPanel = function (_addPath, _addType, _panel) {
+                if (_addPath == "undefined") _addPath = "0";
+                _addPath = _addPath.replace(/[a-zA-Z\[\]]+/g, "").replace(/(\d+)/g, function (a, b) {
+                    return "panels[" + a + "]";
+                });
+
+                var pane = getPanel(_addPath);
+
+                console.log(pane);
+
+                var addProcessor = {
+                    "stack": function stack() {},
+                    "row-left": function rowLeft() {},
+                    "row-right": function rowRight() {},
+                    "column-top": function columnTop() {},
+                    "column-bottom": function columnBottom() {}
+                };
+
+                if (_addType in addProcessor) {
+                    addProcessor[_addType].call(this, pane, _panel);
+                }
 
                 return this;
             };
