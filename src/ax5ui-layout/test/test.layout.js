@@ -10,7 +10,8 @@ describe('ax5layout TEST', function () {
         '<div data-dock-panel="{dock:\'bottom\', split:"true", height: 100, minHeight: 10, maxHeight: 300}" style="text-align: center;"><h4>BOTTOM</h4></div>' +
         '<div data-dock-panel="{dock:\'left\', split:true, width: 100, minWidth: 10, maxWidth: 300}"><h4>LEFT</h4></div>' +
         '<div data-dock-panel="{dock:\'right\', split:true, width: 100, minWidth: 10, maxWidth: 300}"><h4>RIGHT</h4></div>' +
-        '<div data-dock-panel="{dock:\'center\'}" style="padding: 5px;text-align: center;">' +
+        '<div data-dock-panel="{dt' +
+        'ock:\'center\'}" style="padding: 5px;text-align: center;">' +
         '<h4>CENTER</h4>' +
         '</div>' +
         '</div>';
@@ -65,6 +66,28 @@ describe('ax5layout method TEST', function () {
                 ae.equalAll(20, that.dockPanel.top.__height)
                 || ae.equalAll(50, that.dockPanel.left.__width)
                 || ae.equalAll(70, that.dockPanel.right.__width)
+            );
+        }, myUI.config.animateTime);
+    });
+
+    it('onResize ax5layout', function (done) {
+        myUI.onResize($('[data-ax5layout="ax1"]'), function () { that = "onResize"; })
+            .resize($('[data-ax5layout="ax1"]'), {top: 20, bottom: 30, left: 50, right: 70});
+
+        setTimeout(function () {
+            done(ae.equalAll("onResize", that));
+        }, myUI.config.animateTime);
+    });
+
+    it('reset ax5layout', function (done) {
+        myUI.reset($('[data-ax5layout="ax1"]'))
+            .onResize($('[data-ax5layout="ax1"]'), function () { that = this; });
+
+        setTimeout(function () {
+            done(
+                ae.equalAll(100, that.dockPanel.top.__height)
+                || ae.equalAll(100, that.dockPanel.left.__width)
+                || ae.equalAll(100, that.dockPanel.right.__width)
             );
         }, myUI.config.animateTime);
     });
