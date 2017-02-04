@@ -8,7 +8,7 @@ describe('ax5.calendar TEST', function () {
     var myCalendar;
     var myDate = new Date();
     var _c_date = ax5.util.date;
-    var mySelectable = [
+    var myArr = [
         _c_date(myDate, {'add': {d: -1}, return: 'yyyy-MM-dd'}),
         _c_date(myDate, {'add': {d: 0}, return: 'yyyy-MM-dd'}),
         _c_date(myDate, {'add': {d: 1}, return: 'yyyy-MM-dd'})
@@ -92,9 +92,17 @@ describe('ax5.calendar TEST', function () {
     });
 
     it('calendar setSelectable[arr]', function (done) {
-        _c_date = ax5.util.date;
+        myCalendar.setSelectable(myArr);
+        done(ae.equalAll(myArr, Object.keys(myCalendar.selectableMap)));
+    });
+
+    it('calendar setSelectable[obj]', function (done) {
+        var mySelectable = {};
+        myArr.forEach(function (key) {
+            mySelectable[key] = true;
+        });
         myCalendar.setSelectable(mySelectable);
-        done(ae.equalAll(mySelectable, Object.keys(myCalendar.selectableMap)));
+        done(ae.equalAll(mySelectable, myCalendar.selectableMap));
     });
 
     it('calendar setSelectable[range]', function (done) {
@@ -103,10 +111,28 @@ describe('ax5.calendar TEST', function () {
                 {from: _c_date(myDate, {'add': {d: -1}}), to: _c_date(myDate, {'add': {d: 1}})}
             ]
         });
-        done(ae.equalAll(mySelectable, Object.keys(myCalendar.selectableMap)));
+        done(ae.equalAll(myArr, Object.keys(myCalendar.selectableMap)));
     });
 
-    after(function () {
-        $("#calendar-target").remove();
+    it('calendar setMarker[obj]', function (done) {
+        var myMarker = {};
+        myArr.forEach(function (key) {
+            myMarker[key] = {theme: "holiday"};
+        });
+        myCalendar.setMarker(myMarker);
+        done(ae.equalAll(myMarker, myCalendar.markerMap));
     });
+
+    it('calendar setMarker[range]', function (done) {
+        myCalendar.setMarker({
+            range: [
+                {from: _c_date(myDate, {'add': {d: -1}}), to: _c_date(myDate, {'add': {d: 1}}), theme: "holiday"}
+            ]
+        });
+        done(ae.equalAll(myArr, Object.keys(myCalendar.markerMap)));
+    });
+    -
+        after(function () {
+            $("#calendar-target").remove();
+        });
 });
