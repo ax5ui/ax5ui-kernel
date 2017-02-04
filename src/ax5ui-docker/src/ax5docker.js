@@ -500,30 +500,102 @@
 
                 let pane = getPanel(_addPath);
 
-                console.log(pane);
+                let panelProcessor = {
+                    "stack"(_pane, _addType, _panel){
+                        let addProcessor = {
+                            "stack"(_pane, _panel){
+                                _pane.panels.push(_panel);
+                                arrangePanel();
+                            },
+                            "row-left"(_pane, _panel){
 
-                let addProcessor = {
-                    "stack"(){
+                            },
+                            "row-right"(_pane, _panel){
 
+                            },
+                            "column-top"(_pane, _panel){
+
+                            },
+                            "column-bottom"(_pane, _panel){
+
+                            }
+                        };
+                        if (_addType in addProcessor) {
+                            addProcessor[_addType].call(this, _pane, _panel);
+                        }
                     },
-                    "row-left"(){
+                    "row"(_pane, _addType, _panel){
+                        let addProcessor = {
+                            "stack"(_pane, _panel){
+                                // 처리 할 수 없는 상황 첫번째 자식을 찾아 재 요청
+                                if(_pane.panels[0] && _pane.panels[0].panelPath) {
+                                    this.addPanel(_pane.panels[0].panelPath, _addType, _panel);
+                                }
+                            },
+                            "row-left"(_pane, _panel){
 
+                            },
+                            "row-right"(_pane, _panel){
+
+                            },
+                            "column-top"(_pane, _panel){
+
+                            },
+                            "column-bottom"(_pane, _panel){
+
+                            }
+                        };
+                        if (_addType in addProcessor) {
+                            addProcessor[_addType].call(this, _pane, _panel);
+                        }
                     },
-                    "row-right"(){
+                    "column"(_pane, _addType, _panel){
+                        let addProcessor = {
+                            "stack"(_pane, _panel){
 
+                            },
+                            "row-left"(_pane, _panel){
+
+                            },
+                            "row-right"(_pane, _panel){
+
+                            },
+                            "column-top"(_pane, _panel){
+
+                            },
+                            "column-bottom"(_pane, _panel){
+
+                            }
+                        };
+                        if (_addType in addProcessor) {
+                            addProcessor[_addType].call(this, _pane, _panel);
+                        }
                     },
-                    "column-top"(){
+                    "panel"(_pane, _addType, _panel){
+                        let addProcessor = {
+                            "stack"(_pane, _panel){
 
-                    },
-                    "column-bottom"(){
+                            },
+                            "row-left"(_pane, _panel){
 
+                            },
+                            "row-right"(_pane, _panel){
+
+                            },
+                            "column-top"(_pane, _panel){
+
+                            },
+                            "column-bottom"(_pane, _panel){
+
+                            }
+                        };
+                        if (_addType in addProcessor) {
+                            addProcessor[_addType].call(this, _pane, _panel);
+                        }
                     }
                 };
 
-
-                if (_addType in addProcessor) {
-                    addProcessor[_addType].call(this, pane, _panel);
-                }
+                panelProcessor[pane.type].call(this, pane, _addType, _panel);
 
                 return this;
             };
