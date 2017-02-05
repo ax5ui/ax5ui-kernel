@@ -81,7 +81,7 @@ describe('ax5toast method TEST', function () {
                 ae.equalAll(0, that.self.queue.length)
                 || ae.equalAll('close', that.state)
             );
-        }, myUI.config.animateTime + myUI.config.displayTime + 10);
+        }, myUI.config.animateTime + myUI.config.displayTime + 50);
     });
 
     it('toast confirm open test', function (done) {
@@ -100,6 +100,6 @@ describe('ax5toast method TEST', function () {
                 ae.equalAll(0, that.self.queue.length)
                 || ae.equalAll('close', that.state)
             );
-        }, myUI.config.animateTime + myUI.config.displayTime + 10);
+        }, myUI.config.animateTime + myUI.config.displayTime + 50);
     });
 });

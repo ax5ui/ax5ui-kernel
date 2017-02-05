@@ -74,9 +74,8 @@ describe('ax5.calendar TEST', function () {
         myCalendar.changeMode("month");
 
         setTimeout(function () {
-            console.log(myCalendar);
             done(myCalendar.config.mode == 'month' ? "" : "error changeMode");
-        }, myCalendar.config.animateTime);
+        }, myCalendar.config.animateTime + 50);
     });
 
     it('calendar getSelection', function (done) {
@@ -131,7 +130,21 @@ describe('ax5.calendar TEST', function () {
         });
         done(ae.equalAll(myArr, Object.keys(myCalendar.markerMap)));
     });
-    -
+
+    it('calendar setPeriod[range]', function (done) {
+        myCalendar.changeMode("day");
+
+        myCalendar.setPeriod({
+            range: [
+                {from: _c_date(myDate, {'add': {d: -1}}), to: _c_date(myDate, {'add': {d: 1}}), fromLabel: 'S', toLabel: 'E'}
+            ]
+        });
+        done(
+            ae.equalAll(myArr, Object.keys(myCalendar.periodMap))
+            || ae.equalAll("S", myCalendar.periodMap[myArr[0]].label)
+            || ae.equalAll("E", myCalendar.periodMap[myArr[2]].label)
+        );
+    });
         after(function () {
             $("#calendar-target").remove();
         });
