@@ -1,6 +1,3 @@
-
-
-
 @mixin default-flex-box() {
     position: relative;
     @include display(flex);
@@ -8,6 +5,14 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+}
+@include keyframes(ax-docker-popup) {
+    0% {
+        @include transform(scale(1, 0));
+    }
+    100% {
+        @include transform(scale(1, 1));
+    }
 }
 
 [data-ax5docker] {
@@ -36,10 +41,10 @@
                 line-height: $ax5docker-tab-height;
                 -webkit-user-select: none;
 
-                &::-webkit-scrollbar{
+                &::-webkit-scrollbar {
                     display: none;
                 }
-                &:before{
+                &:before {
                     content: ' ';
                     display: block;
                     position: absolute;
@@ -48,7 +53,7 @@
                     width: 100%;
                     border-bottom: 1px solid $ax5docker-border-color;
                 }
-                li{
+                li {
                     position: relative;
                     display: inline-block;
                     @include flex(1);
@@ -66,14 +71,14 @@
 
                     @include transition(max-width 0.25s ease-in-out);
 
-                    .title{
+                    .title {
                         text-align: center;
                         margin: 0 1em;
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
                     }
-                    .close-icon{
+                    .close-icon {
 
                         position: absolute;
                         top: ($ax5docker-tab-height - ($ax5docker-tab-height / 1.5)) / 2;
@@ -88,13 +93,13 @@
                         border-radius: 3px;
                         @include transform(scale(0));
                         @include transition(transform 0.08s);
-                        &:hover{
+                        &:hover {
                             background: #000;
                             color: #fff;
                         }
                     }
 
-                    &:before{
+                    &:before {
                         content: ' ';
                         display: block;
                         position: absolute;
@@ -104,28 +109,52 @@
                         border-top: 1px solid $ax5docker-border-color;
                     }
 
-                    &.active{
+                    &.active {
                         background: $ax5docker-tab-active-item-bg;
                     }
-                    &:hover{
-                        .close-icon{
+                    &:hover {
+                        .close-icon {
                             @include transform(scale(1));
                         }
                     }
                 }
             }
+            [data-ax5docker-pane-tabs-aside] {
+                position: absolute;
+                right: 0;
+                top: 0;
+                min-width: $ax5docker-tab-height;
+                height: $ax5docker-tab-height;
+                line-height: $ax5docker-tab-height;
+                text-align: center;
+                background: $ax5docker-tab-active-item-bg;
+                border-left: 1px solid $ax5docker-border-color;
+                border-right: 1px solid $ax5docker-border-color;
+                border-top: 1px solid $ax5docker-border-color;
+                cursor: pointer;
+                display: none;
+            }
+
             [data-ax5docker-pane-item-views] {
                 @include default-flex-box();
-                [data-ax5docker-pane-item]{
+                [data-ax5docker-pane-item] {
                     display: none;
                     background: $ax5docker-pane-item-bg;
                     border-left: 1px solid $ax5docker-border-color;
                     border-right: 1px solid $ax5docker-border-color;
                     border-bottom: 1px solid $ax5docker-border-color;
-                    &.active{
+                    &.active {
                         display: block;
                         @include flex(1);
                     }
+                }
+            }
+
+            &.tabs-scrolled {
+                [data-ax5docker-pane-tabs-aside] {
+                    display: block;
+                    @include animation(ax-docker-popup $ax5docker-easing-time-open $ease-in-out-cubic);
+                    transform-origin: 0 100%;
                 }
             }
         }

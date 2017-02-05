@@ -36,7 +36,11 @@
                 theme: 'default',
                 animateTime: 250,
                 columnKeys: {},
-                control: {}
+                control: {},
+                icons: {
+                    close: 'X',
+                    more: '...'
+                }
             };
             // 패널 정보
             this.panels = [];
@@ -165,7 +169,7 @@
                             activeIndex = -1;
                         myself.panelPath = getPanelPath(parent, pIndex);
 
-                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
+                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -200,7 +204,7 @@
                             $parent.find('[data-ax5docker-pane-tabs]').append(myself.$label);
                             $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
                         } else {
-                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
+                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
 
                             if (!myself.builded) controlPanel(myself, "init");
                             controlPanel(myself, "active");
@@ -213,7 +217,7 @@
 
                         $dom = null;
                     },
-                    resizeHandel: function resizeHandel($parent, parent, myself) {
+                    resizeHandle: function resizeHandle($parent, parent, myself) {
                         var $dom = jQuery('<div data-ax5docker-resize-handle=""></div>');
                         $parent.append($dom);
                         $dom = null;
@@ -229,7 +233,7 @@
 
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, _pIndex) {
-                                if (_pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself, _pIndex);
+                                if (_pIndex > 0) appendProcessor["resizeHandle"]($dom, P, myself, _pIndex);
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
@@ -247,7 +251,7 @@
 
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, _pIndex) {
-                                if (pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself, _pIndex);
+                                if (pIndex > 0) appendProcessor["resizeHandle"]($dom, P, myself, _pIndex);
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
@@ -267,6 +271,9 @@
                     changeActiveStackPanel(this);
                     U.stopEvent(e);
                 });
+
+                // stackPane tabs 스크롤처리
+                alignStackPane();
                 $root = null;
             };
 
@@ -309,6 +316,27 @@
 
                 controlPanel(panel, "destroy");
                 return _this;
+            };
+
+            /**
+             * stack type panel resize되면 탭 스크롤 처리 관련 처리
+             */
+            var debounceFn = ax5.util.debounce(function (fn) {
+                fn();
+            }, cfg.animateTime);
+
+            var alignStackPane = function alignStackPane() {
+                debounceFn(function () {
+                    this.$target.find('[data-ax5docker-pane-tabs]').each(function () {
+                        var $this = jQuery(this).parent();
+                        if (this.scrollWidth > this.clientWidth) {
+                            $this.addClass("tabs-scrolled");
+                        } else {
+                            $this.removeClass("tabs-scrolled");
+                        }
+                        $this = null;
+                    });
+                }.bind(_this));
             };
 
             /**
@@ -433,6 +461,11 @@
                 this.onClick = cfg.onClick;
                 this.onLoad = cfg.onLoad;
                 this.onDataChanged = cfg.onDataChanged;
+
+                jQuery(window).bind("resize.ax5docker-" + this.id, function () {
+                    // stackPane tabs 스크롤처리
+                    alignStackPane();
+                });
             };
 
             /**
@@ -613,7 +646,7 @@
 // todo : stack 패널 active change -- ok
 // todo : 패널삭제하기 -- ok ~ active 패널 정리.. -- ok
 // todo : 패널추가하기
-// todo : stack tab overflow 처리.
+// todo : stack tab overflow 처리. -- ok (탭 포커싱와 탭 목록 메뉴 처리전)
 // todo : 패널 drag & drop
 
 // ax5.ui.docker.tmpl
