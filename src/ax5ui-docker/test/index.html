@@ -36,11 +36,17 @@
 <div data-ax5docker="docker1" style="height: 80%;background: #dddddd;"></div>
 
 <div style="padding: 5px;">
-    <button class="btn btn-default" data-docker-control="add-panel-0-stack">add Panel(0) / stack</button>
-    <button class="btn btn-default" data-docker-control="add-panel-0-0-row-left">add Panel(0.0) / row-left</button>
-    <button class="btn btn-default" data-docker-control="add-panel-0-0-row-right">add Panel(0.0) / row-right</button>
-    <button class="btn btn-default" data-docker-control="add-panel-0-0-column-top">add Panel(0.0) / column-top</button>
-    <button class="btn btn-default" data-docker-control="add-panel-0-0-0-column-bottom">add Panel(0.0.0) / column-bottom</button>
+    <form class="form-inline" onsubmit="return false;">
+        <input type="text" name="addPath" class="form-control" value="0" placeholder="0.0"/>
+        <select name="addType" class="form-control">
+            <option value="stack">stack</option>
+            <option value="row-left">row-left</option>
+            <option value="row-right">row-right</option>
+            <option value="column-top">column-top</option>
+            <option value="column-bottom">column-bottom</option>
+        </select>
+        <button class="btn btn-default" data-docker-control="add-panel">add Panel</button>
+    </form>
 </div>
 
 <script>
@@ -111,16 +117,16 @@
             "content": {
                 init: function (container, state) {
                     container["$element"].html(JSON.stringify(state));
-                    console.log(state, "init");
+                    //console.log(state, "init");
                 },
                 active: function (container, state) {
-                    console.log(state, "active");
+                    //console.log(state, "active");
                 },
                 deactive: function (container, state) {
-                    console.log(state, "deactive");
+                    //console.log(state, "deactive");
                 },
                 destroy: function (container, state) {
-                    console.log(state, "destroy");
+                    //console.log(state, "destroy");
                 }
             }
         });
@@ -129,56 +135,20 @@
 
         $('[data-docker-control]').click(function () {
             switch (this.getAttribute("data-docker-control")) {
-                case "add-panel-0-stack":
-                    myDocker.addPanel("0", "stack", {
-                        type: "panel",
-                        name: "my name add",
-                        moduleName: "content",
-                        moduleState: {
-                            data1: "data add"
-                        }
-                    });
+                case "add-panel":
+                    myDocker.addPanel(
+                        $('.form-control[name="addPath"]').val(),
+                        $('.form-control[name="addType"]').val(),
+                        {
+                            type: "panel",
+                            name: "my name add",
+                            moduleName: "content",
+                            moduleState: {
+                                data1: "data add"
+                            }
+                        });
                     break;
-                case "add-panel-0-0-row-left":
-                    myDocker.addPanel("0.0", "row-left", {
-                        type: "panel",
-                        name: "my name add",
-                        moduleName: "content",
-                        moduleState: {
-                            data1: "data add"
-                        }
-                    });
-                    break;
-                case "add-panel-0-0-row-right":
-                    myDocker.addPanel("0.0", "row-right", {
-                        type: "panel",
-                        name: "my name add",
-                        moduleName: "content",
-                        moduleState: {
-                            data1: "data add"
-                        }
-                    });
-                    break;
-                case "add-panel-0-0-column-top":
-                    myDocker.addPanel("0.0", "column-top", {
-                        type: "panel",
-                        name: "my name add",
-                        moduleName: "content",
-                        moduleState: {
-                            data1: "data add"
-                        }
-                    });
-                    break;
-                case "add-panel-0-0-0-column-bottom":
-                    myDocker.addPanel("0.0.0", "column-bottom", {
-                        type: "panel",
-                        name: "my name add",
-                        moduleName: "content",
-                        moduleState: {
-                            data1: "data add"
-                        }
-                    });
-                    break;
+
             }
         });
     });

@@ -87,7 +87,7 @@
                     if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
                 });
 
-                return Function("val", "this" + path.join('') + " = val;").call(_this, _value);
+                return Function("val", "return this" + path.join('') + " = val;").call(_this, _value);
             };
 
             var controlPanel = function controlPanel(_panel, _control) {
@@ -473,10 +473,15 @@
 
             /**
              * @method ax5docker.addPanel
-             * @param _addPath
+             * @param {String} _addPath - Position path to add panel
              * @param _addType
              * @param _panel
              * @returns {ax5docker}
+             * @example
+             * ```js
+             * myDocker.addPanel('0.1', 'stack', {type:'panel', name:'addPanel', moduleName: 'content'});
+             *
+             * ```
              */
             this.addPanel = function (_addPath, _addType, _panel) {
                 if (_addPath == "undefined") _addPath = "0";
@@ -532,21 +537,62 @@
                         }
                     },
                     "panel": function panel(_pane, _addType, _panel) {
-                        var addProcessor = {
-                            "stack": function stack(_pane, _panel) {},
-                            "row-left": function rowLeft(_pane, _panel) {},
-                            "row-right": function rowRight(_pane, _panel) {},
-                            "column-top": function columnTop(_pane, _panel) {},
-                            "column-bottom": function columnBottom(_pane, _panel) {}
+                        var copyPanel = jQuery.extend({}, _pane),
+                            addProcessor = {
+                            "stack": function stack(_pane, _panel) {
+                                // _pane stack으로 재구성
+                                _pane = setPanel(_addPath, {
+                                    type: "stack",
+                                    panels: []
+                                });
+                                _pane.panels.push(copyPanel);
+                                _pane.panels.push(_panel);
+                            },
+                            "row-left": function rowLeft(_pane, _panel) {
+                                _pane = setPanel(_addPath, {
+                                    type: "row",
+                                    panels: []
+                                });
+                                _pane.panels.push(_panel);
+                                _pane.panels.push(copyPanel);
+                            },
+                            "row-right": function rowRight(_pane, _panel) {
+                                _pane = setPanel(_addPath, {
+                                    type: "row",
+                                    panels: []
+                                });
+                                _pane.panels.push(copyPanel);
+                                _pane.panels.push(_panel);
+                            },
+                            "column-top": function columnTop(_pane, _panel) {
+                                _pane = setPanel(_addPath, {
+                                    type: "column",
+                                    panels: []
+                                });
+                                _pane.panels.push(_panel);
+                                _pane.panels.push(copyPanel);
+                            },
+                            "column-bottom": function columnBottom(_pane, _panel) {
+                                _pane = setPanel(_addPath, {
+                                    type: "column",
+                                    panels: []
+                                });
+                                _pane.panels.push(_panel);
+                                _pane.panels.push(copyPanel);
+                            }
                         };
+
                         if (_addType in addProcessor) {
                             addProcessor[_addType].call(this, _pane, _panel);
+                            arrangePanel();
                         }
+
+                        copyPanel = null;
+                        addProcessor = null;
                     }
                 };
 
                 panelProcessor[pane.type].call(this, pane, _addType, _panel);
-
                 return this;
             };
 
@@ -567,6 +613,7 @@
 // todo : stack 패널 active change -- ok
 // todo : 패널삭제하기 -- ok ~ active 패널 정리.. -- ok
 // todo : 패널추가하기
+// todo : stack tab overflow 처리.
 // todo : 패널 drag & drop
 
 // ax5.ui.docker.tmpl
