@@ -74,7 +74,23 @@
                     return paths.join(".");
                 },
                 getPanel = (_panelPath) => {
-                    let path = [], _path = [].concat(_panelPath.split(/[\.\[\]]/g));
+                    let path = [],
+                        _path = (U.isArray(_panelPath)) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
+
+                    _path.forEach(function (n) {
+                        if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+                    });
+
+                    try {
+                        return (Function("", "return this" + path.join('') + ";")).call(this);
+                    } catch (e) {
+                        return;
+                    }
+                },
+                getParentPanel = (_panelPath) => {
+                    let path = [],
+                        _path = (U.isArray(_panelPath)) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
+                    _path.pop();
                     _path.forEach(function (n) {
                         if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
                     });
@@ -86,7 +102,9 @@
                     }
                 },
                 setPanel = (_panelPath, _value) => {
-                    let path = [], _path = [].concat(_panelPath.split(/[\.\[\]]/g));
+                    let path = [],
+                        _path = (U.isArray(_panelPath)) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
+
                     _path.forEach(function (n) {
                         if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
                     });
@@ -184,6 +202,7 @@
                             myself.panels[activeIndex].active = true;
 
                             myself.panels.forEach(function (P, _pIndex) {
+                                P.panelIndex = _pIndex;
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
@@ -245,6 +264,7 @@
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, _pIndex) {
                                 if (_pIndex > 0) appendProcessor["resizeHandle"]($dom, P, myself, _pIndex);
+                                P.panelIndex = _pIndex;
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
@@ -263,6 +283,7 @@
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, _pIndex) {
                                 if (pIndex > 0) appendProcessor["resizeHandle"]($dom, P, myself, _pIndex);
+                                P.panelIndex = _pIndex;
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
@@ -523,6 +544,7 @@
              * @param {String} _addPath - Position path to add panel
              * @param _addType
              * @param _panel
+             * @param _panelIndex
              * @returns {ax5docker}
              * @example
              * ```js
@@ -530,7 +552,7 @@
              *
              * ```
              */
-            this.addPanel = function (_addPath, _addType, _panel) {
+            this.addPanel = function (_addPath, _addType, _panel, _panelIndex) {
                 if (_addPath == "undefined") _addPath = "0";
                 _addPath = _addPath
                     .replace(/[a-zA-Z\[\]]+/g, "")
@@ -538,57 +560,89 @@
                         return "panels[" + a + "]";
                     });
 
+                //_addPath = [].concat(_addPath.split(/[\.]/g));
                 let pane = getPanel(_addPath);
+
+                console.log(pane);
 
                 let panelProcessor = {
                     "stack"(_pane, _addType, _panel){
                         let copyPanel = jQuery.extend({}, _pane),
                             addProcessor = {
-                            "stack"(_pane, _panel){
-                                _pane.panels.push(_panel);
-                            },
-                            "row-left"(_pane, _panel){
-                                _pane = setPanel(_addPath, {
-                                    type: "row",
-                                    panels: []
-                                });
-                                _pane.panels.push(_panel);
-                                _pane.panels.push(copyPanel);
-                            },
-                            "row-right"(_pane, _panel){
-                                _pane = setPanel(_addPath, {
-                                    type: "row",
-                                    panels: []
-                                });
-                                _pane.panels.push(copyPanel);
-                                _pane.panels.push(_panel);
-                            },
-                            "column-top"(_pane, _panel){
-                                _pane = setPanel(_addPath, {
-                                    type: "column",
-                                    panels: []
-                                });
-                                _pane.panels.push(_panel);
-                                _pane.panels.push(copyPanel);
-                            },
-                            "column-bottom"(_pane, _panel){
-                                _pane = setPanel(_addPath, {
-                                    type: "column",
-                                    panels: []
-                                });
-                                _pane.panels.push(copyPanel);
-                                _pane.panels.push(_panel);
-                            }
-                        };
+                                "stack"(_pane, _panel){
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                },
+                                "row-left"(_pane, _panel){
+                                    let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                    let parentPane = getPanel(parentPath);
+                                    if (parentPane.type == "row") {
+                                        this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                    } else {
+                                        _pane = setPanel(_addPath, {
+                                            type: "row",
+                                            panels: []
+                                        });
+                                        _pane.panels.push(_panel);
+                                        _pane.panels.push(copyPanel);
+                                        arrangePanel();
+                                    }
+                                },
+                                "row-right"(_pane, _panel){
+                                    let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                    let parentPane = getPanel(parentPath);
+                                    if (parentPane.type == "row") {
+                                        this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                    } else {
+                                        _pane = setPanel(_addPath, {
+                                            type: "row",
+                                            panels: []
+                                        });
+                                        _pane.panels.push(copyPanel);
+                                        _pane.panels.push(_panel);
+                                        arrangePanel();
+                                    }
+                                },
+                                "column-top"(_pane, _panel){
+                                    let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                    let parentPane = getPanel(parentPath);
+                                    if (parentPane.type == "column") {
+                                        this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                    } else {
+                                        _pane = setPanel(_addPath, {
+                                            type: "column",
+                                            panels: []
+                                        });
+                                        _pane.panels.push(_panel);
+                                        _pane.panels.push(copyPanel);
+                                        arrangePanel();
+                                    }
+                                },
+                                "column-bottom"(_pane, _panel){
+                                    let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                    let parentPane = getPanel(parentPath);
+                                    if (parentPane.type == "column") {
+                                        this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                    } else {
+                                        _pane = setPanel(_addPath, {
+                                            type: "column",
+                                            panels: []
+                                        });
+                                        _pane.panels.push(copyPanel);
+                                        _pane.panels.push(_panel);
+                                        arrangePanel();
+                                    }
+                                }
+                            };
                         if (_addType in addProcessor) {
                             addProcessor[_addType].call(this, _pane, _panel);
-                            arrangePanel();
                         }
 
                         copyPanel = null;
                         addProcessor = null;
                     },
-                    "row"(_pane, _addType, _panel){
+                    "row"(_pane, _addType, _panel, _panelIndex){
+                        let copyPanel = jQuery.extend({}, _pane);
                         let addProcessor = {
                             "stack"(_pane, _panel){
                                 // 처리 할 수 없는 상황 첫번째 자식을 찾아 재 요청
@@ -596,64 +650,120 @@
                                     this.addPanel(_pane.panels[0].panelPath, _addType, _panel);
                                 }
                             },
-                            "row-left"(_pane, _panel){
-                                _pane.panels = [].concat(_panel).concat(_pane.panels);
-                                arrangePanel();
+                            "row-left"(_pane, _panel, _panelIndex){
+                                let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                let parentPane = getPanel(parentPath);
+                                if (parentPane.type == "row") {
+                                    _pane.panels.splice(_panelIndex, 0, _panel);
+                                    arrangePanel();
+                                } else {
+                                    _pane = setPanel(_addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(_panel);
+                                    _pane.panels.push(copyPanel);
+                                    arrangePanel();
+                                }
                             },
-                            "row-right"(_pane, _panel){
-                                _pane.panels.push(_panel);
-                                arrangePanel();
+                            "row-right"(_pane, _panel, _panelIndex){
+                                let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                let parentPane = getPanel(parentPath);
+                                if (parentPane.type == "row") {
+                                    _pane.panels.splice(_panelIndex + 1, 0, _panel);
+                                    arrangePanel();
+                                } else {
+                                    _pane = setPanel(_addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(copyPanel);
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                }
                             },
-                            "column-top"(_pane, _panel){
-                                _pane.panels = [].concat({
-                                    type: "column",
-                                    panels: [_panel]
-                                }).concat(_pane.panels);
-                                arrangePanel();
+                            "column-top"(_pane, _panel, _panelIndex){
+                                let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                let parentPane = getPanel(parentPath);
+                                if (parentPane.type == "column") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(_addPath, {
+                                        type: "column",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(_panel);
+                                    _pane.panels.push(copyPanel);
+                                    arrangePanel();
+                                }
                             },
-                            "column-bottom"(_pane, _panel){
-                                _pane.panels.push({
-                                    type: "column",
-                                    panels: [_panel]
-                                });
-                                arrangePanel();
+                            "column-bottom"(_pane, _panel, _panelIndex){
+                                let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                let parentPane = getPanel(parentPath);
+                                if (parentPane.type == "column") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(_addPath, {
+                                        type: "column",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(copyPanel);
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                }
                             }
                         };
                         if (_addType in addProcessor) {
-                            addProcessor[_addType].call(this, _pane, _panel);
+                            addProcessor[_addType].call(this, _pane, _panel, _panelIndex);
                         }
 
                         addProcessor = null;
+                        copyPanel = null;
                     },
-                    "column"(_pane, _addType, _panel){
+                    "column"(_pane, _addType, _panel, _panelIndex){
+                        let copyPanel = jQuery.extend({}, _pane);
                         let addProcessor = {
                             "stack"(_pane, _panel){
-                                _pane.panels = [].concat({
-                                    type: "stack",
-                                    panels: [_panel]
-                                }).concat(_pane.panels);
-                                arrangePanel();
+                                if (_pane.panels[0] && _pane.panels[0].panelPath) {
+                                    this.addPanel(_pane.panels[0].panelPath, _addType, _panel);
+                                }
                             },
                             "row-left"(_pane, _panel){
-                                _pane.panels = [].concat({
-                                    type: "row",
-                                    panels: [_panel]
-                                }).concat(_pane.panels);
-                                arrangePanel();
+                                let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                let parentPane = getPanel(parentPath);
+                                if (parentPane.type == "row") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(_addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(_panel);
+                                    _pane.panels.push(copyPanel);
+                                    arrangePanel();
+                                }
                             },
                             "row-right"(_pane, _panel){
-                                _pane.panels.push({
-                                    type: "row",
-                                    panels: [_panel]
-                                });
-                                arrangePanel();
+                                let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                let parentPane = getPanel(parentPath);
+                                if (parentPane.type == "row") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(_addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(copyPanel);
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                }
                             },
                             "column-top"(_pane, _panel){
-                                _pane.panels = [].concat(_panel).concat(_pane.panels);
+                                _pane.panels.splice(_panelIndex, 0, _panel);
                                 arrangePanel();
                             },
                             "column-bottom"(_pane, _panel){
-                                _pane.panels.push(_panel);
+                                _pane.panels.splice(_panelIndex + 1, 0, _panel);
                                 arrangePanel();
                             }
                         };
@@ -662,6 +772,7 @@
                         }
 
                         addProcessor = null;
+                        copyPanel = null;
                     },
                     "panel"(_pane, _addType, _panel){
                         let copyPanel = jQuery.extend({}, _pane),
@@ -674,44 +785,73 @@
                                     });
                                     _pane.panels.push(copyPanel);
                                     _pane.panels.push(_panel);
+                                    arrangePanel();
                                 },
                                 "row-left"(_pane, _panel){
-                                    _pane = setPanel(_addPath, {
-                                        type: "row",
-                                        panels: []
-                                    });
-                                    _pane.panels.push(_panel);
-                                    _pane.panels.push(copyPanel);
+                                    let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                    let parentPane = getPanel(parentPath);
+                                    if (parentPane.type == "row") {
+                                        this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                    } else {
+                                        _pane = setPanel(_addPath, {
+                                            type: "row",
+                                            panels: []
+                                        });
+                                        _pane.panels.push(_panel);
+                                        _pane.panels.push(copyPanel);
+                                        arrangePanel();
+                                    }
                                 },
                                 "row-right"(_pane, _panel){
-                                    _pane = setPanel(_addPath, {
-                                        type: "row",
-                                        panels: []
-                                    });
-                                    _pane.panels.push(copyPanel);
-                                    _pane.panels.push(_panel);
+                                    let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                    let parentPane = getPanel(parentPath);
+                                    if (parentPane.type == "row") {
+                                        this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                    } else {
+                                        _pane = setPanel(_addPath, {
+                                            type: "row",
+                                            panels: []
+                                        });
+                                        _pane.panels.push(copyPanel);
+                                        _pane.panels.push(_panel);
+                                        arrangePanel();
+                                    }
                                 },
                                 "column-top"(_pane, _panel){
-                                    _pane = setPanel(_addPath, {
-                                        type: "column",
-                                        panels: []
-                                    });
-                                    _pane.panels.push(_panel);
-                                    _pane.panels.push(copyPanel);
+                                    let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                    let parentPane = getPanel(parentPath);
+                                    if (parentPane.type == "column") {
+                                        this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                    } else {
+                                        _pane = setPanel(_addPath, {
+                                            type: "column",
+                                            panels: []
+                                        });
+                                        _pane.panels.push(_panel);
+                                        _pane.panels.push(copyPanel);
+                                        arrangePanel();
+                                    }
                                 },
                                 "column-bottom"(_pane, _panel){
-                                    _pane = setPanel(_addPath, {
-                                        type: "column",
-                                        panels: []
-                                    });
-                                    _pane.panels.push(_panel);
-                                    _pane.panels.push(copyPanel);
+                                    let parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                    let parentPane = getPanel(parentPath);
+                                    if (parentPane.type == "column") {
+                                        this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                    } else {
+                                        _pane = setPanel(_addPath, {
+                                            type: "column",
+                                            panels: []
+                                        });
+                                        _pane.panels.push(copyPanel);
+                                        _pane.panels.push(_panel);
+                                        arrangePanel();
+                                    }
                                 }
                             };
 
                         if (_addType in addProcessor) {
                             addProcessor[_addType].call(this, _pane, _panel);
-                            arrangePanel();
+
                         }
 
                         copyPanel = null;
@@ -719,9 +859,7 @@
                     }
                 };
 
-                console.log(pane);
-                
-                panelProcessor[pane.type].call(this, pane, _addType, _panel);
+                panelProcessor[pane.type].call(this, pane, _addType, _panel, _panelIndex);
                 return this;
             };
 
@@ -743,6 +881,7 @@
 // todo : row > stack 구현 -- ok
 // todo : stack 패널 active change -- ok
 // todo : 패널삭제하기 -- ok ~ active 패널 정리.. -- ok
-// todo : 패널추가하기
+// todo : 패널추가하기 -- ok
+// todo : 패널 스플릿 리사이즈
 // todo : stack tab overflow 처리. -- ok (탭 포커싱와 탭 목록 메뉴 처리전)
 // todo : 패널 drag & drop
