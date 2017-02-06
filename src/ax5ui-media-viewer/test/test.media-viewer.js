@@ -22,7 +22,6 @@ describe('ax5mediaViewer TEST', function () {
         }
     });
 
-
     it('setConfig menu', function (done) {
         myUI.setConfig({
             target: $("#media-viewer-target-0"),
@@ -82,5 +81,30 @@ describe('ax5mediaViewer TEST', function () {
         done(jQuery('[data-ax5-ui-media-viewer]').get(0) ? "" : "error setConfig");
     });
 
+    it('select ax5mediaViewer', function (done) {
+        myUI.select(1);
+        done($('[data-media-thumbnail="1"]').hasClass("selected") ? "" : "error select");
+    });
+
+    it('setMediaList ax5mediaViewer', function (done) {
+        myUI.setMediaList([
+            {
+                video: {
+                    html: '<iframe src="https://player.vimeo.com/video/121840700?color=fcfcfc&badge=0" frameborder="0"></iframe>',
+                    poster: ''
+                }
+            },
+            {
+                video: {
+                    html: '<iframe width="560" height="315" src="https://www.youtube.com/embed/w9Uh2oP88JI" frameborder="0"></iframe>',
+                    poster: ''
+                }
+            }]);
+        done(myUI.config.media.list.length == 2 ? "" : "error setMediaList");
+    });
+
+    after(function () {
+        $("#media-viewer-target-0").remove();
+    });
 
 });
