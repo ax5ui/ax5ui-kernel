@@ -65,7 +65,7 @@
                     type: "row", // type : row, column, stack
                     panels: [
                         {
-                            type: "stack",
+                            type: "column",
                             panels: [
                                 {
                                     type: "panel",
@@ -77,7 +77,20 @@
                                 },
                                 {
                                     type: "panel",
-                                    name: "my name 2",
+                                    name: "my name 1",
+                                    moduleName: "content",
+                                    moduleState: {
+                                        data1: "data1"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            type: "stack",
+                            panels: [
+                                {
+                                    type: "panel",
+                                    name: "my name 1",
                                     moduleName: "content",
                                     moduleState: {
                                         data1: "data1"

@@ -526,19 +526,51 @@
 
                 var panelProcessor = {
                     "stack": function stack(_pane, _addType, _panel) {
-                        var addProcessor = {
+                        var copyPanel = jQuery.extend({}, _pane),
+                            addProcessor = {
                             "stack": function stack(_pane, _panel) {
                                 _pane.panels.push(_panel);
-                                arrangePanel();
                             },
-                            "row-left": function rowLeft(_pane, _panel) {},
-                            "row-right": function rowRight(_pane, _panel) {},
-                            "column-top": function columnTop(_pane, _panel) {},
-                            "column-bottom": function columnBottom(_pane, _panel) {}
+                            "row-left": function rowLeft(_pane, _panel) {
+                                _pane = setPanel(_addPath, {
+                                    type: "row",
+                                    panels: []
+                                });
+                                _pane.panels.push(_panel);
+                                _pane.panels.push(copyPanel);
+                            },
+                            "row-right": function rowRight(_pane, _panel) {
+                                _pane = setPanel(_addPath, {
+                                    type: "row",
+                                    panels: []
+                                });
+                                _pane.panels.push(copyPanel);
+                                _pane.panels.push(_panel);
+                            },
+                            "column-top": function columnTop(_pane, _panel) {
+                                _pane = setPanel(_addPath, {
+                                    type: "column",
+                                    panels: []
+                                });
+                                _pane.panels.push(_panel);
+                                _pane.panels.push(copyPanel);
+                            },
+                            "column-bottom": function columnBottom(_pane, _panel) {
+                                _pane = setPanel(_addPath, {
+                                    type: "column",
+                                    panels: []
+                                });
+                                _pane.panels.push(copyPanel);
+                                _pane.panels.push(_panel);
+                            }
                         };
                         if (_addType in addProcessor) {
                             addProcessor[_addType].call(this, _pane, _panel);
+                            arrangePanel();
                         }
+
+                        copyPanel = null;
+                        addProcessor = null;
                     },
                     "row": function row(_pane, _addType, _panel) {
                         var addProcessor = {
@@ -548,26 +580,72 @@
                                     this.addPanel(_pane.panels[0].panelPath, _addType, _panel);
                                 }
                             },
-                            "row-left": function rowLeft(_pane, _panel) {},
-                            "row-right": function rowRight(_pane, _panel) {},
-                            "column-top": function columnTop(_pane, _panel) {},
-                            "column-bottom": function columnBottom(_pane, _panel) {}
+                            "row-left": function rowLeft(_pane, _panel) {
+                                _pane.panels = [].concat(_panel).concat(_pane.panels);
+                                arrangePanel();
+                            },
+                            "row-right": function rowRight(_pane, _panel) {
+                                _pane.panels.push(_panel);
+                                arrangePanel();
+                            },
+                            "column-top": function columnTop(_pane, _panel) {
+                                _pane.panels = [].concat({
+                                    type: "column",
+                                    panels: [_panel]
+                                }).concat(_pane.panels);
+                                arrangePanel();
+                            },
+                            "column-bottom": function columnBottom(_pane, _panel) {
+                                _pane.panels.push({
+                                    type: "column",
+                                    panels: [_panel]
+                                });
+                                arrangePanel();
+                            }
                         };
                         if (_addType in addProcessor) {
                             addProcessor[_addType].call(this, _pane, _panel);
                         }
+
+                        addProcessor = null;
                     },
                     "column": function column(_pane, _addType, _panel) {
                         var addProcessor = {
-                            "stack": function stack(_pane, _panel) {},
-                            "row-left": function rowLeft(_pane, _panel) {},
-                            "row-right": function rowRight(_pane, _panel) {},
-                            "column-top": function columnTop(_pane, _panel) {},
-                            "column-bottom": function columnBottom(_pane, _panel) {}
+                            "stack": function stack(_pane, _panel) {
+                                _pane.panels = [].concat({
+                                    type: "stack",
+                                    panels: [_panel]
+                                }).concat(_pane.panels);
+                                arrangePanel();
+                            },
+                            "row-left": function rowLeft(_pane, _panel) {
+                                _pane.panels = [].concat({
+                                    type: "row",
+                                    panels: [_panel]
+                                }).concat(_pane.panels);
+                                arrangePanel();
+                            },
+                            "row-right": function rowRight(_pane, _panel) {
+                                _pane.panels.push({
+                                    type: "row",
+                                    panels: [_panel]
+                                });
+                                arrangePanel();
+                            },
+                            "column-top": function columnTop(_pane, _panel) {
+                                _pane.panels = [].concat(_panel).concat(_pane.panels);
+                                arrangePanel();
+                            },
+                            "column-bottom": function columnBottom(_pane, _panel) {
+                                _pane.panels.push(_panel);
+                                arrangePanel();
+                            }
                         };
                         if (_addType in addProcessor) {
                             addProcessor[_addType].call(this, _pane, _panel);
                         }
+
+                        addProcessor = null;
                     },
                     "panel": function panel(_pane, _addType, _panel) {
                         var copyPanel = jQuery.extend({}, _pane),
@@ -624,6 +702,8 @@
                         addProcessor = null;
                     }
                 };
+
+                console.log(pane);
 
                 panelProcessor[pane.type].call(this, pane, _addType, _panel);
                 return this;
