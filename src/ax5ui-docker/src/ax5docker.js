@@ -180,6 +180,7 @@
                 }
             };
 
+
             const repaintPanels = () => {
                 const appendProcessor = {
                     stack($parent, parent, myself, pIndex){
@@ -392,18 +393,16 @@
 
                         myself.panels.forEach(function (P, _pIndex) {
                             if (P) {
-                                newObj.panels.push(P);
+                                let _p = processor[P.type](P);
+                                if (_p) newObj.panels.push(_p);
+                                _p = null;
                             }
                         });
 
-                        if (newObj.panels.length < 2) {
+                        if (newObj.panels.length == 0) {
+                            return null;
+                        } else if (newObj.panels.length < 2) {
                             newObj = newObj.panels[0];
-                        }
-
-                        if (U.isArray(newObj.panels)) {
-                            for (let p = 0, pl = newObj.panels.length; p < pl; p++) {
-                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
-                            }
                         }
 
                         return newObj;
@@ -423,18 +422,16 @@
 
                         myself.panels.forEach(function (P, _pIndex) {
                             if (P) {
-                                newObj.panels.push(P);
+                                let _p = processor[P.type](P);
+                                if (_p) newObj.panels.push(_p);
+                                _p = null;
                             }
                         });
 
-                        if (newObj.panels.length < 2) {
+                        if (newObj.panels.length == 0) {
+                            return null;
+                        } else if (newObj.panels.length < 2) {
                             newObj = newObj.panels[0];
-                        }
-
-                        if (U.isArray(newObj.panels)) {
-                            for (let p = 0, pl = newObj.panels.length; p < pl; p++) {
-                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
-                            }
                         }
 
                         return newObj;
@@ -449,18 +446,16 @@
 
                         myself.panels.forEach(function (P, _pIndex) {
                             if (P) {
-                                newObj.panels.push(P);
+                                let _p = processor[P.type](P);
+                                if (_p) newObj.panels.push(_p);
+                                _p = null;
                             }
                         });
 
-                        if (newObj.panels.length < 2) {
+                        if (newObj.panels.length == 0) {
+                            return null;
+                        } else if (newObj.panels.length < 2) {
                             newObj = newObj.panels[0];
-                        }
-
-                        if (U.isArray(newObj.panels)) {
-                            for (let p = 0, pl = newObj.panels.length; p < pl; p++) {
-                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
-                            }
                         }
 
                         return newObj;

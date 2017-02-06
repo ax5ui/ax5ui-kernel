@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.87"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -376,18 +376,16 @@
 
                         myself.panels.forEach(function (P, _pIndex) {
                             if (P) {
-                                newObj.panels.push(P);
+                                var _p = processor[P.type](P);
+                                if (_p) newObj.panels.push(_p);
+                                _p = null;
                             }
                         });
 
-                        if (newObj.panels.length < 2) {
+                        if (newObj.panels.length == 0) {
+                            return null;
+                        } else if (newObj.panels.length < 2) {
                             newObj = newObj.panels[0];
-                        }
-
-                        if (U.isArray(newObj.panels)) {
-                            for (var p = 0, pl = newObj.panels.length; p < pl; p++) {
-                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
-                            }
                         }
 
                         return newObj;
@@ -407,18 +405,16 @@
 
                         myself.panels.forEach(function (P, _pIndex) {
                             if (P) {
-                                newObj.panels.push(P);
+                                var _p = processor[P.type](P);
+                                if (_p) newObj.panels.push(_p);
+                                _p = null;
                             }
                         });
 
-                        if (newObj.panels.length < 2) {
+                        if (newObj.panels.length == 0) {
+                            return null;
+                        } else if (newObj.panels.length < 2) {
                             newObj = newObj.panels[0];
-                        }
-
-                        if (U.isArray(newObj.panels)) {
-                            for (var p = 0, pl = newObj.panels.length; p < pl; p++) {
-                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
-                            }
                         }
 
                         return newObj;
@@ -433,18 +429,16 @@
 
                         myself.panels.forEach(function (P, _pIndex) {
                             if (P) {
-                                newObj.panels.push(P);
+                                var _p = processor[P.type](P);
+                                if (_p) newObj.panels.push(_p);
+                                _p = null;
                             }
                         });
 
-                        if (newObj.panels.length < 2) {
+                        if (newObj.panels.length == 0) {
+                            return null;
+                        } else if (newObj.panels.length < 2) {
                             newObj = newObj.panels[0];
-                        }
-
-                        if (U.isArray(newObj.panels)) {
-                            for (var p = 0, pl = newObj.panels.length; p < pl; p++) {
-                                newObj.panels[p] = processor[newObj.panels[p].type](newObj.panels[p]);
-                            }
                         }
 
                         return newObj;
@@ -864,7 +858,6 @@
 // todo : 패널 스플릿 리사이즈
 // todo : stack tab overflow 처리. -- ok (탭 포커싱와 탭 목록 메뉴 처리전)
 // todo : 패널 drag & drop
-
 // ax5.ui.docker.tmpl
 (function () {
 
