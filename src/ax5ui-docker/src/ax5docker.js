@@ -38,6 +38,8 @@
                     more: '...'
                 }
             };
+            this.xvar = {};
+
             // 패널 정보
             this.panels = [];
             this.panelId = 0;
@@ -110,6 +112,15 @@
                     });
 
                     return (Function("val", "return this" + path.join('') + " = val;")).call(this, _value);
+                },
+                getMousePosition = (e) => {
+                    let mouseObj, originalEvent = (e.originalEvent) ? e.originalEvent : e;
+                    mouseObj = ('changedTouches' in originalEvent) ? originalEvent.changedTouches[0] : originalEvent;
+                    // clientX, Y 쓰면 스크롤에서 문제 발생
+                    return {
+                        clientX: mouseObj.pageX,
+                        clientY: mouseObj.pageY
+                    }
                 };
 
             const controlPanel = (_panel, _control) => {
@@ -180,7 +191,6 @@
                 }
             };
 
-
             const repaintPanels = () => {
                 const appendProcessor = {
                     stack($parent, parent, myself, pIndex){
@@ -188,7 +198,7 @@
                         let $dom, activeIndex = -1;
                         myself.panelPath = getPanelPath(parent, pIndex);
 
-                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' +
+                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: 1;">' +
                             '<ul data-ax5docker-pane-tabs=""></ul>' +
                             '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' +
                             '<div data-ax5docker-pane-item-views=""></div>' +
@@ -231,7 +241,7 @@
                             $parent.find('[data-ax5docker-pane-tabs]').append(myself.$label);
                             $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
                         } else {
-                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' +
+                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: 1;">' +
                                 '<ul data-ax5docker-pane-tabs=""></ul>' +
                                 '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' +
                                 '<div data-ax5docker-pane-item-views=""></div>' +
@@ -248,8 +258,8 @@
 
                         $dom = null;
                     },
-                    resizeHandle($parent, parent, myself){
-                        let $dom = jQuery('<div data-ax5docker-resize-handle=""></div>');
+                    resizeHandle($parent, parent, myself, pIndex){
+                        let $dom = jQuery('<div data-ax5docker-resize-handle="' + parent.type + "/" + parent.panelPath + "/" + pIndex + '"></div>');
                         $parent.append($dom);
                         $dom = null;
                     },
@@ -259,12 +269,12 @@
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="row" data-ax5docker-path="' + myself.panelPath + '"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="row" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: 1;"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, _pIndex) {
-                                if (_pIndex > 0) appendProcessor["resizeHandle"]($dom, P, myself, _pIndex);
+                                if (_pIndex > 0) appendProcessor["resizeHandle"]($dom, myself, P, _pIndex);
                                 P.panelIndex = _pIndex;
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
@@ -278,12 +288,12 @@
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-path="' + myself.panelPath + '"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: 1;"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, _pIndex) {
-                                if (pIndex > 0) appendProcessor["resizeHandle"]($dom, P, myself, _pIndex);
+                                if (_pIndex > 0) appendProcessor["resizeHandle"]($dom, myself, P, _pIndex);
                                 P.panelIndex = _pIndex;
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
@@ -298,14 +308,31 @@
                 this.$target.html($root);
 
                 this.$target
-                    .off("click")
-                    .on("click", "[data-ax5docker-pane-tab] .close-icon", function (e) {
+                    .off("click.ax5docker-pane")
+                    .on("click.ax5docker-pane", "[data-ax5docker-pane-tab] .close-icon", function (e) {
                         closePanel($(this).parents('[data-ax5docker-pane-tab]'));
                         U.stopEvent(e);
                     })
-                    .on("click", "[data-ax5docker-pane-tab]", function (e) {
+                    .on("click.ax5docker-pane", "[data-ax5docker-pane-tab]", function (e) {
                         changeActiveStackPanel(this);
                         U.stopEvent(e);
+                    });
+
+                this.$target
+                    .off("mousedown.ax5docker-pane-resize")
+                    .off("dragstart.ax5docker-pane-resize")
+                    .on("mousedown.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
+                        let datas = this.getAttribute("data-ax5docker-resize-handle").split(/\//g);
+                        self.xvar.mousePosition = getMousePosition(e);
+                        self.xvar.resizerType = datas[0];
+                        self.xvar.resizerPath = datas[1];
+                        self.xvar.resizerIndex = datas[2];
+                        panelResizerEvent.on(this);
+                        U.stopEvent(e);
+                    })
+                    .on("dragstart.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
+                        U.stopEvent(e);
+                        return false;
                     });
 
                 // stackPane tabs 스크롤처리
@@ -352,6 +379,59 @@
 
                 controlPanel(panel, "destroy");
                 return this;
+            };
+
+            const panelResizerEvent = {
+                "on": (_resizer) => {
+                    const $resizer = $(_resizer);
+                    const resizerPositionLeft = $resizer.offset().left;
+                    const dockerTargetOffsetLeft = this.$target.offset().left;
+
+                    jQuery(document.body)
+                        .bind("mousemove.ax5docker-" + this.instanceId, function (e) {
+                            let mouseObj = getMousePosition(e);
+
+                            if (self.xvar.resizerType == "row") {
+                                self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                            } else {
+                                self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+                            }
+                            self.xvar.resizerLived = true;
+
+                            console.log(self.xvar.__da);
+                        })
+                        .bind("mouseup.ax5docker-" + this.instanceId, function (e) {
+                            panelResizerEvent.off.call(self);
+                            U.stopEvent(e);
+                        })
+                        .bind("mouseleave.ax5docker-" + this.instanceId, function (e) {
+                            panelResizerEvent.off.call(self);
+                            U.stopEvent(e);
+                        });
+
+                    jQuery(document.body)
+                        .attr('unselectable', 'on')
+                        .css('user-select', 'none')
+                        .on('selectstart', false);
+                },
+                "off": () => {
+                    if (typeof this.xvar.__da === "undefined") {
+
+                    }
+                    else {
+                        // this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+                    }
+
+                    jQuery(document.body)
+                        .unbind("mousemove.ax5docker-" + this.instanceId)
+                        .unbind("mouseup.ax5docker-" + this.instanceId)
+                        .unbind("mouseleave.ax5docker-" + this.instanceId);
+
+                    jQuery(document.body)
+                        .removeAttr('unselectable')
+                        .css('user-select', 'auto')
+                        .off('selectstart');
+                }
             };
 
             /**

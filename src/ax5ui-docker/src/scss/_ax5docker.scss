@@ -188,6 +188,7 @@
             &[data-ax5docker-pane-axis="column"] {
                 @include flex-direction(column);
                 > [data-ax5docker-resize-handle] {
+                    height: 2px;
                     &:before {
                         height: 8px;
                         top: -4px;
