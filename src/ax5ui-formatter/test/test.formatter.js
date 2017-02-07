@@ -72,6 +72,64 @@ describe('formatter Date TEST', function () {
     });
 });
 
+describe('formatter Time TEST', function () {
+    before(function () {
+        $('body').append(
+            '<div class="form-group" id="ax5formatter-01">\n' +
+            '    <div class="input-group">\n' +
+            '        <span class="input-group-addon">Number</span>\n' +
+            '        <input id="ax5formatter-001" name="1" type="text" class="form-control" placeholder data-ax5formatter="time" value="apple1234567890">\n' +
+            '    </div>\n' +
+            '</div>\n' +
+            '<div class="form-group">\n' +
+            '    <div class="input-group">\n' +
+            '        <span class="input-group-addon">Number</span>\n' +
+            '        <input id="ax5formatter-002" name="2" type="text" class="form-control" data-ax5formatter="time" value="1234567890">\n' +
+            '    </div>\n' +
+            '</div>');
+    });
+
+    it('formatter Time', function (done) {
+        $('[data-ax5formatter]').ax5formatter(done);
+        var item1 = $('#ax5formatter-001').val('112233').blur().val() === '11:22:33';
+        var item2 = $('#ax5formatter-002').val('010101').blur().val() === '01:01:01';
+        done(item1 && item2 ? "" : "error formatter time");
+    });
+
+    after(function () {
+        $('div.form-group').remove();
+    });
+});
+
+describe('formatter Number TEST', function () {
+    before(function () {
+        $('body').append(
+            '<div class="form-group" id="ax5formatter-01">\n' +
+            '    <div class="input-group">\n' +
+            '        <span class="input-group-addon">Number</span>\n' +
+            '        <input id="ax5formatter-001" name="1" type="text" class="form-control" placeholder data-ax5formatter="number" value="apple1234567890">\n' +
+            '    </div>\n' +
+            '</div>\n' +
+            '<div class="form-group">\n' +
+            '    <div class="input-group">\n' +
+            '        <span class="input-group-addon">Number</span>\n' +
+            '        <input id="ax5formatter-002" name="2" type="text" class="form-control" data-ax5formatter="number" value="1234567890">\n' +
+            '    </div>\n' +
+            '</div>');
+    });
+
+    it('formatter Number', function (done) {
+        $('[data-ax5formatter]').ax5formatter(done);
+        var item1 = $('#ax5formatter-001').val('apple20160903').blur().val() === '20160903';
+        var item2 = $('#ax5formatter-002').val('orange20160903101010').blur().val() === '20160903101010';
+        done(item1 && item2 ? "" : "error formatter number");
+    });
+
+    after(function () {
+        $('div.form-group').remove();
+    });
+});
+
 describe('formatter Phone TEST', function () {
     before(function () {
         $('body').append(
