@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.88"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -55,16 +55,22 @@
 
             var getPanelId = function getPanelId() {
                 return _this.panelId++;
-            },
-                defaultModule = {
+            };
+
+            /**
+             * defaultModule은 패널의 모듈이 정의되지 않은 경우를 위해 준비된 오브젝트
+             * @type {{init: ((container, state)), active: ((container, state)), deactive: ((container, state)), destroy: ((container, state))}}
+             */
+            var defaultModule = {
                 init: function init(container, state) {
                     container["$element"].html(state.name);
                 },
                 active: function active(container, state) {},
                 deactive: function deactive(container, state) {},
                 destroy: function destroy(container, state) {}
-            },
-                getPanelPath = function getPanelPath(parent, pIndex) {
+            };
+
+            var getPanelPath = function getPanelPath(parent, pIndex) {
                 var paths = [];
                 if (parent && typeof parent.panelPath !== "undefined") {
                     paths.push(parent.panelPath);
@@ -72,8 +78,9 @@
 
                 paths.push('panels[' + (pIndex || 0) + ']');
                 return paths.join(".");
-            },
-                getPanel = function getPanel(_panelPath) {
+            };
+
+            var getPanel = function getPanel(_panelPath) {
                 var path = [],
                     _path = U.isArray(_panelPath) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
 
@@ -86,8 +93,9 @@
                 } catch (e) {
                     return;
                 }
-            },
-                getParentPanel = function getParentPanel(_panelPath) {
+            };
+
+            var getParentPanel = function getParentPanel(_panelPath) {
                 var path = [],
                     _path = U.isArray(_panelPath) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
                 _path.pop();
@@ -100,8 +108,9 @@
                 } catch (e) {
                     return;
                 }
-            },
-                setPanel = function setPanel(_panelPath, _value) {
+            };
+
+            var setPanel = function setPanel(_panelPath, _value) {
                 var path = [],
                     _path = U.isArray(_panelPath) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
 
@@ -110,8 +119,9 @@
                 });
 
                 return Function("val", "return this" + path.join('') + " = val;").call(_this, _value);
-            },
-                getMousePosition = function getMousePosition(e) {
+            };
+
+            var getMousePosition = function getMousePosition(e) {
                 var mouseObj = void 0,
                     originalEvent = e.originalEvent ? e.originalEvent : e;
                 mouseObj = 'changedTouches' in originalEvent ? originalEvent.changedTouches[0] : originalEvent;
@@ -189,6 +199,9 @@
                 }
             };
 
+            /**
+             * 패널들의 패널 데이터 구조에 맞게 다시 그리기
+             */
             var repaintPanels = function repaintPanels() {
                 var appendProcessor = {
                     stack: function stack($parent, parent, myself, pIndex) {
@@ -305,10 +318,22 @@
 
                 _this.$target.off("mousedown.ax5docker-pane-resize").off("dragstart.ax5docker-pane-resize").on("mousedown.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
                     var datas = this.getAttribute("data-ax5docker-resize-handle").split(/\//g);
+
+                    // panelResizerEvent.init
                     self.xvar.mousePosition = getMousePosition(e);
                     self.xvar.resizerType = datas[0];
                     self.xvar.resizerPath = datas[1];
                     self.xvar.resizerIndex = datas[2];
+                    // 주변 패널들
+                    self.xvar.resizer$dom = $(this);
+                    self.xvar.resizerParent$dom = self.xvar.resizer$dom.parent();
+
+                    if (self.xvar.resizerType == "row") {
+                        self.xvar.resizerCanvasWidth = self.xvar.resizerParent$dom.innerWidth();
+                    } else {
+                        self.xvar.resizerCanvasHeight = self.xvar.resizerParent$dom.innerHeight();
+                    }
+
                     panelResizerEvent.on(this);
                     U.stopEvent(e);
                 }).on("dragstart.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
@@ -370,15 +395,24 @@
 
                     jQuery(document.body).bind("mousemove.ax5docker-" + _this.instanceId, function (e) {
                         var mouseObj = getMousePosition(e);
+                        if (self.xvar.resizerLived) {
+                            if (self.xvar.resizerType == "row") {
+                                self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                                // U.number(self.xvar.__da / self.xvar.resizerCanvasWidth, {round: 6});
+                                var da_grow = U.number(self.xvar.__da / self.xvar.resizerCanvasWidth, { round: 6 });
+                                var prev_grow = U.number(self.xvar.resizer$dom.prev().css("flex-grow"));
+                                var next_grow = U.number(self.xvar.resizer$dom.next().css("flex-grow"));
 
-                        if (self.xvar.resizerType == "row") {
-                            self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                                console.log(prev_grow, da_grow);
+
+                                self.xvar.resizer$dom.prev().css({ "flex-grow": prev_grow + da_grow });
+                                self.xvar.resizer$dom.next().css({ "flex-grow": prev_grow - da_grow });
+                            } else {
+                                self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+                            }
                         } else {
-                            self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+                            self.xvar.resizerLived = true;
                         }
-                        self.xvar.resizerLived = true;
-
-                        console.log(self.xvar.__da);
                     }).bind("mouseup.ax5docker-" + _this.instanceId, function (e) {
                         panelResizerEvent.off.call(self);
                         U.stopEvent(e);
@@ -390,6 +424,8 @@
                     jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
                 },
                 "off": function off() {
+                    self.xvar.resizerLived = false;
+
                     if (typeof _this.xvar.__da === "undefined") {} else {
                         // this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
                     }

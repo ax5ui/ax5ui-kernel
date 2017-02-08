@@ -50,78 +50,88 @@
             cfg = this.config;
 
             const getPanelId = () => {
-                    return this.panelId++;
+                return this.panelId++;
+            };
+
+            /**
+             * defaultModule은 패널의 모듈이 정의되지 않은 경우를 위해 준비된 오브젝트
+             * @type {{init: ((container, state)), active: ((container, state)), deactive: ((container, state)), destroy: ((container, state))}}
+             */
+            const defaultModule = {
+                init(container, state){
+                    container["$element"].html(state.name);
                 },
-                defaultModule = {
-                    init(container, state){
-                        container["$element"].html(state.name);
-                    },
-                    active(container, state){
+                active(container, state){
 
-                    },
-                    deactive(container, state){
-
-                    },
-                    destroy(container, state){
-
-                    }
                 },
-                getPanelPath = (parent, pIndex) => {
-                    let paths = [];
-                    if (parent && typeof parent.panelPath !== "undefined") {
-                        paths.push(parent.panelPath);
-                    }
+                deactive(container, state){
 
-                    paths.push('panels[' + (pIndex || 0) + ']');
-                    return paths.join(".");
                 },
-                getPanel = (_panelPath) => {
-                    let path = [],
-                        _path = (U.isArray(_panelPath)) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
+                destroy(container, state){
 
-                    _path.forEach(function (n) {
-                        if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
-                    });
+                }
+            };
 
-                    try {
-                        return (Function("", "return this" + path.join('') + ";")).call(this);
-                    } catch (e) {
-                        return;
-                    }
-                },
-                getParentPanel = (_panelPath) => {
-                    let path = [],
-                        _path = (U.isArray(_panelPath)) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
-                    _path.pop();
-                    _path.forEach(function (n) {
-                        if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
-                    });
+            const getPanelPath = (parent, pIndex) => {
+                let paths = [];
+                if (parent && typeof parent.panelPath !== "undefined") {
+                    paths.push(parent.panelPath);
+                }
 
-                    try {
-                        return (Function("", "return this" + path.join('') + ";")).call(this);
-                    } catch (e) {
-                        return;
-                    }
-                },
-                setPanel = (_panelPath, _value) => {
-                    let path = [],
-                        _path = (U.isArray(_panelPath)) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
+                paths.push('panels[' + (pIndex || 0) + ']');
+                return paths.join(".");
+            };
 
-                    _path.forEach(function (n) {
-                        if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
-                    });
+            const getPanel = (_panelPath) => {
+                let path = [],
+                    _path = (U.isArray(_panelPath)) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
 
-                    return (Function("val", "return this" + path.join('') + " = val;")).call(this, _value);
-                },
-                getMousePosition = (e) => {
-                    let mouseObj, originalEvent = (e.originalEvent) ? e.originalEvent : e;
-                    mouseObj = ('changedTouches' in originalEvent) ? originalEvent.changedTouches[0] : originalEvent;
-                    // clientX, Y 쓰면 스크롤에서 문제 발생
-                    return {
-                        clientX: mouseObj.pageX,
-                        clientY: mouseObj.pageY
-                    }
-                };
+                _path.forEach(function (n) {
+                    if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+                });
+
+                try {
+                    return (Function("", "return this" + path.join('') + ";")).call(this);
+                } catch (e) {
+                    return;
+                }
+            };
+
+            const getParentPanel = (_panelPath) => {
+                let path = [],
+                    _path = (U.isArray(_panelPath)) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
+                _path.pop();
+                _path.forEach(function (n) {
+                    if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+                });
+
+                try {
+                    return (Function("", "return this" + path.join('') + ";")).call(this);
+                } catch (e) {
+                    return;
+                }
+            };
+
+            const setPanel = (_panelPath, _value) => {
+                let path = [],
+                    _path = (U.isArray(_panelPath)) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
+
+                _path.forEach(function (n) {
+                    if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+                });
+
+                return (Function("val", "return this" + path.join('') + " = val;")).call(this, _value);
+            };
+
+            const getMousePosition = (e) => {
+                let mouseObj, originalEvent = (e.originalEvent) ? e.originalEvent : e;
+                mouseObj = ('changedTouches' in originalEvent) ? originalEvent.changedTouches[0] : originalEvent;
+                // clientX, Y 쓰면 스크롤에서 문제 발생
+                return {
+                    clientX: mouseObj.pageX,
+                    clientY: mouseObj.pageY
+                }
+            };
 
             const controlPanel = (_panel, _control) => {
                 let moduleState = jQuery.extend(_panel.moduleState, {
@@ -191,6 +201,9 @@
                 }
             };
 
+            /**
+             * 패널들의 패널 데이터 구조에 맞게 다시 그리기
+             */
             const repaintPanels = () => {
                 const appendProcessor = {
                     stack($parent, parent, myself, pIndex){
@@ -323,10 +336,22 @@
                     .off("dragstart.ax5docker-pane-resize")
                     .on("mousedown.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
                         let datas = this.getAttribute("data-ax5docker-resize-handle").split(/\//g);
+
+                        // panelResizerEvent.init
                         self.xvar.mousePosition = getMousePosition(e);
                         self.xvar.resizerType = datas[0];
                         self.xvar.resizerPath = datas[1];
                         self.xvar.resizerIndex = datas[2];
+                        // 주변 패널들
+                        self.xvar.resizer$dom = $(this);
+                        self.xvar.resizerParent$dom = self.xvar.resizer$dom.parent();
+
+                        if (self.xvar.resizerType == "row") {
+                            self.xvar.resizerCanvasWidth = self.xvar.resizerParent$dom.innerWidth();
+                        } else {
+                            self.xvar.resizerCanvasHeight = self.xvar.resizerParent$dom.innerHeight();
+                        }
+
                         panelResizerEvent.on(this);
                         U.stopEvent(e);
                     })
@@ -390,15 +415,26 @@
                     jQuery(document.body)
                         .bind("mousemove.ax5docker-" + this.instanceId, function (e) {
                             let mouseObj = getMousePosition(e);
+                            if (self.xvar.resizerLived) {
+                                if (self.xvar.resizerType == "row") {
+                                    self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                                    // U.number(self.xvar.__da / self.xvar.resizerCanvasWidth, {round: 6});
+                                    let da_grow = U.number(self.xvar.__da / self.xvar.resizerCanvasWidth, {round: 6});
+                                    let prev_grow = U.number(self.xvar.resizer$dom.prev().css("flex-grow"));
+                                    let next_grow = U.number(self.xvar.resizer$dom.next().css("flex-grow"));
 
-                            if (self.xvar.resizerType == "row") {
-                                self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                                    console.log(prev_grow, da_grow);
+                                    
+                                    self.xvar.resizer$dom.prev().css({"flex-grow": prev_grow + da_grow});
+                                    self.xvar.resizer$dom.next().css({"flex-grow": prev_grow - da_grow});
+
+                                } else {
+                                    self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+
+                                }
                             } else {
-                                self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+                                self.xvar.resizerLived = true;
                             }
-                            self.xvar.resizerLived = true;
-
-                            console.log(self.xvar.__da);
                         })
                         .bind("mouseup.ax5docker-" + this.instanceId, function (e) {
                             panelResizerEvent.off.call(self);
@@ -415,6 +451,8 @@
                         .on('selectstart', false);
                 },
                 "off": () => {
+                    self.xvar.resizerLived = false;
+
                     if (typeof this.xvar.__da === "undefined") {
 
                     }

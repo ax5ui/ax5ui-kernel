@@ -79,7 +79,6 @@
                         text-overflow: ellipsis;
                     }
                     .close-icon {
-
                         position: absolute;
                         top: ($ax5docker-tab-height - ($ax5docker-tab-height / 1.5)) / 2;
                         right: ($ax5docker-tab-height - ($ax5docker-tab-height / 1.5)) / 2;
@@ -96,6 +95,10 @@
                         &:hover {
                             background: #000;
                             color: #fff;
+                        }
+                        *{
+                            height: $ax5docker-tab-height / 1.5;
+                            line-height: $ax5docker-tab-height / 1.5;
                         }
                     }
 
@@ -137,12 +140,15 @@
 
             [data-ax5docker-pane-item-views] {
                 @include default-flex-box();
+
+                border-left: 1px solid $ax5docker-border-color;
+                border-right: 1px solid $ax5docker-border-color;
+                border-bottom: 1px solid $ax5docker-border-color;
+
                 [data-ax5docker-pane-item] {
                     display: none;
                     background: $ax5docker-pane-item-bg;
-                    border-left: 1px solid $ax5docker-border-color;
-                    border-right: 1px solid $ax5docker-border-color;
-                    border-bottom: 1px solid $ax5docker-border-color;
+
                     &.active {
                         display: block;
                         @include flex(1);
@@ -157,6 +163,7 @@
                     transform-origin: 0 100%;
                 }
             }
+
         }
         [data-ax5docker-resize-handle] {
             position: relative;
@@ -184,6 +191,14 @@
                         cursor: col-resize;
                     }
                 }
+
+                [data-ax5docker-pane] {
+                    &:not(:last-child){
+                        [data-ax5docker-pane-item-views] {
+                            border-right: 1px solid $ax5docker-border-color;
+                        }
+                    }
+                }
             }
             &[data-ax5docker-pane-axis="column"] {
                 @include flex-direction(column);
@@ -197,6 +212,15 @@
                         cursor: row-resize;
                     }
                 }
+
+                [data-ax5docker-pane] {
+                    &:not(:last-child){
+                        [data-ax5docker-pane-item-views] {
+                            border-bottom: 1px solid $ax5docker-border-color;
+                        }
+                    }
+                }
+
             }
         }
 
