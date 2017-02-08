@@ -34,7 +34,6 @@ describe('ax5combobox TEST', function () {
         }
     });
 
-
     it('bind combobox', function (done) {
         myUI.bind({
             target: $('[data-ax5combobox="combobox1"]'),
@@ -89,5 +88,27 @@ describe('ax5combobox TEST', function () {
     it('enable combobox', function (done) {
         myUI.enable($('[data-ax5combobox="combobox1"]'));
         done(typeof myUI.queue[0].$display.attr("disabled") === "undefined" ? "" : "enable error");
+    });
+
+    it('update combobox', function (done) {
+        myUI.update({
+            target: $('[data-ax5combobox="combobox1"]'),
+            options: options.concat({value: "world", text: "hello-world!"})
+        });
+
+        done(myUI.queue[0].options.length == 10 ? "" : "update error");
+    });
+
+    it('align combobox', function (done) {
+        myUI.update({
+            target: $('[data-ax5combobox="combobox1"]'),
+            minWidth: 120
+        });
+        
+        done(myUI.queue[0].$display.css("minWidth") == "120px" ? "" : "align error");
+    });
+
+    after(function () {
+        $(".form-group").remove();
     });
 });
