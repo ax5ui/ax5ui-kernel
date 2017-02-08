@@ -345,11 +345,15 @@
                         // 주변 패널들
                         self.xvar.resizer$dom = $(this);
                         self.xvar.resizerParent$dom = self.xvar.resizer$dom.parent();
+                        self.xvar.resizerPrevGrow = U.number(self.xvar.resizer$dom.prev().css("flex-grow"));
+                        self.xvar.resizerNextGrow = U.number(self.xvar.resizer$dom.next().css("flex-grow"));
 
                         if (self.xvar.resizerType == "row") {
-                            self.xvar.resizerCanvasWidth = self.xvar.resizerParent$dom.innerWidth();
+                            //self.xvar.resizerCanvasWidth = self.xvar.resizerParent$dom.innerWidth();
+                            self.xvar.resizerCanvasWidth = self.xvar.resizer$dom.prev().innerWidth() + self.xvar.resizer$dom.next().innerWidth() + self.xvar.resizer$dom.width();
                         } else {
-                            self.xvar.resizerCanvasHeight = self.xvar.resizerParent$dom.innerHeight();
+                            //self.xvar.resizerCanvasHeight = self.xvar.resizerParent$dom.innerHeight();
+                            self.xvar.resizerCanvasHeight = self.xvar.resizer$dom.prev().innerHeight() + self.xvar.resizer$dom.next().innerHeight() + self.xvar.resizer$dom.height();
                         }
 
                         panelResizerEvent.on(this);
@@ -415,26 +419,27 @@
                     jQuery(document.body)
                         .bind("mousemove.ax5docker-" + this.instanceId, function (e) {
                             let mouseObj = getMousePosition(e);
+                            let da_grow;
                             if (self.xvar.resizerLived) {
                                 if (self.xvar.resizerType == "row") {
                                     self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
-                                    // U.number(self.xvar.__da / self.xvar.resizerCanvasWidth, {round: 6});
-                                    let da_grow = U.number(self.xvar.__da / self.xvar.resizerCanvasWidth, {round: 6});
-                                    let prev_grow = U.number(self.xvar.resizer$dom.prev().css("flex-grow"));
-                                    let next_grow = U.number(self.xvar.resizer$dom.next().css("flex-grow"));
+                                    da_grow = U.number(self.xvar.__da * 2 / self.xvar.resizerCanvasWidth, {round: 6});
 
-                                    console.log(prev_grow, da_grow);
-                                    
-                                    self.xvar.resizer$dom.prev().css({"flex-grow": prev_grow + da_grow});
-                                    self.xvar.resizer$dom.next().css({"flex-grow": prev_grow - da_grow});
-
+                                    self.xvar.resizer$dom.prev().css({"flex-grow": self.xvar.resizerPrevGrow + da_grow});
+                                    self.xvar.resizer$dom.next().css({"flex-grow": self.xvar.resizerNextGrow - da_grow});
                                 } else {
                                     self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+                                    da_grow = U.number(self.xvar.__da * 2 / self.xvar.resizerCanvasHeight, {round: 6});
 
+                                    self.xvar.resizer$dom.prev().css({"flex-grow": self.xvar.resizerPrevGrow + da_grow});
+                                    self.xvar.resizer$dom.next().css({"flex-grow": self.xvar.resizerNextGrow - da_grow});
                                 }
                             } else {
                                 self.xvar.resizerLived = true;
                             }
+
+                            mouseObj = null;
+                            da_grow = null;
                         })
                         .bind("mouseup.ax5docker-" + this.instanceId, function (e) {
                             panelResizerEvent.off.call(self);
@@ -995,6 +1000,6 @@
 // todo : stack 패널 active change -- ok
 // todo : 패널삭제하기 -- ok ~ active 패널 정리.. -- ok
 // todo : 패널추가하기 -- ok
-// todo : 패널 스플릿 리사이즈
+// todo : 패널 스플릿 리사이즈 -- ok
 // todo : stack tab overflow 처리. -- ok (탭 포커싱와 탭 목록 메뉴 처리전)
 // todo : 패널 drag & drop
