@@ -210,7 +210,7 @@
                             activeIndex = -1;
                         myself.panelPath = getPanelPath(parent, pIndex);
 
-                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: 1;">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
+                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -246,7 +246,7 @@
                             $parent.find('[data-ax5docker-pane-tabs]').append(myself.$label);
                             $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
                         } else {
-                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: 1;">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
+                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
 
                             if (!myself.builded) controlPanel(myself, "init");
                             controlPanel(myself, "active");
@@ -270,7 +270,7 @@
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="row" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: 1;"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="row" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -289,7 +289,7 @@
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: 1;"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -434,7 +434,18 @@
                     self.xvar.resizerLived = false;
 
                     if (typeof _this.xvar.__da === "undefined") {} else {
-                        // this.setColumnWidth(this.colGroup[this.xvar.columnResizerIndex]._width + this.xvar.__da, this.xvar.columnResizerIndex);
+                        var $prevPanel = self.xvar.resizer$dom.prev(),
+                            $nextPanel = self.xvar.resizer$dom.next(),
+                            prevPane = getPanel($prevPanel.attr("data-ax5docker-path")),
+                            nextPane = getPanel($nextPanel.attr("data-ax5docker-path"));
+
+                        prevPane.flexGrow = U.number($prevPanel.css("flex-grow"));
+                        nextPane.flexGrow = U.number($nextPanel.css("flex-grow"));
+
+                        $prevPanel = null;
+                        $nextPanel = null;
+                        prevPane = null;
+                        nextPane = null;
                     }
 
                     jQuery(document.body).unbind("mousemove.ax5docker-" + _this.instanceId).unbind("mouseup.ax5docker-" + _this.instanceId).unbind("mouseleave.ax5docker-" + _this.instanceId);
