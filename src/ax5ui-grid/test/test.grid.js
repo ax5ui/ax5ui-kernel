@@ -168,12 +168,25 @@ describe('ax5grid TEST', function () {
         done();
     });
 
-    it('setData', function (done) {
+    it('setData ax5grid', function (done) {
         myUI.setData([
             {a:"1"}
         ]);
         // has body.grouping
-        done(myUI.list.length == 2 ? "" : "error");
+        done(myUI.list.length == 2 ? "" : "error setData");
+    });
+
+    it('getList ax5grid', function (done) {
+        done(myUI.getList()[0].a == "1" ? "" : "error getList");
+    });
+
+    it('select ax5grid', function (done) {
+        myUI.select(0);
+        done(myUI.getList()[0]["__selected__"] ? "" : "error select");
+    });
+    
+    after(function () {
+        $('[data-ax5grid="first-grid"]').remove();
     });
 
 });
