@@ -3,9 +3,9 @@
  * - github.com/thomasjang
  * - www.axisj.com
  */
-var myUI;
-describe('ax5grid TEST', function () {
 
+describe('ax5grid TEST', function () {
+    var myUI;
     var tmpl = '<div data-ax5grid="first-grid" data-ax5grid-config="" style="height: 300px;"></div>';
 
     $(document.body).append(tmpl);
