@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.88"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1492,6 +1492,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 }
                 return this;
+            };
+
+            /**
+             * @method ax5grid.destroy
+             * @returns {null}
+             */
+            this.destroy = function () {
+                var instanceId = this.instanceId;
+                this.$target.empty();
+                this.list = [];
+                UI.grid_instance = ax5.util.filter(UI.grid_instance, function () {
+                    return this.instanceId != instanceId;
+                });
+                return null;
             };
 
             // 클래스 생성자

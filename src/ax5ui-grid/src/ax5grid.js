@@ -1102,7 +1102,7 @@
              * ```
              */
             this.appendToList = function (_list) {
-                GRID.data.append.call(this, _list, (function(){
+                GRID.data.append.call(this, _list, (function () {
                     alignGrid.call(this);
                     GRID.body.repaint.call(this);
                     GRID.scroller.resize.call(this);
@@ -1500,6 +1500,20 @@
                     }
                 }
                 return this;
+            };
+
+            /**
+             * @method ax5grid.destroy
+             * @returns {null}
+             */
+            this.destroy = function () {
+                const instanceId = this.instanceId;
+                this.$target.empty();
+                this.list = [];
+                UI.grid_instance = ax5.util.filter(UI.grid_instance, function () {
+                    return this.instanceId != instanceId;
+                });
+                return null;
             };
 
             // 클래스 생성자

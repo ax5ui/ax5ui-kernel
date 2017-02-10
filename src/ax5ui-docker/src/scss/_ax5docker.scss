@@ -150,7 +150,7 @@
                     background: $ax5docker-pane-item-bg;
 
                     &.active {
-                        display: block;
+                        display: flex;
                         @include flex(1);
                     }
                 }
