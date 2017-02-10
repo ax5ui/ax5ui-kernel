@@ -170,19 +170,38 @@ describe('ax5grid TEST', function () {
 
     it('setData ax5grid', function (done) {
         myUI.setData([
-            {a:"1"}
+            {a:"1", __modified__: true},
+            {a:"2", __selected__: true},
+            {a:"3", __deleted__: false}
         ]);
         // has body.grouping
-        done(myUI.list.length == 2 ? "" : "error setData");
-    });
-
-    it('getList ax5grid', function (done) {
-        done(myUI.getList()[0].a == "1" ? "" : "error getList");
+        done(myUI.list.length == 4 ? "" : "error setData");
     });
 
     it('select ax5grid', function (done) {
         myUI.select(0);
         done(myUI.getList()[0]["__selected__"] ? "" : "error select");
+    });
+
+    it('getList ax5grid', function (done) {
+        done(myUI.getList().length == 3 ? "" : "error getList");
+    });
+
+    it('getList[modified] ax5grid', function (done) {
+        done(myUI.getList("modified").length == 1 ? "" : "error getList");
+    });
+
+    it('getList[selected] ax5grid', function (done) {
+        done(myUI.getList("selected").length == 2 ? "" : "error getList");
+    });
+
+    it('deleteRow ax5grid', function (done) {
+        myUI.deleteRow(2);
+        done();
+    })
+
+    it('getList[deleted] ax5grid', function (done) {
+        done(myUI.getList("deleted").length == 1 ? "" : "error getList");
     });
     
     after(function () {
