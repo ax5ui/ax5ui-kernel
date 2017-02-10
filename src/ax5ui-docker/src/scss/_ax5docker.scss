@@ -122,7 +122,7 @@
                     }
                 }
             }
-            [data-ax5docker-pane-tabs-aside] {
+            [data-ax5docker-pane-tabs-more] {
                 position: absolute;
                 right: 0;
                 top: 0;
@@ -157,7 +157,7 @@
             }
 
             &.tabs-scrolled {
-                [data-ax5docker-pane-tabs-aside] {
+                [data-ax5docker-pane-tabs-more] {
                     display: block;
                     @include animation(ax-docker-popup $ax5docker-easing-time-open $ease-in-out-cubic);
                     transform-origin: 0 100%;

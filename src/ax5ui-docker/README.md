@@ -9,6 +9,7 @@
 > *Dependencies*
 > * _[jQuery 1.X+](http://jquery.com/)_
 > * _[ax5core](http://ax5.io/ax5core)_
+> * _[ax5ui-menu](http://ax5.io/ax5ui-menu)_
 
 ### Install with bower
 ```sh
@@ -28,6 +29,7 @@ In case of npm, which is the package manager for the front end, you need to solv
 ```sh
 npm install jquery
 npm install ax5core
+npm install ax5ui-menu
 npm install ax5ui-docker
 ```
 

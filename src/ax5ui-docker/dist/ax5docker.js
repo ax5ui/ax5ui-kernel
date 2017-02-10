@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.89"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -43,6 +43,7 @@
                 }
             };
             this.xvar = {};
+            this.menu = null;
 
             // 패널 정보
             this.panels = [];
@@ -210,7 +211,7 @@
                             activeIndex = -1;
                         myself.panelPath = getPanelPath(parent, pIndex);
 
-                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
+                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-more="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -313,6 +314,9 @@
                     U.stopEvent(e);
                 }).on("click.ax5docker-pane", "[data-ax5docker-pane-tab]", function (e) {
                     changeActiveStackPanel(this);
+                    U.stopEvent(e);
+                }).on("click.ax5docker-pane", "[data-ax5docker-pane-tabs-more]", function (e) {
+                    console.log("more");
                     U.stopEvent(e);
                 });
 
@@ -591,6 +595,16 @@
                 this.onClick = cfg.onClick;
                 this.onLoad = cfg.onLoad;
                 this.onDataChanged = cfg.onDataChanged;
+
+                if (ax5.ui.menu) {
+                    this.menu = new ax5.ui.menu({
+                        theme: 'default',
+                        position: "absolute",
+                        icons: {
+                            'arrow': '▸'
+                        }
+                    });
+                }
 
                 jQuery(window).bind("resize.ax5docker-" + this.id, function () {
                     // stackPane tabs 스크롤처리
@@ -973,7 +987,8 @@
 // todo : 패널삭제하기 -- ok ~ active 패널 정리.. -- ok
 // todo : 패널추가하기 -- ok
 // todo : 패널 스플릿 리사이즈 -- ok
-// todo : stack tab overflow 처리. -- ok (탭 포커싱와 탭 목록 메뉴 처리전)
+// todo : stack tab overflow 처리. -- ok
+// todo : 탭 포커싱와 탭 목록 메뉴 처리전
 // todo : 패널 drag & drop
 // ax5.ui.docker.tmpl
 (function () {
