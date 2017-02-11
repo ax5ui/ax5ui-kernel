@@ -56,11 +56,11 @@
                 li {
                     position: relative;
                     display: inline-block;
-                    @include flex(1);
+                    //@include flex(1);
 
                     list-style: none;
                     background: $ax5docker-tab-item-bg;
-                    max-width: 10em;
+                    //max-width: 10em;
                     min-width: 6em;
                     height: $ax5docker-tab-height;
                     border-left: 1px solid $ax5docker-border-color;
@@ -77,6 +77,7 @@
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
+                        //margin-right: $ax5docker-tab-height;
                     }
                     .close-icon {
                         position: absolute;

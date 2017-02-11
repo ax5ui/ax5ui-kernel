@@ -328,11 +328,22 @@
                         U.stopEvent(e);
                     })
                     .on("click.ax5docker-pane", "[data-ax5docker-pane-tab]", function (e) {
-                        changeActiveStackPanel(this);
+                        // pane, panelIndex 인자 변경.
+                        let $clickedLabel = jQuery(this);
+                        let pane = getPanel($clickedLabel.parents('[data-ax5docker-pane]').attr("data-ax5docker-path"));
+                        let panelIndex = $clickedLabel.attr("data-ax5docker-pane-tab");
+
+                        if (!$clickedLabel.hasClass("active")) {
+                            changeActiveStackPanel(pane, panelIndex);
+                        }
+
+                        $clickedLabel = null;
+                        pane = null;
+                        panelIndex = null;
                         U.stopEvent(e);
                     })
                     .on("click.ax5docker-pane", "[data-ax5docker-pane-tabs-more]", function (e) {
-                        console.log("more");
+                        openStackPanelMore($(this).parents('[data-ax5docker-pane]'), e);
                         U.stopEvent(e);
                     });
 
@@ -376,29 +387,27 @@
 
             /**
              * 액티브 패널 변경(stack인 상황에서)
-             * @param clickedLabel
+             * @param pane
+             * @param panelIndex
              * @returns {boolean}
              */
-            const changeActiveStackPanel = (clickedLabel) => {
-                let $clickedLabel = jQuery(clickedLabel),
-                    $pane = $clickedLabel.parents('[data-ax5docker-pane]'),
-                    labelIndex = $clickedLabel.attr("data-ax5docker-pane-tab"),
-                    pane = getPanel($pane.attr("data-ax5docker-path")),
-                    panel = getPanel($clickedLabel.attr("data-ax5docker-path"));
+            const changeActiveStackPanel = (pane, panelIndex) => {
+                let panel = pane.panels[panelIndex];
 
-                if ($clickedLabel.hasClass("active")) {
-                    return false;
-                } else {
-                    for (let p = 0, pl = pane.panels.length; p < pl; p++) {
-                        if (pane.panels[p].active) {
-                            controlPanel(pane.panels[p], "deactive");
-                        }
+                for (let p = 0, pl = pane.panels.length; p < pl; p++) {
+                    if (pane.panels[p].active) {
+                        controlPanel(pane.panels[p], "deactive");
                     }
-
-                    if (!panel.builded) controlPanel(panel, "init");
-                    controlPanel(panel, "active");
                 }
+
+                if (!panel.builded) controlPanel(panel, "init");
+                controlPanel(panel, "active");
+
+                pane = null;
+                panelIndex = null;
+                panel = null;
                 return this;
+                // todo : 액티브 패널이 변경되면 scrollLeft 조정
             };
 
             /**
@@ -412,6 +421,44 @@
                     panel = getPanel(panelPath);
 
                 controlPanel(panel, "destroy");
+
+                $clickedLabel = null;
+                panelPath = null;
+                panel = null;
+                return this;
+            };
+
+            const openStackPanelMore = (stackPane, e) => {
+                let $stackPane = jQuery(stackPane),
+                    panePath = $stackPane.attr("data-ax5docker-path"),
+                    pane = getPanel(panePath);
+
+                if (this.menu) {
+                    let menuItems = U.map(pane.panels, function (index) {
+                        return {
+                            label: this.name,
+                            index: index,
+                            panePath: panePath
+                        }
+                    });
+
+                    this.menu.setConfig({
+                        items: menuItems,
+                        onClick: function () {
+                            //console.log(pane);
+                            changeActiveStackPanel(getPanel(this.panePath), this.index);
+                        }
+                    });
+
+                    this.menu.popup(e);
+                } else {
+                    console.log(pane.panels);
+                    throw "'ax5ui-menu' is required to implement the function.";
+                }
+
+                $stackPane = null;
+                panePath = null;
+                pane = null;
                 return this;
             };
 
@@ -1021,7 +1068,6 @@
 
 })();
 
-// todo : active 된 패널만 표시하기 -- ok
 // todo : row > stack 구현 -- ok
 // todo : stack 패널 active change -- ok
 // todo : 패널삭제하기 -- ok ~ active 패널 정리.. -- ok
