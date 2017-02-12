@@ -178,9 +178,29 @@ describe('ax5grid TEST', function () {
         done(myUI.getList().length == 3 ? "" : "error setData");
     });
 
+
     it('select ax5grid', function (done) {
         myUI.select(0);
         done(myUI.getList()[0]["__selected__"] ? "" : "error select");
+    });
+
+    it('copySelect ax5grid', function (done) {
+        myUI.selectedColumn = {
+            "0_3_0": { panelName: "top-body-scroll", dindex: 0, rowIndex: 0, colIndex: 3, colspan: 1 }
+        };
+        myUI.copySelect();
+        done(myUI.$["form"]["clipboard"].get(0).innerHTML.replace(/\n+|(<br>)/g, "") == 2000 ? "" : "error copySelect");
+        // {chrome: 2000\n, firefox: 2000<br>}
+    });
+
+    it('addRow ax5grid', function (done) {
+        myUI.addRow({a: "D", b: "D", price: 1600, amount: 2600, cost: 2000, saleDt: "2016-01-01", isChecked: "Y", saleType: "D", customer: "name04", __selected__: true});
+        done(myUI.getList().length == 4 ? "" : "error addRow");
+    });
+
+    it('deleteRow ax5grid', function (done) {
+        myUI.deleteRow();
+        done(myUI.getList("deleted").length == 1 ? "" : "error deleteRow");
     });
 
     it('getList ax5grid', function (done) {
@@ -196,18 +216,12 @@ describe('ax5grid TEST', function () {
     });
 
     it('getList[deleted] ax5grid', function (done) {
-        myUI.deleteRow(2);
         done(myUI.getList("deleted").length == 1 ? "" : "error getList[deleted]");
     });
 
     it('setHeight ax5grid', function (done) {
         myUI.setHeight(500);
         done(myUI.$target.css("height") == "500px" ? "" : "error setHeight");
-    });
-
-    it('addRow ax5grid', function (done) {
-        myUI.addRow({a: "D", b: "D", price: 1600, amount: 2600, cost: 2000, saleDt: "2016-01-01", isChecked: "Y", saleType: "D", customer: "name04", __selected__: true});
-        done(myUI.getList().length == 3 ? "" : "error addRow");
     });
 
     after(function () {
