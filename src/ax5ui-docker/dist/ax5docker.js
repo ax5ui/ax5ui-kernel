@@ -152,8 +152,15 @@
                         _panel.active = true;
                         _panel.$label.addClass("active");
                         _panel.$item.addClass("active");
+
+                        var $pane = _panel.$label.parent();
+                        if ($pane.get(0) && $pane.get(0).clientWidth !== $pane.get(0).scrollWidth) {
+                            $pane.animate({ scrollLeft: _panel.$label.position().left }, 300);
+                        }
+
                         module = _panel.moduleName in _this.modules && 'active' in _this.modules[_panel.moduleName] ? _this.modules[_panel.moduleName] : defaultModule;
                         module.active(moduleContainer, moduleState);
+                        $pane = null;
                     },
                     deactive: function deactive() {
                         _panel.active = false;
@@ -387,7 +394,6 @@
                 panelIndex = null;
                 panel = null;
                 return _this;
-                // todo : 액티브 패널이 변경되면 scrollLeft 조정
             };
 
             /**

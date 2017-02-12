@@ -153,8 +153,15 @@
                         _panel.active = true;
                         _panel.$label.addClass("active");
                         _panel.$item.addClass("active");
+
+                        let $pane = _panel.$label.parent();
+                        if ($pane.get(0) && $pane.get(0).clientWidth !== $pane.get(0).scrollWidth) {
+                            $pane.animate({scrollLeft: _panel.$label.position().left}, 300);
+                        }
+
                         module = (_panel.moduleName in this.modules && 'active' in this.modules[_panel.moduleName]) ? this.modules[_panel.moduleName] : defaultModule;
                         module.active(moduleContainer, moduleState);
+                        $pane = null;
                     },
                     deactive: () => {
                         _panel.active = false;
@@ -407,7 +414,6 @@
                 panelIndex = null;
                 panel = null;
                 return this;
-                // todo : 액티브 패널이 변경되면 scrollLeft 조정
             };
 
             /**
