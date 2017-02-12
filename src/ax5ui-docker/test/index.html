@@ -54,7 +54,6 @@
 
     $(function () {
 
-
         var _panel = {
             type: "row", // type : row, column, stack
             panels: [
@@ -165,7 +164,6 @@
             ]
         };
 
-
         myDocker.setConfig({
             target: $('[data-ax5docker="docker1"]'),
             icons: {
@@ -173,7 +171,7 @@
                 more: '<i class="fa fa-chevron-circle-down" aria-hidden="true"></i>'
             },
             panels: [
-                __panel
+                _panel
             ],
             control: {
                 before: function (that, callback) {

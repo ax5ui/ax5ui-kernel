@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.90"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -71,6 +71,12 @@
                 destroy: function destroy(container, state) {}
             };
 
+            /**
+             * 부모패널과 패널인덱스 값으로 패널 패스를 구합니다.
+             * @param parent
+             * @param pIndex
+             * @returns {string}
+             */
             var getPanelPath = function getPanelPath(parent, pIndex) {
                 var paths = [];
                 if (parent && typeof parent.panelPath !== "undefined") {
@@ -81,6 +87,11 @@
                 return paths.join(".");
             };
 
+            /**
+             * 패널패스를 이용하여 패널을 가져옵니다
+             * @param _panelPath
+             * @returns {*}
+             */
             var getPanel = function getPanel(_panelPath) {
                 var path = [],
                     _path = U.isArray(_panelPath) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
@@ -96,21 +107,12 @@
                 }
             };
 
-            var getParentPanel = function getParentPanel(_panelPath) {
-                var path = [],
-                    _path = U.isArray(_panelPath) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
-                _path.pop();
-                _path.forEach(function (n) {
-                    if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
-                });
-
-                try {
-                    return Function("", "return this" + path.join('') + ";").call(_this);
-                } catch (e) {
-                    return;
-                }
-            };
-
+            /**
+             * 패널패스를 이용하여 패널오브젝트에 값을 부여합니다.
+             * @param _panelPath
+             * @param _value
+             * @returns {*}
+             */
             var setPanel = function setPanel(_panelPath, _value) {
                 var path = [],
                     _path = U.isArray(_panelPath) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
@@ -122,6 +124,11 @@
                 return Function("val", "return this" + path.join('') + " = val;").call(_this, _value);
             };
 
+            /**
+             * get mouse position
+             * @param e
+             * @returns {{clientX, clientY}}
+             */
             var getMousePosition = function getMousePosition(e) {
                 var mouseObj = void 0,
                     originalEvent = e.originalEvent ? e.originalEvent : e;
@@ -133,6 +140,12 @@
                 };
             };
 
+            /**
+             * 패널의 모듈이 초기화, 활성화, 비활성, 제거 되는 일들을 제어하는 함수.
+             * 모든 컨트롤은 실행되기전에 사용자가 정의한 control.before 함수의 결과에 따라 실행 여부를 결정합니다. 사용자가 control.before를 정의하지 않으면 무조건 실행합니다.
+             * @param {Object} _panel
+             * @param {String} _control - "init","active","deactive","destroy"
+             */
             var controlPanel = function controlPanel(_panel, _control) {
                 var moduleState = jQuery.extend(_panel.moduleState, {
                     name: _panel.name
@@ -254,7 +267,7 @@
                             $parent.find('[data-ax5docker-pane-tabs]').append(myself.$label);
                             $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
                         } else {
-                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-aside="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
+                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-tabs-more="">' + cfg.icons.more + '</div>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
 
                             if (!myself.builded) controlPanel(myself, "init");
                             controlPanel(myself, "active");
@@ -338,7 +351,9 @@
                     U.stopEvent(e);
                 });
 
-                _this.$target.off("mousedown.ax5docker-pane-resize").off("dragstart.ax5docker-pane-resize").on("mousedown.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
+                _this.$target.off("mousedown.ax5docker-pane-resize").off("dragstart.ax5docker-pane-resize").on("dragstart.ax5docker-pane-resize", "[data-ax5docker-pane-tab]", function (e) {
+                    panelTabDragEvent.on(this);
+                }).on("mousedown.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
                     var datas = this.getAttribute("data-ax5docker-resize-handle").split(/\//g);
 
                     // panelResizerEvent.init
@@ -414,6 +429,12 @@
                 return _this;
             };
 
+            /**
+             * stackTab의 더보기 아이콘이 클릭되면~~~
+             * @param stackPane
+             * @param e
+             * @returns {ax5docker}
+             */
             var openStackPanelMore = function openStackPanelMore(stackPane, e) {
                 var $stackPane = jQuery(stackPane),
                     panePath = $stackPane.attr("data-ax5docker-path"),
@@ -448,13 +469,17 @@
                 return _this;
             };
 
+            /**
+             * repaintPanels이 작동할 때. 리사이저에 mousedown 이벤트를 연결합니다.
+             * 발생된 이벤트가 panelResizerEvent.on 을 작동시켜 리사이저를 움직이게 합니다
+             */
             var panelResizerEvent = {
                 "on": function on(_resizer) {
                     var $resizer = $(_resizer);
                     var resizerPositionLeft = $resizer.offset().left;
                     var dockerTargetOffsetLeft = _this.$target.offset().left;
 
-                    jQuery(document.body).bind("mousemove.ax5docker-" + _this.instanceId, function (e) {
+                    jQuery(document.body).on("mousemove.ax5docker-" + _this.instanceId, function (e) {
                         var mouseObj = getMousePosition(e);
                         var da_grow = void 0;
                         if (self.xvar.resizerLived) {
@@ -477,11 +502,11 @@
 
                         mouseObj = null;
                         da_grow = null;
-                    }).bind("mouseup.ax5docker-" + _this.instanceId, function (e) {
-                        panelResizerEvent.off.call(self);
+                    }).on("mouseup.ax5docker-" + _this.instanceId, function (e) {
+                        panelResizerEvent.off();
                         U.stopEvent(e);
-                    }).bind("mouseleave.ax5docker-" + _this.instanceId, function (e) {
-                        panelResizerEvent.off.call(self);
+                    }).on("mouseleave.ax5docker-" + _this.instanceId, function (e) {
+                        panelResizerEvent.off();
                         U.stopEvent(e);
                     });
 
@@ -505,9 +530,34 @@
                         nextPane = null;
                     }
 
-                    jQuery(document.body).unbind("mousemove.ax5docker-" + _this.instanceId).unbind("mouseup.ax5docker-" + _this.instanceId).unbind("mouseleave.ax5docker-" + _this.instanceId);
+                    jQuery(document.body).off("mousemove.ax5docker-" + _this.instanceId).off("mouseup.ax5docker-" + _this.instanceId).off("mouseleave.ax5docker-" + _this.instanceId);
 
                     jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+                }
+            };
+
+            /**
+             * repaintPanels이 작동할 때. 패널탭에 dragStart 이벤트를 연결합니다.
+             * 발생된 이벤트가 panelTabDragEvent.on를 작동.
+             */
+            var panelTabDragEvent = {
+                "on": function on() {
+                    _this.$target.on("dragover.ax5docker-" + _this.instanceId, function (e) {
+                        // todo : dragover 구현
+                        //console.log("dargover", getMousePosition(e));
+                        U.stopEvent(e);
+                    }).on("drop.ax5docker-" + _this.instanceId, function (e) {
+                        console.log("drop", getMousePosition(e));
+                        panelTabDragEvent.off();
+                        U.stopEvent(e);
+                    }).on("dragend.ax5docker-" + _this.instanceId, function (e) {
+                        console.log("dragend", getMousePosition(e));
+                        panelTabDragEvent.off();
+                        U.stopEvent(e);
+                    });
+                },
+                "off": function off() {
+                    _this.$target.off("dragover.ax5docker-" + _this.instanceId).off("drop.ax5docker-" + _this.instanceId).off("dragend.ax5docker-" + _this.instanceId);
                 }
             };
 
@@ -518,6 +568,9 @@
                 fn();
             }, cfg.animateTime);
 
+            /**
+             * stackPane이 리사이즈 되면 탭을 스크롤여부를 판단해야 합니다.
+             */
             var alignStackPane = function alignStackPane() {
                 debounceFn(function () {
                     this.$target.find('[data-ax5docker-pane-tabs]').each(function () {
@@ -1040,19 +1093,15 @@
 // todo : 패널추가하기 -- ok
 // todo : 패널 스플릿 리사이즈 -- ok
 // todo : stack tab overflow 처리. -- ok
-// todo : 탭 포커싱와 탭 목록 메뉴 처리전
+// todo : 탭 포커싱와 탭 목록 메뉴 처리 -- ok
 // todo : 패널 drag & drop
 // ax5.ui.docker.tmpl
 (function () {
 
     var DOCKER = ax5.ui.docker;
 
-    var panels = function panels(columnKeys) {
-        return " \n{{#panels}}\n{{#panels}}\n{{/panels}}\n{{^panels}}\n{{/panels}}\n{{/panels}}\n        ";
-    };
-
     DOCKER.tmpl = {
-        "panels": panels,
+
         get: function get(tmplName, data, columnKeys) {
             return ax5.mustache.render(DOCKER.tmpl[tmplName].call(this, columnKeys), data);
         }
