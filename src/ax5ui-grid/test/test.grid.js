@@ -224,6 +224,22 @@ describe('ax5grid TEST', function () {
         done(myUI.$target.css("height") == "500px" ? "" : "error setHeight");
     });
 
+    it('appendToList ax5grid', function (done) {
+        myUI.appendToList([
+            {a: "D", b: "D", price: 1600, amount: 2600, cost: 2000, saleDt: "2016-01-01", isChecked: "Y", saleType: "D", customer: "name04"},
+            {a: "E", b: "E", price: 1800, amount: 2800, cost: 2500, saleDt: "2017-01-01", isChecked: "Y", saleType: "A", customer: "name05"},
+            {a: "F", b: "F", price: 2000, amount: 3000, cost: 3000, saleDt: "2017-02-01", isChecked: "N", saleType: "B", customer: "name06"}
+        ]);
+        done(myUI.getList().length == "6" ? "" : "error appendToList");
+    });
+
+    it('removeRow ax5grid', function (done) {
+        // 리스트에서 완전 제거
+        myUI.removeRow();
+        console.log(myUI);
+        done(myUI.getList().length == "5" ? "" : "error removeRow");
+    });
+
     after(function () {
         $('[data-ax5grid="first-grid"]').remove();
     });
