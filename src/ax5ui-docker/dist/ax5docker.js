@@ -544,17 +544,29 @@
                 "on": function on() {
                     _this.$target.on("dragover.ax5docker-" + _this.instanceId, function (e) {
                         // todo : dragover 구현
-                        //console.log("dargover", getMousePosition(e));
+                        // console.log("dargover", getMousePosition(e));
+                        // console.log(e.target);
+                        panelTabDragEvent.dragover(e);
                         U.stopEvent(e);
                     }).on("drop.ax5docker-" + _this.instanceId, function (e) {
-                        console.log("drop", getMousePosition(e));
                         panelTabDragEvent.off();
                         U.stopEvent(e);
                     }).on("dragend.ax5docker-" + _this.instanceId, function (e) {
-                        console.log("dragend", getMousePosition(e));
                         panelTabDragEvent.off();
                         U.stopEvent(e);
                     });
+                },
+                "dragover": function dragover(e) {
+                    // e.target
+                    var $eTarget = jQuery(e.target);
+                    var box = {};
+                    box = $eTarget.offset();
+                    box.width = $eTarget.width();
+                    box.height = $eTarget.height();
+
+                    var mouse = getMousePosition(e);
+
+                    console.log(box, mouse);
                 },
                 "off": function off() {
                     _this.$target.off("dragover.ax5docker-" + _this.instanceId).off("drop.ax5docker-" + _this.instanceId).off("dragend.ax5docker-" + _this.instanceId);

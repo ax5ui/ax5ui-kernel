@@ -581,19 +581,31 @@
                     this.$target
                         .on("dragover.ax5docker-" + this.instanceId, function (e) {
                             // todo : dragover 구현
-                            //console.log("dargover", getMousePosition(e));
+                            // console.log("dargover", getMousePosition(e));
+                            // console.log(e.target);
+                            panelTabDragEvent.dragover(e);
                             U.stopEvent(e);
                         })
                         .on("drop.ax5docker-" + this.instanceId, function (e) {
-                            console.log("drop", getMousePosition(e));
                             panelTabDragEvent.off();
                             U.stopEvent(e);
                         })
                         .on("dragend.ax5docker-" + this.instanceId, function (e) {
-                            console.log("dragend", getMousePosition(e));
                             panelTabDragEvent.off();
                             U.stopEvent(e);
                         });
+                },
+                "dragover": (e) => {
+                    // e.target
+                    const $eTarget = jQuery(e.target);
+                    let box = {};
+                    box = $eTarget.offset();
+                    box.width = $eTarget.width();
+                    box.height = $eTarget.height();
+
+                    let mouse = getMousePosition(e);
+
+                    console.log(box, mouse);
                 },
                 "off": () => {
                     this.$target
@@ -602,7 +614,6 @@
                         .off("dragend.ax5docker-" + this.instanceId);
                 }
             };
-
 
             /**
              * stack type panel resize되면 탭 스크롤 처리 관련 처리

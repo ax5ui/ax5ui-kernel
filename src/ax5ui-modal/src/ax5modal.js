@@ -182,7 +182,7 @@
                         this.$["iframe-form"].submit();
                     }
 
-                    if (callback) callback.call(that);
+                    if (callback) callback.call(that, that);
 
                     if (!this.watingModal) {
                         onStateChanged.call(this, opts, that);
