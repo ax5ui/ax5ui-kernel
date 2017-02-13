@@ -578,34 +578,84 @@
              */
             const panelTabDragEvent = {
                 "on": () => {
-                    this.$target
-                        .on("dragover.ax5docker-" + this.instanceId, function (e) {
-                            // todo : dragover 구현
-                            // console.log("dargover", getMousePosition(e));
-                            // console.log(e.target);
-                            panelTabDragEvent.dragover(e);
-                            U.stopEvent(e);
-                        })
-                        .on("drop.ax5docker-" + this.instanceId, function (e) {
-                            panelTabDragEvent.off();
-                            U.stopEvent(e);
-                        })
-                        .on("dragend.ax5docker-" + this.instanceId, function (e) {
-                            panelTabDragEvent.off();
-                            U.stopEvent(e);
-                        });
+                    if (this.panels[0] && this.panels[0].panels && this.panels[0].panels.length) {
+
+                        this.xvar.drager = {
+                            target: null,
+                            dragOverVertical: null,
+                            dragOverHorizontal: null
+                        };
+
+                        this.$target
+                            .on("dragover.ax5docker-" + this.instanceId, '[data-ax5docker-path]', function (e) {
+                                // todo : dragover 구현
+                                // console.log("dargover", getMousePosition(e));
+                                // console.log(e.target);
+                                panelTabDragEvent.dragover(this, e);
+                                U.stopEvent(e);
+                            })
+                            .on("drop.ax5docker-" + this.instanceId, function (e) {
+                                panelTabDragEvent.off();
+                                U.stopEvent(e);
+                            })
+                            .on("dragend.ax5docker-" + this.instanceId, function (e) {
+                                panelTabDragEvent.off();
+                                U.stopEvent(e);
+                            });
+                    }
                 },
-                "dragover": (e) => {
+                "dragover": (dragoverDom, e) => {
+                    let $dragoverDom = jQuery(dragoverDom);
+                    if (this.xvar.drager.target == null || this.xvar.drager.target.get(0) != $dragoverDom.get(0)) {
+                        this.xvar.drager.target = $dragoverDom;
+                        this.xvar.drager.dragOverVertical = null;
+                        this.xvar.drager.dragOverHorizontal = null;
+                    }
+
                     // e.target
-                    const $eTarget = jQuery(e.target);
                     let box = {};
-                    box = $eTarget.offset();
-                    box.width = $eTarget.width();
-                    box.height = $eTarget.height();
+                    box = $dragoverDom.offset();
+                    box.width = $dragoverDom.width();
+                    box.height = $dragoverDom.height();
 
                     let mouse = getMousePosition(e);
+                    let dragOverVertical, dragOverHorizontal;
+                    if ($dragoverDom.attr("data-ax5docker-pane-tab")) {
 
-                    console.log(box, mouse);
+                    }
+                    else if ($dragoverDom.attr("data-ax5docker-pane-item")) {
+                        // panel dragover 포지션 구하기
+                        let threeQuarterHeight = box.height / 3;
+                        let threeQuarterWidth = box.width / 3;
+
+                        if (box.top <= mouse.clientY && (box.top + threeQuarterHeight) >= mouse.clientY) {
+                            dragOverVertical = "top";
+                        }
+                        else if ((box.top + threeQuarterHeight) <= mouse.clientY && (box.top + threeQuarterHeight * 2) >= mouse.clientY) {
+                            dragOverVertical = "middle";
+                        }
+                        else if ((box.top + threeQuarterHeight * 2) <= mouse.clientY && (box.top + threeQuarterHeight * 3) >= mouse.clientY) {
+                            dragOverVertical = "bottom";
+                        }
+
+                        if (box.left <= mouse.clientX && (box.left + threeQuarterWidth) >= mouse.clientX) {
+                            dragOverHorizontal = "left";
+                        }
+                        else if ((box.left + threeQuarterWidth) <= mouse.clientX && (box.left + threeQuarterWidth * 2) >= mouse.clientX) {
+                            dragOverHorizontal = "center";
+                        }
+                        else if ((box.left + threeQuarterWidth * 2) <= mouse.clientX && (box.left + threeQuarterWidth * 3) >= mouse.clientX) {
+                            dragOverHorizontal = "right";
+                        }
+                    }
+
+                    if (this.xvar.drager.dragOverVertical != dragOverVertical || this.xvar.drager.dragOverHorizontal != dragOverHorizontal) {
+                        this.xvar.drager.dragOverVertical = dragOverVertical;
+                        this.xvar.drager.dragOverHorizontal = dragOverHorizontal;
+                        console.log(this.xvar.drager);
+                    }
+
+                    //console.log(box, mouse);
                 },
                 "off": () => {
                     this.$target
