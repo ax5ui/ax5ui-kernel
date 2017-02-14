@@ -236,8 +236,18 @@ describe('ax5grid TEST', function () {
     it('removeRow ax5grid', function (done) {
         // 리스트에서 완전 제거
         myUI.removeRow();
-        console.log(myUI);
         done(myUI.getList().length == "5" ? "" : "error removeRow");
+    });
+
+    it('updateRow ax5grid', function (done) {
+        myUI.updateRow({a: "G", b: "G", price: 3000, amount: 4000, cost: 5000, saleDt: "2017-02-02", isChecked: "Y", saleType: "A", customer: "name06"}, 0);
+        var data = myUI.getList()[0];
+        done(data.a == "G" && data.b == "G" ? "" : "error updateRow");
+    });
+
+    it('setValue ax5grid', function (done) {
+        myUI.setValue(0, "price", 3000);
+        done(myUI.getList()[0].price == 3000 ? "" : "error updateRow");
     });
 
     after(function () {
