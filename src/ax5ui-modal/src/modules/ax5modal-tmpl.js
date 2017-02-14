@@ -19,7 +19,6 @@
             {{/header}}
             <div class="ax-modal-body" data-modal-els="body">
             {{#iframe}}
-            
                 <div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">
                     <table data-modal-els="iframe-loading" style="width:100%;height:100%;"><tr><td style="text-align: center;vertical-align: middle">{{{iframeLoadingMsg}}}</td></tr></table>
                     <iframe name="{{modalId}}-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>
@@ -32,6 +31,9 @@
                 {{/@each}}
                 {{/param}}
                 </form>
+            {{/iframe}}
+            {{^iframe}}
+                <div data-modal-els="body-frame" style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>
             {{/iframe}}
             </div>
             <div class="ax-modal-body-mask"></div>

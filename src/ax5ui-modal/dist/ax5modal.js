@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "1.3.90"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5modal
@@ -147,6 +147,8 @@
                     this.$["iframe"] = this.activeModal.find('[data-modal-els="iframe"]');
                     this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
                     this.$["iframe-loading"] = this.activeModal.find('[data-modal-els="iframe-loading"]');
+                } else {
+                    this.$["body-frame"] = this.activeModal.find('[data-modal-els="body-frame"]');
                 }
 
                 //- position 정렬
@@ -183,7 +185,7 @@
                     this.$["iframe-form"].submit();
                 }
 
-                if (callback) callback.call(that);
+                if (callback) callback.call(that, that);
 
                 if (!this.watingModal) {
                     onStateChanged.call(this, opts, that);
@@ -651,7 +653,7 @@
     var MODAL = ax5.ui.modal;
 
     var content = function content() {
-        return " \n        <div id=\"{{modalId}}\" data-modal-els=\"root\" class=\"ax5modal {{theme}} {{fullscreen}}\" style=\"{{styles}}\">\n            {{#header}}\n            <div class=\"ax-modal-header\" data-modal-els=\"header\">\n                {{{title}}}\n                {{#btns}}\n                    <div class=\"ax-modal-header-addon\">\n                    {{#@each}}\n                    <button tabindex=\"-1\" data-modal-header-btn=\"{{@key}}\" class=\"{{@value.theme}}\">{{{@value.label}}}</button>\n                    {{/@each}}\n                    </div>\n                {{/btns}}\n            </div>\n            {{/header}}\n            <div class=\"ax-modal-body\" data-modal-els=\"body\">\n            {{#iframe}}\n            \n                <div data-modal-els=\"iframe-wrap\" style=\"-webkit-overflow-scrolling: touch; overflow: auto;position: relative;\">\n                    <table data-modal-els=\"iframe-loading\" style=\"width:100%;height:100%;\"><tr><td style=\"text-align: center;vertical-align: middle\">{{{iframeLoadingMsg}}}</td></tr></table>\n                    <iframe name=\"{{modalId}}-frame\" src=\"\" width=\"100%\" height=\"100%\" frameborder=\"0\" data-modal-els=\"iframe\" style=\"position: absolute;left:0;top:0;\"></iframe>\n                </div>\n                <form name=\"{{modalId}}-form\" data-modal-els=\"iframe-form\">\n                <input type=\"hidden\" name=\"modalId\" value=\"{{modalId}}\" />\n                {{#param}}\n                {{#@each}}\n                <input type=\"hidden\" name=\"{{@key}}\" value=\"{{@value}}\" />\n                {{/@each}}\n                {{/param}}\n                </form>\n            {{/iframe}}\n            </div>\n            <div class=\"ax-modal-body-mask\"></div>\n        </div>\n        ";
+        return " \n        <div id=\"{{modalId}}\" data-modal-els=\"root\" class=\"ax5modal {{theme}} {{fullscreen}}\" style=\"{{styles}}\">\n            {{#header}}\n            <div class=\"ax-modal-header\" data-modal-els=\"header\">\n                {{{title}}}\n                {{#btns}}\n                    <div class=\"ax-modal-header-addon\">\n                    {{#@each}}\n                    <button tabindex=\"-1\" data-modal-header-btn=\"{{@key}}\" class=\"{{@value.theme}}\">{{{@value.label}}}</button>\n                    {{/@each}}\n                    </div>\n                {{/btns}}\n            </div>\n            {{/header}}\n            <div class=\"ax-modal-body\" data-modal-els=\"body\">\n            {{#iframe}}\n                <div data-modal-els=\"iframe-wrap\" style=\"-webkit-overflow-scrolling: touch; overflow: auto;position: relative;\">\n                    <table data-modal-els=\"iframe-loading\" style=\"width:100%;height:100%;\"><tr><td style=\"text-align: center;vertical-align: middle\">{{{iframeLoadingMsg}}}</td></tr></table>\n                    <iframe name=\"{{modalId}}-frame\" src=\"\" width=\"100%\" height=\"100%\" frameborder=\"0\" data-modal-els=\"iframe\" style=\"position: absolute;left:0;top:0;\"></iframe>\n                </div>\n                <form name=\"{{modalId}}-form\" data-modal-els=\"iframe-form\">\n                <input type=\"hidden\" name=\"modalId\" value=\"{{modalId}}\" />\n                {{#param}}\n                {{#@each}}\n                <input type=\"hidden\" name=\"{{@key}}\" value=\"{{@value}}\" />\n                {{/@each}}\n                {{/param}}\n                </form>\n            {{/iframe}}\n            {{^iframe}}\n                <div data-modal-els=\"body-frame\" style=\"position: absolute;left:0;top:0;width:100%;height:100%;\"></div>\n            {{/iframe}}\n            </div>\n            <div class=\"ax-modal-body-mask\"></div>\n        </div>\n        ";
     };
 
     MODAL.tmpl = {

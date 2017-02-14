@@ -147,6 +147,9 @@
                         this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
                         this.$["iframe-loading"] = this.activeModal.find('[data-modal-els="iframe-loading"]');
                     }
+                    else{
+                        this.$["body-frame"] = this.activeModal.find('[data-modal-els="body-frame"]');
+                    }
 
                     //- position 정렬
                     this.align();
