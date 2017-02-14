@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "${VERSION}"
+        version: "1.3.91"
     }, function () {
 
         /**
