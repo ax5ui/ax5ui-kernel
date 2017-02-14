@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "layout",
-        version: "1.3.91"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5layout
@@ -49,7 +49,7 @@
                 theme: 'default',
                 animateTime: 250,
                 splitter: {
-                    size: 4
+                    size: 1
                 },
                 autoResize: true
             };

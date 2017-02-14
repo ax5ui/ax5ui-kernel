@@ -47,7 +47,7 @@
                 theme: 'default',
                 animateTime: 250,
                 splitter: {
-                    size: 4
+                    size: 1
                 },
                 autoResize: true
             };
