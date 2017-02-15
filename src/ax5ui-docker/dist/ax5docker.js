@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.92"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -544,7 +544,7 @@
                 "on": function on() {
                     if (_this.panels[0] && _this.panels[0].panels && _this.panels[0].panels.length) {
 
-                        _this.xvar.drager = {
+                        _this.xvar.dragger = {
                             target: null,
                             dragOverVertical: null,
                             dragOverHorizontal: null
@@ -567,10 +567,10 @@
                 },
                 "dragover": function dragover(dragoverDom, e) {
                     var $dragoverDom = jQuery(dragoverDom);
-                    if (_this.xvar.drager.target == null || _this.xvar.drager.target.get(0) != $dragoverDom.get(0)) {
-                        _this.xvar.drager.target = $dragoverDom;
-                        _this.xvar.drager.dragOverVertical = null;
-                        _this.xvar.drager.dragOverHorizontal = null;
+                    if (_this.xvar.dragger.target == null || _this.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
+                        _this.xvar.dragger.target = $dragoverDom;
+                        _this.xvar.dragger.dragOverVertical = null;
+                        _this.xvar.dragger.dragOverHorizontal = null;
                     }
 
                     // e.target
@@ -604,16 +604,47 @@
                         }
                     }
 
-                    if (_this.xvar.drager.dragOverVertical != dragOverVertical || _this.xvar.drager.dragOverHorizontal != dragOverHorizontal) {
-                        _this.xvar.drager.dragOverVertical = dragOverVertical;
-                        _this.xvar.drager.dragOverHorizontal = dragOverHorizontal;
-                        console.log(_this.xvar.drager);
-                    }
+                    if (_this.xvar.dragger.dragOverVertical != dragOverVertical || _this.xvar.dragger.dragOverHorizontal != dragOverHorizontal) {
+                        _this.xvar.dragger.dragOverVertical = dragOverVertical;
+                        _this.xvar.dragger.dragOverHorizontal = dragOverHorizontal;
 
-                    //console.log(box, mouse);
+                        var draggerProcessor = {
+                            "left-top": function leftTop($target) {
+                                $target.attr("data-dropper", "left");
+                            },
+                            "right-top": function rightTop($target) {
+                                $target.attr("data-dropper", "right");
+                            },
+                            "center-top": function centerTop($target) {
+                                $target.attr("data-dropper", "top");
+                            },
+                            "left-middle": function leftMiddle($target) {
+                                $target.attr("data-dropper", "left");
+                            },
+                            "right-middle": function rightMiddle($target) {
+                                $target.attr("data-dropper", "right");
+                            },
+                            "center-middle": function centerMiddle($target) {
+                                $target.attr("data-dropper", "center");
+                            },
+                            "left-bottom": function leftBottom($target) {
+                                $target.attr("data-dropper", "left");
+                            },
+                            "right-bottom": function rightBottom($target) {
+                                $target.attr("data-dropper", "right");
+                            },
+                            "center-bottom": function centerBottom($target) {
+                                $target.attr("data-dropper", "bottom");
+                            }
+                        };
+
+                        draggerProcessor[_this.xvar.dragger.dragOverHorizontal + "-" + _this.xvar.dragger.dragOverVertical](_this.xvar.dragger.target);
+                    }
                 },
                 "off": function off() {
                     _this.$target.off("dragover.ax5docker-" + _this.instanceId).off("drop.ax5docker-" + _this.instanceId).off("dragend.ax5docker-" + _this.instanceId);
+
+                    _this.xvar.dragger.target.removeAttr("data-dropper");
                 }
             };
 

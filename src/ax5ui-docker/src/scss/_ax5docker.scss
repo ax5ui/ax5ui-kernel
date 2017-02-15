@@ -165,10 +165,61 @@
                 [data-ax5docker-pane-item] {
                     display: none;
                     background: $ax5docker-pane-item-bg;
-
+                    position: relative;
                     &.active {
                         display: flex;
                         @include flex(1);
+                    }
+
+                    &[data-dropper] {
+                        &:before {
+                            transition: all 0.3s;
+                            content: ' ';
+                            position: absolute;
+                            display: block;
+                            background: #000000;
+                            opacity: 0.3;
+                        }
+                    }
+                    &[data-dropper="left"] {
+                        &:before {
+                            left: 0;
+                            top: 0;
+                            height: 100%;
+                            width: 50%;
+                        }
+                    }
+                    &[data-dropper="right"] {
+                        &:before {
+                            left: 50%;
+                            top: 0;
+                            height: 100%;
+                            width: 50%;
+                        }
+                    }
+                    &[data-dropper="top"] {
+                        &:before {
+                            left: 0;
+                            top: 0;
+                            height: 50%;
+                            width: 100%;
+                        }
+                    }
+                    &[data-dropper="bottom"] {
+                        &:before {
+                            left: 0;
+                            top: 50%;
+                            height: 50%;
+                            width: 100%;
+                        }
+                    }
+                    &[data-dropper="center"] {
+                        &:before {
+                            left: 0;
+                            top: 0;
+                            height: 100%;
+                            width: 100%;
+                        }
                     }
                 }
             }

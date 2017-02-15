@@ -580,7 +580,7 @@
                 "on": () => {
                     if (this.panels[0] && this.panels[0].panels && this.panels[0].panels.length) {
 
-                        this.xvar.drager = {
+                        this.xvar.dragger = {
                             target: null,
                             dragOverVertical: null,
                             dragOverHorizontal: null
@@ -606,10 +606,10 @@
                 },
                 "dragover": (dragoverDom, e) => {
                     let $dragoverDom = jQuery(dragoverDom);
-                    if (this.xvar.drager.target == null || this.xvar.drager.target.get(0) != $dragoverDom.get(0)) {
-                        this.xvar.drager.target = $dragoverDom;
-                        this.xvar.drager.dragOverVertical = null;
-                        this.xvar.drager.dragOverHorizontal = null;
+                    if (this.xvar.dragger.target == null || this.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
+                        this.xvar.dragger.target = $dragoverDom;
+                        this.xvar.dragger.dragOverVertical = null;
+                        this.xvar.dragger.dragOverHorizontal = null;
                     }
 
                     // e.target
@@ -649,19 +649,51 @@
                         }
                     }
 
-                    if (this.xvar.drager.dragOverVertical != dragOverVertical || this.xvar.drager.dragOverHorizontal != dragOverHorizontal) {
-                        this.xvar.drager.dragOverVertical = dragOverVertical;
-                        this.xvar.drager.dragOverHorizontal = dragOverHorizontal;
-                        console.log(this.xvar.drager);
-                    }
+                    if (this.xvar.dragger.dragOverVertical != dragOverVertical || this.xvar.dragger.dragOverHorizontal != dragOverHorizontal) {
+                        this.xvar.dragger.dragOverVertical = dragOverVertical;
+                        this.xvar.dragger.dragOverHorizontal = dragOverHorizontal;
 
-                    //console.log(box, mouse);
+                        var draggerProcessor = {
+                            "left-top"($target){
+                                $target.attr("data-dropper", "left");
+                            },
+                            "right-top"($target){
+                                $target.attr("data-dropper", "right");
+                            },
+                            "center-top"($target){
+                                $target.attr("data-dropper", "top");
+                            },
+                            "left-middle"($target){
+                                $target.attr("data-dropper", "left");
+                            },
+                            "right-middle"($target){
+                                $target.attr("data-dropper", "right");
+                            },
+                            "center-middle"($target){
+                                $target.attr("data-dropper", "center");
+                            },
+                            "left-bottom"($target){
+                                $target.attr("data-dropper", "left");
+                            },
+                            "right-bottom"($target){
+                                $target.attr("data-dropper", "right");
+                            },
+                            "center-bottom"($target){
+                                $target.attr("data-dropper", "bottom");
+                            },
+                        };
+
+                        draggerProcessor[this.xvar.dragger.dragOverHorizontal + "-" + this.xvar.dragger.dragOverVertical](this.xvar.dragger.target);
+
+                    }
                 },
                 "off": () => {
                     this.$target
                         .off("dragover.ax5docker-" + this.instanceId)
                         .off("drop.ax5docker-" + this.instanceId)
                         .off("dragend.ax5docker-" + this.instanceId);
+
+                    this.xvar.dragger.target.removeAttr("data-dropper");
                 }
             };
 
