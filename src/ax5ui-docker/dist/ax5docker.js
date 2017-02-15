@@ -568,6 +568,9 @@
                 "dragover": function dragover(dragoverDom, e) {
                     var $dragoverDom = jQuery(dragoverDom);
                     if (_this.xvar.dragger.target == null || _this.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
+
+                        if (_this.xvar.dragger.target) _this.xvar.dragger.target.removeAttr("data-dropper");
+
                         _this.xvar.dragger.target = $dragoverDom;
                         _this.xvar.dragger.dragOverVertical = null;
                         _this.xvar.dragger.dragOverHorizontal = null;
@@ -582,7 +585,28 @@
                     var mouse = getMousePosition(e);
                     var dragOverVertical = void 0,
                         dragOverHorizontal = void 0;
-                    if ($dragoverDom.attr("data-ax5docker-pane-tab")) {} else if ($dragoverDom.attr("data-ax5docker-pane-item")) {
+                    if ($dragoverDom.attr("data-ax5docker-pane-tab")) {
+                        var halfWidth = box.width / 2;
+                        if (box.left <= mouse.clientX && box.left + halfWidth >= mouse.clientX) {
+                            dragOverHorizontal = "left";
+                        } else if (box.left + halfWidth <= mouse.clientX && box.left + halfWidth * 2 >= mouse.clientX) {
+                            dragOverHorizontal = "right";
+                        }
+                        if (_this.xvar.dragger.dragOverHorizontal != dragOverHorizontal && typeof dragOverHorizontal != "undefined") {
+                            _this.xvar.dragger.dragOverHorizontal = dragOverHorizontal;
+
+                            var draggerProcessor = {
+                                "left": function left($target) {
+                                    $target.attr("data-dropper", "left");
+                                },
+                                "right": function right($target) {
+                                    $target.attr("data-dropper", "right");
+                                }
+                            };
+
+                            draggerProcessor[_this.xvar.dragger.dragOverHorizontal](_this.xvar.dragger.target);
+                        }
+                    } else if ($dragoverDom.attr("data-ax5docker-pane-item")) {
                         // panel dragover 포지션 구하기
                         var threeQuarterHeight = box.height / 3;
                         var threeQuarterWidth = box.width / 3;
@@ -602,43 +626,43 @@
                         } else if (box.left + threeQuarterWidth * 2 <= mouse.clientX && box.left + threeQuarterWidth * 3 >= mouse.clientX) {
                             dragOverHorizontal = "right";
                         }
-                    }
 
-                    if (_this.xvar.dragger.dragOverVertical != dragOverVertical || _this.xvar.dragger.dragOverHorizontal != dragOverHorizontal) {
-                        _this.xvar.dragger.dragOverVertical = dragOverVertical;
-                        _this.xvar.dragger.dragOverHorizontal = dragOverHorizontal;
+                        if (_this.xvar.dragger.dragOverVertical != dragOverVertical || _this.xvar.dragger.dragOverHorizontal != dragOverHorizontal) {
+                            _this.xvar.dragger.dragOverVertical = dragOverVertical;
+                            _this.xvar.dragger.dragOverHorizontal = dragOverHorizontal;
 
-                        var draggerProcessor = {
-                            "left-top": function leftTop($target) {
-                                $target.attr("data-dropper", "left");
-                            },
-                            "right-top": function rightTop($target) {
-                                $target.attr("data-dropper", "right");
-                            },
-                            "center-top": function centerTop($target) {
-                                $target.attr("data-dropper", "top");
-                            },
-                            "left-middle": function leftMiddle($target) {
-                                $target.attr("data-dropper", "left");
-                            },
-                            "right-middle": function rightMiddle($target) {
-                                $target.attr("data-dropper", "right");
-                            },
-                            "center-middle": function centerMiddle($target) {
-                                $target.attr("data-dropper", "center");
-                            },
-                            "left-bottom": function leftBottom($target) {
-                                $target.attr("data-dropper", "left");
-                            },
-                            "right-bottom": function rightBottom($target) {
-                                $target.attr("data-dropper", "right");
-                            },
-                            "center-bottom": function centerBottom($target) {
-                                $target.attr("data-dropper", "bottom");
-                            }
-                        };
+                            var draggerProcessor = {
+                                "left-top": function leftTop($target) {
+                                    $target.attr("data-dropper", "left");
+                                },
+                                "right-top": function rightTop($target) {
+                                    $target.attr("data-dropper", "right");
+                                },
+                                "center-top": function centerTop($target) {
+                                    $target.attr("data-dropper", "top");
+                                },
+                                "left-middle": function leftMiddle($target) {
+                                    $target.attr("data-dropper", "left");
+                                },
+                                "right-middle": function rightMiddle($target) {
+                                    $target.attr("data-dropper", "right");
+                                },
+                                "center-middle": function centerMiddle($target) {
+                                    $target.attr("data-dropper", "center");
+                                },
+                                "left-bottom": function leftBottom($target) {
+                                    $target.attr("data-dropper", "left");
+                                },
+                                "right-bottom": function rightBottom($target) {
+                                    $target.attr("data-dropper", "right");
+                                },
+                                "center-bottom": function centerBottom($target) {
+                                    $target.attr("data-dropper", "bottom");
+                                }
+                            };
 
-                        draggerProcessor[_this.xvar.dragger.dragOverHorizontal + "-" + _this.xvar.dragger.dragOverVertical](_this.xvar.dragger.target);
+                            draggerProcessor[_this.xvar.dragger.dragOverHorizontal + "-" + _this.xvar.dragger.dragOverVertical](_this.xvar.dragger.target);
+                        }
                     }
                 },
                 "off": function off() {

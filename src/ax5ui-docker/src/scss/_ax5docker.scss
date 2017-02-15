@@ -127,6 +127,33 @@
                     &:last-child {
 
                     }
+
+                    &[data-dropper] {
+                        &:after {
+                            transition: all 0.3s;
+                            content: ' ';
+                            position: absolute;
+                            display: block;
+                            background: #000000;
+                            opacity: 0.3;
+                        }
+                    }
+                    &[data-dropper="left"] {
+                        &:after {
+                            left: 0;
+                            top: 0;
+                            height: 100%;
+                            width: 50%;
+                        }
+                    }
+                    &[data-dropper="right"] {
+                        &:after {
+                            left: 50%;
+                            top: 0;
+                            height: 100%;
+                            width: 50%;
+                        }
+                    }
                 }
 
                 &:after {
