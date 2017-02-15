@@ -250,8 +250,18 @@ describe('ax5grid TEST', function () {
         done(myUI.getList()[0].price == 3000 ? "" : "error updateRow");
     });
 
+    it('addColumn', function (done) {
+        myUI.addColumn({key: "color", label: "색상", align: "center"});
+        var lastCol = myUI.columns[myUI.columns.length -1];
+        done(lastCol.key == "color" && lastCol.label == "색상" && lastCol.align == "center" ? "" : "error addColumn");
+    });
+
+    it('removeColumn', function (done) {
+        myUI.removeColumn();
+        done(myUI.columns.length == 7 ? "" : "error removeColumn");
+    });
+
     after(function () {
         $('[data-ax5grid="first-grid"]').remove();
     });
-
 });
