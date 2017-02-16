@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.3.92"
+        version: "1.3.93"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -425,7 +425,6 @@
 
                         this.xhr = new XMLHttpRequest();
                         this.xhr.open("post", cfg.form.action, true);
-
                         this.xhr.onload = function (e) {
                             var res = e.target.response;
                             try {
@@ -450,7 +449,6 @@
                             bound_uploaded(res);
                             self.send();
                         };
-
                         this.xhr.upload.onprogress = function (e) {
                             // console.log(e.loaded, e.total);
                             bound_updateProgressBar(e);
