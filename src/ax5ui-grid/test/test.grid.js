@@ -261,6 +261,13 @@ describe('ax5grid TEST', function () {
         done(myUI.columns.length == 7 ? "" : "error removeColumn");
     });
 
+    it('updateColumn', function (done) {
+        myUI.addColumn({key: "color", label: "색상", align: "center"});
+        myUI.updateColumn({key: "c-o-l-o-r", label: "색깔", align: "left"}, 7);
+        var lastCol = myUI.columns[myUI.columns.length -1];
+        done(lastCol.key == "c-o-l-o-r" && lastCol.label == "색깔" && lastCol.align == "left" ? "" : "error updateColumn");
+    });
+
     after(function () {
         $('[data-ax5grid="first-grid"]').remove();
     });
