@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.92"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -5500,12 +5500,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.xvar.touchmoved = false;
 
             jQuery(document.body).on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
-
                 var css = getContentPosition(e);
                 GRID.header.scrollTo.call(self, { left: css.left });
                 GRID.body.scrollTo.call(self, css, "noRepaint");
                 resize.call(self);
-                U.stopEvent(e);
+                U.stopEvent(e.originalEvent);
                 self.xvar.touchmoved = true;
             }).on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
                 if (self.xvar.touchmoved) {
@@ -5513,7 +5512,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     GRID.header.scrollTo.call(self, { left: css.left });
                     GRID.body.scrollTo.call(self, css);
                     resize.call(self);
-                    U.stopEvent(e);
+                    U.stopEvent(e.originalEvent);
                     scrollContentMover.off.call(self);
                 }
             });
@@ -5584,7 +5583,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }.bind(this));
 
-        if (document.addEventListener && ax5.info.supportTouch) {
+        if (ax5.info.supportTouch) {
             this.$["container"]["body"].on("touchstart", '[data-ax5grid-panel]', function (e) {
                 self.xvar.mousePosition = GRID.util.getMousePosition(e);
                 scrollContentMover.on.call(self);

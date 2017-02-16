@@ -449,7 +449,6 @@
 
                         this.xhr = new XMLHttpRequest();
                         this.xhr.open("post", cfg.form.action, true);
-
                         this.xhr.onload = function (e) {
                             let res = e.target.response;
                             try {
@@ -474,7 +473,6 @@
                             bound_uploaded(res);
                             self.send();
                         };
-
                         this.xhr.upload.onprogress = function (e) {
                             // console.log(e.loaded, e.total);
                             bound_updateProgressBar(e);

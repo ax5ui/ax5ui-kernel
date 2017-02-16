@@ -342,12 +342,11 @@
 
             jQuery(document.body)
                 .on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
-
                     let css = getContentPosition(e);
                     GRID.header.scrollTo.call(self, {left: css.left});
                     GRID.body.scrollTo.call(self, css, "noRepaint");
                     resize.call(self);
-                    U.stopEvent(e);
+                    U.stopEvent(e.originalEvent);
                     self.xvar.touchmoved = true;
                 })
                 .on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
@@ -356,7 +355,7 @@
                         GRID.header.scrollTo.call(self, {left: css.left});
                         GRID.body.scrollTo.call(self, css);
                         resize.call(self);
-                        U.stopEvent(e);
+                        U.stopEvent(e.originalEvent);
                         scrollContentMover.off.call(self);
                     }
                 });
@@ -440,7 +439,7 @@
             }
         }).bind(this));
 
-        if (document.addEventListener && ax5.info.supportTouch) {
+        if (ax5.info.supportTouch) {
             this.$["container"]["body"]
                 .on("touchstart", '[data-ax5grid-panel]', function (e) {
                     self.xvar.mousePosition = GRID.util.getMousePosition(e);
