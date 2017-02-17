@@ -111,7 +111,12 @@ describe('ax5.ui.select method TEST', function () {
         myUI.update({
             target: $('[data-ax5select="select2"]'),
             theme: "danger",
-            animateTime: 200
+            animateTime: 200,
+            options:[
+                {value: "A", text: "AMAZING"},
+                {value: "B", text: "BEAUTIFUL"},
+                {value: "C", text: "CREATIVE"}
+            ]
         });
         done(
             ae.equalAll("danger", myUI.queue[0].theme)
