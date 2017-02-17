@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "select",
-        version: "1.3.94"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5select
@@ -415,7 +415,12 @@
                 return function (queIdx) {
                     var item = this.queue[queIdx],
                         data = {};
+
+                    // find selected
                     item.selected = [];
+                    item.options.forEach(function (n) {
+                        if (n[cfg.columnKeys.optionSelected]) item.selected.push(jQuery.extend({}, n));
+                    });
 
                     if (!item.$display) {
                         /// 템플릿에 전달할 오브젝트 선언
@@ -531,7 +536,6 @@
                                 focusIndex++;
                             }
                         });
-
                         item.optionItemLength = focusIndex;
                         item.$select.html(po.join(''));
                     } else {
@@ -587,20 +591,20 @@
             /// private end
 
             /**
-            * Preferences of select UI
-            * @method ax5select.setConfig
-            * @param {Object} config - 클래스 속성값
-            * @returns {ax5select}
-            * @example
-            * ```js
-            * var options = [];
-            * for (var i = 0; i < 20; i++) {
+             * Preferences of select UI
+             * @method ax5select.setConfig
+             * @param {Object} config - 클래스 속성값
+             * @returns {ax5select}
+             * @example
+             * ```js
+             * var options = [];
+             * for (var i = 0; i < 20; i++) {
             *     options.push({value: i, text: "optionText" + i});
             * }
-             * var mySelect = new ax5.ui.select({
+              * var mySelect = new ax5.ui.select({
             *     theme: "danger"
             * });
-             * mySelect.bind({
+              * mySelect.bind({
             *     theme: "primary",
             *     target: $('[data-ax5select="select1"]'),
             *     options: options,
@@ -614,8 +618,8 @@
             *         console.log(this);
             *     }
             * });
-            * ```
-            */
+             * ```
+             */
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
                 this.onChange = cfg.onChange;

@@ -433,7 +433,12 @@
                     return function (queIdx) {
                         let item = this.queue[queIdx],
                             data = {};
+
+                        // find selected
                         item.selected = [];
+                        item.options.forEach(function (n) {
+                            if(n[cfg.columnKeys.optionSelected]) item.selected.push(jQuery.extend({}, n));
+                        });
 
                         if (!item.$display) {
                             /// 템플릿에 전달할 오브젝트 선언
@@ -570,7 +575,6 @@
                                     focusIndex++;
                                 }
                             });
-
                             item.optionItemLength = focusIndex;
                             item.$select.html(po.join(''));
                         }
@@ -628,22 +632,22 @@
             /// private end
 
             /**
-            * Preferences of select UI
-            * @method ax5select.setConfig
-            * @param {Object} config - 클래스 속성값
-            * @returns {ax5select}
-            * @example
-            * ```js
-            * var options = [];
-            * for (var i = 0; i < 20; i++) {
+             * Preferences of select UI
+             * @method ax5select.setConfig
+             * @param {Object} config - 클래스 속성값
+             * @returns {ax5select}
+             * @example
+             * ```js
+             * var options = [];
+             * for (var i = 0; i < 20; i++) {
             *     options.push({value: i, text: "optionText" + i});
             * }
 
-            * var mySelect = new ax5.ui.select({
+             * var mySelect = new ax5.ui.select({
             *     theme: "danger"
             * });
 
-            * mySelect.bind({
+             * mySelect.bind({
             *     theme: "primary",
             *     target: $('[data-ax5select="select1"]'),
             *     options: options,
@@ -657,8 +661,8 @@
             *         console.log(this);
             *     }
             * });
-            * ```
-            */
+             * ```
+             */
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
                 this.onChange = cfg.onChange;
