@@ -22,7 +22,7 @@
                 <div class="form-group">
                     <div data-ax5select="select1" data-ax5select-config='{
                     size: "lg",
-                    multiple: true,
+                    multiple: false,
                     reset:"<i class=\"fa fa-trash\"></i>"
                 }'></div>
                 </div>
@@ -60,14 +60,12 @@
 </div>
 <script>
     var options = [];
-        options.push({value: "", text: "-- 전체 --"});
+    options.push({id: "", alias: "-- 전체 --"});
     for (var i = 0; i < 20; i++) {
-        options.push({value: i, text: "optionText" + i});
+        options.push({id: i, alias: "optionText" + i});
     }
 
-    var mySelect = new ax5.ui.select({
-        theme: "danger"
-    });
+    var mySelect = new ax5.ui.select();
 
     $(document.body).ready(function () {
 
@@ -88,12 +86,30 @@
                     //$('[data-ax-path="select2"]').val(["optionValue7", "optionValue9"]).trigger("change");
                     break;
                 case "update":
-                    mySelect.update({
-                        target: $('[data-ax5select="select1"]'),
-                        options: [
-                            {value: 99, text: "optionText"}
+                    mySelect.setOptions($('[data-ax5select="select1"]'),
+                        [
+                            {"id": 0, "alias": "Select connection"},
+                            {
+                                "createdAt": "2017-02-16T07:02:39Z",
+                                "updatedAt": "2017-02-16T07:02:44Z",
+                                "id": 1,
+                                "database": "ORACLE",
+                                "alias": "Ora11g",
+                                "type": "NET",
+                                "host": "14.63.163.228",
+                                "port": 1521,
+                                "userName": "icn_dev2",
+                                "password": "icn_dev2",
+                                "useUnicode": true,
+                                "identityType": "SID",
+                                "identityValue": "XE",
+                                "favorite": true,
+                                "dataStatus": "ORIGIN"
+                            }
                         ]
-                    });
+                    );
+
+                    return;
                     $('[data-ax5select="select2"]').ax5select({
                         options: options
                     });
@@ -108,15 +124,19 @@
          });
          */
 
-
-        $('[data-ax5select="select2"]').ax5select({
-            options: options
-        });
-        $('[data-ax5select="select3"]').ax5select({
-            options: options
-        });
+        /*
+         $('[data-ax5select="select2"]').ax5select({
+         options: options
+         });
+         $('[data-ax5select="select3"]').ax5select({
+         options: options
+         });
+         */
 
         mySelect.bind({
+            columnKeys: {
+                optionValue: "id", optionText: "alias"
+            },
             //theme: "primary",
             target: $('[data-ax5select="select1"]'),
             options: options,

@@ -1,270 +1,135 @@
-# Basic Usage
-> It is a dropdown UI. It supports multi-selection, based on a html select tag
+<a name="ax5select"></a>
 
-## setConfig()
-`setConfig(config)`
+## ax5select
+**Kind**: global class  
+**Author:** tom@axisj.com  
 
-How to initialize the properties of the UI, there are two.
-You can pass the property values of the UI to `setConfig`.
-Using the `new` you can pass when you initialize the UI.
+* [ax5select](#ax5select)
+    * [.setConfig(config)](#ax5select.setConfig) ⇒ <code>[ax5select](#ax5select)</code>
+    * [.bind(item)](#ax5select.bind) ⇒ <code>[ax5select](#ax5select)</code>
+    * [.open(boundID, [tryCount])](#ax5select.open) ⇒ <code>[ax5select](#ax5select)</code>
+    * [.update(item)](#ax5select.update) ⇒ <code>[ax5select](#ax5select)</code>
+    * [.setOptions(boundID, options)](#ax5select.setOptions) ⇒ <code>[ax5select](#ax5select)</code>
+    * [.val(boundID, [value], [selected])](#ax5select.val) ⇒ <code>[ax5select](#ax5select)</code>
+    * [.close()](#ax5select.close) ⇒ <code>[ax5select](#ax5select)</code>
 
+<a name="ax5select.setConfig"></a>
+
+### ax5select.setConfig(config) ⇒ <code>[ax5select](#ax5select)</code>
+Preferences of select UI
+
+**Kind**: static method of <code>[ax5select](#ax5select)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| config | <code>Object</code> | 클래스 속성값 |
+
+**Example**  
 ```js
-var select = new ax5.ui.select({
-  theme: 'default',
-  animateTime: 250,
-  lang: {
-      emptyOfSelected: '',
-      multipleLabel: '"{{label}}"외 {{length}}건'
-  },
-  columnKeys: {
-      optionValue: 'value',
-      optionText: 'text',
-      optionSelected: 'selected'
-  }
+var options = [];
+for (var i = 0; i < 20; i++) {
+    options.push({value: i, text: "optionText" + i});
+}
+var mySelect = new ax5.ui.select({
+    theme: "danger"
 });
-// or
-select.setConfig({
-  theme: 'default',
-  animateTime: 250,
-  lang: {
-      noSelected: '',
-      noOptions: 'no options',
-      loading: 'now loading..',
-      multipleLabel: '"{{label}}"외 {{length}}건'
-  },
-  columnKeys: {
-      optionValue: 'value',
-      optionText: 'text',
-      optionSelected: 'selected'
-  }
-});
-```
-
-### theme
-Type: `String`
-
-### animateTime
-Type: `Number`
-
-### lang
-Type: `Object`
-
-### columnKeys
-Type: `Object`
-This is used to define the internal name of the key. The object of the options
-
-```js
-var options = [
-  {id:1, text:"text"}
-];
-
-var select = new ax5.ui.select({
-  columnKeys: {
-    optionValue: 'id',
-    optionText: 'text',
-  }
-});
-```
-
----
-
-
-## bind()
-`bind(Options)`
-
-```html
-<div class="form-group">
-    <div data-ax5select="select1" data-ax5select-config='{}'></div>
-</div>
-```
-```js
-var select = new ax5.ui.select();
-
-select.bind({
-  target: $('[data-ax5select="select1"]'),
-  options: [
-    {value: "optionValue1", text: "optionText1"},
-    {value: "optionValue2", text: "optionText2"}
-  ]
-});
-```
-
-### id
-
-Type: `String`
-
-select unique id
-
-### theme
-
-Type: `String`
-
-### multiple
-
-Type: `Boolean`
-
-### target
-
-Type: `Dom Element | jQuery Object`
-
-element that are the target of the select, element must have "data-ax5select" attribute
-
-### options
-
-Type: `Array`
-
-### onStateChanged
-
-Type: `Function`
-
-`onStateChanged` function can be defined in setConfig method or new ax5.ui.select initialization method.
-However, you can us to define an event function after initialization, if necessary
-
-```js
-var select = new ax5.ui.select({
-    onStateChanged: function(){
+mySelect.bind({
+    theme: "primary",
+    target: $('[data-ax5select="select1"]'),
+    options: options,
+    onChange: function () {
+        console.log(this);
+    },
+    onClose: function () {
+        console.log(this);
+    },
+    onStateChanged: function () {
         console.log(this);
     }
 });
-
-select.onStateChanged = function(){
-    console.log(this);
-}
 ```
+<a name="ax5select.bind"></a>
 
-### reset
+### ax5select.bind(item) ⇒ <code>[ax5select](#ax5select)</code>
+bind select
 
-Type: `String`
+**Kind**: static method of <code>[ax5select](#ax5select)</code>  
 
-multiple selected clear icon
+| Param | Type |
+| --- | --- |
+| item | <code>Object</code> | 
+| [item.id] | <code>String</code> | 
+| [item.theme] | <code>String</code> | 
+| [item.multiple] | <code>Boolean</code> | 
+| item.target | <code>Element</code> | 
+| item.options | <code>Array.&lt;Object&gt;</code> | 
 
+**Example**  
 ```js
-select.bind({
-  target: $('[data-ax5select="select1"]'),
-  reset:"<i class=\"fa fa-trash\"></i>",
-  options: [
-    {value: "optionValue1", text: "optionText1"},
-    {value: "optionValue2", text: "optionText2"}
-  ]
+var mySelect = new ax5.ui.select();
+mySelect.bind({
+ columnKeys: {
+     optionValue: "value",
+     optionText: "text"
+ },
+ target: $('[data-ax5select="select1"]'),
+ options: [
+     {value: "", text: ""}
+ ],
+ onChange: function(){
+
+ },
+ onClose: function(){
+
+ },
+ onStateChanged: function(){
+
+ }
 });
 ```
+<a name="ax5select.open"></a>
 
-### onExpand
+### ax5select.open(boundID, [tryCount]) ⇒ <code>[ax5select](#ax5select)</code>
+open the optionBox of select
 
-Type: `Function`
+**Kind**: static method of <code>[ax5select](#ax5select)</code>  
 
-```js
-select.bind({
-  target: $('[data-ax5select="select1"]'),
-  lang: {
-      loading: '<i class="fa fa-spinner fa-pulse"></i>'
-  },
-  onExpand: function (callback) {
-      setTimeout(function () {
-        callback({
-            options: [
-                {value: "V0", text: "callback Text 0"},
-                {value: "V1", text: "callback Text 1"},
-                {value: "V2", text: "callback Text 2"},
-                {value: "V3", text: "callback Text 3"}
-            ]
-        });
-      }, 300);
-  }
-});
-```
+| Param | Type |
+| --- | --- |
+| boundID | <code>String</code> &#124; <code>Number</code> &#124; <code>Element</code> | 
+| [tryCount] | <code>Number</code> | 
 
-## open()
-`open(boundID)`
+<a name="ax5select.update"></a>
 
-### boundID
-Type: `String|Number|Element`
+### ax5select.update(item) ⇒ <code>[ax5select](#ax5select)</code>
+**Kind**: static method of <code>[ax5select](#ax5select)</code>  
 
-```js
-var el = $('[data-ax5select="select1"]').get(0);
-mySelect.open(el);
-mySelect.open($('[data-ax5select="select1"]'));
-mySelect.open(0);
-```
+| Param | Type |
+| --- | --- |
+| item | <code>Object</code> &#124; <code>String</code> | 
 
-## update()
-`update(Options)`
+<a name="ax5select.setOptions"></a>
 
-```js
-mySelect.update({
-  target: $('[data-ax5select="select1"]'),
-  options: [...]
-});
-```
+### ax5select.setOptions(boundID, options) ⇒ <code>[ax5select](#ax5select)</code>
+**Kind**: static method of <code>[ax5select](#ax5select)</code>  
 
-## val()
-`val(boundID[, value, selected])`
+| Param |
+| --- |
+| boundID | 
+| options | 
 
-```js
-mySelect.val($('[data-ax5select="select1"]'), "optionValue2"); // setValue
-mySelect.val($('[data-ax5select="select1"]')); // getValue
-```
+<a name="ax5select.val"></a>
 
-## close()
-`close()`
+### ax5select.val(boundID, [value], [selected]) ⇒ <code>[ax5select](#ax5select)</code>
+**Kind**: static method of <code>[ax5select](#ax5select)</code>  
 
-## enable()
-`enable(boundID)`
-```js
-mySelect.enable($('[data-ax5select="select1"]'));
-```
+| Param | Type |
+| --- | --- |
+| boundID | <code>String</code> &#124; <code>Number</code> &#124; <code>Element</code> | 
+| [value] | <code>String</code> &#124; <code>Object</code> &#124; <code>Array</code> | 
+| [selected] | <code>Boolean</code> | 
 
-## disable()
-`disable(boundID)`
-```js
-mySelect.disable($('[data-ax5select="select1"]'));
-```
-***
+<a name="ax5select.close"></a>
 
-# jQuery extends
-
-## ax5select
-`ax5select(options)`
-
-```js
-$('[data-ax5select]').ax5select({
-    options: options
-});
-```
-
-### open
-`ax5select("open")`
-```js
-$('[data-ax5select]').ax5select("open");
-```
-
-### close
-`ax5select("close")`
-```js
-$('[data-ax5select]').ax5select("close");
-```
-
-### setValue
-`ax5select("setValue")`
-```js
-$('[data-ax5select]').ax5select("setValue", "optionValue2");
-```
-
-### getValue
-`ax5select("getValue")`
-```js
-$('[data-ax5select]').ax5select("getValue");
-```
-
-### enable
-`ax5select("enable")`
-```js
-$('[data-ax5select]').ax5select("enable");
-```
-
-### disable
-`ax5select("disable")`
-```js
-$('[data-ax5select]').ax5select("disable");
-```
-
+### ax5select.close() ⇒ <code>[ax5select](#ax5select)</code>
+**Kind**: static method of <code>[ax5select](#ax5select)</code>  

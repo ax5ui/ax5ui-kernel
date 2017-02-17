@@ -9,36 +9,12 @@
 
     UI.addClass({
         className: "select",
-        version: "1.3.93"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5select
          * @classdesc
          * @author tom@axisj.com
-         * @example
-         * ```js
-         * var options = [];
-         * for (var i = 0; i < 20; i++) {
-         *     options.push({value: i, text: "optionText" + i});
-         * }
-          * var mySelect = new ax5.ui.select({
-         *     theme: "danger"
-         * });
-          * mySelect.bind({
-         *     theme: "primary",
-         *     target: $('[data-ax5select="select1"]'),
-         *     options: options,
-         *     onChange: function () {
-         *         console.log(this);
-         *     },
-         *     onClose: function () {
-         *         console.log(this);
-         *     },
-         *     onStateChanged: function () {
-         *         console.log(this);
-         *     }
-         * });
-         * ```
          */
         var ax5select = function ax5select() {
             var self = this,
@@ -611,14 +587,35 @@
             /// private end
 
             /**
-             * Preferences of select UI
-             * @method ax5select.setConfig
-             * @param {Object} config - 클래스 속성값
-             * @returns {ax5select}
-             * @example
-             * ```
-             * ```
-             */
+            * Preferences of select UI
+            * @method ax5select.setConfig
+            * @param {Object} config - 클래스 속성값
+            * @returns {ax5select}
+            * @example
+            * ```js
+            * var options = [];
+            * for (var i = 0; i < 20; i++) {
+            *     options.push({value: i, text: "optionText" + i});
+            * }
+             * var mySelect = new ax5.ui.select({
+            *     theme: "danger"
+            * });
+             * mySelect.bind({
+            *     theme: "primary",
+            *     target: $('[data-ax5select="select1"]'),
+            *     options: options,
+            *     onChange: function () {
+            *         console.log(this);
+            *     },
+            *     onClose: function () {
+            *         console.log(this);
+            *     },
+            *     onStateChanged: function () {
+            *         console.log(this);
+            *     }
+            * });
+            * ```
+            */
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
                 this.onChange = cfg.onChange;
@@ -638,6 +635,29 @@
              * @param {Element} item.target
              * @param {Object[]} item.options
              * @returns {ax5select}
+             * @example
+             * ```js
+             * var mySelect = new ax5.ui.select();
+             * mySelect.bind({
+             *  columnKeys: {
+             *      optionValue: "value",
+             *      optionText: "text"
+             *  },
+             *  target: $('[data-ax5select="select1"]'),
+             *  options: [
+             *      {value: "", text: ""}
+             *  ],
+             *  onChange: function(){
+             *
+             *  },
+             *  onClose: function(){
+             *
+             *  },
+             *  onStateChanged: function(){
+             *
+             *  }
+             * });
+             * ```
              */
             this.bind = function (item) {
                 var selectConfig = {},
@@ -855,6 +875,20 @@
              */
             this.update = function (_item) {
                 this.bind(_item);
+                return this;
+            };
+
+            /**
+             * @method ax5select.setOptions
+             * @param boundID
+             * @param options
+             * @returns {ax5select}
+             */
+            this.setOptions = function (boundID, options) {
+                var queIdx = getQueIdx.call(this, boundID);
+                this.queue[queIdx].selected = [];
+                this.queue[queIdx].options = options;
+                bindSelectTarget.call(this, queIdx);
                 return this;
             };
 
@@ -1121,6 +1155,9 @@ jQuery.fn.ax5select = function () {
                     break;
                 case "disable":
                     return ax5.ui.select_instance.disable(this);
+                    break;
+                case "setOptions":
+                    return ax5.ui.select_instance.setOptions(this, arguments[1]);
                     break;
                 default:
                     return this;
