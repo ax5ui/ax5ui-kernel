@@ -3,7 +3,6 @@
  * - github.com/thomasjang
  * - www.axisj.com
  */
-
 describe('ax5grid TEST', function () {
     var myUI;
     var tmpl = '<div data-ax5grid="first-grid" data-ax5grid-config="" style="height: 300px;"></div>';
@@ -266,6 +265,17 @@ describe('ax5grid TEST', function () {
         myUI.updateColumn({key: "c-o-l-o-r", label: "색깔", align: "left"}, 7);
         var lastCol = myUI.columns[myUI.columns.length -1];
         done(lastCol.key == "c-o-l-o-r" && lastCol.label == "색깔" && lastCol.align == "left" ? "" : "error updateColumn");
+    });
+
+    //TODO: setColumnWidth??
+    /*it('setColumnWidth', function (done) {
+        _width error
+        myUI(50, 0);
+    });*/
+
+    it('getColumnSortInfo', function (done) {
+        var sortInfo = myUI.getColumnSortInfo()[0];
+        done(sortInfo.key == "b" && sortInfo.orderBy == "asc" && sortInfo.seq == 0 ? "" : "error getColumnSortInfo");
     });
 
     after(function () {
