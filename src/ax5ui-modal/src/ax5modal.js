@@ -147,7 +147,7 @@
                         this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
                         this.$["iframe-loading"] = this.activeModal.find('[data-modal-els="iframe-loading"]');
                     }
-                    else{
+                    else {
                         this.$["body-frame"] = this.activeModal.find('[data-modal-els="body-frame"]');
                     }
 
@@ -201,12 +201,15 @@
                         this.align(null, e || window.event);
                     }).bind(this));
 
-                    this.activeModal.find("[data-modal-header-btn]").on(cfg.clickEventName, (function (e) {
-                        btnOnClick.call(this, e || window.event, opts);
-                    }).bind(this));
+                    this.activeModal
+                        .on(cfg.clickEventName, "[data-modal-header-btn]", (function (e) {
+                            btnOnClick.call(this, e || window.event, opts);
+                        }).bind(this));
 
                     this.$.header
-                        .bind(ENM["mousedown"], function (e) {
+                        .off(ENM["mousedown"])
+                        .off("dragstart")
+                        .on(ENM["mousedown"], function (e) {
                             if (opts.isFullScreen) return false;
 
                             /// 이벤트 필터링 추가 : 버튼엘리먼트로 부터 발생된 이벤트이면 moveModal 시작하지 않도록 필터링
@@ -221,8 +224,22 @@
                                 moveModal.on.call(self);
                             }
                         })
-                        .bind("dragstart", function (e) {
-                            U.stopEvent(e);
+                        .on("dragstart", function (e) {
+                            U.stopEvent(e.originalEvent);
+                            return false;
+                        });
+
+                    this.activeModal
+                        .off(ENM["mousedown"])
+                        .off("dragstart")
+                        .on(ENM["mousedown"], "[data-ax5modal-resizer]", function (e) {
+                            if (opts.isFullScreen) return false;
+
+                            self.mousePosition = getMousePosition(e);
+                            resizeModal.on.call(self);
+                        })
+                        .on("dragstart", function (e) {
+                            U.stopEvent(e.originalEvent);
                             return false;
                         });
                 },
@@ -280,6 +297,113 @@
                     }
                 },
                 moveModal = {
+                    "on": function () {
+                        let modalZIndex = this.activeModal.css("z-index"),
+                            modalOffset = this.activeModal.position(),
+                            modalBox = {
+                                width: this.activeModal.outerWidth(), height: this.activeModal.outerHeight()
+                            },
+                            windowBox = {
+                                width: jQuery(window).width(),
+                                height: jQuery(window).height()
+                            },
+                            getResizerPosition = function (e) {
+                                self.__dx = e.clientX - self.mousePosition.clientX;
+                                self.__dy = e.clientY - self.mousePosition.clientY;
+
+                                var minX = 0;
+                                var maxX = windowBox.width - modalBox.width;
+                                var minY = 0;
+                                var maxY = windowBox.height - modalBox.height;
+
+                                if (minX > modalOffset.left + self.__dx) {
+                                    self.__dx = -modalOffset.left;
+                                }
+                                else if (maxX < modalOffset.left + self.__dx) {
+                                    self.__dx = (maxX) - modalOffset.left;
+                                }
+
+                                if (minY > modalOffset.top + self.__dy) {
+                                    self.__dy = -modalOffset.top;
+                                }
+                                else if (maxY < modalOffset.top + self.__dy) {
+                                    self.__dy = (maxY) - modalOffset.top;
+                                }
+
+                                return {
+                                    left: modalOffset.left + self.__dx + $(document).scrollLeft(),
+                                    top: modalOffset.top + self.__dy + $(document).scrollTop()
+                                };
+                            };
+
+                        self.__dx = 0; // 변화량 X
+                        self.__dy = 0; // 변화량 Y
+
+                        if (!self.resizer) {
+                            // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
+                            self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
+                            self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
+                            self.resizerBg.css({zIndex: modalZIndex});
+                            self.resizer.css({
+                                left: modalOffset.left,
+                                top: modalOffset.top,
+                                width: modalBox.width,
+                                height: modalBox.height,
+                                zIndex: modalZIndex + 1
+                            });
+                            jQuery(document.body)
+                                .append(self.resizerBg)
+                                .append(self.resizer);
+                            self.activeModal.addClass("draged");
+                        }
+
+                        jQuery(document.body)
+                            .bind(ENM["mousemove"] + ".ax5modal-" + cfg.id, function (e) {
+                                self.resizer.css(getResizerPosition(e));
+                            })
+                            .bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
+                                moveModal.off.call(self);
+                            })
+                            .bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
+                                moveModal.off.call(self);
+                            });
+
+                        jQuery(document.body)
+                            .attr('unselectable', 'on')
+                            .css('user-select', 'none')
+                            .on('selectstart', false);
+                    },
+                    "off": function () {
+                        let setModalPosition = function () {
+                            let box = this.activeModal.offset();
+                            box.left += this.__dx - $(document).scrollLeft();
+                            box.top += this.__dy - $(document).scrollTop();
+                            this.activeModal.css(box);
+                        };
+
+                        if (this.resizer) {
+                            this.activeModal.removeClass("draged");
+                            this.resizer.remove();
+                            this.resizer = null;
+                            this.resizerBg.remove();
+                            this.resizerBg = null;
+                            setModalPosition.call(this);
+                            //this.align();
+                        }
+
+                        jQuery(document.body)
+                            .unbind(ENM["mousemove"] + ".ax5modal-" + cfg.id)
+                            .unbind(ENM["mouseup"] + ".ax5modal-" + cfg.id)
+                            .unbind("mouseleave.ax5modal-" + cfg.id);
+
+                        jQuery(document.body)
+                            .removeAttr('unselectable')
+                            .css('user-select', 'auto')
+                            .off('selectstart');
+
+                    }
+                },
+                resizeModal = {
                     "on": function () {
                         let modalZIndex = this.activeModal.css("z-index"),
                             modalOffset = this.activeModal.position(),
