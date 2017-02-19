@@ -134,7 +134,7 @@
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
                 this.activeModal = jQuery('#' + opts.id);
-
+                this.activeModalConfig = opts;
                 // 파트수집
                 this.$ = {
                     "root": this.activeModal,
@@ -226,9 +226,8 @@
 
                 this.activeModal.off(ENM["mousedown"]).off("dragstart").on(ENM["mousedown"], "[data-ax5modal-resizer]", function (e) {
                     if (opts.isFullScreen) return false;
-
                     self.mousePosition = getMousePosition(e);
-                    resizeModal.on.call(self);
+                    resizeModal.on.call(self, this.getAttribute("data-ax5modal-resizer"));
                 }).on("dragstart", function (e) {
                     U.stopEvent(e.originalEvent);
                     return false;
@@ -296,16 +295,13 @@
                     },
                         windowBox = {
                         width: jQuery(window).width(),
-                        height: jQuery(window).height()
+                        height: jQuery(window).height(),
+                        scrollLeft: this.activeModalConfig.absolute ? 0 : jQuery(document).scrollLeft(),
+                        scrollTop: this.activeModalConfig.absolute ? 0 : jQuery(document).scrollTop()
                     },
                         getResizerPosition = function getResizerPosition(e) {
                         self.__dx = e.clientX - self.mousePosition.clientX;
                         self.__dy = e.clientY - self.mousePosition.clientY;
-
-                        var minX = 0;
-                        var maxX = windowBox.width - modalBox.width;
-                        var minY = 0;
-                        var maxY = windowBox.height - modalBox.height;
 
                         if (minX > modalOffset.left + self.__dx) {
                             self.__dx = -modalOffset.left;
@@ -320,10 +316,15 @@
                         }
 
                         return {
-                            left: modalOffset.left + self.__dx + $(document).scrollLeft(),
-                            top: modalOffset.top + self.__dy + $(document).scrollTop()
+                            left: modalOffset.left + self.__dx + windowBox.scrollLeft,
+                            top: modalOffset.top + self.__dy + windowBox.scrollTop
                         };
                     };
+
+                    var minX = 0,
+                        maxX = windowBox.width - modalBox.width,
+                        minY = 0,
+                        maxY = windowBox.height - modalBox.height;
 
                     self.__dx = 0; // 변화량 X
                     self.__dy = 0; // 변화량 Y
@@ -334,8 +335,8 @@
                         self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
                         self.resizerBg.css({ zIndex: modalZIndex });
                         self.resizer.css({
-                            left: modalOffset.left,
-                            top: modalOffset.top,
+                            left: modalOffset.left + windowBox.scrollLeft,
+                            top: modalOffset.top + windowBox.scrollTop,
                             width: modalBox.width,
                             height: modalBox.height,
                             zIndex: modalZIndex + 1
@@ -356,19 +357,23 @@
                 },
                 "off": function off() {
                     var setModalPosition = function setModalPosition() {
-                        var box = this.activeModal.offset();
-                        box.left += this.__dx - $(document).scrollLeft();
-                        box.top += this.__dy - $(document).scrollTop();
+                        var box = this.resizer.offset();
+                        if (!this.activeModalConfig.absolute) {
+                            box.left -= jQuery(document).scrollLeft();
+                            box.top -= jQuery(document).scrollTop();
+                        }
                         this.activeModal.css(box);
+                        box = null;
                     };
 
                     if (this.resizer) {
                         this.activeModal.removeClass("draged");
+                        setModalPosition.call(this);
+
                         this.resizer.remove();
                         this.resizer = null;
                         this.resizerBg.remove();
                         this.resizerBg = null;
-                        setModalPosition.call(this);
                         //this.align();
                     }
 
@@ -378,7 +383,7 @@
                 }
             },
                 resizeModal = {
-                "on": function on() {
+                "on": function on(resizerType) {
                     var modalZIndex = this.activeModal.css("z-index"),
                         modalOffset = this.activeModal.position(),
                         modalBox = {
@@ -386,33 +391,214 @@
                     },
                         windowBox = {
                         width: jQuery(window).width(),
-                        height: jQuery(window).height()
+                        height: jQuery(window).height(),
+                        scrollLeft: this.activeModalConfig.absolute ? 0 : jQuery(document).scrollLeft(),
+                        scrollTop: this.activeModalConfig.absolute ? 0 : jQuery(document).scrollTop()
+                    },
+                        resizerProcessor = {
+                        "top": function top(e) {
+
+                            if (e.shiftKey) {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width,
+                                    height: modalBox.height - self.__dy * 2
+                                };
+                            } else if (e.altKey) {
+                                return {
+                                    left: modalOffset.left + self.__dy,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width - self.__dy * 2,
+                                    height: modalBox.height - self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width,
+                                    height: modalBox.height - self.__dy
+                                };
+                            }
+                        },
+                        "bottom": function bottom(e) {
+                            if (e.shiftKey) {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top - self.__dy,
+                                    width: modalBox.width,
+                                    height: modalBox.height + self.__dy * 2
+                                };
+                            } else if (e.altKey) {
+                                return {
+                                    left: modalOffset.left - self.__dy,
+                                    top: modalOffset.top - self.__dy,
+                                    width: modalBox.width + self.__dy * 2,
+                                    height: modalBox.height + self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top,
+                                    width: modalBox.width,
+                                    height: modalBox.height + self.__dy
+                                };
+                            }
+                        },
+                        "left": function left(e) {
+                            if (e.shiftKey) {
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top,
+                                    width: modalBox.width - self.__dx * 2,
+                                    height: modalBox.height
+                                };
+                            } else if (e.altKey) {
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top + self.__dx,
+                                    width: modalBox.width - self.__dx * 2,
+                                    height: modalBox.height - self.__dx * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top,
+                                    width: modalBox.width - self.__dx,
+                                    height: modalBox.height
+                                };
+                            }
+                        },
+                        "right": function right(e) {
+                            if (e.shiftKey) {
+                                return {
+                                    left: modalOffset.left - self.__dx,
+                                    top: modalOffset.top,
+                                    width: modalBox.width + self.__dx * 2,
+                                    height: modalBox.height
+                                };
+                            } else if (e.altKey) {
+                                return {
+                                    left: modalOffset.left - self.__dx,
+                                    top: modalOffset.top - self.__dx,
+                                    width: modalBox.width + self.__dx * 2,
+                                    height: modalBox.height + self.__dx * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top,
+                                    width: modalBox.width + self.__dx,
+                                    height: modalBox.height
+                                };
+                            }
+                        },
+                        "top-left": function topLeft(e) {
+                            if (e.shiftKey || e.altKey) {
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width - self.__dx * 2,
+                                    height: modalBox.height - self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width - self.__dx,
+                                    height: modalBox.height - self.__dy
+                                };
+                            }
+                        },
+                        "top-right": function topRight(e) {
+                            if (e.shiftKey || e.altKey) {
+                                return {
+                                    left: modalOffset.left - self.__dx,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width + self.__dx * 2,
+                                    height: modalBox.height - self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width + self.__dx,
+                                    height: modalBox.height - self.__dy
+                                };
+                            }
+                        },
+                        "bottom-left": function bottomLeft(e) {
+                            if (e.shiftKey || e.altKey) {
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top - self.__dy,
+                                    width: modalBox.width - self.__dx * 2,
+                                    height: modalBox.height + self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top,
+                                    width: modalBox.width - self.__dx,
+                                    height: modalBox.height + self.__dy
+                                };
+                            }
+                        },
+                        "bottom-right": function bottomRight(e) {
+                            if (e.shiftKey || e.altKey) {
+                                return {
+                                    left: modalOffset.left - self.__dx,
+                                    top: modalOffset.top - self.__dy,
+                                    width: modalBox.width + self.__dx * 2,
+                                    height: modalBox.height + self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top,
+                                    width: modalBox.width + self.__dx,
+                                    height: modalBox.height + self.__dy
+                                };
+                            }
+                        }
                     },
                         getResizerPosition = function getResizerPosition(e) {
                         self.__dx = e.clientX - self.mousePosition.clientX;
-                        self.__dy = e.clientY - self.mousePosition.clientY;
-
-                        var minX = 0;
-                        var maxX = windowBox.width - modalBox.width;
-                        var minY = 0;
-                        var maxY = windowBox.height - modalBox.height;
-
                         if (minX > modalOffset.left + self.__dx) {
                             self.__dx = -modalOffset.left;
-                        } else if (maxX < modalOffset.left + self.__dx) {
-                            self.__dx = maxX - modalOffset.left;
+                        } else if (maxX > modalBox.width - self.__dx) {
+                            self.__dx = modalBox.width - maxX;
                         }
 
+                        self.__dy = e.clientY - self.mousePosition.clientY;
                         if (minY > modalOffset.top + self.__dy) {
                             self.__dy = -modalOffset.top;
-                        } else if (maxY < modalOffset.top + self.__dy) {
-                            self.__dy = maxY - modalOffset.top;
+                        } else if (maxY > modalBox.height - self.__dy) {
+                            self.__dy = modalBox.height - maxY;
                         }
 
-                        return {
-                            left: modalOffset.left + self.__dx + $(document).scrollLeft(),
-                            top: modalOffset.top + self.__dy + $(document).scrollTop()
-                        };
+                        return resizerProcessor[resizerType](e);
+                    };
+
+                    if (!this.activeModalConfig.absolute) {
+                        modalOffset.left += windowBox.scrollLeft;
+                        modalOffset.top += windowBox.scrollTop;
+                    }
+
+                    var minX = 0,
+                        maxX = 100,
+                        minY = 0,
+                        maxY = 100;
+
+                    var cursorType = {
+                        "top": "row-resize",
+                        "bottom": "row-resize",
+                        "left": "col-resize",
+                        "right": "col-resize",
+                        "top-left": "nwse-resize",
+                        "top-right": "nesw-resize",
+                        "bottom-left": "nesw-resize",
+                        "bottom-right": "nwse-resize"
                     };
 
                     self.__dx = 0; // 변화량 X
@@ -422,13 +608,17 @@
                         // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
                         self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
                         self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
-                        self.resizerBg.css({ zIndex: modalZIndex });
+                        self.resizerBg.css({
+                            zIndex: modalZIndex,
+                            cursor: cursorType[resizerType]
+                        });
                         self.resizer.css({
                             left: modalOffset.left,
                             top: modalOffset.top,
                             width: modalBox.width,
                             height: modalBox.height,
-                            zIndex: modalZIndex + 1
+                            zIndex: modalZIndex + 1,
+                            cursor: cursorType[resizerType]
                         });
                         jQuery(document.body).append(self.resizerBg).append(self.resizer);
                         self.activeModal.addClass("draged");
@@ -437,28 +627,36 @@
                     jQuery(document.body).bind(ENM["mousemove"] + ".ax5modal-" + cfg.id, function (e) {
                         self.resizer.css(getResizerPosition(e));
                     }).bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
-                        moveModal.off.call(self);
+                        resizeModal.off.call(self);
                     }).bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
-                        moveModal.off.call(self);
+                        resizeModal.off.call(self);
                     });
 
                     jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
                 },
                 "off": function off() {
                     var setModalPosition = function setModalPosition() {
-                        var box = this.activeModal.offset();
-                        box.left += this.__dx - $(document).scrollLeft();
-                        box.top += this.__dy - $(document).scrollTop();
+                        var box = this.resizer.offset();
+                        jQuery.extend(box, {
+                            width: this.resizer.width(),
+                            height: this.resizer.height()
+                        });
+                        if (!this.activeModalConfig.absolute) {
+                            box.left -= jQuery(document).scrollLeft();
+                            box.top -= jQuery(document).scrollTop();
+                        }
                         this.activeModal.css(box);
+                        box = null;
                     };
 
                     if (this.resizer) {
                         this.activeModal.removeClass("draged");
+                        setModalPosition.call(this);
+
                         this.resizer.remove();
                         this.resizer = null;
                         this.resizerBg.remove();
                         this.resizerBg = null;
-                        setModalPosition.call(this);
                         //this.align();
                     }
 

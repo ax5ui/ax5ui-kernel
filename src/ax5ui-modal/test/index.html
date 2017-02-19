@@ -15,15 +15,19 @@
 </head>
 <body style="padding: 50px;">
 
-<button class="btn btn-danger" data-btn-action="iframe-modal-open">iframe Modal open</button>
-<button class="btn btn-danger" data-btn-action="iframe-modal-close">iframe Modal close</button>
+<div style="position: fixed;left:0;top:0;">
+    <button class="btn btn-danger" data-btn-action="iframe-modal-open">iframe Modal open</button>
+    <button class="btn btn-danger" data-btn-action="iframe-modal-close">iframe Modal close</button>
 
-<button class="btn btn-danger" data-btn-action="modal-open">Modal open</button>
-<button class="btn btn-danger" data-btn-action="modal-close">Modal close</button>
+    <button class="btn btn-danger" data-btn-action="modal-open">Modal open(fixed)</button>
+    <button class="btn btn-danger" data-btn-action="modal-close">Modal close(fixed)</button>
 
-<button class="btn btn-danger" data-btn-action="modal-close-open">Modal close & open</button>
+    <button class="btn btn-danger" data-btn-action="abs-modal-open">Modal open(abs)</button>
+    <button class="btn btn-danger" data-btn-action="abs-modal-close">Modal close(abs)</button>
 
-<div style="height: 1000px;"></div>
+    <button class="btn btn-danger" data-btn-action="modal-close-open">Modal close & open</button>
+</div>
+<div style="height: 2000px;"></div>
 
 <script>
     // todo : move handle 구현, minimize 구현
@@ -66,7 +70,7 @@
 
         $('[data-btn-action]').click(function () {
             var act = this.getAttribute("data-btn-action");
-            switch (act){
+            switch (act) {
                 case "iframe-modal-open":
                     modal.open({
                         width: 800,
@@ -97,11 +101,32 @@
                         fullScreen: function () {
                             return ($(window).width() < 600);
                         }
-                    }, function(){
+                    }, function () {
                         this.$.body.append('<h1>div contents</h1>');
                     });
                     break;
                 case "modal-close":
+                    modal.close();
+                    break;
+                case "abs-modal-open":
+                    modal.open({
+                        position: {
+                            left: "center",
+                            top: "middle",
+                            margin: 10
+                        },
+                        absolute: true,
+                        width: 800,
+                        height: 600,
+                        disableDrag: false,
+                        fullScreen: function () {
+                            return ($(window).width() < 600);
+                        }
+                    }, function () {
+                        this.$.body.append('<h1>div contents</h1>');
+                    });
+                    break;
+                case "abs-modal-close":
                     modal.close();
                     break;
                 case "set-modal-full":
@@ -121,7 +146,7 @@
                         fullScreen: function () {
                             return ($(window).width() < 600);
                         }
-                    }, function(){
+                    }, function () {
                         this.$.body.append('<h1>div contents</h1>');
                     });
                     break;
