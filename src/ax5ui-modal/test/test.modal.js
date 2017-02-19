@@ -126,7 +126,7 @@ describe('ax5.ui.modal method TEST', function () {
         done(ae.equalAll("", that));
     });
 
-    it('modal maximize test', function (done) {
+    /*it('modal maximize test', function (done) {
         myUI.maximize();
         done(ae.equalAll("restore", that.state));
     });
@@ -135,7 +135,7 @@ describe('ax5.ui.modal method TEST', function () {
         that = "";
         myUI.maximize();
         done(ae.equalAll("", that));
-    });
+    });*/
 
     it('modal css test', function (done) {
         myUI.open();
