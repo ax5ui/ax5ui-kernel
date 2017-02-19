@@ -3,6 +3,7 @@
  * - github.com/thomasjang
  * - www.axisj.com
  */
+
 describe('ax5grid TEST', function () {
     var myUI;
     var tmpl = '<div data-ax5grid="first-grid" data-ax5grid-config="" style="height: 300px;"></div>';
@@ -100,13 +101,7 @@ describe('ax5grid TEST', function () {
                     key: undefined,
                     label: "필드C", columns: [
                     {key: "price", label: "단가", align: "right", editor: {type: "money", updateWith: ['cost']}},
-                    {
-                        key: "amount",
-                        label: "수량",
-                        align: "right",
-                        formatter: "money",
-                        editor: {type: "number", updateWith: ['cost']}
-                    },
+                    {key: "amount", label: "수량", align: "right", formatter: "money", editor: {type: "number", updateWith: ['cost']}},
                     {
                         key: "cost", label: "금액", align: "right", formatter: function () {
                         return ax5.util.number(this.item.price * this.item.amount, {"money": true});
@@ -175,42 +170,9 @@ describe('ax5grid TEST', function () {
 
     it('setData ax5grid', function (done) {
         myUI.setData([
-            {
-                a: "A",
-                b: "A",
-                price: 1000,
-                amount: 2000,
-                cost: 500,
-                saleDt: "2013-01-01",
-                isChecked: "Y",
-                saleType: "A",
-                customer: "name01",
-                __modified__: true
-            },
-            {
-                a: "B",
-                b: "B",
-                price: 1200,
-                amount: 2200,
-                cost: 1000,
-                saleDt: "2014-01-01",
-                isChecked: "N",
-                saleType: "B",
-                customer: "name02",
-                __selected__: true
-            },
-            {
-                a: "C",
-                b: "C",
-                price: 1400,
-                amount: 2400,
-                cost: 1500,
-                saleDt: "2015-01-01",
-                isChecked: "N",
-                saleType: "C",
-                customer: "name03",
-                __deleted__: false
-            }
+            {a: "A", b: "A", price: 1000, amount: 2000, cost: 500, saleDt: "2013-01-01", isChecked: "Y", saleType: "A", customer: "name01", __modified__: true},
+            {a: "B", b: "B", price: 1200, amount: 2200, cost: 1000, saleDt: "2014-01-01", isChecked: "N", saleType: "B", customer: "name02", __selected__: true},
+            {a: "C", b: "C", price: 1400, amount: 2400, cost: 1500, saleDt: "2015-01-01", isChecked: "N", saleType: "C", customer: "name03", __deleted__: false}
         ]);
         // has body.grouping
         done(myUI.getList().length == 3 ? "" : "error setData");
@@ -224,7 +186,7 @@ describe('ax5grid TEST', function () {
 
     it('copySelect ax5grid', function (done) {
         myUI.selectedColumn = {
-            "0_3_0": {panelName: "top-body-scroll", dindex: 0, rowIndex: 0, colIndex: 3, colspan: 1}
+            "0_3_0": { panelName: "top-body-scroll", dindex: 0, rowIndex: 0, colIndex: 3, colspan: 1 }
         };
         myUI.copySelect();
         done(myUI.$["form"]["clipboard"].get(0).innerHTML.replace(/\n+|(<br>)/g, "") == 2000 ? "" : "error copySelect");
@@ -232,18 +194,7 @@ describe('ax5grid TEST', function () {
     });
 
     it('addRow ax5grid', function (done) {
-        myUI.addRow({
-            a: "D",
-            b: "D",
-            price: 1600,
-            amount: 2600,
-            cost: 2000,
-            saleDt: "2016-01-01",
-            isChecked: "Y",
-            saleType: "D",
-            customer: "name04",
-            __selected__: true
-        });
+        myUI.addRow({a: "D", b: "D", price: 1600, amount: 2600, cost: 2000, saleDt: "2016-01-01", isChecked: "Y", saleType: "D", customer: "name04", __selected__: true});
         done(myUI.getList().length == 4 ? "" : "error addRow");
     });
 
@@ -275,39 +226,9 @@ describe('ax5grid TEST', function () {
 
     it('appendToList ax5grid', function (done) {
         myUI.appendToList([
-            {
-                a: "D",
-                b: "D",
-                price: 1600,
-                amount: 2600,
-                cost: 2000,
-                saleDt: "2016-01-01",
-                isChecked: "Y",
-                saleType: "D",
-                customer: "name04"
-            },
-            {
-                a: "E",
-                b: "E",
-                price: 1800,
-                amount: 2800,
-                cost: 2500,
-                saleDt: "2017-01-01",
-                isChecked: "Y",
-                saleType: "A",
-                customer: "name05"
-            },
-            {
-                a: "F",
-                b: "F",
-                price: 2000,
-                amount: 3000,
-                cost: 3000,
-                saleDt: "2017-02-01",
-                isChecked: "N",
-                saleType: "B",
-                customer: "name06"
-            }
+            {a: "D", b: "D", price: 1600, amount: 2600, cost: 2000, saleDt: "2016-01-01", isChecked: "Y", saleType: "D", customer: "name04"},
+            {a: "E", b: "E", price: 1800, amount: 2800, cost: 2500, saleDt: "2017-01-01", isChecked: "Y", saleType: "A", customer: "name05"},
+            {a: "F", b: "F", price: 2000, amount: 3000, cost: 3000, saleDt: "2017-02-01", isChecked: "N", saleType: "B", customer: "name06"}
         ]);
         done(myUI.getList().length == "6" ? "" : "error appendToList");
     });
@@ -319,17 +240,7 @@ describe('ax5grid TEST', function () {
     });
 
     it('updateRow ax5grid', function (done) {
-        myUI.updateRow({
-            a: "G",
-            b: "G",
-            price: 3000,
-            amount: 4000,
-            cost: 5000,
-            saleDt: "2017-02-02",
-            isChecked: "Y",
-            saleType: "A",
-            customer: "name06"
-        }, 0);
+        myUI.updateRow({a: "G", b: "G", price: 3000, amount: 4000, cost: 5000, saleDt: "2017-02-02", isChecked: "Y", saleType: "A", customer: "name06"}, 0);
         var data = myUI.getList()[0];
         done(data.a == "G" && data.b == "G" ? "" : "error updateRow");
     });
@@ -341,7 +252,7 @@ describe('ax5grid TEST', function () {
 
     it('addColumn', function (done) {
         myUI.addColumn({key: "color", label: "색상", align: "center"});
-        var lastCol = myUI.columns[myUI.columns.length - 1];
+        var lastCol = myUI.columns[myUI.columns.length -1];
         done(lastCol.key == "color" && lastCol.label == "색상" && lastCol.align == "center" ? "" : "error addColumn");
     });
 
@@ -353,7 +264,7 @@ describe('ax5grid TEST', function () {
     it('updateColumn', function (done) {
         myUI.addColumn({key: "color", label: "색상", align: "center"});
         myUI.updateColumn({key: "c-o-l-o-r", label: "색깔", align: "left"}, 7);
-        var lastCol = myUI.columns[myUI.columns.length - 1];
+        var lastCol = myUI.columns[myUI.columns.length -1];
         done(lastCol.key == "c-o-l-o-r" && lastCol.label == "색깔" && lastCol.align == "left" ? "" : "error updateColumn");
     });
 
@@ -371,6 +282,17 @@ describe('ax5grid TEST', function () {
     it('setColumnSort', function (done) {
         var sortInfo = myUI.setColumnSort({price:{seq:0, orderBy:"desc"}, amount:{seq:1, orderBy:"asc"}}).getColumnSortInfo();
         done(sortInfo[0].key == "price" && sortInfo[1].key == "amount" ? "" : "error setColumnSort");
+    });
+
+    it('select', function (done) {
+        myUI.select(0, {selected: true});
+        var selectedList = myUI.getList("selected");
+        done(selectedList[0].__index == 0 && selectedList[0].__selected__ ? "" : "error select");
+    });
+
+    it('clearSelect', function (done) {
+        myUI.clearSelect();
+        done(myUI.getList("selected").length == 1 ? "" : "error clearSelect");
     });
 
     after(function () {
