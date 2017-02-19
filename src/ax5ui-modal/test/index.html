@@ -44,10 +44,9 @@
                         modal.minimize();
                     }
                 },
-                maximize: {
+                restore: {
                     label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function () {
-                        //console.log("maximize", this);
-                        modal.maximize();
+                        modal.restore();
                     }
                 },
                 close: {
@@ -59,6 +58,9 @@
         }
     });
     modal.onStateChanged = function () {
+        console.log(this);
+    };
+    modal.onResize = function () {
         console.log(this);
     };
 
@@ -119,6 +121,7 @@
                         width: 800,
                         height: 600,
                         disableDrag: false,
+                        disableResize: true,
                         fullScreen: function () {
                             return ($(window).width() < 600);
                         }

@@ -89,7 +89,9 @@
                 height: 400,
                 closeToEsc: true,
                 disableDrag: false,
-                animateTime: 250
+                disableResize: false,
+                animateTime: 250,
+                iframe: false
             };
             this.activeModal = null;
             this.watingModal = false;
@@ -98,6 +100,18 @@
             cfg = this.config; // extended config copy cfg
 
             var onStateChanged = function onStateChanged(opts, that) {
+                var eventProcessor = {
+                    "resize": function resize(that) {
+                        if (this.onResize) {
+                            this.onResize.call(that, that);
+                        }
+                    },
+                    "move": function move() {}
+                };
+                if (that.state in eventProcessor) {
+                    eventProcessor[that.state].call(this, that);
+                }
+
                 if (opts && opts.onStateChanged) {
                     opts.onStateChanged.call(that, that);
                 } else if (this.onStateChanged) {
@@ -113,7 +127,8 @@
                     fullScreen: opts.fullScreen ? "fullscreen" : "",
                     styles: "",
                     iframe: opts.iframe,
-                    iframeLoadingMsg: opts.iframeLoadingMsg
+                    iframeLoadingMsg: opts.iframeLoadingMsg,
+                    disableResize: opts.disableResize
                 };
 
                 if (opts.zIndex) {
@@ -134,7 +149,6 @@
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
                 this.activeModal = jQuery('#' + opts.id);
-                this.activeModalConfig = opts;
                 // 파트수집
                 this.$ = {
                     "root": this.activeModal,
@@ -225,7 +239,7 @@
                 });
 
                 this.activeModal.off(ENM["mousedown"]).off("dragstart").on(ENM["mousedown"], "[data-ax5modal-resizer]", function (e) {
-                    if (opts.isFullScreen) return false;
+                    if (opts.disableDrag || opts.isFullScreen) return false;
                     self.mousePosition = getMousePosition(e);
                     resizeModal.on.call(self, this.getAttribute("data-ax5modal-resizer"));
                 }).on("dragstart", function (e) {
@@ -296,8 +310,8 @@
                         windowBox = {
                         width: jQuery(window).width(),
                         height: jQuery(window).height(),
-                        scrollLeft: this.activeModalConfig.absolute ? 0 : jQuery(document).scrollLeft(),
-                        scrollTop: this.activeModalConfig.absolute ? 0 : jQuery(document).scrollTop()
+                        scrollLeft: self.modalConfig.absolute ? 0 : jQuery(document).scrollLeft(),
+                        scrollTop: self.modalConfig.absolute ? 0 : jQuery(document).scrollTop()
                     },
                         getResizerPosition = function getResizerPosition(e) {
                         self.__dx = e.clientX - self.mousePosition.clientX;
@@ -358,7 +372,7 @@
                 "off": function off() {
                     var setModalPosition = function setModalPosition() {
                         var box = this.resizer.offset();
-                        if (!this.activeModalConfig.absolute) {
+                        if (!this.modalConfig.absolute) {
                             box.left -= jQuery(document).scrollLeft();
                             box.top -= jQuery(document).scrollTop();
                         }
@@ -375,6 +389,11 @@
                         this.resizerBg.remove();
                         this.resizerBg = null;
                         //this.align();
+
+                        onStateChanged.call(this, self.modalConfig, {
+                            self: this,
+                            state: "move"
+                        });
                     }
 
                     jQuery(document.body).unbind(ENM["mousemove"] + ".ax5modal-" + cfg.id).unbind(ENM["mouseup"] + ".ax5modal-" + cfg.id).unbind("mouseleave.ax5modal-" + cfg.id);
@@ -392,13 +411,22 @@
                         windowBox = {
                         width: jQuery(window).width(),
                         height: jQuery(window).height(),
-                        scrollLeft: this.activeModalConfig.absolute ? 0 : jQuery(document).scrollLeft(),
-                        scrollTop: this.activeModalConfig.absolute ? 0 : jQuery(document).scrollTop()
+                        scrollLeft: this.modalConfig.absolute ? 0 : jQuery(document).scrollLeft(),
+                        scrollTop: this.modalConfig.absolute ? 0 : jQuery(document).scrollTop()
                     },
                         resizerProcessor = {
                         "top": function top(e) {
 
+                            if (minHeight > modalBox.height - self.__dy) {
+                                self.__dy = modalBox.height - minHeight;
+                            }
+
                             if (e.shiftKey) {
+
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left,
                                     top: modalOffset.top + self.__dy,
@@ -406,6 +434,11 @@
                                     height: modalBox.height - self.__dy * 2
                                 };
                             } else if (e.altKey) {
+
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left + self.__dy,
                                     top: modalOffset.top + self.__dy,
@@ -422,7 +455,17 @@
                             }
                         },
                         "bottom": function bottom(e) {
+
+                            if (minHeight > modalBox.height + self.__dy) {
+                                self.__dy = -modalBox.height + minHeight;
+                            }
+
                             if (e.shiftKey) {
+
+                                if (minHeight > modalBox.height + self.__dy * 2) {
+                                    self.__dy = (-modalBox.height + minHeight) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left,
                                     top: modalOffset.top - self.__dy,
@@ -430,6 +473,11 @@
                                     height: modalBox.height + self.__dy * 2
                                 };
                             } else if (e.altKey) {
+
+                                if (minHeight > modalBox.height + self.__dy * 2) {
+                                    self.__dy = (-modalBox.height + minHeight) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left - self.__dy,
                                     top: modalOffset.top - self.__dy,
@@ -446,7 +494,17 @@
                             }
                         },
                         "left": function left(e) {
+
+                            if (minWidth > modalBox.width - self.__dx) {
+                                self.__dx = modalBox.width - minWidth;
+                            }
+
                             if (e.shiftKey) {
+
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left + self.__dx,
                                     top: modalOffset.top,
@@ -454,6 +512,11 @@
                                     height: modalBox.height
                                 };
                             } else if (e.altKey) {
+
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left + self.__dx,
                                     top: modalOffset.top + self.__dx,
@@ -470,7 +533,17 @@
                             }
                         },
                         "right": function right(e) {
+
+                            if (minWidth > modalBox.width + self.__dx) {
+                                self.__dx = -modalBox.width + minWidth;
+                            }
+
                             if (e.shiftKey) {
+
+                                if (minWidth > modalBox.width + self.__dx * 2) {
+                                    self.__dx = (-modalBox.width + minWidth) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left - self.__dx,
                                     top: modalOffset.top,
@@ -478,6 +551,11 @@
                                     height: modalBox.height
                                 };
                             } else if (e.altKey) {
+
+                                if (minWidth > modalBox.width + self.__dx * 2) {
+                                    self.__dx = (-modalBox.width + minWidth) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left - self.__dx,
                                     top: modalOffset.top - self.__dx,
@@ -494,7 +572,24 @@
                             }
                         },
                         "top-left": function topLeft(e) {
+
+                            if (minWidth > modalBox.width - self.__dx) {
+                                self.__dx = modalBox.width - minWidth;
+                            }
+
+                            if (minHeight > modalBox.height - self.__dy) {
+                                self.__dy = modalBox.height - minHeight;
+                            }
+
                             if (e.shiftKey || e.altKey) {
+
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left + self.__dx,
                                     top: modalOffset.top + self.__dy,
@@ -502,6 +597,14 @@
                                     height: modalBox.height - self.__dy * 2
                                 };
                             } else {
+
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left + self.__dx,
                                     top: modalOffset.top + self.__dy,
@@ -511,7 +614,24 @@
                             }
                         },
                         "top-right": function topRight(e) {
+
+                            if (minWidth > modalBox.width + self.__dx) {
+                                self.__dx = -modalBox.width + minWidth;
+                            }
+
+                            if (minHeight > modalBox.height - self.__dy) {
+                                self.__dy = modalBox.height - minHeight;
+                            }
+
                             if (e.shiftKey || e.altKey) {
+
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+                                if (minWidth > modalBox.width + self.__dx * 2) {
+                                    self.__dx = (-modalBox.width + minWidth) / 2;
+                                }
+
                                 return {
                                     left: modalOffset.left - self.__dx,
                                     top: modalOffset.top + self.__dy,
@@ -528,7 +648,22 @@
                             }
                         },
                         "bottom-left": function bottomLeft(e) {
+
+                            if (minWidth > modalBox.width - self.__dx) {
+                                self.__dx = modalBox.width - minWidth;
+                            }
+
+                            if (minHeight > modalBox.height + self.__dy) {
+                                self.__dy = -modalBox.height + minHeight;
+                            }
+
                             if (e.shiftKey || e.altKey) {
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+                                if (minHeight > modalBox.height + self.__dy * 2) {
+                                    self.__dy = (-modalBox.height + minHeight) / 2;
+                                }
                                 return {
                                     left: modalOffset.left + self.__dx,
                                     top: modalOffset.top - self.__dy,
@@ -545,7 +680,22 @@
                             }
                         },
                         "bottom-right": function bottomRight(e) {
+
+                            if (minWidth > modalBox.width + self.__dx) {
+                                self.__dx = -modalBox.width + minWidth;
+                            }
+
+                            if (minHeight > modalBox.height + self.__dy) {
+                                self.__dy = -modalBox.height + minHeight;
+                            }
+
                             if (e.shiftKey || e.altKey) {
+                                if (minWidth > modalBox.width + self.__dx * 2) {
+                                    self.__dx = (-modalBox.width + minWidth) / 2;
+                                }
+                                if (minHeight > modalBox.height + self.__dy * 2) {
+                                    self.__dy = (-modalBox.height + minHeight) / 2;
+                                }
                                 return {
                                     left: modalOffset.left - self.__dx,
                                     top: modalOffset.top - self.__dy,
@@ -564,31 +714,18 @@
                     },
                         getResizerPosition = function getResizerPosition(e) {
                         self.__dx = e.clientX - self.mousePosition.clientX;
-                        if (minX > modalOffset.left + self.__dx) {
-                            self.__dx = -modalOffset.left;
-                        } else if (maxX > modalBox.width - self.__dx) {
-                            self.__dx = modalBox.width - maxX;
-                        }
-
                         self.__dy = e.clientY - self.mousePosition.clientY;
-                        if (minY > modalOffset.top + self.__dy) {
-                            self.__dy = -modalOffset.top;
-                        } else if (maxY > modalBox.height - self.__dy) {
-                            self.__dy = modalBox.height - maxY;
-                        }
 
                         return resizerProcessor[resizerType](e);
                     };
 
-                    if (!this.activeModalConfig.absolute) {
+                    if (!this.modalConfig.absolute) {
                         modalOffset.left += windowBox.scrollLeft;
                         modalOffset.top += windowBox.scrollTop;
                     }
 
-                    var minX = 0,
-                        maxX = 100,
-                        minY = 0,
-                        maxY = 100;
+                    var minWidth = 100,
+                        minHeight = 100;
 
                     var cursorType = {
                         "top": "row-resize",
@@ -624,11 +761,11 @@
                         self.activeModal.addClass("draged");
                     }
 
-                    jQuery(document.body).bind(ENM["mousemove"] + ".ax5modal-" + cfg.id, function (e) {
+                    jQuery(document.body).on(ENM["mousemove"] + ".ax5modal-" + cfg.id, function (e) {
                         self.resizer.css(getResizerPosition(e));
-                    }).bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
+                    }).on(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
                         resizeModal.off.call(self);
-                    }).bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
+                    }).on("mouseleave.ax5layout-" + this.instanceId, function (e) {
                         resizeModal.off.call(self);
                     });
 
@@ -641,11 +778,17 @@
                             width: this.resizer.width(),
                             height: this.resizer.height()
                         });
-                        if (!this.activeModalConfig.absolute) {
+                        if (!this.modalConfig.absolute) {
                             box.left -= jQuery(document).scrollLeft();
                             box.top -= jQuery(document).scrollTop();
                         }
                         this.activeModal.css(box);
+
+                        if (this.modalConfig.iframe) {
+                            this.$["iframe-wrap"].css({ height: box.height - this.modalConfig.headerHeight });
+                            this.$["iframe"].css({ height: box.height - this.modalConfig.headerHeight });
+                        }
+
                         box = null;
                     };
 
@@ -657,10 +800,14 @@
                         this.resizer = null;
                         this.resizerBg.remove();
                         this.resizerBg = null;
-                        //this.align();
+
+                        onStateChanged.call(this, self.modalConfig, {
+                            self: this,
+                            state: "resize"
+                        });
                     }
 
-                    jQuery(document.body).unbind(ENM["mousemove"] + ".ax5modal-" + cfg.id).unbind(ENM["mouseup"] + ".ax5modal-" + cfg.id).unbind("mouseleave.ax5modal-" + cfg.id);
+                    jQuery(document.body).off(ENM["mousemove"] + ".ax5modal-" + cfg.id).off(ENM["mouseup"] + ".ax5modal-" + cfg.id).off("mouseleave.ax5modal-" + cfg.id);
 
                     jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
                 }
@@ -673,7 +820,21 @@
              * @method ax5modal.setConfig
              * @param {Object} config - 클래스 속성값
              * @param {Number} [config.zIndex]
+             * @param {Object} [config.position]
+             * @param {String} [config.position.left="center"]
+             * @param {String} [config.position.top="middle"]
+             * @param {Number} [config.position.margin=10]
+             * @param {String} [config.minimizePosition="bottom-right"]
+             * @param {Number} [config.width=300]
+             * @param {Number} [config.height=400]
+             * @param {Boolean} [config.closeToEsc=true]
              * @param {Boolean} [config.absolute=false]
+             * @param {Boolean} [config.disableDrag=false]
+             * @param {Boolean} [config.disableResize=false]
+             * @param {Number} [config.animateTime=250]
+             * @param {Function} [config.fullScreen]
+             * @param {Function} [config.onStateChanged]
+             * @param {Function} [config.onResize]
              * @returns {ax5modal}
              * @example
              * ```
@@ -682,6 +843,7 @@
             //== class body start
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
+                this.onResize = cfg.onResize;
             };
 
             /**
@@ -796,10 +958,10 @@
             }();
 
             /**
-             * @method ax5modal.maximize
+             * @method ax5modal.restore
              * @returns {ax5modal}
              */
-            this.maximize = function () {
+            this.restore = function () {
                 var opts = self.modalConfig;
                 if (this.minimized) {
                     this.minimized = false;
@@ -951,7 +1113,7 @@
     var MODAL = ax5.ui.modal;
 
     var content = function content() {
-        return " \n        <div id=\"{{modalId}}\" data-modal-els=\"root\" class=\"ax5modal {{theme}} {{fullscreen}}\" style=\"{{styles}}\">\n            {{#header}}\n            <div class=\"ax-modal-header\" data-modal-els=\"header\">\n                {{{title}}}\n                {{#btns}}\n                    <div class=\"ax-modal-header-addon\">\n                    {{#@each}}\n                    <button tabindex=\"-1\" data-modal-header-btn=\"{{@key}}\" class=\"{{@value.theme}}\">{{{@value.label}}}</button>\n                    {{/@each}}\n                    </div>\n                {{/btns}}\n            </div>\n            {{/header}}\n            <div class=\"ax-modal-body\" data-modal-els=\"body\">\n            {{#iframe}}\n                <div data-modal-els=\"iframe-wrap\" style=\"-webkit-overflow-scrolling: touch; overflow: auto;position: relative;\">\n                    <table data-modal-els=\"iframe-loading\" style=\"width:100%;height:100%;\"><tr><td style=\"text-align: center;vertical-align: middle\">{{{iframeLoadingMsg}}}</td></tr></table>\n                    <iframe name=\"{{modalId}}-frame\" src=\"\" width=\"100%\" height=\"100%\" frameborder=\"0\" data-modal-els=\"iframe\" style=\"position: absolute;left:0;top:0;\"></iframe>\n                </div>\n                <form name=\"{{modalId}}-form\" data-modal-els=\"iframe-form\">\n                <input type=\"hidden\" name=\"modalId\" value=\"{{modalId}}\" />\n                {{#param}}\n                {{#@each}}\n                <input type=\"hidden\" name=\"{{@key}}\" value=\"{{@value}}\" />\n                {{/@each}}\n                {{/param}}\n                </form>\n            {{/iframe}}\n            {{^iframe}}\n                <div data-modal-els=\"body-frame\" style=\"position: absolute;left:0;top:0;width:100%;height:100%;\"></div>\n            {{/iframe}}\n            </div>\n            <div data-ax5modal-resizer=\"top\"></div>\n            <div data-ax5modal-resizer=\"right\"></div>\n            <div data-ax5modal-resizer=\"bottom\"></div>\n            <div data-ax5modal-resizer=\"left\"></div>\n            <div data-ax5modal-resizer=\"top-left\"></div>\n            <div data-ax5modal-resizer=\"top-right\"></div>\n            <div data-ax5modal-resizer=\"bottom-left\"></div>\n            <div data-ax5modal-resizer=\"bottom-right\"></div>\n        </div>\n        ";
+        return " \n        <div id=\"{{modalId}}\" data-modal-els=\"root\" class=\"ax5modal {{theme}} {{fullscreen}}\" style=\"{{styles}}\">\n            {{#header}}\n            <div class=\"ax-modal-header\" data-modal-els=\"header\">\n                {{{title}}}\n                {{#btns}}\n                    <div class=\"ax-modal-header-addon\">\n                    {{#@each}}\n                    <button tabindex=\"-1\" data-modal-header-btn=\"{{@key}}\" class=\"{{@value.theme}}\">{{{@value.label}}}</button>\n                    {{/@each}}\n                    </div>\n                {{/btns}}\n            </div>\n            {{/header}}\n            <div class=\"ax-modal-body\" data-modal-els=\"body\">\n            {{#iframe}}\n                <div data-modal-els=\"iframe-wrap\" style=\"-webkit-overflow-scrolling: touch; overflow: auto;position: relative;\">\n                    <table data-modal-els=\"iframe-loading\" style=\"width:100%;height:100%;\"><tr><td style=\"text-align: center;vertical-align: middle\">{{{iframeLoadingMsg}}}</td></tr></table>\n                    <iframe name=\"{{modalId}}-frame\" src=\"\" width=\"100%\" height=\"100%\" frameborder=\"0\" data-modal-els=\"iframe\" style=\"position: absolute;left:0;top:0;\"></iframe>\n                </div>\n                <form name=\"{{modalId}}-form\" data-modal-els=\"iframe-form\">\n                <input type=\"hidden\" name=\"modalId\" value=\"{{modalId}}\" />\n                {{#param}}\n                {{#@each}}\n                <input type=\"hidden\" name=\"{{@key}}\" value=\"{{@value}}\" />\n                {{/@each}}\n                {{/param}}\n                </form>\n            {{/iframe}}\n            {{^iframe}}\n                <div data-modal-els=\"body-frame\" style=\"position: absolute;left:0;top:0;width:100%;height:100%;\"></div>\n            {{/iframe}}\n            </div>\n            {{^disableResize}}\n            <div data-ax5modal-resizer=\"top\"></div>\n            <div data-ax5modal-resizer=\"right\"></div>\n            <div data-ax5modal-resizer=\"bottom\"></div>\n            <div data-ax5modal-resizer=\"left\"></div>\n            <div data-ax5modal-resizer=\"top-left\"></div>\n            <div data-ax5modal-resizer=\"top-right\"></div>\n            <div data-ax5modal-resizer=\"bottom-left\"></div>\n            <div data-ax5modal-resizer=\"bottom-right\"></div>\n            {{/disableResize}}\n        </div>\n        ";
     };
 
     MODAL.tmpl = {

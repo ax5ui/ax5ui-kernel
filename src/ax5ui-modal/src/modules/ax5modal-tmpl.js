@@ -36,6 +36,7 @@
                 <div data-modal-els="body-frame" style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>
             {{/iframe}}
             </div>
+            {{^disableResize}}
             <div data-ax5modal-resizer="top"></div>
             <div data-ax5modal-resizer="right"></div>
             <div data-ax5modal-resizer="bottom"></div>
@@ -44,6 +45,7 @@
             <div data-ax5modal-resizer="top-right"></div>
             <div data-ax5modal-resizer="bottom-left"></div>
             <div data-ax5modal-resizer="bottom-right"></div>
+            {{/disableResize}}
         </div>
         `;
     };
