@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.96"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -606,6 +606,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Number} [_config.header.columnPadding=3]
              * @param {Number} [_config.header.columnBorderWidth=1]
              * @param {Object} [_config.body]
+             * @param {Function} [_config.onClick]
+             * @param {Function} [_config.onDBLClick]
              * @param {String|Array} [_config.body.mergeCells=false] -
              * @param {String} [_config.body.align]
              * @param {Number} [_config.body.columnHeight=25]
@@ -695,12 +697,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              *         return this;
              *     },
              *     setData: function (_pageNo) {
-             *
              *         firstGrid.setData(sampleData);
-             *
              *         return this;
              *     }
              * };
+             *
+             * // onClick, onDBLClick, onDataChanged
+             * firstGrid.setConfig({
+             *      target: $('[data-ax5grid="first-grid"]'),
+             *      columns: [...],
+             *      body: {
+             *          onClick: function(){
+             *              console.log(this);
+             *          },
+             *          onDBLClick: function(){
+             *              console.log(this);
+             *              // 
+             *          },
+             *          onDataChanged: function(){
+             *              console.log(this);
+             *          }
+             *      }
+             * });
              * ```
              */
             this.init = function (_config) {
@@ -1863,11 +1881,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 dindex = void 0,
                 rowIndex = void 0,
                 colIndex = void 0,
-                targetClick = {
+                targetDBLClick = {
                 "default": function _default(_column) {
-
-                    if (this.isInlineEditing) {
-                        for (var columnKey in this.inlineEditing) {
+                    if (self.isInlineEditing) {
+                        for (var columnKey in self.inlineEditing) {
                             if (columnKey == _column.dindex + "_" + _column.colIndex + "_" + _column.rowIndex) {
                                 return this;
                             }
@@ -1881,7 +1898,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             value = GRID.data.getValue.call(self, dindex, column.key);
                         }
                     }
-                    GRID.body.inlineEdit.active.call(self, self.focusedColumn, e, value);
+
+                    var editor = self.colGroup[_column.colIndex].editor;
+                    if (U.isObject(editor)) {
+                        GRID.body.inlineEdit.active.call(self, self.focusedColumn, e, value);
+                    } else {
+                        // 더블클릭 실행
+                        if (self.config.body.onDBLClick) {
+                            var that = {
+                                self: self,
+                                page: self.page,
+                                list: self.list,
+                                item: self.list[_column.dindex],
+                                dindex: _column.dindex,
+                                rowIndex: _column.rowIndex,
+                                colIndex: _column.colIndex,
+                                column: column,
+                                value: self.list[_column.dindex][column.key]
+                            };
+                            self.config.body.onDBLClick.call(that);
+                        }
+                    }
                 },
                 "rowSelector": function rowSelector(_column) {},
                 "lineNumber": function lineNumber(_column) {}
@@ -1895,8 +1932,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
             dindex = Number(this.getAttribute("data-ax5grid-data-index"));
 
-            if (attr in targetClick) {
-                targetClick[attr]({
+            if (attr in targetDBLClick) {
+                targetDBLClick[attr]({
                     panelName: panelName,
                     attr: attr,
                     row: row,
