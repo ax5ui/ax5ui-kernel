@@ -26,6 +26,7 @@
          * });
          * ```
          */
+
         var ax5layout = function () {
             var self = this,
                 cfg,

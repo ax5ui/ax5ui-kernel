@@ -32,6 +32,7 @@
          * });
          * ```
          */
+
         var ax5combobox = function () {
             var
                 self = this,
