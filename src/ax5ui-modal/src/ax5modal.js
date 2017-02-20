@@ -357,6 +357,9 @@
                                 box.top -= jQuery(document).scrollTop();
                             }
                             this.activeModal.css(box);
+                            this.modalConfig.left = box.left;
+                            this.modalConfig.top = box.top;
+
                             box = null;
                         };
 
@@ -791,6 +794,12 @@
                             }
                             this.activeModal.css(box);
 
+
+                            this.modalConfig.left = box.left;
+                            this.modalConfig.top = box.top;
+                            this.modalConfig.width = box.width;
+                            this.modalConfig.height = box.height;
+                            this.$["body"].css({height: box.height - this.modalConfig.headerHeight});
                             if (this.modalConfig.iframe) {
                                 this.$["iframe-wrap"].css({height: box.height - this.modalConfig.headerHeight});
                                 this.$["iframe"].css({height: box.height - this.modalConfig.headerHeight});
@@ -1164,9 +1173,12 @@
 
                     this.activeModal.css(box);
 
+                    this.$["body"].css({height: box.height - opts.headerHeight});
                     if (opts.iframe) {
                         this.$["iframe-wrap"].css({height: box.height - opts.headerHeight});
                         this.$["iframe"].css({height: box.height - opts.headerHeight});
+                    } else {
+
                     }
                     return this;
                 };

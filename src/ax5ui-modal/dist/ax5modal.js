@@ -9,51 +9,12 @@
 
     UI.addClass({
         className: "modal",
-        version: "1.3.96"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5modal
          * @alias ax5.ui.modal
          * @author tom@axisj.com
-         * @example
-         * ```js
-         * var modal = new ax5.ui.modal({
-         *     iframeLoadingMsg: '<i class="fa fa-spinner fa-5x fa-spin" aria-hidden="true"></i>',
-         *     header: {
-         *         title: "MODAL TITLE",
-         *         btns: {
-         *             minimize: {
-         *                 label: '<i class="fa fa-minus-circle" aria-hidden="true"></i>', onClick: function () {
-         *                     modal.minimize();
-         *                 }
-         *             },
-         *             maximize: {
-         *                 label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function () {
-         *                     modal.maximize();
-         *                 }
-         *             },
-         *             close: {
-         *                 label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function () {
-         *                     modal.close();
-         *                 }
-         *             }
-         *         }
-         *     }
-         * });
-         *
-         * modal.open({
-         *     width: 800,
-         *     height: 600,
-         *     fullScreen: function(){
-         *         return ($(window).width() < 600);
-         *     },
-         *     iframe: {
-         *         method: "get",
-         *         url: "http://chequer-app:2017/html/login.html",
-         *         param: "callback=modalCallback"
-         *     }
-         * });
-         * ```
          */
         var ax5modal = function ax5modal() {
             var self = this,
@@ -377,6 +338,9 @@
                             box.top -= jQuery(document).scrollTop();
                         }
                         this.activeModal.css(box);
+                        this.modalConfig.left = box.left;
+                        this.modalConfig.top = box.top;
+
                         box = null;
                     };
 
@@ -784,6 +748,11 @@
                         }
                         this.activeModal.css(box);
 
+                        this.modalConfig.left = box.left;
+                        this.modalConfig.top = box.top;
+                        this.modalConfig.width = box.width;
+                        this.modalConfig.height = box.height;
+                        this.$["body"].css({ height: box.height - this.modalConfig.headerHeight });
                         if (this.modalConfig.iframe) {
                             this.$["iframe-wrap"].css({ height: box.height - this.modalConfig.headerHeight });
                             this.$["iframe"].css({ height: box.height - this.modalConfig.headerHeight });
@@ -833,11 +802,53 @@
              * @param {Boolean} [config.disableResize=false]
              * @param {Number} [config.animateTime=250]
              * @param {Function} [config.fullScreen]
-             * @param {Function} [config.onStateChanged]
+             * @param {Function} [config.onStateChanged] - `onStateChanged` function can be defined in setConfig method or new ax5.ui.modal initialization method. However, you can us to define an event function after initialization, if necessary
              * @param {Function} [config.onResize]
              * @returns {ax5modal}
              * @example
-             * ```
+             * ```js
+             * var modal = new ax5.ui.modal({
+             *     iframeLoadingMsg: '<i class="fa fa-spinner fa-5x fa-spin" aria-hidden="true"></i>',
+             *     header: {
+             *         title: "MODAL TITLE",
+             *         btns: {
+             *             minimize: {
+             *                 label: '<i class="fa fa-minus-circle" aria-hidden="true"></i>', onClick: function () {
+             *                     modal.minimize();
+             *                 }
+             *             },
+             *             maximize: {
+             *                 label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function () {
+             *                     modal.maximize();
+             *                 }
+             *             },
+             *             close: {
+             *                 label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function () {
+             *                     modal.close();
+             *                 }
+             *             }
+             *         }
+             *     }
+             * });
+             *
+             * modal.open({
+             *     width: 800,
+             *     height: 600,
+             *     fullScreen: function(){
+             *         return ($(window).width() < 600);
+             *     },
+             *     iframe: {
+             *         method: "get",
+             *         url: "http://chequer-app:2017/html/login.html",
+             *         param: "callback=modalCallback"
+             *     },
+             *     onStateChanged: function(){
+             *          console.log(this);
+             *     },
+             *     onResize: function(){
+             *          console.log(this);
+             *     }
+             * });
              * ```
              */
             //== class body start
@@ -852,7 +863,14 @@
              * @returns {ax5modal}
              * @example
              * ```
-             * my_modal.open();
+             * modal.open();
+             * modal.open({
+             *  width: 500,
+             *  height: 500
+             * });
+             * moaal.open({}, function(){
+             *  console.log(this);
+             * });
              * ```
              */
             this.open = function (opts, callback, tryCount) {
@@ -1017,6 +1035,11 @@
              * @param position
              * @param e
              * @returns {ax5modal}
+             * @example
+             * ```js
+             * modal.align({left:"center", top:"middle"});
+             * modal.align({left:"left", top:"top", margin: 20});
+             * ```
              */
             this.align = function () {
 
@@ -1083,10 +1106,11 @@
 
                     this.activeModal.css(box);
 
+                    this.$["body"].css({ height: box.height - opts.headerHeight });
                     if (opts.iframe) {
                         this.$["iframe-wrap"].css({ height: box.height - opts.headerHeight });
                         this.$["iframe"].css({ height: box.height - opts.headerHeight });
-                    }
+                    } else {}
                     return this;
                 };
             }();

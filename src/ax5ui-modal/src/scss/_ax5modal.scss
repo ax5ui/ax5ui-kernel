@@ -21,6 +21,9 @@
         font-weight: 600;
         padding: $ax5modal-header-padding;
         border-bottom: 1px solid transparent;
+        border-top-left-radius: $ax5modal-border-radius;
+        border-top-right-radius: $ax5modal-border-radius;
+
         cursor: move;
         .ax-modal-header-addon{
             position: absolute;
@@ -39,11 +42,15 @@
         }
     }
     .ax-modal-body {
+        border-bottom-left-radius: $ax5modal-border-radius;
+        border-bottom-right-radius: $ax5modal-border-radius;
+
         padding: $ax5modal-body-padding;
         text-align: center;
         @include flex(1);
         position: relative;
         overflow: hidden;
+
         iframe {
             border: 0 none;
         }
