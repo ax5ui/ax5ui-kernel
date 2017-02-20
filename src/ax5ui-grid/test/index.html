@@ -125,6 +125,9 @@
                     onClick: function () {
                         this.self.select(this.dindex);
                     },
+                    onDBLClick: function () {
+                        console.log("DBLClick", this);
+                    },
                     onDataChanged: function () {
                         /*
                         var rowNum = this.dindex;
@@ -141,7 +144,7 @@
                 columns: [
                     {key: "b", label: "필드B", align: "center"},
                     {key: "companyJson.대표자명", label: "대표자명", width: 100, align: "center"},
-                    {key: "saleDt", label: "판매일자", width: "*", align: "center", editor: "text", formatter: function formatter() {
+                    {key: "saleDt", label: "판매일자", width: "*", align: "center", formatter: function formatter() {
                         return ax5.util.date(this.value, {"return":'yyyy/MM/dd'});
                     }},
                     {key: "customer", label: "고객명"},

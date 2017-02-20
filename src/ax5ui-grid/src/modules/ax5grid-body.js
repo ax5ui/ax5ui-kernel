@@ -274,16 +274,16 @@
                     "default": function (_column) {
                         let column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
                             that = {
-                            self: self,
-                            page: self.page,
-                            list: self.list,
-                            item: self.list[_column.dindex],
-                            dindex: _column.dindex,
-                            rowIndex: _column.rowIndex,
-                            colIndex: _column.colIndex,
-                            column: column,
-                            value: self.list[_column.dindex][column.key]
-                        };
+                                self: self,
+                                page: self.page,
+                                list: self.list,
+                                item: self.list[_column.dindex],
+                                dindex: _column.dindex,
+                                rowIndex: _column.rowIndex,
+                                colIndex: _column.colIndex,
+                                column: column,
+                                value: self.list[_column.dindex][column.key]
+                            };
 
                         if (column.editor && column.editor.type == "checkbox") { // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
                             let value = GRID.data.getValue.call(self, _column.dindex, column.key),
@@ -354,11 +354,10 @@
         this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
             let panelName, attr,
                 row, col, dindex, rowIndex, colIndex,
-                targetClick = {
+                targetDBLClick = {
                     "default": function (_column) {
-
-                        if (this.isInlineEditing) {
-                            for (let columnKey in this.inlineEditing) {
+                        if (self.isInlineEditing) {
+                            for (let columnKey in self.inlineEditing) {
                                 if (columnKey == _column.dindex + "_" + _column.colIndex + "_" + _column.rowIndex) {
                                     return this;
                                 }
@@ -371,7 +370,27 @@
                                 value = GRID.data.getValue.call(self, dindex, column.key);
                             }
                         }
-                        GRID.body.inlineEdit.active.call(self, self.focusedColumn, e, value);
+
+                        let editor = self.colGroup[_column.colIndex].editor;
+                        if (U.isObject(editor)) {
+                            GRID.body.inlineEdit.active.call(self, self.focusedColumn, e, value);
+                        } else {
+                            // 더블클릭 실행
+                            if (self.config.body.onDBLClick) {
+                                let that = {
+                                    self: self,
+                                    page: self.page,
+                                    list: self.list,
+                                    item: self.list[_column.dindex],
+                                    dindex: _column.dindex,
+                                    rowIndex: _column.rowIndex,
+                                    colIndex: _column.colIndex,
+                                    column: column,
+                                    value: self.list[_column.dindex][column.key]
+                                };
+                                self.config.body.onDBLClick.call(that);
+                            }
+                        }
                     },
                     "rowSelector": function (_column) {
 
@@ -389,8 +408,8 @@
             colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
             dindex = Number(this.getAttribute("data-ax5grid-data-index"));
 
-            if (attr in targetClick) {
-                targetClick[attr]({
+            if (attr in targetDBLClick) {
+                targetDBLClick[attr]({
                     panelName: panelName,
                     attr: attr,
                     row: row,
@@ -2123,7 +2142,6 @@
                     }
                     return this;
                 }
-
 
                 if (this.list[dindex].__isGrouping) {
                     return false;

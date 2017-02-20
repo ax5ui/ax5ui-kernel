@@ -613,6 +613,8 @@
              * @param {Number} [_config.header.columnPadding=3]
              * @param {Number} [_config.header.columnBorderWidth=1]
              * @param {Object} [_config.body]
+             * @param {Function} [_config.onClick]
+             * @param {Function} [_config.onDBLClick]
              * @param {String|Array} [_config.body.mergeCells=false] -
              * @param {String} [_config.body.align]
              * @param {Number} [_config.body.columnHeight=25]
@@ -702,12 +704,29 @@
              *         return this;
              *     },
              *     setData: function (_pageNo) {
-             *
              *         firstGrid.setData(sampleData);
-             *
              *         return this;
              *     }
              * };
+             *
+             * // onClick, onDBLClick, onDataChanged
+             * firstGrid.setConfig({
+             *      target: $('[data-ax5grid="first-grid"]'),
+             *      columns: [...],
+             *      body: {
+             *          onClick: function(){
+             *              console.log(this);
+             *          },
+             *          onDBLClick: function(){
+             *              console.log(this);
+             *              // If the column does not have an editor attribute, an event is raised.
+             *          },
+             *          onDataChanged: function(){
+             *              console.log(this);
+             *              // If change Data
+             *          }
+             *      }
+             * });
              * ```
              */
             this.init = function (_config) {
