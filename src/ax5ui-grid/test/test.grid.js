@@ -171,7 +171,7 @@ describe('ax5grid TEST', function () {
     it('setData ax5grid', function (done) {
         myUI.setData([
             {a: "A", b: "A", price: 1000, amount: 2000, cost: 500, saleDt: "2013-01-01", isChecked: "Y", saleType: "A", customer: "name01", __modified__: true},
-            {a: "B", b: "B", price: 1200, amount: 2200, cost: 1000, saleDt: "2014-01-01", isChecked: "N", saleType: "B", customer: "name02", __selected__: true},
+            {a: "B", b: "B", price: 1200, amount: 2200, cost: 1000, saleDt: "2014-01-01", isChecked: "N", saleType: "B", customer: "name02"},
             {a: "C", b: "C", price: 1400, amount: 2400, cost: 1500, saleDt: "2015-01-01", isChecked: "N", saleType: "C", customer: "name03", __deleted__: false}
         ]);
         // has body.grouping
@@ -212,7 +212,7 @@ describe('ax5grid TEST', function () {
     });
 
     it('getList[selected] ax5grid', function (done) {
-        done(myUI.getList("selected").length == 2 ? "" : "error getList[selected]");
+        done(myUI.getList("selected").length == 1 ? "" : "error getList[selected]");
     });
 
     it('getList[deleted] ax5grid', function (done) {
@@ -292,7 +292,11 @@ describe('ax5grid TEST', function () {
 
     it('clearSelect', function (done) {
         myUI.clearSelect();
-        done(myUI.getList("selected").length == 1 ? "" : "error clearSelect");
+        done(myUI.getList("selected").length == 0 ? "" : "error clearSelect");
+    });
+
+    it('selectAll', function (done) {
+        done(ae.equalAll(myUI.getList(), myUI.getList("selected")) ? "" : "error selectAll");
     });
 
     after(function () {
