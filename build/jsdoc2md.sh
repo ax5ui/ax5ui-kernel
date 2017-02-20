@@ -5,3 +5,4 @@ jsdoc2md "src/ax5ui-grid/dist/ax5grid.js" > src/ax5ui-grid/API.md
 jsdoc2md "src/ax5ui-binder/dist/ax5binder.js" > src/ax5ui-binder/API.md
 jsdoc2md "src/ax5ui-autocomplete/dist/ax5autocomplete.js" > src/ax5ui-autocomplete/API.md
 jsdoc2md "src/ax5ui-uploader/dist/ax5uploader.js" > src/ax5ui-uploader/API.md
+jsdoc2md "src/ax5ui-modal/dist/ax5modal.js" > src/ax5ui-modal/API.md

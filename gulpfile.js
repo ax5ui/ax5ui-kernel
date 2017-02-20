@@ -10,7 +10,6 @@ var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
 var babel = require('gulp-babel');
 var clean = require('gulp-clean');
-var gulpJsdoc2md = require('gulp-jsdoc-to-markdown');
 var rename = require('gulp-rename');
 var gutil = require('gulp-util');
 var shell = require('gulp-shell');
@@ -284,7 +283,6 @@ gulp.task('test-npm-install', function(){
 
     gulp.src('').pipe(shell(commands));
 });
-
 
 /**
  *

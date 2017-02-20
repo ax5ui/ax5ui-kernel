@@ -29,6 +29,7 @@
     * [.selectAll(_options)](#ax5grid.selectAll) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.exportExcel(_fileName)](#ax5grid.exportExcel) ⇒ <code>[ax5grid](#ax5grid)</code> &#124; <code>String</code>
     * [.focus(_pos)](#ax5grid.focus) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.destroy()](#ax5grid.destroy) ⇒ <code>null</code>
 
 <a name="ax5grid.setConfig"></a>
 
@@ -457,3 +458,7 @@ firstGrid.focus("DOWN");
 firstGrid.focus("HOME");
 firstGrid.focus("END");
 ```
+<a name="ax5grid.destroy"></a>
+
+### ax5grid.destroy() ⇒ <code>null</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  

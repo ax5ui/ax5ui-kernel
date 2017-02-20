@@ -1,212 +1,104 @@
-# Basic Usage
-> Modal UI, hold does not exceed the current page, you can use in order to process a simple user input and information. In some cases, by the other page so as to output in the modal, it can also handle the task of more diverse forms.
+<a name="ax5modal"></a>
 
-How to initialize the properties of the UI, there are two.
-You can pass the property values of the UI to `setConfig`.
-Using the `new` you can pass when you initialize the UI.
+## ax5modal
+**Kind**: global class  
+**Author:** tom@axisj.com  
 
-## setConfig()
-`setConfig([options, callInit=true])`
- 
-```js
-var myModal = new ax5.ui.modal();
-myModal.set_config({
-    width: "Number",
-    height: "Number",
-    position: {
-        left: "left|center|right|Number", 
-        top: "top|middle|bottom|Number", 
-        margin: "Number"
-    },
-    iframeLoadingMsg: "",
-    iframe: {
-        method: "get|post", 
-        url: "String", 
-        param: "paramString|Object"
-    },
-    closeToEsc: "Boolean",
-    onStateChanged: "Function",
-    animateTime: "Number",
-    zIndex: "Number",
-    absolute: false,
-    fullScreen: "Boolean",
-    header: {
-        title: "",
-        btns: {
-            close: {
-                label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function(){
-                    myModal.close();
-                }
-            }
-        }
-    }
-});
+* [ax5modal](#ax5modal)
+    * [.setConfig(config)](#ax5modal.setConfig) ⇒ <code>[ax5modal](#ax5modal)</code>
+    * [.open()](#ax5modal.open) ⇒ <code>[ax5modal](#ax5modal)</code>
+    * [.close()](#ax5modal.close) ⇒ <code>[ax5modal](#ax5modal)</code>
+    * [.minimize()](#ax5modal.minimize) ⇒ <code>[ax5modal](#ax5modal)</code>
+    * [.restore()](#ax5modal.restore) ⇒ <code>[ax5modal](#ax5modal)</code>
+    * [.css(css)](#ax5modal.css) ⇒ <code>[ax5modal](#ax5modal)</code>
+    * [.setModalConfig(_config)](#ax5modal.setModalConfig) ⇒ <code>ax5.ui.ax5modal</code>
+    * [.align(position, e)](#ax5modal.align) ⇒ <code>[ax5modal](#ax5modal)</code>
+
+<a name="ax5modal.setConfig"></a>
+
+### ax5modal.setConfig(config) ⇒ <code>[ax5modal](#ax5modal)</code>
+Preferences of modal UI
+
+**Kind**: static method of <code>[ax5modal](#ax5modal)</code>  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| config | <code>Object</code> |  | 클래스 속성값 |
+| [config.zIndex] | <code>Number</code> |  |  |
+| [config.position] | <code>Object</code> |  |  |
+| [config.position.left] | <code>String</code> | <code>&quot;center&quot;</code> |  |
+| [config.position.top] | <code>String</code> | <code>&quot;middle&quot;</code> |  |
+| [config.position.margin] | <code>Number</code> | <code>10</code> |  |
+| [config.minimizePosition] | <code>String</code> | <code>&quot;bottom-right&quot;</code> |  |
+| [config.width] | <code>Number</code> | <code>300</code> |  |
+| [config.height] | <code>Number</code> | <code>400</code> |  |
+| [config.closeToEsc] | <code>Boolean</code> | <code>true</code> |  |
+| [config.absolute] | <code>Boolean</code> | <code>false</code> |  |
+| [config.disableDrag] | <code>Boolean</code> | <code>false</code> |  |
+| [config.disableResize] | <code>Boolean</code> | <code>false</code> |  |
+| [config.animateTime] | <code>Number</code> | <code>250</code> |  |
+| [config.fullScreen] | <code>function</code> |  |  |
+| [config.onStateChanged] | <code>function</code> |  |  |
+| [config.onResize] | <code>function</code> |  |  |
+
+**Example**  
 ```
-
-### width
-
-Type: `Number` [default: 300]
-
-Modal width
-
-### height
-
-Type: `Number` [default: 400]
-
-Modal height
-
-### position
-
-Type: `Object` 
-
-**default**
-```json
-{
-    left: "center", // left|center|right|Number
-    top: "middle", // top|middle|bottom|Number
-    margin: 10
-}
 ```
+<a name="ax5modal.open"></a>
 
-### iframe
+### ax5modal.open() ⇒ <code>[ax5modal](#ax5modal)</code>
+open the modal
 
-Type: `Object` 
-
-**default**
-```json
-{
-    method: "get", // get|post
-    url: "", // iframe src url
-    param: "" // parameter
-}
+**Kind**: static method of <code>[ax5modal](#ax5modal)</code>  
+**Example**  
 ```
-
-### closeToEsc
-
-Type: `Boolean`
-
-### onStateChanged
-
-Type: `Function`  
-
-onStateChanged function is executed when the modal of the state is changed,
-this.state state value is passed to this time onStateChanged function.
-
-### animateTime
-
-Type: `Number` [default : 300]
-
-### zIndex
-
-Type: `Number`
-
-### absolute
-
-Type: `Boolean` [default=false]
-
-### fullScreen
-
-Type: `Boolean`  
-
-```json
-fullScreen : true
+my_modal.open();
 ```
+<a name="ax5modal.close"></a>
 
-### header
+### ax5modal.close() ⇒ <code>[ax5modal](#ax5modal)</code>
+close the modal
 
-Type: `Object'
-
-```json
-{
-    title:"MODAL TITLE",
-    btns: {
-        minimize: {
-            label: '<i class="fa fa-minus-circle" aria-hidden="true"></i>', onClick: function(){
-                modal.minimize();
-            }
-        },
-        maximize: {
-            label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function(){
-                modal.maximize();
-            }
-        },
-        close: {
-            label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function(){
-                modal.close();
-            }
-        }
-    }
-}
+**Kind**: static method of <code>[ax5modal](#ax5modal)</code>  
+**Example**  
 ```
-
-- - -
-
-## open()
-`open(Options[, callback])`
-
-it is possible to redefine all of the options that can be used in setConfig.  
-
-```js
-modal.open();
-modal.open({
-    width: 500,
-    height: 500
-});
-modal.open({}, function(){
-    console.log(this);
-});
+my_modal.close();
 ```
+<a name="ax5modal.minimize"></a>
 
-- - -
+### ax5modal.minimize() ⇒ <code>[ax5modal](#ax5modal)</code>
+**Kind**: static method of <code>[ax5modal](#ax5modal)</code>  
+<a name="ax5modal.restore"></a>
 
-## css()
-`css(Object)`
+### ax5modal.restore() ⇒ <code>[ax5modal](#ax5modal)</code>
+**Kind**: static method of <code>[ax5modal](#ax5modal)</code>  
+<a name="ax5modal.css"></a>
 
-```js
-modal.css({
-    width: 400,
-    height: 600
-});
-```
+### ax5modal.css(css) ⇒ <code>[ax5modal](#ax5modal)</code>
+setCSS
 
-- - -
+**Kind**: static method of <code>[ax5modal](#ax5modal)</code>  
 
-## align()
-`align(Object)`
+| Param | Type | Description |
+| --- | --- | --- |
+| css | <code>Object</code> | - |
 
-```js
-modal.align({left:"center", top:"middle"});
-modal.align({left:"left", top:"top", margin: 20});
-```
+<a name="ax5modal.setModalConfig"></a>
 
-- - - 
+### ax5modal.setModalConfig(_config) ⇒ <code>ax5.ui.ax5modal</code>
+**Kind**: static method of <code>[ax5modal](#ax5modal)</code>  
 
-## close()
-`close()`
+| Param |
+| --- |
+| _config | 
 
+<a name="ax5modal.align"></a>
 
-- - -
+### ax5modal.align(position, e) ⇒ <code>[ax5modal](#ax5modal)</code>
+**Kind**: static method of <code>[ax5modal](#ax5modal)</code>  
 
-## minimize()
-`minimize()`
+| Param |
+| --- |
+| position | 
+| e | 
 
-
-- - -
-
-## maximize()
-`maximize()`
-
-- - -
-
-## onStateChanged
-
-Type: `Function`
-
-`onStateChanged` function can be defined in setConfig method or new ax5.ui.modal initialization method.
-However, you can us to define an event function after initialization, if necessary
-
-```js
-modal.onStateChanged = function(){
-    console.log(this);
-}
-```

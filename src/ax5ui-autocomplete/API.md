@@ -30,6 +30,7 @@
     * [.blur(_boundID)](#ax5autocomplete.blur) ⇒ <code>[ax5autocomplete](#ax5autocomplete)</code>
     * [.enable(_boundID)](#ax5autocomplete.enable) ⇒ <code>[ax5autocomplete](#ax5autocomplete)</code>
     * [.disable(_boundID)](#ax5autocomplete.disable) ⇒ <code>[ax5autocomplete](#ax5autocomplete)</code>
+    * [.align()](#ax5autocomplete.align)
 
 <a name="ax5autocomplete.setConfig"></a>
 
@@ -143,6 +144,10 @@ myAutocomplete.setText($('[data-ax5autocomplete="autocomplete1"]'), ["substring"
 | --- | --- |
 | _boundID | <code>jQueryObject</code> &#124; <code>Element</code> &#124; <code>Number</code> | 
 
+<a name="ax5autocomplete.align"></a>
+
+### ax5autocomplete.align()
+**Kind**: static method of <code>[ax5autocomplete](#ax5autocomplete)</code>  
 <a name="jQueryExtends"></a>
 
 ## jQueryExtends : <code>object</code>
