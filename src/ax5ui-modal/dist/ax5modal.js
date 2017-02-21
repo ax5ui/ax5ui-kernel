@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "${VERSION}"
+        version: "1.3.98"
     }, function () {
         /**
          * @class ax5modal
@@ -63,7 +63,9 @@
             var onStateChanged = function onStateChanged(opts, that) {
                 var eventProcessor = {
                     "resize": function resize(that) {
-                        if (this.onResize) {
+                        if (opts && opts.onResize) {
+                            opts.onResize.call(that, that);
+                        } else if (this.onResize) {
                             this.onResize.call(that, that);
                         }
                     },

@@ -15,7 +15,6 @@ var gutil = require('gulp-util');
 var shell = require('gulp-shell');
 var replace = require('gulp-replace');
 var jeditor = require("gulp-json-editor");
-
 var sourcemaps = require('gulp-sourcemaps');
 
 var PATHS = {

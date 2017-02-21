@@ -1,0 +1,19 @@
+{
+  "name": "ax5core",
+  "version": "1.3.98",
+  "description": "ax5core is a collection of utility functions that have been designed for use in ax5ui",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ax5ui/ax5core"
+  },
+  "author": {
+    "name": "Thomas Jang",
+    "email": "tom@axisj.com",
+    "url": "ax5.io"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "jquery": "^3.1.1"
+  }
+}
