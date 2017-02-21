@@ -60,6 +60,8 @@ Preferences of grid UI
 | [_config.header.columnPadding] | <code>Number</code> | <code>3</code> |  |
 | [_config.header.columnBorderWidth] | <code>Number</code> | <code>1</code> |  |
 | [_config.body] | <code>Object</code> |  |  |
+| [_config.onClick] | <code>function</code> |  |  |
+| [_config.onDBLClick] | <code>function</code> |  |  |
 | [_config.body.mergeCells] | <code>String</code> &#124; <code>Array</code> | <code>false</code> | - |
 | [_config.body.align] | <code>String</code> |  |  |
 | [_config.body.columnHeight] | <code>Number</code> | <code>25</code> |  |
@@ -148,12 +150,28 @@ var gridView = {
         return this;
     },
     setData: function (_pageNo) {
-
         firstGrid.setData(sampleData);
-
         return this;
     }
 };
+
+// onClick, onDBLClick, onDataChanged
+firstGrid.setConfig({
+     target: $('[data-ax5grid="first-grid"]'),
+     columns: [...],
+     body: {
+         onClick: function(){
+             console.log(this);
+         },
+         onDBLClick: function(){
+             console.log(this);
+             // 
+         },
+         onDataChanged: function(){
+             console.log(this);
+         }
+     }
+});
 ```
 <a name="ax5grid.align"></a>
 

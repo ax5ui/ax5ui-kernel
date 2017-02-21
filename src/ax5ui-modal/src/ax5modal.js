@@ -61,7 +61,10 @@
             let onStateChanged = function (opts, that) {
                     var eventProcessor = {
                         "resize": function (that) {
-                            if (this.onResize) {
+                            if (opts && opts.onResize) {
+                                opts.onResize.call(that, that);
+                            }
+                            else if (this.onResize) {
                                 this.onResize.call(that, that);
                             }
                         },
