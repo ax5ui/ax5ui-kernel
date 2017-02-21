@@ -3,7 +3,6 @@
  * - github.com/thomasjang
  * - www.axisj.com
  */
-
 describe('ax5grid TEST', function () {
     var myUI;
     var tmpl = '<div data-ax5grid="first-grid" data-ax5grid-config="" style="height: 300px;"></div>';
@@ -296,7 +295,35 @@ describe('ax5grid TEST', function () {
     });
 
     it('selectAll', function (done) {
-        done(ae.equalAll(myUI.getList(), myUI.getList("selected")) ? "" : "error selectAll");
+        myUI.selectAll();
+        done(ae.equalAll(myUI.getList(), myUI.getList("selected")));
+    });
+
+    it('focus', function (done) {
+        myUI.focusedColumn = {
+            "6_0_0": {
+                "panelName": "left-body-scroll",
+                "dindex": 6,
+                "rowIndex": 0,
+                "colIndex": 0,
+                "colspan": 1
+            }
+        };
+        myUI.clearSelect().select(0).focus("DOWN");
+        done(ae.equalAll({
+            "7_0_0": {
+                "panelName": "left-body-scroll",
+                "dindex": 7,
+                "rowIndex": 0,
+                "colIndex": 0,
+                "colspan": 1
+            }
+        }, myUI.focusedColumn));
+    });
+
+    it('destroy', function (done) {
+        myUI.destroy();
+        done(ae.equalAll([], myUI.getList()));
     });
 
     after(function () {
