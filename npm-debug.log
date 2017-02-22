@@ -1,34 +1,32 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'install' ]
-2 info using npm@2.11.2
-3 info using node@v0.12.5
-4 verbose readDependencies loading dependencies from /data/deploy/.jenkins/jobs/AX5-KERNEL/workspace/package.json
-5 error install Couldn't read dependencies
-6 verbose stack Error: Failed to parse json
-6 verbose stack Unexpected token '<' at 3:1
-6 verbose stack <<<<<<< HEAD
-6 verbose stack ^
-6 verbose stack     at parseError (/usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:379:11)
-6 verbose stack     at parseJson (/usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:68:23)
-6 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:48:5
-6 verbose stack     at evalmachine.<anonymous>:334:14
-6 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/graceful-fs/graceful-fs.js:102:5
-6 verbose stack     at FSReqWrap.oncomplete (evalmachine.<anonymous>:95:15)
-7 verbose cwd /data/deploy/.jenkins/jobs/AX5-KERNEL/workspace
-8 error Linux 2.6.32-573.22.1.el6.x86_64
-9 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "install"
-10 error node v0.12.5
-11 error npm  v2.11.2
-12 error file /data/deploy/.jenkins/jobs/AX5-KERNEL/workspace/package.json
-13 error code EJSONPARSE
-14 error Failed to parse json
-14 error Unexpected token '<' at 3:1
-14 error <<<<<<< HEAD
-14 error ^
-15 error File: /data/deploy/.jenkins/jobs/AX5-KERNEL/workspace/package.json
-16 error Failed to parse package.json data.
-16 error package.json must be actual JSON, not just JavaScript.
-16 error
-16 error This is not a bug in npm.
-16 error Tell the package author to fix their package.json file. JSON.parse
-17 verbose exit [ 1, true ]
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'test' ]
+2 info using npm@3.10.8
+3 info using node@v6.9.1
+4 verbose stack Error: Failed to parse json
+4 verbose stack Unexpected token '<' at 3:1
+4 verbose stack <<<<<<< HEAD
+4 verbose stack ^
+4 verbose stack     at parseError (/usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:390:11)
+4 verbose stack     at parseJson (/usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:79:23)
+4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:48:5
+4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/graceful-fs/graceful-fs.js:78:16
+4 verbose stack     at tryToString (fs.js:455:3)
+4 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (fs.js:442:12)
+5 verbose cwd /Users/imt/ax5ui-kernel
+6 error Darwin 16.4.0
+7 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "test"
+8 error node v6.9.1
+9 error npm  v3.10.8
+10 error file /Users/imt/ax5ui-kernel/package.json
+11 error code EJSONPARSE
+12 error Failed to parse json
+12 error Unexpected token '<' at 3:1
+12 error <<<<<<< HEAD
+12 error ^
+13 error File: /Users/imt/ax5ui-kernel/package.json
+14 error Failed to parse package.json data.
+14 error package.json must be actual JSON, not just JavaScript.
+14 error
+14 error This is not a bug in npm.
+14 error Tell the package author to fix their package.json file. JSON.parse
+15 verbose exit [ 1, true ]

@@ -321,6 +321,10 @@ describe('ax5grid TEST', function () {
         }, myUI.focusedColumn));
     });
 
+    it('keyDown', function (done) {
+        done(Object.keys(myUI.keyDown("KEY_UP").focusedColumn)[0] == "6_0_0" && Object.keys(myUI.keyDown("KEY_DOWN").focusedColumn)[0] == "7_0_0" ? "" : "error keyDown[KEY_UP/KEY_DOWN]");
+    });
+
     it('destroy', function (done) {
         myUI.destroy();
         done(ae.equalAll([], myUI.getList()));
