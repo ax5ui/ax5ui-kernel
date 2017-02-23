@@ -322,7 +322,22 @@ describe('ax5grid TEST', function () {
     });
 
     it('keyDown', function (done) {
-        done(Object.keys(myUI.keyDown("KEY_UP").focusedColumn)[0] == "6_0_0" && Object.keys(myUI.keyDown("KEY_DOWN").focusedColumn)[0] == "7_0_0" ? "" : "error keyDown[KEY_UP/KEY_DOWN]");
+        myUI.focusedColumn = {
+            "1_3_0": {
+                "panelName": "body-scroll",
+                "dindex": 1,
+                "rowIndex": 0,
+                "colIndex": 3,
+                "colspan": 1
+            }
+        };
+        done(
+            ae.equalAll("0_3_0", Object.keys(myUI.keyDown("KEY_UP").focusedColumn)[0])
+            || ae.equalAll("0_4_0", Object.keys(myUI.keyDown("KEY_RIGHT").focusedColumn)[0])
+            || ae.equalAll("1_4_0", Object.keys(myUI.keyDown("KEY_DOWN").focusedColumn)[0])
+            || ae.equalAll("9_4_0", Object.keys(myUI.keyDown("KEY_END").focusedColumn)[0])
+            || ae.equalAll("0_4_0", Object.keys(myUI.keyDown("KEY_HOME").focusedColumn)[0])
+        );
     });
 
     it('destroy', function (done) {
