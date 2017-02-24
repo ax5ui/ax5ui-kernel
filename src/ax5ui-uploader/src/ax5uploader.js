@@ -879,6 +879,16 @@
             };
 
             /**
+             * clear uploadedFiles
+             * @method ax5uploader.clear
+             * @returns {ax5uploader}
+             */
+            this.clear = function () {
+                this.setUploadedFiles([]);
+                return this;
+            };
+
+            /**
              * Removes the object corresponding to the index passed to the argument from uploadedFiles.
              * @method ax5uploader.removeFile
              * @param {Number} _index
@@ -942,13 +952,3 @@
 
     UPLOADER = ax5.ui.uploader;
 })();
-
-
-// todo :
-// html5용 업로드 - 구현완료
-// abort, 여러개의 파일이 올라가는 중간에 abort 하면 업로드된 파일은 두고. 안올라간 파일만 중지 -- ok
-// set uploded files
-// uploaded files display, needs columnKeys
-// delete file
-
-// dropFile support

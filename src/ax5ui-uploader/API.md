@@ -9,6 +9,7 @@
     * [.send()](#ax5uploader.send) ⇒ <code>[ax5uploader](#ax5uploader)</code>
     * [.abort()](#ax5uploader.abort) ⇒ <code>[ax5uploader](#ax5uploader)</code>
     * [.setUploadedFiles(_files)](#ax5uploader.setUploadedFiles) ⇒ <code>[ax5uploader](#ax5uploader)</code>
+    * [.clear()](#ax5uploader.clear) ⇒ <code>[ax5uploader](#ax5uploader)</code>
     * [.removeFile(_index)](#ax5uploader.removeFile) ⇒ <code>[ax5uploader](#ax5uploader)</code>
     * [.removeFileAll()](#ax5uploader.removeFileAll) ⇒ <code>[ax5uploader](#ax5uploader)</code>
     * [.selectFile()](#ax5uploader.selectFile) ⇒ <code>Boolean</code>
@@ -103,6 +104,12 @@ $.ajax({
     }
 });
 ```
+<a name="ax5uploader.clear"></a>
+
+### ax5uploader.clear() ⇒ <code>[ax5uploader](#ax5uploader)</code>
+clear uploadedFiles
+
+**Kind**: static method of <code>[ax5uploader](#ax5uploader)</code>  
 <a name="ax5uploader.removeFile"></a>
 
 ### ax5uploader.removeFile(_index) ⇒ <code>[ax5uploader](#ax5uploader)</code>
