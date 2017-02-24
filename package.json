@@ -1,10 +1,6 @@
 {
   "name": "ax5ui-kernel",
-<<<<<<< HEAD
   "version": "1.3.102",
-=======
-  "version": "1.3.98",
->>>>>>> 256e58fdf3e2b3e6b60911ec2b0b8d6c8af1940f
   "license": "MIT",
   "repository": {
     "type": "git",

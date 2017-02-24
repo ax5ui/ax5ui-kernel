@@ -58,12 +58,13 @@
         }
         //todo : checkBox CSS 구현
         .checkBox {
-            display: block;
+            display: inline-block;
             position: relative;
             border: $ax5grid-cell-checkbox-border;
             border-radius: $ax5grid-cell-checkbox-border-radius;
             @include ax-background(top, $ax5grid-cell-checkbox-bg-colors);
             height: 100%;
+            width: 100%;
             &:after {
                 content: '';
                 width: 60%;

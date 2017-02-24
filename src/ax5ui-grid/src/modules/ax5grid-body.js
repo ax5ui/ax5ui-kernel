@@ -555,7 +555,7 @@
             return (typeof _item["__index"] !== "undefined") ? _item["__index"] + 1 : "";
         }
         else if (_key === "__d-checkbox__") {
-            return '<div class="checkBox"></div>';
+            return `<div class="checkBox" style="max-height: ${_col.width-10}px;min-height: ${_col.width-10}px;"></div>`;
         }
         else {
             if (_col.editor && (function (_editor) {
