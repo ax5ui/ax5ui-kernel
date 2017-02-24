@@ -13,7 +13,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.103"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -103,6 +103,20 @@
                 try {
                     return Function("", "return this" + path.join('') + ";").call(_this);
                 } catch (e) {
+                    return;
+                }
+            };
+
+            /**
+             * 패널을 이용하여 패널의 부모 패널을 가져옵니다
+             * @param _panel
+             */
+            var getPanelParent = function getPanelParent(_panel) {
+                var _path = _panel.panelPath.substr(0, _panel.panelPath.lastIndexOf("."));
+                try {
+                    return Function("", "return this." + _path + ";").call(_this);
+                } catch (e) {
+                    console.log(e);
                     return;
                 }
             };
@@ -557,7 +571,7 @@
                             panelTabDragEvent.dragover(this, e);
                             U.stopEvent(e);
                         }).on("drop.ax5docker-" + _this.instanceId, function (e) {
-                            panelTabDragEvent.off();
+                            panelTabDragEvent.off("drop");
                             U.stopEvent(e);
                         }).on("dragend.ax5docker-" + _this.instanceId, function (e) {
                             panelTabDragEvent.off();
@@ -665,7 +679,11 @@
                         }
                     }
                 },
-                "off": function off() {
+                "off": function off(isDrop) {
+                    if (isDrop) {
+                        console.log(_this.xvar.dragger);
+                    }
+
                     _this.$target.off("dragover.ax5docker-" + _this.instanceId).off("drop.ax5docker-" + _this.instanceId).off("dragend.ax5docker-" + _this.instanceId);
 
                     _this.xvar.dragger.target.removeAttr("data-dropper");
@@ -879,16 +897,20 @@
              * ```
              */
             this.addPanel = function (_addPath, _addType, _panel, _panelIndex) {
-                if (_addPath == "undefined") _addPath = "0";
-                _addPath = _addPath.replace(/[a-zA-Z\[\]]+/g, "").replace(/(\d+)/g, function (a, b) {
+                var addPath = "";
+                if (_addPath == "undefined") addPath = "0";
+                addPath = _addPath.replace(/[a-zA-Z\[\]]+/g, "").replace(/(\d+)/g, function (a, b) {
                     return "panels[" + a + "]";
                 });
 
-                //_addPath = [].concat(_addPath.split(/[\.]/g));
-                var pane = getPanel(_addPath);
-
-                console.log(pane);
-
+                var pane = getPanel(addPath);
+                var parent = getPanelParent(pane);
+                if (parent.type == "stack") {
+                    // 부모패널로 ~
+                    //console.log(addPath, _addPath);
+                    pane = parent;
+                    addPath = pane.panelPath;
+                }
                 var panelProcessor = {
                     "stack": function stack(_pane, _addType, _panel) {
                         var copyPanel = jQuery.extend({}, _pane),
@@ -898,12 +920,12 @@
                                 arrangePanel();
                             },
                             "row-left": function rowLeft(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "row",
                                         panels: []
                                     });
@@ -913,12 +935,12 @@
                                 }
                             },
                             "row-right": function rowRight(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "row",
                                         panels: []
                                     });
@@ -928,12 +950,12 @@
                                 }
                             },
                             "column-top": function columnTop(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "column") {
+                                if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "column",
                                         panels: []
                                     });
@@ -943,12 +965,12 @@
                                 }
                             },
                             "column-bottom": function columnBottom(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "column") {
+                                if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "column",
                                         panels: []
                                     });
@@ -975,13 +997,13 @@
                                 }
                             },
                             "row-left": function rowLeft(_pane, _panel, _panelIndex) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row") {
                                     _pane.panels.splice(_panelIndex, 0, _panel);
                                     arrangePanel();
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "row",
                                         panels: []
                                     });
@@ -991,13 +1013,13 @@
                                 }
                             },
                             "row-right": function rowRight(_pane, _panel, _panelIndex) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row") {
                                     _pane.panels.splice(_panelIndex + 1, 0, _panel);
                                     arrangePanel();
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "row",
                                         panels: []
                                     });
@@ -1007,12 +1029,12 @@
                                 }
                             },
                             "column-top": function columnTop(_pane, _panel, _panelIndex) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "column") {
+                                if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "column",
                                         panels: []
                                     });
@@ -1022,12 +1044,12 @@
                                 }
                             },
                             "column-bottom": function columnBottom(_pane, _panel, _panelIndex) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "column") {
+                                if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "column",
                                         panels: []
                                     });
@@ -1053,12 +1075,12 @@
                                 }
                             },
                             "row-left": function rowLeft(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "row",
                                         panels: []
                                     });
@@ -1068,12 +1090,12 @@
                                 }
                             },
                             "row-right": function rowRight(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "row",
                                         panels: []
                                     });
@@ -1099,11 +1121,12 @@
                         copyPanel = null;
                     },
                     "panel": function panel(_pane, _addType, _panel) {
+                        // todo : 부모가 stack인지 체크 하자.
                         var copyPanel = jQuery.extend({}, _pane),
                             addProcessor = {
                             "stack": function stack(_pane, _panel) {
                                 // _pane stack으로 재구성
-                                _pane = setPanel(_addPath, {
+                                _pane = setPanel(addPath, {
                                     type: "stack",
                                     panels: []
                                 });
@@ -1112,12 +1135,12 @@
                                 arrangePanel();
                             },
                             "row-left": function rowLeft(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "row",
                                         panels: []
                                     });
@@ -1127,12 +1150,12 @@
                                 }
                             },
                             "row-right": function rowRight(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "row",
                                         panels: []
                                     });
@@ -1142,12 +1165,12 @@
                                 }
                             },
                             "column-top": function columnTop(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "column") {
+                                if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "column",
                                         panels: []
                                     });
@@ -1157,12 +1180,12 @@
                                 }
                             },
                             "column-bottom": function columnBottom(_pane, _panel) {
-                                var parentPath = _addPath.substr(0, _addPath.lastIndexOf("."));
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane.type == "column") {
+                                if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
-                                    _pane = setPanel(_addPath, {
+                                    _pane = setPanel(addPath, {
                                         type: "column",
                                         panels: []
                                     });
@@ -1183,6 +1206,18 @@
                 };
 
                 panelProcessor[pane.type].call(this, pane, _addType, _panel, _panelIndex);
+                return this;
+            };
+
+            /**
+             * @method ax5docker.movePanel
+             * @param _panel
+             * @param _movePath
+             * @param _moveType
+             * @returns {ax5docker}
+             */
+            this.movePanel = function (_panel, _movePath, _moveType) {
+
                 return this;
             };
 
