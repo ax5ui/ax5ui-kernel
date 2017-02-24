@@ -267,11 +267,10 @@ describe('ax5grid TEST', function () {
         done(lastCol.key == "c-o-l-o-r" && lastCol.label == "색깔" && lastCol.align == "left" ? "" : "error updateColumn");
     });
 
-    //TODO: setColumnWidth??
+    //TODO: setColumnWidth
     /*it('setColumnWidth', function (done) {
-     _width error
-     myUI(50, 0);
-     });*/
+        myUI(50, 0);
+    });*/
 
     it('getColumnSortInfo', function (done) {
         var sortInfo = myUI.getColumnSortInfo()[0];
@@ -339,6 +338,21 @@ describe('ax5grid TEST', function () {
             || ae.equalAll("0_4_0", Object.keys(myUI.keyDown("KEY_HOME").focusedColumn)[0])
         );
     });
+
+    /*
+    it('align', function (done) {
+       done(ae.equalAll(myUI, myUI.align()));
+    });
+
+
+    success!
+    it('exportExcel', function (done) {
+        var _this = myUI.exportExcel("fileName");
+        setTimeout(function () {
+            done(ae.equalAll(_this, myUI));
+        }, 200);
+    });
+    */
 
     it('destroy', function (done) {
         myUI.destroy();

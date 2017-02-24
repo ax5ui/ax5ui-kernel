@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "mask",
-        version: "1.3.98"
+        version: "1.3.103"
     }, function () {
         /**
          * @class ax5mask
@@ -247,27 +247,31 @@
              * ```
              */
             this.close = function (_delay) {
+                var _this = this;
+
                 if (this.$mask) {
-                    var _close = function _close() {
-                        this.status = "off";
-                        this.$mask.remove();
-                        this.$target.removeClass("ax-masking");
+                    (function () {
+                        var _close = function _close() {
+                            this.status = "off";
+                            this.$mask.remove();
+                            this.$target.removeClass("ax-masking");
 
-                        onStateChanged.call(this, null, {
-                            self: this,
-                            state: "close"
-                        });
+                            onStateChanged.call(this, null, {
+                                self: this,
+                                state: "close"
+                            });
 
-                        jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
-                    };
+                            jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
+                        };
 
-                    if (_delay) {
-                        setTimeout(function () {
-                            _close.call(this);
-                        }.bind(this), _delay);
-                    } else {
-                        _close.call(this);
-                    }
+                        if (_delay) {
+                            setTimeout(function () {
+                                _close.call(this);
+                            }.bind(_this), _delay);
+                        } else {
+                            _close.call(_this);
+                        }
+                    })();
                 }
                 return this;
             };
@@ -277,24 +281,28 @@
              * @returns {ax5mask}
              */
             this.fadeOut = function () {
+                var _this2 = this;
+
                 if (this.$mask) {
-                    var _close = function _close() {
-                        this.status = "off";
-                        this.$mask.remove();
-                        this.$target.removeClass("ax-masking");
+                    (function () {
+                        var _close = function _close() {
+                            this.status = "off";
+                            this.$mask.remove();
+                            this.$target.removeClass("ax-masking");
 
-                        onStateChanged.call(this, null, {
-                            self: this,
-                            state: "close"
-                        });
+                            onStateChanged.call(this, null, {
+                                self: this,
+                                state: "close"
+                            });
 
-                        jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
-                    };
+                            jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
+                        };
 
-                    this.$mask.addClass("fade-out");
-                    setTimeout(function () {
-                        _close.call(this);
-                    }.bind(this), cfg.animateTime);
+                        _this2.$mask.addClass("fade-out");
+                        setTimeout(function () {
+                            _close.call(this);
+                        }.bind(_this2), cfg.animateTime);
+                    })();
                 }
                 return this;
             };
