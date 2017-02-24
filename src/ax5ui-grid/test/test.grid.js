@@ -339,11 +339,12 @@ describe('ax5grid TEST', function () {
         );
     });
 
+    /*
     it('align', function (done) {
        done(ae.equalAll(myUI, myUI.align()));
     });
 
-    /*
+
     success!
     it('exportExcel', function (done) {
         var _this = myUI.exportExcel("fileName");
