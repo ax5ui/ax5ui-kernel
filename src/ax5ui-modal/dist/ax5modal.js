@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "1.3.103"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5modal
@@ -306,27 +306,26 @@
                     self.__dx = 0; // 변화량 X
                     self.__dy = 0; // 변화량 Y
 
-                    if (!self.resizer) {
-                        // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
-                        self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
-                        self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
-                        self.resizerBg.css({ zIndex: modalZIndex });
-                        self.resizer.css({
-                            left: modalOffset.left + windowBox.scrollLeft,
-                            top: modalOffset.top + windowBox.scrollTop,
-                            width: modalBox.width,
-                            height: modalBox.height,
-                            zIndex: modalZIndex + 1
-                        });
-                        jQuery(document.body).append(self.resizerBg).append(self.resizer);
-                        self.activeModal.addClass("draged");
-                    }
+                    // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
+                    self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
+                    self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
+                    self.resizerBg.css({ zIndex: modalZIndex });
+                    self.resizer.css({
+                        left: modalOffset.left + windowBox.scrollLeft,
+                        top: modalOffset.top + windowBox.scrollTop,
+                        width: modalBox.width,
+                        height: modalBox.height,
+                        zIndex: modalZIndex + 1
+                    });
 
-                    jQuery(document.body).bind(ENM["mousemove"] + ".ax5modal-" + cfg.id, function (e) {
+                    jQuery(document.body).append(self.resizerBg).append(self.resizer);
+                    self.activeModal.addClass("draged");
+
+                    jQuery(document.body).on(ENM["mousemove"] + ".ax5modal-move-" + this.instanceId, function (e) {
                         self.resizer.css(getResizerPosition(e));
-                    }).bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
+                    }).on(ENM["mouseup"] + ".ax5modal-move-" + this.instanceId, function (e) {
                         moveModal.off.call(self);
-                    }).bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
+                    }).on("mouseleave.ax5modal-move-" + this.instanceId, function (e) {
                         moveModal.off.call(self);
                     });
 
@@ -346,25 +345,23 @@
                         box = null;
                     };
 
-                    if (this.resizer) {
-                        this.activeModal.removeClass("draged");
-                        setModalPosition.call(this);
+                    this.activeModal.removeClass("draged");
+                    setModalPosition.call(this);
 
-                        this.resizer.remove();
-                        this.resizer = null;
-                        this.resizerBg.remove();
-                        this.resizerBg = null;
-                        //this.align();
+                    this.resizer.remove();
+                    this.resizer = null;
+                    this.resizerBg.remove();
+                    this.resizerBg = null;
+                    //this.align();
 
-                        onStateChanged.call(this, self.modalConfig, {
-                            self: this,
-                            state: "move"
-                        });
-                    }
-
-                    jQuery(document.body).unbind(ENM["mousemove"] + ".ax5modal-" + cfg.id).unbind(ENM["mouseup"] + ".ax5modal-" + cfg.id).unbind("mouseleave.ax5modal-" + cfg.id);
+                    jQuery(document.body).off(ENM["mousemove"] + ".ax5modal-move-" + this.instanceId).off(ENM["mouseup"] + ".ax5modal-move-" + this.instanceId).off("mouseleave.ax5modal-move-" + this.instanceId);
 
                     jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+
+                    onStateChanged.call(this, self.modalConfig, {
+                        self: this,
+                        state: "move"
+                    });
                 }
             },
                 resizeModal = {
@@ -707,35 +704,33 @@
                     self.__dx = 0; // 변화량 X
                     self.__dy = 0; // 변화량 Y
 
-                    if (!self.resizer) {
-                        // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
-                        self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
-                        self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
-                        self.resizerBg.css({
-                            zIndex: modalZIndex,
-                            cursor: cursorType[resizerType]
-                        });
-                        self.resizer.css({
-                            left: modalOffset.left,
-                            top: modalOffset.top,
-                            width: modalBox.width,
-                            height: modalBox.height,
-                            zIndex: modalZIndex + 1,
-                            cursor: cursorType[resizerType]
-                        });
-                        jQuery(document.body).append(self.resizerBg).append(self.resizer);
-                        self.activeModal.addClass("draged");
-                    }
+                    // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
+                    self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
+                    self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
+                    self.resizerBg.css({
+                        zIndex: modalZIndex,
+                        cursor: cursorType[resizerType]
+                    });
+                    self.resizer.css({
+                        left: modalOffset.left,
+                        top: modalOffset.top,
+                        width: modalBox.width,
+                        height: modalBox.height,
+                        zIndex: modalZIndex + 1,
+                        cursor: cursorType[resizerType]
+                    });
+                    jQuery(document.body).append(self.resizerBg).append(self.resizer);
+                    self.activeModal.addClass("draged");
 
-                    jQuery(document.body).on(ENM["mousemove"] + ".ax5modal-" + cfg.id, function (e) {
+                    jQuery(document.body).bind(ENM["mousemove"] + ".ax5modal-resize-" + this.instanceId, function (e) {
                         self.resizer.css(getResizerPosition(e));
-                    }).on(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
+                    }).bind(ENM["mouseup"] + ".ax5modal-resize-" + this.instanceId, function (e) {
                         resizeModal.off.call(self);
-                    }).on("mouseleave.ax5layout-" + this.instanceId, function (e) {
+                    }).bind("mouseleave.ax5modal-resize-" + this.instanceId, function (e) {
                         resizeModal.off.call(self);
                     });
 
-                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').bind('selectstart', false);
                 },
                 "off": function off() {
                     var setModalPosition = function setModalPosition() {
@@ -763,24 +758,22 @@
                         box = null;
                     };
 
-                    if (this.resizer) {
-                        this.activeModal.removeClass("draged");
-                        setModalPosition.call(this);
+                    this.activeModal.removeClass("draged");
+                    setModalPosition.call(this);
 
-                        this.resizer.remove();
-                        this.resizer = null;
-                        this.resizerBg.remove();
-                        this.resizerBg = null;
+                    this.resizer.remove();
+                    this.resizer = null;
+                    this.resizerBg.remove();
+                    this.resizerBg = null;
 
-                        onStateChanged.call(this, self.modalConfig, {
-                            self: this,
-                            state: "resize"
-                        });
-                    }
+                    onStateChanged.call(this, self.modalConfig, {
+                        self: this,
+                        state: "resize"
+                    });
 
-                    jQuery(document.body).off(ENM["mousemove"] + ".ax5modal-" + cfg.id).off(ENM["mouseup"] + ".ax5modal-" + cfg.id).off("mouseleave.ax5modal-" + cfg.id);
+                    jQuery(document.body).unbind(ENM["mousemove"] + ".ax5modal-resize-" + this.instanceId).unbind(ENM["mouseup"] + ".ax5modal-resize-" + this.instanceId).unbind("mouseleave.ax5modal-resize-" + this.instanceId);
 
-                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').unbind('selectstart');
                 }
             };
 
