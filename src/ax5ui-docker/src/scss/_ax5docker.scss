@@ -199,17 +199,18 @@
                     }
 
                     &[data-dropper] {
-                        &:before {
+                        &:after {
                             transition: all 0.3s;
                             content: ' ';
                             position: absolute;
                             display: block;
                             background: #000000;
                             opacity: 0.3;
+                            z-index: 100;
                         }
                     }
                     &[data-dropper="left"] {
-                        &:before {
+                        &:after {
                             left: 0;
                             top: 0;
                             height: 100%;
@@ -217,7 +218,7 @@
                         }
                     }
                     &[data-dropper="right"] {
-                        &:before {
+                        &:after {
                             left: 50%;
                             top: 0;
                             height: 100%;
@@ -225,7 +226,7 @@
                         }
                     }
                     &[data-dropper="top"] {
-                        &:before {
+                        &:after {
                             left: 0;
                             top: 0;
                             height: 50%;
@@ -233,7 +234,7 @@
                         }
                     }
                     &[data-dropper="bottom"] {
-                        &:before {
+                        &:after {
                             left: 0;
                             top: 50%;
                             height: 50%;
@@ -241,7 +242,7 @@
                         }
                     }
                     &[data-dropper="center"] {
-                        &:before {
+                        &:after {
                             left: 0;
                             top: 0;
                             height: 100%;

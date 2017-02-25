@@ -177,7 +177,7 @@
         myDocker.addModule({
             "content": {
                 init: function (container, state) {
-                    container["$element"].html(JSON.stringify(state));
+                    container["$element"].html('<div style="display: flex;"><div></div><div></div></div>');
                     //console.log(state, "init");
                 },
                 active: function (container, state) {
