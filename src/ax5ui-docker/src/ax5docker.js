@@ -6,8 +6,11 @@
 
 (function () {
 
+
     const UI = ax5.ui,
         U = ax5.util;
+
+    let DOCKER;
 
     UI.addClass({
         className: "docker",
@@ -36,7 +39,9 @@
                 icons: {
                     close: 'X',
                     more: '...'
-                }
+                },
+                disableClosePanel: false,
+                disableDragPanel: false,
             };
             this.xvar = {};
             this.menu = null;
@@ -246,11 +251,13 @@
                         let $dom, activeIndex = -1;
                         myself.panelPath = getPanelPath(parent, pIndex);
 
-                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';">' +
-                            '<ul data-ax5docker-pane-tabs=""></ul>' +
-                            '<div data-ax5docker-pane-tabs-more="">' + cfg.icons.more + '</div>' +
-                            '<div data-ax5docker-pane-item-views=""></div>' +
-                            '</div>');
+                        $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
+                            name: myself.name,
+                            panelPath: myself.panelPath,
+                            icons: cfg.icons,
+                            disableClosePanel: cfg.disableClosePanel,
+                            disableDragPanel: cfg.disableDragPanel,
+                        }, {}));
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -272,10 +279,14 @@
                     panel($parent, parent, myself, pIndex){
                         let $dom;
                         myself.panelPath = getPanelPath(parent, pIndex);
-                        myself.$label = jQuery('<li data-ax5docker-pane-tab="' + pIndex + '" data-ax5docker-path="' + myself.panelPath + '">' +
-                            '<div class="title">' + myself.name + '</div>' +
-                            '<div class="close-icon">' + cfg.icons.close + '</div>' +
-                            '</li>');
+                        myself.$label = jQuery(DOCKER.tmpl.get.call(this, "panel-label", {
+                            pIndex: pIndex,
+                            name: myself.name,
+                            panelPath: myself.panelPath,
+                            icons: cfg.icons,
+                            disableClosePanel: cfg.disableClosePanel,
+                            disableDragPanel: cfg.disableDragPanel,
+                        }, {}));
 
                         if (!myself.$item) {
                             myself.$item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '" data-ax5docker-pane-id="' + getPanelId() + '" data-ax5docker-path="' + myself.panelPath + '"></div>');
@@ -289,11 +300,14 @@
                             $parent.find('[data-ax5docker-pane-tabs]').append(myself.$label);
                             $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
                         } else {
-                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';">' +
-                                '<ul data-ax5docker-pane-tabs=""></ul>' +
-                                '<div data-ax5docker-pane-tabs-more="">' + cfg.icons.more + '</div>' +
-                                '<div data-ax5docker-pane-item-views=""></div>' +
-                                '</div>');
+                            $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
+                                name: myself.name,
+                                panelPath: myself.panelPath,
+                                flexGrow: myself.flexGrow,
+                                icons: cfg.icons,
+                                disableClosePanel: cfg.disableClosePanel,
+                                disableDragPanel: cfg.disableDragPanel,
+                            }, {}));
 
                             if (!myself.builded) controlPanel(myself, "init");
                             controlPanel(myself, "active");
@@ -385,7 +399,9 @@
                     .off("mousedown.ax5docker-pane-resize")
                     .off("dragstart.ax5docker-pane-resize")
                     .on("dragstart.ax5docker-pane-resize", "[data-ax5docker-pane-tab]", function (e) {
-                        panelTabDragEvent.on(this);
+                        if(!cfg.disableDragPanel) {
+                            panelTabDragEvent.on(this);
+                        }
                     })
                     .on("mousedown.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
                         let datas = this.getAttribute("data-ax5docker-resize-handle").split(/\//g);
@@ -725,13 +741,12 @@
                     }
                 },
                 "off": (isDrop) => {
-                    if(isDrop){
+                    if (isDrop) {
                         console.log(this.xvar.dragger);
 
 
-
                     }
-                    
+
                     this.$target
                         .off("dragover.ax5docker-" + this.instanceId)
                         .off("drop.ax5docker-" + this.instanceId)
@@ -864,7 +879,38 @@
             /**
              * @method ax5docker.setConfig
              * @param {Object} config
+             * @param {Element} config.target
              * @param {Array} config.panels
+             * @param {Object} [config.icons]
+             * @param {String} [config.icons.close]
+             * @param {String} [config.icons.more]
+             * @param {Boolean} [config.disableClosePanel=false]
+             * @param {Boolean} [config.disableDragPanel=false]
+             * @param {Object} [config.control]
+             * @param {Function} [config.control.before]
+             * @param {Function} [config.control.after]
+             * @param {Object} [config.menu]
+             * @param {String} [config.menu.theme="default"]
+             * @param {String} [config.menu.position="absolute"]
+             * @param {Object} [config.menu.icons]
+             * @param {String} [config.menu.icons.arrow]
+             * @example
+             * ```js
+             * var myDocker = new ax5.ui.docker();
+             * myDocker.setConfig({
+             *      target: $('[data-ax5docker="docker1"]'),
+             *      panels: [
+             *          {
+             *              type: "panel",
+             *              name: "panel name",
+             *              moduleName: "content",
+             *              moduleState:{
+             *                  data: "data1"
+             *              }
+             *          }
+             *      ]
+             * });
+             * ```
              */
             this.init = function (_config) {
                 cfg = jQuery.extend(true, {}, cfg, _config);
@@ -1277,6 +1323,9 @@
 
             // 클래스 생성자
             this.main = (function () {
+                UI.docker_instance = UI.docker_instance || [];
+                UI.docker_instance.push(this);
+
                 if (arguments && U.isObject(arguments[0])) {
                     this.setConfig(arguments[0]);
                 }
@@ -1287,6 +1336,7 @@
         return ax5docker;
     })());
 
+    DOCKER = ax5.ui.docker;
 })();
 
 // todo : row > stack 구현 -- ok
@@ -1297,3 +1347,4 @@
 // todo : stack tab overflow 처리. -- ok
 // todo : 탭 포커싱와 탭 목록 메뉴 처리 -- ok
 // todo : 패널 drag & drop
+// todo : update panels -- ok (setPanels)

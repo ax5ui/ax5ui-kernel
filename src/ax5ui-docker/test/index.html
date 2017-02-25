@@ -46,6 +46,8 @@
             <option value="column-bottom">column-bottom</option>
         </select>
         <button class="btn btn-default" data-docker-control="add-panel">add Panel</button>
+
+        <button class="btn btn-default" data-docker-control="set-panels">set Panels</button>
     </form>
 </div>
 
@@ -128,14 +130,6 @@
                     moduleState: {
                         data1: "data1"
                     }
-                },
-                {
-                    type: "panel",
-                    name: "my name 2",
-                    moduleName: "content",
-                    moduleState: {
-                        data1: "data1"
-                    }
                 }
             ]
         };
@@ -149,6 +143,8 @@
             panels: [
                 __panel
             ],
+            disableClosePanel: true,
+            disableDragPanel: false,
             control: {
                 before: function (that, callback) {
                     if (that.controlType === "destroy") {
@@ -177,7 +173,7 @@
         myDocker.addModule({
             "content": {
                 init: function (container, state) {
-                    container["$element"].html('<div style="display: flex;"><div></div><div></div></div>');
+                    container["$element"].html(JSON.stringify(state));
                     //console.log(state, "init");
                 },
                 active: function (container, state) {
@@ -209,7 +205,33 @@
                             }
                         });
                     break;
+                case "set-panels":
 
+                    myDocker.setPanels([
+                        {
+                            type: "stack", // type : row, col, stack
+                            panels: [
+                                {
+                                    type: "panel",
+                                    name: "my name",
+                                    header: {
+                                        btns: "my name"
+                                    },
+                                    body: ""
+                                },
+                                {
+                                    type: "panel",
+                                    name: "my name 2",
+                                    header: {
+                                        btns: "my name"
+                                    },
+                                    body: ""
+                                }
+                            ]
+                        }
+                    ]);
+
+                    break;
             }
         });
     });
