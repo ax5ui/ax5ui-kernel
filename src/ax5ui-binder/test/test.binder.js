@@ -107,10 +107,12 @@ describe('ax5binder TEST', function () {
 
 describe('Manipulate list item TEST', function () {
     var myUI;
+    var that;
     var tmpl = '<form class name="binder-list-form" onsubmit="return false;" style="border: 1px solid #ccc;padding: 10px;border-radius: 10px;">' +
         '<div data-ax-repeat="list">' +
         '<script type="text/html">' +
         '<input type="text" name="input-text" data-ax-item-path="A" />' +
+        '<span data-ax-item-path="list"><button class="btn btn-primary btn-sm" type="button" data-ax-repeat-click="btn"></button></span>'+
         '</script>' +
         '</div>' +
         '</form>';
@@ -165,5 +167,18 @@ describe('Manipulate list item TEST', function () {
     it('childSet ax5ui', function (done) {
         myUI.childSet("list", 2, "A", [{a: 10}, {b: 20}]);
         done(myUI.get("list[2][A]").length === 2 && myUI.get("list[2][A][0][a]") === 10 ? "" : "childSet error");
+    });
+
+    it('onClick', function (done) {
+        myUI.onClick("list", function () {
+            that = this;
+        });
+        var keyList = ["el", "jquery", "tagname", "value", "repeat_path", "item", "item_index", "item_path"];
+        $('[data-ax-repeat-i="0"]').find('[data-ax-repeat-click="btn"]').trigger("click");
+        done(ae.equalAll(Object.keys(that), keyList));
+    });
+
+    after(function () {
+        $('form').remove();
     });
 });
