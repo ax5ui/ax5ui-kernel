@@ -2129,7 +2129,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                 }
 
-                return typeof returnValue === "number" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
+                // 키값이 Boolean일때 오류 발생하여 수정.
+                return typeof returnValue !== "string" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
                     return tagsToReplace[tag] || tag;
                 });
             }

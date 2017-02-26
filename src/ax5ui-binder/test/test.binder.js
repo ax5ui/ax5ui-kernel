@@ -164,18 +164,28 @@ describe('Manipulate list item TEST', function () {
         done(myUI.get("list[2][A][3][d]") === 5 ? "" : "childUpdate error");
     });
 
-    it('childSet ax5ui', function (done) {
+    it('childSet ax5binder', function (done) {
         myUI.childSet("list", 2, "A", [{a: 10}, {b: 20}]);
         done(myUI.get("list[2][A]").length === 2 && myUI.get("list[2][A][0][a]") === 10 ? "" : "childSet error");
     });
 
-    it('onClick', function (done) {
+    it('onClick ax5binder', function (done) {
         myUI.onClick("list", function () {
             that = this;
         });
-        var keyList = ["el", "jquery", "tagname", "value", "repeat_path", "item", "item_index", "item_path"];
+        var keyList = ["el", "jquery", "tagname", "value", "repeat_path", "item", "item_index", "item_path"].sort();
         $('[data-ax-repeat-i="0"]').find('[data-ax-repeat-click="btn"]').trigger("click");
-        done(ae.equalAll(Object.keys(that), keyList));
+        done(ae.equalAll(Object.keys(that).sort(), keyList));
+    });
+
+    it('onUpdate ax5binder', function (done) {
+        myUI.onUpdate("list", function () {
+            that = this;
+        });
+        myUI.add("list", {A: 4});
+
+        var keyList = ["list", "repeat_path", "tmpl"];
+        done(ae.equalAll(Object.keys(that).sort(), keyList.sort()));
     });
 
     after(function () {
