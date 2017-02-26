@@ -606,7 +606,7 @@
                     if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                 }
 
-                return (typeof returnValue === "number") ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
+                return (typeof returnValue !== "string") ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
                     return tagsToReplace[tag] || tag;
                 });
             }
