@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.107"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -581,10 +581,11 @@
              * 발생된 이벤트가 panelTabDragEvent.on를 작동.
              */
             var panelTabDragEvent = {
-                "on": function on() {
+                "on": function on(dragPanel) {
                     if (_this.panels[0] && _this.panels[0].panels && _this.panels[0].panels.length) {
 
                         _this.xvar.dragger = {
+                            dragPanel: dragPanel,
                             target: null,
                             dragOverVertical: null,
                             dragOverHorizontal: null
@@ -708,7 +709,15 @@
                 },
                 "off": function off(isDrop) {
                     if (isDrop) {
-                        console.log(_this.xvar.dragger);
+                        var dragPanel = getPanel(_this.xvar.dragger.dragPanel.getAttribute("data-ax5docker-path"));
+                        //let targetPanel = getPanel(this.xvar.dragger.target.attr("data-ax5docker-path"));
+                        var appendType = [];
+
+                        if (_this.xvar.dragger.dragOverHorizontal) appendType.push(_this.xvar.dragger.dragOverHorizontal);
+                        if (_this.xvar.dragger.dragOverVertical) appendType.push(_this.xvar.dragger.dragOverVertical);
+
+                        _this.appendPanel(dragPanel, _this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
+                        dragPanel = null;
                     }
 
                     _this.$target.off("dragover.ax5docker-" + _this.instanceId).off("drop.ax5docker-" + _this.instanceId).off("dragend.ax5docker-" + _this.instanceId);
@@ -1275,7 +1284,7 @@
              * @returns {ax5docker}
              */
             this.appendPanel = function (_panel, _appendPath, _appendType) {
-
+                console.log(_panel, _appendPath, _appendType);
                 return this;
             };
 

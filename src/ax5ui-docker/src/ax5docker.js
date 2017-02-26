@@ -607,13 +607,14 @@
              * 발생된 이벤트가 panelTabDragEvent.on를 작동.
              */
             const panelTabDragEvent = {
-                "on": () => {
+                "on": (dragPanel) => {
                     if (this.panels[0] && this.panels[0].panels && this.panels[0].panels.length) {
 
                         this.xvar.dragger = {
+                            dragPanel: dragPanel,
                             target: null,
                             dragOverVertical: null,
-                            dragOverHorizontal: null
+                            dragOverHorizontal: null,
                         };
 
                         this.$target
@@ -742,9 +743,15 @@
                 },
                 "off": (isDrop) => {
                     if (isDrop) {
-                        console.log(this.xvar.dragger);
+                        let dragPanel = getPanel(this.xvar.dragger.dragPanel.getAttribute("data-ax5docker-path"));
+                        //let targetPanel = getPanel(this.xvar.dragger.target.attr("data-ax5docker-path"));
+                        let appendType = [];
 
+                        if(this.xvar.dragger.dragOverHorizontal) appendType.push(this.xvar.dragger.dragOverHorizontal);
+                        if(this.xvar.dragger.dragOverVertical) appendType.push(this.xvar.dragger.dragOverVertical);
 
+                        this.appendPanel(dragPanel, this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
+                        dragPanel = null;
                     }
 
                     this.$target
@@ -1317,7 +1324,7 @@
              * @returns {ax5docker}
              */
             this.appendPanel = function (_panel, _appendPath, _appendType) {
-
+                console.log(_panel, _appendPath, _appendType);
                 return this;
             };
 
