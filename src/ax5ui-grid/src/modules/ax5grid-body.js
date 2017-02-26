@@ -606,11 +606,13 @@
                     if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                 }
 
+                // 키값이 Boolean일때 오류 발생하여 수정.
                 return (typeof returnValue !== "string") ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
                     return tagsToReplace[tag] || tag;
                 });
             }
         }
+
     };
 
     let getGroupingValue = function (_item, _index, _col) {

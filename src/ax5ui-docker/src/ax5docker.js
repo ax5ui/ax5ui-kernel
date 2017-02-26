@@ -1310,13 +1310,13 @@
 
 
             /**
-             * @method ax5docker.movePanel
+             * @method ax5docker.appendPanel
              * @param _panel
-             * @param _movePath
-             * @param _moveType
+             * @param _appendPath
+             * @param _appendType
              * @returns {ax5docker}
              */
-            this.movePanel = function (_panel, _movePath, _moveType) {
+            this.appendPanel = function (_panel, _appendPath, _appendType) {
 
                 return this;
             };
