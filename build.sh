@@ -2,6 +2,8 @@
 
 LOG=`git log --pretty=oneline --abbrev-commit -1`
 
+rm -rf .subsplit
+
 case "$LOG" in
   *MAJOR@*) echo "Major Version"; VERSION_TYPE="MAJOR";;
   *MINOR@*) echo "Minor version"; VERSION_TYPE="MINOR";;
