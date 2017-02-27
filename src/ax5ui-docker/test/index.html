@@ -56,7 +56,7 @@
 
     $(function () {
 
-        var __panel = {
+        var _panel = {
             type: "row", // type : row, column, stack
             panels: [
                 {
@@ -120,7 +120,7 @@
             ]
         };
 
-        var _panel = {
+        var __panel = {
             type: "stack",
             panels: [
                 {
@@ -129,6 +129,14 @@
                     moduleName: "content",
                     moduleState: {
                         data1: "data1"
+                    }
+                },
+                {
+                    type: "panel",
+                    name: "my name 2",
+                    moduleName: "content",
+                    moduleState: {
+                        data1: "data2"
                     }
                 }
             ]
@@ -143,7 +151,7 @@
             panels: [
                 __panel
             ],
-            disableClosePanel: true,
+            disableClosePanel: false,
             disableDragPanel: false,
             control: {
                 before: function (that, callback) {

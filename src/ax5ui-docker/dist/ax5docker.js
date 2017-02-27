@@ -120,7 +120,6 @@
                 try {
                     return Function("", "return this." + _path + ";").call(_this);
                 } catch (e) {
-                    console.log(e);
                     return;
                 }
             };
@@ -201,6 +200,15 @@
                         module.deactive(moduleContainer, moduleState);
                     },
                     destroy: function destroy() {
+                        module = _panel.moduleName in _this.modules && 'destroy' in _this.modules[_panel.moduleName] ? _this.modules[_panel.moduleName] : defaultModule;
+                        module.destroy(moduleContainer, moduleState);
+
+                        // 패널 데이터 제거.
+                        setPanel(_panel.panelPath, null);
+                        // 현재 패널 정보를 검사하여 패널 정보를 재 구성합니다.
+                        arrangePanel();
+                    },
+                    remove: function remove() {
                         module = _panel.moduleName in _this.modules && 'destroy' in _this.modules[_panel.moduleName] ? _this.modules[_panel.moduleName] : defaultModule;
                         module.destroy(moduleContainer, moduleState);
 
@@ -368,7 +376,7 @@
                 _this.$target.html($root);
 
                 _this.$target.off("click.ax5docker-pane").on("click.ax5docker-pane", "[data-ax5docker-pane-tab] .close-icon", function (e) {
-                    closePanel($(this).parents('[data-ax5docker-pane-tab]'));
+                    self.removePanel($(this).parents('[data-ax5docker-pane-tab]').attr("data-ax5docker-path"));
                     U.stopEvent(e);
                 }).on("click.ax5docker-pane", "[data-ax5docker-pane-tab]", function (e) {
                     // pane, panelIndex 인자 변경.
@@ -447,24 +455,6 @@
 
                 pane = null;
                 panelIndex = null;
-                panel = null;
-                return _this;
-            };
-
-            /**
-             * 패널 삭제하기
-             * @param clickedLabel
-             * @returns {ax5docker}
-             */
-            var closePanel = function closePanel(clickedLabel) {
-                var $clickedLabel = jQuery(clickedLabel),
-                    panelPath = $clickedLabel.attr("data-ax5docker-path"),
-                    panel = getPanel(panelPath);
-
-                controlPanel(panel, "destroy");
-
-                $clickedLabel = null;
-                panelPath = null;
                 panel = null;
                 return _this;
             };
@@ -868,18 +858,18 @@
              * ```js
              * var myDocker = new ax5.ui.docker();
              * myDocker.setConfig({
-             *      target: $('[data-ax5docker="docker1"]'),
-             *      panels: [
-             *          {
-             *              type: "panel",
-             *              name: "panel name",
-             *              moduleName: "content",
-             *              moduleState:{
-             *                  data: "data1"
-             *              }
-             *          }
-             *      ]
-             * });
+            *      target: $('[data-ax5docker="docker1"]'),
+            *      panels: [
+            *          {
+            *              type: "panel",
+            *              name: "panel name",
+            *              moduleName: "content",
+            *              moduleState:{
+            *                  data: "data1"
+            *              }
+            *          }
+            *      ]
+            * });
              * ```
              */
             this.init = function (_config) {
@@ -972,7 +962,7 @@
 
                 var pane = getPanel(addPath);
                 var parent = getPanelParent(pane);
-                if (parent.type == "stack") {
+                if (parent && parent.type == "stack") {
                     // 부모패널로 ~
                     //console.log(addPath, _addPath);
                     pane = parent;
@@ -1055,8 +1045,8 @@
                         addProcessor = null;
                     },
                     "row": function row(_pane, _addType, _panel, _panelIndex) {
-                        var copyPanel = jQuery.extend({}, _pane);
-                        var addProcessor = {
+                        var copyPanel = jQuery.extend({}, _pane),
+                            addProcessor = {
                             "stack": function stack(_pane, _panel) {
                                 // 처리 할 수 없는 상황 첫번째 자식을 찾아 재 요청
                                 if (_pane.panels[0] && _pane.panels[0].panelPath) {
@@ -1134,8 +1124,8 @@
                         copyPanel = null;
                     },
                     "column": function column(_pane, _addType, _panel, _panelIndex) {
-                        var copyPanel = jQuery.extend({}, _pane);
-                        var addProcessor = {
+                        var copyPanel = jQuery.extend({}, _pane),
+                            addProcessor = {
                             "stack": function stack(_pane, _panel) {
                                 if (_pane.panels[0] && _pane.panels[0].panelPath) {
                                     this.addPanel(_pane.panels[0].panelPath, _addType, _panel);
@@ -1188,7 +1178,6 @@
                         copyPanel = null;
                     },
                     "panel": function panel(_pane, _addType, _panel) {
-                        // todo : 부모가 stack인지 체크 하자.
                         var copyPanel = jQuery.extend({}, _pane),
                             addProcessor = {
                             "stack": function stack(_pane, _panel) {
@@ -1263,7 +1252,10 @@
                             }
                         };
 
+                        console.log(_addType);
+
                         if (_addType in addProcessor) {
+
                             addProcessor[_addType].call(this, _pane, _panel);
                         }
 
@@ -1277,6 +1269,21 @@
             };
 
             /**
+             * 패널 삭제하기
+             * @method ax5docker.removePanel
+             * @param clickedLabel
+             * @returns {ax5docker}
+             */
+            this.removePanel = function (panelPath) {
+                var panel = getPanel(panelPath);
+
+                controlPanel(panel, "destroy");
+
+                panel = null;
+                return this;
+            };
+
+            /**
              * @method ax5docker.appendPanel
              * @param _panel
              * @param _appendPath
@@ -1284,7 +1291,63 @@
              * @returns {ax5docker}
              */
             this.appendPanel = function (_panel, _appendPath, _appendType) {
-                console.log(_panel, _appendPath, _appendType);
+                // console.log(_panel, _appendPath, _appendType);
+                // console.log(_panel);
+                var copiedPanel = $.extend({}, _panel, { panelPath: "" }),
+                    addType = void 0;
+                var removePanelPath = _panel.panelPath;
+
+                if (_appendType.length == 1) {
+                    // stack
+                    addType = "stack";
+                    copiedPanel.active = false;
+                    copiedPanel.$item.removeClass("active");
+                } else {
+                    switch (_appendType[0] + "-" + _appendType[1]) {
+                        case "left-top":
+                            addType = "row-left";
+                            break;
+                        case "left-middle":
+                            addType = "row-left";
+                            break;
+                        case "left-bottom":
+                            addType = "row-left";
+                            break;
+                        case "center-top":
+                            addType = "column-top";
+                            break;
+                        case "center-middle":
+                            addType = "stack";
+                            copiedPanel.active = false;
+                            copiedPanel.$item.removeClass("active");
+                            break;
+                        case "center-bottom":
+                            addType = "column-bottom";
+                            break;
+                        case "right-top":
+                            addType = "row-right";
+                            break;
+                        case "right-middle":
+                            addType = "row-right";
+                            break;
+                        case "right-bottom":
+                            addType = "row-right";
+                            break;
+                    }
+                }
+
+                if (_panel.panelPath === _appendPath && addType == "stack") {
+                    return this;
+                }
+
+                if (_panel.panelPath === _appendPath) {
+                    // 부모레벨로 이동
+                    _appendPath = _appendPath.substr(0, _appendPath.lastIndexOf("."));
+                }
+                setPanel(removePanelPath, null);
+                this.addPanel(_appendPath, addType, copiedPanel);
+
+                copiedPanel = null;
                 return this;
             };
 
@@ -1312,8 +1375,9 @@
 // todo : 패널 스플릿 리사이즈 -- ok
 // todo : stack tab overflow 처리. -- ok
 // todo : 탭 포커싱와 탭 목록 메뉴 처리 -- ok
-// todo : 패널 drag & drop
+// todo : 패널 drag & drop -- ok
 // todo : update panels -- ok (setPanels)
+// todo : 패널 dropper CSS 수정
 // ax5.ui.docker.tmpl
 (function () {
 
