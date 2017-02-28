@@ -188,13 +188,17 @@ describe('Manipulate list item TEST', function () {
     });
 
     it('onUpdate[remove] ax5binder', function (done) {
-        myUI.onUpdate("list", function () {
-            that = this;
-        });
         myUI.remove("list", 4);
         var keyList = ["list", "repeat_path", "tmpl"];
         done(ae.equalAll(Object.keys(that).sort(), keyList.sort())
         || ae.equalAll(4, that.list.length));
+    });
+
+    it('onUpdate[update] ax5binder', function (done) {
+        myUI.update("list", 3, {A: 5});
+        var keyList = ["list", "repeat_path", "tmpl"];
+        done(ae.equalAll(Object.keys(that).sort(), keyList.sort())
+            || ae.equalAll(5, that.list[3].A));
     });
 
     after(function () {
