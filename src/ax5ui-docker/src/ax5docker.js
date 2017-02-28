@@ -1334,7 +1334,6 @@
                         }
                     };
 
-                    console.log(pane.type, _addType, _panelIndex);
                     panelProcessor[pane.type].call(this, pane, _addType, _panel, _panelIndex);
                     return this;
                 };
@@ -1353,7 +1352,6 @@
                     panel = null;
                     return this;
                 };
-
 
                 /**
                  * @method ax5docker.appendPanel
@@ -1375,7 +1373,7 @@
                         addType = "stack-" + _appendType[0];
                         copiedPanel.active = false;
                         copiedPanel.$item.removeClass("active");
-
+                        controlPanel(copiedPanel, "deactive");
                     } else {
                         switch (_appendType[0] + "-" + _appendType[1]) {
                             case "left-top":
@@ -1395,6 +1393,7 @@
                                 copiedPanel.active = false;
                                 copiedPanel.$item.removeClass("active");
                                 appendPanelIndex = undefined;
+                                controlPanel(copiedPanel, "deactive");
                                 break;
                             case "center-bottom":
                                 addType = "column-bottom";
@@ -1417,7 +1416,6 @@
                     }
                     // todo : deactive call
 
-                    console.log(addType);
                     setPanel(removePanelPath, null);
                     this.addPanel(_appendPath, addType, copiedPanel, appendPanelIndex);
 
