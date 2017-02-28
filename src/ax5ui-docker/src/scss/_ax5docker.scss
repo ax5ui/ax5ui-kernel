@@ -128,30 +128,60 @@
 
                     }
 
+                    $dropper-arrow-size: 4px;
                     &[data-dropper] {
-                        &:after {
-                            transition: all 0.3s;
+                        &:before {
+                            //transition: all 0.3s;
                             content: ' ';
                             position: absolute;
                             display: block;
-                            background: #000000;
-                            opacity: 0.3;
+                            background: $ax5docker-tab-item-dropper-color;
+                            opacity: 1.0;
+                        }
+                        &:after {
+                            position: absolute;
+                            content: '';
+                            width: 0px;
+                            height: 0px;
+                            display: inline-block;
                         }
                     }
                     &[data-dropper="left"] {
-                        &:after {
+                        &:before {
+                            right: auto;
                             left: 0;
                             top: 0;
                             height: 100%;
-                            width: 50%;
+                            width: $ax5docker-tab-item-dropper-width;
+                        }
+                        &:after {
+                            right: auto;
+                            left: $ax5docker-tab-item-dropper-width;
+                            top: calc(50% - #{$dropper-arrow-size});
+                            border-left: $dropper-arrow-size solid $ax5docker-tab-item-dropper-color;
+                            border-top: $dropper-arrow-size solid transparent;
+                            border-bottom: $dropper-arrow-size solid transparent;
+                            background: transparent;
+                            opacity: 1;
                         }
                     }
                     &[data-dropper="right"] {
-                        &:after {
-                            left: 50%;
+                        &:before {
+                            left: auto;
+                            right: 0;
                             top: 0;
                             height: 100%;
-                            width: 50%;
+                            width: $ax5docker-tab-item-dropper-width;
+                        }
+                        &:after {
+                            left: auto;
+                            right: $ax5docker-tab-item-dropper-width;
+                            top: calc(50% - #{$dropper-arrow-size});
+                            border-right: $dropper-arrow-size solid $ax5docker-tab-item-dropper-color;
+                            border-top: $dropper-arrow-size solid transparent;
+                            border-bottom: $dropper-arrow-size solid transparent;
+                            background: transparent;
+                            opacity: 1;
                         }
                     }
                 }
@@ -205,7 +235,7 @@
                             position: absolute;
                             display: block;
                             background: #000000;
-                            opacity: 0.3;
+                            opacity: 0.1;
                             z-index: 100;
                         }
                     }

@@ -1025,7 +1025,7 @@
                                     },
                                     "stack-right"(_pane, _panel){
                                         //_pane.panels.push(_panel);
-                                        _pane.panels.splice(_panelIndex + 1, 0, _panel);
+                                        _pane.panels.splice(Number(_panelIndex) + 1, 0, _panel);
                                         arrangePanel();
                                     },
                                     "row-left"(_pane, _panel){
@@ -1363,9 +1363,8 @@
                  * @returns {ax5docker}
                  */
                 this.appendPanel = function (_panel, _appendPath, _appendType) {
-                    // console.log(_panel, _appendPath, _appendType);
-                    console.info(_panel);
-                    console.info(_appendPath);
+                    //console.info(_panel);
+                    //console.info(_appendPath);
 
                     let copiedPanel = $.extend({}, _panel, {panelPath: ""}),
                         addType;
@@ -1418,11 +1417,9 @@
                     }
                     // todo : deactive call
 
+                    console.log(addType);
                     setPanel(removePanelPath, null);
-
-
                     this.addPanel(_appendPath, addType, copiedPanel, appendPanelIndex);
-                    console.log(this.panels[0]);
 
                     copiedPanel = null;
                     return this;
