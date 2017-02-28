@@ -194,6 +194,10 @@
             }
         });
 
+        myDocker.onResize = function (e) {
+            console.log(e);
+        };
+
         myDocker.addModule({
             "content": {
                 init: function (container, state) {

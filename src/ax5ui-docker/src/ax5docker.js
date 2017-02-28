@@ -42,9 +42,14 @@
                     },
                     disableClosePanel: false,
                     disableDragPanel: false,
+
+                    resizeDebounceTime: 100,
+                    panelDebounceTime: 300,
                 };
                 this.xvar = {};
                 this.menu = null;
+
+                this.onResize = null;
 
                 // 패널 정보
                 this.panels = [];
@@ -54,6 +59,42 @@
                 this.modules = {};
 
                 cfg = this.config;
+
+                /**
+                 * debouncer
+                 * @type {{resizeDebounceFn, panelDebounceFn}}
+                 */
+                const debouncer = {
+                    resizeDebounceFn: ax5.util.debounce(function (fn) {
+                        fn();
+                    }, cfg.resizeDebounceTime),
+                    panelDebounceFn: ax5.util.debounce(function (fn) {
+                        fn();
+                    }, cfg.panelDebounceTime)
+                };
+
+                const fireEvent = (event) => {
+                    const eventProcessor = {
+                        "resize"(e){
+                            if (this.onResize) {
+
+
+                                debouncer.resizeDebounceFn((function () {
+                                    let that = {
+                                        self: this,
+                                        resizer: e.target,
+                                        resizedDom: [e.target.prev(), e.target.next()]
+                                    };
+                                    this.onResize.call(that, that);
+                                }).bind(this));
+                            }
+                        }
+                    };
+
+                    if (event.eventName in eventProcessor) {
+                        eventProcessor[event.eventName].call(this, event);
+                    }
+                };
 
                 const getPanelId = () => {
                     return this.panelId++;
@@ -541,6 +582,11 @@
                                         self.xvar.resizer$dom.prev().css({"flex-grow": self.xvar.resizerPrevGrow + da_grow});
                                         self.xvar.resizer$dom.next().css({"flex-grow": self.xvar.resizerNextGrow - da_grow});
                                     }
+
+                                    fireEvent({
+                                        eventName: "resize",
+                                        target: self.xvar.resizer$dom
+                                    });
                                 } else {
                                     self.xvar.resizerLived = true;
                                 }
@@ -756,18 +802,12 @@
                     }
                 };
 
-                /**
-                 * stack type panel resize되면 탭 스크롤 처리 관련 처리
-                 */
-                const debounceFn = ax5.util.debounce(function (fn) {
-                    fn();
-                }, cfg.animateTime);
 
                 /**
                  * stackPane이 리사이즈 되면 탭을 스크롤여부를 판단해야 합니다.
                  */
                 const alignStackPane = () => {
-                    debounceFn((function () {
+                    debouncer.panelDebounceFn((function () {
                         this.$target.find('[data-ax5docker-pane-tabs]').each(function () {
                             let $this = jQuery(this).parent();
                             if (this.scrollWidth > this.clientWidth) {
@@ -918,6 +958,10 @@
                         console.log(ax5.info.getError("ax5docker", "401", "init"));
                         return this;
                     }
+
+                    // 이벤트 정의 영역
+                    this.onResize = cfg.onResize;
+
                     // memory target
                     this.$target = jQuery(cfg.target);
                     // set panels
