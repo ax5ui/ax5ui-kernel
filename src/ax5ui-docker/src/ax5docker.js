@@ -27,10 +27,15 @@
              * ```
              */
             let ax5docker = function () {
+
                 let self = this,
                     cfg;
 
                 this.instanceId = ax5.getGuid();
+
+                /**
+                 * @member {Object} ax5docker.config
+                 */
                 this.config = {
                     theme: 'default',
                     animateTime: 250,
@@ -42,27 +47,41 @@
                     },
                     disableClosePanel: false,
                     disableDragPanel: false,
-
                     resizeDebounceTime: 100,
                     panelDebounceTime: 300,
                 };
+
+                /**
+                 * @member {Object} ax5docker.xvar
+                 */
                 this.xvar = {};
+                /**
+                 * @member {Object} ax5docker.menu
+                 */
                 this.menu = null;
 
                 this.onResize = null;
 
                 // 패널 정보
+                /**
+                 * @member {Array} ax5docker.panels
+                 */
                 this.panels = [];
+                /**
+                 * @member {Number} ax5docker.panelId
+                 */
                 this.panelId = 0;
 
                 // 패널의 컨텐츠 모듈
+                /**
+                 * @member {Object} ax5docker.modules
+                 */
                 this.modules = {};
 
                 cfg = this.config;
 
                 /**
-                 * debouncer
-                 * @type {{resizeDebounceFn, panelDebounceFn}}
+                 * @private {Object} ax5docker.debouncer
                  */
                 const debouncer = {
                     resizeDebounceFn: ax5.util.debounce(function (fn) {
@@ -73,6 +92,11 @@
                     }, cfg.panelDebounceTime)
                 };
 
+                /**
+                 * @private {Function} fireEvent
+                 * @param event
+                 * @returns {ax5docker}
+                 */
                 const fireEvent = (event) => {
                     const eventProcessor = {
                         "resize"(e){
@@ -94,6 +118,8 @@
                     if (event.eventName in eventProcessor) {
                         eventProcessor[event.eventName].call(this, event);
                     }
+
+                    return this;
                 };
 
                 const getPanelId = () => {
@@ -102,7 +128,6 @@
 
                 /**
                  * defaultModule은 패널의 모듈이 정의되지 않은 경우를 위해 준비된 오브젝트
-                 * @type {{init: ((container, state)), active: ((container, state)), deactive: ((container, state)), destroy: ((container, state))}}
                  */
                 const defaultModule = {
                     init(container, state){
@@ -934,6 +959,8 @@
                  * @param {String} [config.menu.position="absolute"]
                  * @param {Object} [config.menu.icons]
                  * @param {String} [config.menu.icons.arrow]
+                 * @param {Number} [config.resizeDebounceTime=100]
+                 * @param {Number} [config.panelDebounceTime=300]
                  * @example
                  * ```js
                  * var myDocker = new ax5.ui.docker();
