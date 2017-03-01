@@ -103,6 +103,11 @@ describe('ax5binder TEST', function () {
 
         done(myUI.validate().error[0].type == "email" ? "" : "validate error");
     });
+
+    it('focus ax5binder', function (done) {
+        myUI.focus("password");
+        done(document.activeElement.type == "password" ? "" : "focus error" );
+    });
 });
 
 describe('Manipulate list item TEST', function () {
