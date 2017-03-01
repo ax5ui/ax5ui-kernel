@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.109"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -180,8 +180,8 @@
              * @param _panel
              */
             var getPanelParent = function getPanelParent(_panel) {
-                var _path = _panel.panelPath.substr(0, _panel.panelPath.lastIndexOf("."));
                 try {
+                    var _path = _panel.panelPath.substr(0, _panel.panelPath.lastIndexOf("."));
                     return Function("", "return this." + _path + ";").call(_this);
                 } catch (e) {
                     return;
@@ -572,13 +572,11 @@
              */
             var panelResizerEvent = {
                 "on": function on(_resizer) {
-                    var $resizer = $(_resizer);
-                    var resizerPositionLeft = $resizer.offset().left;
-                    var dockerTargetOffsetLeft = _this.$target.offset().left;
 
                     jQuery(document.body).on("mousemove.ax5docker-" + _this.instanceId, function (e) {
-                        var mouseObj = getMousePosition(e);
-                        var da_grow = void 0;
+                        var mouseObj = getMousePosition(e),
+                            da_grow = void 0;
+
                         if (self.xvar.resizerLived) {
                             if (self.xvar.resizerType == "row") {
                                 self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
@@ -1026,13 +1024,26 @@
              */
             this.addPanel = function (_addPath, _addType, _panel, _panelIndex) {
                 var addPath = "";
-                if (_addPath == "undefined") addPath = "0";
-                addPath = _addPath.replace(/[a-zA-Z\[\]]+/g, "").replace(/(\d+)/g, function (a, b) {
-                    return "panels[" + a + "]";
-                });
+                var pane = void 0;
+                var parent = void 0;
 
-                var pane = getPanel(addPath);
-                var parent = getPanelParent(pane);
+                if (this.panels.length === 0 || !this.panels[0]) {
+                    return this.setPanels([{ type: "stack", panels: [_panel] }]);
+                } else {
+
+                    console.log("here");
+
+                    if (_addPath == "undefined") {
+                        addPath = "0";
+                    } else {
+                        addPath = _addPath.replace(/[a-zA-Z\[\]]+/g, "").replace(/(\d+)/g, function (a, b) {
+                            return "panels[" + a + "]";
+                        });
+                    }
+                    pane = getPanel(addPath);
+                    parent = getPanelParent(pane);
+                }
+
                 if (parent && parent.type == "stack") {
                     // 부모패널로 ~
                     //console.log(addPath, _addPath);
@@ -1363,7 +1374,8 @@
                     }
                 };
 
-                panelProcessor[pane.type].call(this, pane, _addType, _panel, _panelIndex);
+                panelProcessor[pane ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
+
                 return this;
             };
 

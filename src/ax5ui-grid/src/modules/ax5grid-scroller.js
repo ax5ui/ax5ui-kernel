@@ -382,8 +382,13 @@
         let self = this,
             margin = this.config.scroller.trackPadding;
 
-        this.$["scroller"]["vertical-bar"].css({width: this.config.scroller.size - (margin + 1), left: margin / 2});
-        this.$["scroller"]["horizontal-bar"].css({height: this.config.scroller.size - (margin + 1), top: margin / 2});
+        if (margin == 0) {
+            this.$["scroller"]["vertical-bar"].css({width: this.config.scroller.size, left: -1});
+            this.$["scroller"]["horizontal-bar"].css({height: this.config.scroller.size, top: -1});
+        } else {
+            this.$["scroller"]["vertical-bar"].css({width: this.config.scroller.size - (margin + 1), left: margin / 2});
+            this.$["scroller"]["horizontal-bar"].css({height: this.config.scroller.size - (margin + 1), top: margin / 2});
+        }
 
         this.$["scroller"]["vertical-bar"]
             .on(GRID.util.ENM["mousedown"], (function (e) {

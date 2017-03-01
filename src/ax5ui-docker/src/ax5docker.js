@@ -185,8 +185,8 @@
                  * @param _panel
                  */
                 const getPanelParent = (_panel) => {
-                    let _path = _panel.panelPath.substr(0, _panel.panelPath.lastIndexOf("."));
                     try {
+                        let _path = _panel.panelPath.substr(0, _panel.panelPath.lastIndexOf("."));
                         return (Function("", "return this." + _path + ";")).call(this);
                     } catch (e) {
                         return;
@@ -585,14 +585,12 @@
                  */
                 const panelResizerEvent = {
                     "on": (_resizer) => {
-                        const $resizer = $(_resizer);
-                        const resizerPositionLeft = $resizer.offset().left;
-                        const dockerTargetOffsetLeft = this.$target.offset().left;
 
                         jQuery(document.body)
                             .on("mousemove.ax5docker-" + this.instanceId, function (e) {
-                                let mouseObj = getMousePosition(e);
-                                let da_grow;
+                                let mouseObj = getMousePosition(e),
+                                    da_grow;
+
                                 if (self.xvar.resizerLived) {
                                     if (self.xvar.resizerType == "row") {
                                         self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
@@ -1066,15 +1064,28 @@
                  */
                 this.addPanel = function (_addPath, _addType, _panel, _panelIndex) {
                     let addPath = "";
-                    if (_addPath == "undefined") addPath = "0";
-                    addPath = _addPath
-                        .replace(/[a-zA-Z\[\]]+/g, "")
-                        .replace(/(\d+)/g, function (a, b) {
-                            return "panels[" + a + "]";
-                        });
+                    let pane;
+                    let parent;
 
-                    let pane = getPanel(addPath);
-                    let parent = getPanelParent(pane);
+                    if (this.panels.length === 0 || !this.panels[0]) {
+                        return this.setPanels([{type: "stack", panels: [_panel]}]);
+                    } else {
+
+                        console.log("here");
+
+                        if (_addPath == "undefined") {
+                            addPath = "0";
+                        } else {
+                            addPath = _addPath
+                                .replace(/[a-zA-Z\[\]]+/g, "")
+                                .replace(/(\d+)/g, function (a, b) {
+                                    return "panels[" + a + "]";
+                                });
+                        }
+                        pane = getPanel(addPath);
+                        parent = getPanelParent(pane);
+                    }
+
                     if (parent && parent.type == "stack") {
                         // 부모패널로 ~
                         //console.log(addPath, _addPath);
@@ -1405,7 +1416,8 @@
                         }
                     };
 
-                    panelProcessor[pane.type].call(this, pane, _addType, _panel, _panelIndex);
+                    panelProcessor[(pane) ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
+
                     return this;
                 };
 
