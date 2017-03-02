@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.110"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -803,6 +803,20 @@
                 }.bind(_this));
             };
 
+            var panelsDeactive = function panelsDeactive(panels) {
+                if (U.isArray(panels)) {
+                    panels.forEach(function (p) {
+                        //p.active = false;
+                        //p.$item.removeClass("active");
+                        controlPanel(p, "deactive");
+                    });
+                } else {
+                    //panels.active = false;
+                    //panels.$item.removeClass("active");
+                    controlPanel(panels, "deactive");
+                }
+            };
+
             /**
              * 패널중에 null이 된 요소를 찾아 panels를 정리 합니다.
              * @returns {*}
@@ -1030,9 +1044,6 @@
                 if (this.panels.length === 0 || !this.panels[0]) {
                     return this.setPanels([{ type: "stack", panels: [_panel] }]);
                 } else {
-
-                    console.log("here");
-
                     if (_addPath == "undefined") {
                         addPath = "0";
                     } else {
@@ -1055,16 +1066,23 @@
                         var copyPanel = jQuery.extend({}, _pane),
                             addProcessor = {
                             "stack": function stack(_pane, _panel) {
+                                if (_panel.active) {
+                                    panelsDeactive(_pane.panels);
+                                }
                                 _pane.panels.push(_panel);
                                 arrangePanel();
                             },
                             "stack-left": function stackLeft(_pane, _panel) {
-                                //_pane.panels.push(_panel);
+                                if (_panel.active) {
+                                    panelsDeactive(_pane.panels);
+                                }
                                 _pane.panels.splice(_panelIndex, 0, _panel);
                                 arrangePanel();
                             },
                             "stack-right": function stackRight(_pane, _panel) {
-                                //_pane.panels.push(_panel);
+                                if (_panel.active) {
+                                    panelsDeactive(_pane.panels);
+                                }
                                 _pane.panels.splice(Number(_panelIndex) + 1, 0, _panel);
                                 arrangePanel();
                             },
@@ -1278,6 +1296,11 @@
                                     type: "stack",
                                     panels: []
                                 });
+
+                                if (_panel.active) {
+                                    panelsDeactive(copyPanel);
+                                }
+
                                 _pane.panels.push(copyPanel);
                                 _pane.panels.push(_panel);
                                 arrangePanel();
@@ -1288,6 +1311,10 @@
                                     type: "stack",
                                     panels: []
                                 });
+
+                                if (_panel.active) {
+                                    panelsDeactive(copyPanel);
+                                }
                                 _pane.panels.push(_panel);
                                 _pane.panels.push(copyPanel);
                                 arrangePanel();
@@ -1298,6 +1325,10 @@
                                     type: "stack",
                                     panels: []
                                 });
+
+                                if (_panel.active) {
+                                    panelsDeactive(copyPanel);
+                                }
                                 _pane.panels.push(copyPanel);
                                 _pane.panels.push(_panel);
                                 arrangePanel();
