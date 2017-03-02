@@ -106,7 +106,7 @@ describe('ax5binder TEST', function () {
 
     it('focus ax5binder', function (done) {
         myUI.focus("password");
-        done(document.activeElement.type == "password" ? "" : "focus error" );
+        done(document.activeElement.type == "password" ? "" : "focus error");
     });
 });
 
@@ -117,7 +117,7 @@ describe('Manipulate list item TEST', function () {
         '<div data-ax-repeat="list">' +
         '<script type="text/html">' +
         '<input type="text" name="input-text" data-ax-item-path="A" />' +
-        '<span data-ax-item-path="list"><button class="btn btn-primary btn-sm" type="button" data-ax-repeat-click="btn"></button></span>'+
+        '<span data-ax-item-path="list"><button class="btn btn-primary btn-sm" type="button" data-ax-repeat-click="btn"></button></span>' +
         '</script>' +
         '</div>' +
         '</form>';
@@ -196,7 +196,7 @@ describe('Manipulate list item TEST', function () {
         myUI.remove("list", 4);
         var keyList = ["list", "repeat_path", "tmpl"];
         done(ae.equalAll(Object.keys(that).sort(), keyList.sort())
-        || ae.equalAll(4, that.list.length));
+            || ae.equalAll(4, that.list.length));
     });
 
     it('onUpdate[update] ax5binder', function (done) {
@@ -204,6 +204,11 @@ describe('Manipulate list item TEST', function () {
         var keyList = ["list", "repeat_path", "tmpl"];
         done(ae.equalAll(Object.keys(that).sort(), keyList.sort())
             || ae.equalAll(5, that.list[3].A));
+    });
+
+    it('onUpdate[childAdd] ax5binder', function (done) {
+        myUI.childAdd("list", 2, "A", {e: 5});
+        done(that.list[2]["A"][2]["e"]=== 5 ? "" : "onUpdate[childAdd] error");
     });
 
     after(function () {
