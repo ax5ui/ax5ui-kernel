@@ -56,7 +56,7 @@
 
     $(function () {
 
-        var _panel = {
+        var __panel = {
             type: "row", // type : row, column, stack
             panels: [
                 {
@@ -85,22 +85,6 @@
                     panels: [
                         {
                             type: "panel",
-                            name: "my name 1",
-                            moduleName: "content",
-                            moduleState: {
-                                data1: "data1"
-                            }
-                        },
-                        {
-                            type: "panel",
-                            name: "my name 2",
-                            moduleName: "content",
-                            moduleState: {
-                                data1: "data1"
-                            }
-                        },
-                        {
-                            type: "panel",
                             name: "my name 3",
                             moduleName: "content",
                             moduleState: {
@@ -108,19 +92,11 @@
                             }
                         }
                     ]
-                },
-                {
-                    type: "panel",
-                    name: "my name 3",
-                    moduleName: "content",
-                    moduleState: {
-                        data1: "data2"
-                    }
                 }
             ]
         };
 
-        var __panel = {
+        var _panel = {
             type: "stack",
             panels: [
                 {

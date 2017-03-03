@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.112"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -667,6 +667,7 @@
                     }
                 },
                 "dragover": function dragover(dragoverDom, e) {
+
                     var $dragoverDom = jQuery(dragoverDom);
                     if (_this.xvar.dragger.target == null || _this.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
 
@@ -686,6 +687,7 @@
                     var mouse = getMousePosition(e);
                     var dragOverVertical = void 0,
                         dragOverHorizontal = void 0;
+
                     if ($dragoverDom.attr("data-ax5docker-pane-tab")) {
                         var halfWidth = box.width / 2;
                         if (box.left <= mouse.clientX && box.left + halfWidth >= mouse.clientX) {
@@ -707,6 +709,10 @@
                                 draggerProcessor[_this.xvar.dragger.dragOverHorizontal](_this.xvar.dragger.target);
                             }
                         }
+                    } else if ($dragoverDom.attr("data-ax5docker-pane-tabs")) {
+                        //this.xvar.dragger.dragOverVertical = "center";
+                        _this.xvar.dragger.dragOverHorizontal = "right";
+                        _this.xvar.dragger.target.attr("data-dropper", "true");
                     } else if ($dragoverDom.attr("data-ax5docker-pane-item")) {
                         // panel dragover 포지션 구하기
                         var threeQuarterHeight = box.height / 3;
@@ -769,12 +775,15 @@
                 },
                 "off": function off(isDrop) {
                     if (isDrop) {
+
                         var dragPanel = getPanel(_this.xvar.dragger.dragPanel.getAttribute("data-ax5docker-path"));
                         //let targetPanel = getPanel(this.xvar.dragger.target.attr("data-ax5docker-path"));
                         var appendType = [];
 
                         if (_this.xvar.dragger.dragOverHorizontal) appendType.push(_this.xvar.dragger.dragOverHorizontal);
                         if (_this.xvar.dragger.dragOverVertical) appendType.push(_this.xvar.dragger.dragOverVertical);
+
+                        console.log(dragPanel, _this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
 
                         _this.appendPanel(dragPanel, _this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
                         dragPanel = null;
@@ -1172,7 +1181,7 @@
                                 arrangePanel();
                             },
                             "column-top": function columnTop(_pane, _panel, _panelIndex) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
                                 if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1187,7 +1196,7 @@
                                 }
                             },
                             "column-bottom": function columnBottom(_pane, _panel, _panelIndex) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
                                 if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1218,7 +1227,7 @@
                                 }
                             },
                             "row-left": function rowLeft(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
                                 if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1233,7 +1242,7 @@
                                 }
                             },
                             "row-right": function rowRight(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
                                 if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1310,9 +1319,9 @@
                                 arrangePanel();
                             },
                             "row-left": function rowLeft(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane && parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row" || parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
                                     _pane = setPanel(addPath, {
@@ -1325,9 +1334,9 @@
                                 }
                             },
                             "row-right": function rowRight(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane && parentPane.type == "row") {
+                                if (parentPane && parentPane.type == "row" || parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
                                     _pane = setPanel(addPath, {
@@ -1340,9 +1349,9 @@
                                 }
                             },
                             "column-top": function columnTop(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane && parentPane.type == "column") {
+                                if (parentPane && parentPane.type == "column" || parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
                                     _pane = setPanel(addPath, {
@@ -1355,9 +1364,10 @@
                                 }
                             },
                             "column-bottom": function columnBottom(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
-                                if (parentPane && parentPane.type == "column") {
+
+                                if (parentPane && parentPane.type == "column" || parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                 } else {
                                     _pane = setPanel(addPath, {
@@ -1372,7 +1382,6 @@
                         };
 
                         if (_addType in addProcessor) {
-
                             addProcessor[_addType].call(this, _pane, _panel);
                         }
 
@@ -1381,7 +1390,7 @@
                     }
                 };
 
-                console.log(pane.type, _addType);
+                // console.log(pane.type, _addType);
 
                 panelProcessor[pane ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
 
@@ -1505,7 +1514,7 @@
     var DOCKER = ax5.ui.docker;
 
     var stack_panel = function stack_panel() {
-        return "<div data-ax5docker-pane=\"\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <ul data-ax5docker-pane-tabs=\"\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"\">{{{icons.more}}}</div>\n    <div data-ax5docker-pane-item-views=\"\"></div>\n</div>";
+        return "<div data-ax5docker-pane=\"\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <ul data-ax5docker-pane-tabs=\"true\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"\">{{{icons.more}}}</div>\n    <div data-ax5docker-pane-item-views=\"\"></div>\n</div>";
     };
 
     var panel_label = function panel_label() {

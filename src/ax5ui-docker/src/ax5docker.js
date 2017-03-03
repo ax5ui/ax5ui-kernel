@@ -698,6 +698,7 @@
                         }
                     },
                     "dragover": (dragoverDom, e) => {
+
                         let $dragoverDom = jQuery(dragoverDom);
                         if (this.xvar.dragger.target == null || this.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
 
@@ -716,6 +717,7 @@
 
                         let mouse = getMousePosition(e);
                         let dragOverVertical, dragOverHorizontal;
+
                         if ($dragoverDom.attr("data-ax5docker-pane-tab")) {
                             let halfWidth = box.width / 2;
                             if (box.left <= mouse.clientX && (box.left + halfWidth) >= mouse.clientX) {
@@ -738,6 +740,11 @@
                                     draggerProcessor[this.xvar.dragger.dragOverHorizontal](this.xvar.dragger.target);
                                 }
                             }
+                        }
+                        else if($dragoverDom.attr("data-ax5docker-pane-tabs")){
+                            //this.xvar.dragger.dragOverVertical = "center";
+                            this.xvar.dragger.dragOverHorizontal = "right";
+                            this.xvar.dragger.target.attr("data-dropper", "true");
                         }
                         else if ($dragoverDom.attr("data-ax5docker-pane-item")) {
                             // panel dragover 포지션 구하기
@@ -805,6 +812,7 @@
                     },
                     "off": (isDrop) => {
                         if (isDrop) {
+                            
                             let dragPanel = getPanel(this.xvar.dragger.dragPanel.getAttribute("data-ax5docker-path"));
                             //let targetPanel = getPanel(this.xvar.dragger.target.attr("data-ax5docker-path"));
                             let appendType = [];
@@ -812,6 +820,8 @@
                             if (this.xvar.dragger.dragOverHorizontal) appendType.push(this.xvar.dragger.dragOverHorizontal);
                             if (this.xvar.dragger.dragOverVertical) appendType.push(this.xvar.dragger.dragOverVertical);
 
+                            console.log(dragPanel, this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
+                            
                             this.appendPanel(dragPanel, this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
                             dragPanel = null;
                         }
@@ -1214,7 +1224,7 @@
                                         arrangePanel();
                                     },
                                     "column-top"(_pane, _panel, _panelIndex){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
                                         if (parentPane && parentPane.type == "column") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1229,7 +1239,7 @@
                                         }
                                     },
                                     "column-bottom"(_pane, _panel, _panelIndex){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
                                         if (parentPane && parentPane.type == "column") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1260,7 +1270,7 @@
                                         }
                                     },
                                     "row-left"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
                                         if (parentPane && parentPane.type == "row") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1275,7 +1285,7 @@
                                         }
                                     },
                                     "row-right"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
                                         if (parentPane && parentPane.type == "row") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1330,7 +1340,6 @@
                                             panels: []
                                         });
 
-
                                         if (_panel.active) {
                                             panelsDeactive(copyPanel);
                                         }
@@ -1353,9 +1362,9 @@
                                         arrangePanel();
                                     },
                                     "row-left"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
-                                        if (parentPane && parentPane.type == "row") {
+                                        if (parentPane && parentPane.type == "row" || parentPane.type == "column") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                         } else {
                                             _pane = setPanel(addPath, {
@@ -1368,9 +1377,9 @@
                                         }
                                     },
                                     "row-right"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
-                                        if (parentPane && parentPane.type == "row") {
+                                        if (parentPane && parentPane.type == "row" || parentPane.type == "column") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                         } else {
                                             _pane = setPanel(addPath, {
@@ -1383,9 +1392,9 @@
                                         }
                                     },
                                     "column-top"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
-                                        if (parentPane && parentPane.type == "column") {
+                                        if (parentPane && parentPane.type == "column" || parentPane.type == "row") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                         } else {
                                             _pane = setPanel(addPath, {
@@ -1398,9 +1407,10 @@
                                         }
                                     },
                                     "column-bottom"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
-                                        if (parentPane && parentPane.type == "column") {
+
+                                        if (parentPane && parentPane.type == "column" || parentPane.type == "row") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
                                         } else {
                                             _pane = setPanel(addPath, {
@@ -1415,7 +1425,6 @@
                                 };
 
                             if (_addType in addProcessor) {
-
                                 addProcessor[_addType].call(this, _pane, _panel);
                             }
 
@@ -1424,8 +1433,8 @@
                         }
                     };
 
-                    console.log(pane.type, _addType);
-
+                    // console.log(pane.type, _addType);
+                    
                     panelProcessor[(pane) ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
 
                     return this;

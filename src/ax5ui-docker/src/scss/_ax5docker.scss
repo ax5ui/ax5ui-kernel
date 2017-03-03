@@ -194,7 +194,18 @@
                     min-width: $ax5docker-tab-height;
                     height: $ax5docker-tab-height;
                 }
-
+                &[data-dropper] {
+                    &:after {
+                        content: ' ';
+                        position: relative;
+                        display: inline-block;
+                        list-style: none;
+                        min-width: 6em;
+                        background: $ax5docker-tab-item-bg;
+                        border: 1px dashed $ax5docker-tab-item-dropper-color;
+                        //opacity: 0.1;
+                    }
+                }
             }
             [data-ax5docker-pane-tabs-more] {
                 position: absolute;

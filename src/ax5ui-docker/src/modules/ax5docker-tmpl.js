@@ -5,7 +5,7 @@
 
     let stack_panel = function () {
         return `<div data-ax5docker-pane="" data-ax5docker-path="{{panelPath}}" style="flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};">
-    <ul data-ax5docker-pane-tabs=""></ul>
+    <ul data-ax5docker-pane-tabs="true" data-ax5docker-path="{{panelPath}}"></ul>
     <div data-ax5docker-pane-tabs-more="">{{{icons.more}}}</div>
     <div data-ax5docker-pane-item-views=""></div>
 </div>`;
