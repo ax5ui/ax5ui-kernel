@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.111"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -1164,36 +1164,12 @@
                                 }
                             },
                             "row-left": function rowLeft(_pane, _panel, _panelIndex) {
-                                var parentPath = U.left(addPath, ".");
-                                var parentPane = getPanel(parentPath);
-                                if (parentPane && parentPane.type == "row") {
-                                    _pane.panels.splice(_panelIndex, 0, _panel);
-                                    arrangePanel();
-                                } else {
-                                    _pane = setPanel(addPath, {
-                                        type: "row",
-                                        panels: []
-                                    });
-                                    _pane.panels.push(_panel);
-                                    _pane.panels.push(copyPanel);
-                                    arrangePanel();
-                                }
+                                _pane.panels.splice(_panelIndex, 0, _panel);
+                                arrangePanel();
                             },
                             "row-right": function rowRight(_pane, _panel, _panelIndex) {
-                                var parentPath = U.left(addPath, ".");
-                                var parentPane = getPanel(parentPath);
-                                if (parentPane && parentPane.type == "row") {
-                                    _pane.panels.splice(_panelIndex + 1, 0, _panel);
-                                    arrangePanel();
-                                } else {
-                                    _pane = setPanel(addPath, {
-                                        type: "row",
-                                        panels: []
-                                    });
-                                    _pane.panels.push(copyPanel);
-                                    _pane.panels.push(_panel);
-                                    arrangePanel();
-                                }
+                                _pane.panels.splice(_panelIndex + 1, 0, _panel);
+                                arrangePanel();
                             },
                             "column-top": function columnTop(_pane, _panel, _panelIndex) {
                                 var parentPath = U.left(addPath, ".");
@@ -1405,6 +1381,8 @@
                     }
                 };
 
+                console.log(pane.type, _addType);
+
                 panelProcessor[pane ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
 
                 return this;
@@ -1493,6 +1471,15 @@
                 this.addPanel(_appendPath, addType, copiedPanel, appendPanelIndex);
 
                 copiedPanel = null;
+                return this;
+            };
+
+            /**
+             * @method ax5docker.align
+             * @returns {ax5docker}
+             */
+            this.align = function () {
+                alignStackPane();
                 return this;
             };
 
