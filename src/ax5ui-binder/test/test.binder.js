@@ -154,12 +154,8 @@ describe('Manipulate list item TEST', function () {
         done(myUI.get("list[2][A][3][d]") === 4 ? "" : "childAdd error");
     });
 
-    it('childAdd ax5binder', function (done) {
-        myUI.childAdd("list", 2, "A", {d: 4});
-        done(myUI.get("list[2][A][3][d]") === 4 ? "" : "childAdd error");
-    });
-
     it('childRemove ax5binder', function (done) {
+        myUI.childAdd("list", 2, "A", {d: 4});
         myUI.childRemove("list", 2, "A", 3);
         done(myUI.get("list[2][A]").length === 4 ? "" : "childRemove error");
     });
@@ -209,6 +205,11 @@ describe('Manipulate list item TEST', function () {
     it('onUpdate[childAdd] ax5binder', function (done) {
         myUI.childAdd("list", 2, "A", {e: 5});
         done(that.list[2]["A"][2]["e"]=== 5 ? "" : "onUpdate[childAdd] error");
+    });
+
+    it('onUpdate[childRemove] ax5binder', function (done) {
+        myUI.childRemove("list", 2, "A", 2);
+        done(that.list[2]["A"].length === 2 ? "" : "onUpdate[childRemove] error");
     });
 
     after(function () {
