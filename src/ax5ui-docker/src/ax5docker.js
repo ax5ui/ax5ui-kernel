@@ -820,11 +820,10 @@
                             if (this.xvar.dragger.dragOverHorizontal) appendType.push(this.xvar.dragger.dragOverHorizontal);
                             if (this.xvar.dragger.dragOverVertical) appendType.push(this.xvar.dragger.dragOverVertical);
 
-                            console.log(dragPanel, this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
-                            
                             this.appendPanel(dragPanel, this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
                             dragPanel = null;
                         }
+
 
                         this.$target
                             .off("dragover.ax5docker-" + this.instanceId)
