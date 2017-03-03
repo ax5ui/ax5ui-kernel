@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.113"
+        version: "1.3.114"
     }, function () {
 
         /**
@@ -782,8 +782,6 @@
 
                         if (_this.xvar.dragger.dragOverHorizontal) appendType.push(_this.xvar.dragger.dragOverHorizontal);
                         if (_this.xvar.dragger.dragOverVertical) appendType.push(_this.xvar.dragger.dragOverVertical);
-
-                        console.log(dragPanel, _this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
 
                         _this.appendPanel(dragPanel, _this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
                         dragPanel = null;
