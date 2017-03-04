@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.114"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -1094,7 +1094,7 @@
                                 arrangePanel();
                             },
                             "row-left": function rowLeft(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
                                 if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1109,7 +1109,7 @@
                                 }
                             },
                             "row-right": function rowRight(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
                                 if (parentPane && parentPane.type == "row") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1124,7 +1124,7 @@
                                 }
                             },
                             "column-top": function columnTop(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
                                 if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1139,7 +1139,7 @@
                                 }
                             },
                             "column-bottom": function columnBottom(_pane, _panel) {
-                                var parentPath = U.left(addPath, ".");
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                 var parentPane = getPanel(parentPath);
                                 if (parentPane && parentPane.type == "column") {
                                     this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1388,9 +1388,9 @@
                     }
                 };
 
-                // console.log(pane.type, _addType);
-
-                panelProcessor[pane ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
+                if (pane ? pane.type : "stack" in panelProcessor) {
+                    panelProcessor[pane ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
+                }
 
                 return this;
             };
@@ -1426,8 +1426,17 @@
                 var removePanelPath = _panel.panelPath;
                 var appendPanelIndex = U.right(_appendPath, ".").replace(/\D/g, "");
 
+                if (_panel.panelPath === _appendPath) {
+                    var parentPath = _appendPath.substr(0, _appendPath.lastIndexOf("."));
+                    var parentPane = getPanel(parentPath);
+                    if (parentPane.type != "stack") {
+                        return this;
+                    }
+                }
+
                 if (_appendType.length == 1) {
                     // stack
+
                     addType = "stack-" + _appendType[0];
                     copiedPanel.active = false;
                     copiedPanel.$item.removeClass("active");

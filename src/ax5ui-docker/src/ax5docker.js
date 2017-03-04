@@ -1138,7 +1138,7 @@
                                         arrangePanel();
                                     },
                                     "row-left"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
                                         if (parentPane && parentPane.type == "row") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1153,7 +1153,7 @@
                                         }
                                     },
                                     "row-right"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
                                         if (parentPane && parentPane.type == "row") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1168,7 +1168,7 @@
                                         }
                                     },
                                     "column-top"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
                                         if (parentPane && parentPane.type == "column") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1183,7 +1183,7 @@
                                         }
                                     },
                                     "column-bottom"(_pane, _panel){
-                                        let parentPath = U.left(addPath, ".");
+                                        let parentPath = addPath.substr(0, addPath.lastIndexOf("."));
                                         let parentPane = getPanel(parentPath);
                                         if (parentPane && parentPane.type == "column") {
                                             this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
@@ -1432,9 +1432,9 @@
                         }
                     };
 
-                    // console.log(pane.type, _addType);
-                    
-                    panelProcessor[(pane) ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
+                    if((pane) ? pane.type : "stack" in panelProcessor) {
+                        panelProcessor[(pane) ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
+                    }
 
                     return this;
                 };
@@ -1470,11 +1470,21 @@
                     let removePanelPath = _panel.panelPath;
                     let appendPanelIndex = U.right(_appendPath, ".").replace(/\D/g, "");
 
+                    if (_panel.panelPath === _appendPath) {
+                        let parentPath = _appendPath.substr(0, _appendPath.lastIndexOf("."));
+                        let parentPane = getPanel(parentPath);
+                        if(parentPane.type != "stack"){
+                            return this;
+                        }
+                    }
+                    
                     if (_appendType.length == 1) { // stack
+
                         addType = "stack-" + _appendType[0];
                         copiedPanel.active = false;
                         copiedPanel.$item.removeClass("active");
                         controlPanel(copiedPanel, "deactive");
+
                     } else {
                         switch (_appendType[0] + "-" + _appendType[1]) {
                             case "left-top":
