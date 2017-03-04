@@ -204,12 +204,17 @@ describe('Manipulate list item TEST', function () {
 
     it('onUpdate[childAdd] ax5binder', function (done) {
         myUI.childAdd("list", 2, "A", {e: 5});
-        done(that.list[2]["A"][2]["e"]=== 5 ? "" : "onUpdate[childAdd] error");
+        done(that.list[2]["A"][2]["e"] === 5 ? "" : "onUpdate[childAdd] error");
     });
 
     it('onUpdate[childRemove] ax5binder', function (done) {
         myUI.childRemove("list", 2, "A", 2);
         done(that.list[2]["A"].length === 2 ? "" : "onUpdate[childRemove] error");
+    });
+
+    it('onUpdate[childUpdate] ax5binder', function (done) {
+        myUI.childUpdate("list", 2, "A", 2, {e: 15});
+        done(that.list[2]["A"][2]["e"] === 15 ? "" : "onUpdate[childUpdate] error");
     });
 
     after(function () {
