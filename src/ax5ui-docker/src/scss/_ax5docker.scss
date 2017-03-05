@@ -7,6 +7,361 @@
     overflow: hidden;
 }
 
+@mixin ax5docker-pane($direction: top) {
+    @if ($direction == "bottom") {
+        padding-top: 0;
+        padding-bottom: $ax5docker-tab-height - 1;
+    } @else {
+        padding-top: $ax5docker-tab-height - 1;
+        padding-bottom: 0;
+    }
+    ul[data-ax5docker-pane-tabs] {
+        @include default-flex-box();
+        //@include flex(none);
+
+        position: absolute;
+        left: 0;
+
+        padding: 0;
+        margin: 0;
+        width: 100%;
+
+        @if ($direction == "bottom") {
+            top: auto;
+            bottom: 0;
+        } @else {
+            top: 0;
+            bottom: auto;
+        }
+
+        overflow-x: auto;
+        overflow-y: visible;
+        background: $ax5docker-tab-bg;
+        list-style: none;
+        height: $ax5docker-tab-height;
+        -webkit-user-select: none;
+        z-index: 10;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+
+        li {
+            position: relative;
+            display: inline-block;
+            list-style: none;
+            //margin-top: -1px;
+
+            min-width: 6em;
+            height: $ax5docker-tab-height;
+
+            @if ($direction == "bottom") {
+                border-top: 1px solid $ax5docker-border-color;
+                border-bottom: 0 none;
+                border-top: 0 none;
+            } @else {
+                border-top: 0 none;
+                border-bottom: 1px solid $ax5docker-border-color;
+            }
+
+            -webkit-user-drag: element;
+            -webkit-user-select: none;
+
+            @include transition(max-width 0.25s ease-in-out);
+
+            .title {
+                text-align: center;
+                margin: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                background: $ax5docker-tab-item-bg;
+                border: 1px solid $ax5docker-border-color;
+
+                height: $ax5docker-tab-height;
+                line-height: $ax5docker-tab-height - 2;
+                padding-left: 0.7em;
+                padding-right: $ax5docker-tab-height / 1.5;
+
+                @if ($direction == "bottom") {
+                    border-top-left-radius: 0;
+                    border-top-right-radius: 0;
+                    border-bottom-left-radius: 4px;
+                    border-bottom-right-radius: 4px;
+                } @else {
+                    border-top-left-radius: 4px;
+                    border-top-right-radius: 4px;
+                    border-bottom-left-radius: 0;
+                    border-bottom-right-radius: 0;
+                }
+            }
+            .close-icon {
+                position: absolute;
+                top: ($ax5docker-tab-height - ($ax5docker-tab-height / 1.5)) / 2;
+                right: ($ax5docker-tab-height - ($ax5docker-tab-height / 1.5)) / 2;
+                z-index: 2;
+                width: $ax5docker-tab-height / 1.5;
+                height: $ax5docker-tab-height / 1.5;
+                line-height: $ax5docker-tab-height / 1.5;
+                overflow: hidden;
+                font-size: $ax5docker-tab-height / 2;
+                text-align: center;
+                border-radius: 3px;
+                @include transform(scale(0));
+                @include transition(transform 0.08s);
+                &:hover {
+                    background: #000;
+                    color: #fff;
+                }
+                * {
+                    height: $ax5docker-tab-height / 1.5;
+                    line-height: $ax5docker-tab-height / 1.5;
+                }
+            }
+
+            &.active {
+                .title {
+                    //background: $ax5docker-tab-active-item-bg;
+                    background: $ax5docker-tab-active-item-bg;
+                    @if ($direction == "bottom") {
+                        height: $ax5docker-tab-height;
+                        line-height: $ax5docker-tab-height;
+                        border-top: 0 none;
+                    } @else {
+                        height: $ax5docker-tab-height + 1;
+                        line-height: $ax5docker-tab-height - 2;
+                    }
+                }
+            }
+            &:hover {
+                .close-icon {
+                    @include transform(scale(1));
+                }
+            }
+
+            &:last-child {
+
+            }
+
+            $dropper-arrow-size: 4px;
+            &[data-dropper] {
+                &:before {
+                    //transition: all 0.3s;
+                    content: ' ';
+                    position: absolute;
+                    display: block;
+                    background: $ax5docker-tab-item-dropper-color;
+                    opacity: 1.0;
+                }
+                &:after {
+                    position: absolute;
+                    content: '';
+                    width: 0px;
+                    height: 0px;
+                    display: inline-block;
+                }
+            }
+            &[data-dropper="left"] {
+                &:before {
+                    right: auto;
+                    left: -1px;
+                    top: 0;
+                    height: 100%;
+                    width: $ax5docker-tab-item-dropper-width;
+                }
+                &:after {
+                    right: auto;
+                    left: $ax5docker-tab-item-dropper-width - 1;
+                    top: calc(50% - #{$dropper-arrow-size});
+                    border-left: $dropper-arrow-size solid $ax5docker-tab-item-dropper-color;
+                    border-top: $dropper-arrow-size solid transparent;
+                    border-bottom: $dropper-arrow-size solid transparent;
+                    background: transparent;
+                    opacity: 1;
+                }
+            }
+            &[data-dropper="right"] {
+                &:before {
+                    left: auto;
+                    right: 0;
+                    top: 0;
+                    height: 100%;
+                    width: $ax5docker-tab-item-dropper-width;
+                }
+                &:after {
+                    left: auto;
+                    right: $ax5docker-tab-item-dropper-width;
+                    top: calc(50% - #{$dropper-arrow-size});
+                    border-right: $dropper-arrow-size solid $ax5docker-tab-item-dropper-color;
+                    border-top: $dropper-arrow-size solid transparent;
+                    border-bottom: $dropper-arrow-size solid transparent;
+                    background: transparent;
+                    opacity: 1;
+                }
+            }
+        }
+        li.pane-tab-margin{
+            content: ' ';
+            position: relative;
+            display: inline-block;
+            list-style: none;
+            width: $ax5docker-tab-margin;
+            min-width: $ax5docker-tab-margin;
+
+            @if ($direction == "bottom") {
+                border-top: 1px solid $ax5docker-border-color;
+                border-bottom: 0 none;
+            } @else {
+                border-top: 0 none;
+                border-bottom: 1px solid $ax5docker-border-color;
+            }
+        }
+        &:before{
+            content: ' ';
+            position: absolute;
+
+            @if ($direction == "bottom") {
+                bottom: auto;
+                top:0;
+                left: 0;
+                width: 100%;
+                height: 1px;
+                background: $ax5docker-border-color;
+            } @else {
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 1px;
+                background: $ax5docker-border-color;
+            }
+        }
+        &:after {
+            content: ' ';
+            position: relative;
+            display: inline-block;
+            list-style: none;
+            min-width: $ax5docker-tab-height;
+            height: $ax5docker-tab-height;
+
+            @if ($direction == "bottom") {
+                border-top: 1px solid $ax5docker-border-color;
+                border-bottom: 0 none;
+            } @else {
+                border-top: 0 none;
+                border-bottom: 1px solid $ax5docker-border-color;
+            }
+        }
+        &[data-dropper] {
+            &:after {
+                content: ' ';
+                position: relative;
+                display: inline-block;
+                list-style: none;
+                min-width: 6em;
+                background: $ax5docker-tab-item-bg;
+                border: 1px dashed $ax5docker-tab-item-dropper-color;
+                //opacity: 0.1;
+            }
+        }
+    }
+    [data-ax5docker-pane-tabs-more] {
+        position: absolute;
+        min-width: $ax5docker-tab-height;
+        height: $ax5docker-tab-height;
+        line-height: $ax5docker-tab-height;
+        text-align: center;
+        background: $ax5docker-tab-active-item-bg;
+        border-left: 1px solid $ax5docker-border-color;
+        border-right: 1px solid $ax5docker-border-color;
+
+        cursor: pointer;
+        display: none;
+        z-index: 11;
+
+        @if ($direction == "bottom") {
+            right: 0;
+            top: auto;
+            bottom: 0;
+            border-top: 0 none;
+            border-bottom: 1px solid $ax5docker-border-color;
+        } @else {
+            right: 0;
+            top: 0;
+            border-top: 1px solid $ax5docker-border-color;
+            border-bottom: 0 none;
+        }
+    }
+    [data-ax5docker-pane-item-views] {
+        z-index: 5;
+        @include default-flex-box();
+
+        border: 1px solid $ax5docker-border-color;
+
+        [data-ax5docker-pane-item] {
+            display: none;
+            background: $ax5docker-pane-item-bg;
+            position: relative;
+            &.active {
+                display: flex;
+                @include flex(1);
+            }
+
+            &[data-dropper] {
+                &:after {
+                    transition: all 0.3s;
+                    content: ' ';
+                    position: absolute;
+                    display: block;
+                    background: #000000;
+                    opacity: 0.1;
+                    z-index: 100;
+                }
+            }
+            &[data-dropper="left"] {
+                &:after {
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    width: 50%;
+                }
+            }
+            &[data-dropper="right"] {
+                &:after {
+                    left: 50%;
+                    top: 0;
+                    height: 100%;
+                    width: 50%;
+                }
+            }
+            &[data-dropper="top"] {
+                &:after {
+                    left: 0;
+                    top: 0;
+                    height: 50%;
+                    width: 100%;
+                }
+            }
+            &[data-dropper="bottom"] {
+                &:after {
+                    left: 0;
+                    top: 50%;
+                    height: 50%;
+                    width: 100%;
+                }
+            }
+            &[data-dropper="center"] {
+                &:after {
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
 @include keyframes(ax-docker-popup) {
     0% {
         @include transform(scale(1, 0));
@@ -28,271 +383,7 @@
         [data-ax5docker-pane] {
             @include default-flex-box();
             @include flex-direction(column);
-            ul[data-ax5docker-pane-tabs] {
-                @include default-flex-box();
-                @include flex(none);
-                position: relative;
-                padding: 0;
-                margin: 0;
-
-                overflow-x: auto;
-                overflow-y: hidden;
-                background: $ax5docker-tab-bg;
-                list-style: none;
-                height: $ax5docker-tab-height;
-                line-height: $ax5docker-tab-height;
-                -webkit-user-select: none;
-
-                &::-webkit-scrollbar {
-                    display: none;
-                }
-                &:before {
-                    content: ' ';
-                    display: block;
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    width: 100%;
-                    border-bottom: 1px solid $ax5docker-border-color;
-                }
-                li {
-                    position: relative;
-                    display: inline-block;
-                    //@include flex(1);
-
-                    list-style: none;
-                    background: $ax5docker-tab-item-bg;
-                    //max-width: 10em;
-                    min-width: 6em;
-                    height: $ax5docker-tab-height;
-                    border-left: 1px solid $ax5docker-border-color;
-                    border-right: 1px solid $ax5docker-border-color;
-
-                    -webkit-user-drag: element;
-                    -webkit-user-select: none;
-
-                    @include transition(max-width 0.25s ease-in-out);
-
-                    .title {
-                        text-align: center;
-                        margin: 0 1em;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        //margin-right: $ax5docker-tab-height;
-                    }
-                    .close-icon {
-                        position: absolute;
-                        top: ($ax5docker-tab-height - ($ax5docker-tab-height / 1.5)) / 2;
-                        right: ($ax5docker-tab-height - ($ax5docker-tab-height / 1.5)) / 2;
-                        z-index: 2;
-                        width: $ax5docker-tab-height / 1.5;
-                        height: $ax5docker-tab-height / 1.5;
-                        line-height: $ax5docker-tab-height / 1.5;
-                        overflow: hidden;
-                        font-size: $ax5docker-tab-height / 2;
-                        text-align: center;
-                        border-radius: 3px;
-                        @include transform(scale(0));
-                        @include transition(transform 0.08s);
-                        &:hover {
-                            background: #000;
-                            color: #fff;
-                        }
-                        * {
-                            height: $ax5docker-tab-height / 1.5;
-                            line-height: $ax5docker-tab-height / 1.5;
-                        }
-                    }
-
-                    &:before {
-                        content: ' ';
-                        display: block;
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        border-top: 1px solid $ax5docker-border-color;
-                    }
-
-                    &.active {
-                        background: $ax5docker-tab-active-item-bg;
-                    }
-                    &:hover {
-                        .close-icon {
-                            @include transform(scale(1));
-                        }
-                    }
-
-                    &:last-child {
-
-                    }
-
-                    $dropper-arrow-size: 4px;
-                    &[data-dropper] {
-                        &:before {
-                            //transition: all 0.3s;
-                            content: ' ';
-                            position: absolute;
-                            display: block;
-                            background: $ax5docker-tab-item-dropper-color;
-                            opacity: 1.0;
-                        }
-                        &:after {
-                            position: absolute;
-                            content: '';
-                            width: 0px;
-                            height: 0px;
-                            display: inline-block;
-                        }
-                    }
-                    &[data-dropper="left"] {
-                        &:before {
-                            right: auto;
-                            left: 0;
-                            top: 0;
-                            height: 100%;
-                            width: $ax5docker-tab-item-dropper-width;
-                        }
-                        &:after {
-                            right: auto;
-                            left: $ax5docker-tab-item-dropper-width;
-                            top: calc(50% - #{$dropper-arrow-size});
-                            border-left: $dropper-arrow-size solid $ax5docker-tab-item-dropper-color;
-                            border-top: $dropper-arrow-size solid transparent;
-                            border-bottom: $dropper-arrow-size solid transparent;
-                            background: transparent;
-                            opacity: 1;
-                        }
-                    }
-                    &[data-dropper="right"] {
-                        &:before {
-                            left: auto;
-                            right: 0;
-                            top: 0;
-                            height: 100%;
-                            width: $ax5docker-tab-item-dropper-width;
-                        }
-                        &:after {
-                            left: auto;
-                            right: $ax5docker-tab-item-dropper-width;
-                            top: calc(50% - #{$dropper-arrow-size});
-                            border-right: $dropper-arrow-size solid $ax5docker-tab-item-dropper-color;
-                            border-top: $dropper-arrow-size solid transparent;
-                            border-bottom: $dropper-arrow-size solid transparent;
-                            background: transparent;
-                            opacity: 1;
-                        }
-                    }
-                }
-
-
-                &:after {
-                    content: ' ';
-                    position: relative;
-                    display: inline-block;
-                    list-style: none;
-                    min-width: $ax5docker-tab-height;
-                    height: $ax5docker-tab-height;
-                }
-                &[data-dropper] {
-                    &:after {
-                        content: ' ';
-                        position: relative;
-                        display: inline-block;
-                        list-style: none;
-                        min-width: 6em;
-                        background: $ax5docker-tab-item-bg;
-                        border: 1px dashed $ax5docker-tab-item-dropper-color;
-                        //opacity: 0.1;
-                    }
-                }
-            }
-            [data-ax5docker-pane-tabs-more] {
-                position: absolute;
-                right: 0;
-                top: 0;
-                min-width: $ax5docker-tab-height;
-                height: $ax5docker-tab-height;
-                line-height: $ax5docker-tab-height;
-                text-align: center;
-                background: $ax5docker-tab-active-item-bg;
-                border-left: 1px solid $ax5docker-border-color;
-                border-right: 1px solid $ax5docker-border-color;
-                border-top: 1px solid $ax5docker-border-color;
-                cursor: pointer;
-                display: none;
-            }
-
-            [data-ax5docker-pane-item-views] {
-                @include default-flex-box();
-
-                border-left: 1px solid $ax5docker-border-color;
-                border-right: 1px solid $ax5docker-border-color;
-                border-bottom: 1px solid $ax5docker-border-color;
-
-                [data-ax5docker-pane-item] {
-                    display: none;
-                    background: $ax5docker-pane-item-bg;
-                    position: relative;
-                    &.active {
-                        display: flex;
-                        @include flex(1);
-                    }
-
-                    &[data-dropper] {
-                        &:after {
-                            transition: all 0.3s;
-                            content: ' ';
-                            position: absolute;
-                            display: block;
-                            background: #000000;
-                            opacity: 0.1;
-                            z-index: 100;
-                        }
-                    }
-                    &[data-dropper="left"] {
-                        &:after {
-                            left: 0;
-                            top: 0;
-                            height: 100%;
-                            width: 50%;
-                        }
-                    }
-                    &[data-dropper="right"] {
-                        &:after {
-                            left: 50%;
-                            top: 0;
-                            height: 100%;
-                            width: 50%;
-                        }
-                    }
-                    &[data-dropper="top"] {
-                        &:after {
-                            left: 0;
-                            top: 0;
-                            height: 50%;
-                            width: 100%;
-                        }
-                    }
-                    &[data-dropper="bottom"] {
-                        &:after {
-                            left: 0;
-                            top: 50%;
-                            height: 50%;
-                            width: 100%;
-                        }
-                    }
-                    &[data-dropper="center"] {
-                        &:after {
-                            left: 0;
-                            top: 0;
-                            height: 100%;
-                            width: 100%;
-                        }
-                    }
-                }
-            }
+            @include ax5docker-pane();
 
             &.tabs-scrolled {
                 [data-ax5docker-pane-tabs-more] {
@@ -301,7 +392,16 @@
                     transform-origin: 0 100%;
                 }
             }
-
+            &[data-ax5docker-label-direction="bottom"] {
+                @include ax5docker-pane("bottom");
+                &.tabs-scrolled {
+                    [data-ax5docker-pane-tabs-more] {
+                        display: block;
+                        @include animation(ax-docker-popup $ax5docker-easing-time-open $ease-in-out-cubic);
+                        transform-origin: 0 100%;
+                    }
+                }
+            }
         }
         [data-ax5docker-resize-handle] {
             position: relative;
@@ -311,7 +411,7 @@
             &:before {
                 content: "";
                 position: absolute;
-                z-index: 3;
+                z-index: 20;
             }
         }
 
@@ -333,7 +433,7 @@
                 [data-ax5docker-pane] {
                     &:not(:last-child) {
                         [data-ax5docker-pane-item-views] {
-                            border-right: 1px solid $ax5docker-border-color;
+                            //border-right: 1px solid $ax5docker-border-color;
                         }
                     }
                 }
@@ -354,7 +454,7 @@
                 [data-ax5docker-pane] {
                     &:not(:last-child) {
                         [data-ax5docker-pane-item-views] {
-                            border-bottom: 1px solid $ax5docker-border-color;
+                            //border-bottom: 1px solid $ax5docker-border-color;
                         }
                     }
                 }

@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.115"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -47,6 +47,7 @@
                     close: 'X',
                     more: '...'
                 },
+                labelDirection: 'top',
                 disableClosePanel: false,
                 disableDragPanel: false,
                 resizeDebounceTime: 100,
@@ -325,6 +326,7 @@
                             name: myself.name,
                             panelPath: myself.panelPath,
                             icons: cfg.icons,
+                            labelDirection: myself.labelDirection || cfg.labelDirection,
                             disableClosePanel: cfg.disableClosePanel,
                             disableDragPanel: cfg.disableDragPanel
                         }, {}));
@@ -378,6 +380,7 @@
                                 panelPath: myself.panelPath,
                                 flexGrow: myself.flexGrow,
                                 icons: cfg.icons,
+                                labelDirection: myself.labelDirection || cfg.labelDirection,
                                 disableClosePanel: cfg.disableClosePanel,
                                 disableDragPanel: cfg.disableDragPanel
                             }, {}));
@@ -668,9 +671,13 @@
                 },
                 "dragover": function dragover(dragoverDom, e) {
 
-                    var $dragoverDom = jQuery(dragoverDom);
-                    if (_this.xvar.dragger.target == null || _this.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
+                    var $dragoverDom = jQuery(dragoverDom),
+                        box = {},
+                        mouse = getMousePosition(e),
+                        dragOverVertical = void 0,
+                        dragOverHorizontal = void 0;
 
+                    if (_this.xvar.dragger.target == null || _this.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
                         if (_this.xvar.dragger.target) _this.xvar.dragger.target.removeAttr("data-dropper");
 
                         _this.xvar.dragger.target = $dragoverDom;
@@ -678,15 +685,9 @@
                         _this.xvar.dragger.dragOverHorizontal = null;
                     }
 
-                    // e.target
-                    var box = {};
                     box = $dragoverDom.offset();
                     box.width = $dragoverDom.width();
                     box.height = $dragoverDom.height();
-
-                    var mouse = getMousePosition(e);
-                    var dragOverVertical = void 0,
-                        dragOverHorizontal = void 0;
 
                     if ($dragoverDom.attr("data-ax5docker-pane-tab")) {
                         var halfWidth = box.width / 2;
@@ -697,7 +698,7 @@
                         }
                         if (_this.xvar.dragger.dragOverHorizontal != dragOverHorizontal && typeof dragOverHorizontal != "undefined") {
                             _this.xvar.dragger.dragOverHorizontal = dragOverHorizontal;
-                            var draggerProcessor = {
+                            var _draggerProcessor = {
                                 "left": function left($target) {
                                     $target.attr("data-dropper", "left");
                                 },
@@ -705,10 +706,11 @@
                                     $target.attr("data-dropper", "right");
                                 }
                             };
-                            if (_this.xvar.dragger.dragOverHorizontal in draggerProcessor) {
-                                draggerProcessor[_this.xvar.dragger.dragOverHorizontal](_this.xvar.dragger.target);
+                            if (_this.xvar.dragger.dragOverHorizontal in _draggerProcessor) {
+                                _draggerProcessor[_this.xvar.dragger.dragOverHorizontal](_this.xvar.dragger.target);
                             }
                         }
+                        halfWidth = null;
                     } else if ($dragoverDom.attr("data-ax5docker-pane-tabs")) {
                         //this.xvar.dragger.dragOverVertical = "center";
                         _this.xvar.dragger.dragOverHorizontal = "right";
@@ -771,20 +773,23 @@
                                 draggerProcessor[_this.xvar.dragger.dragOverHorizontal + "-" + _this.xvar.dragger.dragOverVertical](_this.xvar.dragger.target);
                             }
                         }
+
+                        threeQuarterHeight = null;
+                        threeQuarterWidth = null;
                     }
                 },
                 "off": function off(isDrop) {
                     if (isDrop) {
-
-                        var dragPanel = getPanel(_this.xvar.dragger.dragPanel.getAttribute("data-ax5docker-path"));
-                        //let targetPanel = getPanel(this.xvar.dragger.target.attr("data-ax5docker-path"));
-                        var appendType = [];
+                        var dragPanel = getPanel(_this.xvar.dragger.dragPanel.getAttribute("data-ax5docker-path")),
+                            appendType = [];
 
                         if (_this.xvar.dragger.dragOverHorizontal) appendType.push(_this.xvar.dragger.dragOverHorizontal);
                         if (_this.xvar.dragger.dragOverVertical) appendType.push(_this.xvar.dragger.dragOverVertical);
 
                         _this.appendPanel(dragPanel, _this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
+
                         dragPanel = null;
+                        appendType = null;
                     }
 
                     _this.$target.off("dragover.ax5docker-" + _this.instanceId).off("drop.ax5docker-" + _this.instanceId).off("dragend.ax5docker-" + _this.instanceId);
@@ -1418,13 +1423,16 @@
              * @returns {ax5docker}
              */
             this.appendPanel = function (_panel, _appendPath, _appendType) {
-                //console.info(_panel);
-                //console.info(_appendPath);
 
                 var copiedPanel = $.extend({}, _panel, { panelPath: "" }),
                     addType = void 0;
+
                 var removePanelPath = _panel.panelPath;
                 var appendPanelIndex = U.right(_appendPath, ".").replace(/\D/g, "");
+
+                if (_appendType.length == 0) {
+                    return this;
+                }
 
                 if (_panel.panelPath === _appendPath) {
                     var parentPath = _appendPath.substr(0, _appendPath.lastIndexOf("."));
@@ -1436,7 +1444,6 @@
 
                 if (_appendType.length == 1) {
                     // stack
-
                     addType = "stack-" + _appendType[0];
                     copiedPanel.active = false;
                     copiedPanel.$item.removeClass("active");
@@ -1520,12 +1527,16 @@
 
     var DOCKER = ax5.ui.docker;
 
-    var stack_panel = function stack_panel() {
-        return "<div data-ax5docker-pane=\"\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <ul data-ax5docker-pane-tabs=\"true\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"\">{{{icons.more}}}</div>\n    <div data-ax5docker-pane-item-views=\"\"></div>\n</div>";
+    var stack_panel = function stack_panel(columnKeys, data) {
+        if (data.labelDirection === "bottom") {
+            return "<div data-ax5docker-pane=\"\" data-ax5docker-label-direction=\"{{labelDirection}}\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <div data-ax5docker-pane-item-views=\"\"></div>\n    <ul data-ax5docker-pane-tabs=\"true\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"\">{{{icons.more}}}</div>\n</div>";
+        } else {
+            return "<div data-ax5docker-pane=\"\" data-ax5docker-label-direction=\"{{labelDirection}}\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <ul data-ax5docker-pane-tabs=\"true\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"\">{{{icons.more}}}</div>\n    <div data-ax5docker-pane-item-views=\"\"></div>\n</div>";
+        }
     };
 
     var panel_label = function panel_label() {
-        return "<li data-ax5docker-pane-tab=\"{{pIndex}}\" data-ax5docker-path=\"{{panelPath}}\">\n    <div class=\"title\">{{{name}}}</div>\n    {{^disableClosePanel}}<div class=\"close-icon\">{{{icons.close}}}</div>{{/disableClosePanel}}\n</li>";
+        return "<li data-ax5docker-pane-tab=\"{{pIndex}}\" data-ax5docker-path=\"{{panelPath}}\">\n    <div class=\"title\">{{{name}}}</div>\n    {{^disableClosePanel}}<div class=\"close-icon\">{{{icons.close}}}</div>{{/disableClosePanel}}\n</li><li class=\"pane-tab-margin\"></li>";
     };
 
     DOCKER.tmpl = {
@@ -1533,7 +1544,7 @@
         "panel-label": panel_label,
 
         get: function get(tmplName, data, columnKeys) {
-            return ax5.mustache.render(DOCKER.tmpl[tmplName].call(this, columnKeys), data);
+            return ax5.mustache.render(DOCKER.tmpl[tmplName].call(this, columnKeys, data), data);
         }
     };
 })();

@@ -45,6 +45,7 @@
                         close: 'X',
                         more: '...'
                     },
+                    labelDirection: 'top',
                     disableClosePanel: false,
                     disableDragPanel: false,
                     resizeDebounceTime: 100,
@@ -329,6 +330,7 @@
                                 name: myself.name,
                                 panelPath: myself.panelPath,
                                 icons: cfg.icons,
+                                labelDirection: myself.labelDirection || cfg.labelDirection,
                                 disableClosePanel: cfg.disableClosePanel,
                                 disableDragPanel: cfg.disableDragPanel,
                             }, {}));
@@ -382,6 +384,7 @@
                                     panelPath: myself.panelPath,
                                     flexGrow: myself.flexGrow,
                                     icons: cfg.icons,
+                                    labelDirection: myself.labelDirection || cfg.labelDirection,
                                     disableClosePanel: cfg.disableClosePanel,
                                     disableDragPanel: cfg.disableDragPanel,
                                 }, {}));
@@ -699,9 +702,13 @@
                     },
                     "dragover": (dragoverDom, e) => {
 
-                        let $dragoverDom = jQuery(dragoverDom);
-                        if (this.xvar.dragger.target == null || this.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
+                        let $dragoverDom = jQuery(dragoverDom),
+                            box = {},
+                            mouse = getMousePosition(e),
+                            dragOverVertical,
+                            dragOverHorizontal;
 
+                        if (this.xvar.dragger.target == null || this.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
                             if (this.xvar.dragger.target) this.xvar.dragger.target.removeAttr("data-dropper");
 
                             this.xvar.dragger.target = $dragoverDom;
@@ -709,14 +716,9 @@
                             this.xvar.dragger.dragOverHorizontal = null;
                         }
 
-                        // e.target
-                        let box = {};
                         box = $dragoverDom.offset();
                         box.width = $dragoverDom.width();
                         box.height = $dragoverDom.height();
-
-                        let mouse = getMousePosition(e);
-                        let dragOverVertical, dragOverHorizontal;
 
                         if ($dragoverDom.attr("data-ax5docker-pane-tab")) {
                             let halfWidth = box.width / 2;
@@ -728,7 +730,7 @@
                             }
                             if (this.xvar.dragger.dragOverHorizontal != dragOverHorizontal && typeof dragOverHorizontal != "undefined") {
                                 this.xvar.dragger.dragOverHorizontal = dragOverHorizontal;
-                                var draggerProcessor = {
+                                const draggerProcessor = {
                                     "left"($target){
                                         $target.attr("data-dropper", "left");
                                     },
@@ -740,8 +742,9 @@
                                     draggerProcessor[this.xvar.dragger.dragOverHorizontal](this.xvar.dragger.target);
                                 }
                             }
+                            halfWidth = null;
                         }
-                        else if($dragoverDom.attr("data-ax5docker-pane-tabs")){
+                        else if ($dragoverDom.attr("data-ax5docker-pane-tabs")) {
                             //this.xvar.dragger.dragOverVertical = "center";
                             this.xvar.dragger.dragOverHorizontal = "right";
                             this.xvar.dragger.target.attr("data-dropper", "true");
@@ -808,22 +811,26 @@
                                     draggerProcessor[this.xvar.dragger.dragOverHorizontal + "-" + this.xvar.dragger.dragOverVertical](this.xvar.dragger.target);
                                 }
                             }
+
+                            threeQuarterHeight = null;
+                            threeQuarterWidth = null;
                         }
+
+
                     },
                     "off": (isDrop) => {
                         if (isDrop) {
-                            
-                            let dragPanel = getPanel(this.xvar.dragger.dragPanel.getAttribute("data-ax5docker-path"));
-                            //let targetPanel = getPanel(this.xvar.dragger.target.attr("data-ax5docker-path"));
-                            let appendType = [];
+                            let dragPanel = getPanel(this.xvar.dragger.dragPanel.getAttribute("data-ax5docker-path")),
+                                appendType = [];
 
                             if (this.xvar.dragger.dragOverHorizontal) appendType.push(this.xvar.dragger.dragOverHorizontal);
                             if (this.xvar.dragger.dragOverVertical) appendType.push(this.xvar.dragger.dragOverVertical);
 
                             this.appendPanel(dragPanel, this.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
-                            dragPanel = null;
-                        }
 
+                            dragPanel = null;
+                            appendType = null;
+                        }
 
                         this.$target
                             .off("dragover.ax5docker-" + this.instanceId)
@@ -1432,7 +1439,7 @@
                         }
                     };
 
-                    if((pane) ? pane.type : "stack" in panelProcessor) {
+                    if ((pane) ? pane.type : "stack" in panelProcessor) {
                         panelProcessor[(pane) ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
                     }
 
@@ -1462,24 +1469,26 @@
                  * @returns {ax5docker}
                  */
                 this.appendPanel = function (_panel, _appendPath, _appendType) {
-                    //console.info(_panel);
-                    //console.info(_appendPath);
-
+                    
                     let copiedPanel = $.extend({}, _panel, {panelPath: ""}),
                         addType;
+                    
                     let removePanelPath = _panel.panelPath;
                     let appendPanelIndex = U.right(_appendPath, ".").replace(/\D/g, "");
+
+                    if (_appendType.length == 0) {
+                        return this;
+                    }
 
                     if (_panel.panelPath === _appendPath) {
                         let parentPath = _appendPath.substr(0, _appendPath.lastIndexOf("."));
                         let parentPane = getPanel(parentPath);
-                        if(parentPane.type != "stack"){
+                        if (parentPane.type != "stack") {
                             return this;
                         }
                     }
-                    
-                    if (_appendType.length == 1) { // stack
 
+                    if (_appendType.length == 1) { // stack
                         addType = "stack-" + _appendType[0];
                         copiedPanel.active = false;
                         copiedPanel.$item.removeClass("active");
