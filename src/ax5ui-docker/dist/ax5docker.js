@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.116"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -633,6 +633,8 @@
                         nextPane = null;
                     }
 
+                    alignStackPane();
+
                     jQuery(document.body).off("mousemove.ax5docker-" + _this.instanceId).off("mouseup.ax5docker-" + _this.instanceId).off("mouseleave.ax5docker-" + _this.instanceId);
 
                     jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
@@ -791,6 +793,8 @@
                         dragPanel = null;
                         appendType = null;
                     }
+
+                    alignStackPane();
 
                     _this.$target.off("dragover.ax5docker-" + _this.instanceId).off("drop.ax5docker-" + _this.instanceId).off("dragend.ax5docker-" + _this.instanceId);
 

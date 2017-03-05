@@ -655,6 +655,8 @@
                             nextPane = null;
                         }
 
+                        alignStackPane();
+
                         jQuery(document.body)
                             .off("mousemove.ax5docker-" + this.instanceId)
                             .off("mouseup.ax5docker-" + this.instanceId)
@@ -831,6 +833,8 @@
                             dragPanel = null;
                             appendType = null;
                         }
+
+                        alignStackPane();
 
                         this.$target
                             .off("dragover.ax5docker-" + this.instanceId)
