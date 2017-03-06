@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.118"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -323,6 +323,7 @@
                         myself.panelPath = getPanelPath(parent, pIndex);
 
                         $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
+                            id: self.instanceId,
                             name: myself.name,
                             panelPath: myself.panelPath,
                             icons: cfg.icons,
@@ -352,6 +353,7 @@
                         var $dom = void 0;
                         myself.panelPath = getPanelPath(parent, pIndex);
                         myself.$label = jQuery(DOCKER.tmpl.get.call(this, "panel-label", {
+                            id: self.instanceId,
                             pIndex: pIndex,
                             name: myself.name,
                             panelPath: myself.panelPath,
@@ -361,7 +363,7 @@
                         }, {}));
 
                         if (!myself.$item) {
-                            myself.$item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '" data-ax5docker-pane-id="' + getPanelId() + '" data-ax5docker-path="' + myself.panelPath + '"></div>');
+                            myself.$item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '" data-ax5docker-id="' + self.instanceId + '" data-ax5docker-pane-id="' + getPanelId() + '" data-ax5docker-path="' + myself.panelPath + '"></div>');
                         } else {
                             myself.$item.attr("data-ax5docker-path", myself.panelPath);
                             myself.$item.attr("data-ax5docker-pane-item", pIndex);
@@ -372,10 +374,11 @@
                                 if (!myself.builded) controlPanel(myself, "init");
                                 controlPanel(myself, "active");
                             }
-                            $parent.find('[data-ax5docker-pane-tabs]').append(myself.$label);
-                            $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
+                            $parent.find('[data-ax5docker-pane-tabs="' + self.instanceId + '"]').append(myself.$label);
+                            $parent.find('[data-ax5docker-pane-item-views="' + self.instanceId + '"]').append(myself.$item);
                         } else {
                             $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
+                                id: self.instanceId,
                                 name: myself.name,
                                 panelPath: myself.panelPath,
                                 flexGrow: myself.flexGrow,
@@ -388,8 +391,8 @@
                             if (!myself.builded) controlPanel(myself, "init");
                             controlPanel(myself, "active");
 
-                            $dom.find('[data-ax5docker-pane-tabs]').append(myself.$label);
-                            $dom.find('[data-ax5docker-pane-item-views]').append(myself.$item);
+                            $dom.find('[data-ax5docker-pane-tabs="' + self.instanceId + '"]').append(myself.$label);
+                            $dom.find('[data-ax5docker-pane-item-views="' + self.instanceId + '"]').append(myself.$item);
 
                             $parent.append($dom);
                         }
@@ -397,7 +400,7 @@
                         $dom = null;
                     },
                     resizeHandle: function resizeHandle($parent, parent, myself, pIndex) {
-                        var $dom = jQuery('<div data-ax5docker-resize-handle="' + parent.type + "/" + parent.panelPath + "/" + pIndex + '"></div>');
+                        var $dom = jQuery('<div data-ax5docker-id="' + self.instanceId + '" data-ax5docker-resize-handle="' + parent.type + "/" + parent.panelPath + "/" + pIndex + '"></div>');
                         $parent.append($dom);
                         $dom = null;
                     },
@@ -407,7 +410,7 @@
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="row" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="row" data-ax5docker-id="' + self.instanceId + '" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -426,7 +429,7 @@
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-id="' + self.instanceId + '" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
@@ -441,14 +444,14 @@
                     }
                 };
 
-                var $root = jQuery('<div data-ax5docker-panes=""></div>');
+                var $root = jQuery('<div data-ax5docker-panes="' + _this.instanceId + '"></div>');
                 if (_this.panels[0]) appendProcessor[_this.panels[0].type]($root, null, _this.panels[0], 0);
                 _this.$target.html($root);
 
-                _this.$target.off("click.ax5docker-pane").on("click.ax5docker-pane", "[data-ax5docker-pane-tab] .close-icon", function (e) {
+                _this.$target.off("click.ax5docker-pane").on("click.ax5docker-pane", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-pane-tab] .close-icon', function (e) {
                     self.removePanel($(this).parents('[data-ax5docker-pane-tab]').attr("data-ax5docker-path"));
                     U.stopEvent(e);
-                }).on("click.ax5docker-pane", "[data-ax5docker-pane-tab]", function (e) {
+                }).on("click.ax5docker-pane", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-pane-tab]', function (e) {
                     // pane, panelIndex 인자 변경.
                     var $clickedLabel = jQuery(this);
                     var pane = getPanel($clickedLabel.parents('[data-ax5docker-pane]').attr("data-ax5docker-path"));
@@ -462,16 +465,16 @@
                     pane = null;
                     panelIndex = null;
                     U.stopEvent(e);
-                }).on("click.ax5docker-pane", "[data-ax5docker-pane-tabs-more]", function (e) {
+                }).on("click.ax5docker-pane", '[data-ax5docker-pane-tabs-more="' + _this.instanceId + '"]', function (e) {
                     openStackPanelMore($(this).parents('[data-ax5docker-pane]'), e);
                     U.stopEvent(e);
                 });
 
-                _this.$target.off("mousedown.ax5docker-pane-resize").off("dragstart.ax5docker-pane-resize").on("dragstart.ax5docker-pane-resize", "[data-ax5docker-pane-tab]", function (e) {
+                _this.$target.off("mousedown.ax5docker-pane-resize").off("dragstart.ax5docker-pane-resize").on("dragstart.ax5docker-pane-resize", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-pane-tab]', function (e) {
                     if (!cfg.disableDragPanel) {
                         panelTabDragEvent.on(this);
                     }
-                }).on("mousedown.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
+                }).on("mousedown.ax5docker-pane-resize", '[data-ax5docker-resize-handle="' + _this.instanceId + '"]', function (e) {
                     var datas = this.getAttribute("data-ax5docker-resize-handle").split(/\//g);
 
                     // panelResizerEvent.init
@@ -495,7 +498,7 @@
 
                     panelResizerEvent.on(this);
                     U.stopEvent(e);
-                }).on("dragstart.ax5docker-pane-resize", "[data-ax5docker-resize-handle]", function (e) {
+                }).on("dragstart.ax5docker-pane-resize", '[data-ax5docker-resize-handle="' + _this.instanceId + '"]', function (e) {
                     U.stopEvent(e);
                     return false;
                 });
@@ -503,142 +506,6 @@
                 // stackPane tabs 스크롤처리
                 alignStackPane();
                 $root = null;
-            };
-
-            /**
-             * 액티브 패널 변경(stack인 상황에서)
-             * @param pane
-             * @param panelIndex
-             * @returns {boolean}
-             */
-            var changeActiveStackPanel = function changeActiveStackPanel(pane, panelIndex) {
-                var panel = pane.panels[panelIndex];
-
-                for (var p = 0, pl = pane.panels.length; p < pl; p++) {
-                    if (pane.panels[p].active) {
-                        controlPanel(pane.panels[p], "deactive");
-                    }
-                }
-
-                if (!panel.builded) controlPanel(panel, "init");
-                controlPanel(panel, "active");
-
-                pane = null;
-                panelIndex = null;
-                panel = null;
-                return _this;
-            };
-
-            /**
-             * stackTab의 더보기 아이콘이 클릭되면~~~
-             * @param stackPane
-             * @param e
-             * @returns {ax5docker}
-             */
-            var openStackPanelMore = function openStackPanelMore(stackPane, e) {
-                var $stackPane = jQuery(stackPane),
-                    panePath = $stackPane.attr("data-ax5docker-path"),
-                    pane = getPanel(panePath);
-
-                if (_this.menu) {
-                    var menuItems = U.map(pane.panels, function (index) {
-                        return {
-                            label: this.name,
-                            index: index,
-                            panePath: panePath
-                        };
-                    });
-
-                    _this.menu.setConfig({
-                        items: menuItems,
-                        onClick: function onClick() {
-                            //console.log(pane);
-                            changeActiveStackPanel(getPanel(this.panePath), this.index);
-                        }
-                    });
-
-                    _this.menu.popup(e);
-                } else {
-                    console.log(pane.panels);
-                    throw "'ax5ui-menu' is required to implement the function.";
-                }
-
-                $stackPane = null;
-                panePath = null;
-                pane = null;
-                return _this;
-            };
-
-            /**
-             * repaintPanels이 작동할 때. 리사이저에 mousedown 이벤트를 연결합니다.
-             * 발생된 이벤트가 panelResizerEvent.on 을 작동시켜 리사이저를 움직이게 합니다
-             */
-            var panelResizerEvent = {
-                "on": function on(_resizer) {
-
-                    jQuery(document.body).on("mousemove.ax5docker-" + _this.instanceId, function (e) {
-                        var mouseObj = getMousePosition(e),
-                            da_grow = void 0;
-
-                        if (self.xvar.resizerLived) {
-                            if (self.xvar.resizerType == "row") {
-                                self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
-                                da_grow = U.number(self.xvar.__da * 2 / self.xvar.resizerCanvasWidth, { round: 6 });
-
-                                self.xvar.resizer$dom.prev().css({ "flex-grow": self.xvar.resizerPrevGrow + da_grow });
-                                self.xvar.resizer$dom.next().css({ "flex-grow": self.xvar.resizerNextGrow - da_grow });
-                            } else {
-                                self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
-                                da_grow = U.number(self.xvar.__da * 2 / self.xvar.resizerCanvasHeight, { round: 6 });
-
-                                self.xvar.resizer$dom.prev().css({ "flex-grow": self.xvar.resizerPrevGrow + da_grow });
-                                self.xvar.resizer$dom.next().css({ "flex-grow": self.xvar.resizerNextGrow - da_grow });
-                            }
-
-                            fireEvent({
-                                eventName: "resize",
-                                target: self.xvar.resizer$dom
-                            });
-                        } else {
-                            self.xvar.resizerLived = true;
-                        }
-
-                        mouseObj = null;
-                        da_grow = null;
-                    }).on("mouseup.ax5docker-" + _this.instanceId, function (e) {
-                        panelResizerEvent.off();
-                        U.stopEvent(e);
-                    }).on("mouseleave.ax5docker-" + _this.instanceId, function (e) {
-                        panelResizerEvent.off();
-                        U.stopEvent(e);
-                    });
-
-                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
-                },
-                "off": function off() {
-                    self.xvar.resizerLived = false;
-
-                    if (typeof _this.xvar.__da === "undefined") {} else {
-                        var $prevPanel = self.xvar.resizer$dom.prev(),
-                            $nextPanel = self.xvar.resizer$dom.next(),
-                            prevPane = getPanel($prevPanel.attr("data-ax5docker-path")),
-                            nextPane = getPanel($nextPanel.attr("data-ax5docker-path"));
-
-                        prevPane.flexGrow = U.number($prevPanel.css("flex-grow"));
-                        nextPane.flexGrow = U.number($nextPanel.css("flex-grow"));
-
-                        $prevPanel = null;
-                        $nextPanel = null;
-                        prevPane = null;
-                        nextPane = null;
-                    }
-
-                    alignStackPane();
-
-                    jQuery(document.body).off("mousemove.ax5docker-" + _this.instanceId).off("mouseup.ax5docker-" + _this.instanceId).off("mouseleave.ax5docker-" + _this.instanceId);
-
-                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
-                }
             };
 
             /**
@@ -656,7 +523,7 @@
                             dragOverHorizontal: null
                         };
 
-                        _this.$target.on("dragover.ax5docker-" + _this.instanceId, '[data-ax5docker-path]', function (e) {
+                        _this.$target.on("dragover.ax5docker-" + _this.instanceId, '[data-ax5docker-id="' + _this.instanceId + '"][data-ax5docker-path]', function (e) {
                             // todo : dragover 구현
                             // console.log("dargover", getMousePosition(e));
                             // console.log(e.target);
@@ -803,11 +670,147 @@
             };
 
             /**
+             * repaintPanels이 작동할 때. 리사이저에 mousedown 이벤트를 연결합니다.
+             * 발생된 이벤트가 panelResizerEvent.on 을 작동시켜 리사이저를 움직이게 합니다
+             */
+            var panelResizerEvent = {
+                "on": function on(_resizer) {
+
+                    jQuery(document.body).on("mousemove.ax5docker-" + _this.instanceId, function (e) {
+                        var mouseObj = getMousePosition(e),
+                            da_grow = void 0;
+
+                        if (self.xvar.resizerLived) {
+                            if (self.xvar.resizerType == "row") {
+                                self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                                da_grow = U.number(self.xvar.__da * 2 / self.xvar.resizerCanvasWidth, { round: 6 });
+
+                                self.xvar.resizer$dom.prev().css({ "flex-grow": self.xvar.resizerPrevGrow + da_grow });
+                                self.xvar.resizer$dom.next().css({ "flex-grow": self.xvar.resizerNextGrow - da_grow });
+                            } else {
+                                self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+                                da_grow = U.number(self.xvar.__da * 2 / self.xvar.resizerCanvasHeight, { round: 6 });
+
+                                self.xvar.resizer$dom.prev().css({ "flex-grow": self.xvar.resizerPrevGrow + da_grow });
+                                self.xvar.resizer$dom.next().css({ "flex-grow": self.xvar.resizerNextGrow - da_grow });
+                            }
+
+                            fireEvent({
+                                eventName: "resize",
+                                target: self.xvar.resizer$dom
+                            });
+                        } else {
+                            self.xvar.resizerLived = true;
+                        }
+
+                        mouseObj = null;
+                        da_grow = null;
+                    }).on("mouseup.ax5docker-" + _this.instanceId, function (e) {
+                        panelResizerEvent.off();
+                        U.stopEvent(e);
+                    }).on("mouseleave.ax5docker-" + _this.instanceId, function (e) {
+                        panelResizerEvent.off();
+                        U.stopEvent(e);
+                    });
+
+                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+                },
+                "off": function off() {
+                    self.xvar.resizerLived = false;
+
+                    if (typeof _this.xvar.__da === "undefined") {} else {
+                        var $prevPanel = self.xvar.resizer$dom.prev(),
+                            $nextPanel = self.xvar.resizer$dom.next(),
+                            prevPane = getPanel($prevPanel.attr("data-ax5docker-path")),
+                            nextPane = getPanel($nextPanel.attr("data-ax5docker-path"));
+
+                        prevPane.flexGrow = U.number($prevPanel.css("flex-grow"));
+                        nextPane.flexGrow = U.number($nextPanel.css("flex-grow"));
+
+                        $prevPanel = null;
+                        $nextPanel = null;
+                        prevPane = null;
+                        nextPane = null;
+                    }
+
+                    alignStackPane();
+
+                    jQuery(document.body).off("mousemove.ax5docker-" + _this.instanceId).off("mouseup.ax5docker-" + _this.instanceId).off("mouseleave.ax5docker-" + _this.instanceId);
+
+                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+                }
+            };
+
+            /**
+             * 액티브 패널 변경(stack인 상황에서)
+             * @param pane
+             * @param panelIndex
+             * @returns {boolean}
+             */
+            var changeActiveStackPanel = function changeActiveStackPanel(pane, panelIndex) {
+                var panel = pane.panels[panelIndex];
+
+                for (var p = 0, pl = pane.panels.length; p < pl; p++) {
+                    if (pane.panels[p].active) {
+                        controlPanel(pane.panels[p], "deactive");
+                    }
+                }
+
+                if (!panel.builded) controlPanel(panel, "init");
+                controlPanel(panel, "active");
+
+                pane = null;
+                panelIndex = null;
+                panel = null;
+                return _this;
+            };
+
+            /**
+             * stackTab의 더보기 아이콘이 클릭되면~~~
+             * @param stackPane
+             * @param e
+             * @returns {ax5docker}
+             */
+            var openStackPanelMore = function openStackPanelMore(stackPane, e) {
+                var $stackPane = jQuery(stackPane),
+                    panePath = $stackPane.attr("data-ax5docker-path"),
+                    pane = getPanel(panePath);
+
+                if (_this.menu) {
+                    var menuItems = U.map(pane.panels, function (index) {
+                        return {
+                            label: this.name,
+                            index: index,
+                            panePath: panePath
+                        };
+                    });
+
+                    _this.menu.setConfig({
+                        items: menuItems,
+                        onClick: function onClick() {
+                            //console.log(pane);
+                            changeActiveStackPanel(getPanel(this.panePath), this.index);
+                        }
+                    });
+
+                    _this.menu.popup(e);
+                } else {
+                    console.log(pane.panels);
+                    throw "'ax5ui-menu' is required to implement the function.";
+                }
+
+                $stackPane = null;
+                panePath = null;
+                pane = null;
+                return _this;
+            };
+
+            /**
              * stackPane이 리사이즈 되면 탭을 스크롤여부를 판단해야 합니다.
              */
             var alignStackPane = function alignStackPane() {
                 debouncer.panelDebounceFn(function () {
-                    this.$target.find('[data-ax5docker-pane-tabs]').each(function () {
+                    this.$target.find('[data-ax5docker-pane-tabs="' + this.instanceId + '"]').each(function () {
                         var $this = jQuery(this).parent();
                         if (this.scrollWidth > this.clientWidth) {
                             $this.addClass("tabs-scrolled");
@@ -838,7 +841,6 @@
              * @returns {*}
              */
             var arrangePanel = function arrangePanel() {
-                // console.log(this.$target.find('[data-ax5docker-pane]'));
                 var panels = [];
                 var processor = {
                     stack: function stack(myself) {
@@ -1533,14 +1535,14 @@
 
     var stack_panel = function stack_panel(columnKeys, data) {
         if (data.labelDirection === "bottom") {
-            return "<div data-ax5docker-pane=\"\" data-ax5docker-label-direction=\"{{labelDirection}}\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <div data-ax5docker-pane-item-views=\"\"></div>\n    <ul data-ax5docker-pane-tabs=\"true\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"\">{{{icons.more}}}</div>\n</div>";
+            return "<div data-ax5docker-pane=\"{{id}}\" data-ax5docker-label-direction=\"{{labelDirection}}\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <div data-ax5docker-pane-item-views=\"{{id}}\"></div>\n    <ul data-ax5docker-pane-tabs=\"{{id}}\" data-ax5docker-id=\"{{id}}\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"{{id}}\">{{{icons.more}}}</div>\n</div>";
         } else {
-            return "<div data-ax5docker-pane=\"\" data-ax5docker-label-direction=\"{{labelDirection}}\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <ul data-ax5docker-pane-tabs=\"true\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"\">{{{icons.more}}}</div>\n    <div data-ax5docker-pane-item-views=\"\"></div>\n</div>";
+            return "<div data-ax5docker-pane=\"{{id}}\" data-ax5docker-label-direction=\"{{labelDirection}}\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <ul data-ax5docker-pane-tabs=\"{{id}}\" data-ax5docker-id=\"{{id}}\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"{{id}}\">{{{icons.more}}}</div>\n    <div data-ax5docker-pane-item-views=\"{{id}}\"></div>\n</div>";
         }
     };
 
     var panel_label = function panel_label() {
-        return "<li data-ax5docker-pane-tab=\"{{pIndex}}\" data-ax5docker-path=\"{{panelPath}}\">\n    <div class=\"title\">{{{name}}}</div>\n    {{^disableClosePanel}}<div class=\"close-icon\">{{{icons.close}}}</div>{{/disableClosePanel}}\n</li><li class=\"pane-tab-margin\"></li>";
+        return "<li data-ax5docker-pane-tab=\"{{pIndex}}\" data-ax5docker-id=\"{{id}}\" data-ax5docker-path=\"{{panelPath}}\">\n    <div class=\"title\">{{{name}}}</div>\n    {{^disableClosePanel}}<div class=\"close-icon\">{{{icons.close}}}</div>{{/disableClosePanel}}\n</li><li class=\"pane-tab-margin\"></li>";
     };
 
     DOCKER.tmpl = {

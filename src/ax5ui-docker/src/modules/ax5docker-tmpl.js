@@ -5,22 +5,22 @@
 
     let stack_panel = function (columnKeys, data) {
         if(data.labelDirection === "bottom"){
-            return `<div data-ax5docker-pane="" data-ax5docker-label-direction="{{labelDirection}}" data-ax5docker-path="{{panelPath}}" style="flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};">
-    <div data-ax5docker-pane-item-views=""></div>
-    <ul data-ax5docker-pane-tabs="true" data-ax5docker-path="{{panelPath}}"></ul>
-    <div data-ax5docker-pane-tabs-more="">{{{icons.more}}}</div>
+            return `<div data-ax5docker-pane="{{id}}" data-ax5docker-label-direction="{{labelDirection}}" data-ax5docker-path="{{panelPath}}" style="flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};">
+    <div data-ax5docker-pane-item-views="{{id}}"></div>
+    <ul data-ax5docker-pane-tabs="{{id}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}"></ul>
+    <div data-ax5docker-pane-tabs-more="{{id}}">{{{icons.more}}}</div>
 </div>`;
         }else{
-            return `<div data-ax5docker-pane="" data-ax5docker-label-direction="{{labelDirection}}" data-ax5docker-path="{{panelPath}}" style="flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};">
-    <ul data-ax5docker-pane-tabs="true" data-ax5docker-path="{{panelPath}}"></ul>
-    <div data-ax5docker-pane-tabs-more="">{{{icons.more}}}</div>
-    <div data-ax5docker-pane-item-views=""></div>
+            return `<div data-ax5docker-pane="{{id}}" data-ax5docker-label-direction="{{labelDirection}}" data-ax5docker-path="{{panelPath}}" style="flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};">
+    <ul data-ax5docker-pane-tabs="{{id}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}"></ul>
+    <div data-ax5docker-pane-tabs-more="{{id}}">{{{icons.more}}}</div>
+    <div data-ax5docker-pane-item-views="{{id}}"></div>
 </div>`;
         }
     };
 
     let panel_label = function () {
-        return `<li data-ax5docker-pane-tab="{{pIndex}}" data-ax5docker-path="{{panelPath}}">
+        return `<li data-ax5docker-pane-tab="{{pIndex}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}">
     <div class="title">{{{name}}}</div>
     {{^disableClosePanel}}<div class="close-icon">{{{icons.close}}}</div>{{/disableClosePanel}}
 </li><li class="pane-tab-margin"></li>`;

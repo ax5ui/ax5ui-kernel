@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2017. tom@axisj.com
+  ~ - github.com/thomasjang
+  ~ - www.axisj.com
+  -->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../../ax5ui-menu/dist/ax5menu.css"/>
+    <link rel="stylesheet" type="text/css" href="../dist/ax5docker.css"/>
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-direct/dist/jquery-direct.js"></script>
+    <script src="../../ax5core/dist/ax5core.js"></script>
+    <script src="../../ax5ui-menu/dist/ax5menu.js"></script>
+    <script src="../dist/ax5docker.js"></script>
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body * {
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body style="padding: 0px;">
+
+<div data-ax5docker="docker1" style="height: 80%;background: #ECECEC;padding: 5px;"></div>
+
+<div style="padding: 5px;">
+    <form class="form-inline" onsubmit="return false;">
+        <input type="text" name="addPath" class="form-control" value="0.0" placeholder="0.0"/>
+        <select name="addType" class="form-control">
+            <option value="stack">stack</option>
+            <option value="row-left">row-left</option>
+            <option value="row-right" selected="selected">row-right</option>
+            <option value="column-top">column-top</option>
+            <option value="column-bottom">column-bottom</option>
+        </select>
+        <button class="btn btn-default" data-docker-control="add-panel">add Panel</button>
+
+        <button class="btn btn-default" data-docker-control="set-panels">set Panels</button>
+    </form>
+</div>
+
+<script>
+    var myDocker = new ax5.ui.docker();
+
+    $(function () {
+
+        var _panel = {
+            type: "row", // type : row, column, stack
+            panels: [
+                {
+                    type: "column",
+                    panels: [
+                        {
+                            type: "panel",
+                            name: "my name 1",
+                            moduleName: "content",
+                            moduleState: {
+                                data1: "data1"
+                            }
+                        },
+                        {
+                            type: "panel",
+                            name: "my name 1",
+                            moduleName: "content",
+                            moduleState: {
+                                data1: "data1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    type: "stack",
+                    panels: [
+                        {
+                            type: "panel",
+                            name: "my name 3",
+                            moduleName: "content",
+                            moduleState: {
+                                data1: "data1"
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var __panel = {
+            type: "stack",
+            panels: [
+                {
+                    type: "panel",
+                    name: "my name 1 ~~ long name i'm long",
+                    moduleName: "content",
+                    moduleState: {
+                        key: "data1"
+                    }
+                },
+                {
+                    type: "panel",
+                    name: "my name 22",
+                    moduleName: "content",
+                    moduleState: {
+                        key: "data2"
+                    }
+                },
+            ]
+        };
+
+        myDocker.setConfig({
+            target: $('[data-ax5docker="docker1"]'),
+            icons: {
+                close: '<i class="fa fa-times" aria-hidden="true"></i>',
+                more: '<i class="fa fa-chevron-circle-down" aria-hidden="true"></i>'
+            },
+            panels: [
+                __panel
+            ],
+            disableClosePanel: false,
+            disableDragPanel: false,
+            control: {
+                before: function (that, callback) {
+                    if (that.controlType === "destroy") {
+                        if (confirm("정말 삭제 할까요?")) {
+                            setTimeout(function () {
+                                callback();
+                            }, 300);
+
+                            return;
+                        }
+                    } else {
+                        callback();
+                        return;
+                    }
+                }
+            },
+            menu: {
+                theme: 'default',
+                position: "absolute",
+                icons: {
+                    'arrow': '▸'
+                }
+            }
+        });
+
+        myDocker.onResize = function (e) {
+            console.log(e);
+        };
+
+        myDocker.addModule({
+            "content": {
+                init: function (container, state) {
+                    //container["$element"].html(JSON.stringify(state));
+                    console.log(state, "init");
+
+                    var $dom = $(`<div
+data-ax5docker="sub-docker-${state.key}"
+style="height: 100%;background: #ECECEC;padding: 5px;">
+${state.key}
+</div>`);
+                    
+                    console.log(container["$element"].attr("data-ax5docker-path"));
+                    container["$element"].html($dom);
+
+                    this.docker = new ax5.ui.docker();
+                    this.docker.setConfig({
+                        target: $dom,
+                        icons: {
+                            close: '<i class="fa fa-times" aria-hidden="true"></i>',
+                            more: '<i class="fa fa-chevron-circle-down" aria-hidden="true"></i>'
+                        },
+                        labelDirection: "bottom",
+                        panels: [
+                            {
+                                type: "stack",
+                                panels: [
+                                    {
+                                        type: "panel",
+                                        name: "my name 33",
+                                        moduleName: "eeeeee",
+                                        moduleState: {
+                                            key: "data1"
+                                        }
+                                    },
+                                    {
+                                        type: "panel",
+                                        name: "my name 44",
+                                        moduleName: "eeeeee",
+                                        moduleState: {
+                                            key: "data2"
+                                        }
+                                    },
+                                ]
+                            }
+                        ]
+                    });
+                    this.docker.repaint();
+
+                },
+                active: function (container, state) {
+                    // console.log(state, "active");
+                },
+                deactive: function (container, state) {
+                    // console.log(state, "deactive");
+                },
+                destroy: function (container, state) {
+                    // console.log(state, "destroy");
+                }
+            }
+        });
+
+        myDocker.repaint();
+
+        $('[data-docker-control]').click(function () {
+            switch (this.getAttribute("data-docker-control")) {
+                case "add-panel":
+                    myDocker.addPanel(
+                        $('.form-control[name="addPath"]').val(),
+                        $('.form-control[name="addType"]').val(),
+                        {
+                            type: "panel",
+                            name: "my name add",
+                            moduleName: "content",
+                            moduleState: {
+                                data1: "data add"
+                            },
+                            active: true
+                        });
+                    break;
+                case "set-panels":
+
+                    myDocker.setPanels([
+                        {
+                            type: "stack", // type : row, col, stack
+                            panels: [
+                                {
+                                    type: "panel",
+                                    name: "my name",
+                                    header: {
+                                        btns: "my name"
+                                    },
+                                    body: ""
+                                },
+                                {
+                                    type: "panel",
+                                    name: "my name 2",
+                                    header: {
+                                        btns: "my name"
+                                    },
+                                    body: ""
+                                }
+                            ]
+                        }
+                    ]);
+
+                    break;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

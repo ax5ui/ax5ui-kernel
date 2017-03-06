@@ -422,6 +422,7 @@
                 @include flex-direction(row);
                 > [data-ax5docker-resize-handle] {
                     width: 2px;
+                    height: 100%;
                     &:before {
                         width: 8px;
                         left: -4px;
@@ -443,6 +444,7 @@
                 @include flex-direction(column);
                 > [data-ax5docker-resize-handle] {
                     height: 2px;
+                    width: 100%;
                     &:before {
                         height: 8px;
                         top: -4px;
@@ -459,7 +461,6 @@
                         }
                     }
                 }
-
             }
         }
 
