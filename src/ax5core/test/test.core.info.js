@@ -58,4 +58,14 @@ describe('ax5.info TEST', function() {
         should(ax5.info.supportTouch).Boolean();
     });
 
+    it('ax5.info.getError expect', function (done) {
+        var expect = {
+            className: "ax5dialog",
+            errorCode: "501",
+            methodName: "methodName",
+            msg: "Duplicate call error"
+        };
+        done(ae.equalAll(expect, ax5.info.getError("ax5dialog", "501", "methodName")));
+    });
+
 });
