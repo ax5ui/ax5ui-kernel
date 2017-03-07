@@ -58,7 +58,7 @@ describe('ax5.info TEST', function() {
         should(ax5.info.supportTouch).Boolean();
     });
 
-    it('ax5.info.getError expect', function (done) {
+    it('ax5.info.getError', function (done) {
         var expect = {
             className: "ax5dialog",
             errorCode: "501",
