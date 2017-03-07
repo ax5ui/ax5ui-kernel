@@ -81,8 +81,8 @@
 
                 height: $ax5docker-tab-height;
                 line-height: $ax5docker-tab-height - 2;
-                padding-left: 0.7em;
-                padding-right: $ax5docker-tab-height / 1.5;
+                //padding: 0 $ax5docker-tab-height / 1.5;
+                padding: 0 0.5em;
 
                 @if ($direction == "bottom") {
                     border-top-left-radius: 0;
@@ -111,6 +111,8 @@
                 border-radius: 3px;
                 @include transform(scale(0));
                 @include transition(transform 0.08s);
+                background: #fff;
+                color: #000;
                 &:hover {
                     background: #000;
                     color: #fff;

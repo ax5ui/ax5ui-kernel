@@ -486,7 +486,7 @@
                                 panelTabDragEvent.on(this);
                             }
                         })
-                        .on("mousedown.ax5docker-pane-resize", '[data-ax5docker-resize-handle="' + this.instanceId + '"]', function (e) {
+                        .on("mousedown.ax5docker-pane-resize", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-resize-handle]', function (e) {
                             let datas = this.getAttribute("data-ax5docker-resize-handle").split(/\//g);
 
                             // panelResizerEvent.init
@@ -511,7 +511,7 @@
                             panelResizerEvent.on(this);
                             U.stopEvent(e);
                         })
-                        .on("dragstart.ax5docker-pane-resize", '[data-ax5docker-resize-handle="' + this.instanceId + '"]', function (e) {
+                        .on("dragstart.ax5docker-pane-resize", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-resize-handle]', function (e) {
                             U.stopEvent(e);
                             return false;
                         });

@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.119"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -474,7 +474,7 @@
                     if (!cfg.disableDragPanel) {
                         panelTabDragEvent.on(this);
                     }
-                }).on("mousedown.ax5docker-pane-resize", '[data-ax5docker-resize-handle="' + _this.instanceId + '"]', function (e) {
+                }).on("mousedown.ax5docker-pane-resize", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-resize-handle]', function (e) {
                     var datas = this.getAttribute("data-ax5docker-resize-handle").split(/\//g);
 
                     // panelResizerEvent.init
@@ -498,7 +498,7 @@
 
                     panelResizerEvent.on(this);
                     U.stopEvent(e);
-                }).on("dragstart.ax5docker-pane-resize", '[data-ax5docker-resize-handle="' + _this.instanceId + '"]', function (e) {
+                }).on("dragstart.ax5docker-pane-resize", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-resize-handle]', function (e) {
                     U.stopEvent(e);
                     return false;
                 });
