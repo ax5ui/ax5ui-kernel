@@ -68,4 +68,12 @@ describe('ax5.info TEST', function() {
         done(ae.equalAll(expect, ax5.info.getError("ax5dialog", "501", "methodName")));
     });
 
+    it('ax5.info.getError not in ax5.info.errorMsg ', function (done) {
+        var expect = {
+            className: "ax5custom",
+            errorCode: "501",
+            methodName: "methodName"
+        };
+        done(ae.equalAll(expect, ax5.info.getError("ax5custom", "501", "methodName")));
+    });
 });
