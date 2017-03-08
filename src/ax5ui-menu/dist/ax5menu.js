@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "menu",
-        version: "1.3.120"
+        version: "1.3.121"
     }, function () {
         /**
          * @class ax5.ui.menu
