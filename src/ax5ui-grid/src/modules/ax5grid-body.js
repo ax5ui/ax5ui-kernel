@@ -201,11 +201,14 @@
             cfg = this.config,
             processor = {
                 "selected": function (_dindex) {
-                    var i = this.$.livePanelKeys.length;
-                    while (i--) {
-                        this.$.panel[this.$.livePanelKeys[i]]
-                            .find('[data-ax5grid-tr-data-index="' + _dindex + '"]')
-                            .attr("data-ax5grid-selected", this.list[_dindex][cfg.columnKeys.selected]);
+                    if(this.list[_dindex]) {
+                        var i = this.$.livePanelKeys.length;
+                        while (i--) {
+                            this.$.panel[this.$.livePanelKeys[i]]
+                                .find('[data-ax5grid-tr-data-index="' + _dindex + '"]')
+                                .attr("data-ax5grid-selected", this.list[_dindex][cfg.columnKeys.selected]);
+
+                        }
                     }
                 },
                 "selectedClear": function () {
@@ -245,7 +248,6 @@
 
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
-            if (!self.list[_dindex]) return false;
             processor[_state].call(self, _dindex, _data);
         });
     };
