@@ -245,6 +245,7 @@
 
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
+            if (!self.list[_dindex]) return false;
             processor[_state].call(self, _dindex, _data);
         });
     };
@@ -555,7 +556,7 @@
             return (typeof _item["__index"] !== "undefined") ? _item["__index"] + 1 : "";
         }
         else if (_key === "__d-checkbox__") {
-            return `<div class="checkBox" style="max-height: ${_col.width-10}px;min-height: ${_col.width-10}px;"></div>`;
+            return `<div class="checkBox" style="max-height: ${_col.width - 10}px;min-height: ${_col.width - 10}px;"></div>`;
         }
         else {
             if (_col.editor && (function (_editor) {
@@ -608,8 +609,8 @@
 
                 // 키값이 Boolean일때 오류 발생하여 수정.
                 return (typeof returnValue !== "string") ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
-                    return tagsToReplace[tag] || tag;
-                });
+                        return tagsToReplace[tag] || tag;
+                    });
             }
         }
 

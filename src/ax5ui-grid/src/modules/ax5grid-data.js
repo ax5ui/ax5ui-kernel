@@ -393,6 +393,7 @@
     let select = function (_dindex, _selected, _options) {
         let cfg = this.config;
 
+        if (!this.list[_dindex]) return false;
         if (this.list[_dindex].__isGrouping) return false;
         if (this.list[_dindex][cfg.columnKeys.disableSelection]) return false;
 
