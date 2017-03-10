@@ -1,3 +1,16 @@
+describe('ax5.util.each TEST', function () {
+    /* ax5.util.filter */
+    //example 01
+    it('ax5.util.each [object]', function () {
+        var obj = {a: 1, b: 2, c: 3, d: 4, e: 5};
+        var result = 0;
+        ax5.util.each(obj, function (i, o) {
+            result += o;
+        });
+        _.isEqual(result, 15).should.equal(true);
+    });
+});
+
 describe('ax5.util.filter TEST', function () {
     /* ax5.util.filter */
     //example 01
