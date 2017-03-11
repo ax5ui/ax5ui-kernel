@@ -2,12 +2,24 @@ describe('ax5.util.each TEST', function () {
     /* ax5.util.filter */
     //example 01
     it('ax5.util.each [object]', function () {
-        var obj = {a: 1, b: 2, c: 3, d: 4, e: 5};
+        var obj = {a_1: 1, b_2: 2, c_3: 3, d_4: 4, e_5: 5};
         var result = 0;
         ax5.util.each(obj, function (i, o) {
+            result += Number(i.replace(/\D/g, ''));
             result += o;
         });
-        _.isEqual(result, 15).should.equal(true);
+        _.isEqual(result, 30).should.equal(true);
+    });
+
+    //example 02
+    it('ax5.util.each [array]', function () {
+        var obj = [1, 2, 3, 4, 5];
+        var result = 0;
+        ax5.util.each(obj, function (i, o) {
+            result += i;
+            result += o;
+        });
+        _.isEqual(result, 25).should.equal(true);
     });
 });
 
