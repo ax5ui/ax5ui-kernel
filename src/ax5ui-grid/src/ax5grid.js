@@ -326,7 +326,7 @@
                 },
                 alignGrid = function (_isFirst) {
                     // 대상이 크기가 컬럼의 최소 크기 보다 작업 금지
-                    if (Math.min(this.$target.innerWidth(), this.$target.innerHeight()) < cfg.columnMinWidth) {
+                    if (Math.min(this.$target.innerWidth(), this.$target.innerHeight()) < 5) {
                         return false;
                     }
 
