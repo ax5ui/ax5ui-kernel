@@ -21,6 +21,15 @@ describe('ax5.util.each TEST', function () {
         });
         _.isEqual(result, 25).should.equal(true);
     });
+
+    //example 03
+    it('ax5.util.each [function]', function () {
+        var obj = function () {
+            return 0;
+        };
+        var result = ax5.util.each(obj, function (i, o) {});
+        _.isEqual(result, obj).should.equal(true);
+    });
 });
 
 describe('ax5.util.filter TEST', function () {
