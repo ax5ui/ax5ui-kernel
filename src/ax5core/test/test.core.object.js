@@ -27,8 +27,20 @@ describe('ax5.util.each TEST', function () {
         var obj = function () {
             return 0;
         };
-        var result = ax5.util.each(obj, function (i, o) {});
+        var result = ax5.util.each(obj, function (i, o) {
+        });
         _.isEqual(result, obj).should.equal(true);
+    });
+
+    //example 04
+    it('ax5.util.each [string]', function () {
+        var obj = "12345";
+        var result = 0;
+        ax5.util.each(obj, function (i, o) {
+            result += i;
+            result += Number(o);
+        });
+        _.isEqual(result, 25).should.equal(true);
     });
 });
 
