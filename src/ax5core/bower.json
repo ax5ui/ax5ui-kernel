@@ -18,6 +18,10 @@
   "dependencies": {
     "jquery": "^1.11.0"
   },
+  "devDependencies": {
+    "bootstrap-sass": "^3.3.7",
+    "bourbon": "^4.2.7"
+  },
   "license": "MIT",
   "homepage": "ax5.io"
 }
