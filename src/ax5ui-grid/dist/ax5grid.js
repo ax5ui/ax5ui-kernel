@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.122"
+        version: "1.3.124"
     }, function () {
         /**
          * @class ax5grid
@@ -332,7 +332,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             },
                 alignGrid = function alignGrid(_isFirst) {
                 // 대상이 크기가 컬럼의 최소 크기 보다 작업 금지
-                if (Math.min(this.$target.innerWidth(), this.$target.innerHeight()) < cfg.columnMinWidth) {
+                if (Math.min(this.$target.innerWidth(), this.$target.innerHeight()) < 5) {
                     return false;
                 }
 
