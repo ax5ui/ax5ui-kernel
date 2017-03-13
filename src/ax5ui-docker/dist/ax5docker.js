@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.124"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -582,7 +582,7 @@
                         halfWidth = null;
                     } else if ($dragoverDom.attr("data-ax5docker-pane-tabs")) {
                         //this.xvar.dragger.dragOverVertical = "center";
-                        _this.xvar.dragger.dragOverHorizontal = "right";
+                        _this.xvar.dragger.dragOverHorizontal = "last-child";
                         _this.xvar.dragger.target.attr("data-dropper", "true");
                     } else if ($dragoverDom.attr("data-ax5docker-pane-item")) {
                         // panel dragover 포지션 구하기
@@ -1450,7 +1450,7 @@
 
                 if (_appendType.length == 1) {
                     // stack
-                    addType = "stack-" + _appendType[0];
+                    addType = _appendType[0] == "last-child" ? "stack" : "stack-" + _appendType[0];
                     copiedPanel.active = false;
                     copiedPanel.$item.removeClass("active");
                     controlPanel(copiedPanel, "deactive");

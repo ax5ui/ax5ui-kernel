@@ -600,7 +600,7 @@
                         }
                         else if ($dragoverDom.attr("data-ax5docker-pane-tabs")) {
                             //this.xvar.dragger.dragOverVertical = "center";
-                            this.xvar.dragger.dragOverHorizontal = "right";
+                            this.xvar.dragger.dragOverHorizontal = "last-child";
                             this.xvar.dragger.target.attr("data-dropper", "true");
                         }
                         else if ($dragoverDom.attr("data-ax5docker-pane-item")) {
@@ -1494,7 +1494,7 @@
                     }
 
                     if (_appendType.length == 1) { // stack
-                        addType = "stack-" + _appendType[0];
+                        addType = (_appendType[0] == "last-child") ? "stack" : "stack-" + _appendType[0];
                         copiedPanel.active = false;
                         copiedPanel.$item.removeClass("active");
                         controlPanel(copiedPanel, "deactive");
