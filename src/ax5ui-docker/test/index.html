@@ -31,11 +31,11 @@
         }
     </style>
 </head>
-<body style="padding: 0px;">
+<body style="padding: 20px;">
 
-<div data-ax5docker="docker1" style="height: 80%;background: #ECECEC;padding: 3px;"></div>
+<div data-ax5docker="docker1" style="height: 500px;background: #eee;padding: 5px;"></div>
 
-<div style="padding: 5px;">
+<div style="padding: 20px 0;">
     <form class="form-inline" onsubmit="return false;">
         <input type="text" name="addPath" class="form-control" value="0.0" placeholder="0.0"/>
         <select name="addType" class="form-control">
@@ -56,7 +56,7 @@
 
     $(function () {
 
-        var _panel = {
+        var __panel = {
             type: "row", // type : row, column, stack
             panels: [
                 {
@@ -96,7 +96,7 @@
             ]
         };
 
-        var __panel = {
+        var _panel = {
             type: "stack",
             panels: [
                 {

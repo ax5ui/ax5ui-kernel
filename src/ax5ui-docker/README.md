@@ -47,8 +47,10 @@ Folder location can be any for your project. However, please be sure to assign t
 
 ```html
 <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-docker/master/dist/ax5docker.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-menu/master/dist/ax5menu.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5menu/master/dist/ax5menu.min.js"></script>
 <script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-docker/master/dist/ax5docker.min.js"></script>
 ```
 
@@ -56,18 +58,114 @@ Folder location can be any for your project. However, please be sure to assign t
 This is a list of CDN urls for ax5ui-docker. ax5ui offers the CDN services through rawgit.
 ```
 https://cdn.rawgit.com/ax5ui/ax5ui-docker/master/dist/ax5docker.css
-https://cdn.rawgit.com/ax5ui/ax5ui-docker/master/dist/ax5docker.js
 https://cdn.rawgit.com/ax5ui/ax5ui-docker/master/dist/ax5docker.min.js
 ```
 
 ### Basic Usage
 ```html
-
+<div data-ax5docker="docker1" style="height: 500px;background: #eee;padding: 5px;"></div>
 ```
 
 ```js
 $(function () {
+    var myDocker = new ax5.ui.docker();
+    
+    myDocker.setConfig({
+        target: $('[data-ax5docker="docker1"]'),
+        icons: {
+            close: '<i class="fa fa-times" aria-hidden="true"></i>',
+            more: '<i class="fa fa-chevron-circle-down" aria-hidden="true"></i>'
+        },
+        panels: [
+            {
+                type: "row", // type : row, column, stack
+                panels: [
+                    {
+                        type: "column",
+                        panels: [
+                            {
+                                type: "panel",
+                                name: "my name 1",
+                                moduleName: "content",
+                                moduleState: {
+                                    data1: "data1"
+                                }
+                            },
+                            {
+                                type: "panel",
+                                name: "my name 1",
+                                moduleName: "content",
+                                moduleState: {
+                                    data1: "data1"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        type: "stack",
+                        panels: [
+                            {
+                                type: "panel",
+                                name: "my name 3",
+                                moduleName: "content",
+                                moduleState: {
+                                    data1: "data1"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        disableClosePanel: false,
+        disableDragPanel: false,
+        control: {
+            before: function (that, callback) {
+                if (that.controlType === "destroy") {
+                    if (confirm("Do you want to Delete?")) {
+                        setTimeout(function () {
+                            callback();
+                        }, 300);
 
+                        return;
+                    }
+                } else {
+                    callback();
+                    return;
+                }
+            }
+        },
+        menu: {
+            theme: 'default',
+            position: "absolute",
+            icons: {
+                'arrow': '▸'
+            }
+        }
+    });
+
+    myDocker.onResize = function (e) {
+        console.log(e);
+    };
+
+    myDocker.addModule({
+        "content": {
+            init: function (container, state) {
+                container["$element"].html(JSON.stringify(state));
+            },
+            active: function (container, state) {
+                // console.log(state, "active");
+            },
+            deactive: function (container, state) {
+                // console.log(state, "deactive");
+            },
+            destroy: function (container, state) {
+                // console.log(state, "destroy");
+            }
+        }
+    });
+
+    myDocker.repaint(); // play docker
 });
 ```
 
