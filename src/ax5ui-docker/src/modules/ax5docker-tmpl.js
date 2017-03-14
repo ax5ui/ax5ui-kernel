@@ -21,6 +21,7 @@
 
     let panel_label = function () {
         return `<li data-ax5docker-pane-tab="{{pIndex}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}">
+    <div class="label-icon" style="{{#color}}background: {{color}};{{/color}}{{#borderColor}}border-color: {{borderColor}};{{/borderColor}}"></div>
     <div class="title">{{{name}}}</div>
     {{^disableClosePanel}}<div class="close-icon">{{{icons.close}}}</div>{{/disableClosePanel}}
 </li><li class="pane-tab-margin"></li>`;

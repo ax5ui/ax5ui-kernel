@@ -49,26 +49,33 @@
 ### ax5docker.setConfig(config)
 **Kind**: static method of <code>[ax5docker](#ax5docker)</code>  
 
-| Param | Type | Default |
-| --- | --- | --- |
-| config | <code>Object</code> |  | 
-| config.target | <code>Element</code> |  | 
-| config.panels | <code>Array</code> |  | 
-| [config.icons] | <code>Object</code> |  | 
-| [config.icons.close] | <code>String</code> |  | 
-| [config.icons.more] | <code>String</code> |  | 
-| [config.disableClosePanel] | <code>Boolean</code> | <code>false</code> | 
-| [config.disableDragPanel] | <code>Boolean</code> | <code>false</code> | 
-| [config.control] | <code>Object</code> |  | 
-| [config.control.before] | <code>function</code> |  | 
-| [config.control.after] | <code>function</code> |  | 
-| [config.menu] | <code>Object</code> |  | 
-| [config.menu.theme] | <code>String</code> | <code>&quot;default&quot;</code> | 
-| [config.menu.position] | <code>String</code> | <code>&quot;absolute&quot;</code> | 
-| [config.menu.icons] | <code>Object</code> |  | 
-| [config.menu.icons.arrow] | <code>String</code> |  | 
-| [config.resizeDebounceTime] | <code>Number</code> | <code>100</code> | 
-| [config.panelDebounceTime] | <code>Number</code> | <code>300</code> | 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| config | <code>Object</code> |  |  |
+| config.target | <code>Element</code> |  |  |
+| config.panels | <code>Array.&lt;Object&gt;</code> |  |  |
+| config.panels[].type | <code>String</code> |  | panel, stack, row, column |
+| config.panels[].name | <code>String</code> |  |  |
+| [config.panels[].color] | <code>String</code> |  |  |
+| [config.panels[].borderColor] | <code>String</code> |  |  |
+| config.panels[].moduleName | <code>String</code> |  |  |
+| config.panels[].moduleState | <code>Object</code> |  |  |
+| config.panels[].panels | <code>Array.&lt;Object&gt;</code> |  |  |
+| [config.icons] | <code>Object</code> |  |  |
+| [config.icons.close] | <code>String</code> |  |  |
+| [config.icons.more] | <code>String</code> |  |  |
+| [config.disableClosePanel] | <code>Boolean</code> | <code>false</code> |  |
+| [config.disableDragPanel] | <code>Boolean</code> | <code>false</code> |  |
+| [config.control] | <code>Object</code> |  |  |
+| [config.control.before] | <code>function</code> |  |  |
+| [config.control.after] | <code>function</code> |  |  |
+| [config.menu] | <code>Object</code> |  |  |
+| [config.menu.theme] | <code>String</code> | <code>&quot;default&quot;</code> |  |
+| [config.menu.position] | <code>String</code> | <code>&quot;absolute&quot;</code> |  |
+| [config.menu.icons] | <code>Object</code> |  |  |
+| [config.menu.icons.arrow] | <code>String</code> |  |  |
+| [config.resizeDebounceTime] | <code>Number</code> | <code>100</code> |  |
+| [config.panelDebounceTime] | <code>Number</code> | <code>300</code> |  |
 
 **Example**  
 ```js
@@ -79,6 +86,8 @@ myDocker.setConfig({
          {
              type: "panel",
              name: "panel name",
+             color: "#ff3300",
+             borderColor: "#000000",
              moduleName: "content",
              moduleState:{
                  data: "data1"
