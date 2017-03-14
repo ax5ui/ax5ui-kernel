@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.126"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -154,8 +154,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     this.onStateChanged.call(_that, _that);
                 }
                 return true;
-            },
-                initGrid = function initGrid() {
+            };
+            var initGrid = function initGrid() {
                 // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
 
                 var data = {
@@ -223,8 +223,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.$["container"]["root"].css({ height: this.config.height || this.config._height });
 
                 return this;
-            },
-                initColumns = function initColumns(_columns) {
+            };
+            var initColumns = function initColumns(_columns) {
                 this.columns = U.deepCopy(_columns);
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex > this.columns.length ? this.columns.length : cfg.frozenColumnIndex;
@@ -248,8 +248,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
 
                 return this;
-            },
-                onResetColumns = function onResetColumns() {
+            };
+            var onResetColumns = function onResetColumns() {
                 initColumns.call(this, this.config.columns);
                 resetColGroupWidth.call(this);
                 if (this.config.footSum) {
@@ -261,8 +261,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 GRID.header.repaint.call(this, true);
                 GRID.body.repaint.call(this, true);
                 GRID.scroller.resize.call(this);
-            },
-                resetColGroupWidth = function resetColGroupWidth() {
+            };
+            var resetColGroupWidth = function resetColGroupWidth() {
                 /// !! 그리드 target의 크기가 변경되면 이 함수를 호출하려 this.colGroup의 _width 값을 재 계산 하여야 함. [tom]
                 var CT_WIDTH = this.$["container"]["root"].width() - function () {
                     var width = 0;
@@ -292,16 +292,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         colGroup[autoWidthColgroupIndexs[i]]._width = computedWidth;
                     }
                 }
-            },
-                initFootSum = function initFootSum(_footSum) {
+            };
+            var initFootSum = function initFootSum(_footSum) {
                 if (U.isArray(_footSum)) {
                     this.footSumTable = GRID.util.makeFootSumTable.call(this, this.footSumColumns = _footSum);
                 } else {
                     this.footSumColumns = [];
                     this.footSumTable = {};
                 }
-            },
-                initBodyGroup = function initBodyGroup(_grouping) {
+            };
+            var initBodyGroup = function initBodyGroup(_grouping) {
                 var grouping = jQuery.extend({}, _grouping);
                 if ("by" in grouping && "columns" in grouping) {
                     this.bodyGrouping = {
@@ -329,8 +329,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 } else {
                     cfg.body.grouping = false;
                 }
-            },
-                alignGrid = function alignGrid(_isFirst) {
+            };
+            var alignGrid = function alignGrid(_isFirst) {
                 // 대상이 크기가 컬럼의 최소 크기 보다 작업 금지
                 if (Math.min(this.$target.innerWidth(), this.$target.innerHeight()) < 5) {
                     return false;
@@ -560,8 +560,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 panelDisplayProcess.call(this, this.$["container"]["page"], "", "", "page");
 
                 return true;
-            },
-                sortColumns = function sortColumns(_sortInfo) {
+            };
+            var sortColumns = function sortColumns(_sortInfo) {
                 GRID.header.repaint.call(this);
 
                 if (U.isFunction(this.config.remoteSort)) {
@@ -841,7 +841,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                 }
                             } else {
                                 if (ctrlKeys[e.which]) {
-                                    self.keyDown(ctrlKeys[e.which], e.originalEvent);
+                                    self.keyDown(ctrlKeys[e.which], e.originalEvent); // 키다운 이벤트 호출
                                     U.stopEvent(e);
                                 } else if (e.which == ax5.info.eventKeys.ESC) {
                                     if (self.focused) {
@@ -1470,8 +1470,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ```
              */
             this.focus = function (_pos) {
-                var _this = this;
-
                 if (GRID.body.moveFocus.call(this, _pos)) {
                     var focusedColumn = void 0;
                     for (var c in this.focusedColumn) {
@@ -1485,35 +1483,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (typeof this.selectedDataIndexs[0] === "undefined") {
                         this.select(0);
                     } else {
-                        (function () {
-                            var selectedIndex = _this.selectedDataIndexs[0];
-                            var processor = {
-                                "UP": function UP() {
-                                    if (selectedIndex > 0) {
-                                        this.select(selectedIndex - 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex - 1);
-                                    }
-                                },
-                                "DOWN": function DOWN() {
-                                    if (selectedIndex < this.list.length - 1) {
-                                        this.select(selectedIndex + 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex + 1);
-                                    }
-                                },
-                                "HOME": function HOME() {
-                                    this.select(0, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, 0);
-                                },
-                                "END": function END() {
-                                    this.select(this.list.length - 1, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, this.list.length - 1);
+                        var selectedIndex = this.selectedDataIndexs[0];
+                        var processor = {
+                            "UP": function UP() {
+                                if (selectedIndex > 0) {
+                                    this.select(selectedIndex - 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex - 1);
                                 }
-                            };
-
-                            if (_pos in processor) {
-                                processor[_pos].call(_this);
+                            },
+                            "DOWN": function DOWN() {
+                                if (selectedIndex < this.list.length - 1) {
+                                    this.select(selectedIndex + 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex + 1);
+                                }
+                            },
+                            "HOME": function HOME() {
+                                this.select(0, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, 0);
+                            },
+                            "END": function END() {
+                                this.select(this.list.length - 1, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, this.list.length - 1);
                             }
-                        })();
+                        };
+
+                        if (_pos in processor) {
+                            processor[_pos].call(this);
+                        }
                     }
                 }
                 return this;
@@ -3264,7 +3260,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var moveResult = true,
                     focusedColumn = void 0,
                     originalColumn = void 0,
-                    while_i = void 0;
+                    while_i = void 0,
+                    nPanelInfo = void 0;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -3317,7 +3314,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     while_i++;
                 }
 
-                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+
+                // if mergeCells
+                if (this.config.body.mergeCells && this.list.length) {
+                    while (!this.$.panel[nPanelInfo.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').get(0)) {
+
+                        if (_dy > 0) {
+                            focusedColumn.dindex++;
+                        } else {
+                            focusedColumn.dindex--;
+                        }
+
+                        if (focusedColumn.dindex < 0 || focusedColumn.dindex > this.list.length - 1) {
+                            break;
+                        }
+                    }
+                    nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                }
+
                 focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
@@ -3339,12 +3354,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return moveResult;
             },
             "LR": function LR(_dx) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i = 0;
-                var isScrollPanel = false;
-                var containerPanelName = "";
+                var moveResult = true,
+                    focusedColumn = void 0,
+                    originalColumn = void 0,
+                    while_i = 0,
+                    isScrollPanel = false,
+                    containerPanelName = "",
+                    nPanelInfo = void 0;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -3374,6 +3390,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
                     focusedColumn.rowIndex = 0;
                 }
+
                 while_i = 0;
                 while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
                     focusedColumn.colIndex--;
@@ -3385,7 +3402,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     while_i++;
                 }
 
-                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+
+                // if mergeCells
+                if (this.config.body.mergeCells && this.list.length && focusedColumn.dindex > 1) {
+                    while (!this.$.panel[nPanelInfo.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').get(0)) {
+
+                        focusedColumn.dindex--;
+
+                        if (focusedColumn.dindex < 0 || focusedColumn.dindex > this.list.length - 1) {
+                            break;
+                        }
+                    }
+                    nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                }
 
                 focusedColumn.panelName = nPanelInfo.panelName;
                 containerPanelName = nPanelInfo.containerPanelName;
@@ -3517,8 +3547,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
-            var _this2 = this;
-
             var self = this,
                 dindex,
                 colIndex,
@@ -3597,31 +3625,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.isInlineEditing = true;
             }
             if (this.isInlineEditing) {
-                var _ret4 = function () {
 
-                    var originalValue = GRID.data.getValue.call(self, dindex, col.key),
-                        initValue = function (__value, __editor) {
-                        if (U.isNothing(__value)) {
-                            __value = U.isNothing(originalValue) ? "" : originalValue;
-                        }
+                var originalValue = GRID.data.getValue.call(self, dindex, col.key),
+                    initValue = function (__value, __editor) {
+                    if (U.isNothing(__value)) {
+                        __value = U.isNothing(originalValue) ? "" : originalValue;
+                    }
 
-                        if (__editor.type == "money") {
-                            return U.number(__value, { "money": true });
-                        } else {
-                            return __value;
-                        }
-                    }.call(_this2, _initValue, editor);
+                    if (__editor.type == "money") {
+                        return U.number(__value, { "money": true });
+                    } else {
+                        return __value;
+                    }
+                }.call(this, _initValue, editor);
 
-                    _this2.inlineEditing[key].$inlineEditorCell = _this2.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+                this.inlineEditing[key].$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
 
-                    _this2.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(_this2, key, editor, _this2.inlineEditing[key].$inlineEditorCell, initValue);
+                this.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(this, key, editor, this.inlineEditing[key].$inlineEditorCell, initValue);
 
-                    return {
-                        v: true
-                    };
-                }();
-
-                if ((typeof _ret4 === "undefined" ? "undefined" : _typeof(_ret4)) === "object") return _ret4.v;
+                return true;
             }
         },
         deActive: function deActive(_msg, _key, _value) {

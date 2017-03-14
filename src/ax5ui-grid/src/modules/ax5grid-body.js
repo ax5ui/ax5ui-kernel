@@ -201,7 +201,7 @@
             cfg = this.config,
             processor = {
                 "selected": function (_dindex) {
-                    if(this.list[_dindex]) {
+                    if (this.list[_dindex]) {
                         var i = this.$.livePanelKeys.length;
                         while (i--) {
                             this.$.panel[this.$.livePanelKeys[i]]
@@ -1825,7 +1825,8 @@
         let focus = {
             "UD": function (_dy) {
                 let moveResult = true,
-                    focusedColumn, originalColumn, while_i;
+                    focusedColumn, originalColumn, while_i,
+                    nPanelInfo;
 
                 for (let c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -1879,7 +1880,27 @@
                     while_i++;
                 }
 
-                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+
+                // if mergeCells
+                if (this.config.body.mergeCells && this.list.length) {
+                    while (!this.$.panel[nPanelInfo.panelName]
+                        .find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]')
+                        .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').get(0)) {
+
+                        if (_dy > 0) {
+                            focusedColumn.dindex++;
+                        } else {
+                            focusedColumn.dindex--;
+                        }
+
+                        if (focusedColumn.dindex < 0 || focusedColumn.dindex > this.list.length - 1) {
+                            break;
+                        }
+                    }
+                    nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                }
+
                 focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
@@ -1906,12 +1927,9 @@
 
             },
             "LR": function (_dx) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i = 0;
-                var isScrollPanel = false;
-                var containerPanelName = "";
+                let moveResult = true,
+                    focusedColumn, originalColumn,
+                    while_i = 0, isScrollPanel = false, containerPanelName = "", nPanelInfo;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -1941,6 +1959,7 @@
                 if (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
                     focusedColumn.rowIndex = 0;
                 }
+
                 while_i = 0;
                 while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
                     focusedColumn.colIndex--;
@@ -1952,7 +1971,22 @@
                     while_i++;
                 }
 
-                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+
+                // if mergeCells
+                if (this.config.body.mergeCells && this.list.length && focusedColumn.dindex > 1) {
+                    while (!this.$.panel[nPanelInfo.panelName]
+                        .find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]')
+                        .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').get(0)) {
+
+                        focusedColumn.dindex--;
+
+                        if (focusedColumn.dindex < 0 || focusedColumn.dindex > this.list.length - 1) {
+                            break;
+                        }
+                    }
+                    nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                }
 
                 focusedColumn.panelName = nPanelInfo.panelName;
                 containerPanelName = nPanelInfo.containerPanelName;
