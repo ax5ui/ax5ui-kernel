@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.3.127"
+        version: "1.3.128"
     }, function () {
         /**
          * @class ax5grid
@@ -3339,7 +3339,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 focusedColumn.panelName = nPanelInfo.panelName;
 
-                // 포커스 컬럼의 위치에 따라 스크롤 처리.
+                // 포커스 컬럼의 위치에 따라 스크롤 처리.ㅊㅇ
                 (function () {
                     if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
                         if (focusedColumn.dindex <= this.xvar.paintStartRowIndex) {
