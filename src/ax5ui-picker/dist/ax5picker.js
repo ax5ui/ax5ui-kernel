@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "1.3.128"
+        version: "1.3.129"
     }, function () {
         /**
          * @class ax5picker
