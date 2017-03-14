@@ -150,6 +150,23 @@ describe('ax5.util.map TEST', function () {
         }), [{"id": "a", "value": 1}, {"id": "b", "value": 2}]).should.equal(true);
     });
     /*end ax5.util.map*/
+
+    //Usage 02
+    it('ax5.util.map({a: 1, b: 2}, function (k, v) {return {id: k, value: v};})', function () {
+
+        _.isEqual(ax5.util.map({a: 1, b: 2}, function (k, v) {
+            return {id: k, value: v};
+        }), [{"id": "a", "value": 1}, {"id": "b", "value": 2}]).should.equal(true);
+    });
+    /*end ax5.util.map*/
+
+    //Usage 03
+    it('ax5.util.map("12345", function (k, v) {return k + Number(v);})', function () {
+        _.isEqual(ax5.util.map("987", function (k, v) {
+            return k + Number(v);
+        }), [9,9,9]).should.equal(true);
+    });
+    /*end ax5.util.map*/
 });
 
 describe('ax5.util.merge TEST', function () {
