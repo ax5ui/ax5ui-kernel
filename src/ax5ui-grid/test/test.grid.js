@@ -10,7 +10,7 @@ describe('ax5grid TEST', function () {
     $(document.body).append(tmpl);
 
     ///
-    it('new ax5grid', function (done) {
+    it('1 new ax5grid', function (done) {
         try {
             myUI = new ax5.ui.grid();
             done();
@@ -19,7 +19,7 @@ describe('ax5grid TEST', function () {
         }
     });
 
-    it('setConfig ax5grid', function (done) {
+    it('2 setConfig ax5grid', function (done) {
         myUI.setConfig({
             target: $('[data-ax5grid="first-grid"]'),
             frozenColumnIndex: 3,
@@ -167,7 +167,7 @@ describe('ax5grid TEST', function () {
         done();
     });
 
-    it('setData ax5grid', function (done) {
+    it('3 setData ax5grid', function (done) {
         myUI.setData([
             {a: "A", b: "A", price: 1000, amount: 2000, cost: 500, saleDt: "2013-01-01", isChecked: "Y", saleType: "A", customer: "name01", __modified__: true},
             {a: "B", b: "B", price: 1200, amount: 2200, cost: 1000, saleDt: "2014-01-01", isChecked: "N", saleType: "B", customer: "name02"},
@@ -178,12 +178,12 @@ describe('ax5grid TEST', function () {
     });
 
 
-    it('select ax5grid', function (done) {
+    it('4 select ax5grid', function (done) {
         myUI.select(0);
         done(myUI.getList()[0]["__selected__"] ? "" : "error select");
     });
 
-    it('copySelect ax5grid', function (done) {
+    it('5 copySelect ax5grid', function (done) {
         myUI.selectedColumn = {
             "0_3_0": { panelName: "top-body-scroll", dindex: 0, rowIndex: 0, colIndex: 3, colspan: 1 }
         };
@@ -192,38 +192,38 @@ describe('ax5grid TEST', function () {
         // {chrome: 2000\n, firefox: 2000<br>}
     });
 
-    it('addRow ax5grid', function (done) {
+    it('6 addRow ax5grid', function (done) {
         myUI.addRow({a: "D", b: "D", price: 1600, amount: 2600, cost: 2000, saleDt: "2016-01-01", isChecked: "Y", saleType: "D", customer: "name04", __selected__: true});
         done(myUI.getList().length == 4 ? "" : "error addRow");
     });
 
-    it('deleteRow ax5grid', function (done) {
+    it('7 deleteRow ax5grid', function (done) {
         myUI.deleteRow();
         done(myUI.getList("deleted").length == 1 ? "" : "error deleteRow");
     });
 
-    it('getList ax5grid', function (done) {
+    it('8 getList ax5grid', function (done) {
         done(myUI.getList().length == 3 ? "" : "error getList");
     });
 
-    it('getList[modified] ax5grid', function (done) {
+    it('9 getList[modified] ax5grid', function (done) {
         done(myUI.getList("modified").length == 1 ? "" : "error getList[modified]");
     });
 
-    it('getList[selected] ax5grid', function (done) {
+    it('10 getList[selected] ax5grid', function (done) {
         done(myUI.getList("selected").length == 1 ? "" : "error getList[selected]");
     });
 
-    it('getList[deleted] ax5grid', function (done) {
+    it('11 getList[deleted] ax5grid', function (done) {
         done(myUI.getList("deleted").length == 1 ? "" : "error getList[deleted]");
     });
 
-    it('setHeight ax5grid', function (done) {
+    it('12 setHeight ax5grid', function (done) {
         myUI.setHeight(500);
         done(myUI.$target.css("height") == "500px" ? "" : "error setHeight");
     });
 
-    it('appendToList ax5grid', function (done) {
+    it('13 appendToList ax5grid', function (done) {
         myUI.appendToList([
             {a: "D", b: "D", price: 1600, amount: 2600, cost: 2000, saleDt: "2016-01-01", isChecked: "Y", saleType: "D", customer: "name04"},
             {a: "E", b: "E", price: 1800, amount: 2800, cost: 2500, saleDt: "2017-01-01", isChecked: "Y", saleType: "A", customer: "name05"},
@@ -232,30 +232,30 @@ describe('ax5grid TEST', function () {
         done(myUI.getList().length == "6" ? "" : "error appendToList");
     });
 
-    it('removeRow ax5grid', function (done) {
+    it('14 removeRow ax5grid', function (done) {
         // 리스트에서 완전 제거
         myUI.removeRow();
         done(myUI.getList().length == "5" ? "" : "error removeRow");
     });
 
-    it('updateRow ax5grid', function (done) {
+    it('15 updateRow ax5grid', function (done) {
         myUI.updateRow({a: "G", b: "G", price: 3000, amount: 4000, cost: 5000, saleDt: "2017-02-02", isChecked: "Y", saleType: "A", customer: "name06"}, 0);
         var data = myUI.getList()[0];
         done(data.a == "G" && data.b == "G" ? "" : "error updateRow");
     });
 
-    it('setValue ax5grid', function (done) {
+    it('16 setValue ax5grid', function (done) {
         myUI.setValue(0, "price", 3000);
         done(myUI.getList()[0].price == 3000 ? "" : "error updateRow");
     });
 
-    it('addColumn', function (done) {
+    it('17 addColumn', function (done) {
         myUI.addColumn({key: "color", label: "색상", align: "center"});
         var lastCol = myUI.columns[myUI.columns.length -1];
         done(lastCol.key == "color" && lastCol.label == "색상" && lastCol.align == "center" ? "" : "error addColumn");
     });
 
-    it('removeColumn', function (done) {
+    it('18 removeColumn', function (done) {
         myUI.removeColumn();
         done(myUI.columns.length == 7 ? "" : "error removeColumn");
     });
@@ -347,10 +347,11 @@ describe('ax5grid TEST', function () {
     });
 */
 
-
+    /*
     it('align', function (done) {
        done(ae.equalAll(myUI, myUI.align()));
     });
+    */
 
 
     /*
