@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "docker",
-        version: "1.3.129"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -325,6 +325,7 @@
                         $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
                             id: self.instanceId,
                             name: myself.name,
+                            hasLabelColor: !U.isNothing(myself.color),
                             color: myself.color,
                             borderColor: myself.borderColor,
                             panelPath: myself.panelPath,
@@ -358,6 +359,7 @@
                             id: self.instanceId,
                             pIndex: pIndex,
                             name: myself.name,
+                            hasLabelColor: !U.isNothing(myself.color),
                             color: myself.color,
                             borderColor: myself.borderColor,
                             panelPath: myself.panelPath,
@@ -384,6 +386,9 @@
                             $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
                                 id: self.instanceId,
                                 name: myself.name,
+                                hasLabelColor: !U.isNothing(myself.color),
+                                color: myself.color,
+                                borderColor: myself.borderColor,
                                 panelPath: myself.panelPath,
                                 flexGrow: myself.flexGrow,
                                 icons: cfg.icons,
@@ -1555,7 +1560,7 @@
     };
 
     var panel_label = function panel_label() {
-        return "<li data-ax5docker-pane-tab=\"{{pIndex}}\" data-ax5docker-id=\"{{id}}\" data-ax5docker-path=\"{{panelPath}}\">\n    <div class=\"label-icon\" style=\"{{#color}}background: {{color}};{{/color}}{{#borderColor}}border-color: {{borderColor}};{{/borderColor}}\"></div>\n    <div class=\"title\">{{{name}}}</div>\n    {{^disableClosePanel}}<div class=\"close-icon\">{{{icons.close}}}</div>{{/disableClosePanel}}\n</li><li class=\"pane-tab-margin\"></li>";
+        return "<li data-ax5docker-pane-tab=\"{{pIndex}}\" data-ax5docker-id=\"{{id}}\" data-ax5docker-path=\"{{panelPath}}\" class=\"{{#hasLabelColor}}hasLabelColor{{/hasLabelColor}}\">\n    <div class=\"label-icon\" style=\"{{#color}}background: {{color}};{{/color}}{{#borderColor}}border-color: {{borderColor}};{{/borderColor}}\"></div>\n    <div class=\"title\">{{{name}}}</div>\n    {{^disableClosePanel}}<div class=\"close-icon\">{{{icons.close}}}</div>{{/disableClosePanel}}\n</li><li class=\"pane-tab-margin\"></li>";
     };
 
     DOCKER.tmpl = {

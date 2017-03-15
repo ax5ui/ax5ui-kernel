@@ -71,6 +71,7 @@
             @include transition(max-width 0.25s ease-in-out);
 
             .label-icon{
+                display: none;
                 position: absolute;
                 top: ($ax5docker-tab-height - ($ax5docker-tab-height / 2)) / 2;
                 left: ($ax5docker-tab-height - ($ax5docker-tab-height / 2)) / 2;
@@ -93,8 +94,7 @@
                 height: $ax5docker-tab-height;
                 line-height: $ax5docker-tab-height - 2;
                 //padding: 0 $ax5docker-tab-height / 1.5;
-                padding: 0 0.5em 0 ($ax5docker-tab-height / 1.1);
-
+                padding: 0 0.5em;
 
                 @if ($direction == "bottom") {
                     border-top-left-radius: 0;
@@ -135,6 +135,14 @@
                 }
             }
 
+            &.hasLabelColor{
+                .label-icon{
+                    display: block;
+                }
+                .title{
+                    padding: 0 0.5em 0 ($ax5docker-tab-height / 1.1);
+                }
+            }
             &.active {
                 .title {
                     //background: $ax5docker-tab-active-item-bg;

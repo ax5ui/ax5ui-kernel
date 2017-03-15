@@ -329,6 +329,7 @@
                             $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
                                 id: self.instanceId,
                                 name: myself.name,
+                                hasLabelColor: !U.isNothing(myself.color),
                                 color: myself.color,
                                 borderColor: myself.borderColor,
                                 panelPath: myself.panelPath,
@@ -362,6 +363,7 @@
                                 id: self.instanceId,
                                 pIndex: pIndex,
                                 name: myself.name,
+                                hasLabelColor: !U.isNothing(myself.color),
                                 color: myself.color,
                                 borderColor: myself.borderColor,
                                 panelPath: myself.panelPath,
@@ -388,6 +390,9 @@
                                 $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
                                     id: self.instanceId,
                                     name: myself.name,
+                                    hasLabelColor: !U.isNothing(myself.color),
+                                    color: myself.color,
+                                    borderColor: myself.borderColor,
                                     panelPath: myself.panelPath,
                                     flexGrow: myself.flexGrow,
                                     icons: cfg.icons,
