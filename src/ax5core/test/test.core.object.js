@@ -88,6 +88,15 @@ describe('ax5.util.filter TEST', function () {
         should(result).be.deepEqual([{"pickup": true, "name": "AXISJ"}, {"pickup": true, "name": "AX5"}]);
     });
 
+    //example04
+    var filString = "BANANABANANA";
+
+    it('ax5.util.filter( "BANANABANANA", function(){return this.pickup;})', function () {
+        var result = ax5.util.filter(filString, function () {
+            return this == "A";
+        });
+        should(result).be.deepEqual(["A", "A", "A", "A", "A", "A"]);
+    });
     /* end ax5.util.filter */
 });
 
@@ -131,7 +140,7 @@ describe('ax5.util.search TEST', function () {
 
 describe('ax5.util.map TEST', function () {
     /*ax5.util.map*/
-    //Usage 01
+    // Usage 01
     var map_a = [1, 2, 3, 4, 5];
 
     it('[1,2,3,4,5] = ax5.util.map([1,2,3,4,5] , function(){return {id : this}})', function () {
@@ -142,7 +151,7 @@ describe('ax5.util.map TEST', function () {
         _.isEqual(map_a, [{"id": 1}, {"id": 2}, {"id": 3}, {"id": 4}, {"id": 5}]).should.equal(true);
     });
 
-    //Usage 02
+    // Usage 02
     it('ax5.util.map({a: 1, b: 2}, function (k, v) {return {id: k, value: v};})', function () {
 
         _.isEqual(ax5.util.map({a: 1, b: 2}, function (k, v) {
@@ -151,22 +160,18 @@ describe('ax5.util.map TEST', function () {
     });
     /*end ax5.util.map*/
 
-    //Usage 02
-    it('ax5.util.map({a: 1, b: 2}, function (k, v) {return {id: k, value: v};})', function () {
-
-        _.isEqual(ax5.util.map({a: 1, b: 2}, function (k, v) {
-            return {id: k, value: v};
-        }), [{"id": "a", "value": 1}, {"id": "b", "value": 2}]).should.equal(true);
-    });
-    /*end ax5.util.map*/
-
-    //Usage 03
+    // Usage 03
     it('ax5.util.map("12345", function (k, v) {return k + Number(v);})', function () {
         _.isEqual(ax5.util.map("987", function (k, v) {
             return k + Number(v);
-        }), [9,9,9]).should.equal(true);
+        }), [9, 9, 9]).should.equal(true);
     });
     /*end ax5.util.map*/
+
+    // Usage 04
+    it('ax5.util.map("")', function () {
+
+    });
 });
 
 describe('ax5.util.merge TEST', function () {
