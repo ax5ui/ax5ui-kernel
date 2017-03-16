@@ -165,10 +165,11 @@ firstGrid.setConfig({
          },
          onDBLClick: function(){
              console.log(this);
-             // 
+             // If the column does not have an editor attribute, an event is raised.
          },
          onDataChanged: function(){
              console.log(this);
+             // If change Data
          }
      }
 });
