@@ -167,17 +167,18 @@ describe('ax5.util.map TEST', function () {
         }), [9, 9, 9]).should.equal(true);
     });
     /*end ax5.util.map*/
-
-    // Usage 04
-    it('ax5.util.map("")', function () {
-
-    });
 });
 
 describe('ax5.util.merge TEST', function () {
     /*ax5.util.merge*/
+    // Usage 01
     it('ax5.util.merge([1,2,3],[7,8,9])', function () {
         _.isEqual(ax5.util.merge([1, 2, 3], [7, 8, 9]), [1, 2, 3, 7, 8, 9]).should.equal(true);
+    });
+
+    // Usage 02
+    it('ax5.util.merge([{i: "apple"}, {i: "banana"}], [{i: "cherry"}, {i: "damson"}])', function () {
+        _.isEqual(ax5.util.merge([{i: "apple"}, {i: "banana"}], [{i: "cherry"}, {i: "damson"}]), [{i: "apple"}, {i: "banana"}, {i: "cherry"}, {i: "damson"}]).should.equal(true);
     });
     /*end ax5.util.merge*/
 });
