@@ -63,6 +63,7 @@
                 remoteSort: false,
 
                 header: {
+                    display: true,
                     align: false,
                     columnHeight: 26,
                     columnPadding: 3,
@@ -361,7 +362,7 @@
                     footSumHeight = (function (bodyTrHeight) {
                         return this.footSumColumns.length * bodyTrHeight;
                     }).call(this, this.xvar.bodyTrHeight),
-                    headerHeight = this.headerTable.rows.length * cfg.header.columnHeight,
+                    headerHeight = (cfg.header.display) ? this.headerTable.rows.length * cfg.header.columnHeight : 0,
                     pageHeight = (cfg.page.display) ? cfg.page.height : 0;
 
                 (function () {
@@ -467,6 +468,7 @@
                             isHide = true;
                         } else {
                             css["height"] = pageHeight;
+
                         }
                     }
 
@@ -476,7 +478,7 @@
                         return this;
                     }
 
-                    panel.css(css);
+                    panel.show().css(css);
                     return this;
                 };
                 let scrollerDisplayProcess = function (panel, scrollerWidth, scrollerHeight, containerType) {
