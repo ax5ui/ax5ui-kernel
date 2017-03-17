@@ -934,7 +934,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                         if (activeEditLength == 0) {
                             GRID.body.inlineEdit.keydown.call(this, "RETURN");
-                        }
+                            U.stopEvent(_e);
+                        } else {}
                     },
                     "TAB": function TAB(_e) {
 

@@ -2356,7 +2356,7 @@
         }
     };
 
-    let getExcelString = function () {
+    const getExcelString = function () {
         let cfg = this.config,
             list = this.list,
             bodyRowData = this.bodyRowTable,

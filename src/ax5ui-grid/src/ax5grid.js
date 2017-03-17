@@ -947,6 +947,9 @@
                         }
                         if (activeEditLength == 0) {
                             GRID.body.inlineEdit.keydown.call(this, "RETURN");
+                            U.stopEvent(_e);
+                        } else {
+
                         }
                     },
                     "TAB": function (_e) {
