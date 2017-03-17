@@ -171,8 +171,7 @@
         };
 
         if (_key === "__checkbox_header__") {
-            return '<div class="checkBox"></div>';
-
+            return `<div class="checkBox" style="max-height: ${_col.width - 10}px;min-height: ${_col.width - 10}px;"></div>`;
         } else {
             return (_col.label || "&nbsp;");
         }
