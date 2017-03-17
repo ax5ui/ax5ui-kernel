@@ -135,6 +135,16 @@ describe('ax5.util.search TEST', function () {
 
         _.isEqual(result, "AX5-1").should.equal(true);
     });
+
+    //example04
+    var c = "example";
+
+    it('ax5.util.search("example" , function(k, v){return v == "x"})', function () {
+        var result = ax5.util.search(c, function (k, v) {
+            return v == "x";
+        });
+        _.isEqual(result, 1).should.equal(true);
+    });
     /*end ax5.util.search */
 });
 
