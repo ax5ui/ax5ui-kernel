@@ -212,11 +212,20 @@ describe('ax5.util.reduce TEST', function () {
 
 describe('ax5.util.reduceRight TEST', function () {
     /*ax5.util.reduceRight*/
+    //Usage 01
     it('ax5.util.reduceRight([5,4,3,2,1] , function(p,n){return p-n;})', function () {
         should.deepEqual(ax5.util.reduceRight([5, 4, 3, 2, 1], function (p, n) {
             return p - n;
         }), -13);
     });
+
+    //Usage 02
+    it('ax5.util.reduceRight("ymmuy_os_si_maerc-eci" , function(){return this;})', function () {
+        should.deepEqual(ax5.util.reduceRight("ymmuy_os_si_maerc-eci", function (p, n) {
+            return p + n;
+        }), "ice-cream_is_so_yummy");
+    });
+
     /*end ax5.util.reduceRight*/
 });
 
