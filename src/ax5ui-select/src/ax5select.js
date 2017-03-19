@@ -437,7 +437,7 @@
                         // find selected
                         item.selected = [];
                         item.options.forEach(function (n) {
-                            if(n[cfg.columnKeys.optionSelected]) item.selected.push(jQuery.extend({}, n));
+                            if (n[cfg.columnKeys.optionSelected]) item.selected.push(jQuery.extend({}, n));
                         });
 
                         if (!item.$display) {
@@ -1069,12 +1069,9 @@
 
                 return function (boundID, value, selected, internal) {
                     let queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID);
-                    if (queIdx === -1) {
-                        console.log(ax5.info.getError("ax5select", "402", "val"));
-                        return;
+                    if (!this.queue[queIdx]) {
+                        return this;
                     }
-
-                    // setValue 이면 현재 선택값 초기화
                     if (typeof value !== "undefined" && !this.queue[queIdx].multiple) {
                         clearSelected.call(this, queIdx);
                     }

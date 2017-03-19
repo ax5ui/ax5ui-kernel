@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "autocomplete",
-        version: "1.3.133"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5autocomplete
@@ -1409,7 +1409,7 @@ jQuery.fn.ax5autocomplete = function () {
     };
 
     var label = function label(columnKeys) {
-        return "{{#selected}}<div tabindex=\"-1\" data-ax5autocomplete-selected-label=\"{{@i}}\" data-ax5autocomplete-selected-text=\"{{text}}\"><div data-ax5autocomplete-remove=\"true\" data-ax5autocomplete-remove-index=\"{{@i}}\">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}";
+        return "{{#selected}}\n<div tabindex=\"-1\" data-ax5autocomplete-selected-label=\"{{@i}}\" data-ax5autocomplete-selected-text=\"{{text}}\">\n<div data-ax5autocomplete-remove=\"true\" data-ax5autocomplete-remove-index=\"{{@i}}\">{{{removeIcon}}}</div>\n<span>{{#" + columnKeys.optionText + "}}</span>\n</div>{{/selected}}";
     };
 
     AUTOCOMPLETE.tmpl = {
