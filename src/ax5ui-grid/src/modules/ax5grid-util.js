@@ -268,11 +268,13 @@
         };
 
         for (var r = 0, rl = _footSumColumns.length; r < rl; r++) {
-            var footSumRow = _footSumColumns[r];
+            var footSumRow = _footSumColumns[r],
+                addC = 0;
+
             table.rows[r] = {cols: []};
-            var addC = 0;
+
             for (var c = 0, cl = footSumRow.length; c < cl; c++) {
-                if (addC > this.columns.length) break;
+                if (addC > this.colGroup.length) break;
                 var colspan = footSumRow[c].colspan || 1;
                 if (footSumRow[c].label || footSumRow[c].key) {
                     table.rows[r].cols.push({
@@ -295,6 +297,7 @@
                     });
                 }
                 addC += colspan;
+                colspan = null;
             }
 
             if (addC < this.columns.length + 1) {
@@ -307,7 +310,10 @@
                     });
                 }
             }
+            footSumRow = null;
+            addC = null;
         }
+
         return table;
     };
 
