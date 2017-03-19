@@ -1,5 +1,5 @@
 describe('ax5.util.each TEST', function () {
-    /* ax5.util.filter */
+    /* ax5.util.each */
     //example 01
     it('ax5.util.each [object]', function () {
         var obj = {a_1: 1, b_2: 2, c_3: 3, d_4: 4, e_5: 5};
@@ -42,6 +42,18 @@ describe('ax5.util.each TEST', function () {
         });
         _.isEqual(result, 25).should.equal(true);
     });
+
+    //example 05
+    it('ax5.util.each [!isObj return false]', function (){
+       var arr = [0,0,0,1,1,1,1,0,0,1];
+       var result = 0;
+       ax5.util.each(arr, function (i, o) {
+           ++result;
+           return o === 0;
+       });
+        _.isEqual(result, 4).should.equal(true);
+    });
+    /* end ax5.util.each */
 });
 
 describe('ax5.util.filter TEST', function () {
@@ -220,7 +232,7 @@ describe('ax5.util.reduceRight TEST', function () {
     });
 
     //Usage 02
-    it('ax5.util.reduceRight("ymmuy_os_si_maerc-eci" , function(){return this;})', function () {
+    it('ax5.util.reduceRight("ymmuy_os_si_maerc-eci" , function(){return return p + n;})', function () {
         should.deepEqual(ax5.util.reduceRight("ymmuy_os_si_maerc-eci", function (p, n) {
             return p + n;
         }), "ice-cream_is_so_yummy");
