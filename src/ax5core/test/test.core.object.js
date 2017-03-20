@@ -219,6 +219,25 @@ describe('ax5.util.reduce TEST', function () {
             return parseInt(p || 0) + parseInt(n);
         }), 3);
     });
+
+    //Example03
+    it('ax5.util.reduce({a: 1, b: 2, c: 3} , function(){ return ++count;})', function () {
+        var count = 0;
+        ax5.util.reduce({a: 1, b: 2, c: 3}, function () {
+            return ++count;
+        });
+        should.deepEqual(count, 3);
+    });
+
+    //Example04
+    it('ax5.util.reduce([] , function(p,n){ return parseInt(p || 0) + parseInt(n);})', function () {
+        var count = 0;
+        ax5.util.reduce([5, 4, 3, 2, 1], function () {
+            return ++count;
+        });
+        should.deepEqual(count, 4);
+    });
+
     /*end ax5.util.reduce*/
 });
 
