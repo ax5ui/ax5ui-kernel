@@ -44,13 +44,13 @@ describe('ax5.util.each TEST', function () {
     });
 
     //example 05
-    it('ax5.util.each [!isObj return false]', function (){
-       var arr = [0,0,0,1,1,1,1,0,0,1];
-       var result = 0;
-       ax5.util.each(arr, function (i, o) {
-           ++result;
-           return o === 0;
-       });
+    it('ax5.util.each [!isObj return false]', function () {
+        var arr = [0, 0, 0, 1, 1, 1, 1, 0, 0, 1];
+        var result = 0;
+        ax5.util.each(arr, function (i, o) {
+            ++result;
+            return o === 0;
+        });
         _.isEqual(result, 4).should.equal(true);
     });
     /* end ax5.util.each */
@@ -221,7 +221,7 @@ describe('ax5.util.reduce TEST', function () {
     });
 
     //Example03
-    it('ax5.util.reduce({a: 1, b: 2, c: 3} , function(){ return ++count;})', function () {
+    it('ax5.util.reduce({a: 1, b: 2, c: 3} , function(){ return ++count; })', function () {
         var count = 0;
         ax5.util.reduce({a: 1, b: 2, c: 3}, function () {
             return ++count;
@@ -230,14 +230,13 @@ describe('ax5.util.reduce TEST', function () {
     });
 
     //Example04
-    it('ax5.util.reduce([] , function(p,n){ return parseInt(p || 0) + parseInt(n);})', function () {
+    it('ax5.util.reduce([] , function(p,n){ return ++count; })', function () {
         var count = 0;
         ax5.util.reduce([5, 4, 3, 2, 1], function () {
             return ++count;
         });
         should.deepEqual(count, 4);
     });
-
     /*end ax5.util.reduce*/
 });
 
@@ -257,6 +256,23 @@ describe('ax5.util.reduceRight TEST', function () {
         }), "ice-cream_is_so_yummy");
     });
 
+    //Example03
+    it('ax5.util.reduceRight("avocado" , function(){ return ++count; })', function () {
+        var count = 0;
+        ax5.util.reduceRight("avocado", function () {
+            return ++count;
+        });
+        should.deepEqual(count, 6);
+    });
+
+    //Example04
+    it('ax5.util.reduceRight([0, 1, 1, 2, 3, 5, 8, 13, 21] , function(p,n){ return ++count; })', function () {
+        var count = 0;
+        ax5.util.reduceRight([0, 1, 1, 2, 3, 5, 8, 13, 21], function () {
+            return ++count;
+        });
+        should.deepEqual(count, 8);
+    });
     /*end ax5.util.reduceRight*/
 });
 
