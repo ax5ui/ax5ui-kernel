@@ -81,7 +81,8 @@
             dialog.alert({
                 theme: theme,
                 title: 'Alert ' + theme,
-                msg: theme + ' color'
+                msg: theme + ' color',
+                autoCloseTime: 3000
             }, function () {
                 console.log(this);
             });
@@ -132,6 +133,11 @@
                             //my_dialog.close(); // 닫기를 안할 수도 있겠어요.
                         }
                     }
+                },
+                additionalContent: function () {
+                    return "<div style='border:1px solid #ccc;border-radius: 5px;background: #eee;padding: 10px;'>" +
+                        "추가내용 기술 " +
+                        "</div>";
                 }
             }, function () {
                 console.log(this);
@@ -147,6 +153,9 @@
                 input: {
                     data1: {label: "data1의 라벨"},
                     data2: {label: "data2의 라벨"}
+                },
+                onOpen: function () {
+
                 }
             }, function () {
                 console.log(this);

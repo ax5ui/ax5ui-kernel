@@ -775,4 +775,4 @@ $(document.body).click(function(){
 ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format("ASP", "ASP.NET");
 ax5.util.string("{0} is dead, but {1} is alive! {0} {2}").format(["ASP", "ASP.NET"]);
 ax5.util.stinrg("{0} counts").format(100);
-```
+``````
