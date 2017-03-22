@@ -1409,7 +1409,7 @@ jQuery.fn.ax5autocomplete = function () {
     };
 
     var label = function label(columnKeys) {
-        return "{{#selected}}\n<div tabindex=\"-1\" data-ax5autocomplete-selected-label=\"{{@i}}\" data-ax5autocomplete-selected-text=\"{{text}}\">\n<div data-ax5autocomplete-remove=\"true\" data-ax5autocomplete-remove-index=\"{{@i}}\">{{{removeIcon}}}</div>\n<span>{{#" + columnKeys.optionText + "}}</span>\n</div>{{/selected}}";
+        return "{{#selected}}\n<div tabindex=\"-1\" data-ax5autocomplete-selected-label=\"{{@i}}\" data-ax5autocomplete-selected-text=\"{{text}}\">\n<div data-ax5autocomplete-remove=\"true\" data-ax5autocomplete-remove-index=\"{{@i}}\">{{{removeIcon}}}</div>\n<span>{{" + columnKeys.optionText + "}}</span>\n</div>{{/selected}}";
     };
 
     AUTOCOMPLETE.tmpl = {
