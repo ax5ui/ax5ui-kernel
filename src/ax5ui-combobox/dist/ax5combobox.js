@@ -1531,7 +1531,7 @@ jQuery.fn.ax5combobox = function () {
     };
 
     var label = function label(columnKeys) {
-        return "{{#selected}}<div tabindex=\"-1\" data-ax5combobox-selected-label=\"{{@i}}\" data-ax5combobox-selected-text=\"{{text}}\"><div data-ax5combobox-remove=\"true\" \ndata-ax5combobox-remove-index=\"{{@i}}\">{{{removeIcon}}}</div><span>{{#" + columnKeys.optionText + "}}</span></div>{{/selected}}";
+        return "{{#selected}}<div tabindex=\"-1\" data-ax5combobox-selected-label=\"{{@i}}\" data-ax5combobox-selected-text=\"{{text}}\"><div data-ax5combobox-remove=\"true\" \ndata-ax5combobox-remove-index=\"{{@i}}\">{{{removeIcon}}}</div><span>{{" + columnKeys.optionText + "}}</span></div>{{/selected}}";
     };
 
     COMBOBOX.tmpl = {

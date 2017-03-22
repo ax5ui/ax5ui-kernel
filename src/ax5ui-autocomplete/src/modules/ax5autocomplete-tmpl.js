@@ -88,7 +88,7 @@ data-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceI
         return `{{#selected}}
 <div tabindex="-1" data-ax5autocomplete-selected-label="{{@i}}" data-ax5autocomplete-selected-text="{{text}}">
 <div data-ax5autocomplete-remove="true" data-ax5autocomplete-remove-index="{{@i}}">{{{removeIcon}}}</div>
-<span>{{#${columnKeys.optionText}}}</span>
+<span>{{${columnKeys.optionText}}}</span>
 </div>{{/selected}}`;
     };
 
