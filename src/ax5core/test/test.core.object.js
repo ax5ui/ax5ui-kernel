@@ -157,6 +157,14 @@ describe('ax5.util.search TEST', function () {
         });
         _.isEqual(result, 1).should.equal(true);
     });
+
+    //example05
+    var c = "example";
+
+    it('ax5.util.search("example" , "a")', function () {
+        var result = ax5.util.search("example", "a");
+        _.isEqual(result, 2).should.equal(true);
+    });
     /*end ax5.util.search */
 });
 
@@ -183,7 +191,7 @@ describe('ax5.util.map TEST', function () {
     /*end ax5.util.map*/
 
     // Usage 03
-    it('ax5.util.map("12345", function (k, v) {return k + Number(v);})', function () {
+    it('ax5.util.map("987", function (k, v) {return k + Number(v);})', function () {
         _.isEqual(ax5.util.map("987", function (k, v) {
             return k + Number(v);
         }), [9, 9, 9]).should.equal(true);
