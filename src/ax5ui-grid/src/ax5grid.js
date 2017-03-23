@@ -54,7 +54,7 @@
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: true,
-
+                virtualScrollX: false,
                 height: 0,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
@@ -620,6 +620,7 @@
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
              * @param {Function} [_config.remoteSort=false]
+             * @param {Boolean} [_config.virtualScrollX=false]
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]

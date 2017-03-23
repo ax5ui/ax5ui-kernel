@@ -53,29 +53,27 @@
     };
 
     const getTableByStartEndColumnIndex = function (_table, _startColumnIndex, _endColumnIndex) {
-        
+
         let tempTable = {rows: []};
         for (let r = 0, rl = _table.rows.length; r < rl; r++) {
             let row = _table.rows[r];
 
             tempTable.rows[r] = {cols: []};
-
             for (let c = 0, cl = row.cols.length; c < cl; c++) {
                 let col = jQuery.extend({}, row.cols[c]),
                     colStartIndex = col.colIndex, colEndIndex = col.colIndex + col.colspan;
 
                 if (colStartIndex >= _startColumnIndex && colStartIndex <= _endColumnIndex) {
-                    if (colEndIndex <= _endColumnIndex) {
-                        // 변형없이 추가
-                        tempTable.rows[r].cols.push(col);
-                    } else {
-                        col.colspan = _endColumnIndex - colStartIndex + 1;
-                        tempTable.rows[r].cols.push(col);
-                    }
-                } else {
-                    
+                    // 변형없이 추가
+                    tempTable.rows[r].cols.push(col);
+                }
+                else if (colStartIndex < _endColumnIndex && colEndIndex > _startColumnIndex) {
+                    // 앞에서 걸친경우
+                    col.colspan = _startColumnIndex - colStartIndex;
+                    tempTable.rows[r].cols.push(col);
                 }
             }
+
         }
 
         return tempTable;
@@ -326,11 +324,11 @@
                 addC += colspan;
                 colspan = null;
             }
-
-            if (addC < this.columns.length + 1) {
+            
+            if (addC < this.colGroup.length) {
                 for (var c = addC; c < this.colGroup.length; c++) {
                     table.rows[r].cols.push({
-                        colIndex: (c + 1),
+                        colIndex: (c),
                         colspan: 1,
                         rowspan: 1,
                         label: "&nbsp;",
@@ -382,7 +380,7 @@
             for (var c = addC; c < this.colGroup.length; c++) {
                 table.rows[r].cols.push({
                     rowIndex: 0,
-                    colIndex: (c + 1),
+                    colIndex: (c),
                     colspan: 1,
                     rowspan: 1,
                     label: "&nbsp;",

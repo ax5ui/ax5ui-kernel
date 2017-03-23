@@ -727,9 +727,10 @@
         if (isNaN(paintStartRowIndex)) return this;
 
         let paintStartColumnIndex = 0, paintEndColumnIndex = 0, nopaintLeftColumnsWidth = 0, nopaintRightColumnsWidth = 0;
+
         let bodyScrollLeft = -(this.$.panel["body-scroll"].position().left);
 
-        { // 페인트 시작컬럼위치와 종료컬럼위치 구하기
+        if (this.config.virtualScrollX) { // 페인트 시작컬럼위치와 종료컬럼위치 구하기
             for (let ci = this.xvar.frozenColumnIndex; ci < this.colGroup.length; ci++) {
                 // bodyScrollLeft
                 this.colGroup[ci]._sx = (ci == this.xvar.frozenColumnIndex) ? 0 : this.colGroup[ci - 1]._ex;
@@ -772,7 +773,12 @@
         if (nopaintLeftColumnsWidth || nopaintRightColumnsWidth) {
             headerColGroup = [].concat(headerColGroup).splice(paintStartColumnIndex, paintEndColumnIndex - paintStartColumnIndex + 1);
             bodyRowData = GRID.util.getTableByStartEndColumnIndex(bodyRowData, paintStartColumnIndex, paintEndColumnIndex);
-            //console.log(bodyRowData.rows[0].cols);
+            if (cfg.body.grouping) {
+                bodyGroupingData = GRID.util.getTableByStartEndColumnIndex(bodyGroupingData, paintStartColumnIndex, paintEndColumnIndex);
+            }
+            if(cfg.footSum) {
+                footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, paintStartColumnIndex, paintEndColumnIndex);
+            }
         }
 
         if (document.addEventListener && ax5.info.supportTouch) {
@@ -1831,7 +1837,6 @@
     };
 
     let scrollTo = function (css, noRepaint) {
-        let cfg = this.config;
 
         if (this.isInlineEditing) {
             for (var key in this.inlineEditing) {
@@ -1841,7 +1846,7 @@
             }
         }
 
-        if (cfg.asidePanelWidth > 0 && "top" in css) {
+        if (this.config.asidePanelWidth > 0 && "top" in css) {
             this.$.panel["aside-body-scroll"].css({top: css.top});
         }
         if (this.xvar.frozenColumnIndex > 0 && "top" in css) {
@@ -1853,13 +1858,13 @@
 
         this.$.panel["body-scroll"].css(css);
 
-        if (cfg.footSum && "left" in css) {
+        if (this.config.footSum && "left" in css) {
             this.$.panel["bottom-body-scroll"].css({left: css.left});
         }
 
         if (!noRepaint && "top" in css) {
             repaint.call(this);
-        } else if (!noRepaint && "left" in css) {
+        } else if (this.config.virtualScrollX && !noRepaint && "left" in css) {
             repaint.call(this);
         }
     };
@@ -2503,4 +2508,4 @@
 })();
 
 // todo : footSum 컬럼 표시해야 할 컬럼만 표시하기 처리
-// todo : grouping 컬럼 표시해야 할 컬럼만 표시하기 처리
+// todo : grouping 컬럼 표시해야 할 컬럼만 표시하기 처리 -- ok

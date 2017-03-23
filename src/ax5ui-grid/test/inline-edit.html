@@ -87,30 +87,6 @@
         {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
         {a: "A", b: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
         {a: "A", b: "A01", price: 1500, amount: 2, saleDt: "2016-08-26", customer: "이서연", saleType: "A", isChecked: "N"},
-        {a: "A", b: "A<A", price: 1000, amount: null, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y", __disable_selection__: true},
-        {a: "A", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
-        {a: "A", b: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
-        {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
-        {a: "A", b: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
-        {a: "A", b: "A01", price: 1500, amount: 2, saleDt: "2016-08-26", customer: "이서연", saleType: "A", isChecked: "N"},
-        {a: "A", b: "A<A", price: 1000, amount: null, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y", __disable_selection__: true},
-        {a: "A", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
-        {a: "A", b: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
-        {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
-        {a: "A", b: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
-        {a: "A", b: "A01", price: 1500, amount: 2, saleDt: "2016-08-26", customer: "이서연", saleType: "A", isChecked: "N"},
-        {a: "A", b: "A<A", price: 1000, amount: null, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y", __disable_selection__: true},
-        {a: "A", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
-        {a: "A", b: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
-        {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
-        {a: "A", b: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
-        {a: "A", b: "A01", price: 1500, amount: 2, saleDt: "2016-08-26", customer: "이서연", saleType: "A", isChecked: "N"},
-        {a: "A", b: "A<A", price: 1000, amount: null, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y", __disable_selection__: true},
-        {a: "A", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
-        {a: "A", b: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
-        {a: "A", b: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
-        {a: "A", b: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
-        {a: "A", b: "A01", price: 1500, amount: 2, saleDt: "2016-08-26", customer: "이서연", saleType: "A", isChecked: "N"},
     ];
     ///
     var gridView = {
@@ -124,6 +100,7 @@
                 multipleSelect: true,
                 lineNumberColumnWidth: 40,
                 rowSelectorColumnWidth: 28,
+                virtualScrollX: true,
                 sortable: true, // 모든 컬럼에 정렬 아이콘 표시
                 multiSort: false, // 다중 정렬 여부
                 remoteSort: false, // remoteSort에 함수를 sortable 컬럼이 클릭되었을때 실행 setColumnSort를 직접 구현. (remoteSort를 사용하면 헤더에 정렬 상태만 표시 하고 데이터 정렬은 처리 안함)
@@ -138,7 +115,7 @@
                         // console.log(this);
                         // this.self.select(this.dindex);
                     },
-                    /*
+
                     grouping: {
                         by: ["b"],
                         columns: [
@@ -161,7 +138,6 @@
                             {label: "~~~", colspan: 3}
                         ]
                     }
-                    */
                 },
                 page: {
                     navigationItemCount: 9,
@@ -244,6 +220,7 @@
                         key: "customer", label: "고객명", editor: {type: "text"}
                     }
                 ],
+
                 footSum: [
                     [
                         {label: "전체 합계", colspan: 2, align: "center"},
@@ -257,8 +234,10 @@
                             });
                             return ax5.util.number(value, {"money": 1});
                         }, align: "right"
-                        }
+                        },
+                        {label: "전체 합계", colspan: 4, align: "center"},
                     ]]
+
             });
 
             firstGrid.onDataChanged = function () {

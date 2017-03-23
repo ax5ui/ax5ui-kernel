@@ -58,7 +58,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: true,
-
+                virtualScrollX: false,
                 height: 0,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
@@ -612,6 +612,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
              * @param {Function} [_config.remoteSort=false]
+             * @param {Boolean} [_config.virtualScrollX=false]
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
@@ -2260,9 +2261,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             paintEndColumnIndex = 0,
             nopaintLeftColumnsWidth = 0,
             nopaintRightColumnsWidth = 0;
+
         var bodyScrollLeft = -this.$.panel["body-scroll"].position().left;
 
-        {
+        if (this.config.virtualScrollX) {
             // 페인트 시작컬럼위치와 종료컬럼위치 구하기
             for (var ci = this.xvar.frozenColumnIndex; ci < this.colGroup.length; ci++) {
                 // bodyScrollLeft
@@ -2301,7 +2303,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (nopaintLeftColumnsWidth || nopaintRightColumnsWidth) {
             headerColGroup = [].concat(headerColGroup).splice(paintStartColumnIndex, paintEndColumnIndex - paintStartColumnIndex + 1);
             bodyRowData = GRID.util.getTableByStartEndColumnIndex(bodyRowData, paintStartColumnIndex, paintEndColumnIndex);
-            //console.log(bodyRowData.rows[0].cols);
+            if (cfg.body.grouping) {
+                bodyGroupingData = GRID.util.getTableByStartEndColumnIndex(bodyGroupingData, paintStartColumnIndex, paintEndColumnIndex);
+            }
+            if (cfg.footSum) {
+                footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, paintStartColumnIndex, paintEndColumnIndex);
+            }
         }
 
         if (document.addEventListener && ax5.info.supportTouch) {
@@ -3274,7 +3281,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var scrollTo = function scrollTo(css, noRepaint) {
-        var cfg = this.config;
 
         if (this.isInlineEditing) {
             for (var key in this.inlineEditing) {
@@ -3284,7 +3290,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
 
-        if (cfg.asidePanelWidth > 0 && "top" in css) {
+        if (this.config.asidePanelWidth > 0 && "top" in css) {
             this.$.panel["aside-body-scroll"].css({ top: css.top });
         }
         if (this.xvar.frozenColumnIndex > 0 && "top" in css) {
@@ -3296,13 +3302,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         this.$.panel["body-scroll"].css(css);
 
-        if (cfg.footSum && "left" in css) {
+        if (this.config.footSum && "left" in css) {
             this.$.panel["bottom-body-scroll"].css({ left: css.left });
         }
 
         if (!noRepaint && "top" in css) {
             repaint.call(this);
-        } else if (!noRepaint && "left" in css) {
+        } else if (this.config.virtualScrollX && !noRepaint && "left" in css) {
             repaint.call(this);
         }
     };
@@ -3934,7 +3940,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 })();
 
 // todo : footSum 컬럼 표시해야 할 컬럼만 표시하기 처리
-// todo : grouping 컬럼 표시해야 할 컬럼만 표시하기 처리
+// todo : grouping 컬럼 표시해야 할 컬럼만 표시하기 처리 -- ok
 
 // ax5.ui.grid.collector
 (function () {
@@ -5877,21 +5883,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var row = _table.rows[r];
 
             tempTable.rows[r] = { cols: [] };
-
             for (var c = 0, cl = row.cols.length; c < cl; c++) {
                 var col = jQuery.extend({}, row.cols[c]),
                     colStartIndex = col.colIndex,
                     colEndIndex = col.colIndex + col.colspan;
 
                 if (colStartIndex >= _startColumnIndex && colStartIndex <= _endColumnIndex) {
-                    if (colEndIndex <= _endColumnIndex) {
-                        // 변형없이 추가
-                        tempTable.rows[r].cols.push(col);
-                    } else {
-                        col.colspan = _endColumnIndex - colStartIndex + 1;
-                        tempTable.rows[r].cols.push(col);
-                    }
-                } else {}
+                    // 변형없이 추가
+                    tempTable.rows[r].cols.push(col);
+                } else if (colStartIndex < _endColumnIndex && colEndIndex > _startColumnIndex) {
+                    // 앞에서 걸친경우
+                    col.colspan = _startColumnIndex - colStartIndex;
+                    tempTable.rows[r].cols.push(col);
+                }
             }
         }
 
@@ -6137,10 +6141,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 colspan = null;
             }
 
-            if (addC < this.columns.length + 1) {
+            if (addC < this.colGroup.length) {
                 for (var c = addC; c < this.colGroup.length; c++) {
                     table.rows[r].cols.push({
-                        colIndex: c + 1,
+                        colIndex: c,
                         colspan: 1,
                         rowspan: 1,
                         label: "&nbsp;"
@@ -6194,7 +6198,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             for (var c = addC; c < this.colGroup.length; c++) {
                 table.rows[r].cols.push({
                     rowIndex: 0,
-                    colIndex: c + 1,
+                    colIndex: c,
                     colspan: 1,
                     rowspan: 1,
                     label: "&nbsp;"
