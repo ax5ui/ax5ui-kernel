@@ -5,14 +5,12 @@
     var U = ax5.util;
 
 
-
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
      * @param _table
      * @param _frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
-
     var divideTableByFrozenColumnIndex = function (_table, _frozenColumnIndex) {
         var tempTable_l = {rows: []};
         var tempTable_r = {rows: []};
@@ -52,6 +50,35 @@
             leftData: tempTable_l,
             rightData: tempTable_r
         }
+    };
+
+    const getTableByStartEndColumnIndex = function (_table, _startColumnIndex, _endColumnIndex) {
+        
+        let tempTable = {rows: []};
+        for (let r = 0, rl = _table.rows.length; r < rl; r++) {
+            let row = _table.rows[r];
+
+            tempTable.rows[r] = {cols: []};
+
+            for (let c = 0, cl = row.cols.length; c < cl; c++) {
+                let col = jQuery.extend({}, row.cols[c]),
+                    colStartIndex = col.colIndex, colEndIndex = col.colIndex + col.colspan;
+
+                if (colStartIndex >= _startColumnIndex && colStartIndex <= _endColumnIndex) {
+                    if (colEndIndex <= _endColumnIndex) {
+                        // 변형없이 추가
+                        tempTable.rows[r].cols.push(col);
+                    } else {
+                        col.colspan = _endColumnIndex - colStartIndex + 1;
+                        tempTable.rows[r].cols.push(col);
+                    }
+                } else {
+                    
+                }
+            }
+        }
+
+        return tempTable;
     };
 
     var getMousePosition = function (e) {
@@ -383,7 +410,7 @@
 
         return {
             panelName: _panels.join("-"),
-            containerPanelName : _containerPanelName,
+            containerPanelName: _containerPanelName,
             isScrollPanel: _isScrollPanel
         }
     };
@@ -402,6 +429,7 @@
 
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
+        getTableByStartEndColumnIndex: getTableByStartEndColumnIndex,
         getMousePosition: getMousePosition,
         ENM: ENM,
         makeHeaderTable: makeHeaderTable,
@@ -410,7 +438,7 @@
         makeFootSumTable: makeFootSumTable,
         makeBodyGroupingTable: makeBodyGroupingTable,
         findPanelByColumnIndex: findPanelByColumnIndex,
-        getRealPathForDataItem: getRealPathForDataItem
+        getRealPathForDataItem: getRealPathForDataItem,
     };
 
 })();

@@ -556,6 +556,12 @@
 
                 panelDisplayProcess.call(this, this.$["container"]["page"], "", "", "page");
 
+                // 각 패널의 사이즈 결정
+                /// 다른 패널의 사이즈 정보가 필요한 경우 여기서 정의해주고 사용함.
+                this.xvar.bodyHeight = this.$.panel["body"].height();
+                this.xvar.bodyWidth = this.$.panel["body"].width();
+                // scrollContentWidth 는 grid-header repaint에서 결정합니다. 까먹지 맙시다. > this.xvar.scrollContentWidth
+
                 return true;
             };
             const sortColumns = function (_sortInfo) {
