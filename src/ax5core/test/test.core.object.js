@@ -317,6 +317,17 @@ describe('ax5.util.sum TEST', function () {
 
         should.deepEqual(test, 40);
     });
+
+    //Usage 03
+    it('ax5.util.sum("123", function(){return this;})', function () {
+
+        var test = ax5.util.sum("123", function () {
+            return this;
+        });
+
+        should.deepEqual(test, 0);
+        // print: console.error("argument error : ax5.util.sum - use Array or Object");
+    });
     /*end ax.util.Sum */
 });
 
