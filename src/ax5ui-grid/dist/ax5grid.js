@@ -2282,6 +2282,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             }
             this.$.panel["body-scroll"].css({ "padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth });
+            this.$.panel["bottom-body-scroll"].css({ "padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth });
         }
 
         if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex && this.xvar.paintStartColumnIndex === paintStartColumnIndex && this.xvar.paintEndColumnIndex === paintEndColumnIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
@@ -2308,6 +2309,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
             if (cfg.footSum) {
                 footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, paintStartColumnIndex, paintEndColumnIndex);
+            }
+
+            if (this.xvar.paintStartColumnIndex !== paintStartColumnIndex || this.xvar.paintEndColumnIndex !== paintEndColumnIndex) {
+                this.needToPaintSum = true;
             }
         }
 
@@ -3939,7 +3944,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 })();
 
-// todo : footSum 컬럼 표시해야 할 컬럼만 표시하기 처리
+// todo : footSum 컬럼 표시해야 할 컬럼만 표시하기 처리 -- ok
 // todo : grouping 컬럼 표시해야 할 컬럼만 표시하기 처리 -- ok
 
 // ax5.ui.grid.collector

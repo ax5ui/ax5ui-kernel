@@ -747,6 +747,7 @@
                 }
             }
             this.$.panel["body-scroll"].css({"padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth});
+            this.$.panel["bottom-body-scroll"].css({"padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth});
         }
 
         if (
@@ -776,8 +777,12 @@
             if (cfg.body.grouping) {
                 bodyGroupingData = GRID.util.getTableByStartEndColumnIndex(bodyGroupingData, paintStartColumnIndex, paintEndColumnIndex);
             }
-            if(cfg.footSum) {
+            if (cfg.footSum) {
                 footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, paintStartColumnIndex, paintEndColumnIndex);
+            }
+
+            if (this.xvar.paintStartColumnIndex !== paintStartColumnIndex || this.xvar.paintEndColumnIndex !== paintEndColumnIndex) {
+                this.needToPaintSum = true;
             }
         }
 
@@ -2507,5 +2512,5 @@
     };
 })();
 
-// todo : footSum 컬럼 표시해야 할 컬럼만 표시하기 처리
+// todo : footSum 컬럼 표시해야 할 컬럼만 표시하기 처리 -- ok
 // todo : grouping 컬럼 표시해야 할 컬럼만 표시하기 처리 -- ok
