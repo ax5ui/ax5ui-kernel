@@ -369,7 +369,7 @@ describe('ax5.util.first TEST', function () {
     /* end ax.util.first */
 });
 
-describe('ax5.util.first TEST', function () {
+describe('ax5.util.last TEST', function () {
     /* ax5.util.last */
     //Example01
     it('ax5.util.last(["ax5", "axisj"])', function () {
@@ -388,6 +388,20 @@ describe('ax5.util.first TEST', function () {
     /* end ax5.util.last */
 });
 
-/* ax5.util.deepCopy */
-
-/* end ax5.util.deepCopy */
+describe('ax5.util.deepCopy TEST', function () {
+    //Example01
+    it('ax5.util.deepCopy(obj)', function () {
+        /* ax5.util.deepCopy */
+        var obj = [
+            {name: "A", child: [{name: "a-1"}]},
+            {
+                name: "B", child: [{name: "b-1"}],
+                callBack: function () {
+                    console.log('callBack');
+                }
+            }
+        ];
+        should.deepEqual(ax5.util.deepCopy(obj), obj);
+        /* end ax5.util.deepCopy */
+    });
+});
