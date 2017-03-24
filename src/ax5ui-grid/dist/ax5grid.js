@@ -804,9 +804,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 GRID.scroller.resize.call(this);
 
                 jQuery(window).bind("resize.ax5grid-" + this.id, function () {
-                    alignGrid.call(this);
-                    GRID.scroller.resize.call(this);
-                }.bind(this));
+                    alignGrid.call(self);
+                    GRID.scroller.resize.call(self);
+                    GRID.body.repaint.call(self); // window resize시 repaint 함수 호출
+                });
 
                 jQuery(document.body).on("click.ax5grid-" + this.id, function (e) {
                     var isPickerClick = false,
@@ -1555,7 +1556,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
-// todo : destroy
 // todo : body menu
 // todo : filter
 // todo : column reorder
@@ -5777,8 +5777,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }),
             height: verticalScrollBarHeight
         });
-
-        //console.log(horizontalScrollBarWidth);
 
         this.$["scroller"]["horizontal-bar"].css({
             left: convertScrollBarPosition.horizontal.call(this, this.$.panel["body-scroll"].position().left, {
