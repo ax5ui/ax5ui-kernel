@@ -1204,7 +1204,6 @@
                 paintRowCount: this.xvar.frozenRowIndex
             }));
         }
-
         repaintBody.call(this, "body-scroll", headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
 
         // 바닥 요약
@@ -1238,8 +1237,11 @@
         this.xvar.paintRowCount = paintRowCount;
         this.xvar.paintStartColumnIndex = paintStartColumnIndex;
         this.xvar.paintEndColumnIndex = paintEndColumnIndex;
+        this.xvar.nopaintLeftColumnsWidth = nopaintLeftColumnsWidth;
+        this.xvar.nopaintRightColumnsWidth = nopaintRightColumnsWidth;
         this.xvar.dataRowCount = list.length;
         this.needToPaintSum = false;
+
         GRID.page.statusUpdate.call(this);
     };
 
@@ -1277,9 +1279,9 @@
         /// ~~~~~~
 
         let paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex,
+            headerColGroup = this.headerColGroup,
             leftFootSumData = this.leftFootSumData,
             footSumData = this.footSumData,
-            asideBodyGroupingData = this.asideBodyGroupingData,
             leftBodyGroupingData = this.leftBodyGroupingData,
             bodyGroupingData = this.bodyGroupingData,
             bodyAlign = cfg.body.align,
@@ -1289,6 +1291,16 @@
                 paintRowCount: paintRowCount,
                 bodyTrHeight: this.xvar.bodyTrHeight
             };
+
+        if(this.xvar.nopaintLeftColumnsWidth || this.xvar.nopaintRightColumnsWidth){
+            headerColGroup = [].concat(headerColGroup).splice(this.xvar.paintStartColumnIndex, this.xvar.paintEndColumnIndex - this.xvar.paintStartColumnIndex + 1);
+            if (cfg.body.grouping) {
+                bodyGroupingData = GRID.util.getTableByStartEndColumnIndex(bodyGroupingData, this.xvar.paintStartColumnIndex, this.xvar.paintEndColumnIndex);
+            }
+            if (cfg.footSum) {
+                footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, this.xvar.paintStartColumnIndex, this.xvar.paintEndColumnIndex);
+            }
+        }
 
         let repaintSum = function (_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
             let _elTarget = this.$.panel[_elTargetKey],
@@ -1472,38 +1484,38 @@
             if (this.xvar.frozenColumnIndex > 0) {
                 if (this.xvar.frozenRowIndex > 0) {
                     // 상단 행고정
-                    replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                    replaceGroupTr.call(this, "top-left-body", headerColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
                         paintStartRowIndex: 0,
                         paintRowCount: this.xvar.frozenRowIndex,
                         bodyTrHeight: this.xvar.bodyTrHeight
                     });
                 }
-                replaceGroupTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
+                replaceGroupTr.call(this, "left-body-scroll", headerColGroup, leftBodyGroupingData, list, scrollConfig);
             }
 
             // body
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                replaceGroupTr.call(this, "top-body-scroll", headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
                     paintStartRowIndex: 0,
                     paintRowCount: this.xvar.frozenRowIndex,
                     bodyTrHeight: this.xvar.bodyTrHeight
                 });
             }
 
-            replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
+            replaceGroupTr.call(this, "body-scroll", headerColGroup, bodyGroupingData, list, scrollConfig);
         }
 
         if (this.xvar.frozenColumnIndex > 0) {
             if (cfg.footSum && this.needToPaintSum) {
                 // 바닥 요약
-                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+                repaintSum.call(this, "bottom-left-body", headerColGroup, leftFootSumData, list);
             }
         }
 
         if (cfg.footSum && this.needToPaintSum) {
             // 바닥 요약
-            repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+            repaintSum.call(this, "bottom-body-scroll", headerColGroup, footSumData, list, scrollConfig);
         }
     };
 
@@ -2062,6 +2074,7 @@
 
 
                 if ($column && isScrollPanel) {// 스크롤 패널 이라면~
+                    // todo : 컬럼이동할 때에도 scrollTo 체크
                     var newLeft = (function () {
                         if ($column.position().left + $column.outerWidth() > Math.abs(this.$.panel[focusedColumn.panelName].position().left) + this.$.panel[containerPanelName].width()) {
                             return $column.position().left + $column.outerWidth() - this.$.panel[containerPanelName].width();
@@ -2511,6 +2524,3 @@
         getExcelString: getExcelString
     };
 })();
-
-// todo : footSum 컬럼 표시해야 할 컬럼만 표시하기 처리 -- ok
-// todo : grouping 컬럼 표시해야 할 컬럼만 표시하기 처리 -- ok
