@@ -54,7 +54,7 @@
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: true,
-                virtualScrollX: false,
+                virtualScrollX: true,
                 height: 0,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
@@ -621,7 +621,7 @@
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
              * @param {Function} [_config.remoteSort=false]
-             * @param {Boolean} [_config.virtualScrollX=false]
+             * @param {Boolean} [_config.virtualScrollX=true]
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
@@ -903,6 +903,7 @@
              */
             this.align = function () {
                 if (alignGrid.call(this)) {
+                    GRID.body.repaint.call(this);
                     GRID.scroller.resize.call(this);
                 }
                 return this;

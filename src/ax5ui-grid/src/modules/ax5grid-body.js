@@ -748,19 +748,13 @@
                     if (nopaintRightColumnsWidth === null) nopaintRightColumnsWidth = this.xvar.scrollContentWidth - this.colGroup[ci]._ex;
                 }
             }
+
             if (nopaintLeftColumnsWidth === null) nopaintLeftColumnsWidth = 0;
             if (nopaintRightColumnsWidth === null) nopaintRightColumnsWidth = 0;
             this.$.panel["top-body-scroll"].css({"padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth});
             this.$.panel["body-scroll"].css({"padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth});
             this.$.panel["bottom-body-scroll"].css({"padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth});
         }
-
-        if (
-            this.xvar.dataRowCount === list.length
-            && this.xvar.paintStartRowIndex === paintStartRowIndex
-            && this.xvar.paintStartColumnIndex === paintStartColumnIndex
-            && this.xvar.paintEndColumnIndex === paintEndColumnIndex
-        ) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
 
         let isFirstPaint = (typeof this.xvar.paintStartRowIndex === "undefined"),
             headerColGroup = this.headerColGroup,
@@ -775,10 +769,20 @@
             bodyAlign = cfg.body.align,
             paintRowCount = Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight) + 1;
 
+        if (
+            this.xvar.dataRowCount === list.length
+            && this.xvar.paintStartRowIndex === paintStartRowIndex
+            && this.xvar.paintRowCount === paintRowCount
+            && this.xvar.paintStartColumnIndex === paintStartColumnIndex
+            && this.xvar.paintEndColumnIndex === paintEndColumnIndex
+        ) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
+
+
         // bodyRowData 수정 : 페인트 컬럼 포지션이 달라지므로
         if (nopaintLeftColumnsWidth || nopaintRightColumnsWidth) {
-            headerColGroup = [].concat(headerColGroup).splice(paintStartColumnIndex, paintEndColumnIndex - paintStartColumnIndex + 1);
+            headerColGroup = [].concat(headerColGroup).splice(paintStartColumnIndex - this.xvar.frozenColumnIndex, paintEndColumnIndex - paintStartColumnIndex + 1 + this.xvar.frozenColumnIndex);
             bodyRowData = GRID.util.getTableByStartEndColumnIndex(bodyRowData, paintStartColumnIndex, paintEndColumnIndex);
+
             if (cfg.body.grouping) {
                 bodyGroupingData = GRID.util.getTableByStartEndColumnIndex(bodyGroupingData, paintStartColumnIndex, paintEndColumnIndex);
             }
@@ -2114,11 +2118,12 @@
                             return true;
                         }
                         else if (focusedColumn.colIndex >= this.xvar.paintEndColumnIndex && this.colGroup[Number(focusedColumn.colIndex)]) {
-                            scrollLeft = -(this.colGroup[Number(focusedColumn.colIndex)]._ex - this.xvar.bodyWidth);
-
-                            scrollTo.call(this, {left: scrollLeft});
-                            GRID.header.scrollTo.call(this, {left: scrollLeft});
-                            GRID.scroller.resize.call(this);
+                            if(this.colGroup[Number(focusedColumn.colIndex)]._ex > this.xvar.bodyWidth) {
+                                scrollLeft = (this.colGroup[Number(focusedColumn.colIndex)]._ex - this.xvar.bodyWidth);
+                                scrollTo.call(this, {left: -scrollLeft});
+                                GRID.header.scrollTo.call(this, {left: -scrollLeft});
+                                GRID.scroller.resize.call(this);
+                            }
                             return true;
                         }
                     }
