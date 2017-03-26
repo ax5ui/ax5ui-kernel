@@ -855,90 +855,91 @@
                 }
                 return len;
             })(); di < dl; di++) {
-
-                let isGroupingRow = false, rowTable;
-                if (_groupRow && "__isGrouping" in _list[di]) {
-                    rowTable = _groupRow;
-                    isGroupingRow = true;
-                } else {
-                    rowTable = _bodyRow;
-                }
-
-                for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
-
-                    SS.push('<tr class="tr-' + (di % 4) + '"',
-                        (isGroupingRow) ? ' data-ax5grid-grouping-tr="true"' : '',
-                        ' data-ax5grid-tr-data-index="' + di + '"',
-                        ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"',
-                        ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"',
-                        '>');
-                    for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
-                        col = rowTable.rows[tri].cols[ci];
-                        cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
-                        colAlign = col.align || bodyAlign;
-
-                        SS.push('<td ',
-                            'data-ax5grid-panel-name="' + _elTargetKey + '" ',
-                            'data-ax5grid-data-index="' + di + '" ',
-                            'data-ax5grid-column-row="' + tri + '" ',
-                            'data-ax5grid-column-col="' + ci + '" ',
-                            'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ',
-                            'data-ax5grid-column-colIndex="' + col.colIndex + '" ',
-                            'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
-                            (function (_focusedColumn, _selectedColumn) {
-                                let attrs = "";
-                                if (_focusedColumn) {
-                                    attrs += 'data-ax5grid-column-focused="true" ';
-                                }
-                                if (_selectedColumn) {
-                                    attrs += 'data-ax5grid-column-selected="true" ';
-                                }
-                                return attrs;
-                            })(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]),
-                            'colspan="' + col.colspan + '" ',
-                            'rowspan="' + col.rowspan + '" ',
-                            'class="' + (function (_col) {
-                                let tdCSS_class = "";
-                                if (_col.styleClass) {
-                                    if (U.isFunction(_col.styleClass)) {
-                                        tdCSS_class += _col.styleClass.call({
-                                                column: _col,
-                                                key: _col.key,
-                                                item: _list[di],
-                                                index: di
-                                            }) + " ";
-                                    } else {
-                                        tdCSS_class += _col.styleClass + " ";
-                                    }
-                                }
-                                if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
-                                if (ci == cl - 1) tdCSS_class += "isLastColumn ";
-                                return tdCSS_class;
-                            }).call(this, col) + '" ',
-                            'style="height: ' + cellHeight + 'px;min-height: 1px;">');
-
-                        SS.push((function (_cellHeight) {
-                            let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
-                            if (!col.multiLine) {
-                                _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                            }
-
-                            return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
-                                ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                                '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-
-                        })(cellHeight), (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
-
-                        SS.push('</td>');
+                if(_list[di]) {
+                    let isGroupingRow = false, rowTable;
+                    if (_list[di] && _groupRow && "__isGrouping" in _list[di]) {
+                        rowTable = _groupRow;
+                        isGroupingRow = true;
+                    } else {
+                        rowTable = _bodyRow;
                     }
-                    SS.push('<td ',
-                        'data-ax5grid-column-row="null" ',
-                        'data-ax5grid-column-col="null" ',
-                        'data-ax5grid-data-index="' + di + '" ',
-                        'data-ax5grid-column-attr="' + ("default") + '" ',
-                        'style="height: ' + (cfg.body.columnHeight) + 'px;min-height: 1px;" ',
-                        '></td>');
-                    SS.push('</tr>');
+
+                    for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+
+                        SS.push('<tr class="tr-' + (di % 4) + '"',
+                            (isGroupingRow) ? ' data-ax5grid-grouping-tr="true"' : '',
+                            ' data-ax5grid-tr-data-index="' + di + '"',
+                            ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"',
+                            ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"',
+                            '>');
+                        for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                            col = rowTable.rows[tri].cols[ci];
+                            cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                            colAlign = col.align || bodyAlign;
+
+                            SS.push('<td ',
+                                'data-ax5grid-panel-name="' + _elTargetKey + '" ',
+                                'data-ax5grid-data-index="' + di + '" ',
+                                'data-ax5grid-column-row="' + tri + '" ',
+                                'data-ax5grid-column-col="' + ci + '" ',
+                                'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ',
+                                'data-ax5grid-column-colIndex="' + col.colIndex + '" ',
+                                'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
+                                (function (_focusedColumn, _selectedColumn) {
+                                    let attrs = "";
+                                    if (_focusedColumn) {
+                                        attrs += 'data-ax5grid-column-focused="true" ';
+                                    }
+                                    if (_selectedColumn) {
+                                        attrs += 'data-ax5grid-column-selected="true" ';
+                                    }
+                                    return attrs;
+                                })(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]),
+                                'colspan="' + col.colspan + '" ',
+                                'rowspan="' + col.rowspan + '" ',
+                                'class="' + (function (_col) {
+                                    let tdCSS_class = "";
+                                    if (_col.styleClass) {
+                                        if (U.isFunction(_col.styleClass)) {
+                                            tdCSS_class += _col.styleClass.call({
+                                                    column: _col,
+                                                    key: _col.key,
+                                                    item: _list[di],
+                                                    index: di
+                                                }) + " ";
+                                        } else {
+                                            tdCSS_class += _col.styleClass + " ";
+                                        }
+                                    }
+                                    if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                                    if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                                    return tdCSS_class;
+                                }).call(this, col) + '" ',
+                                'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                            SS.push((function (_cellHeight) {
+                                let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
+                                if (!col.multiLine) {
+                                    _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                                }
+
+                                return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
+                                    ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
+                                    '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+
+                            })(cellHeight), (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
+
+                            SS.push('</td>');
+                        }
+                        SS.push('<td ',
+                            'data-ax5grid-column-row="null" ',
+                            'data-ax5grid-column-col="null" ',
+                            'data-ax5grid-data-index="' + di + '" ',
+                            'data-ax5grid-column-attr="' + ("default") + '" ',
+                            'style="height: ' + (cfg.body.columnHeight) + 'px;min-height: 1px;" ',
+                            '></td>');
+                        SS.push('</tr>');
+                    }
                 }
             }
             SS.push('</table>');
@@ -1407,7 +1408,7 @@
                 }
                 return len;
             })(); di < dl; di++) {
-                if (_groupRow && "__isGrouping" in _list[di]) {
+                if (_list[di] && _groupRow && "__isGrouping" in _list[di]) {
                     let rowTable = _groupRow;
                     SS = [];
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
@@ -1653,7 +1654,7 @@
                 }
                 return len;
             })(); di < dl; di++) {
-                if (_groupRow && "__isGrouping" in _list[di]) {
+                if (_list[di] && _groupRow && "__isGrouping" in _list[di]) {
                     let rowTable = _groupRow;
                     SS = [];
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
@@ -2038,7 +2039,7 @@
                     focusedColumn.rowIndex = 0;
                 }
 
-                if (this.list[focusedColumn.dindex].__isGrouping) {
+                if (this.list[focusedColumn.dindex] && this.list[focusedColumn.dindex].__isGrouping) {
                     if (_dx < 0) {
                         while (typeof this.bodyGroupingMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
                             focusedColumn.colIndex--;
@@ -2058,7 +2059,8 @@
                             }
                         }
                     }
-                } else {
+                }
+                else {
                     if (_dx < 0) {
                         while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
                             focusedColumn.colIndex--;
