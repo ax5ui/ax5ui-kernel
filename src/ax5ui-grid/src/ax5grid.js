@@ -135,6 +135,7 @@
             this.leftBodyGroupingData = {};
             this.bodyGroupingData = {};
             this.rightBodyGroupingData = {};
+            this.bodyGroupingMap = {};
 
             // footSum
             this.footSumTable = {}; // footSum의 출력레이아웃
@@ -354,7 +355,7 @@
                     })(this.colGroup, cfg.frozenColumnIndex),
                     verticalScrollerWidth, horizontalScrollerHeight, bodyHeight;
 
-                // todo : 우측 함계컬럼 넘비 계산
+                // todo : 우측 함계컬럼 너비 계산
                 let rightPanelWidth = 0,
                     frozenRowHeight = (function (bodyTrHeight) {
                         return cfg.frozenRowIndex * bodyTrHeight;

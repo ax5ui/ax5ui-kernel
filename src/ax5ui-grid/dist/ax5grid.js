@@ -139,6 +139,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.leftBodyGroupingData = {};
             this.bodyGroupingData = {};
             this.rightBodyGroupingData = {};
+            this.bodyGroupingMap = {};
 
             // footSum
             this.footSumTable = {}; // footSum의 출력레이아웃
@@ -362,7 +363,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     horizontalScrollerHeight = void 0,
                     bodyHeight = void 0;
 
-                // todo : 우측 함계컬럼 넘비 계산
+                // todo : 우측 함계컬럼 너비 계산
                 var rightPanelWidth = 0,
                     frozenRowHeight = function (bodyTrHeight) {
                     return cfg.frozenRowIndex * bodyTrHeight;
@@ -2073,6 +2074,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }.call(this, this.bodyGroupingTable);
             this.leftBodyGroupingData = dividedBodyGroupingObj.leftData;
             this.bodyGroupingData = dividedBodyGroupingObj.rightData;
+            this.bodyGroupingMap = GRID.util.makeBodyRowMap.call(this, this.bodyGroupingTable);
         }
 
         this.leftFootSumData = {};
@@ -2259,8 +2261,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         var paintStartColumnIndex = 0,
             paintEndColumnIndex = 0,
-            nopaintLeftColumnsWidth = 0,
-            nopaintRightColumnsWidth = 0;
+            nopaintLeftColumnsWidth = null,
+            nopaintRightColumnsWidth = null;
 
         var bodyScrollLeft = -this.$.panel["body-scroll"].position().left;
 
@@ -2276,11 +2278,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
                 if (this.colGroup[ci]._sx <= bodyScrollLeft + this.xvar.bodyWidth && this.colGroup[ci]._ex >= bodyScrollLeft + this.xvar.bodyWidth) {
                     paintEndColumnIndex = ci;
-                    nopaintLeftColumnsWidth = this.colGroup[paintStartColumnIndex]._sx;
-                    nopaintRightColumnsWidth = this.xvar.scrollContentWidth - this.colGroup[ci]._ex;
-                    break;
+
+                    if (nopaintLeftColumnsWidth === null) nopaintLeftColumnsWidth = this.colGroup[paintStartColumnIndex]._sx;
+                    if (nopaintRightColumnsWidth === null) nopaintRightColumnsWidth = this.xvar.scrollContentWidth - this.colGroup[ci]._ex;
                 }
             }
+            if (nopaintLeftColumnsWidth === null) nopaintLeftColumnsWidth = 0;
+            if (nopaintRightColumnsWidth === null) nopaintRightColumnsWidth = 0;
             this.$.panel["body-scroll"].css({ "padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth });
             this.$.panel["bottom-body-scroll"].css({ "padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth });
         }
@@ -3442,8 +3446,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     focusedColumn = void 0,
                     originalColumn = void 0,
                     while_i = 0,
-                    isScrollPanel = false,
-                    containerPanelName = "",
                     nPanelInfo = void 0;
 
                 for (var c in this.focusedColumn) {
@@ -3464,7 +3466,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         moveResult = false;
                     }
                 } else {
-                    focusedColumn.colIndex = focusedColumn.colIndex + (originalColumn.colspan - 1) + _dx;
+                    focusedColumn.colIndex = focusedColumn.colIndex + _dx;
                     if (focusedColumn.colIndex > this.colGroup.length - 1) {
                         focusedColumn.colIndex = this.colGroup.length - 1;
                         moveResult = false;
@@ -3475,15 +3477,46 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     focusedColumn.rowIndex = 0;
                 }
 
-                while_i = 0;
-                while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
-                    focusedColumn.colIndex--;
-                    if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
-                        // find fail
-                        moveResult = false;
-                        break;
+                if (this.list[focusedColumn.dindex].__isGrouping) {
+                    if (_dx < 0) {
+                        while (typeof this.bodyGroupingMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex--;
+                            if (focusedColumn.colIndex <= 0) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        while (typeof this.bodyGroupingMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex++;
+                            if (focusedColumn.colIndex >= this.colGroup.length) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
                     }
-                    while_i++;
+                } else {
+                    if (_dx < 0) {
+                        while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex--;
+                            if (focusedColumn.colIndex <= 0) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex++;
+                            if (focusedColumn.colIndex >= this.colGroup.length) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
@@ -3502,34 +3535,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
 
                 focusedColumn.panelName = nPanelInfo.panelName;
-                containerPanelName = nPanelInfo.containerPanelName;
-                isScrollPanel = nPanelInfo.isScrollPanel;
+
+                // 포커스 컬럼의 위치에 따라 스크롤 처리
+                (function () {
+                    var scrollLeft = 0;
+                    if (focusedColumn.colIndex + 1 > this.xvar.frozenColumnIndex) {
+                        if (focusedColumn.colIndex <= this.xvar.paintStartColumnIndex && this.colGroup[focusedColumn.colIndex]) {
+                            scrollLeft = -this.colGroup[Number(focusedColumn.colIndex)]._sx;
+                            scrollTo.call(this, { left: scrollLeft });
+                            GRID.header.scrollTo.call(this, { left: scrollLeft });
+                            GRID.scroller.resize.call(this);
+                        } else if (focusedColumn.colIndex >= this.xvar.paintEndColumnIndex && this.colGroup[Number(focusedColumn.colIndex)]) {
+                            scrollLeft = -this.colGroup[Number(focusedColumn.colIndex)]._sx;
+                            scrollTo.call(this, { left: scrollLeft });
+                            GRID.header.scrollTo.call(this, { left: scrollLeft });
+                            GRID.scroller.resize.call(this);
+                        }
+                    }
+                    scrollLeft = null;
+                }).call(this);
 
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
 
-                var $column = this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
-
-                if ($column && isScrollPanel) {
-                    // 스크롤 패널 이라면~
-                    // todo : 컬럼이동할 때에도 scrollTo 체크
-                    var newLeft = function () {
-                        if ($column.position().left + $column.outerWidth() > Math.abs(this.$.panel[focusedColumn.panelName].position().left) + this.$.panel[containerPanelName].width()) {
-                            return $column.position().left + $column.outerWidth() - this.$.panel[containerPanelName].width();
-                        } else if (Math.abs(this.$.panel[focusedColumn.panelName].position().left) > $column.position().left) {
-                            return $column.position().left;
-                        } else {
-                            return;
-                        }
-                    }.call(this);
-
-                    //console.log(newLeft);
-
-                    if (typeof newLeft !== "undefined") {
-                        GRID.header.scrollTo.call(this, { left: -newLeft });
-                        scrollTo.call(this, { left: -newLeft });
-                        GRID.scroller.resize.call(this);
-                    }
-                }
+                this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
 
                 return moveResult;
             },
