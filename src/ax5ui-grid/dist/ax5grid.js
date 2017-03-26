@@ -58,7 +58,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: true,
-
+                virtualScrollX: false,
                 height: 0,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
@@ -139,6 +139,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.leftBodyGroupingData = {};
             this.bodyGroupingData = {};
             this.rightBodyGroupingData = {};
+            this.bodyGroupingMap = {};
 
             // footSum
             this.footSumTable = {}; // footSum의 출력레이아웃
@@ -362,7 +363,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     horizontalScrollerHeight = void 0,
                     bodyHeight = void 0;
 
-                // todo : 우측 함계컬럼 넘비 계산
+                // todo : 우측 함계컬럼 너비 계산
                 var rightPanelWidth = 0,
                     frozenRowHeight = function (bodyTrHeight) {
                     return cfg.frozenRowIndex * bodyTrHeight;
@@ -560,6 +561,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 panelDisplayProcess.call(this, this.$["container"]["page"], "", "", "page");
 
+                // 각 패널의 사이즈 결정
+                /// 다른 패널의 사이즈 정보가 필요한 경우 여기서 정의해주고 사용함.
+                this.xvar.bodyHeight = this.$.panel["body"].height();
+                this.xvar.bodyWidth = this.$.panel["body"].width();
+                // scrollContentWidth 는 grid-header repaint에서 결정합니다. 까먹지 맙시다. > this.xvar.scrollContentWidth
+
                 return true;
             };
             var sortColumns = function sortColumns(_sortInfo) {
@@ -606,6 +613,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
              * @param {Function} [_config.remoteSort=false]
+             * @param {Boolean} [_config.virtualScrollX=false]
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
@@ -797,9 +805,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 GRID.scroller.resize.call(this);
 
                 jQuery(window).bind("resize.ax5grid-" + this.id, function () {
-                    alignGrid.call(this);
-                    GRID.scroller.resize.call(this);
-                }.bind(this));
+                    alignGrid.call(self);
+                    GRID.scroller.resize.call(self);
+                    GRID.body.repaint.call(self); // window resize시 repaint 함수 호출
+                });
 
                 jQuery(document.body).on("click.ax5grid-" + this.id, function (e) {
                     var isPickerClick = false,
@@ -1552,7 +1561,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     GRID = ax5.ui.grid;
 })();
 
-// todo : destroy
 // todo : body menu
 // todo : filter
 // todo : column reorder
@@ -2070,6 +2078,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }.call(this, this.bodyGroupingTable);
             this.leftBodyGroupingData = dividedBodyGroupingObj.leftData;
             this.bodyGroupingData = dividedBodyGroupingObj.rightData;
+            this.bodyGroupingMap = GRID.util.makeBodyRowMap.call(this, this.bodyGroupingTable);
         }
 
         this.leftFootSumData = {};
@@ -2247,13 +2256,47 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             resetFrozenColumn.call(this);
             // 틀고정 이 변경되면 출력 시작 인덱스 값을 초기화
             this.xvar.paintStartRowIndex = undefined;
+            this.xvar.paintStartColumnIndex = undefined;
         }
 
         /// 출력시작 인덱스
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
-        if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
+        var paintStartRowIndex = Math.floor(-this.$.panel["body-scroll"].position().top / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        if (isNaN(paintStartRowIndex)) return this;
+
+        var paintStartColumnIndex = 0,
+            paintEndColumnIndex = 0,
+            nopaintLeftColumnsWidth = null,
+            nopaintRightColumnsWidth = null;
+
+        var bodyScrollLeft = -this.$.panel["body-scroll"].position().left;
+
+        if (this.config.virtualScrollX) {
+            // 페인트 시작컬럼위치와 종료컬럼위치 구하기
+            for (var ci = this.xvar.frozenColumnIndex; ci < this.colGroup.length; ci++) {
+                // bodyScrollLeft
+                this.colGroup[ci]._sx = ci == this.xvar.frozenColumnIndex ? 0 : this.colGroup[ci - 1]._ex;
+                this.colGroup[ci]._ex = this.colGroup[ci]._sx + this.colGroup[ci]._width;
+
+                if (this.colGroup[ci]._sx <= bodyScrollLeft && this.colGroup[ci]._ex >= bodyScrollLeft) {
+                    paintStartColumnIndex = ci;
+                }
+                if (this.colGroup[ci]._sx <= bodyScrollLeft + this.xvar.bodyWidth && this.colGroup[ci]._ex >= bodyScrollLeft + this.xvar.bodyWidth) {
+                    paintEndColumnIndex = ci;
+
+                    if (nopaintLeftColumnsWidth === null) nopaintLeftColumnsWidth = this.colGroup[paintStartColumnIndex]._sx;
+                    if (nopaintRightColumnsWidth === null) nopaintRightColumnsWidth = this.xvar.scrollContentWidth - this.colGroup[ci]._ex;
+                }
+            }
+            if (nopaintLeftColumnsWidth === null) nopaintLeftColumnsWidth = 0;
+            if (nopaintRightColumnsWidth === null) nopaintRightColumnsWidth = 0;
+            this.$.panel["body-scroll"].css({ "padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth });
+            this.$.panel["bottom-body-scroll"].css({ "padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth });
+        }
+
+        if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex && this.xvar.paintStartColumnIndex === paintStartColumnIndex && this.xvar.paintEndColumnIndex === paintEndColumnIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
 
         var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined",
+            headerColGroup = this.headerColGroup,
             asideBodyRowData = this.asideBodyRowData,
             leftBodyRowData = this.leftBodyRowData,
             bodyRowData = this.bodyRowData,
@@ -2263,7 +2306,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             leftBodyGroupingData = this.leftBodyGroupingData,
             bodyGroupingData = this.bodyGroupingData,
             bodyAlign = cfg.body.align,
-            paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+            paintRowCount = Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight) + 1;
+
+        // bodyRowData 수정 : 페인트 컬럼 포지션이 달라지므로
+        if (nopaintLeftColumnsWidth || nopaintRightColumnsWidth) {
+            headerColGroup = [].concat(headerColGroup).splice(paintStartColumnIndex, paintEndColumnIndex - paintStartColumnIndex + 1);
+            bodyRowData = GRID.util.getTableByStartEndColumnIndex(bodyRowData, paintStartColumnIndex, paintEndColumnIndex);
+            if (cfg.body.grouping) {
+                bodyGroupingData = GRID.util.getTableByStartEndColumnIndex(bodyGroupingData, paintStartColumnIndex, paintEndColumnIndex);
+            }
+            if (cfg.footSum) {
+                footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, paintStartColumnIndex, paintEndColumnIndex);
+            }
+
+            if (this.xvar.paintStartColumnIndex !== paintStartColumnIndex || this.xvar.paintEndColumnIndex !== paintEndColumnIndex) {
+                this.needToPaintSum = true;
+            }
+        }
 
         if (document.addEventListener && ax5.info.supportTouch) {
             paintRowCount = paintRowCount * 2;
@@ -2320,6 +2379,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (isScrolled) {
                 SS.push('<div style="font-size:0;line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight + 'px;"></div>');
             }
+
+            // 가로 가상 스크롤 적용하지 않는 경우
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -2524,9 +2585,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (!tableTrs[ri].getAttribute("data-ax5grid-grouping-tr")) {
                     tableTrTds = tableTrs[ri].childNodes;
                     trMaps = [];
-                    for (var ci = 0, cl = tableTrTds.length; ci < cl; ci++) {
+                    for (var _ci = 0, cl = tableTrTds.length; _ci < cl; _ci++) {
                         var tdObj = {
-                            "$": jQuery(tableTrTds[ci])
+                            "$": jQuery(tableTrTds[_ci])
                         };
 
                         if (tdObj["$"].attr("data-ax5grid-column-col") != "null") {
@@ -2553,18 +2614,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var _loop = function _loop(_ri, _rl) {
                     var prevTokenColIndexs = [];
 
-                    var _loop2 = function _loop2(_ci2, _cl2) {
+                    var _loop2 = function _loop2(_ci3, _cl2) {
                         // 적용 하려는 컬럼에 editor 속성이 없다면 머지 대상입니다.
-                        if (!_colGroup[_ci2].editor && function () {
+                        if (!_colGroup[_ci3].editor && function () {
                             if (U.isArray(cfg.body.mergeCells)) {
-                                return ax5.util.search(cfg.body.mergeCells, _colGroup[_ci2].key) > -1;
+                                return ax5.util.search(cfg.body.mergeCells, _colGroup[_ci3].key) > -1;
                             } else {
                                 return true;
                             }
                         }()) {
 
                             // 앞줄과 값이 같다면.
-                            if (token[_ci2] && function () {
+                            if (token[_ci3] && function () {
                                 if (prevTokenColIndexs.length > 0) {
                                     var hasFalse = true;
                                     prevTokenColIndexs.forEach(function (ti) {
@@ -2576,24 +2637,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                 } else {
                                     return true;
                                 }
-                            }() && token[_ci2].text == tblRowMaps[_ri][_ci2].text) {
-                                tblRowMaps[_ri][_ci2].rowspan = 0;
-                                tblRowMaps[token[_ci2].ri][_ci2].rowspan++;
+                            }() && token[_ci3].text == tblRowMaps[_ri][_ci3].text) {
+                                tblRowMaps[_ri][_ci3].rowspan = 0;
+                                tblRowMaps[token[_ci3].ri][_ci3].rowspan++;
                                 hasMergeTd = true;
                             } else {
-                                token[_ci2] = {
+                                token[_ci3] = {
                                     ri: _ri,
-                                    ci: _ci2,
-                                    text: tblRowMaps[_ri][_ci2].text
+                                    ci: _ci3,
+                                    text: tblRowMaps[_ri][_ci3].text
                                 };
                             }
 
-                            prevTokenColIndexs.push(_ci2);
+                            prevTokenColIndexs.push(_ci3);
                         }
                     };
 
-                    for (var _ci2 = 0, _cl2 = tblRowMaps[_ri].length; _ci2 < _cl2; _ci2++) {
-                        _loop2(_ci2, _cl2);
+                    for (var _ci3 = 0, _cl2 = tblRowMaps[_ri].length; _ci3 < _cl2; _ci3++) {
+                        _loop2(_ci3, _cl2);
                     }
                 };
 
@@ -2604,20 +2665,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // rowspan을 다 구했으면 적용합니다.
                 if (hasMergeTd) {
                     for (var _ri2 = 0, _rl2 = tblRowMaps.length; _ri2 < _rl2; _ri2++) {
-                        for (var _ci = 0, _cl = tblRowMaps[_ri2].length; _ci < _cl; _ci++) {
-                            if (tblRowMaps[_ri2][_ci].rowspan == 0) {
-                                tblRowMaps[_ri2][_ci]["$"].remove();
-                            } else if (tblRowMaps[_ri2][_ci].rowspan > 1) {
-                                tblRowMaps[_ri2][_ci]["$"].attr("rowspan", tblRowMaps[_ri2][_ci].rowspan).addClass("merged");
+                        for (var _ci2 = 0, _cl = tblRowMaps[_ri2].length; _ci2 < _cl; _ci2++) {
+                            if (tblRowMaps[_ri2][_ci2].rowspan == 0) {
+                                tblRowMaps[_ri2][_ci2]["$"].remove();
+                            } else if (tblRowMaps[_ri2][_ci2].rowspan > 1) {
+                                tblRowMaps[_ri2][_ci2]["$"].attr("rowspan", tblRowMaps[_ri2][_ci2].rowspan).addClass("merged");
                             }
                         }
                     }
                 }
             }
         };
+
         var scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
             paintRowCount: paintRowCount,
+            paintStartColumnIndex: paintStartColumnIndex,
+            paintEndColumnIndex: paintEndColumnIndex,
+            nopaintLeftColumnsWidth: nopaintLeftColumnsWidth,
+            nopaintRightColumnsWidth: nopaintRightColumnsWidth,
             bodyTrHeight: this.xvar.bodyTrHeight
         };
 
@@ -2649,17 +2715,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
             }
         }
+
         // body
         if (this.xvar.frozenRowIndex > 0) {
             // 상단 행고정
-            repaintBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+            repaintBody.call(this, "top-body-scroll", headerColGroup, bodyRowData, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), jQuery.extend({}, scrollConfig, {
+                paintStartRowIndex: 0,
+                paintRowCount: this.xvar.frozenRowIndex
+            }));
         }
-
-        repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
+        repaintBody.call(this, "body-scroll", headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
 
         // 바닥 요약
         if (cfg.footSum && this.needToPaintSum) {
-            repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+            repaintSum.call(this, "bottom-body-scroll", headerColGroup, footSumData, list, scrollConfig);
         }
         // right
         if (cfg.rightSum) {}
@@ -2688,8 +2757,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         this.xvar.paintStartRowIndex = paintStartRowIndex;
         this.xvar.paintRowCount = paintRowCount;
+        this.xvar.paintStartColumnIndex = paintStartColumnIndex;
+        this.xvar.paintEndColumnIndex = paintEndColumnIndex;
+        this.xvar.nopaintLeftColumnsWidth = nopaintLeftColumnsWidth;
+        this.xvar.nopaintRightColumnsWidth = nopaintRightColumnsWidth;
         this.xvar.dataRowCount = list.length;
         this.needToPaintSum = false;
+
         GRID.page.statusUpdate.call(this);
     };
 
@@ -2722,9 +2796,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         /// ~~~~~~
 
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex,
+            headerColGroup = this.headerColGroup,
             leftFootSumData = this.leftFootSumData,
             footSumData = this.footSumData,
-            asideBodyGroupingData = this.asideBodyGroupingData,
             leftBodyGroupingData = this.leftBodyGroupingData,
             bodyGroupingData = this.bodyGroupingData,
             bodyAlign = cfg.body.align,
@@ -2734,6 +2808,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             paintRowCount: paintRowCount,
             bodyTrHeight: this.xvar.bodyTrHeight
         };
+
+        if (this.xvar.nopaintLeftColumnsWidth || this.xvar.nopaintRightColumnsWidth) {
+            headerColGroup = [].concat(headerColGroup).splice(this.xvar.paintStartColumnIndex, this.xvar.paintEndColumnIndex - this.xvar.paintStartColumnIndex + 1);
+            if (cfg.body.grouping) {
+                bodyGroupingData = GRID.util.getTableByStartEndColumnIndex(bodyGroupingData, this.xvar.paintStartColumnIndex, this.xvar.paintEndColumnIndex);
+            }
+            if (cfg.footSum) {
+                footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, this.xvar.paintStartColumnIndex, this.xvar.paintEndColumnIndex);
+            }
+        }
 
         var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
             var _elTarget = this.$.panel[_elTargetKey],
@@ -2892,38 +2976,38 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (this.xvar.frozenColumnIndex > 0) {
                 if (this.xvar.frozenRowIndex > 0) {
                     // 상단 행고정
-                    replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                    replaceGroupTr.call(this, "top-left-body", headerColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
                         paintStartRowIndex: 0,
                         paintRowCount: this.xvar.frozenRowIndex,
                         bodyTrHeight: this.xvar.bodyTrHeight
                     });
                 }
-                replaceGroupTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
+                replaceGroupTr.call(this, "left-body-scroll", headerColGroup, leftBodyGroupingData, list, scrollConfig);
             }
 
             // body
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                replaceGroupTr.call(this, "top-body-scroll", headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
                     paintStartRowIndex: 0,
                     paintRowCount: this.xvar.frozenRowIndex,
                     bodyTrHeight: this.xvar.bodyTrHeight
                 });
             }
 
-            replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
+            replaceGroupTr.call(this, "body-scroll", headerColGroup, bodyGroupingData, list, scrollConfig);
         }
 
         if (this.xvar.frozenColumnIndex > 0) {
             if (cfg.footSum && this.needToPaintSum) {
                 // 바닥 요약
-                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+                repaintSum.call(this, "bottom-left-body", headerColGroup, leftFootSumData, list);
             }
         }
 
         if (cfg.footSum && this.needToPaintSum) {
             // 바닥 요약
-            repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+            repaintSum.call(this, "bottom-body-scroll", headerColGroup, footSumData, list, scrollConfig);
         }
     };
 
@@ -3222,7 +3306,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var scrollTo = function scrollTo(css, noRepaint) {
-        var cfg = this.config;
 
         if (this.isInlineEditing) {
             for (var key in this.inlineEditing) {
@@ -3232,7 +3315,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
 
-        if (cfg.asidePanelWidth > 0 && "top" in css) {
+        if (this.config.asidePanelWidth > 0 && "top" in css) {
             this.$.panel["aside-body-scroll"].css({ top: css.top });
         }
         if (this.xvar.frozenColumnIndex > 0 && "top" in css) {
@@ -3244,13 +3327,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         this.$.panel["body-scroll"].css(css);
 
-        if (cfg.footSum && "left" in css) {
+        if (this.config.footSum && "left" in css) {
             this.$.panel["bottom-body-scroll"].css({ left: css.left });
         }
 
         if (!noRepaint && "top" in css) {
             repaint.call(this);
-        } else {}
+        } else if (this.config.virtualScrollX && !noRepaint && "left" in css) {
+            repaint.call(this);
+        }
     };
 
     var blur = function blur() {
@@ -3365,8 +3450,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     focusedColumn = void 0,
                     originalColumn = void 0,
                     while_i = 0,
-                    isScrollPanel = false,
-                    containerPanelName = "",
                     nPanelInfo = void 0;
 
                 for (var c in this.focusedColumn) {
@@ -3387,7 +3470,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         moveResult = false;
                     }
                 } else {
-                    focusedColumn.colIndex = focusedColumn.colIndex + (originalColumn.colspan - 1) + _dx;
+                    focusedColumn.colIndex = focusedColumn.colIndex + _dx;
                     if (focusedColumn.colIndex > this.colGroup.length - 1) {
                         focusedColumn.colIndex = this.colGroup.length - 1;
                         moveResult = false;
@@ -3398,15 +3481,46 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     focusedColumn.rowIndex = 0;
                 }
 
-                while_i = 0;
-                while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
-                    focusedColumn.colIndex--;
-                    if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
-                        // find fail
-                        moveResult = false;
-                        break;
+                if (this.list[focusedColumn.dindex].__isGrouping) {
+                    if (_dx < 0) {
+                        while (typeof this.bodyGroupingMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex--;
+                            if (focusedColumn.colIndex <= 0) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        while (typeof this.bodyGroupingMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex++;
+                            if (focusedColumn.colIndex >= this.colGroup.length) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
                     }
-                    while_i++;
+                } else {
+                    if (_dx < 0) {
+                        while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex--;
+                            if (focusedColumn.colIndex <= 0) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex++;
+                            if (focusedColumn.colIndex >= this.colGroup.length) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
@@ -3425,33 +3539,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
 
                 focusedColumn.panelName = nPanelInfo.panelName;
-                containerPanelName = nPanelInfo.containerPanelName;
-                isScrollPanel = nPanelInfo.isScrollPanel;
+
+                // 포커스 컬럼의 위치에 따라 스크롤 처리
+                (function () {
+                    var scrollLeft = 0;
+                    if (focusedColumn.colIndex + 1 > this.xvar.frozenColumnIndex) {
+                        if (focusedColumn.colIndex <= this.xvar.paintStartColumnIndex && this.colGroup[focusedColumn.colIndex]) {
+                            scrollLeft = -this.colGroup[Number(focusedColumn.colIndex)]._sx;
+                            scrollTo.call(this, { left: scrollLeft });
+                            GRID.header.scrollTo.call(this, { left: scrollLeft });
+                            GRID.scroller.resize.call(this);
+                        } else if (focusedColumn.colIndex >= this.xvar.paintEndColumnIndex && this.colGroup[Number(focusedColumn.colIndex)]) {
+                            scrollLeft = -this.colGroup[Number(focusedColumn.colIndex)]._sx;
+                            scrollTo.call(this, { left: scrollLeft });
+                            GRID.header.scrollTo.call(this, { left: scrollLeft });
+                            GRID.scroller.resize.call(this);
+                        }
+                    }
+                    scrollLeft = null;
+                }).call(this);
 
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
 
-                var $column = this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
-
-                if ($column && isScrollPanel) {
-                    // 스크롤 패널 이라면~
-                    var newLeft = function () {
-                        if ($column.position().left + $column.outerWidth() > Math.abs(this.$.panel[focusedColumn.panelName].position().left) + this.$.panel[containerPanelName].width()) {
-                            return $column.position().left + $column.outerWidth() - this.$.panel[containerPanelName].width();
-                        } else if (Math.abs(this.$.panel[focusedColumn.panelName].position().left) > $column.position().left) {
-                            return $column.position().left;
-                        } else {
-                            return;
-                        }
-                    }.call(this);
-
-                    //console.log(newLeft);
-
-                    if (typeof newLeft !== "undefined") {
-                        GRID.header.scrollTo.call(this, { left: -newLeft });
-                        scrollTo.call(this, { left: -newLeft });
-                        GRID.scroller.resize.call(this);
-                    }
-                }
+                this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
 
                 return moveResult;
             },
@@ -5708,8 +5818,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             height: verticalScrollBarHeight
         });
 
-        //console.log(horizontalScrollBarWidth);
-
         this.$["scroller"]["horizontal-bar"].css({
             left: convertScrollBarPosition.horizontal.call(this, this.$.panel["body-scroll"].position().left, {
                 _content_width: _content_width,
@@ -5779,7 +5887,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @param _frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
-
     var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(_table, _frozenColumnIndex) {
         var tempTable_l = { rows: [] };
         var tempTable_r = { rows: [] };
@@ -5819,6 +5926,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             leftData: tempTable_l,
             rightData: tempTable_r
         };
+    };
+
+    var getTableByStartEndColumnIndex = function getTableByStartEndColumnIndex(_table, _startColumnIndex, _endColumnIndex) {
+
+        var tempTable = { rows: [] };
+        for (var r = 0, rl = _table.rows.length; r < rl; r++) {
+            var row = _table.rows[r];
+
+            tempTable.rows[r] = { cols: [] };
+            for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                var col = jQuery.extend({}, row.cols[c]),
+                    colStartIndex = col.colIndex,
+                    colEndIndex = col.colIndex + col.colspan;
+
+                if (colStartIndex >= _startColumnIndex && colStartIndex <= _endColumnIndex) {
+                    // 변형없이 추가
+                    tempTable.rows[r].cols.push(col);
+                } else if (colStartIndex < _endColumnIndex && colEndIndex > _startColumnIndex) {
+                    // 앞에서 걸친경우
+                    col.colspan = _startColumnIndex - colStartIndex;
+                    tempTable.rows[r].cols.push(col);
+                }
+            }
+        }
+
+        return tempTable;
     };
 
     var getMousePosition = function getMousePosition(e) {
@@ -6060,10 +6193,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 colspan = null;
             }
 
-            if (addC < this.columns.length + 1) {
+            if (addC < this.colGroup.length) {
                 for (var c = addC; c < this.colGroup.length; c++) {
                     table.rows[r].cols.push({
-                        colIndex: c + 1,
+                        colIndex: c,
                         colspan: 1,
                         rowspan: 1,
                         label: "&nbsp;"
@@ -6117,7 +6250,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             for (var c = addC; c < this.colGroup.length; c++) {
                 table.rows[r].cols.push({
                     rowIndex: 0,
-                    colIndex: c + 1,
+                    colIndex: c,
                     colspan: 1,
                     rowspan: 1,
                     label: "&nbsp;"
@@ -6163,6 +6296,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
+        getTableByStartEndColumnIndex: getTableByStartEndColumnIndex,
         getMousePosition: getMousePosition,
         ENM: ENM,
         makeHeaderTable: makeHeaderTable,

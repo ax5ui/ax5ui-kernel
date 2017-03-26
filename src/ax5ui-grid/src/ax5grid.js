@@ -54,7 +54,7 @@
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: true,
-
+                virtualScrollX: false,
                 height: 0,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
@@ -135,6 +135,7 @@
             this.leftBodyGroupingData = {};
             this.bodyGroupingData = {};
             this.rightBodyGroupingData = {};
+            this.bodyGroupingMap = {};
 
             // footSum
             this.footSumTable = {}; // footSum의 출력레이아웃
@@ -354,7 +355,7 @@
                     })(this.colGroup, cfg.frozenColumnIndex),
                     verticalScrollerWidth, horizontalScrollerHeight, bodyHeight;
 
-                // todo : 우측 함계컬럼 넘비 계산
+                // todo : 우측 함계컬럼 너비 계산
                 let rightPanelWidth = 0,
                     frozenRowHeight = (function (bodyTrHeight) {
                         return cfg.frozenRowIndex * bodyTrHeight;
@@ -556,6 +557,12 @@
 
                 panelDisplayProcess.call(this, this.$["container"]["page"], "", "", "page");
 
+                // 각 패널의 사이즈 결정
+                /// 다른 패널의 사이즈 정보가 필요한 경우 여기서 정의해주고 사용함.
+                this.xvar.bodyHeight = this.$.panel["body"].height();
+                this.xvar.bodyWidth = this.$.panel["body"].width();
+                // scrollContentWidth 는 grid-header repaint에서 결정합니다. 까먹지 맙시다. > this.xvar.scrollContentWidth
+
                 return true;
             };
             const sortColumns = function (_sortInfo) {
@@ -614,6 +621,7 @@
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
              * @param {Function} [_config.remoteSort=false]
+             * @param {Boolean} [_config.virtualScrollX=false]
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
@@ -805,9 +813,10 @@
                 GRID.scroller.resize.call(this);
 
                 jQuery(window).bind("resize.ax5grid-" + this.id, function () {
-                    alignGrid.call(this);
-                    GRID.scroller.resize.call(this);
-                }.bind(this));
+                    alignGrid.call(self);
+                    GRID.scroller.resize.call(self);
+                    GRID.body.repaint.call(self);  // window resize시 repaint 함수 호출
+                });
 
                 jQuery(document.body).on("click.ax5grid-" + this.id, (function (e) {
                     let isPickerClick = false,
@@ -1563,7 +1572,6 @@
     GRID = ax5.ui.grid;
 })();
 
-// todo : destroy
 // todo : body menu
 // todo : filter
 // todo : column reorder
