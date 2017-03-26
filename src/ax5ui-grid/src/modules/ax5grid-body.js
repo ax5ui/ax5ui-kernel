@@ -750,6 +750,7 @@
             }
             if (nopaintLeftColumnsWidth === null) nopaintLeftColumnsWidth = 0;
             if (nopaintRightColumnsWidth === null) nopaintRightColumnsWidth = 0;
+            this.$.panel["top-body-scroll"].css({"padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth});
             this.$.panel["body-scroll"].css({"padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth});
             this.$.panel["bottom-body-scroll"].css({"padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth});
         }
@@ -2006,7 +2007,7 @@
             "LR": function (_dx) {
                 let moveResult = true,
                     focusedColumn, originalColumn,
-                    while_i = 0, nPanelInfo;
+                    while_i = 0, isScrollPanel = false, containerPanelName = "", nPanelInfo;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -2099,7 +2100,8 @@
                 focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리
-                (function () {
+                let isScrollTo = (function () {
+                    if(!this.config.virtualScrollX) return false;
                     let scrollLeft = 0;
                     if (focusedColumn.colIndex + 1 > this.xvar.frozenColumnIndex) {
                         if (focusedColumn.colIndex <= this.xvar.paintStartColumnIndex && this.colGroup[focusedColumn.colIndex]) {
@@ -2107,23 +2109,49 @@
                             scrollTo.call(this, {left: scrollLeft});
                             GRID.header.scrollTo.call(this, {left: scrollLeft});
                             GRID.scroller.resize.call(this);
+                            return true;
                         }
                         else if (focusedColumn.colIndex >= this.xvar.paintEndColumnIndex && this.colGroup[Number(focusedColumn.colIndex)]) {
-                            scrollLeft = -this.colGroup[Number(focusedColumn.colIndex)]._sx;
+                            scrollLeft = -(this.colGroup[Number(focusedColumn.colIndex)]._ex - this.xvar.bodyWidth);
+
                             scrollTo.call(this, {left: scrollLeft});
                             GRID.header.scrollTo.call(this, {left: scrollLeft});
                             GRID.scroller.resize.call(this);
+                            return true;
                         }
                     }
                     scrollLeft = null;
+                    return false;
                 }).call(this);
+                
+                containerPanelName = nPanelInfo.containerPanelName;
+                isScrollPanel = nPanelInfo.isScrollPanel;
 
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
 
-                this.$.panel[focusedColumn.panelName]
+                var $column = this.$.panel[focusedColumn.panelName]
                     .find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]')
                     .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]')
                     .attr('data-ax5grid-column-focused', "true");
+
+                if (!isScrollTo && $column && isScrollPanel) {// 스크롤 패널 이라면~
+                    // todo : 컬럼이동할 때에도 scrollTo 체크
+                    var newLeft = (function () {
+                        if ($column.position().left + $column.outerWidth() > Math.abs(this.$.panel[focusedColumn.panelName].position().left) + this.$.panel[containerPanelName].width()) {
+                            return $column.position().left + $column.outerWidth() - this.$.panel[containerPanelName].width();
+                        } else if (Math.abs(this.$.panel[focusedColumn.panelName].position().left) > $column.position().left) {
+                            return $column.position().left;
+                        } else {
+                            return;
+                        }
+                    }).call(this);
+
+                    if (typeof newLeft !== "undefined") {
+                        GRID.header.scrollTo.call(this, {left: -newLeft});
+                        scrollTo.call(this, {left: -newLeft});
+                        GRID.scroller.resize.call(this);
+                    }
+                }
 
                 return moveResult;
             },
