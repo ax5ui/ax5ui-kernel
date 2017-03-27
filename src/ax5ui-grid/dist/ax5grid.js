@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.3"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -98,6 +98,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     modified: '__modified__',
                     deleted: '__deleted__',
                     disableSelection: '__disable_selection__'
+                },
+                tree: {
+                    use: false,
+                    hashDigit: 8,
+                    columnKeys: {
+                        parent: "pid",
+                        child: "id",
+                        open: "open",
+                        parentHash: "__parant__",
+                        childHash: "__child__",
+                        children: "__children__",
+                        childrenLength: "__childrenLength__"
+                    }
                 }
             };
             this.xvar = {
@@ -655,6 +668,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Array} _config.columns[].editor.updateWith
              * @param {Function} _config.columns[].editor.disabled - disable editor
              * @param {Boolean} [_config.columns[].multiLine=false]
+             * @param {Object} [_config.tree]
+             * @param {Boolean} [_config.tree.use=false] - Whether tree-type data is used
+             * @param {Object} [_config.tree.columnKeys]
+             * @param {String} [_config.tree.columnKeys.parant]
+             * @param {String} [_config.tree.columnKeys.child]
+             * @param {String} [_config.tree.columnKeys.open]
              * @returns {ax5grid}
              * @example
              * ```js
@@ -1483,8 +1502,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ```
              */
             this.focus = function (_pos) {
-                var _this = this;
-
                 if (GRID.body.moveFocus.call(this, _pos)) {
                     var focusedColumn = void 0;
                     for (var c in this.focusedColumn) {
@@ -1498,35 +1515,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (typeof this.selectedDataIndexs[0] === "undefined") {
                         this.select(0);
                     } else {
-                        (function () {
-                            var selectedIndex = _this.selectedDataIndexs[0];
-                            var processor = {
-                                "UP": function UP() {
-                                    if (selectedIndex > 0) {
-                                        this.select(selectedIndex - 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex - 1);
-                                    }
-                                },
-                                "DOWN": function DOWN() {
-                                    if (selectedIndex < this.list.length - 1) {
-                                        this.select(selectedIndex + 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex + 1);
-                                    }
-                                },
-                                "HOME": function HOME() {
-                                    this.select(0, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, 0);
-                                },
-                                "END": function END() {
-                                    this.select(this.list.length - 1, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, this.list.length - 1);
+                        var selectedIndex = this.selectedDataIndexs[0];
+                        var processor = {
+                            "UP": function UP() {
+                                if (selectedIndex > 0) {
+                                    this.select(selectedIndex - 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex - 1);
                                 }
-                            };
-
-                            if (_pos in processor) {
-                                processor[_pos].call(_this);
+                            },
+                            "DOWN": function DOWN() {
+                                if (selectedIndex < this.list.length - 1) {
+                                    this.select(selectedIndex + 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex + 1);
+                                }
+                            },
+                            "HOME": function HOME() {
+                                this.select(0, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, 0);
+                            },
+                            "END": function END() {
+                                this.select(this.list.length - 1, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, this.list.length - 1);
                             }
-                        })();
+                        };
+
+                        if (_pos in processor) {
+                            processor[_pos].call(this);
+                        }
                     }
                 }
                 return this;
@@ -3701,8 +3716,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
-            var _this2 = this;
-
             var self = this,
                 dindex,
                 colIndex,
@@ -3781,31 +3794,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.isInlineEditing = true;
             }
             if (this.isInlineEditing) {
-                var _ret4 = function () {
 
-                    var originalValue = GRID.data.getValue.call(self, dindex, col.key),
-                        initValue = function (__value, __editor) {
-                        if (U.isNothing(__value)) {
-                            __value = U.isNothing(originalValue) ? "" : originalValue;
-                        }
+                var originalValue = GRID.data.getValue.call(self, dindex, col.key),
+                    initValue = function (__value, __editor) {
+                    if (U.isNothing(__value)) {
+                        __value = U.isNothing(originalValue) ? "" : originalValue;
+                    }
 
-                        if (__editor.type == "money") {
-                            return U.number(__value, { "money": true });
-                        } else {
-                            return __value;
-                        }
-                    }.call(_this2, _initValue, editor);
+                    if (__editor.type == "money") {
+                        return U.number(__value, { "money": true });
+                    } else {
+                        return __value;
+                    }
+                }.call(this, _initValue, editor);
 
-                    _this2.inlineEditing[key].$inlineEditorCell = _this2.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+                this.inlineEditing[key].$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
 
-                    _this2.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(_this2, key, editor, _this2.inlineEditing[key].$inlineEditorCell, initValue);
+                this.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(this, key, editor, this.inlineEditing[key].$inlineEditorCell, initValue);
 
-                    return {
-                        v: true
-                    };
-                }();
-
-                if ((typeof _ret4 === "undefined" ? "undefined" : _typeof(_ret4)) === "object") return _ret4.v;
+                return true;
             }
         },
         deActive: function deActive(_msg, _key, _value) {
@@ -4173,16 +4180,72 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return returnList;
     };
 
+    var arrangeData4tree = function arrangeData4tree(_list) {
+        var li = _list.length;
+        var keys = this.config.tree.columnKeys;
+        var hashDigit = this.config.tree.hashDigit;
+        var childMap = {};
+        var i = 0,
+            seq = 0;
+
+        while (li--) {
+            _list[li][keys.parentHash] = null;
+            _list[li][keys.childHash] = null;
+            _list[li][keys.childLength] = null;
+        }
+
+        /// 루트 아이템 수집
+        i = 0;
+        seq = 0;
+        li = _list.length;
+        for (; i < li; i++) {
+            if (_list[i]) {
+                childMap[_list[i][keys.child]] = i; // 인덱싱
+
+                if (U.number(_list[i][keys.parent]) === 0) {
+                    // 최상위 아이템인 경우
+                    _list[i][keys.children] = [];
+                    _list[i][keys.childrenLength] = 0;
+                    _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
+                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+
+                    seq++;
+                } else {
+                    _list[i][keys.childrenLength] = 0;
+                }
+            }
+        }
+
+        /// 자식 아이템 수집
+        i = 0;
+        for (; i < li; i++) {
+            if (_list[i]) {
+                console.log(_list[i][keys.parentHash]);
+            }
+        }
+
+        return _list;
+    };
+
     var set = function set(data) {
-        var self = this;
 
         if (U.isArray(data)) {
+
             this.page = null;
-            this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
+            if (this.config.tree.use) {
+                this.list = arrangeData4tree.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
+            } else {
+                this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
+            }
             this.deletedList = [];
         } else if ("page" in data) {
+
             this.page = jQuery.extend({}, data.page);
-            this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
+            if (this.config.tree.use) {
+                this.list = arrangeData4tree.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
+            } else {
+                this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
+            }
             this.deletedList = [];
         }
 

@@ -94,6 +94,19 @@
                     modified: '__modified__',
                     deleted: '__deleted__',
                     disableSelection: '__disable_selection__'
+                },
+                tree: {
+                    use: false,
+                    hashDigit: 8,
+                    columnKeys: {
+                        parent: "pid",
+                        child: "id",
+                        open: "open",
+                        parentHash: "__parant__",
+                        childHash: "__child__",
+                        children: "__children__",
+                        childrenLength: "__childrenLength__",
+                    }
                 }
             };
             this.xvar = {
@@ -663,6 +676,12 @@
              * @param {Array} _config.columns[].editor.updateWith
              * @param {Function} _config.columns[].editor.disabled - disable editor
              * @param {Boolean} [_config.columns[].multiLine=false]
+             * @param {Object} [_config.tree]
+             * @param {Boolean} [_config.tree.use=false] - Whether tree-type data is used
+             * @param {Object} [_config.tree.columnKeys]
+             * @param {String} [_config.tree.columnKeys.parant]
+             * @param {String} [_config.tree.columnKeys.child]
+             * @param {String} [_config.tree.columnKeys.open]
              * @returns {ax5grid}
              * @example
              * ```js
