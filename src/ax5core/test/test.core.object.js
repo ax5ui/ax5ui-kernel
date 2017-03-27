@@ -333,6 +333,17 @@ describe('ax5.util.sum TEST', function () {
 
 describe('ax5.util.avg TEST', function () {
     /* ax.util.avg */
+    //Example 01
+    it('ax5.util.avg(arr , function(){return this.value;})', function () {
+        var arr = [7, 70, 700, 7000, 70000, 700000, 7000000];
+
+        var rs = ax5.util.avg(arr, function () {
+            return this
+        });
+
+        should.deepEqual(rs, 1111111);
+    });
+    //Example 02
     it('ax5.util.avg(arr , function(){return this.value;})', function () {
         var arr = [
             {name: "122", value: 9},
