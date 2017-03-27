@@ -122,7 +122,7 @@
                             {
                                 label: function () {
                                     return this.groupBy.labels.join(", ") + " 합계";
-                                }, colspan: 2
+                                }, colspan: 6
                             },
                             {key: "price", collector: "avg", formatter: "money", align: "right"},
                             {key: "amount", collector: "sum", formatter: "money", align: "right"},
@@ -135,7 +135,6 @@
                                 return ax5.util.number(value, {"money": 1});
                             }, align: "right"
                             },
-                            {label: "~~~", colspan: 3}
                         ]
                     }
                 },
@@ -237,7 +236,7 @@
 
                 footSum: [
                     [
-                        {label: "전체 합계", colspan: 2, align: "center"},
+                        {label: "전체 합계", colspan: 6, align: "center"},
                         {key: "price", collector: "avg", formatter: "money", align: "right"},
                         {key: "amount", collector: "sum", formatter: "money", align: "right"},
                         {
@@ -249,7 +248,6 @@
                             return ax5.util.number(value, {"money": 1});
                         }, align: "right"
                         },
-                        {label: "전체 합계", colspan: 4, align: "center"},
                     ]]
 
             });
