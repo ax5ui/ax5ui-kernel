@@ -104,13 +104,13 @@
         let li = _list.length;
         let keys = this.config.tree.columnKeys;
         let hashDigit = this.config.tree.hashDigit;
-        let childMap = {};
+        let listIndexMap = {};
         let i = 0, seq = 0;
 
         while (li--) {
-            _list[li][keys.parentHash] = null;
-            _list[li][keys.childHash] = null;
-            _list[li][keys.childLength] = null;
+            delete _list[li][keys.parentHash];
+            delete _list[li][keys.childHash];
+            delete _list[li][keys.childrenLength];
         }
 
         /// 루트 아이템 수집
@@ -119,13 +119,15 @@
         li = _list.length;
         for (; i < li; i++) {
             if (_list[i]) {
-                childMap[_list[i][keys.child]] = i; // 인덱싱
+                listIndexMap[_list[i][keys.selfKey]] = i; // 인덱싱
 
-                if (U.number(_list[i][keys.parent]) === 0) { // 최상위 아이템인 경우
+                if (U.number(_list[i][keys.parentKey]) === 0) { // 최상위 아이템인 경우
+                    _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
                     _list[i][keys.childrenLength] = 0;
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
                     _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.hidden] = false;
 
                     seq++;
                 } else {
@@ -137,11 +139,33 @@
         /// 자식 아이템 수집
         i = 0;
         for (; i < li; i++) {
-            if (_list[i]) {
-                console.log(_list[i][keys.parentHash]);
+            let _parent, _parentHash;
+            if (_list[i] && _list[i][keys.parentKey] && typeof _list[i][keys.parentHash] === "undefined") {
+
+                if (_parent = _list[listIndexMap[_list[i][keys.parentKey]]]) {
+                    _parentHash = _parent[keys.childHash];
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = _parentHash;
+                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.childrenLength], hashDigit);
+
+                    if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
+                    _parent[keys.childrenLength]++;
+                    _parent[keys.children].push(_list[i][keys.selfKey]);
+                } else {
+                    _list[i][keys.parentKey] = "0";
+                    _list[i][keys.children] = [];
+                    _list[i][keys.childrenLength] = 0;
+                    _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
+                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.hidden] = false;
+
+                    seq++;
+                }
             }
         }
 
+        console.log(_list);
+        
         return _list;
     };
 

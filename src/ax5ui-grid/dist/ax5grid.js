@@ -103,11 +103,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     use: false,
                     hashDigit: 8,
                     columnKeys: {
-                        parent: "pid",
-                        child: "id",
-                        open: "open",
-                        parentHash: "__parant__",
-                        childHash: "__child__",
+                        parentKey: "pid",
+                        selfKey: "id",
+                        collapse: "collapse",
+                        hidden: "hidden",
+                        parentHash: "__hp__",
+                        childHash: "__hc__",
                         children: "__children__",
                         childrenLength: "__childrenLength__"
                     }
@@ -4184,14 +4185,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var li = _list.length;
         var keys = this.config.tree.columnKeys;
         var hashDigit = this.config.tree.hashDigit;
-        var childMap = {};
+        var listIndexMap = {};
         var i = 0,
             seq = 0;
 
         while (li--) {
-            _list[li][keys.parentHash] = null;
-            _list[li][keys.childHash] = null;
-            _list[li][keys.childLength] = null;
+            delete _list[li][keys.parentHash];
+            delete _list[li][keys.childHash];
+            delete _list[li][keys.childrenLength];
         }
 
         /// 루트 아이템 수집
@@ -4200,14 +4201,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         li = _list.length;
         for (; i < li; i++) {
             if (_list[i]) {
-                childMap[_list[i][keys.child]] = i; // 인덱싱
+                listIndexMap[_list[i][keys.selfKey]] = i; // 인덱싱
 
-                if (U.number(_list[i][keys.parent]) === 0) {
+                if (U.number(_list[i][keys.parentKey]) === 0) {
                     // 최상위 아이템인 경우
+                    _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
                     _list[i][keys.childrenLength] = 0;
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
                     _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.hidden] = false;
 
                     seq++;
                 } else {
@@ -4219,10 +4222,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         /// 자식 아이템 수집
         i = 0;
         for (; i < li; i++) {
-            if (_list[i]) {
-                console.log(_list[i][keys.parentHash]);
+            var _parent = void 0,
+                _parentHash = void 0;
+            if (_list[i] && _list[i][keys.parentKey] && typeof _list[i][keys.parentHash] === "undefined") {
+
+                if (_parent = _list[listIndexMap[_list[i][keys.parentKey]]]) {
+                    _parentHash = _parent[keys.childHash];
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = _parentHash;
+                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.childrenLength], hashDigit);
+
+                    if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
+                    _parent[keys.childrenLength]++;
+                    _parent[keys.children].push(_list[i][keys.selfKey]);
+                } else {
+                    _list[i][keys.parentKey] = "0";
+                    _list[i][keys.children] = [];
+                    _list[i][keys.childrenLength] = 0;
+                    _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
+                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.hidden] = false;
+
+                    seq++;
+                }
             }
         }
+
+        console.log(_list);
 
         return _list;
     };

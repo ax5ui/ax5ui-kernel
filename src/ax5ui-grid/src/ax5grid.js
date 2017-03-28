@@ -99,11 +99,12 @@
                     use: false,
                     hashDigit: 8,
                     columnKeys: {
-                        parent: "pid",
-                        child: "id",
-                        open: "open",
-                        parentHash: "__parant__",
-                        childHash: "__child__",
+                        parentKey: "pid",
+                        selfKey: "id",
+                        collapse: "collapse",
+                        hidden: "hidden",
+                        parentHash: "__hp__",
+                        childHash: "__hc__",
                         children: "__children__",
                         childrenLength: "__childrenLength__",
                     }
