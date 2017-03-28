@@ -377,6 +377,11 @@ describe('ax5.util.first TEST', function () {
 
         should.deepEqual(ax5.util.first(_obj), {"k": "ax5"});
     });
+
+    //Example 03
+    it('ax5.util.first("axisj")', function () {
+        should.deepEqual(ax5.util.first("axisj"), undefined);
+    });
     /* end ax.util.first */
 });
 
