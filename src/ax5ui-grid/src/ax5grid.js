@@ -98,6 +98,13 @@
                 tree: {
                     use: false,
                     hashDigit: 8,
+                    indentWidth: 10,
+                    icons: {
+                        open: "⊖",
+                        close: "⊕",
+                        group: "⊚",
+                        item: "⊙"
+                    },
                     columnKeys: {
                         parentKey: "pid",
                         selfKey: "id",
@@ -106,7 +113,7 @@
                         parentHash: "__hp__",
                         childHash: "__hc__",
                         children: "__children__",
-                        childrenLength: "__childrenLength__",
+                        depth: "__depth__",
                     }
                 }
             };

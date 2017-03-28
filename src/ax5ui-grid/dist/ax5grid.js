@@ -102,6 +102,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 tree: {
                     use: false,
                     hashDigit: 8,
+                    indentWidth: 10,
+                    icons: {
+                        open: "⊖",
+                        close: "⊕",
+                        group: "⊚",
+                        item: "⊙"
+                    },
                     columnKeys: {
                         parentKey: "pid",
                         selfKey: "id",
@@ -110,7 +117,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         parentHash: "__hp__",
                         childHash: "__hc__",
                         children: "__children__",
-                        childrenLength: "__childrenLength__"
+                        depth: "__depth__"
                     }
                 }
             };
@@ -2125,6 +2132,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
                 return false;
             }(_col.editor)) {
+                // editor가 inline타입이라면
 
                 _value = _value || GRID.data.getValue.call(this, _index, _key);
 
@@ -2143,34 +2151,50 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // print editor
                 return _returnPlainText ? _value : GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
             }
-            if (_col.formatter) {
-                var that = {
-                    key: _key,
-                    value: _value || GRID.data.getValue.call(this, _index, _key),
-                    dindex: _index,
-                    item: _item,
-                    list: _list
-                };
-                if (U.isFunction(_col.formatter)) {
-                    return _col.formatter.call(that);
-                } else {
-                    return GRID.formatter[_col.formatter].call(that);
-                }
-            } else {
-                var returnValue = "";
 
-                if (typeof _value !== "undefined") {
-                    returnValue = _value;
-                } else {
-                    _value = GRID.data.getValue.call(this, _index, _key);
-                    if (_value !== null && typeof _value !== "undefined") returnValue = _value;
-                }
+            var valueProcessor = {
+                "formatter": function formatter() {
+                    var that = {
+                        key: _key,
+                        value: _value || GRID.data.getValue.call(this, _index, _key),
+                        dindex: _index,
+                        item: _item,
+                        list: _list
+                    };
+                    if (U.isFunction(_col.formatter)) {
+                        return _col.formatter.call(that);
+                    } else {
+                        return GRID.formatter[_col.formatter].call(that);
+                    }
+                },
+                "default": function _default() {
+                    var returnValue = "";
 
-                // 키값이 Boolean일때 오류 발생하여 수정.
-                return typeof returnValue !== "string" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
-                    return tagsToReplace[tag] || tag;
-                });
+                    if (typeof _value !== "undefined") {
+                        returnValue = _value;
+                    } else {
+                        _value = GRID.data.getValue.call(this, _index, _key);
+                        if (_value !== null && typeof _value !== "undefined") returnValue = _value;
+                    }
+
+                    // 키값이 Boolean일때 오류 발생하여 수정.
+                    return typeof returnValue !== "string" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
+                        return tagsToReplace[tag] || tag;
+                    });
+                },
+                "treeControl": function treeControl(__value) {
+                    var keys = this.config.tree.columnKeys;
+
+                    return '<a data-ax5grid-tnode-children="' + _item[keys.children].length + '" data-ax5grid-tnode-depth="' + _item[keys.depth] + '"></a>' + __value;
+                }
+            };
+
+            var returnValue = _col.formatter ? valueProcessor.formatter.call(this) : valueProcessor.default.call(this);
+            if (_col.treeControl) {
+                returnValue = valueProcessor.treeControl.call(this, returnValue);
             }
+
+            return returnValue;
         }
     };
 
@@ -4192,7 +4216,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         while (li--) {
             delete _list[li][keys.parentHash];
             delete _list[li][keys.childHash];
-            delete _list[li][keys.childrenLength];
+            //delete _list[li][keys.childrenLength];
         }
 
         /// 루트 아이템 수집
@@ -4207,14 +4231,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     // 최상위 아이템인 경우
                     _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
-                    _list[i][keys.childrenLength] = 0;
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
                     _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.depth] = 0;
                     _list[i][keys.hidden] = false;
 
                     seq++;
-                } else {
-                    _list[i][keys.childrenLength] = 0;
                 }
             }
         }
@@ -4230,15 +4252,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     _parentHash = _parent[keys.childHash];
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = _parentHash;
-                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.childrenLength], hashDigit);
-
+                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.children].length, hashDigit);
+                    _list[i][keys.depth] = _parent[keys.depth] + 1;
                     if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
-                    _parent[keys.childrenLength]++;
                     _parent[keys.children].push(_list[i][keys.selfKey]);
                 } else {
                     _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
-                    _list[i][keys.childrenLength] = 0;
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
                     _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
                     _list[i][keys.hidden] = false;
@@ -4247,8 +4267,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             }
         }
-
-        console.log(_list);
 
         return _list;
     };

@@ -568,7 +568,7 @@
                         return (GRID.inlineEditor[_editor.type].editMode == "inline");
                     }
                     return false;
-                })(_col.editor)) {
+                })(_col.editor)) { // editor가 inline타입이라면
 
                 _value = _value || GRID.data.getValue.call(this, _index, _key);
 
@@ -587,35 +587,51 @@
                 // print editor
                 return _returnPlainText ? _value : GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
             }
-            if (_col.formatter) {
-                let that = {
-                    key: _key,
-                    value: _value || GRID.data.getValue.call(this, _index, _key),
-                    dindex: _index,
-                    item: _item,
-                    list: _list
-                };
-                if (U.isFunction(_col.formatter)) {
-                    return _col.formatter.call(that);
-                } else {
-                    return GRID.formatter[_col.formatter].call(that);
-                }
-            }
-            else {
-                let returnValue = "";
 
-                if (typeof _value !== "undefined") {
-                    returnValue = _value;
-                } else {
-                    _value = GRID.data.getValue.call(this, _index, _key);
-                    if (_value !== null && typeof _value !== "undefined") returnValue = _value;
-                }
+            const valueProcessor = {
+                "formatter": function () {
+                    let that = {
+                        key: _key,
+                        value: _value || GRID.data.getValue.call(this, _index, _key),
+                        dindex: _index,
+                        item: _item,
+                        list: _list
+                    };
+                    if (U.isFunction(_col.formatter)) {
+                        return _col.formatter.call(that);
+                    } else {
+                        return GRID.formatter[_col.formatter].call(that);
+                    }
+                },
+                "default": function () {
+                    let returnValue = "";
 
-                // 키값이 Boolean일때 오류 발생하여 수정.
-                return (typeof returnValue !== "string") ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
-                        return tagsToReplace[tag] || tag;
-                    });
+                    if (typeof _value !== "undefined") {
+                        returnValue = _value;
+                    } else {
+                        _value = GRID.data.getValue.call(this, _index, _key);
+                        if (_value !== null && typeof _value !== "undefined") returnValue = _value;
+                    }
+
+                    // 키값이 Boolean일때 오류 발생하여 수정.
+                    return (typeof returnValue !== "string") ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
+                            return tagsToReplace[tag] || tag;
+                        });
+                },
+                "treeControl": function (__value) {
+                    let keys = this.config.tree.columnKeys;
+
+                    return '<a data-ax5grid-tnode-children="' + _item[keys.children].length + '" data-ax5grid-tnode-depth="' + _item[keys.depth] + '"></a>'
+                        + __value;
+                }
+            };
+
+            let returnValue = (_col.formatter) ? valueProcessor.formatter.call(this) : valueProcessor.default.call(this);
+            if (_col.treeControl) {
+                returnValue = valueProcessor.treeControl.call(this, returnValue);
             }
+
+            return returnValue;
         }
 
     };
@@ -859,7 +875,7 @@
                 }
                 return len;
             })(); di < dl; di++) {
-                if(_list[di]) {
+                if (_list[di]) {
                     let isGroupingRow = false, rowTable;
                     if (_list[di] && _groupRow && "__isGrouping" in _list[di]) {
                         rowTable = _groupRow;
@@ -2107,7 +2123,7 @@
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리
                 let isScrollTo = (function () {
-                    if(!this.config.virtualScrollX) return false;
+                    if (!this.config.virtualScrollX) return false;
                     let scrollLeft = 0;
                     if (focusedColumn.colIndex + 1 > this.xvar.frozenColumnIndex) {
                         if (focusedColumn.colIndex <= this.xvar.paintStartColumnIndex && this.colGroup[focusedColumn.colIndex]) {
@@ -2118,7 +2134,7 @@
                             return true;
                         }
                         else if (focusedColumn.colIndex >= this.xvar.paintEndColumnIndex && this.colGroup[Number(focusedColumn.colIndex)]) {
-                            if(this.colGroup[Number(focusedColumn.colIndex)]._ex > this.xvar.bodyWidth) {
+                            if (this.colGroup[Number(focusedColumn.colIndex)]._ex > this.xvar.bodyWidth) {
                                 scrollLeft = (this.colGroup[Number(focusedColumn.colIndex)]._ex - this.xvar.bodyWidth);
                                 scrollTo.call(this, {left: -scrollLeft});
                                 GRID.header.scrollTo.call(this, {left: -scrollLeft});
@@ -2130,7 +2146,7 @@
                     scrollLeft = null;
                     return false;
                 }).call(this);
-                
+
                 containerPanelName = nPanelInfo.containerPanelName;
                 isScrollPanel = nPanelInfo.isScrollPanel;
 

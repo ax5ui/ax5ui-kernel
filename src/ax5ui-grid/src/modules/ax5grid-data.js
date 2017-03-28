@@ -110,7 +110,7 @@
         while (li--) {
             delete _list[li][keys.parentHash];
             delete _list[li][keys.childHash];
-            delete _list[li][keys.childrenLength];
+            //delete _list[li][keys.childrenLength];
         }
 
         /// 루트 아이템 수집
@@ -124,14 +124,12 @@
                 if (U.number(_list[i][keys.parentKey]) === 0) { // 최상위 아이템인 경우
                     _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
-                    _list[i][keys.childrenLength] = 0;
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
                     _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.depth] = 0;
                     _list[i][keys.hidden] = false;
 
                     seq++;
-                } else {
-                    _list[i][keys.childrenLength] = 0;
                 }
             }
         }
@@ -146,15 +144,13 @@
                     _parentHash = _parent[keys.childHash];
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = _parentHash;
-                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.childrenLength], hashDigit);
-
+                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.children].length, hashDigit);
+                    _list[i][keys.depth] = _parent[keys.depth] + 1;
                     if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
-                    _parent[keys.childrenLength]++;
                     _parent[keys.children].push(_list[i][keys.selfKey]);
                 } else {
                     _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
-                    _list[i][keys.childrenLength] = 0;
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
                     _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
                     _list[i][keys.hidden] = false;
@@ -164,8 +160,6 @@
             }
         }
 
-        console.log(_list);
-        
         return _list;
     };
 

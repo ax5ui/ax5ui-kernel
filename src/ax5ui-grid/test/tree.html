@@ -75,10 +75,10 @@
 
     var sampleData = [
         {pid: "", id: "1", name: "A<A", price: 1000, amount: null, saleDt: "2016-08-29", customer: "장기영", saleType: "A", isChecked: "Y", __disable_selection__: true},
-        {pid: "", id: "2", name: "names", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
-        {pid: "", id: "3", name: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
-        {pid: "", id: "4", name: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
-        {pid: "", id: "5", name: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
+        {pid: "1", id: "2", name: "names", price: 1100, amount: 11, saleDt: "2016-08-28", customer: "장서우", saleType: "B", isChecked: "N"},
+        {pid: "1", id: "3", name: "C01", price: 1200, amount: 10, saleDt: "2016-08-27", customer: "이영희", saleType: "A", isChecked: "N"},
+        {pid: "3", id: "4", name: "A01", price: 1300, amount: 8, saleDt: "2016-08-25", customer: "황인서", saleType: "C", isChecked: "Y"},
+        {pid: "3", id: "5", name: "B01", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "황세진", saleType: "D", isChecked: "Y"},
         {pid: "", id: "6", name: "A01", price: 1500, amount: 2, saleDt: "2016-08-26", customer: "이서연", saleType: "A", isChecked: "N"},
     ];
 
@@ -126,7 +126,7 @@
                             }
                         }
                     },
-                    {key: "name", label: "필드B", align: "center", editor: {type: "text"}},
+                    {key: "name", label: "필드B", align: "left", width: 300, treeControl: true, editor: {type: "text"}},
                     {
                         key: "isChecked", label: "체크박스", width: 50, sortable: false, editor: {
                         type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
