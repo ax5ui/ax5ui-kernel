@@ -444,6 +444,7 @@
             }
         }).bind(this));
 
+
         if (ax5.info.supportTouch) {
             this.$["container"]["body"]
                 .on("touchstart", '[data-ax5grid-panel]', function (e) {
@@ -451,6 +452,7 @@
                     scrollContentMover.on.call(self);
                 });
         }
+
     };
 
     var resize = function () {

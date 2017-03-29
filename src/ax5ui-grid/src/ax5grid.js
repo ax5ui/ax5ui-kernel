@@ -100,10 +100,11 @@
                     hashDigit: 8,
                     indentWidth: 10,
                     icons: {
-                        open: "⊖",
-                        close: "⊕",
-                        group: "⊚",
-                        item: "⊙"
+                        openedArrow: '▾',
+                        collapsedArrow: '▸',
+                        groupIcon: '⊚',
+                        collapsedGroupIcon: '⊚',
+                        itemIcon: '⊙'
                     },
                     columnKeys: {
                         parentKey: "pid",
@@ -130,6 +131,7 @@
             this.bodyGrouping = {};
 
             this.list = []; // 그리드의 데이터
+            this.proxyList = null; // 그리드 데이터의 대리자
             this.page = {}; // 그리드의 페이지 정보
             this.selectedDataIndexs = [];
             this.deletedList = [];
@@ -138,6 +140,7 @@
             this.selectedColumn = {}; // 그리드 바디의 선택된 셀 정보
             this.isInlineEditing = false;
             this.inlineEditing = {};
+            this.listIndexMap = {}; // tree데이터 사용시 데이터 인덱싱 맵
 
             // header
             this.headerTable = {};

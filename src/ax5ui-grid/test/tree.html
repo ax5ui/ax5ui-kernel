@@ -179,10 +179,19 @@
                 },
                 tree: {
                     use: true,
+                    indentWidth: 10,
+                    arrowWidth: 15,
+                    iconWidth: 18,
+                    icons: {
+                        openedArrow: '<i class="fa fa-caret-down" aria-hidden="true"></i>',
+                        collapsedArrow: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
+                        groupIcon: '<i class="fa fa-folder-open" aria-hidden="true"></i>',
+                        collapsedGroupIcon: '<i class="fa fa-folder" aria-hidden="true"></i>',
+                        itemIcon: '<i class="fa fa-circle" aria-hidden="true"></i>'
+                    },
                     columnKeys: {
                         parent: "pid",
-                        child: "id",
-                        open: "open"
+                        child: "id"
                     }
                 }
             });

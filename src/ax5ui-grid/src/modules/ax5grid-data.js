@@ -160,7 +160,21 @@
             }
         }
 
+        this.listIndexMap = listIndexMap;
+
         return _list;
+    };
+
+    const getProxyList = function (_list) {
+        let i = 0, l = _list.length, returnList = [];
+        for (; i < l; i++) {
+
+            if (_list[i] && !_list[i][this.config.tree.columnKeys.hidden]) {
+                _list[i].__origin_index__ = i;
+                returnList.push(_list[i]);
+            }
+        }
+        return returnList;
     };
 
     const set = function (data) {
@@ -172,7 +186,9 @@
                 this.list = arrangeData4tree.call(this,
                     (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data) : data
                 );
+                this.proxyList = getProxyList.call(this, this.list);
             } else {
+                this.proxyList = null;
                 this.list = initData.call(this,
                     (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data) : data
                 );
@@ -186,6 +202,7 @@
                 this.list = arrangeData4tree.call(this,
                     (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data.list) : data.list
                 );
+                this.proxyList = getProxyList.call(this, this.list);
             } else {
                 this.list = initData.call(this,
                     (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data.list) : data.list
@@ -641,11 +658,46 @@
         GRID.page.navigationUpdate.call(this);
     };
 
+    const toggleCollapse = function (_dindex, _collapse) {
+        let keys = this.config.tree.columnKeys, childHash, originIndex;
+
+        if (typeof _dindex === "undefined") return false;
+        originIndex = this.proxyList[_dindex].__origin_index__;
+
+        if (this.list[originIndex][keys.children]) {
+            this.proxyList = []; // 리셋 프록시
+            if (typeof _collapse == "undefined") {
+                _collapse = !(this.list[originIndex][keys.collapse] || false);
+            }
+
+            this.list[originIndex][keys.collapse] = _collapse;
+            childHash = this.list[originIndex][keys.childHash];
+
+            let i = this.list.length;
+            while (i--) {
+                if (this.list[i]) {
+                    if (this.list[i][keys.parentHash].substr(0, childHash.length) === childHash) {
+                        this.list[i][keys.hidden] = _collapse;
+                    }
+
+                    if (!this.list[i][keys.hidden]) {
+                        this.proxyList.push(this.list[i]);
+                    }
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     GRID.data = {
         init: init,
         set: set,
         get: get,
         getList: getList,
+        getProxyList: getProxyList,
         setValue: setValue,
         getValue: getValue,
         clearSelect: clearSelect,
@@ -658,6 +710,7 @@
         sort: sort,
         initData: initData,
         clearGroupingData: clearGroupingData,
-        append: append
+        append: append,
+        toggleCollapse: toggleCollapse
     };
 })();
