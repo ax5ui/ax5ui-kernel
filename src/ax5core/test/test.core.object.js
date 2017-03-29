@@ -401,6 +401,11 @@ describe('ax5.util.last TEST', function () {
 
         should.deepEqual(ax5.util.last(_obj), {"z": "axisj"});
     });
+
+    //Example 03
+    it('ax5.util.last("axisj")', function () {
+        should.deepEqual(ax5.util.last("axisj"), undefined);
+    });
     /* end ax5.util.last */
 });
 
