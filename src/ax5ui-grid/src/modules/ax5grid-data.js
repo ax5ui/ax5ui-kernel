@@ -4,11 +4,11 @@
     let GRID = ax5.ui.grid,
         U = ax5.util;
 
-    let init = function () {
+    const init = function () {
 
     };
 
-    let clearGroupingData = function (_list) {
+    const clearGroupingData = function (_list) {
         let i = 0, l = _list.length, returnList = [];
         for (; i < l; i++) {
             if (_list[i] && !_list[i]["__isGrouping"]) {
@@ -21,7 +21,7 @@
         return returnList;
     };
 
-    let initData = function (_list) {
+    const initData = function (_list) {
         this.selectedDataIndexs = [];
         let i = 0, l = _list.length,
             returnList = [],
@@ -100,21 +100,116 @@
         return returnList;
     };
 
-    let set = function (data) {
-        let self = this;
+    const arrangeData4tree = function (_list) {
+        let li = _list.length;
+        let keys = this.config.tree.columnKeys;
+        let hashDigit = this.config.tree.hashDigit;
+        let listIndexMap = {};
+        let i = 0, seq = 0;
+
+        while (li--) {
+            delete _list[li][keys.parentHash];
+            delete _list[li][keys.childHash];
+            //delete _list[li][keys.childrenLength];
+        }
+
+        /// 루트 아이템 수집
+        i = 0;
+        seq = 0;
+        li = _list.length;
+        for (; i < li; i++) {
+            if (_list[i]) {
+                listIndexMap[_list[i][keys.selfKey]] = i; // 인덱싱
+
+                if (U.number(_list[i][keys.parentKey]) === 0) { // 최상위 아이템인 경우
+                    _list[i][keys.parentKey] = "0";
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
+                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.depth] = 0;
+                    _list[i][keys.hidden] = false;
+
+                    seq++;
+                }
+            }
+        }
+
+        /// 자식 아이템 수집
+        i = 0;
+        for (; i < li; i++) {
+            let _parent, _parentHash;
+            if (_list[i] && _list[i][keys.parentKey] && typeof _list[i][keys.parentHash] === "undefined") {
+
+                if (_parent = _list[listIndexMap[_list[i][keys.parentKey]]]) {
+                    _parentHash = _parent[keys.childHash];
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = _parentHash;
+                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.children].length, hashDigit);
+                    _list[i][keys.depth] = _parent[keys.depth] + 1;
+                    if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
+                    _parent[keys.children].push(_list[i][keys.selfKey]);
+                } else {
+                    _list[i][keys.parentKey] = "0";
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
+                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.hidden] = false;
+
+                    seq++;
+                }
+            }
+        }
+
+        this.listIndexMap = listIndexMap;
+
+        return _list;
+    };
+
+    const getProxyList = function (_list) {
+        let i = 0, l = _list.length, returnList = [];
+        for (; i < l; i++) {
+
+            if (_list[i] && !_list[i][this.config.tree.columnKeys.hidden]) {
+                _list[i].__origin_index__ = i;
+                returnList.push(_list[i]);
+            }
+        }
+        return returnList;
+    };
+
+    const set = function (data) {
 
         if (U.isArray(data)) {
+
             this.page = null;
-            this.list = initData.call(this,
-                (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data) : data
-            );
+            if (this.config.tree.use) {
+                this.list = arrangeData4tree.call(this,
+                    (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data) : data
+                );
+                this.proxyList = getProxyList.call(this, this.list);
+            } else {
+                this.proxyList = null;
+                this.list = initData.call(this,
+                    (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data) : data
+                );
+            }
             this.deletedList = [];
+
         } else if ("page" in data) {
+
             this.page = jQuery.extend({}, data.page);
-            this.list = initData.call(this,
-                (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data.list) : data.list
-            );
+            if (this.config.tree.use) {
+                this.list = arrangeData4tree.call(this,
+                    (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data.list) : data.list
+                );
+                this.proxyList = getProxyList.call(this, this.list);
+            } else {
+                this.list = initData.call(this,
+                    (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data.list) : data.list
+                );
+            }
             this.deletedList = [];
+
         }
 
         this.needToPaintSum = true;
@@ -128,14 +223,14 @@
         return this;
     };
 
-    let get = function (_type) {
+    const get = function (_type) {
         return {
             list: this.list,
             page: this.page
         };
     };
 
-    let getList = function (_type) {
+    const getList = function (_type) {
         let returnList = [];
         let i = 0, l = this.list.length;
         switch (_type) {
@@ -163,7 +258,7 @@
         return returnList;
     };
 
-    let add = function (_row, _dindex, _options) {
+    const add = function (_row, _dindex, _options) {
         let list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
         let processor = {
             "first": function () {
@@ -217,7 +312,7 @@
      * list에서 완전 제거 하는 경우 사용.
      * ax5grid.data.remove
      */
-    let remove = function (_dindex) {
+    const remove = function (_dindex) {
         let list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
         let processor = {
             "first": function () {
@@ -272,7 +367,7 @@
      * list에서 deleted 처리 repaint
      * ax5grid.data.deleteRow
      */
-    let deleteRow = function (_dindex) {
+    const deleteRow = function (_dindex) {
         let list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
         let processor = {
             "first": function () {
@@ -328,7 +423,7 @@
         return this;
     };
 
-    let update = function (_row, _dindex) {
+    const update = function (_row, _dindex) {
         if (!U.isNumber(_dindex)) {
             throw 'invalid argument _dindex';
         }
@@ -341,7 +436,7 @@
         }
     };
 
-    let setValue = function (_dindex, _key, _value) {
+    const setValue = function (_dindex, _key, _value) {
         let originalValue = getValue.call(this, _dindex, _key);
         this.needToPaintSum = true;
 
@@ -386,11 +481,11 @@
         return _value;
     };
 
-    let clearSelect = function () {
+    const clearSelect = function () {
         this.selectedDataIndexs = [];
     };
 
-    let select = function (_dindex, _selected, _options) {
+    const select = function (_dindex, _selected, _options) {
         let cfg = this.config;
 
         if (!this.list[_dindex]) return false;
@@ -421,7 +516,7 @@
         return this.list[_dindex][cfg.columnKeys.selected];
     };
 
-    let selectAll = function (_selected, _options) {
+    const selectAll = function (_selected, _options) {
         let cfg = this.config,
             dindex = this.list.length;
 
@@ -465,7 +560,7 @@
         return this.list;
     };
 
-    let sort = function (_sortInfo, _list) {
+    const sort = function (_sortInfo, _list) {
         let self = this, list = _list || this.list, sortInfoArray = [];
         let getKeyValue = function (_item, _key, _value) {
             if (/[\.\[\]]/.test(_key)) {
@@ -515,7 +610,7 @@
         }
     };
 
-    let append = function (_list, _callback) {
+    const append = function (_list, _callback) {
         let self = this;
         this.list = this.list.concat([].concat(_list));
 
@@ -544,7 +639,7 @@
         // todo : append bounce animation
     };
 
-    let appendIdle = function () {
+    const appendIdle = function () {
         this.appendProgress = false;
         if (this.config.body.grouping) {
             this.list = initData.call(this,
@@ -563,11 +658,46 @@
         GRID.page.navigationUpdate.call(this);
     };
 
+    const toggleCollapse = function (_dindex, _collapse) {
+        let keys = this.config.tree.columnKeys, childHash, originIndex;
+
+        if (typeof _dindex === "undefined") return false;
+        originIndex = this.proxyList[_dindex].__origin_index__;
+
+        if (this.list[originIndex][keys.children]) {
+            this.proxyList = []; // 리셋 프록시
+            if (typeof _collapse == "undefined") {
+                _collapse = !(this.list[originIndex][keys.collapse] || false);
+            }
+
+            this.list[originIndex][keys.collapse] = _collapse;
+            childHash = this.list[originIndex][keys.childHash];
+
+            let i = this.list.length;
+            while (i--) {
+                if (this.list[i]) {
+                    if (this.list[i][keys.parentHash].substr(0, childHash.length) === childHash) {
+                        this.list[i][keys.hidden] = _collapse;
+                    }
+
+                    if (!this.list[i][keys.hidden]) {
+                        this.proxyList.push(this.list[i]);
+                    }
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     GRID.data = {
         init: init,
         set: set,
         get: get,
         getList: getList,
+        getProxyList: getProxyList,
         setValue: setValue,
         getValue: getValue,
         clearSelect: clearSelect,
@@ -580,6 +710,7 @@
         sort: sort,
         initData: initData,
         clearGroupingData: clearGroupingData,
-        append: append
+        append: append,
+        toggleCollapse: toggleCollapse
     };
 })();

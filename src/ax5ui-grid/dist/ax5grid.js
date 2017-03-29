@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.3"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -98,6 +98,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     modified: '__modified__',
                     deleted: '__deleted__',
                     disableSelection: '__disable_selection__'
+                },
+                tree: {
+                    use: false,
+                    hashDigit: 8,
+                    indentWidth: 10,
+                    icons: {
+                        openedArrow: '▾',
+                        collapsedArrow: '▸',
+                        groupIcon: '⊚',
+                        collapsedGroupIcon: '⊚',
+                        itemIcon: '⊙'
+                    },
+                    columnKeys: {
+                        parentKey: "pid",
+                        selfKey: "id",
+                        collapse: "collapse",
+                        hidden: "hidden",
+                        parentHash: "__hp__",
+                        childHash: "__hc__",
+                        children: "__children__",
+                        depth: "__depth__"
+                    }
                 }
             };
             this.xvar = {
@@ -113,6 +135,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.bodyGrouping = {};
 
             this.list = []; // 그리드의 데이터
+            this.proxyList = null; // 그리드 데이터의 대리자
             this.page = {}; // 그리드의 페이지 정보
             this.selectedDataIndexs = [];
             this.deletedList = [];
@@ -121,6 +144,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.selectedColumn = {}; // 그리드 바디의 선택된 셀 정보
             this.isInlineEditing = false;
             this.inlineEditing = {};
+            this.listIndexMap = {}; // tree데이터 사용시 데이터 인덱싱 맵
 
             // header
             this.headerTable = {};
@@ -655,6 +679,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Array} _config.columns[].editor.updateWith
              * @param {Function} _config.columns[].editor.disabled - disable editor
              * @param {Boolean} [_config.columns[].multiLine=false]
+             * @param {Object} [_config.tree]
+             * @param {Boolean} [_config.tree.use=false] - Whether tree-type data is used
+             * @param {Object} [_config.tree.columnKeys]
+             * @param {String} [_config.tree.columnKeys.parant]
+             * @param {String} [_config.tree.columnKeys.child]
+             * @param {String} [_config.tree.columnKeys.open]
              * @returns {ax5grid}
              * @example
              * ```js
@@ -1483,8 +1513,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ```
              */
             this.focus = function (_pos) {
-                var _this = this;
-
                 if (GRID.body.moveFocus.call(this, _pos)) {
                     var focusedColumn = void 0;
                     for (var c in this.focusedColumn) {
@@ -1498,35 +1526,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (typeof this.selectedDataIndexs[0] === "undefined") {
                         this.select(0);
                     } else {
-                        (function () {
-                            var selectedIndex = _this.selectedDataIndexs[0];
-                            var processor = {
-                                "UP": function UP() {
-                                    if (selectedIndex > 0) {
-                                        this.select(selectedIndex - 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex - 1);
-                                    }
-                                },
-                                "DOWN": function DOWN() {
-                                    if (selectedIndex < this.list.length - 1) {
-                                        this.select(selectedIndex + 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex + 1);
-                                    }
-                                },
-                                "HOME": function HOME() {
-                                    this.select(0, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, 0);
-                                },
-                                "END": function END() {
-                                    this.select(this.list.length - 1, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, this.list.length - 1);
+                        var selectedIndex = this.selectedDataIndexs[0];
+                        var processor = {
+                            "UP": function UP() {
+                                if (selectedIndex > 0) {
+                                    this.select(selectedIndex - 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex - 1);
                                 }
-                            };
-
-                            if (_pos in processor) {
-                                processor[_pos].call(_this);
+                            },
+                            "DOWN": function DOWN() {
+                                if (selectedIndex < this.list.length - 1) {
+                                    this.select(selectedIndex + 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex + 1);
+                                }
+                            },
+                            "HOME": function HOME() {
+                                this.select(0, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, 0);
+                            },
+                            "END": function END() {
+                                this.select(this.list.length - 1, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, this.list.length - 1);
                             }
-                        })();
+                        };
+
+                        if (_pos in processor) {
+                            processor[_pos].call(this);
+                        }
                     }
                 }
                 return this;
@@ -1862,7 +1888,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
 
                     if (!self.config.multipleSelect && self.selectedDataIndexs[0] !== _column.dindex) {
-                        GRID.body.updateRowState.call(self, ["selectedClear"]);
+                        updateRowState.call(self, ["selectedClear"]);
                         GRID.data.clearSelect.call(self);
                     }
 
@@ -1871,7 +1897,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     });
                     updateRowState.call(self, ["selected"], _column.dindex);
                 },
-                "lineNumber": function lineNumber(_column) {}
+                "lineNumber": function lineNumber(_column) {},
+                "tree-control": function treeControl(_column, _el) {
+                    //console.log(_column);
+                    toggleCollapse.call(self, _column.dindex);
+                }
             };
 
             panelName = this.getAttribute("data-ax5grid-panel-name");
@@ -1891,7 +1921,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     dindex: dindex,
                     rowIndex: rowIndex,
                     colIndex: colIndex
-                });
+                }, this);
             }
         });
         this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
@@ -1966,17 +1996,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         });
 
-        /* 사용안함. 나중을 위해 그냥 두자
-         this.$["container"]["body"].on("mouseover", "tr", function () {
-         let dindex = this.getAttribute("data-ax5grid-tr-data-index"),
-         i = self.$.livePanelKeys.length;
-         while (i--) {
-         if (typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
-         self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
-         }
-         self.xvar.dataHoveredIndex = dindex;
-         });
-         */
         this.$["container"]["body"].on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
             if (self.xvar.touchmoved) return false;
             if (this.getAttribute("data-ax5grid-column-rowIndex")) {
@@ -2109,6 +2128,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
                 return false;
             }(_col.editor)) {
+                // editor가 inline타입이라면
 
                 _value = _value || GRID.data.getValue.call(this, _index, _key);
 
@@ -2127,34 +2147,64 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // print editor
                 return _returnPlainText ? _value : GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
             }
-            if (_col.formatter) {
-                var that = {
-                    key: _key,
-                    value: _value || GRID.data.getValue.call(this, _index, _key),
-                    dindex: _index,
-                    item: _item,
-                    list: _list
-                };
-                if (U.isFunction(_col.formatter)) {
-                    return _col.formatter.call(that);
-                } else {
-                    return GRID.formatter[_col.formatter].call(that);
-                }
-            } else {
-                var returnValue = "";
 
-                if (typeof _value !== "undefined") {
-                    returnValue = _value;
-                } else {
-                    _value = GRID.data.getValue.call(this, _index, _key);
-                    if (_value !== null && typeof _value !== "undefined") returnValue = _value;
-                }
+            var valueProcessor = {
+                "formatter": function formatter() {
+                    var that = {
+                        key: _key,
+                        value: _value || GRID.data.getValue.call(this, _index, _key),
+                        dindex: _index,
+                        item: _item,
+                        list: _list
+                    };
+                    if (U.isFunction(_col.formatter)) {
+                        return _col.formatter.call(that);
+                    } else {
+                        return GRID.formatter[_col.formatter].call(that);
+                    }
+                },
+                "default": function _default() {
+                    var returnValue = "";
 
-                // 키값이 Boolean일때 오류 발생하여 수정.
-                return typeof returnValue !== "string" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
-                    return tagsToReplace[tag] || tag;
-                });
+                    if (typeof _value !== "undefined") {
+                        returnValue = _value;
+                    } else {
+                        _value = GRID.data.getValue.call(this, _index, _key);
+                        if (_value !== null && typeof _value !== "undefined") returnValue = _value;
+                    }
+
+                    // 키값이 Boolean일때 오류 발생하여 수정.
+                    return typeof returnValue !== "string" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
+                        return tagsToReplace[tag] || tag;
+                    });
+                },
+                "treeControl": function treeControl(__value) {
+                    var cfg = this.config,
+                        keys = this.config.tree.columnKeys,
+                        indentNodeHtml = '';
+
+                    if (_item[keys.children].length) {
+                        indentNodeHtml += '<a ' + 'data-ax5grid-data-index="' + _index + '" ' + 'data-ax5grid-column-attr="tree-control" ' + 'data-ax5grid-tnode-arrow="" ' + 'style="width: ' + cfg.tree.arrowWidth + 'px;padding-left:' + _item[keys.depth] * cfg.tree.indentWidth + 'px;"' + '>';
+                        indentNodeHtml += _item[keys.collapse] ? cfg.tree.icons.collapsedArrow : cfg.tree.icons.openedArrow;
+                        indentNodeHtml += '</a>';
+                    } else {
+                        indentNodeHtml += '<span ' + 'data-ax5grid-tnode-arrow="" ' + 'style="width: ' + cfg.tree.arrowWidth + 'px;padding-left:' + _item[keys.depth] * cfg.tree.indentWidth + 'px;"' + '>&nbsp;</span>';
+                    }
+
+                    indentNodeHtml += '<span ' + 'data-ax5grid-tnode-item="' + (_item[keys.children].length ? 'group' : 'item') + '" ' + 'style="width: ' + cfg.tree.iconWidth + 'px;"' + '>';
+                    indentNodeHtml += _item[keys.children].length ? _item[keys.collapse] ? cfg.tree.icons.collapsedGroupIcon : cfg.tree.icons.groupIcon : cfg.tree.icons.itemIcon;
+                    indentNodeHtml += '</span>';
+
+                    return indentNodeHtml + __value;
+                }
+            };
+
+            var returnValue = _col.formatter ? valueProcessor.formatter.call(this) : valueProcessor.default.call(this);
+            if (_col.treeControl) {
+                returnValue = valueProcessor.treeControl.call(this, returnValue);
             }
+
+            return returnValue;
         }
     };
 
@@ -2250,7 +2300,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var repaint = function repaint(_reset) {
         var cfg = this.config,
-            list = this.list;
+            list = this.proxyList ? this.proxyList : this.list;
 
         /// repaint reset 타입이면 고정컬럼을 재조정
         if (_reset) {
@@ -3701,8 +3751,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
-            var _this2 = this;
-
             var self = this,
                 dindex,
                 colIndex,
@@ -3781,31 +3829,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.isInlineEditing = true;
             }
             if (this.isInlineEditing) {
-                var _ret4 = function () {
 
-                    var originalValue = GRID.data.getValue.call(self, dindex, col.key),
-                        initValue = function (__value, __editor) {
-                        if (U.isNothing(__value)) {
-                            __value = U.isNothing(originalValue) ? "" : originalValue;
-                        }
+                var originalValue = GRID.data.getValue.call(self, dindex, col.key),
+                    initValue = function (__value, __editor) {
+                    if (U.isNothing(__value)) {
+                        __value = U.isNothing(originalValue) ? "" : originalValue;
+                    }
 
-                        if (__editor.type == "money") {
-                            return U.number(__value, { "money": true });
-                        } else {
-                            return __value;
-                        }
-                    }.call(_this2, _initValue, editor);
+                    if (__editor.type == "money") {
+                        return U.number(__value, { "money": true });
+                    } else {
+                        return __value;
+                    }
+                }.call(this, _initValue, editor);
 
-                    _this2.inlineEditing[key].$inlineEditorCell = _this2.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+                this.inlineEditing[key].$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
 
-                    _this2.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(_this2, key, editor, _this2.inlineEditing[key].$inlineEditorCell, initValue);
+                this.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(this, key, editor, this.inlineEditing[key].$inlineEditorCell, initValue);
 
-                    return {
-                        v: true
-                    };
-                }();
-
-                if ((typeof _ret4 === "undefined" ? "undefined" : _typeof(_ret4)) === "object") return _ret4.v;
+                return true;
             }
         },
         deActive: function deActive(_msg, _key, _value) {
@@ -4019,6 +4061,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return po.join('');
     };
 
+    var toggleCollapse = function toggleCollapse(_dindex, _collapse) {
+        if (GRID.data.toggleCollapse.call(this, _dindex, _collapse)) {
+            this.proxyList = GRID.data.getProxyList.call(this, this.list);
+            repaint.call(this);
+        }
+    };
+
     GRID.body = {
         init: init,
         repaint: repaint,
@@ -4030,7 +4079,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         blur: blur,
         moveFocus: moveFocus,
         inlineEdit: inlineEdit,
-        getExcelString: getExcelString
+        getExcelString: getExcelString,
+        toggleCollapse: toggleCollapse
     };
 })();
 // ax5.ui.grid.collector
@@ -4173,16 +4223,110 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return returnList;
     };
 
+    var arrangeData4tree = function arrangeData4tree(_list) {
+        var li = _list.length;
+        var keys = this.config.tree.columnKeys;
+        var hashDigit = this.config.tree.hashDigit;
+        var listIndexMap = {};
+        var i = 0,
+            seq = 0;
+
+        while (li--) {
+            delete _list[li][keys.parentHash];
+            delete _list[li][keys.childHash];
+            //delete _list[li][keys.childrenLength];
+        }
+
+        /// 루트 아이템 수집
+        i = 0;
+        seq = 0;
+        li = _list.length;
+        for (; i < li; i++) {
+            if (_list[i]) {
+                listIndexMap[_list[i][keys.selfKey]] = i; // 인덱싱
+
+                if (U.number(_list[i][keys.parentKey]) === 0) {
+                    // 최상위 아이템인 경우
+                    _list[i][keys.parentKey] = "0";
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
+                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.depth] = 0;
+                    _list[i][keys.hidden] = false;
+
+                    seq++;
+                }
+            }
+        }
+
+        /// 자식 아이템 수집
+        i = 0;
+        for (; i < li; i++) {
+            var _parent = void 0,
+                _parentHash = void 0;
+            if (_list[i] && _list[i][keys.parentKey] && typeof _list[i][keys.parentHash] === "undefined") {
+
+                if (_parent = _list[listIndexMap[_list[i][keys.parentKey]]]) {
+                    _parentHash = _parent[keys.childHash];
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = _parentHash;
+                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.children].length, hashDigit);
+                    _list[i][keys.depth] = _parent[keys.depth] + 1;
+                    if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
+                    _parent[keys.children].push(_list[i][keys.selfKey]);
+                } else {
+                    _list[i][keys.parentKey] = "0";
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
+                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.hidden] = false;
+
+                    seq++;
+                }
+            }
+        }
+
+        this.listIndexMap = listIndexMap;
+
+        return _list;
+    };
+
+    var getProxyList = function getProxyList(_list) {
+        var i = 0,
+            l = _list.length,
+            returnList = [];
+        for (; i < l; i++) {
+
+            if (_list[i] && !_list[i][this.config.tree.columnKeys.hidden]) {
+                _list[i].__origin_index__ = i;
+                returnList.push(_list[i]);
+            }
+        }
+        return returnList;
+    };
+
     var set = function set(data) {
-        var self = this;
 
         if (U.isArray(data)) {
+
             this.page = null;
-            this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
+            if (this.config.tree.use) {
+                this.list = arrangeData4tree.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
+                this.proxyList = getProxyList.call(this, this.list);
+            } else {
+                this.proxyList = null;
+                this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
+            }
             this.deletedList = [];
         } else if ("page" in data) {
+
             this.page = jQuery.extend({}, data.page);
-            this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
+            if (this.config.tree.use) {
+                this.list = arrangeData4tree.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
+                this.proxyList = getProxyList.call(this, this.list);
+            } else {
+                this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
+            }
             this.deletedList = [];
         }
 
@@ -4594,11 +4738,48 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         GRID.page.navigationUpdate.call(this);
     };
 
+    var toggleCollapse = function toggleCollapse(_dindex, _collapse) {
+        var keys = this.config.tree.columnKeys,
+            childHash = void 0,
+            originIndex = void 0;
+
+        if (typeof _dindex === "undefined") return false;
+        originIndex = this.proxyList[_dindex].__origin_index__;
+
+        if (this.list[originIndex][keys.children]) {
+            this.proxyList = []; // 리셋 프록시
+            if (typeof _collapse == "undefined") {
+                _collapse = !(this.list[originIndex][keys.collapse] || false);
+            }
+
+            this.list[originIndex][keys.collapse] = _collapse;
+            childHash = this.list[originIndex][keys.childHash];
+
+            var i = this.list.length;
+            while (i--) {
+                if (this.list[i]) {
+                    if (this.list[i][keys.parentHash].substr(0, childHash.length) === childHash) {
+                        this.list[i][keys.hidden] = _collapse;
+                    }
+
+                    if (!this.list[i][keys.hidden]) {
+                        this.proxyList.push(this.list[i]);
+                    }
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     GRID.data = {
         init: init,
         set: set,
         get: get,
         getList: getList,
+        getProxyList: getProxyList,
         setValue: setValue,
         getValue: getValue,
         clearSelect: clearSelect,
@@ -4611,7 +4792,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         sort: sort,
         initData: initData,
         clearGroupingData: clearGroupingData,
-        append: append
+        append: append,
+        toggleCollapse: toggleCollapse
     };
 })();
 /*

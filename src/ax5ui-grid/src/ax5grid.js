@@ -94,6 +94,28 @@
                     modified: '__modified__',
                     deleted: '__deleted__',
                     disableSelection: '__disable_selection__'
+                },
+                tree: {
+                    use: false,
+                    hashDigit: 8,
+                    indentWidth: 10,
+                    icons: {
+                        openedArrow: '▾',
+                        collapsedArrow: '▸',
+                        groupIcon: '⊚',
+                        collapsedGroupIcon: '⊚',
+                        itemIcon: '⊙'
+                    },
+                    columnKeys: {
+                        parentKey: "pid",
+                        selfKey: "id",
+                        collapse: "collapse",
+                        hidden: "hidden",
+                        parentHash: "__hp__",
+                        childHash: "__hc__",
+                        children: "__children__",
+                        depth: "__depth__",
+                    }
                 }
             };
             this.xvar = {
@@ -109,6 +131,7 @@
             this.bodyGrouping = {};
 
             this.list = []; // 그리드의 데이터
+            this.proxyList = null; // 그리드 데이터의 대리자
             this.page = {}; // 그리드의 페이지 정보
             this.selectedDataIndexs = [];
             this.deletedList = [];
@@ -117,6 +140,7 @@
             this.selectedColumn = {}; // 그리드 바디의 선택된 셀 정보
             this.isInlineEditing = false;
             this.inlineEditing = {};
+            this.listIndexMap = {}; // tree데이터 사용시 데이터 인덱싱 맵
 
             // header
             this.headerTable = {};
@@ -663,6 +687,12 @@
              * @param {Array} _config.columns[].editor.updateWith
              * @param {Function} _config.columns[].editor.disabled - disable editor
              * @param {Boolean} [_config.columns[].multiLine=false]
+             * @param {Object} [_config.tree]
+             * @param {Boolean} [_config.tree.use=false] - Whether tree-type data is used
+             * @param {Object} [_config.tree.columnKeys]
+             * @param {String} [_config.tree.columnKeys.parant]
+             * @param {String} [_config.tree.columnKeys.child]
+             * @param {String} [_config.tree.columnKeys.open]
              * @returns {ax5grid}
              * @example
              * ```js
