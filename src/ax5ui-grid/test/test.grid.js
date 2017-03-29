@@ -241,6 +241,9 @@ describe('ax5grid TEST', function () {
     it('15 updateRow ax5grid', function (done) {
         myUI.updateRow({a: "G", b: "G", price: 3000, amount: 4000, cost: 5000, saleDt: "2017-02-02", isChecked: "Y", saleType: "A", customer: "name06"}, 0);
         var data = myUI.getList()[0];
+        
+        console.log(data);
+        
         done(data.a == "G" && data.b == "G" ? "" : "error updateRow");
     });
 

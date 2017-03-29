@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.4"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1519,8 +1519,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ```
              */
             this.focus = function (_pos) {
-                var _this = this;
-
                 if (GRID.body.moveFocus.call(this, _pos)) {
                     var focusedColumn = void 0;
                     for (var c in this.focusedColumn) {
@@ -1534,35 +1532,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (typeof this.selectedDataIndexs[0] === "undefined") {
                         this.select(0);
                     } else {
-                        (function () {
-                            var selectedIndex = _this.selectedDataIndexs[0];
-                            var processor = {
-                                "UP": function UP() {
-                                    if (selectedIndex > 0) {
-                                        this.select(selectedIndex - 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex - 1);
-                                    }
-                                },
-                                "DOWN": function DOWN() {
-                                    if (selectedIndex < this.list.length - 1) {
-                                        this.select(selectedIndex + 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex + 1);
-                                    }
-                                },
-                                "HOME": function HOME() {
-                                    this.select(0, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, 0);
-                                },
-                                "END": function END() {
-                                    this.select(this.list.length - 1, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, this.list.length - 1);
+                        var selectedIndex = this.selectedDataIndexs[0];
+                        var processor = {
+                            "UP": function UP() {
+                                if (selectedIndex > 0) {
+                                    this.select(selectedIndex - 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex - 1);
                                 }
-                            };
-
-                            if (_pos in processor) {
-                                processor[_pos].call(_this);
+                            },
+                            "DOWN": function DOWN() {
+                                if (selectedIndex < this.list.length - 1) {
+                                    this.select(selectedIndex + 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex + 1);
+                                }
+                            },
+                            "HOME": function HOME() {
+                                this.select(0, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, 0);
+                            },
+                            "END": function END() {
+                                this.select(this.list.length - 1, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, this.list.length - 1);
                             }
-                        })();
+                        };
+
+                        if (_pos in processor) {
+                            processor[_pos].call(this);
+                        }
                     }
                 }
                 return this;
@@ -2465,7 +2461,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (_list[di]) {
                     var isGroupingRow = false,
                         rowTable = void 0,
-                        odi = _list[di].__origin_index__;
+                        odi = typeof _list[di].__origin_index__ !== "undefined" ? _list[di].__origin_index__ : di;
                     if (_groupRow && "__isGrouping" in _list[di]) {
                         rowTable = _groupRow;
                         isGroupingRow = true;
@@ -3319,6 +3315,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
             }
 
+            console.log('tr[data-ax5grid-tr-data-index="' + di + '"]');
+
             _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
         };
 
@@ -3764,8 +3762,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
-            var _this2 = this;
-
             var self = this,
                 dindex,
                 colIndex,
@@ -3844,31 +3840,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.isInlineEditing = true;
             }
             if (this.isInlineEditing) {
-                var _ret4 = function () {
 
-                    var originalValue = GRID.data.getValue.call(self, dindex, col.key),
-                        initValue = function (__value, __editor) {
-                        if (U.isNothing(__value)) {
-                            __value = U.isNothing(originalValue) ? "" : originalValue;
-                        }
+                var originalValue = GRID.data.getValue.call(self, dindex, col.key),
+                    initValue = function (__value, __editor) {
+                    if (U.isNothing(__value)) {
+                        __value = U.isNothing(originalValue) ? "" : originalValue;
+                    }
 
-                        if (__editor.type == "money") {
-                            return U.number(__value, { "money": true });
-                        } else {
-                            return __value;
-                        }
-                    }.call(_this2, _initValue, editor);
+                    if (__editor.type == "money") {
+                        return U.number(__value, { "money": true });
+                    } else {
+                        return __value;
+                    }
+                }.call(this, _initValue, editor);
 
-                    _this2.inlineEditing[key].$inlineEditorCell = _this2.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+                this.inlineEditing[key].$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
 
-                    _this2.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(_this2, key, editor, _this2.inlineEditing[key].$inlineEditorCell, initValue);
+                this.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(this, key, editor, this.inlineEditing[key].$inlineEditorCell, initValue);
 
-                    return {
-                        v: true
-                    };
-                }();
-
-                if ((typeof _ret4 === "undefined" ? "undefined" : _typeof(_ret4)) === "object") return _ret4.v;
+                return true;
             }
         },
         deActive: function deActive(_msg, _key, _value) {

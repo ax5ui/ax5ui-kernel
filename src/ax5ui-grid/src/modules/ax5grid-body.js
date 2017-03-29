@@ -891,7 +891,7 @@
                 return len;
             })(); di < dl; di++) {
                 if (_list[di]) {
-                    let isGroupingRow = false, rowTable, odi = _list[di].__origin_index__;
+                    let isGroupingRow = false, rowTable, odi = (typeof _list[di].__origin_index__ !== "undefined") ? _list[di].__origin_index__ : di;
                     if (_groupRow && "__isGrouping" in _list[di]) {
                         rowTable = _groupRow;
                         isGroupingRow = true;
@@ -1838,7 +1838,9 @@
                     'style="height: ' + (cfg.body.columnHeight) + 'px;min-height: 1px;" ',
                     '></td>');
             }
-
+            
+            console.log('tr[data-ax5grid-tr-data-index="' + di + '"]');
+            
             _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
         };
 
