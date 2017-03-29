@@ -317,11 +317,33 @@ describe('ax5.util.sum TEST', function () {
 
         should.deepEqual(test, 40);
     });
+
+    //Usage 03
+    it('ax5.util.sum("123", function(){return this;})', function () {
+
+        var test = ax5.util.sum("123", function () {
+            return this;
+        });
+
+        should.deepEqual(test, 0);
+        // print: console.error("argument error : ax5.util.sum - use Array or Object");
+    });
     /*end ax.util.Sum */
 });
 
 describe('ax5.util.avg TEST', function () {
     /* ax.util.avg */
+    //Example 01
+    it('ax5.util.avg(arr , function(){return this.value;})', function () {
+        var arr = [7, 70, 700, 7000, 70000, 700000, 7000000];
+
+        var rs = ax5.util.avg(arr, function () {
+            return this
+        });
+
+        should.deepEqual(rs, 1111111);
+    });
+    //Example 02
     it('ax5.util.avg(arr , function(){return this.value;})', function () {
         var arr = [
             {name: "122", value: 9},
@@ -355,10 +377,15 @@ describe('ax5.util.first TEST', function () {
 
         should.deepEqual(ax5.util.first(_obj), {"k": "ax5"});
     });
+
+    //Example 03
+    it('ax5.util.first("axisj")', function () {
+        should.deepEqual(ax5.util.first("axisj"), undefined);
+    });
     /* end ax.util.first */
 });
 
-describe('ax5.util.first TEST', function () {
+describe('ax5.util.last TEST', function () {
     /* ax5.util.last */
     //Example01
     it('ax5.util.last(["ax5", "axisj"])', function () {
@@ -377,6 +404,20 @@ describe('ax5.util.first TEST', function () {
     /* end ax5.util.last */
 });
 
-/* ax5.util.deepCopy */
-
-/* end ax5.util.deepCopy */
+describe('ax5.util.deepCopy TEST', function () {
+    //Example01
+    it('ax5.util.deepCopy(obj)', function () {
+        /* ax5.util.deepCopy */
+        var obj = [
+            {name: "A", child: [{name: "a-1"}]},
+            {
+                name: "B", child: [{name: "b-1"}],
+                callBack: function () {
+                    console.log('callBack');
+                }
+            }
+        ];
+        should.deepEqual(ax5.util.deepCopy(obj), obj);
+        /* end ax5.util.deepCopy */
+    });
+});
