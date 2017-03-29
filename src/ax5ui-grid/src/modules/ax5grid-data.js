@@ -109,7 +109,7 @@
 
         while (li--) {
             delete _list[li][keys.parentHash];
-            delete _list[li][keys.childHash];
+            delete _list[li][keys.selfHash];
             //delete _list[li][keys.childrenLength];
         }
 
@@ -125,7 +125,7 @@
                     _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
-                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.selfHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
                     _list[i][keys.depth] = 0;
                     _list[i][keys.hidden] = false;
 
@@ -141,10 +141,10 @@
             if (_list[i] && _list[i][keys.parentKey] && typeof _list[i][keys.parentHash] === "undefined") {
 
                 if (_parent = _list[listIndexMap[_list[i][keys.parentKey]]]) {
-                    _parentHash = _parent[keys.childHash];
+                    _parentHash = _parent[keys.selfHash];
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = _parentHash;
-                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.children].length, hashDigit);
+                    _list[i][keys.selfHash] = _parentHash + "." + U.setDigit(_parent[keys.children].length, hashDigit);
                     _list[i][keys.depth] = _parent[keys.depth] + 1;
                     if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
                     _parent[keys.children].push(_list[i][keys.selfKey]);
@@ -152,7 +152,7 @@
                     _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
-                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.selfHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
                     _list[i][keys.hidden] = false;
 
                     seq++;
@@ -178,7 +178,6 @@
     };
 
     const set = function (data) {
-
         if (U.isArray(data)) {
 
             this.page = null;
@@ -469,14 +468,16 @@
     };
 
     let getValue = function (_dindex, _key, _value) {
+        let list = this.list;
+
         if (/[\.\[\]]/.test(_key)) {
             try {
-                _value = (Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";")).call(this.list[_dindex]);
+                _value = (Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";")).call(list[_dindex]);
             } catch (e) {
 
             }
         } else {
-            _value = this.list[_dindex][_key];
+            _value = list[_dindex][_key];
         }
         return _value;
     };
@@ -659,7 +660,7 @@
     };
 
     const toggleCollapse = function (_dindex, _collapse) {
-        let keys = this.config.tree.columnKeys, childHash, originIndex;
+        let keys = this.config.tree.columnKeys, selfHash, originIndex;
 
         if (typeof _dindex === "undefined") return false;
         originIndex = this.proxyList[_dindex].__origin_index__;
@@ -671,12 +672,13 @@
             }
 
             this.list[originIndex][keys.collapse] = _collapse;
-            childHash = this.list[originIndex][keys.childHash];
+            selfHash = this.list[originIndex][keys.selfHash];
 
             let i = this.list.length;
             while (i--) {
                 if (this.list[i]) {
-                    if (this.list[i][keys.parentHash].substr(0, childHash.length) === childHash) {
+                    // console.log(this.list[i][keys.parentHash].substr(0, selfHash.length), selfHash);
+                    if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
                         this.list[i][keys.hidden] = _collapse;
                     }
 

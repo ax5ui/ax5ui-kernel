@@ -54,6 +54,7 @@
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: true,
+                virtualScrollY: true,
                 virtualScrollX: true,
                 height: 0,
                 columnMinWidth: 100,
@@ -112,7 +113,7 @@
                         collapse: "collapse",
                         hidden: "hidden",
                         parentHash: "__hp__",
-                        childHash: "__hc__",
+                        selfHash: "__hs__",
                         children: "__children__",
                         depth: "__depth__",
                     }
@@ -645,7 +646,8 @@
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
              * @param {Function} [_config.remoteSort=false]
-             * @param {Boolean} [_config.virtualScrollX=true]
+             * @param {Boolean} [_config.virtualScrollY=true] - 세로축 가상스크롤 처리여부
+             * @param {Boolean} [_config.virtualScrollX=true] - 가로축 가상스크롤 처리여부
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
@@ -690,7 +692,7 @@
              * @param {Object} [_config.tree]
              * @param {Boolean} [_config.tree.use=false] - Whether tree-type data is used
              * @param {Object} [_config.tree.columnKeys]
-             * @param {String} [_config.tree.columnKeys.parant]
+             * @param {String} [_config.tree.columnKeys.parent]
              * @param {String} [_config.tree.columnKeys.child]
              * @param {String} [_config.tree.columnKeys.open]
              * @returns {ax5grid}
@@ -1095,12 +1097,16 @@
              * ```
              */
             this.setData = function (_data) {
+                let isFirstPaint = (typeof this.xvar.paintStartRowIndex === "undefined");
+
                 GRID.data.set.call(this, _data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
-                GRID.scroller.resize.call(this);
+                if(!isFirstPaint) GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
-                GRID.body.scrollTo.call(this, {top: 0});
+                if(!isFirstPaint) GRID.body.scrollTo.call(this, {top: 0});
+
+                isFirstPaint = null;
                 return this;
             };
 

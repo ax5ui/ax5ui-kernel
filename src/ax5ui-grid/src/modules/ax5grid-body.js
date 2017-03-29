@@ -562,7 +562,7 @@
                     return false;
                 })(_col.editor)) { // editor가 inline타입이라면
 
-                _value = _value || GRID.data.getValue.call(this, _index, _key);
+                _value = _value || GRID.data.getValue.call(this, (typeof _item.__origin_index__ === "undefined") ? _index : _item.__origin_index__, _key);
 
                 if (U.isFunction(_col.editor.disabled)) {
                     if (_col.editor.disabled.call({
@@ -584,7 +584,7 @@
                 "formatter": function () {
                     let that = {
                         key: _key,
-                        value: _value || GRID.data.getValue.call(this, _index, _key),
+                        value: _value || GRID.data.getValue.call(this, (typeof _item.__origin_index__ === "undefined") ? _index : _item.__origin_index__, _key),
                         dindex: _index,
                         item: _item,
                         list: _list
@@ -601,7 +601,7 @@
                     if (typeof _value !== "undefined") {
                         returnValue = _value;
                     } else {
-                        _value = GRID.data.getValue.call(this, _index, _key);
+                        _value = GRID.data.getValue.call(this, (typeof _item.__origin_index__ === "undefined") ? _index : _item.__origin_index__, _key);
                         if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                     }
 
@@ -745,6 +745,7 @@
     };
 
     const repaint = function (_reset) {
+        // debugger;
         let cfg = this.config, list = (this.proxyList) ? this.proxyList : this.list;
 
         /// repaint reset 타입이면 고정컬럼을 재조정
@@ -756,7 +757,7 @@
         }
 
         /// 출력시작 인덱스
-        let paintStartRowIndex = Math.floor(-(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        let paintStartRowIndex = (!this.config.virtualScrollY) ? 0 : Math.floor(-(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (isNaN(paintStartRowIndex)) return this;
 
         let paintStartColumnIndex = 0, paintEndColumnIndex = 0, nopaintLeftColumnsWidth = null, nopaintRightColumnsWidth = null;
@@ -798,7 +799,7 @@
             leftBodyGroupingData = this.leftBodyGroupingData,
             bodyGroupingData = this.bodyGroupingData,
             bodyAlign = cfg.body.align,
-            paintRowCount = Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight) + 1;
+            paintRowCount = (!this.config.virtualScrollY) ? list.length : Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight) + 1;
 
         if (
             this.xvar.dataRowCount === list.length
@@ -820,13 +821,12 @@
             if (cfg.footSum) {
                 footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, paintStartColumnIndex, paintEndColumnIndex);
             }
-
             if (this.xvar.paintStartColumnIndex !== paintStartColumnIndex || this.xvar.paintEndColumnIndex !== paintEndColumnIndex) {
                 this.needToPaintSum = true;
             }
         }
 
-        if (document.addEventListener && ax5.info.supportTouch) {
+        if (!this.config.virtualScrollX && document.addEventListener && ax5.info.supportTouch) {
             paintRowCount = paintRowCount * 2;
         }
 
@@ -891,8 +891,8 @@
                 return len;
             })(); di < dl; di++) {
                 if (_list[di]) {
-                    let isGroupingRow = false, rowTable;
-                    if (_list[di] && _groupRow && "__isGrouping" in _list[di]) {
+                    let isGroupingRow = false, rowTable, odi = _list[di].__origin_index__;
+                    if (_groupRow && "__isGrouping" in _list[di]) {
                         rowTable = _groupRow;
                         isGroupingRow = true;
                     } else {
@@ -903,7 +903,7 @@
 
                         SS.push('<tr class="tr-' + (di % 4) + '"',
                             (isGroupingRow) ? ' data-ax5grid-grouping-tr="true"' : '',
-                            ' data-ax5grid-tr-data-index="' + di + '"',
+                            ' data-ax5grid-tr-data-index="' + odi + '"',
                             ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"',
                             ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"',
                             '>');
@@ -914,7 +914,7 @@
 
                             SS.push('<td ',
                                 'data-ax5grid-panel-name="' + _elTargetKey + '" ',
-                                'data-ax5grid-data-index="' + di + '" ',
+                                'data-ax5grid-data-index="' + odi + '" ',
                                 'data-ax5grid-column-row="' + tri + '" ',
                                 'data-ax5grid-column-col="' + ci + '" ',
                                 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ',
@@ -929,7 +929,7 @@
                                         attrs += 'data-ax5grid-column-selected="true" ';
                                     }
                                     return attrs;
-                                })(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]),
+                                })(this.focusedColumn[odi + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[odi + "_" + col.colIndex + "_" + col.rowIndex]),
                                 'colspan="' + col.colspan + '" ',
                                 'rowspan="' + col.rowspan + '" ',
                                 'class="' + (function (_col) {
@@ -969,7 +969,7 @@
                         SS.push('<td ',
                             'data-ax5grid-column-row="null" ',
                             'data-ax5grid-column-col="null" ',
-                            'data-ax5grid-data-index="' + di + '" ',
+                            'data-ax5grid-data-index="' + odi + '" ',
                             'data-ax5grid-column-attr="' + ("default") + '" ',
                             'style="height: ' + (cfg.body.columnHeight) + 'px;min-height: 1px;" ',
                             '></td>');
@@ -1206,6 +1206,8 @@
             nopaintLeftColumnsWidth: nopaintLeftColumnsWidth,
             nopaintRightColumnsWidth: nopaintRightColumnsWidth,
             bodyTrHeight: this.xvar.bodyTrHeight,
+            virtualScrollX: this.config.virtualScrollX,
+            virtualScrollY: this.config.virtualScrollY,
         };
 
         // aside
@@ -1920,7 +1922,7 @@
             this.$.panel["bottom-body-scroll"].css({left: css.left});
         }
 
-        if (!noRepaint && "top" in css) {
+        if (this.config.virtualScrollY && !noRepaint && "top" in css) {
             repaint.call(this);
         } else if (this.config.virtualScrollX && !noRepaint && "left" in css) {
             repaint.call(this);

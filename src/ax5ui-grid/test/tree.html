@@ -87,8 +87,8 @@
         initView: function () {
             firstGrid.setConfig({
                 target: $('[data-ax5grid="first-grid"]'),
-                frozenColumnIndex: 2,
-                frozenRowIndex: 2,
+                frozenColumnIndex: 0,
+                frozenRowIndex: 0,
                 showLineNumber: true,
                 showRowSelector: true,
                 multipleSelect: true,
@@ -126,7 +126,7 @@
                             }
                         }
                     },
-                    {key: "name", label: "필드B", align: "left", width: 300, treeControl: true, editor: {type: "text"}},
+                    {key: "name", label: "필드B", align: "left", width: 200, treeControl: true, editor: {type: "text"}},
                     {
                         key: "isChecked", label: "체크박스", width: 50, sortable: false, editor: {
                         type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
@@ -163,6 +163,11 @@
                     },
                     {
                         key: "customer", label: "고객명", editor: {type: "text"}
+                    },
+                    {
+                        key: "hash", label: "hash", width: 300, align: "left", formatter: function () {
+                        return this.item["__hs__"];
+                    }
                     }
                 ],
                 page: {
@@ -190,8 +195,8 @@
                         itemIcon: '<i class="fa fa-circle" aria-hidden="true"></i>'
                     },
                     columnKeys: {
-                        parent: "pid",
-                        child: "id"
+                        parentKey: "pid",
+                        selfKey: "id"
                     }
                 }
             });

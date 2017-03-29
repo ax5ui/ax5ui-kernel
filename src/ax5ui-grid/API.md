@@ -53,6 +53,8 @@ Preferences of grid UI
 | [_config.sortable] | <code>Boolean</code> | <code>false</code> |  |
 | [_config.multiSort] | <code>Boolean</code> | <code>false</code> |  |
 | [_config.remoteSort] | <code>function</code> | <code>false</code> |  |
+| [_config.virtualScrollY] | <code>Boolean</code> | <code>true</code> | 세로축 가상스크롤 처리여부 |
+| [_config.virtualScrollX] | <code>Boolean</code> | <code>true</code> | 가로축 가상스크롤 처리여부 |
 | [_config.header] | <code>Object</code> |  |  |
 | [_config.header.align] | <code>String</code> |  |  |
 | [_config.header.columnHeight] | <code>Number</code> | <code>25</code> |  |
@@ -94,6 +96,12 @@ Preferences of grid UI
 | _config.columns[].editor.updateWith | <code>Array</code> |  |  |
 | _config.columns[].editor.disabled | <code>function</code> |  | disable editor |
 | [_config.columns[].multiLine] | <code>Boolean</code> | <code>false</code> |  |
+| [_config.tree] | <code>Object</code> |  |  |
+| [_config.tree.use] | <code>Boolean</code> | <code>false</code> | Whether tree-type data is used |
+| [_config.tree.columnKeys] | <code>Object</code> |  |  |
+| [_config.tree.columnKeys.parant] | <code>String</code> |  |  |
+| [_config.tree.columnKeys.child] | <code>String</code> |  |  |
+| [_config.tree.columnKeys.open] | <code>String</code> |  |  |
 
 **Example**  
 ```js

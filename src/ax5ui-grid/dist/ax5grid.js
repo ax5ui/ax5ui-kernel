@@ -58,6 +58,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: true,
+                virtualScrollY: true,
                 virtualScrollX: true,
                 height: 0,
                 columnMinWidth: 100,
@@ -116,7 +117,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         collapse: "collapse",
                         hidden: "hidden",
                         parentHash: "__hp__",
-                        childHash: "__hc__",
+                        selfHash: "__hs__",
                         children: "__children__",
                         depth: "__depth__"
                     }
@@ -637,7 +638,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
              * @param {Function} [_config.remoteSort=false]
-             * @param {Boolean} [_config.virtualScrollX=true]
+             * @param {Boolean} [_config.virtualScrollY=true] - 세로축 가상스크롤 처리여부
+             * @param {Boolean} [_config.virtualScrollX=true] - 가로축 가상스크롤 처리여부
              * @param {Object} [_config.header]
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
@@ -682,7 +684,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Object} [_config.tree]
              * @param {Boolean} [_config.tree.use=false] - Whether tree-type data is used
              * @param {Object} [_config.tree.columnKeys]
-             * @param {String} [_config.tree.columnKeys.parant]
+             * @param {String} [_config.tree.columnKeys.parent]
              * @param {String} [_config.tree.columnKeys.child]
              * @param {String} [_config.tree.columnKeys.open]
              * @returns {ax5grid}
@@ -1083,12 +1085,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ```
              */
             this.setData = function (_data) {
+                var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
+
                 GRID.data.set.call(this, _data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
-                GRID.scroller.resize.call(this);
+                if (!isFirstPaint) GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
-                GRID.body.scrollTo.call(this, { top: 0 });
+                if (!isFirstPaint) GRID.body.scrollTo.call(this, { top: 0 });
+
+                isFirstPaint = null;
                 return this;
             };
 
@@ -2130,7 +2136,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }(_col.editor)) {
                 // editor가 inline타입이라면
 
-                _value = _value || GRID.data.getValue.call(this, _index, _key);
+                _value = _value || GRID.data.getValue.call(this, typeof _item.__origin_index__ === "undefined" ? _index : _item.__origin_index__, _key);
 
                 if (U.isFunction(_col.editor.disabled)) {
                     if (_col.editor.disabled.call({
@@ -2152,7 +2158,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 "formatter": function formatter() {
                     var that = {
                         key: _key,
-                        value: _value || GRID.data.getValue.call(this, _index, _key),
+                        value: _value || GRID.data.getValue.call(this, typeof _item.__origin_index__ === "undefined" ? _index : _item.__origin_index__, _key),
                         dindex: _index,
                         item: _item,
                         list: _list
@@ -2169,7 +2175,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (typeof _value !== "undefined") {
                         returnValue = _value;
                     } else {
-                        _value = GRID.data.getValue.call(this, _index, _key);
+                        _value = GRID.data.getValue.call(this, typeof _item.__origin_index__ === "undefined" ? _index : _item.__origin_index__, _key);
                         if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                     }
 
@@ -2299,6 +2305,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var repaint = function repaint(_reset) {
+        // debugger;
         var cfg = this.config,
             list = this.proxyList ? this.proxyList : this.list;
 
@@ -2311,7 +2318,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         /// 출력시작 인덱스
-        var paintStartRowIndex = Math.floor(-this.$.panel["body-scroll"].position().top / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        var paintStartRowIndex = !this.config.virtualScrollY ? 0 : Math.floor(-this.$.panel["body-scroll"].position().top / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (isNaN(paintStartRowIndex)) return this;
 
         var paintStartColumnIndex = 0,
@@ -2357,7 +2364,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             leftBodyGroupingData = this.leftBodyGroupingData,
             bodyGroupingData = this.bodyGroupingData,
             bodyAlign = cfg.body.align,
-            paintRowCount = Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight) + 1;
+            paintRowCount = !this.config.virtualScrollY ? list.length : Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight) + 1;
 
         if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex && this.xvar.paintRowCount === paintRowCount && this.xvar.paintStartColumnIndex === paintStartColumnIndex && this.xvar.paintEndColumnIndex === paintEndColumnIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
 
@@ -2373,13 +2380,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (cfg.footSum) {
                 footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, paintStartColumnIndex, paintEndColumnIndex);
             }
-
             if (this.xvar.paintStartColumnIndex !== paintStartColumnIndex || this.xvar.paintEndColumnIndex !== paintEndColumnIndex) {
                 this.needToPaintSum = true;
             }
         }
 
-        if (document.addEventListener && ax5.info.supportTouch) {
+        if (!this.config.virtualScrollX && document.addEventListener && ax5.info.supportTouch) {
             paintRowCount = paintRowCount * 2;
         }
 
@@ -2454,8 +2460,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }(); di < dl; di++) {
                 if (_list[di]) {
                     var isGroupingRow = false,
-                        rowTable = void 0;
-                    if (_list[di] && _groupRow && "__isGrouping" in _list[di]) {
+                        rowTable = void 0,
+                        odi = _list[di].__origin_index__;
+                    if (_groupRow && "__isGrouping" in _list[di]) {
                         rowTable = _groupRow;
                         isGroupingRow = true;
                     } else {
@@ -2464,13 +2471,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
 
-                        SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
+                        SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + odi + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
                         for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                             col = rowTable.rows[tri].cols[ci];
                             cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
                             colAlign = col.align || bodyAlign;
 
-                            SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
+                            SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + odi + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
                                 var attrs = "";
                                 if (_focusedColumn) {
                                     attrs += 'data-ax5grid-column-focused="true" ';
@@ -2479,7 +2486,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                     attrs += 'data-ax5grid-column-selected="true" ';
                                 }
                                 return attrs;
-                            }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                            }(this.focusedColumn[odi + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[odi + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
                                 var tdCSS_class = "";
                                 if (_col.styleClass) {
                                     if (U.isFunction(_col.styleClass)) {
@@ -2509,7 +2516,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                             SS.push('</td>');
                         }
-                        SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                        SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + odi + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
                         SS.push('</tr>');
                     }
                 }
@@ -2740,7 +2747,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             paintEndColumnIndex: paintEndColumnIndex,
             nopaintLeftColumnsWidth: nopaintLeftColumnsWidth,
             nopaintRightColumnsWidth: nopaintRightColumnsWidth,
-            bodyTrHeight: this.xvar.bodyTrHeight
+            bodyTrHeight: this.xvar.bodyTrHeight,
+            virtualScrollX: this.config.virtualScrollX,
+            virtualScrollY: this.config.virtualScrollY
         };
 
         // aside
@@ -3387,7 +3396,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.$.panel["bottom-body-scroll"].css({ left: css.left });
         }
 
-        if (!noRepaint && "top" in css) {
+        if (this.config.virtualScrollY && !noRepaint && "top" in css) {
             repaint.call(this);
         } else if (this.config.virtualScrollX && !noRepaint && "left" in css) {
             repaint.call(this);
@@ -4233,7 +4242,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         while (li--) {
             delete _list[li][keys.parentHash];
-            delete _list[li][keys.childHash];
+            delete _list[li][keys.selfHash];
             //delete _list[li][keys.childrenLength];
         }
 
@@ -4250,7 +4259,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
-                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.selfHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
                     _list[i][keys.depth] = 0;
                     _list[i][keys.hidden] = false;
 
@@ -4267,10 +4276,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (_list[i] && _list[i][keys.parentKey] && typeof _list[i][keys.parentHash] === "undefined") {
 
                 if (_parent = _list[listIndexMap[_list[i][keys.parentKey]]]) {
-                    _parentHash = _parent[keys.childHash];
+                    _parentHash = _parent[keys.selfHash];
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = _parentHash;
-                    _list[i][keys.childHash] = _parentHash + "." + U.setDigit(_parent[keys.children].length, hashDigit);
+                    _list[i][keys.selfHash] = _parentHash + "." + U.setDigit(_parent[keys.children].length, hashDigit);
                     _list[i][keys.depth] = _parent[keys.depth] + 1;
                     if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
                     _parent[keys.children].push(_list[i][keys.selfKey]);
@@ -4278,7 +4287,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
-                    _list[i][keys.childHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.selfHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
                     _list[i][keys.hidden] = false;
 
                     seq++;
@@ -4306,7 +4315,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var set = function set(data) {
-
         if (U.isArray(data)) {
 
             this.page = null;
@@ -4553,12 +4561,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getValue = function getValue(_dindex, _key, _value) {
+        var list = this.list;
+
         if (/[\.\[\]]/.test(_key)) {
             try {
-                _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(this.list[_dindex]);
+                _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(list[_dindex]);
             } catch (e) {}
         } else {
-            _value = this.list[_dindex][_key];
+            _value = list[_dindex][_key];
         }
         return _value;
     };
@@ -4740,7 +4750,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var toggleCollapse = function toggleCollapse(_dindex, _collapse) {
         var keys = this.config.tree.columnKeys,
-            childHash = void 0,
+            selfHash = void 0,
             originIndex = void 0;
 
         if (typeof _dindex === "undefined") return false;
@@ -4753,12 +4763,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
 
             this.list[originIndex][keys.collapse] = _collapse;
-            childHash = this.list[originIndex][keys.childHash];
+            selfHash = this.list[originIndex][keys.selfHash];
 
             var i = this.list.length;
             while (i--) {
                 if (this.list[i]) {
-                    if (this.list[i][keys.parentHash].substr(0, childHash.length) === childHash) {
+                    // console.log(this.list[i][keys.parentHash].substr(0, selfHash.length), selfHash);
+                    if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
                         this.list[i][keys.hidden] = _collapse;
                     }
 
