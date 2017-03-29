@@ -413,7 +413,9 @@ jQuery.fn.ax5formatter = function () {
     var pattern_number = {
         getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
             var enterableKeyCodes = {
-                '190': '.'
+                '190': '.',
+                '110': '.'
+
             };
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
@@ -421,6 +423,8 @@ jQuery.fn.ax5formatter = function () {
             val = val.replace(/[^0-9^\.^\-]/g, "");
             var arrNumber = val.split('.'),
                 returnValue;
+
+            arrNumber[0] += ".";
 
             if (arrNumber.length > 1) {
                 if (U.isNumber(_opts.maxRound)) {
