@@ -53,6 +53,16 @@ describe('ax5.util.each TEST', function () {
         });
         _.isEqual(result, 4).should.equal(true);
     });
+
+    //example 06
+    it('ax5.util.each [isNothing]', function () {
+        var arr;
+        _.isEqual(ax5.util.each(arr, function (i, o) {
+            ++result;
+            return o === 0;
+        }), []).should.equal(true);
+    });
+
     /* end ax5.util.each */
 });
 
