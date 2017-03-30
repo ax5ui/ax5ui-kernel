@@ -15,7 +15,7 @@
         padding-top: $ax5docker-tab-height - 1;
         padding-bottom: 0;
     }
-    ul[data-ax5docker-pane-tabs] {
+    >ul[data-ax5docker-pane-tabs] {
         @include default-flex-box();
         //@include flex(none);
 
@@ -288,7 +288,7 @@
             }
         }
     }
-    [data-ax5docker-pane-tabs-more] {
+    >[data-ax5docker-pane-tabs-more] {
         position: absolute;
         min-width: $ax5docker-tab-height;
         height: $ax5docker-tab-height;
@@ -315,7 +315,7 @@
             border-bottom: 0 none;
         }
     }
-    [data-ax5docker-pane-item-views] {
+    >[data-ax5docker-pane-item-views] {
         z-index: 5;
         @include default-flex-box();
 
@@ -384,6 +384,7 @@
         }
     }
 }
+
 
 @include keyframes(ax-docker-popup) {
     0% {
