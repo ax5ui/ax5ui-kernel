@@ -206,6 +206,14 @@ describe('ax5.util.map TEST', function () {
             return k + Number(v);
         }), [9, 9, 9]).should.equal(true);
     });
+
+    // Usage 04
+    it('ax5.util.map({a: temp, b: temp, c:temp}, function (k, v) {return v;})', function () {
+        var temp = void 0;
+        _.isEqual(ax5.util.map({a: temp, b: temp, c:temp}, function (k, v) {
+            return v;
+        }), []).should.equal(true);
+    });
     /*end ax5.util.map*/
 });
 
