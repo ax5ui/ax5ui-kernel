@@ -214,6 +214,15 @@ describe('ax5.util.map TEST', function () {
             return v;
         }), []).should.equal(true);
     });
+
+    // Usage 05
+    it('ax5.util.map({a: (function(){return 1;})(), b: (function(){return 2;})(), c:(function(){return 3;})()}, ...)', function () {
+        _.isEqual(ax5.util.map({a: (function(){return 1;})(), b: (function(){return 2;})(), c:(function(){return 3;})()}, function (k) {
+            var obj = {};
+            obj[this] = k;
+            return obj;
+        }), [{"1": "a"}, {"2": "b"}, {"3": "c"}]).should.equal(true);
+    });
     /*end ax5.util.map*/
 });
 
