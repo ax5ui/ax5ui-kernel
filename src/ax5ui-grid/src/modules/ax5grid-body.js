@@ -903,7 +903,7 @@
 
                         SS.push('<tr class="tr-' + (di % 4) + '"',
                             (isGroupingRow) ? ' data-ax5grid-grouping-tr="true"' : '',
-                            ' data-ax5grid-tr-data-index="' + odi + '"',
+                            ' data-ax5grid-tr-data-index="' + di + '"',
                             ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"',
                             ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"',
                             '>');
@@ -914,7 +914,7 @@
 
                             SS.push('<td ',
                                 'data-ax5grid-panel-name="' + _elTargetKey + '" ',
-                                'data-ax5grid-data-index="' + odi + '" ',
+                                'data-ax5grid-data-index="' + di + '" ',
                                 'data-ax5grid-column-row="' + tri + '" ',
                                 'data-ax5grid-column-col="' + ci + '" ',
                                 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ',
@@ -929,7 +929,7 @@
                                         attrs += 'data-ax5grid-column-selected="true" ';
                                     }
                                     return attrs;
-                                })(this.focusedColumn[odi + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[odi + "_" + col.colIndex + "_" + col.rowIndex]),
+                                })(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]),
                                 'colspan="' + col.colspan + '" ',
                                 'rowspan="' + col.rowspan + '" ',
                                 'class="' + (function (_col) {
