@@ -23,10 +23,13 @@
 
     const initData = function (_list) {
         this.selectedDataIndexs = [];
+        this.deletedList = [];
+
         let i = 0, l = _list.length,
             returnList = [],
             appendIndex = 0,
-            dataRealRowCount = 0;
+            dataRealRowCount = 0,
+            lineNumber = 0;
 
         if (this.config.body.grouping) {
             let groupingKeys = U.map(this.bodyGrouping.by, function () {
@@ -71,24 +74,27 @@
                         if (_list[i][this.config.columnKeys.selected]) {
                             this.selectedDataIndexs.push(i);
                         }
-                        dataRealRowCount = _list[i]["__index"] = i;
+                        _list[i]["__index"] = lineNumber;
+                        dataRealRowCount++;
                         returnList.push(_list[i]);
                         appendIndex++;
+                        lineNumber++;
                     }
                 }
             }
         }
         else {
             for (; i < l; i++) {
-                if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
-                    this.deletedList.push(_list[i]);
-                } else if (_list[i]) {
-                    if (_list[i][this.config.columnKeys.selected]) {
+                if (_list[i]) {
+                    if (_list[i][this.config.columnKeys.deleted]) {
+                        this.deletedList.push(_list[i]);
+                    } else if (_list[i][this.config.columnKeys.selected]) {
                         this.selectedDataIndexs.push(i);
                     }
                     // __index변수를 추가하여 lineNumber 에 출력합니다. (body getFieldValue 에서 출력함)
-                    _list[i]["__index"] = i;
+                    _list[i]["__index"] = lineNumber;
                     dataRealRowCount++;
+                    lineNumber++;
                     returnList.push(_list[i]);
                 }
             }
@@ -101,11 +107,17 @@
     };
 
     const arrangeData4tree = function (_list) {
+        this.selectedDataIndexs = [];
+        this.deletedList = [];
+        let i = 0, seq = 0,
+            appendIndex = 0,
+            dataRealRowCount = 0,
+            lineNumber = 0;
+
         let li = _list.length;
         let keys = this.config.tree.columnKeys;
         let hashDigit = this.config.tree.hashDigit;
         let listIndexMap = {};
-        let i = 0, seq = 0;
 
         while (li--) {
             delete _list[li][keys.parentHash];
@@ -122,6 +134,7 @@
                 listIndexMap[_list[i][keys.selfKey]] = i; // 인덱싱
 
                 if (U.number(_list[i][keys.parentKey]) === 0) { // 최상위 아이템인 경우
+
                     _list[i][keys.parentKey] = "0";
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
@@ -136,6 +149,7 @@
 
         /// 자식 아이템 수집
         i = 0;
+        lineNumber = 0;
         for (; i < li; i++) {
             let _parent, _parentHash;
             if (_list[i] && _list[i][keys.parentKey] && typeof _list[i][keys.parentHash] === "undefined") {
@@ -158,9 +172,24 @@
                     seq++;
                 }
             }
+
+            if (_list[i]) {
+                if (_list[i][this.config.columnKeys.deleted]) {
+                    this.deletedList.push(_list[i]);
+                    _list[i][keys.hidden] = true;
+                }
+                else if (_list[i][this.config.columnKeys.selected]) {
+                    this.selectedDataIndexs.push(i);
+                }
+
+                _list[i]["__index"] = lineNumber;
+                dataRealRowCount++;
+                lineNumber++;
+            }
         }
 
         this.listIndexMap = listIndexMap;
+        this.xvar.dataRealRowCount = dataRealRowCount;
 
         return _list;
     };
@@ -182,10 +211,8 @@
 
             this.page = null;
             if (this.config.tree.use) {
-                this.list = arrangeData4tree.call(this,
-                    (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data) : data
-                );
-                this.proxyList = getProxyList.call(this, this.list);
+                this.list = arrangeData4tree.call(this, data);
+                this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
             } else {
                 this.proxyList = null;
                 this.list = initData.call(this,
@@ -198,10 +225,8 @@
 
             this.page = jQuery.extend({}, data.page);
             if (this.config.tree.use) {
-                this.list = arrangeData4tree.call(this,
-                    (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data.list) : data.list
-                );
-                this.proxyList = getProxyList.call(this, this.list);
+                this.list = arrangeData4tree.call(this, data.list);
+                this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
             } else {
                 this.list = initData.call(this,
                     (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data.list) : data.list
@@ -260,45 +285,55 @@
     const add = function (_row, _dindex, _options) {
         let list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
         let processor = {
-            "first": function () {
+            "first"() {
                 list = [].concat(_row).concat(list);
             },
-            "last": function () {
+            "last"() {
                 list = list.concat([].concat(_row));
             }
         };
 
-        if (typeof _dindex === "undefined") _dindex = "last";
-        if (_dindex in processor) {
-            _row[this.config.columnKeys.modified] = true;
-            processor[_dindex].call(this, _row);
-        } else {
-            if (!U.isNumber(_dindex)) {
-                throw 'invalid argument _dindex';
+        if (this.config.tree.use) {
+            let list = this.list.concat([].concat(_row));
+
+            this.list = arrangeData4tree.call(this, list);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
+        }
+        else {
+            if (typeof _dindex === "undefined") _dindex = "last";
+            if (_dindex in processor) {
+                _row[this.config.columnKeys.modified] = true;
+                processor[_dindex].call(this, _row);
+            } else {
+                if (!U.isNumber(_dindex)) {
+                    throw 'invalid argument _dindex';
+                }
+                //
+                list = list.splice(_dindex, [].concat(_row));
             }
-            //
-            list = list.splice(_dindex, [].concat(_row));
-        }
 
-        if (this.config.body.grouping) {
-            list = initData.call(this,
-                sort.call(this,
-                    this.sortInfo,
-                    list
-                )
-            );
-        } else if (_options && _options.sort && Object.keys(this.sortInfo).length) {
-            list = initData.call(this,
-                sort.call(this,
-                    this.sortInfo,
-                    list
-                )
-            );
-        } else {
-            list = initData.call(this, list);
-        }
+            if (this.config.body.grouping) {
+                list = initData.call(this,
+                    sort.call(this,
+                        this.sortInfo,
+                        list
+                    )
+                );
+            }
+            else if (_options && _options.sort && Object.keys(this.sortInfo).length) {
+                list = initData.call(this,
+                    sort.call(this,
+                        this.sortInfo,
+                        list
+                    )
+                );
+            }
+            else {
+                list = initData.call(this, list);
+            }
 
-        this.list = list;
+            this.list = list;
+        }
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
@@ -315,11 +350,18 @@
         let list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
         let processor = {
             "first": function () {
-                list.splice(_dindex, 1);
+                if (this.config.tree.use) {
+// todo : tree node 제거할 때 자식 노드 함께 제거 로직 개발
+                } else {
+                    list.splice(0, 1);
+                }
             },
             "last": function () {
                 var lastIndex = list.length - 1;
                 list.splice(lastIndex, 1);
+            },
+            "index": function (_dindex) {
+                list.splice(_dindex, 1);
             }
         };
 
@@ -331,28 +373,34 @@
                 throw 'invalid argument _dindex';
             }
             //
-            list.splice(_dindex, 1);
+            processor[_dindex].call(this, _dindex);
         }
 
-        if (this.config.body.grouping) {
-            list = initData.call(this,
-                sort.call(this,
-                    this.sortInfo,
-                    list
-                )
-            );
-        } else if (Object.keys(this.sortInfo).length) {
-            list = initData.call(this,
-                sort.call(this,
-                    this.sortInfo,
-                    list
-                )
-            );
-        } else {
-            list = initData.call(this, list);
+        if (this.config.tree.use) {
+            this.list = arrangeData4tree.call(this, list);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
+        }
+        else {
+            if (this.config.body.grouping) {
+                list = initData.call(this,
+                    sort.call(this,
+                        this.sortInfo,
+                        list
+                    )
+                );
+            } else if (Object.keys(this.sortInfo).length) {
+                list = initData.call(this,
+                    sort.call(this,
+                        this.sortInfo,
+                        list
+                    )
+                );
+            } else {
+                list = initData.call(this, list);
+            }
+            this.list = list;
         }
 
-        this.list = list;
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
@@ -395,25 +443,31 @@
             list[_dindex][this.config.columnKeys.deleted] = true;
         }
 
-        if (this.config.body.grouping) {
-            list = initData.call(this,
-                sort.call(this,
-                    this.sortInfo,
-                    list
-                )
-            );
-        } else if (Object.keys(this.sortInfo).length) {
-            list = initData.call(this,
-                sort.call(this,
-                    this.sortInfo,
-                    list
-                )
-            );
-        } else {
-            list = initData.call(this, list);
+        if (this.config.tree.use) {
+            this.list = arrangeData4tree.call(this, list);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
         }
+        else {
+            if (this.config.body.grouping) {
+                list = initData.call(this,
+                    sort.call(this,
+                        this.sortInfo,
+                        list
+                    )
+                );
+            } else if (Object.keys(this.sortInfo).length) {
+                list = initData.call(this,
+                    sort.call(this,
+                        this.sortInfo,
+                        list
+                    )
+                );
+            } else {
+                list = initData.call(this, list);
+            }
 
-        this.list = list;
+            this.list = list;
+        }
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;
@@ -613,7 +667,16 @@
 
     const append = function (_list, _callback) {
         let self = this;
-        this.list = this.list.concat([].concat(_list));
+
+        if (this.config.tree.use) {
+            let list = this.list.concat([].concat(_list));
+
+            this.list = arrangeData4tree.call(this, list);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
+            list = null;
+        } else {
+            this.list = this.list.concat([].concat(_list));
+        }
 
         this.appendProgress = true;
         GRID.page.statusUpdate.call(this);

@@ -813,6 +813,14 @@
                     this.$target.data("data-ax5grid-id", grid.id);
                 }
 
+
+                GRID.data.init.call(this);
+
+                if (this.config.tree.use) { // 트리라면
+                    this.sortInfo = {};
+                    this.sortInfo[this.config.tree.columnKeys.selfHash] = {orderBy: "asc", seq: 0, fixed: true};
+                }
+
                 ///========
                 // 그리드를 그리기 위한 가장 기초적인 작업 뼈대와 틀을 준비합니다. 이 메소드는 초기화 시 한번만 호출 되게 됩니다.
                 initGrid.call(this);
