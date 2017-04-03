@@ -4276,10 +4276,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (_list[i]) {
                 listIndexMap[_list[i][keys.selfKey]] = i; // 인덱싱
 
-                if (U.number(_list[i][keys.parentKey]) === 0) {
+                if (U.isNothing(_list[i][keys.parentKey]) || _list[i][keys.parentKey] === "top") {
                     // 최상위 아이템인 경우
-
-                    _list[i][keys.parentKey] = "0";
+                    _list[i][keys.parentKey] = "top";
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
                     _list[i][keys.selfHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
@@ -4297,7 +4296,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         for (; i < li; i++) {
             var _parent = void 0,
                 _parentHash = void 0;
-            if (_list[i] && _list[i][keys.parentKey] && typeof _list[i][keys.parentHash] === "undefined") {
+            if (_list[i] && _list[i][keys.parentKey] !== "top" && typeof _list[i][keys.parentHash] === "undefined") {
 
                 if (_parent = _list[listIndexMap[_list[i][keys.parentKey]]]) {
                     _parentHash = _parent[keys.selfHash];
@@ -4308,7 +4307,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
                     _parent[keys.children].push(_list[i][keys.selfKey]);
                 } else {
-                    _list[i][keys.parentKey] = "0";
+                    _list[i][keys.parentKey] = "top";
                     _list[i][keys.children] = [];
                     _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
                     _list[i][keys.selfHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
