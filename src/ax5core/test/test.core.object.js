@@ -119,6 +119,14 @@ describe('ax5.util.filter TEST', function () {
         });
         should(result).be.deepEqual(["A", "A", "A", "A", "A", "A"]);
     });
+
+    //example 05
+    it('ax5.util.filter("", function (i, o){}) ', function () {
+        var arr = [null, null, null];
+        _.isEqual(ax5.util.filter(arr, function (i, o) {
+            return o === null;
+        }), arr).should.equal(true);
+    });
     /* end ax5.util.filter */
 });
 
@@ -218,14 +226,22 @@ describe('ax5.util.map TEST', function () {
     // Usage 04
     it('ax5.util.map({a: temp, b: temp, c:temp}, function (k, v) {return v;})', function () {
         var temp = void 0;
-        _.isEqual(ax5.util.map({a: temp, b: temp, c:temp}, function (k, v) {
+        _.isEqual(ax5.util.map({a: temp, b: temp, c: temp}, function (k, v) {
             return v;
         }), []).should.equal(true);
     });
 
     // Usage 05
     it('ax5.util.map({a: (function(){return 1;})(), b: (function(){return 2;})(), c:(function(){return 3;})()}, ...)', function () {
-        _.isEqual(ax5.util.map({a: (function(){return 1;})(), b: (function(){return 2;})(), c:(function(){return 3;})()}, function (k) {
+        _.isEqual(ax5.util.map({
+            a: (function () {
+                return 1;
+            })(), b: (function () {
+                return 2;
+            })(), c: (function () {
+                return 3;
+            })()
+        }, function (k) {
             var obj = {};
             obj[this] = k;
             return obj;
