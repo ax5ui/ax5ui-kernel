@@ -127,6 +127,7 @@ describe('ax5.util.filter TEST', function () {
             return o === null;
         }), arr).should.equal(true);
     });
+
     /* end ax5.util.filter */
 });
 
@@ -461,9 +462,9 @@ describe('ax5.util.last TEST', function () {
 });
 
 describe('ax5.util.deepCopy TEST', function () {
+    /* ax5.util.deepCopy */
     //Example01
     it('ax5.util.deepCopy(obj)', function () {
-        /* ax5.util.deepCopy */
         var obj = [
             {name: "A", child: [{name: "a-1"}]},
             {
@@ -474,6 +475,16 @@ describe('ax5.util.deepCopy TEST', function () {
             }
         ];
         should.deepEqual(ax5.util.deepCopy(obj), obj);
-        /* end ax5.util.deepCopy */
     });
+    /* end ax5.util.deepCopy */
+});
+
+describe('ax5.util.param TEST', function () {
+    //Example01
+    /* ax5.util.param */
+    it('ax5.util.param', function () {
+        var result = {a: "1", b: "1232"};
+        should.deepEqual(ax5.util.param("a=1&b=1232"), result);
+    });
+    /* ax5.util.param */
 });
