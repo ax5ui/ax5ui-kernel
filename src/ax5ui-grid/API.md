@@ -98,10 +98,25 @@ Preferences of grid UI
 | [_config.columns[].multiLine] | <code>Boolean</code> | <code>false</code> |  |
 | [_config.tree] | <code>Object</code> |  |  |
 | [_config.tree.use] | <code>Boolean</code> | <code>false</code> | Whether tree-type data is used |
+| [_config.tree.hashDigit] | <code>Number</code> | <code>8</code> |  |
+| [_config.tree.indentWidth] | <code>Number</code> | <code>10</code> |  |
+| [_config.tree.arrowWidth] | <code>Number</code> | <code>15</code> |  |
+| [_config.tree.iconWidth] | <code>Number</code> | <code>18</code> |  |
+| [_config.tree.icons] | <code>Object</code> |  |  |
+| [_config.tree.icons.openedArrow] | <code>String</code> | <code>&#x27;▾&#x27;</code> |  |
+| [_config.tree.icons.collapsedArrow] | <code>String</code> | <code>&#x27;▸&#x27;</code> |  |
+| [_config.tree.icons.groupIcon] | <code>String</code> | <code>&#x27;⊚&#x27;</code> |  |
+| [_config.tree.icons.collapsedGroupIcon] | <code>String</code> | <code>&#x27;⊚&#x27;</code> |  |
+| [_config.tree.icons.itemIcon] | <code>String</code> | <code>&#x27;⊙&#x27;</code> |  |
 | [_config.tree.columnKeys] | <code>Object</code> |  |  |
-| [_config.tree.columnKeys.parant] | <code>String</code> |  |  |
-| [_config.tree.columnKeys.child] | <code>String</code> |  |  |
-| [_config.tree.columnKeys.open] | <code>String</code> |  |  |
+| [_config.tree.columnKeys.parentKey] | <code>String</code> | <code>&quot;pid&quot;</code> |  |
+| [_config.tree.columnKeys.selfKey] | <code>String</code> | <code>&quot;id&quot;</code> |  |
+| [_config.tree.columnKeys.collapse] | <code>String</code> | <code>&quot;collapse&quot;</code> |  |
+| [_config.tree.columnKeys.hidden] | <code>String</code> | <code>&quot;hidden&quot;</code> |  |
+| [_config.tree.columnKeys.parentHash] | <code>String</code> | <code>&quot;__hp__&quot;</code> |  |
+| [_config.tree.columnKeys.selfHash] | <code>String</code> | <code>&quot;__hs__&quot;</code> |  |
+| [_config.tree.columnKeys.children] | <code>String</code> | <code>&quot;__children__&quot;</code> |  |
+| [_config.tree.columnKeys.depth] | <code>String</code> | <code>&quot;__depth__&quot;</code> |  |
 
 **Example**  
 ```js

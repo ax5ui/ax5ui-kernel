@@ -13,9 +13,8 @@
             self.xvar.columnResizerIndex = _colIndex;
             var resizeRange = {
                 min: -self.colGroup[_colIndex]._width + 2,
-                max: (self.colGroup[_colIndex + 1]) ? self.colGroup[_colIndex + 1]._width : self.$["container"]["root"].width() - 2,
+                max: self.$["container"]["root"].width() - self.colGroup[_colIndex]._width,
             };
-            //console.log(resizeRange);
 
             jQuery(document.body)
                 .bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
@@ -166,9 +165,9 @@
             colGroup = this.colGroup,
             _key = _col.key,
             tagsToReplace = {
-            '<': '&lt;',
-            '>': '&gt;'
-        };
+                '<': '&lt;',
+                '>': '&gt;'
+            };
 
         if (_key === "__checkbox_header__") {
             return `<div class="checkBox" style="max-height: ${_col.width - 10}px;min-height: ${_col.width - 10}px;"></div>`;

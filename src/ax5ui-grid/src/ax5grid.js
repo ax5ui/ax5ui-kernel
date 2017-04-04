@@ -100,6 +100,8 @@
                     use: false,
                     hashDigit: 8,
                     indentWidth: 10,
+                    arrowWidth: 15,
+                    iconWidth: 18,
                     icons: {
                         openedArrow: '▾',
                         collapsedArrow: '▸',
@@ -691,10 +693,25 @@
              * @param {Boolean} [_config.columns[].multiLine=false]
              * @param {Object} [_config.tree]
              * @param {Boolean} [_config.tree.use=false] - Whether tree-type data is used
+             * @param {Number} [_config.tree.hashDigit=8]
+             * @param {Number} [_config.tree.indentWidth=10]
+             * @param {Number} [_config.tree.arrowWidth=15]
+             * @param {Number} [_config.tree.iconWidth=18]
+             * @param {Object} [_config.tree.icons]
+             * @param {String} [_config.tree.icons.openedArrow='▾']
+             * @param {String} [_config.tree.icons.collapsedArrow='▸']
+             * @param {String} [_config.tree.icons.groupIcon='⊚']
+             * @param {String} [_config.tree.icons.collapsedGroupIcon='⊚']
+             * @param {String} [_config.tree.icons.itemIcon='⊙']
              * @param {Object} [_config.tree.columnKeys]
-             * @param {String} [_config.tree.columnKeys.parent]
-             * @param {String} [_config.tree.columnKeys.child]
-             * @param {String} [_config.tree.columnKeys.open]
+             * @param {String} [_config.tree.columnKeys.parentKey="pid"]
+             * @param {String} [_config.tree.columnKeys.selfKey="id"]
+             * @param {String} [_config.tree.columnKeys.collapse="collapse"]
+             * @param {String} [_config.tree.columnKeys.hidden="hidden"]
+             * @param {String} [_config.tree.columnKeys.parentHash="__hp__"]
+             * @param {String} [_config.tree.columnKeys.selfHash="__hs__"]
+             * @param {String} [_config.tree.columnKeys.children="__children__"]
+             * @param {String} [_config.tree.columnKeys.depth="__depth__"]
              * @returns {ax5grid}
              * @example
              * ```js

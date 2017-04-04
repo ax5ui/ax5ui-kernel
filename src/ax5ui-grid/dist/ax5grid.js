@@ -104,6 +104,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     use: false,
                     hashDigit: 8,
                     indentWidth: 10,
+                    arrowWidth: 15,
+                    iconWidth: 18,
                     icons: {
                         openedArrow: '▾',
                         collapsedArrow: '▸',
@@ -683,10 +685,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Boolean} [_config.columns[].multiLine=false]
              * @param {Object} [_config.tree]
              * @param {Boolean} [_config.tree.use=false] - Whether tree-type data is used
+             * @param {Number} [_config.tree.hashDigit=8]
+             * @param {Number} [_config.tree.indentWidth=10]
+             * @param {Number} [_config.tree.arrowWidth=15]
+             * @param {Number} [_config.tree.iconWidth=18]
+             * @param {Object} [_config.tree.icons]
+             * @param {String} [_config.tree.icons.openedArrow='▾']
+             * @param {String} [_config.tree.icons.collapsedArrow='▸']
+             * @param {String} [_config.tree.icons.groupIcon='⊚']
+             * @param {String} [_config.tree.icons.collapsedGroupIcon='⊚']
+             * @param {String} [_config.tree.icons.itemIcon='⊙']
              * @param {Object} [_config.tree.columnKeys]
-             * @param {String} [_config.tree.columnKeys.parent]
-             * @param {String} [_config.tree.columnKeys.child]
-             * @param {String} [_config.tree.columnKeys.open]
+             * @param {String} [_config.tree.columnKeys.parentKey="pid"]
+             * @param {String} [_config.tree.columnKeys.selfKey="id"]
+             * @param {String} [_config.tree.columnKeys.collapse="collapse"]
+             * @param {String} [_config.tree.columnKeys.hidden="hidden"]
+             * @param {String} [_config.tree.columnKeys.parentHash="__hp__"]
+             * @param {String} [_config.tree.columnKeys.selfHash="__hs__"]
+             * @param {String} [_config.tree.columnKeys.children="__children__"]
+             * @param {String} [_config.tree.columnKeys.depth="__depth__"]
              * @returns {ax5grid}
              * @example
              * ```js
@@ -4476,17 +4493,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var processor = {
             "first": function first() {
                 if (this.config.tree.use) {
-                    // todo : tree node 제거할 때 자식 노드 함께 제거 로직 개발
+                    processor.tree.call(this, 0);
                 } else {
                     list.splice(0, 1);
                 }
             },
             "last": function last() {
-                var lastIndex = list.length - 1;
-                list.splice(lastIndex, 1);
+                if (this.config.tree.use) {
+                    processor.tree.call(this, list.length - 1);
+                } else {
+                    list.splice(list.length - 1, 1);
+                }
             },
             "index": function index(_dindex) {
-                list.splice(_dindex, 1);
+                if (this.config.tree.use) {
+                    processor.tree.call(this, _dindex);
+                } else {
+                    list.splice(_dindex, 1);
+                }
+            },
+            "tree": function tree(_dindex) {
+                var treeKeys = this.config.tree.columnKeys,
+                    selfHash = list[_dindex][this.config.tree.columnKeys.selfHash];
+                list = U.filter(list, function () {
+                    return this[treeKeys.selfHash].substr(0, selfHash.length) != selfHash;
+                });
+                treeKeys = null;
+                selfHash = null;
             }
         };
 
@@ -4497,8 +4530,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (!U.isNumber(_dindex)) {
                 throw 'invalid argument _dindex';
             }
-            //
-            processor[_dindex].call(this, _dindex);
+            processor["index"].call(this, _dindex);
         }
 
         if (this.config.tree.use) {
@@ -4530,22 +4562,76 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
         var processor = {
             "first": function first() {
-                list[0][this.config.columnKeys.deleted] = true;
+                if (this.config.tree.use) {
+                    processor.tree.call(this, 0);
+                } else {
+                    list[0][this.config.columnKeys.deleted] = true;
+                }
             },
             "last": function last() {
-                list[list.length - 1][this.config.columnKeys.deleted] = true;
+                if (this.config.tree.use) {
+                    processor.tree.call(this, list.length - 1);
+                } else {
+                    list[list.length - 1][this.config.columnKeys.deleted] = true;
+                }
             },
             "selected": function selected() {
-                var i = list.length;
-                while (i--) {
-                    if (list[i][this.config.columnKeys.selected]) {
-                        list[i][this.config.columnKeys.deleted] = true;
+                if (this.config.tree.use) {
+                    processor.tree.call(this, "selected");
+                } else {
+                    var i = list.length;
+                    while (i--) {
+                        if (list[i][this.config.columnKeys.selected]) {
+                            list[i][this.config.columnKeys.deleted] = true;
+                        }
                     }
+                    i = null;
                 }
+            },
+            "tree": function tree(_dindex) {
+                var keys = this.config.columnKeys,
+                    treeKeys = this.config.tree.columnKeys;
+
+                if (_dindex === "selected") {
+
+                    var i = list.length;
+                    while (i--) {
+                        if (list[i][this.config.columnKeys.selected]) {
+                            list[i][this.config.columnKeys.deleted] = true;
+
+                            var selfHash = list[i][treeKeys.selfHash];
+                            var ii = list.length;
+
+                            while (ii--) {
+                                if (list[ii][treeKeys.selfHash].substr(0, selfHash.length) === selfHash) {
+                                    list[ii][keys.deleted] = true;
+                                }
+                            }
+
+                            selfHash = null;
+                            ii = null;
+                        }
+                    }
+                    i = null;
+                } else {
+                    var _selfHash = list[_dindex][treeKeys.selfHash];
+                    var _i = list.length;
+                    while (_i--) {
+                        if (list[_i][treeKeys.selfHash].substr(0, _selfHash.length) !== _selfHash) {
+                            list[_i][keys.deleted] = true;
+                        }
+                    }
+                    _selfHash = null;
+                    _i = null;
+                }
+
+                keys = null;
+                treeKeys = null;
             }
         };
 
         if (typeof _dindex === "undefined") _dindex = "last";
+
         if (_dindex in processor) {
             processor[_dindex].call(this, _dindex);
         } else {
@@ -5003,9 +5089,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             self.xvar.columnResizerIndex = _colIndex;
             var resizeRange = {
                 min: -self.colGroup[_colIndex]._width + 2,
-                max: self.colGroup[_colIndex + 1] ? self.colGroup[_colIndex + 1]._width : self.$["container"]["root"].width() - 2
+                max: self.$["container"]["root"].width() - self.colGroup[_colIndex]._width
             };
-            //console.log(resizeRange);
 
             jQuery(document.body).bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
                 var mouseObj = GRID.util.getMousePosition(e);

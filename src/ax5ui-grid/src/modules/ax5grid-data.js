@@ -350,18 +350,33 @@
         let processor = {
             "first": function () {
                 if (this.config.tree.use) {
-// todo : tree node 제거할 때 자식 노드 함께 제거 로직 개발
+                    processor.tree.call(this, 0);
                 } else {
                     list.splice(0, 1);
                 }
             },
             "last": function () {
-                var lastIndex = list.length - 1;
-                list.splice(lastIndex, 1);
+                if (this.config.tree.use) {
+                    processor.tree.call(this, list.length - 1);
+                } else {
+                    list.splice(list.length - 1, 1);
+                }
             },
             "index": function (_dindex) {
-                list.splice(_dindex, 1);
-            }
+                if (this.config.tree.use) {
+                    processor.tree.call(this, _dindex);
+                } else {
+                    list.splice(_dindex, 1);
+                }
+            },
+            "tree": function (_dindex) {
+                let treeKeys = this.config.tree.columnKeys, selfHash = list[_dindex][this.config.tree.columnKeys.selfHash];
+                list = U.filter(list, function () {
+                    return this[treeKeys.selfHash].substr(0, selfHash.length) != selfHash;
+                });
+                treeKeys = null;
+                selfHash = null;
+            },
         };
 
         if (typeof _dindex === "undefined") _dindex = "last";
@@ -371,8 +386,7 @@
             if (!U.isNumber(_dindex)) {
                 throw 'invalid argument _dindex';
             }
-            //
-            processor[_dindex].call(this, _dindex);
+            processor["index"].call(this, _dindex);
         }
 
         if (this.config.tree.use) {
@@ -417,22 +431,77 @@
         let list = (this.config.body.grouping) ? clearGroupingData.call(this, this.list) : this.list;
         let processor = {
             "first": function () {
-                list[0][this.config.columnKeys.deleted] = true;
+                if (this.config.tree.use) {
+                    processor.tree.call(this, 0);
+                } else {
+                    list[0][this.config.columnKeys.deleted] = true;
+                }
             },
             "last": function () {
-                list[list.length - 1][this.config.columnKeys.deleted] = true;
+                if (this.config.tree.use) {
+                    processor.tree.call(this, list.length - 1);
+                } else {
+                    list[list.length - 1][this.config.columnKeys.deleted] = true;
+                }
             },
             "selected": function () {
-                var i = list.length;
-                while (i--) {
-                    if (list[i][this.config.columnKeys.selected]) {
-                        list[i][this.config.columnKeys.deleted] = true;
+                if (this.config.tree.use) {
+                    processor.tree.call(this, "selected");
+                } else {
+                    let i = list.length;
+                    while (i--) {
+                        if (list[i][this.config.columnKeys.selected]) {
+                            list[i][this.config.columnKeys.deleted] = true;
+                        }
                     }
+                    i = null;
                 }
-            }
+            },
+            "tree": function (_dindex) {
+                let keys = this.config.columnKeys,
+                    treeKeys = this.config.tree.columnKeys;
+
+                if (_dindex === "selected") {
+                    
+                    let i = list.length;
+                    while (i--) {
+                        if (list[i][this.config.columnKeys.selected]) {
+                            list[i][this.config.columnKeys.deleted] = true;
+
+                            let selfHash = list[i][treeKeys.selfHash];
+                            let ii = list.length;
+                            
+                            while (ii--) {
+                                if (list[ii][treeKeys.selfHash].substr(0, selfHash.length) === selfHash) {
+                                    list[ii][keys.deleted] = true;
+                                }
+                            }
+
+                            selfHash = null;
+                            ii = null;
+                        }
+                    }
+                    i = null;
+
+                } else {
+                    let selfHash = list[_dindex][treeKeys.selfHash];
+                    let i = list.length;
+                    while (i--) {
+                        if (list[i][treeKeys.selfHash].substr(0, selfHash.length) !== selfHash) {
+                            list[i][keys.deleted] = true;
+                        }
+                    }
+                    selfHash = null;
+                    i = null;
+                }
+
+                keys = null;
+                treeKeys = null;
+            },
         };
 
         if (typeof _dindex === "undefined") _dindex = "last";
+        
         if (_dindex in processor) {
             processor[_dindex].call(this, _dindex);
         } else {
