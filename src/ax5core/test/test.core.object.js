@@ -479,12 +479,18 @@ describe('ax5.util.deepCopy TEST', function () {
     /* end ax5.util.deepCopy */
 });
 
-describe('ax5.util.param TEST', function () {
-    //Example01
+describe('ax5.util.param TEST', function (){
     /* ax5.util.param */
+    //Example01
     it('ax5.util.param', function () {
         var result = {a: "1", b: "1232"};
         should.deepEqual(ax5.util.param("a=1&b=1232"), result);
+    });
+
+    //Example02
+    it('ax5.util.param', function () {
+        var result = "a=1&b=1232";
+        should.deepEqual(ax5.util.param({a: "1", b: "1232"}), result);
     });
     /* ax5.util.param */
 });
