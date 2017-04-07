@@ -11,7 +11,8 @@
   },
   "scripts": {
     "build": "babel src -d lib",
-    "test": "karma start karma.conf.js"
+    "test": "karma start karma.conf.js",
+    "postinstall": "./node_modules/.bin/opencollective-postinstall || exit 0"
   },
   "devDependencies": {
     "ax5core": "",
@@ -54,11 +55,17 @@
     "marko": "^2.8.4",
     "mocha": "^3.1.0",
     "node-sass": "",
+    "opencollective-postinstall": "^1.0.15",
     "phantomjs-prebuilt": "^2.1.13",
     "requirejs": "^2.3.2",
     "should": "^11.1.0",
     "strip-indent": "^1.0.1",
     "version": "^0.1.2",
     "webdriverio": "^4.6.1"
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/ax5ui-kernel",
+    "logo": "https://opencollective.com/opencollective/logo.txt"
   }
 }
