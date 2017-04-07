@@ -498,5 +498,11 @@ describe('ax5.util.param TEST', function (){
         var result = "a=1&b=1232";
         should.deepEqual(ax5.util.param(result, "param"), result);
     });
+
+    //Example04
+    it('ax5.util.param("a=1&b=1232", "object")', function () {
+        var result = {a: "1", b: "1232"};
+        should.deepEqual(ax5.util.param("a=1&b=1232", "object"), result);
+    });
     /* ax5.util.param */
 });
