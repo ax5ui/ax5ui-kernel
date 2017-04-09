@@ -757,7 +757,9 @@
         }
 
         /// 출력시작 인덱스
-        let paintStartRowIndex = (!this.config.virtualScrollY) ? 0 : Math.floor(-(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        let paintStartRowIndex = (!this.config.virtualScrollY) ?
+            this.xvar.frozenRowIndex :
+            Math.floor(-(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (isNaN(paintStartRowIndex)) return this;
 
         let paintStartColumnIndex = 0, paintEndColumnIndex = 0, nopaintLeftColumnsWidth = null, nopaintRightColumnsWidth = null;

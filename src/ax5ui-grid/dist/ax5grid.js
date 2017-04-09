@@ -2345,7 +2345,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         /// 출력시작 인덱스
-        var paintStartRowIndex = !this.config.virtualScrollY ? 0 : Math.floor(-this.$.panel["body-scroll"].position().top / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        var paintStartRowIndex = !this.config.virtualScrollY ? this.xvar.frozenRowIndex : Math.floor(-this.$.panel["body-scroll"].position().top / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
         if (isNaN(paintStartRowIndex)) return this;
 
         var paintStartColumnIndex = 0,
