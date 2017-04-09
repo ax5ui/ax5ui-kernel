@@ -77,7 +77,7 @@ describe('ax5.util.weeksOfMonth TEST', function () {
             year: 2015,
             month: 9,
             count: 3
-        }
+        };
         should.deepEqual(ax5.util.weeksOfMonth("2015-09-19"), obj);
     });
     /* end ax5.util.weeksOfMonth */
@@ -93,6 +93,11 @@ describe('ax5.util.daysOfMonth TEST', function () {
     //Usage 02
     it('ax5.util.daysOfMonth(2015,1)', function () {
         should.deepEqual(ax5.util.daysOfMonth(2015, 1), 28);
+    });
+
+    //Usage 03
+    it('ax5.util.daysOfMonth(2016,1)', function () {
+        should.deepEqual(ax5.util.daysOfMonth(2016, 1), 29);
     });
     /* end ax5.util.daysOfMonth*/
 });
