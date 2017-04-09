@@ -148,6 +148,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.isInlineEditing = false;
             this.inlineEditing = {};
             this.listIndexMap = {}; // tree데이터 사용시 데이터 인덱싱 맵
+            this.contextMenu_instance = null;
 
             // header
             this.headerTable = {};
@@ -800,6 +801,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.onLoad = cfg.onLoad;
                 this.onDataChanged = cfg.body.onDataChanged;
                 // todo event에 대한 추가 정의 필요
+
+                // 컨텐스트 메뉴 (이렇게 하면 setConfig와, myGrid.contextMenu = function(){} 둘다 사용가능해지기 때문에.)
+                this.contextMenu = cfg.contextMenu;
 
                 this.$target = jQuery(cfg.target);
 
@@ -2029,6 +2033,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         });
 
+        if (this.contextMenu) {
+            this.$["container"]["body"].on("contextmenu", function (e) {
+                if (!self.contextMenu_instance) {
+                    self.contextMenu_instance = new ax5.ui.menu();
+                }
+
+                self.contextMenu_instance.setConfig(self.contextMenu);
+                self.contextMenu_instance.popup(e);
+
+                U.stopEvent(e.originalEvent);
+            });
+        }
         this.$["container"]["body"].on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
             if (self.xvar.touchmoved) return false;
             if (this.getAttribute("data-ax5grid-column-rowIndex")) {

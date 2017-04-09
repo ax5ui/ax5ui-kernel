@@ -144,6 +144,7 @@
             this.isInlineEditing = false;
             this.inlineEditing = {};
             this.listIndexMap = {}; // tree데이터 사용시 데이터 인덱싱 맵
+            this.contextMenu_instance = null;
 
             // header
             this.headerTable = {};
@@ -809,6 +810,9 @@
                 this.onDataChanged = cfg.body.onDataChanged;
                 // todo event에 대한 추가 정의 필요
 
+                // 컨텐스트 메뉴 (이렇게 하면 setConfig와, myGrid.contextMenu = function(){} 둘다 사용가능해지기 때문에.)
+                this.contextMenu = cfg.contextMenu;
+
                 this.$target = jQuery(cfg.target);
 
                 // target attribute data
@@ -948,7 +952,7 @@
                     if (this.onLoad) {
                         this.onLoad.call({
                             self: this
-                        })
+                        });
                     }
                 }).bind(this));
                 return this;
