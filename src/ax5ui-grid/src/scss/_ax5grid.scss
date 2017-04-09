@@ -23,6 +23,9 @@
     &.lineNumberColumn {
 
     }
+    &.focused{
+        box-shadow: $ax5grid-cell-focused-box-shadow;
+    }
 
     @if ($container == "header") {
         cursor: pointer;
@@ -205,6 +208,7 @@
     }
 }
 
+
 @mixin gridRowBackground() {
     &.tr-0 {
         background: $ax5grid-row-bg-0;
@@ -288,6 +292,7 @@
                 @include gridRowBackground();
                 td {
                     @include gridColumn($container);
+
                 }
             }
         }
@@ -419,7 +424,7 @@
         }
 
         [data-ax5grid-container="header"] {
-            @include user-select(none);
+            user-select: none;
             @include gridBoxModal();
             position: relative;
             overflow: hidden;

@@ -294,6 +294,7 @@
                             let width = 0;
                             if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
                             if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
+                            width += cfg.scroller.size;
                             return width;
                         })(),
                     totalWidth = 0, computedWidth, autoWidthColgroupIndexs = [],
@@ -1127,9 +1128,10 @@
                 GRID.data.set.call(this, _data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
-                if(!isFirstPaint) GRID.scroller.resize.call(this);
+                GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
-                if(!isFirstPaint) GRID.body.scrollTo.call(this, {top: 0});
+
+                if (!isFirstPaint) GRID.body.scrollTo.call(this, {top: 0});
 
                 isFirstPaint = null;
                 return this;
