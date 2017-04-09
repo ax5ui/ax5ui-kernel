@@ -427,18 +427,58 @@
             }
         });
 
-        if (this.contextMenu) {
+        if (this.config.contextMenu) {
             this.$["container"]["body"].on("contextmenu", function (e) {
-                if (!self.contextMenu_instance) {
-                    self.contextMenu_instance = new ax5.ui.menu();
+                let target, dindex, rowIndex, colIndex, item, column, param = {};
+
+                target = U.findParentNode(e.target, function (t) {
+                    if (t.getAttribute("data-ax5grid-column-attr")) {
+                        return true;
+                    }
+                });
+
+                if (target) {
+                    // item 찾기
+                    rowIndex = Number(target.getAttribute("data-ax5grid-column-rowIndex"));
+                    colIndex = Number(target.getAttribute("data-ax5grid-column-colIndex"));
+                    dindex = Number(target.getAttribute("data-ax5grid-data-index"));
+                    column = self.bodyRowMap[rowIndex + "_" + colIndex];
+                    item = self.list[dindex];
                 }
 
-                self.contextMenu_instance.setConfig(self.contextMenu);
-                self.contextMenu_instance.popup(e);
+                if (!self.contextMenu) {
+                    self.contextMenu = new ax5.ui.menu();
+                }
+
+                self.contextMenu.setConfig(self.config.contextMenu);
+
+                param = {
+                    element: target,
+                    dindex: dindex,
+                    rowIndex: rowIndex,
+                    colIndex: colIndex,
+                    item: item,
+                    column: column
+                };
+
+                self.contextMenu.popup(e, {
+                    filter: function () {
+                        return self.config.contextMenu.popupFilter.call(this, this, param);
+                    },
+                    param: param
+                });
 
                 U.stopEvent(e.originalEvent);
+                target = null;
+                dindex = null;
+                rowIndex = null;
+                colIndex = null;
+                item = null;
+                column = null;
+                param = null;
             });
         }
+
         this.$["container"]["body"]
             .on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
                 if (self.xvar.touchmoved) return false;
@@ -655,7 +695,7 @@
             };
 
             let returnValue = (_col.formatter) ? valueProcessor.formatter.call(this) : valueProcessor.default.call(this);
-            if (_col.treeControl) {
+            if (this.config.tree.use && _col.treeControl) {
                 returnValue = valueProcessor.treeControl.call(this, returnValue);
             }
 

@@ -423,7 +423,9 @@
                         }
 
                         if (self.onClick) {
-                            self.onClick.call(item, item, param);
+                            if (self.onClick.call(item, item, param)) {
+                                self.close();
+                            }
                         }
                         if ((!item[cfg.columnKeys.items] || item[cfg.columnKeys.items].length == 0) && cfg.itemClickAndClose) self.close();
                     }

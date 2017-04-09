@@ -148,7 +148,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.isInlineEditing = false;
             this.inlineEditing = {};
             this.listIndexMap = {}; // tree데이터 사용시 데이터 인덱싱 맵
-            this.contextMenu_instance = null;
+            this.gridContextMenu = null; // contentMenu 의 인스턴스
 
             // header
             this.headerTable = {};
@@ -801,9 +801,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.onLoad = cfg.onLoad;
                 this.onDataChanged = cfg.body.onDataChanged;
                 // todo event에 대한 추가 정의 필요
-
-                // 컨텐스트 메뉴 (이렇게 하면 setConfig와, myGrid.contextMenu = function(){} 둘다 사용가능해지기 때문에.)
-                this.contextMenu = cfg.contextMenu;
 
                 this.$target = jQuery(cfg.target);
 
@@ -2033,18 +2030,64 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         });
 
-        if (this.contextMenu) {
+        if (this.config.contextMenu) {
             this.$["container"]["body"].on("contextmenu", function (e) {
-                if (!self.contextMenu_instance) {
-                    self.contextMenu_instance = new ax5.ui.menu();
+                var target = void 0,
+                    dindex = void 0,
+                    rowIndex = void 0,
+                    colIndex = void 0,
+                    item = void 0,
+                    column = void 0,
+                    param = {};
+
+                target = U.findParentNode(e.target, function (t) {
+                    if (t.getAttribute("data-ax5grid-column-attr")) {
+                        return true;
+                    }
+                });
+
+                if (target) {
+                    // item 찾기
+                    rowIndex = Number(target.getAttribute("data-ax5grid-column-rowIndex"));
+                    colIndex = Number(target.getAttribute("data-ax5grid-column-colIndex"));
+                    dindex = Number(target.getAttribute("data-ax5grid-data-index"));
+                    column = self.bodyRowMap[rowIndex + "_" + colIndex];
+                    item = self.list[dindex];
                 }
 
-                self.contextMenu_instance.setConfig(self.contextMenu);
-                self.contextMenu_instance.popup(e);
+                if (!self.contextMenu) {
+                    self.contextMenu = new ax5.ui.menu();
+                }
+
+                self.contextMenu.setConfig(self.config.contextMenu);
+
+                param = {
+                    element: target,
+                    dindex: dindex,
+                    rowIndex: rowIndex,
+                    colIndex: colIndex,
+                    item: item,
+                    column: column
+                };
+
+                self.contextMenu.popup(e, {
+                    filter: function filter() {
+                        return self.config.contextMenu.popupFilter.call(this, this, param);
+                    },
+                    param: param
+                });
 
                 U.stopEvent(e.originalEvent);
+                target = null;
+                dindex = null;
+                rowIndex = null;
+                colIndex = null;
+                item = null;
+                column = null;
+                param = null;
             });
         }
+
         this.$["container"]["body"].on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
             if (self.xvar.touchmoved) return false;
             if (this.getAttribute("data-ax5grid-column-rowIndex")) {
@@ -2249,7 +2292,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
 
             var returnValue = _col.formatter ? valueProcessor.formatter.call(this) : valueProcessor.default.call(this);
-            if (_col.treeControl) {
+            if (this.config.tree.use && _col.treeControl) {
                 returnValue = valueProcessor.treeControl.call(this, returnValue);
             }
 
