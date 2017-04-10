@@ -77,8 +77,18 @@ describe('ax5.util.weeksOfMonth TEST', function () {
             year: 2015,
             month: 9,
             count: 3
-        };
+        }
         should.deepEqual(ax5.util.weeksOfMonth("2015-09-19"), obj);
+    });
+
+    //Usage03
+    it('ax5.util.weeksOfMonth("2016-04-30")', function () {
+        var obj = {
+            year: 2016,
+            month: 4,
+            count: 5
+        }
+        should.deepEqual(ax5.util.weeksOfMonth("2016-04-30"), obj);
     });
     /* end ax5.util.weeksOfMonth */
 });
