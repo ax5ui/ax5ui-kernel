@@ -37,6 +37,15 @@ describe('ax5.util.date TEST', function () {
         should.deepEqual(ax5.util.date((new Date()), {set: "lastDayOfMonth", return: 'yyyy/MM/dd'}), str);
     });
 
+    //Usage 06
+    it('ax5.util.date("20170411103317") [string.length == 14]', function () {
+        var date = new Date(2017, 3, 11);
+        date.setHours(10);
+        date.setMinutes(33);
+        date.setSeconds(17);
+        should.deepEqual(ax5.util.date("20170411103317"), date);
+    });
+
     /* end ax5.util.date */
 });
 
