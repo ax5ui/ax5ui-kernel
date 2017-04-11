@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "layout",
-        version: "1.4.9"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5layout
@@ -957,6 +957,18 @@
                 };
             }();
 
+            this.getActiveTab = function (boundID) {
+                var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
+                if (queIdx === -1) {
+                    console.log(ax5.info.getError("ax5layout", "402", "tabOpen"));
+                    return;
+                }
+
+                if (typeof this.queue[queIdx].activePanelIndex != "undefined") {
+                    return this.queue[queIdx].tabPanel[this.queue[queIdx].activePanelIndex];
+                }
+            };
+
             /// 클래스 생성자
             this.main = function () {
                 if (arguments && U.isObject(arguments[0])) {
@@ -1014,6 +1026,9 @@ jQuery.fn.ax5layout = function () {
                     break;
                 case "tabOpen":
                     return ax5.ui.layout_instance.tabOpen(this, arguments[1]);
+                    break;
+                case "getActiveTab":
+                    return ax5.ui.layout_instance.getActiveTab(this, arguments[1]);
                     break;
                 default:
                     return this;
