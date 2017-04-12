@@ -22,7 +22,6 @@ describe('ax5.util.date TEST', function () {
         should.deepEqual(ax5.util.date("1919-03-01", {add: {d: 10}, return: "yyyy/MM/dd hh:mm:ss"}), '1919/03/11 12:00:00');
     });
 
-
     //Usage 04
     it('ax5.util.date((new Date()) , {set:"firstDayOfMonth", return:"yyyy/MM/dd"})', function () {
         var date = new Date();
@@ -44,6 +43,13 @@ describe('ax5.util.date TEST', function () {
         date.setMinutes(33);
         date.setSeconds(17);
         should.deepEqual(ax5.util.date("20170411103317"), date);
+    });
+
+    //Usage 07
+    it('ax5.util.date("201704") [string.length == 7]', function () {
+        var date = new Date(2017, 3);
+        date.setHours(12);
+        should.deepEqual(ax5.util.date("201704"), date);
     });
 
     /* end ax5.util.date */
