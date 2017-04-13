@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "1.4.9"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5modal
@@ -26,7 +26,7 @@
             },
                 getMousePosition = function getMousePosition(e) {
                 var mouseObj = e;
-                if ('changedTouches' in e) {
+                if ('changedTouches' in e && e.changedTouches) {
                     mouseObj = e.changedTouches[0];
                 }
                 return {

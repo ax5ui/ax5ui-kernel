@@ -24,7 +24,7 @@
                 },
                 getMousePosition = function (e) {
                     let mouseObj = e;
-                    if ('changedTouches' in e) {
+                    if ('changedTouches' in e && e.changedTouches) {
                         mouseObj = e.changedTouches[0];
                     }
                     return {
