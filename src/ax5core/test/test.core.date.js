@@ -46,7 +46,14 @@ describe('ax5.util.date TEST', function () {
     });
 
     //Usage 07
-    it('ax5.util.date("201704") [string.length == 7]', function () {
+    it('ax5.util.date("201704") [string.length > 7]', function () {
+        var date = new Date(2017, 3, 12);
+        date.setHours(12);
+        should.deepEqual(ax5.util.date("20170412"), date);
+    });
+
+    //Usage 08
+    it('ax5.util.date("201704") [string.length > 4]', function () {
         var date = new Date(2017, 3);
         date.setHours(12);
         should.deepEqual(ax5.util.date("201704"), date);
