@@ -248,13 +248,14 @@ ax5Grid.setData([]);
 ### ax5grid.getList(_type) ⇒ <code>Array</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 
-| Param | Type |
-| --- | --- |
-| _type | <code>String</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| _type | <code>String</code> | selected|modified|deleted |
 
 **Example**  
 ```js
 ax5Grid.getList();
+ax5Grid.getList("selected");
 ax5Grid.getList("modified");
 ax5Grid.getList("deleted");
 ```

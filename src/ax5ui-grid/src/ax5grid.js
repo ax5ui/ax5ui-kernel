@@ -1140,11 +1140,12 @@
 
             /**
              * @method ax5grid.getList
-             * @param {String} _type
+             * @param {String} _type - selected|modified|deleted
              * @returns {Array}
              * @example
              * ```js
              * ax5Grid.getList();
+             * ax5Grid.getList("selected");
              * ax5Grid.getList("modified");
              * ax5Grid.getList("deleted");
              * ```
