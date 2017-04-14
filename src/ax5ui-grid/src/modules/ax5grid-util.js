@@ -11,39 +11,56 @@
      * @param _frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
-    var divideTableByFrozenColumnIndex = function (_table, _frozenColumnIndex) {
-        var tempTable_l = {rows: []};
-        var tempTable_r = {rows: []};
-        for (var r = 0, rl = _table.rows.length; r < rl; r++) {
-            var row = _table.rows[r];
+    const divideTableByFrozenColumnIndex = function (_table, _frozenColumnIndex) {
+
+        console.log(_table, Function.callee);
+
+        let tempTable_l = {rows: []},
+            tempTable_r = {rows: []};
+
+        for (let r = 0, rl = _table.rows.length; r < rl; r++) {
+            let row = _table.rows[r];
 
             tempTable_l.rows[r] = {cols: []};
             tempTable_r.rows[r] = {cols: []};
 
-            for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                var col = jQuery.extend({}, row.cols[c]);
-                var colStartIndex = col.colIndex, colEndIndex = col.colIndex + col.colspan;
+            for (let c = 0, cl = row.cols.length; c < cl; c++) {
+                let col = jQuery.extend({}, row.cols[c]),
+                    colStartIndex = col.colIndex,
+                    colEndIndex = col.colIndex + col.colspan;
+
+                console.log(colStartIndex, colEndIndex, _frozenColumnIndex);
+
 
                 if (colStartIndex < _frozenColumnIndex) {
                     if (colEndIndex <= _frozenColumnIndex) {
                         // 좌측편에 변형없이 추가
                         tempTable_l.rows[r].cols.push(col);
                     } else {
-                        var leftCol = jQuery.extend({}, col);
-                        var rightCol = jQuery.extend({}, leftCol);
+                        let leftCol = jQuery.extend({}, col),
+                            rightCol = jQuery.extend({}, leftCol);
+
                         leftCol.colspan = _frozenColumnIndex - leftCol.colIndex;
                         rightCol.colIndex = _frozenColumnIndex;
                         rightCol.colspan = col.colspan - leftCol.colspan;
 
                         tempTable_l.rows[r].cols.push(leftCol);
-                        tempTable_r.rows[r].cols.push(rightCol);
+                        if(rightCol.colspan) {
+                            tempTable_r.rows[r].cols.push(rightCol);
+                        }
                     }
                 }
                 else {
                     // 오른편
                     tempTable_r.rows[r].cols.push(col);
                 }
+
+                col = null;
+                colStartIndex = null;
+                colEndIndex = null;
             }
+
+            row = null;
         }
 
         return {
@@ -328,7 +345,7 @@
                 addC += colspan;
                 colspan = null;
             }
-            
+
             if (addC < this.colGroup.length) {
                 for (var c = addC; c < this.colGroup.length; c++) {
                     table.rows[r].cols.push({

@@ -540,6 +540,9 @@
 
             return data;
         }).call(this, this.bodyRowTable);
+        
+        //console.log(dividedBodyRowObj);
+        
         this.leftBodyRowData = dividedBodyRowObj.leftData;
         this.bodyRowData = dividedBodyRowObj.rightData;
 

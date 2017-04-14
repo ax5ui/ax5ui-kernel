@@ -257,7 +257,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var initColumns = function initColumns(_columns) {
                 this.columns = U.deepCopy(_columns);
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
-                this.xvar.frozenColumnIndex = cfg.frozenColumnIndex > this.columns.length ? this.columns.length : cfg.frozenColumnIndex;
+                this.xvar.frozenColumnIndex = cfg.frozenColumnIndex || 0;
 
                 this.bodyRowTable = GRID.util.makeBodyRowTable.call(this, this.columns);
                 this.bodyRowMap = GRID.util.makeBodyRowMap.call(this, this.bodyRowTable);
@@ -2148,6 +2148,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             return data;
         }.call(this, this.bodyRowTable);
+
+        //console.log(dividedBodyRowObj);
+
         this.leftBodyRowData = dividedBodyRowObj.leftData;
         this.bodyRowData = dividedBodyRowObj.rightData;
 
@@ -5248,7 +5251,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var resetFrozenColumn = function resetFrozenColumn() {
         var cfg = this.config,
-            dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+            dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.xvar.frozenColumnIndex);
+
         this.asideHeaderData = function (dataTable) {
             var colGroup = [];
             var data = { rows: [] };
@@ -6346,8 +6350,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
     var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(_table, _frozenColumnIndex) {
-        var tempTable_l = { rows: [] };
-        var tempTable_r = { rows: [] };
+
+        console.log(_table, Function.callee);
+
+        var tempTable_l = { rows: [] },
+            tempTable_r = { rows: [] };
+
         for (var r = 0, rl = _table.rows.length; r < rl; r++) {
             var row = _table.rows[r];
 
@@ -6355,29 +6363,40 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             tempTable_r.rows[r] = { cols: [] };
 
             for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                var col = jQuery.extend({}, row.cols[c]);
-                var colStartIndex = col.colIndex,
+                var col = jQuery.extend({}, row.cols[c]),
+                    colStartIndex = col.colIndex,
                     colEndIndex = col.colIndex + col.colspan;
+
+                console.log(colStartIndex, colEndIndex, _frozenColumnIndex);
 
                 if (colStartIndex < _frozenColumnIndex) {
                     if (colEndIndex <= _frozenColumnIndex) {
                         // 좌측편에 변형없이 추가
                         tempTable_l.rows[r].cols.push(col);
                     } else {
-                        var leftCol = jQuery.extend({}, col);
-                        var rightCol = jQuery.extend({}, leftCol);
+                        var leftCol = jQuery.extend({}, col),
+                            rightCol = jQuery.extend({}, leftCol);
+
                         leftCol.colspan = _frozenColumnIndex - leftCol.colIndex;
                         rightCol.colIndex = _frozenColumnIndex;
                         rightCol.colspan = col.colspan - leftCol.colspan;
 
                         tempTable_l.rows[r].cols.push(leftCol);
-                        tempTable_r.rows[r].cols.push(rightCol);
+                        if (rightCol.colspan) {
+                            tempTable_r.rows[r].cols.push(rightCol);
+                        }
                     }
                 } else {
                     // 오른편
                     tempTable_r.rows[r].cols.push(col);
                 }
+
+                col = null;
+                colStartIndex = null;
+                colEndIndex = null;
             }
+
+            row = null;
         }
 
         return {

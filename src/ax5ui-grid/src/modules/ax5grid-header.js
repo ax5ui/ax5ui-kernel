@@ -116,7 +116,8 @@
 
     var resetFrozenColumn = function () {
         let cfg = this.config,
-            dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+            dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.xvar.frozenColumnIndex);
+
         this.asideHeaderData = (function (dataTable) {
             var colGroup = [];
             var data = {rows: []};
