@@ -24,7 +24,7 @@
                 "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
             },
                 getMousePosition = function getMousePosition(e) {
-                var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
                 return {
                     clientX: mouseObj.clientX,
                     clientY: mouseObj.clientY
@@ -370,7 +370,7 @@
                     };
                     var getResizerPosition = {
                         "left": function left(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
                             var minWidth = panel.minWidth || 0;
@@ -384,7 +384,7 @@
                             return { left: panel.$splitter.position().left + panel.__da };
                         },
                         "right": function right(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
                             var minWidth = panel.minWidth || 0;
@@ -398,7 +398,7 @@
                             return { left: panel.$splitter.position().left + panel.__da };
                         },
                         "top": function top(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
                             var minHeight = panel.minHeight || 0;
@@ -412,7 +412,7 @@
                             return { top: panel.$splitter.position().top + panel.__da };
                         },
                         "bottom": function bottom(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
                             var minHeight = panel.minHeight || 0;
@@ -426,7 +426,7 @@
                             return { top: panel.$splitter.position().top + panel.__da };
                         },
                         "split": function split(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             if (item.orientation == "horizontal") {
                                 panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
