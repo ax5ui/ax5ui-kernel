@@ -1630,8 +1630,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.body
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var columnSelect = {
         focusClear: function focusClear() {
@@ -4191,8 +4192,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.collector
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var sum = function sum() {
         var value = 0,
@@ -4204,6 +4206,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
         return value;
     };
+
     var avg = function avg() {
         var value = 0,
             i = this.list.length,
@@ -5048,14 +5051,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.excel
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var base64 = function base64(s) {
         return window.btoa(unescape(encodeURIComponent(s)));
-    },
-        uri = "data:application/vnd.ms-excel;base64,",
-        getExcelTmpl = function getExcelTmpl() {
+    };
+
+    var uri = "data:application/vnd.ms-excel;base64,";
+
+    var getExcelTmpl = function getExcelTmpl() {
         return "\uFEFF\n{{#tables}}{{{body}}}{{/tables}}\n";
     };
 
@@ -5140,8 +5146,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.formatter
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var money = function money() {
         return U.number(this.value, { "money": true });
@@ -5154,8 +5161,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.header
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+    var U = ax5.util;
 
     var columnResizerEvent = {
         "on": function on(_columnResizer, _colIndex) {
@@ -5217,30 +5224,40 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
             var key = this.getAttribute("data-ax5grid-column-key"),
                 colIndex = this.getAttribute("data-ax5grid-column-colindex"),
-                rowIndex = this.getAttribute("data-ax5grid-column-rowindex"),
-                col = self.colGroup[colIndex];
+
+            //rowIndex = this.getAttribute("data-ax5grid-column-rowindex"),
+            col = self.colGroup[colIndex];
 
             if (key === "__checkbox_header__") {
                 var selected = this.getAttribute("data-ax5grid-selected");
-                selected = U.isNothing(selected) ? true : selected === "true" ? false : true;
+                selected = U.isNothing(selected) ? true : selected !== "true";
 
                 $(this).attr("data-ax5grid-selected", selected);
                 self.selectAll({ selected: selected });
+
+                selected = null;
             } else {
-                if (key && col) {
-                    if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
-                        if (!col.sortFixed) toggleSort.call(self, col.key);
+                if (key && col && col.sortable !== false && !col.sortFixed) {
+                    if (col.sortable === true || self.config.sortable === true) {
+                        toggleSort.call(self, col.key);
                     }
                 }
             }
 
             GRID.body.blur.call(self);
+
+            key = null;
+            colIndex = null;
+            col = null;
         });
         this.$["container"]["header"].on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
             var colIndex = this.getAttribute("data-ax5grid-column-resizer");
+
             self.xvar.mousePosition = GRID.util.getMousePosition(e);
             columnResizerEvent.on.call(self, this, Number(colIndex));
             U.stopEvent(e);
+
+            colIndex = null;
         }).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
@@ -5287,30 +5304,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
                     }
+
+                    col = null;
                 }
             }
 
             this.asideColGroup = colGroup;
             return data;
         }.call(this, this.headerTable);
+
         this.leftHeaderData = dividedHeaderObj.leftData;
         this.headerData = dividedHeaderObj.rightData;
     };
 
     var getFieldValue = function getFieldValue(_col) {
-        var cfg = this.config,
-            colGroup = this.colGroup,
-            _key = _col.key,
-            tagsToReplace = {
-            '<': '&lt;',
-            '>': '&gt;'
-        };
-
-        if (_key === "__checkbox_header__") {
-            return "<div class=\"checkBox\" style=\"max-height: " + (_col.width - 10) + "px;min-height: " + (_col.width - 10) + "px;\"></div>";
-        } else {
-            return _col.label || "&nbsp;";
-        }
+        return _col.key === "__checkbox_header__" ? "<div class=\"checkBox\" style=\"max-height: " + (_col.width - 10) + "px;min-height: " + (_col.width - 10) + "px;\"></div>" : _col.label || "&nbsp;";
     };
 
     var repaint = function repaint(_reset) {
@@ -5715,8 +5723,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // ax5.ui.grid.page
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var onclickPageMove = function onclickPageMove(_act) {
         var callback = function callback(_pageNo) {
@@ -5837,13 +5846,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 (function () {
 
     var GRID = ax5.ui.grid;
+
     var U = ax5.util;
 
     var convertScrollPosition = {
         "vertical": function vertical(css, _var) {
-            var _content_height = _var._content_height - _var._panel_height;
-            var _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight;
-            var top = _content_height * css.top / _scroller_height;
+            var _content_height = _var._content_height - _var._panel_height,
+                _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight,
+                top = _content_height * css.top / _scroller_height;
+
             if (top < 0) top = 0;else if (_content_height < top) {
                 top = _content_height;
             }
@@ -5852,9 +5863,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
         },
         "horizontal": function horizontal(css, _var) {
-            var _content_width = _var._content_width - _var._panel_width;
-            var _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth;
-            var left = _content_width * css.left / _scroller_width;
+            var _content_width = _var._content_width - _var._panel_width,
+                _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth,
+                left = _content_width * css.left / _scroller_width;
+
             if (left < 0) left = 0;else if (_content_width < left) {
                 left = _content_width;
             }
@@ -5863,18 +5875,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
         }
     };
+
     var convertScrollBarPosition = {
         "vertical": function vertical(_top, _var) {
 
-            var type = "vertical";
-            var _content_height = _var._content_height - _var._panel_height;
-            var _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight;
-            var top = _scroller_height * _top / _content_height;
+            var type = "vertical",
+                _content_height = _var._content_height - _var._panel_height,
+                _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight,
+                top = _scroller_height * _top / _content_height,
+                scrollPositon = void 0;
 
             if (-top > _scroller_height) {
                 top = -_scroller_height;
 
-                var scrollPositon = convertScrollPosition[type].call(this, { top: -top }, {
+                scrollPositon = convertScrollPosition[type].call(this, { top: -top }, {
                     _content_width: _var._content_width,
                     _content_height: _var._content_height,
                     _panel_width: _var._panel_width,
@@ -5891,14 +5905,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return -top;
         },
         "horizontal": function horizontal(_left, _var) {
-            var type = "horizontal";
-            var _content_width = _var._content_width - _var._panel_width;
-            var _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth;
-            var left = _scroller_width * _left / _content_width;
+            var type = "horizontal",
+                _content_width = _var._content_width - _var._panel_width,
+                _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth,
+                left = _scroller_width * _left / _content_width,
+                scrollPositon = void 0;
 
             if (-left > _scroller_width) {
                 left = -_scroller_width;
-                var scrollPositon = convertScrollPosition[type].call(this, { left: -left }, {
+                scrollPositon = convertScrollPosition[type].call(this, { left: -left }, {
                     _content_width: _var._content_width,
                     _content_height: _var._content_height,
                     _panel_width: _var._panel_width,
@@ -5916,6 +5931,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return -left;
         }
     };
+
     var scrollBarMover = {
         "click": function click(track, bar, type, e) {
 
@@ -5963,9 +5979,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                     return { left: newLeft };
                 }
-            };
+            },
+                css = getScrollerPosition[type](e);
 
-            var css = getScrollerPosition[type](e);
             bar.css(css);
 
             var scrollPositon = convertScrollPosition[type].call(self, css, {
@@ -5980,6 +5996,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             });
             if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
             GRID.body.scrollTo.call(self, scrollPositon);
+
+            scrollPositon = null;
         },
         "on": function on(track, bar, type, e) {
             var self = this,
@@ -6061,6 +6079,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
         }
     };
+
     var scrollContentMover = {
         "wheel": function wheel(delta) {
             var self = this,
@@ -6341,6 +6360,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 (function () {
 
     var GRID = ax5.ui.grid;
+
     var U = ax5.util;
 
     /**
@@ -6350,8 +6370,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
     var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(_table, _frozenColumnIndex) {
-
-        console.log(_table, Function.callee);
 
         var tempTable_l = { rows: [] },
             tempTable_r = { rows: [] };
@@ -6366,8 +6384,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var col = jQuery.extend({}, row.cols[c]),
                     colStartIndex = col.colIndex,
                     colEndIndex = col.colIndex + col.colspan;
-
-                console.log(colStartIndex, colEndIndex, _frozenColumnIndex);
 
                 if (colStartIndex < _frozenColumnIndex) {
                     if (colEndIndex <= _frozenColumnIndex) {
@@ -6436,9 +6452,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getMousePosition = function getMousePosition(e) {
-        var mouseObj,
+        var mouseObj = void 0,
             originalEvent = e.originalEvent ? e.originalEvent : e;
-        mouseObj = 'changedTouches' in originalEvent ? originalEvent.changedTouches[0] : originalEvent;
+
+        mouseObj = 'changedTouches' in originalEvent && originalEvent.changedTouches ? originalEvent.changedTouches[0] : originalEvent;
         // clientX, Y 쓰면 스크롤에서 문제 발생
         return {
             clientX: mouseObj.pageX,
@@ -6453,13 +6470,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var makeHeaderTable = function makeHeaderTable(_columns) {
-        var columns = U.deepCopy(_columns);
-        var cfg = this.config;
-        var table = {
+        var columns = U.deepCopy(_columns),
+            cfg = this.config,
+            table = {
             rows: []
-        };
-        var colIndex = 0;
-        var maekRows = function maekRows(_columns, depth, parentField) {
+        },
+            colIndex = 0,
+            maekRows = function maekRows(_columns, depth, parentField) {
             var row = { cols: [] };
             var i = 0,
                 l = _columns.length;
@@ -6503,6 +6520,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return colspan;
             }
         };
+
         maekRows(columns, 0);
 
         // set rowspan
@@ -6518,22 +6536,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var makeBodyRowTable = function makeBodyRowTable(_columns) {
-        var columns = U.deepCopy(_columns);
-        var table = {
+        var columns = U.deepCopy(_columns),
+            table = {
             rows: []
-        };
-        var colIndex = 0;
-        var maekRows = function maekRows(_columns, depth, parentField) {
-            var row = { cols: [] };
-            var i = 0,
-                l = _columns.length;
+        },
+            colIndex = 0,
+            maekRows = function maekRows(_columns, depth, parentField) {
+            var row = { cols: [] },
+                i = 0,
+                l = _columns.length,
+                colspan = 1;
 
             var selfMakeRow = function selfMakeRow(__columns) {
                 var i = 0,
                     l = __columns.length;
                 for (; i < l; i++) {
-                    var field = __columns[i];
-                    var colspan = 1;
+                    var field = __columns[i],
+                        _colspan = 1;
 
                     if (!field.hidden) {
 
@@ -6553,9 +6572,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                             row.cols.push(field);
                             if ('columns' in field) {
-                                colspan = maekRows(field.columns, depth + 1, field);
+                                _colspan = maekRows(field.columns, depth + 1, field);
                             }
-                            field.colspan = colspan;
+                            field.colspan = _colspan;
                         } else {
                             if ('columns' in field) {
                                 selfMakeRow(field.columns, depth);
@@ -6567,7 +6586,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             for (; i < l; i++) {
                 var field = _columns[i];
-                var colspan = 1;
+                colspan = 1;
 
                 if (!field.hidden) {
 
@@ -6596,6 +6615,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     }
                 } else {}
+
+                field = null;
             }
 
             if (row.cols.length > 0) {
@@ -6608,6 +6629,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return colspan;
             }
         };
+
         maekRows(columns, 0);
 
         (function (table) {
@@ -6619,7 +6641,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (!('columns' in col)) {
                         col.rowspan = rl - r;
                     }
+                    col = null;
                 }
+                row = null;
             }
         })(table);
 
@@ -6675,9 +6699,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
 
             if (addC < this.colGroup.length) {
-                for (var c = addC; c < this.colGroup.length; c++) {
+                for (var _c = addC; _c < this.colGroup.length; _c++) {
                     table.rows[r].cols.push({
-                        colIndex: c,
+                        colIndex: _c,
                         colspan: 1,
                         rowspan: 1,
                         label: "&nbsp;"
@@ -6699,21 +6723,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             addC = 0;
 
         table.rows[r] = { cols: [] };
-        for (var _c = 0, cl = _bodyGroupingColumns.length; _c < cl; _c++) {
+        for (var _c2 = 0, cl = _bodyGroupingColumns.length; _c2 < cl; _c2++) {
             if (addC > this.columns.length) break;
-            var colspan = _bodyGroupingColumns[_c].colspan || 1;
-            if (_bodyGroupingColumns[_c].label || _bodyGroupingColumns[_c].key) {
+            var colspan = _bodyGroupingColumns[_c2].colspan || 1;
+            if (_bodyGroupingColumns[_c2].label || _bodyGroupingColumns[_c2].key) {
                 table.rows[r].cols.push({
                     colspan: colspan,
                     rowspan: 1,
                     rowIndex: 0,
                     colIndex: addC,
                     columnAttr: "default",
-                    align: _bodyGroupingColumns[_c].align,
-                    label: _bodyGroupingColumns[_c].label,
-                    key: _bodyGroupingColumns[_c].key,
-                    collector: _bodyGroupingColumns[_c].collector,
-                    formatter: _bodyGroupingColumns[_c].formatter
+                    align: _bodyGroupingColumns[_c2].align,
+                    label: _bodyGroupingColumns[_c2].label,
+                    key: _bodyGroupingColumns[_c2].key,
+                    collector: _bodyGroupingColumns[_c2].collector,
+                    formatter: _bodyGroupingColumns[_c2].formatter
                 });
             } else {
                 table.rows[r].cols.push({

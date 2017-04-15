@@ -1,9 +1,9 @@
 // ax5.ui.grid.util
 (function () {
 
-    var GRID = ax5.ui.grid;
-    var U = ax5.util;
+    const GRID = ax5.ui.grid;
 
+    const U = ax5.util;
 
     /**
      * @method ax5grid.util.divideTableByFrozenColumnIndex
@@ -12,8 +12,6 @@
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
     const divideTableByFrozenColumnIndex = function (_table, _frozenColumnIndex) {
-
-        console.log(_table, Function.callee);
 
         let tempTable_l = {rows: []},
             tempTable_r = {rows: []};
@@ -29,9 +27,6 @@
                     colStartIndex = col.colIndex,
                     colEndIndex = col.colIndex + col.colspan;
 
-                console.log(colStartIndex, colEndIndex, _frozenColumnIndex);
-
-
                 if (colStartIndex < _frozenColumnIndex) {
                     if (colEndIndex <= _frozenColumnIndex) {
                         // 좌측편에 변형없이 추가
@@ -45,7 +40,7 @@
                         rightCol.colspan = col.colspan - leftCol.colspan;
 
                         tempTable_l.rows[r].cols.push(leftCol);
-                        if(rightCol.colspan) {
+                        if (rightCol.colspan) {
                             tempTable_r.rows[r].cols.push(rightCol);
                         }
                     }
@@ -80,17 +75,17 @@
                 let col = jQuery.extend({}, row.cols[c]),
                     colStartIndex = col.colIndex, colEndIndex = col.colIndex + col.colspan;
 
-                if(_startColumnIndex <= colStartIndex || colEndIndex <= _endColumnIndex){
-                    if(_startColumnIndex <= colStartIndex && colEndIndex <= _endColumnIndex){
+                if (_startColumnIndex <= colStartIndex || colEndIndex <= _endColumnIndex) {
+                    if (_startColumnIndex <= colStartIndex && colEndIndex <= _endColumnIndex) {
                         // 변형없이 추가
                         tempTable.rows[r].cols.push(col);
                     }
-                    else if(_startColumnIndex > colStartIndex && colEndIndex > _startColumnIndex){
+                    else if (_startColumnIndex > colStartIndex && colEndIndex > _startColumnIndex) {
                         // 앞에서 걸친경우
                         col.colspan = colEndIndex - _startColumnIndex;
                         tempTable.rows[r].cols.push(col);
                     }
-                    else if(colEndIndex > _endColumnIndex && colStartIndex <= _endColumnIndex){
+                    else if (colEndIndex > _endColumnIndex && colStartIndex <= _endColumnIndex) {
                         tempTable.rows[r].cols.push(col);
                     }
                 }
@@ -100,9 +95,11 @@
         return tempTable;
     };
 
-    var getMousePosition = function (e) {
-        var mouseObj, originalEvent = (e.originalEvent) ? e.originalEvent : e;
-        mouseObj = ('changedTouches' in originalEvent) ? originalEvent.changedTouches[0] : originalEvent;
+    const getMousePosition = function (e) {
+        let mouseObj,
+            originalEvent = (e.originalEvent) ? e.originalEvent : e;
+
+        mouseObj = ('changedTouches' in originalEvent && originalEvent.changedTouches) ? originalEvent.changedTouches[0] : originalEvent;
         // clientX, Y 쓰면 스크롤에서 문제 발생
         return {
             clientX: mouseObj.pageX,
@@ -110,71 +107,72 @@
         }
     };
 
-    var ENM = {
+    const ENM = {
         "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
         "mousemove": (ax5.info.supportTouch) ? "touchmove" : "mousemove",
         "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
     };
 
-    var makeHeaderTable = function (_columns) {
-        var columns = U.deepCopy(_columns);
-        var cfg = this.config;
-        var table = {
-            rows: []
-        };
-        var colIndex = 0;
-        var maekRows = function (_columns, depth, parentField) {
-            var row = {cols: []};
-            var i = 0, l = _columns.length;
+    const makeHeaderTable = function (_columns) {
+        let columns = U.deepCopy(_columns),
+            cfg = this.config,
+            table = {
+                rows: []
+            },
+            colIndex = 0,
+            maekRows = function (_columns, depth, parentField) {
+                var row = {cols: []};
+                var i = 0, l = _columns.length;
 
-            for (; i < l; i++) {
-                var field = _columns[i];
-                var colspan = 1;
+                for (; i < l; i++) {
+                    var field = _columns[i];
+                    var colspan = 1;
 
-                if (!field.hidden) {
-                    field.colspan = 1;
-                    field.rowspan = 1;
+                    if (!field.hidden) {
+                        field.colspan = 1;
+                        field.rowspan = 1;
 
-                    field.rowIndex = depth;
-                    field.colIndex = (function () {
-                        if (!parentField) {
-                            return colIndex++;
+                        field.rowIndex = depth;
+                        field.colIndex = (function () {
+                            if (!parentField) {
+                                return colIndex++;
+                            } else {
+                                colIndex = parentField.colIndex + i + 1;
+                                return parentField.colIndex + i;
+                            }
+                        })();
+
+                        row.cols.push(field);
+
+                        if ('columns' in field) {
+                            colspan = maekRows(field.columns, depth + 1, field);
                         } else {
-                            colIndex = parentField.colIndex + i + 1;
-                            return parentField.colIndex + i;
+                            field.width = ('width' in field) ? field.width : cfg.columnMinWidth;
                         }
-                    })();
-
-                    row.cols.push(field);
-
-                    if ('columns' in field) {
-                        colspan = maekRows(field.columns, depth + 1, field);
+                        field.colspan = colspan;
                     } else {
-                        field.width = ('width' in field) ? field.width : cfg.columnMinWidth;
+
+
                     }
-                    field.colspan = colspan;
+                }
+
+                if (row.cols.length > 0) {
+                    if (!table.rows[depth]) {
+                        table.rows[depth] = {cols: []};
+                    }
+                    table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                    return (row.cols.length - 1) + colspan;
                 } else {
-
-
+                    return colspan;
                 }
-            }
 
-            if (row.cols.length > 0) {
-                if (!table.rows[depth]) {
-                    table.rows[depth] = {cols: []};
-                }
-                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
-                return (row.cols.length - 1) + colspan;
-            } else {
-                return colspan;
-            }
+            };
 
-        };
         maekRows(columns, 0);
 
         // set rowspan
-        for (var r = 0, rl = table.rows.length; r < rl; r++) {
-            for (var c = 0, cl = table.rows[r].cols.length; c < cl; c++) {
+        for (let r = 0, rl = table.rows.length; r < rl; r++) {
+            for (let c = 0, cl = table.rows[r].cols.length; c < cl; c++) {
                 if (!('columns' in table.rows[r].cols[c])) {
                     table.rows[r].cols[c].rowspan = rl - r;
                 }
@@ -184,21 +182,61 @@
         return table;
     };
 
-    var makeBodyRowTable = function (_columns) {
-        var columns = U.deepCopy(_columns);
-        var table = {
-            rows: []
-        };
-        var colIndex = 0;
-        var maekRows = function (_columns, depth, parentField) {
-            var row = {cols: []};
-            var i = 0, l = _columns.length;
+    const makeBodyRowTable = function (_columns) {
+        let columns = U.deepCopy(_columns),
+            table = {
+                rows: []
+            },
+            colIndex = 0,
+            maekRows = function (_columns, depth, parentField) {
+                let row = {cols: []},
+                    i = 0,
+                    l = _columns.length,
+                    colspan = 1;
 
-            var selfMakeRow = function (__columns) {
-                var i = 0, l = __columns.length;
+                let selfMakeRow = function (__columns) {
+                    let i = 0, l = __columns.length;
+                    for (; i < l; i++) {
+                        let field = __columns[i],
+                            colspan = 1;
+
+                        if (!field.hidden) {
+
+                            if ('key' in field) {
+                                field.colspan = 1;
+                                field.rowspan = 1;
+
+                                field.rowIndex = depth;
+                                field.colIndex = (function () {
+                                    if (!parentField) {
+                                        return colIndex++;
+                                    } else {
+                                        colIndex = parentField.colIndex + i + 1;
+                                        return parentField.colIndex + i;
+                                    }
+                                })();
+
+                                row.cols.push(field);
+                                if ('columns' in field) {
+                                    colspan = maekRows(field.columns, depth + 1, field);
+                                }
+                                field.colspan = colspan;
+                            }
+                            else {
+                                if ('columns' in field) {
+                                    selfMakeRow(field.columns, depth);
+                                }
+                            }
+                        }
+                        else {
+
+                        }
+                    }
+                };
+
                 for (; i < l; i++) {
-                    var field = __columns[i];
-                    var colspan = 1;
+                    let field = _columns[i];
+                    colspan = 1;
 
                     if (!field.hidden) {
 
@@ -227,79 +265,48 @@
                                 selfMakeRow(field.columns, depth);
                             }
                         }
-                    } else {
+                    }
+                    else {
 
                     }
+
+                    field = null;
+                }
+
+                if (row.cols.length > 0) {
+                    if (!table.rows[depth]) {
+                        table.rows[depth] = {cols: []};
+                    }
+                    table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
+                    return (row.cols.length - 1) + colspan;
+                }
+                else {
+                    return colspan;
                 }
             };
 
-            for (; i < l; i++) {
-                var field = _columns[i];
-                var colspan = 1;
-
-                if (!field.hidden) {
-
-                    if ('key' in field) {
-                        field.colspan = 1;
-                        field.rowspan = 1;
-
-                        field.rowIndex = depth;
-                        field.colIndex = (function () {
-                            if (!parentField) {
-                                return colIndex++;
-                            } else {
-                                colIndex = parentField.colIndex + i + 1;
-                                return parentField.colIndex + i;
-                            }
-                        })();
-
-                        row.cols.push(field);
-                        if ('columns' in field) {
-                            colspan = maekRows(field.columns, depth + 1, field);
-                        }
-                        field.colspan = colspan;
-                    }
-                    else {
-                        if ('columns' in field) {
-                            selfMakeRow(field.columns, depth);
-                        }
-                    }
-                } else {
-
-                }
-            }
-
-            if (row.cols.length > 0) {
-                if (!table.rows[depth]) {
-                    table.rows[depth] = {cols: []};
-                }
-                table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
-                return (row.cols.length - 1) + colspan;
-            } else {
-                return colspan;
-            }
-
-        };
         maekRows(columns, 0);
 
         (function (table) {
             // set rowspan
-            for (var r = 0, rl = table.rows.length; r < rl; r++) {
-                var row = table.rows[r];
-                for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                    var col = row.cols[c];
+            for (let r = 0, rl = table.rows.length; r < rl; r++) {
+                let row = table.rows[r];
+                for (let c = 0, cl = row.cols.length; c < cl; c++) {
+                    let col = row.cols[c];
                     if (!('columns' in col)) {
                         col.rowspan = rl - r;
                     }
+                    col = null;
                 }
+                row = null;
             }
         })(table);
 
         return table;
     };
 
-    var makeBodyRowMap = function (_table) {
-        var map = {};
+    const makeBodyRowMap = function (_table) {
+        let map = {};
         _table.rows.forEach(function (row) {
             row.cols.forEach(function (col) {
                 map[col.rowIndex + "_" + col.colIndex] = jQuery.extend({}, col);
@@ -313,15 +320,15 @@
             rows: []
         };
 
-        for (var r = 0, rl = _footSumColumns.length; r < rl; r++) {
-            var footSumRow = _footSumColumns[r],
+        for (let r = 0, rl = _footSumColumns.length; r < rl; r++) {
+            let footSumRow = _footSumColumns[r],
                 addC = 0;
 
             table.rows[r] = {cols: []};
 
-            for (var c = 0, cl = footSumRow.length; c < cl; c++) {
+            for (let c = 0, cl = footSumRow.length; c < cl; c++) {
                 if (addC > this.colGroup.length) break;
-                var colspan = footSumRow[c].colspan || 1;
+                let colspan = footSumRow[c].colspan || 1;
                 if (footSumRow[c].label || footSumRow[c].key) {
                     table.rows[r].cols.push({
                         colspan: colspan,
@@ -347,7 +354,7 @@
             }
 
             if (addC < this.colGroup.length) {
-                for (var c = addC; c < this.colGroup.length; c++) {
+                for (let c = addC; c < this.colGroup.length; c++) {
                     table.rows[r].cols.push({
                         colIndex: (c),
                         colspan: 1,
@@ -363,10 +370,12 @@
         return table;
     };
 
-    let makeBodyGroupingTable = function (_bodyGroupingColumns) {
+    const makeBodyGroupingTable = function (_bodyGroupingColumns) {
         let table = {
-            rows: []
-        }, r = 0, addC = 0;
+                rows: []
+            },
+            r = 0,
+            addC = 0;
 
         table.rows[r] = {cols: []};
         for (let c = 0, cl = _bodyGroupingColumns.length; c < cl; c++) {
@@ -412,7 +421,7 @@
         return table;
     };
 
-    let findPanelByColumnIndex = function (_dindex, _colIndex, _rowIndex) {
+    const findPanelByColumnIndex = function (_dindex, _colIndex, _rowIndex) {
         let _containerPanelName,
             _isScrollPanel = false,
             _panels = [];
@@ -434,7 +443,7 @@
         }
     };
 
-    let getRealPathForDataItem = function (_dataPath) {
+    const getRealPathForDataItem = function (_dataPath) {
         let path = [],
             _path = [].concat(_dataPath.split(/[\.\[\]]/g));
 

@@ -1,7 +1,9 @@
 // ax5.ui.grid.body
 (function () {
 
-    const GRID = ax5.ui.grid, U = ax5.util;
+    const GRID = ax5.ui.grid;
+
+    const U = ax5.util;
 
     const columnSelect = {
         focusClear: function () {
