@@ -59,6 +59,19 @@ describe('ax5.util.date TEST', function () {
         should.deepEqual(ax5.util.date("201704"), date);
     });
 
+    //Usage 09
+    it('ax5.util.date("2017") [string.length > 2]', function () {
+        var date = new Date(2017, 0);
+        date.setHours(12);
+        should.deepEqual(ax5.util.date("2017"), date);
+    });
+
+    //Usage 10
+    it('ax5.util.date("17") [string.length <= 2]', function () {
+        var date = new Date();
+        should.deepEqual(ax5.util.date("17"), date);
+    });
+
     /* end ax5.util.date */
 });
 
