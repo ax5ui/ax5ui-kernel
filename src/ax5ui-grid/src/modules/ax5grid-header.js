@@ -2,6 +2,7 @@
 (function () {
 
     const GRID = ax5.ui.grid;
+
     const U = ax5.util;
 
     const columnResizerEvent = {

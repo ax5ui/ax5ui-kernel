@@ -7,9 +7,9 @@
 // ax5.ui.grid
 (function () {
 
-    let UI = ax5.ui,
-        U = ax5.util,
-        GRID;
+    const UI = ax5.ui;
+    const U = ax5.util;
+    let GRID;
 
     UI.addClass({
         className: "grid",
@@ -24,7 +24,7 @@
          * var myGrid = new ax5.ui.grid();
          * ```
          */
-        let ax5grid = function () {
+        return function () {
             let self = this,
                 cfg,
                 ctrlKeys = {
@@ -1632,13 +1632,11 @@
                 }
             }).apply(this, arguments);
         };
-        return ax5grid;
     })());
 
     GRID = ax5.ui.grid;
 })();
 
-// todo : body menu
 // todo : filter
 // todo : column reorder
 // todo : editor 필수값 속성 지정

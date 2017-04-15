@@ -5,7 +5,7 @@
 
     const U = ax5.util;
 
-    let money = function () {
+    const money = function () {
         return U.number(this.value, {"money": true});
     };
 

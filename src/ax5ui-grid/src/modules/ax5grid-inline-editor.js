@@ -3,7 +3,7 @@
 
     const GRID = ax5.ui.grid;
 
-    let edit_text = {
+    const edit_text = {
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function (_root, _columnKey, _editor, _value) {
@@ -23,7 +23,7 @@
         }
     };
 
-    let edit_money = {
+    const edit_money = {
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function (_root, _columnKey, _editor, _value) {
@@ -47,7 +47,7 @@
         }
     };
 
-    let edit_number = {
+    const edit_number = {
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function (_root, _columnKey, _editor, _value) {
@@ -71,7 +71,7 @@
         }
     };
 
-    let edit_date = {
+    const edit_date = {
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function (_root, _columnKey, _editor, _value) {
@@ -106,7 +106,7 @@
         }
     };
 
-    let edit_select = {
+    const edit_select = {
         useReturnToSave: false,
         editMode: "popup",
         getHtml: function (_root, _columnKey, _editor, _value) {
@@ -158,7 +158,7 @@
         }
     };
 
-    let edit_checkbox = {
+    const edit_checkbox = {
         editMode: "inline",
         getHtml: function (_root, _editor, _value) {
 
