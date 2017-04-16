@@ -8,14 +8,14 @@
 
 (function () {
 
-    var UI = ax5.ui,
-        U = ax5.util;
+    var UI = ax5.ui;
+    var U = ax5.util;
 
     var DOCKER = void 0;
 
     UI.addClass({
         className: "docker",
-        version: "1.4.9"
+        version: "${VERSION}"
     }, function () {
 
         /**
@@ -27,7 +27,7 @@
          * var ax5docker = new ax5.ui.ax5docker();
          * ```
          */
-        var ax5docker = function ax5docker() {
+        return function () {
             var _this = this;
 
             var self = this,
@@ -850,7 +850,6 @@
              * @returns {*}
              */
             var arrangePanel = function arrangePanel() {
-                var panels = [];
                 var processor = {
                     stack: function stack(myself) {
                         if (!U.isArray(myself.panels)) return false;
@@ -935,6 +934,13 @@
                     _this.panels[0] = processor[_this.panels[0].type](_this.panels[0]);
                 } else {
                     _this.panels = [];
+                }
+
+                if (_this.panels[0].type === "panel") {
+                    _this.panels[0] = {
+                        type: "stack",
+                        panels: [_this.panels[0]]
+                    };
                 }
 
                 repaintPanels();
@@ -1540,8 +1546,6 @@
                 }
             }.apply(this, arguments);
         };
-
-        return ax5docker;
     }());
 
     DOCKER = ax5.ui.docker;

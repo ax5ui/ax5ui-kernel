@@ -7,8 +7,8 @@
 (function () {
 
 
-    const UI = ax5.ui,
-        U = ax5.util;
+    const UI = ax5.ui;
+    const U = ax5.util;
 
     let DOCKER;
 
@@ -26,7 +26,7 @@
              * var ax5docker = new ax5.ui.ax5docker();
              * ```
              */
-            let ax5docker = function () {
+            return function () {
 
                 let self = this,
                     cfg;
@@ -893,7 +893,6 @@
                  * @returns {*}
                  */
                 const arrangePanel = () => {
-                    const panels = [];
                     const processor = {
                         stack(myself){
                             if (!U.isArray(myself.panels)) return false;
@@ -978,6 +977,13 @@
                         this.panels[0] = processor[this.panels[0].type](this.panels[0]);
                     } else {
                         this.panels = [];
+                    }
+
+                    if(this.panels[0].type === "panel"){
+                        this.panels[0] = {
+                            type: "stack",
+                            panels: [this.panels[0]]
+                        };
                     }
 
                     repaintPanels();
@@ -1586,8 +1592,6 @@
                 }).apply(this, arguments);
 
             };
-
-            return ax5docker;
         })()
     );
 
