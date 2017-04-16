@@ -1,11 +1,17 @@
 "use strict";
 
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 // ax5.ui.modal
 (function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
-    var MODAL;
+    var MODAL = void 0;
 
     UI.addClass({
         className: "modal",
@@ -16,7 +22,7 @@
          * @alias ax5.ui.modal
          * @author tom@axisj.com
          */
-        var ax5modal = function ax5modal() {
+        return function () {
             var self = this,
                 cfg = void 0,
                 ENM = {
@@ -1121,7 +1127,6 @@
                 }
             }.apply(this, arguments);
         };
-        return ax5modal;
     }());
 
     MODAL = ax5.ui.modal;
