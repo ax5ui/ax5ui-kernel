@@ -78,6 +78,12 @@ describe('ax5.util.date TEST', function () {
         should.deepEqual(ax5.util.date(date, {return: "yyyy-MM-dd"}), "2017-04-16");
     });
 
+    //Usage 12
+    it('ax5.util.date(date, {return: "yyyy-MM-dd hh:mm:ss"})', function () {
+        var date = new Date(2017, 3, 16, 12, 30, 15);
+        should.deepEqual(ax5.util.date(date, {return: "yyyy-MM-dd hh:mm:ss"}), "2017-04-16 12:30:15");
+    });
+
     /* end ax5.util.date */
 });
 
