@@ -1,6 +1,6 @@
 {
   "name": "ax5ui-docker",
-  "version": "1.4.9",
+  "version": "1.4.16",
   "description": "A dashboard plugin that works with Bootstrap & jQuery",
   "license": "MIT",
   "repository": {

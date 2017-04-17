@@ -15,7 +15,7 @@
 
     UI.addClass({
         className: "modal",
-        version: "${VERSION}"
+        version: "1.4.16"
     }, function () {
         /**
          * @class ax5modal
