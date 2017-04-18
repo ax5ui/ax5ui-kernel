@@ -84,12 +84,19 @@ describe('ax5.util.date TEST', function () {
         should.deepEqual(ax5.util.date(date, {return: "yyyy-MM-dd hh:mm:ss"}), "2017-04-16 12:30:15");
     });
 
+    //Usage 13
+    it('ax5.util.date(date, {return: "dw"})', function () {
+        var date = new Date(2017, 3, 16);
+        should.deepEqual(ax5.util.date(date, {return: "dw"}), "SUN");
+    });
+
     /* end ax5.util.date */
 });
 
 describe('ax5.util.dday TEST', function () {
     /* ax5.util.dday*/
     //Usage 01
+
     it('ax5.util.dday(new Date())', function () {
         should.deepEqual(ax5.util.dday(new Date()), 0);
     });
