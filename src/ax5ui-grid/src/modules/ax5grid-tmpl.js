@@ -66,17 +66,17 @@
         return `<div data-ax5grid-page-navigation="holder">
             {{#hasPage}}
             <div data-ax5grid-page-navigation="cell">    
-                {{#firstIcon}}<button data-ax5grid-page-move="first">{{{firstIcon}}}</button>{{/firstIcon}}
-                <button data-ax5grid-page-move="prev">{{{prevIcon}}}</button>
+                {{#firstIcon}}<button type="button" data-ax5grid-page-move="first">{{{firstIcon}}}</button>{{/firstIcon}}
+                <button type="button" data-ax5grid-page-move="prev">{{{prevIcon}}}</button>
             </div>
             <div data-ax5grid-page-navigation="cell-paging">
                 {{#@paging}}
-                <button data-ax5grid-page-move="{{pageNo}}" data-ax5grid-page-selected="{{selected}}">{{pageNo}}</button>
+                <button type="button" data-ax5grid-page-move="{{pageNo}}" data-ax5grid-page-selected="{{selected}}">{{pageNo}}</button>
                 {{/@paging}}
             </div>
             <div data-ax5grid-page-navigation="cell">
-                <button data-ax5grid-page-move="next">{{{nextIcon}}}</button>
-                {{#lastIcon}}<button data-ax5grid-page-move="last">{{{lastIcon}}}</button>{{/lastIcon}}
+                <button type="button" data-ax5grid-page-move="next">{{{nextIcon}}}</button>
+                {{#lastIcon}}<button type="button" data-ax5grid-page-move="last">{{{lastIcon}}}</button>{{/lastIcon}}
             </div>
             {{/hasPage}}
         </div>`;
