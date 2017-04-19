@@ -90,6 +90,12 @@ describe('ax5.util.date TEST', function () {
         should.deepEqual(ax5.util.date(date, {return: "dw"}), "SUN");
     });
 
+    //Usage 14
+    it('ax5.util.date(date, {return: "dw"})', function () {
+        var date = new Date(2017, 3, 16);
+        should.deepEqual(ax5.util.date(date, {return: "dw"}), "SUN");
+    });
+
     /* end ax5.util.date */
 });
 
@@ -162,6 +168,11 @@ describe('ax5.util.daysOfMonth TEST', function () {
     //Usage 03
     it('ax5.util.daysOfMonth(2016,1)', function () {
         should.deepEqual(ax5.util.daysOfMonth(2016, 1), 29);
+    });
+
+    //Usage 04
+    it('ax5.util.daysOfMonth(2016,3)', function () {
+        should.deepEqual(ax5.util.daysOfMonth(2016, 3), 30);
     });
     /* end ax5.util.daysOfMonth*/
 });
