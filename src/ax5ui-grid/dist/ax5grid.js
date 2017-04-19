@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.18"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -266,9 +266,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 var colGroupMap = {};
                 for (var r = 0, rl = this.headerTable.rows.length; r < rl; r++) {
-                    var row = this.headerTable.rows[r];
-                    for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                        colGroupMap[row.cols[c].colIndex] = jQuery.extend({}, row.cols[c]);
+                    var _row2 = this.headerTable.rows[r];
+                    for (var c = 0, cl = _row2.cols.length; c < cl; c++) {
+                        colGroupMap[_row2.cols[c].colIndex] = jQuery.extend({}, _row2.cols[c]);
                     }
                 }
 
@@ -4540,8 +4540,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (!U.isNumber(_dindex)) {
                     throw 'invalid argument _dindex';
                 }
-                //
-                list = list.splice(_dindex, [].concat(_row));
+                if (U.isArray(_row)) {
+                    for (var _i = 0, _l = row.length; _i < _l; _i++) {
+                        list.splice(_dindex + _i, 0, _row[_i]);
+                    }
+                } else {
+                    list.splice(_dindex, 0, _row);
+                }
             }
 
             if (this.config.body.grouping) {
@@ -4693,14 +4698,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     i = null;
                 } else {
                     var _selfHash = list[_dindex][treeKeys.selfHash];
-                    var _i = list.length;
-                    while (_i--) {
-                        if (list[_i][treeKeys.selfHash].substr(0, _selfHash.length) !== _selfHash) {
-                            list[_i][keys.deleted] = true;
+                    var _i2 = list.length;
+                    while (_i2--) {
+                        if (list[_i2][treeKeys.selfHash].substr(0, _selfHash.length) !== _selfHash) {
+                            list[_i2][keys.deleted] = true;
                         }
                     }
                     _selfHash = null;
-                    _i = null;
+                    _i2 = null;
                 }
 
                 keys = null;
@@ -6375,13 +6380,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             tempTable_r = { rows: [] };
 
         for (var r = 0, rl = _table.rows.length; r < rl; r++) {
-            var row = _table.rows[r];
+            var _row3 = _table.rows[r];
 
             tempTable_l.rows[r] = { cols: [] };
             tempTable_r.rows[r] = { cols: [] };
 
-            for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                var col = jQuery.extend({}, row.cols[c]),
+            for (var c = 0, cl = _row3.cols.length; c < cl; c++) {
+                var col = jQuery.extend({}, _row3.cols[c]),
                     colStartIndex = col.colIndex,
                     colEndIndex = col.colIndex + col.colspan;
 
@@ -6412,7 +6417,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 colEndIndex = null;
             }
 
-            row = null;
+            _row3 = null;
         }
 
         return {
@@ -6425,11 +6430,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         var tempTable = { rows: [] };
         for (var r = 0, rl = _table.rows.length; r < rl; r++) {
-            var row = _table.rows[r];
+            var _row4 = _table.rows[r];
 
             tempTable.rows[r] = { cols: [] };
-            for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                var col = jQuery.extend({}, row.cols[c]),
+            for (var c = 0, cl = _row4.cols.length; c < cl; c++) {
+                var col = jQuery.extend({}, _row4.cols[c]),
                     colStartIndex = col.colIndex,
                     colEndIndex = col.colIndex + col.colspan;
 
@@ -6635,15 +6640,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         (function (table) {
             // set rowspan
             for (var r = 0, rl = table.rows.length; r < rl; r++) {
-                var row = table.rows[r];
-                for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                    var col = row.cols[c];
+                var _row5 = table.rows[r];
+                for (var c = 0, cl = _row5.cols.length; c < cl; c++) {
+                    var col = _row5.cols[c];
                     if (!('columns' in col)) {
                         col.rowspan = rl - r;
                     }
                     col = null;
                 }
-                row = null;
+                _row5 = null;
             }
         })(table);
 

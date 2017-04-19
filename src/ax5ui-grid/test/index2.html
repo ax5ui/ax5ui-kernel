@@ -192,7 +192,7 @@
         $('[data-grid-control]').click(function () {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    firstGrid.addRow($.extend({}, sampleData[(Math.floor(Math.random() * sampleData.length))], true), "first");
+                    firstGrid.addRow($.extend({}, sampleData[(Math.floor(Math.random() * sampleData.length))], true), 2);
                     break;
                 case "row-remove":
                     firstGrid.removeRow();

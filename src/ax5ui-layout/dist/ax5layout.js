@@ -7,7 +7,7 @@
 
     UI.addClass({
         className: "layout",
-        version: "1.4.18"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5layout
@@ -982,6 +982,12 @@
     }());
 })();
 
+/*
+ * Copyright (c) 2017. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 ax5.ui.layout_instance = new ax5.ui.layout();
 
 /**
@@ -1002,7 +1008,6 @@ ax5.ui.layout_instance = new ax5.ui.layout();
  * jQuery('[data-ax5layout="ax1"]').ax5layout("tabOpen", 1);
  * ```
  */
-
 jQuery.fn.ax5layout = function () {
     return function (config) {
         if (ax5.util.isString(arguments[0])) {

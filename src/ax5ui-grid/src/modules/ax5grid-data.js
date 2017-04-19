@@ -316,8 +316,13 @@
                 if (!U.isNumber(_dindex)) {
                     throw 'invalid argument _dindex';
                 }
-                //
-                list = list.splice(_dindex, [].concat(_row));
+                if (U.isArray(_row)) {
+                    for (let _i = 0, _l = row.length; _i < _l; _i++) {
+                        list.splice(_dindex + _i, 0, _row[_i]);
+                    }
+                } else {
+                    list.splice(_dindex, 0, _row);
+                }
             }
 
             if (this.config.body.grouping) {
