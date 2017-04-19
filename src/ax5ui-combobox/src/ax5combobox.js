@@ -1,9 +1,9 @@
 // ax5.ui.combobox
 (function () {
 
-    var UI = ax5.ui;
-    var U = ax5.util;
-    var COMBOBOX;
+    const UI = ax5.ui;
+    const U = ax5.util;
+    let COMBOBOX;
 
     UI.addClass({
         className: "combobox",
@@ -32,8 +32,7 @@
          * });
          * ```
          */
-
-        var ax5combobox = function () {
+        return function () {
             var
                 self = this,
                 cfg;
@@ -1530,7 +1529,6 @@
                 }
             }).apply(this, arguments);
         };
-        return ax5combobox;
     })());
 
     COMBOBOX = ax5.ui.combobox;
