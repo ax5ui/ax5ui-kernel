@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.19"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -87,6 +87,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 page: {
                     height: 25,
                     display: true,
+                    statusDisplay: true,
                     navigationItemCount: 5
                 },
                 scroller: {
@@ -662,7 +663,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Array} [_config.body.grouping.columns] - list grouping columns
              * @param {Object} [_config.page]
              * @param {Number} [_config.page.height=25]
-             * @param {Boolean} [_config.page.display=true]
+             * @param {Boolean} [_config.page.display=true] - grid page display
+             * @param {Boolean} [_config.page.statusDisplay=true] - grid status display
              * @param {Number} [_config.page.navigationItemCount=5]
              * @param {Object} [_config.scroller]
              * @param {Number} [_config.scroller.size=15]
@@ -5787,11 +5789,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var navigationItemCount = this.config.page.navigationItemCount;
 
             page["@paging"] = function () {
-                var returns = [];
+                var returns = [],
+                    startI = void 0,
+                    endI = void 0;
 
-                var startI = page.currentPage - Math.floor(navigationItemCount / 2);
+                startI = page.currentPage - Math.floor(navigationItemCount / 2);
                 if (startI < 0) startI = 0;
-                var endI = page.currentPage + navigationItemCount;
+                endI = page.currentPage + navigationItemCount;
                 if (endI > page.totalPages) endI = page.totalPages;
 
                 if (endI - startI > navigationItemCount) {
@@ -5815,8 +5819,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             this.$["page"]["navigation"].html(GRID.tmpl.get("page_navigation", page));
             this.$["page"]["navigation"].find("[data-ax5grid-page-move]").on("click", function () {
-                var act = this.getAttribute("data-ax5grid-page-move");
-                onclickPageMove.call(self, act);
+                onclickPageMove.call(self, this.getAttribute("data-ax5grid-page-move"));
             });
         } else {
             this.$["page"]["navigation"].empty();
@@ -5824,10 +5827,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var statusUpdate = function statusUpdate() {
+        if (!this.config.page.statusDisplay) {
+            return;
+        }
+
         var fromRowIndex = this.xvar.paintStartRowIndex;
         var toRowIndex = this.xvar.paintStartRowIndex + this.xvar.paintRowCount - 1;
         //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
         var totalElements = this.xvar.dataRowCount;
+
         if (toRowIndex > totalElements) {
             toRowIndex = totalElements;
         }

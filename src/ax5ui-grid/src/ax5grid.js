@@ -83,6 +83,7 @@
                 page: {
                     height: 25,
                     display: true,
+                    statusDisplay: true,
                     navigationItemCount: 5
                 },
                 scroller: {
@@ -670,7 +671,8 @@
              * @param {Array} [_config.body.grouping.columns] - list grouping columns
              * @param {Object} [_config.page]
              * @param {Number} [_config.page.height=25]
-             * @param {Boolean} [_config.page.display=true]
+             * @param {Boolean} [_config.page.display=true] - grid page display
+             * @param {Boolean} [_config.page.statusDisplay=true] - grid status display
              * @param {Number} [_config.page.navigationItemCount=5]
              * @param {Object} [_config.scroller]
              * @param {Number} [_config.scroller.size=15]
