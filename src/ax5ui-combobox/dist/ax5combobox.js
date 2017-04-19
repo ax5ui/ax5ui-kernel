@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "combobox",
-        version: "1.4.16"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5combobox
@@ -1414,6 +1414,27 @@
                 return this;
             };
 
+            /**
+             * @method ax5combobox.clear
+             * @param {(jQueryObject|Element|Number)} _boundID
+             * @returns {ax5combobox}
+             */
+            this.clear = function (_boundID) {
+                var queIdx = U.isNumber(_boundID) ? _boundID : getQueIdx.call(this, _boundID);
+                if (queIdx === -1) {
+                    console.log(ax5.info.getError("ax5combobox", "402", "clear"));
+                    return;
+                }
+
+                clearSelected.call(this, queIdx);
+                setOptionSelect.call(this, queIdx, [], false, { noStateChange: false });
+                printLabel.call(this, queIdx);
+                blurLabel.call(this, queIdx);
+                alignComboboxDisplay.call(this);
+
+                return this;
+            };
+
             // 클래스 생성자
             this.main = function () {
                 if (arguments && U.isObject(arguments[0])) {
@@ -1428,81 +1449,6 @@
 
     COMBOBOX = ax5.ui.combobox;
 })();
-
-/**
- * ax5combobox jquery extends
- * @namespace jQueryExtends
- */
-
-/**
- * @method jQueryExtends.ax5combobox
- * @param {String} methodName
- * @param [arguments]
- * @param [arguments]
- * @example
- * ```html
- * <div data-ax5combobox="ax1" data-ax5combobox-config='{
- *  multiple: true,
- *  editable: true,
- *  size: "",
- *  theme:""
- *  }'></div>
- * <script>
- * jQuery('[data-ax5combobox="ax1"]').ax5combobox();
- * $('[data-ax5combobox="ax1"]').ax5combobox("getSelectedOption");
- * $('[data-ax5combobox="ax1"]').ax5combobox("setValue", ["string", "number"]);
- * $('[data-ax5combobox="ax1"]').ax5combobox("enable");
- * $('[data-ax5combobox="ax1"]').ax5combobox("disable");
- * </script>
- * ```
- */
-
-ax5.ui.combobox_instance = new ax5.ui.combobox();
-jQuery.fn.ax5combobox = function () {
-    return function (config) {
-        if (ax5.util.isString(arguments[0])) {
-            var methodName = arguments[0];
-
-            switch (methodName) {
-                case "open":
-                    return ax5.ui.combobox_instance.open(this);
-                    break;
-                case "close":
-                    return ax5.ui.combobox_instance.close(this);
-                    break;
-                case "setValue":
-                    return ax5.ui.combobox_instance.setValue(this, arguments[1], arguments[2], arguments[3], arguments[4] || "justSetValue");
-                    break;
-                case "setText":
-                    return ax5.ui.combobox_instance.setText(this, arguments[1], arguments[2], arguments[3], arguments[4] || "justSetValue");
-                    break;
-                case "getSelectedOption":
-                    return ax5.ui.combobox_instance.getSelectedOption(this);
-                    break;
-                case "enable":
-                    return ax5.ui.combobox_instance.enable(this);
-                    break;
-                case "disable":
-                    return ax5.ui.combobox_instance.disable(this);
-                    break;
-                case "blur":
-                    return ax5.ui.combobox_instance.blur(this);
-                default:
-                    return this;
-            }
-        } else {
-            if (typeof config == "undefined") config = {};
-            jQuery.each(this, function () {
-                var defaultConfig = {
-                    target: this
-                };
-                config = jQuery.extend({}, config, defaultConfig);
-                ax5.ui.combobox_instance.bind(config);
-            });
-        }
-        return this;
-    };
-}();
 
 // ax5.ui.combobox.tmpl
 (function () {
@@ -1639,3 +1585,86 @@ jQuery.fn.ax5combobox = function () {
         nodeTypeProcessor: nodeTypeProcessor
     };
 })();
+
+/*
+ * Copyright (c) 2017. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+/**
+ * ax5combobox jquery extends
+ * @namespace jQueryExtends
+ */
+
+/**
+ * @method jQueryExtends.ax5combobox
+ * @param {String} methodName
+ * @param [arguments]
+ * @param [arguments]
+ * @example
+ * ```html
+ * <div data-ax5combobox="ax1" data-ax5combobox-config='{
+ *  multiple: true,
+ *  editable: true,
+ *  size: "",
+ *  theme:""
+ *  }'></div>
+ * <script>
+ * jQuery('[data-ax5combobox="ax1"]').ax5combobox();
+ * $('[data-ax5combobox="ax1"]').ax5combobox("getSelectedOption");
+ * $('[data-ax5combobox="ax1"]').ax5combobox("setValue", ["string", "number"]);
+ * $('[data-ax5combobox="ax1"]').ax5combobox("enable");
+ * $('[data-ax5combobox="ax1"]').ax5combobox("disable");
+ * </script>
+ * ```
+ */
+
+ax5.ui.combobox_instance = new ax5.ui.combobox();
+jQuery.fn.ax5combobox = function () {
+    return function (config) {
+        if (ax5.util.isString(arguments[0])) {
+            var methodName = arguments[0];
+
+            switch (methodName) {
+                case "open":
+                    return ax5.ui.combobox_instance.open(this);
+                    break;
+                case "close":
+                    return ax5.ui.combobox_instance.close(this);
+                    break;
+                case "setValue":
+                    return ax5.ui.combobox_instance.setValue(this, arguments[1], arguments[2], arguments[3], arguments[4] || "justSetValue");
+                    break;
+                case "setText":
+                    return ax5.ui.combobox_instance.setText(this, arguments[1], arguments[2], arguments[3], arguments[4] || "justSetValue");
+                    break;
+                case "getSelectedOption":
+                    return ax5.ui.combobox_instance.getSelectedOption(this);
+                    break;
+                case "enable":
+                    return ax5.ui.combobox_instance.enable(this);
+                    break;
+                case "disable":
+                    return ax5.ui.combobox_instance.disable(this);
+                    break;
+                case "blur":
+                    return ax5.ui.combobox_instance.blur(this);
+                case "clear":
+                    return ax5.ui.combobox_instance.clear(this);
+                default:
+                    return this;
+            }
+        } else {
+            if (typeof config == "undefined") config = {};
+            jQuery.each(this, function () {
+                var defaultConfig = {
+                    target: this
+                };
+                config = jQuery.extend({}, config, defaultConfig);
+                ax5.ui.combobox_instance.bind(config);
+            });
+        }
+        return this;
+    };
+}();
