@@ -1,4 +1,4 @@
-![ax5ui preview](src/preview.png)
+﻿![ax5ui preview](src/preview.png)
 
 # What is it!
 AX5UI는 jQuery/Bootstrap과 함께 사용하는 HTML5 웹표준 Javascript UI 플러그인입니다.  (데모 : http://ax5.io)
@@ -56,7 +56,7 @@ If the source code download
 
 ### Structure
 AX5UI를 여러분의 웹 애플리케이션에 추가하면, AX5UI는 브라우저에 `ax5`라는 변수만을 사용합니다. 
-`ax5`오브젝트안에는 `ax5.util`, `ax5.mustache`, `ax5.info`, `ax5.ui`등의 키가 담겨 있고 AX5UI의 UI클래스들을 추가하게 되면 `ax5.ui`아래에 담기되 됩니다.
+`ax5`오브젝트안에는 `ax5.util`, `ax5.mustache`, `ax5.info`, `ax5.ui`등의 키가 담겨 있고 AX5UI의 UI클래스들을 추가하게 되면 `ax5.ui`아래에 담기게 됩니다.
 
 **ax5core**
 ```html
