@@ -19,7 +19,10 @@ describe('ax5.util.date TEST', function () {
 
     //Usage 03
     it('ax5.util.date("1919-03-01", {add:{d:10}, return:"yyyy/MM/dd hh:mm:ss"})', function () {
-        should.deepEqual(ax5.util.date("1919-03-01", {add: {d: 10}, return: "yyyy/MM/dd hh:mm:ss"}), '1919/03/11 12:00:00');
+        should.deepEqual(ax5.util.date("1919-03-01", {
+            add: {d: 10},
+            return: "yyyy/MM/dd hh:mm:ss"
+        }), '1919/03/11 12:00:00');
     });
 
     //Usage 04
@@ -96,13 +99,18 @@ describe('ax5.util.date TEST', function () {
         should.deepEqual(ax5.util.date(date, {return: "dw"}), "SUN");
     });
 
+    //Usage 15
+    it('ax5.util.date("2017-04-16", {add: {d: 1}})', function () {
+        var date = new Date(2017, 3, 17, 12);
+        should.deepEqual(ax5.util.date("2017-04-16", {add: {d: 1}}), date);
+    });
+
     /* end ax5.util.date */
 });
 
 describe('ax5.util.dday TEST', function () {
     /* ax5.util.dday*/
     //Usage 01
-
     it('ax5.util.dday(new Date())', function () {
         should.deepEqual(ax5.util.dday(new Date()), 0);
     });
@@ -127,7 +135,7 @@ describe('ax5.util.weeksOfMonth TEST', function () {
             year: 2015,
             month: 10,
             count: 1
-        }
+        };
         should.deepEqual(ax5.util.weeksOfMonth("2015-10-01"), obj);
     });
 
@@ -137,7 +145,7 @@ describe('ax5.util.weeksOfMonth TEST', function () {
             year: 2015,
             month: 9,
             count: 3
-        }
+        };
         should.deepEqual(ax5.util.weeksOfMonth("2015-09-19"), obj);
     });
 
@@ -147,7 +155,7 @@ describe('ax5.util.weeksOfMonth TEST', function () {
             year: 2016,
             month: 4,
             count: 5
-        }
+        };
         should.deepEqual(ax5.util.weeksOfMonth("2016-04-30"), obj);
     });
     /* end ax5.util.weeksOfMonth */
