@@ -105,6 +105,12 @@ describe('ax5.util.date TEST', function () {
         should.deepEqual(ax5.util.date("2017-04-16", {add: {d: 1}}), date);
     });
 
+    //Usage 16
+    it('ax5.util.date("2017-05-16", {add: {m: 1}})', function () {
+        var date = new Date(2017, 5, 16, 12);
+        should.deepEqual(ax5.util.date("2017-05-16", {add: {m: 1}}), date);
+    });
+
     /* end ax5.util.date */
 });
 
