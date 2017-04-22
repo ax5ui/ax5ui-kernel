@@ -685,6 +685,7 @@
              * @param {String} _config.columns[].label
              * @param {Number} _config.columns[].width
              * @param {(String|Function)} _config.columns[].styleClass
+             * @param {(String|Function)} _config.columns[].headerStyleClass
              * @param {Boolean} _config.columns[].enableFilter
              * @param {Boolean} _config.columns[].sortable
              * @param {String} _config.columns[].align
