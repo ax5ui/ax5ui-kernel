@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "mask",
-        version: "1.4.20"
+        version: "1.4.21"
     }, function () {
         /**
          * @class ax5mask
