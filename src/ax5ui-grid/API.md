@@ -73,7 +73,8 @@ Preferences of grid UI
 | [_config.body.grouping.columns] | <code>Array</code> |  | list grouping columns |
 | [_config.page] | <code>Object</code> |  |  |
 | [_config.page.height] | <code>Number</code> | <code>25</code> |  |
-| [_config.page.display] | <code>Boolean</code> | <code>true</code> |  |
+| [_config.page.display] | <code>Boolean</code> | <code>true</code> | grid page display |
+| [_config.page.statusDisplay] | <code>Boolean</code> | <code>true</code> | grid status display |
 | [_config.page.navigationItemCount] | <code>Number</code> | <code>5</code> |  |
 | [_config.scroller] | <code>Object</code> |  |  |
 | [_config.scroller.size] | <code>Number</code> | <code>15</code> |  |
@@ -86,6 +87,7 @@ Preferences of grid UI
 | _config.columns[].label | <code>String</code> |  |  |
 | _config.columns[].width | <code>Number</code> |  |  |
 | _config.columns[].styleClass | <code>String</code> &#124; <code>function</code> |  |  |
+| _config.columns[].headerStyleClass | <code>String</code> &#124; <code>function</code> |  |  |
 | _config.columns[].enableFilter | <code>Boolean</code> |  |  |
 | _config.columns[].sortable | <code>Boolean</code> |  |  |
 | _config.columns[].align | <code>String</code> |  |  |
