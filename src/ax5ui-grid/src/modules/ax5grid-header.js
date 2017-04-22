@@ -229,14 +229,14 @@
                         'rowspan="' + col.rowspan + '" ',
                         'class="' + (function (_col) {
                             var tdCSS_class = "";
-                            if (_col.styleClass) {
-                                if (U.isFunction(_col.styleClass)) {
-                                    tdCSS_class += _col.styleClass.call({
+                            if (_col.headerStyleClass) {
+                                if (U.isFunction(_col.headerStyleClass)) {
+                                    tdCSS_class += _col.headerStyleClass.call({
                                             column: _col,
                                             key: _col.key
                                         }) + " ";
                                 } else {
-                                    tdCSS_class += _col.styleClass + " ";
+                                    tdCSS_class += _col.headerStyleClass + " ";
                                 }
                             }
                             if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
@@ -244,7 +244,7 @@
                             return tdCSS_class;
                         }).call(this, col) + '" ',
                         'style="height: ' + cellHeight + 'px;min-height: 1px;">');
-
+                    
                     SS.push((function () {
                         var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth);
                         return '<span data-ax5grid-cellHolder="" ' +

@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.20"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -5367,14 +5367,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         return typeof col.key !== "undefined" ? 'data-ax5grid-column-key="' + col.key + '" ' : '';
                     }(), 'data-ax5grid-column-colindex="' + col.colIndex + '" ', 'data-ax5grid-column-rowindex="' + col.rowIndex + '" ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
                         var tdCSS_class = "";
-                        if (_col.styleClass) {
-                            if (U.isFunction(_col.styleClass)) {
-                                tdCSS_class += _col.styleClass.call({
+                        if (_col.headerStyleClass) {
+                            if (U.isFunction(_col.headerStyleClass)) {
+                                tdCSS_class += _col.headerStyleClass.call({
                                     column: _col,
                                     key: _col.key
                                 }) + " ";
                             } else {
-                                tdCSS_class += _col.styleClass + " ";
+                                tdCSS_class += _col.headerStyleClass + " ";
                             }
                         }
                         if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
