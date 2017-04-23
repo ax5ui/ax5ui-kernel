@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.21"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1239,6 +1239,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // todo : mergeCells 옵션에 따라 예외처리
 
                 GRID.body.repaintRow.call(this, _dindex);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.updateChildRows
+             * @param {Object} _parentRow
+             * @param {Object} _updateData
+             * @returns {ax5grid}
+             */
+            this.updateChildRows = function (_parentRow, _updateData) {
+
                 return this;
             };
 

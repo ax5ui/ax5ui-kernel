@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "menu",
-        version: "1.4.21"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5.ui.menu
@@ -163,9 +163,9 @@
 
             cfg = this.config;
 
-            var appEventAttach = function appEventAttach(active, param) {
+            var appEventAttach = function appEventAttach(active, opt) {
                 if (active) {
-                    jQuery(document).unbind("click.ax5menu-" + this.menuId).bind("click.ax5menu-" + this.menuId, clickItem.bind(this, param));
+                    jQuery(document).unbind("click.ax5menu-" + this.menuId).bind("click.ax5menu-" + this.menuId, clickItem.bind(this, opt));
                     jQuery(window).unbind("keydown.ax5menu-" + this.menuId).bind("keydown.ax5menu-" + this.menuId, function (e) {
                         if (e.which == ax5.info.eventKeys.ESC) {
                             self.close();
@@ -355,7 +355,7 @@
 
                 return this;
             },
-                clickItem = function clickItem(param, e) {
+                clickItem = function clickItem(opt, e) {
                 var target = void 0,
                     item = void 0;
 
@@ -365,11 +365,13 @@
                     }
                 });
                 if (target) {
+
                     item = function (path) {
                         if (!path) return false;
                         var item = void 0;
+
                         try {
-                            item = Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].' + cfg.columnKeys.items + '[') + "];").call(self);
+                            item = Function("", "return this[" + path.substring(5).replace(/\./g, '].' + cfg.columnKeys.items + '[') + "];").call(opt.items);
                         } catch (e) {
                             console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
                         }
@@ -416,7 +418,7 @@
                     }
 
                     if (self.onClick) {
-                        if (self.onClick.call(item, item, param)) {
+                        if (self.onClick.call(item, item, opt.param)) {
                             self.close();
                         }
                     }
@@ -560,6 +562,7 @@
 
                     var items = [].concat(cfg.items),
                         _filteringItem = void 0;
+                    opt.items = items;
 
                     if (opt.filter) {
                         _filteringItem = function filteringItem(_items) {
@@ -574,7 +577,7 @@
                             });
                             return arr;
                         };
-                        items = _filteringItem(items);
+                        opt.items = items = _filteringItem(items);
                     }
 
                     if (items.length) {
@@ -582,7 +585,7 @@
 
                         if (this.popupEventAttachTimer) clearTimeout(this.popupEventAttachTimer);
                         this.popupEventAttachTimer = setTimeout(function () {
-                            appEventAttach.call(this, true, opt.param); // 이벤트 연결
+                            appEventAttach.call(this, true, opt); // 이벤트 연결
                         }.bind(this), 500);
                     }
 

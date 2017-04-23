@@ -1255,6 +1255,17 @@
             };
 
             /**
+             * @method ax5grid.updateChildRows
+             * @param {Object} _parentRow
+             * @param {Object} _updateData
+             * @returns {ax5grid}
+             */
+            this.updateChildRows = function (_parentRow, _updateData) {
+
+                return this;
+            };
+
+            /**
              * @method ax5grid.deleteRow
              * @param {Number|String} _dindex
              * @returns {ax5grid}

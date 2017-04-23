@@ -148,7 +148,8 @@
                         'arrow': '<i class="fa fa-caret-right"></i>'
                     },
                     items: [
-                        {type: 1, label: "menu1"},
+                        {type: 2, label: "menu1"},
+                        {type: 1, label: "menu2"},
                         {divide: true},
                         {
                             label: "Tools",
@@ -184,6 +185,9 @@
                     ],
                     popupFilter: function (item, param) {
                         //console.log(item, param);
+
+                        return item.type == 1;
+
                         if(param.element) {
                             return true;
                         }else{

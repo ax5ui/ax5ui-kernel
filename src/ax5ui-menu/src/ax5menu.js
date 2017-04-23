@@ -161,9 +161,9 @@
 
             cfg = this.config;
 
-            let appEventAttach = function (active, param) {
+            let appEventAttach = function (active, opt) {
                     if (active) {
-                        jQuery(document).unbind("click.ax5menu-" + this.menuId).bind("click.ax5menu-" + this.menuId, clickItem.bind(this, param));
+                        jQuery(document).unbind("click.ax5menu-" + this.menuId).bind("click.ax5menu-" + this.menuId, clickItem.bind(this, opt));
                         jQuery(window).unbind("keydown.ax5menu-" + this.menuId).bind("keydown.ax5menu-" + this.menuId, function (e) {
                             if (e.which == ax5.info.eventKeys.ESC) {
                                 self.close();
@@ -362,7 +362,7 @@
 
                     return this;
                 },
-                clickItem = function (param, e) {
+                clickItem = function (opt, e) {
                     let target, item;
 
                     target = U.findParentNode(e.target, function (target) {
@@ -371,11 +371,13 @@
                         }
                     });
                     if (target) {
+
                         item = (function (path) {
                             if (!path) return false;
                             let item;
+
                             try {
-                                item = (Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].' + cfg.columnKeys.items + '[') + "];")).call(self);
+                                item = (Function("", "return this[" + path.substring(5).replace(/\./g, '].' + cfg.columnKeys.items + '[') + "];")).call(opt.items);
                             } catch (e) {
                                 console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
                             }
@@ -423,7 +425,7 @@
                         }
 
                         if (self.onClick) {
-                            if (self.onClick.call(item, item, param)) {
+                            if (self.onClick.call(item, item, opt.param)) {
                                 self.close();
                             }
                         }
@@ -571,6 +573,7 @@
 
                     let items = [].concat(cfg.items),
                         filteringItem;
+                    opt.items = items;
 
                     if (opt.filter) {
                         filteringItem = function (_items) {
@@ -585,7 +588,7 @@
                             });
                             return arr;
                         };
-                        items = filteringItem(items);
+                        opt.items = items = filteringItem(items);
                     }
 
                     if (items.length) {
@@ -593,7 +596,7 @@
 
                         if (this.popupEventAttachTimer) clearTimeout(this.popupEventAttachTimer);
                         this.popupEventAttachTimer = setTimeout((function () {
-                            appEventAttach.call(this, true, opt.param); // 이벤트 연결
+                            appEventAttach.call(this, true, opt); // 이벤트 연결
                         }).bind(this), 500);
                     }
 
