@@ -1245,6 +1245,10 @@
              * @param {Object} _row
              * @param {Number} _dindex
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.updateRow({price: 100, amount: 100, cost: 10000}, 1);
+             * ```
              */
             this.updateRow = function (_row, _dindex) {
                 GRID.data.update.call(this, _row, _dindex);
@@ -1256,12 +1260,21 @@
 
             /**
              * @method ax5grid.updateChildRows
-             * @param {Object} _parentRow
+             * @param {Number} _dindex
              * @param {Object} _updateData
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * onDataChanged: function () {
+             *      this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked});
+             * }
+             * ```
              */
-            this.updateChildRows = function (_parentRow, _updateData) {
-
+            this.updateChildRows = function (_dindex, _updateData) {
+                GRID.data.updateChild.call(this, _dindex, _updateData);
+                this.xvar.paintStartRowIndex = undefined;
+                this.xvar.paintStartColumnIndex = undefined;
+                GRID.body.repaint.call(this);
                 return this;
             };
 

@@ -571,6 +571,41 @@
         }
     };
 
+    const updateChild = function (_dindex, _updateData) {
+        let keys = this.config.tree.columnKeys, selfHash, originIndex;
+
+        if (typeof _dindex === "undefined") return false;
+        originIndex = this.proxyList[_dindex].__origin_index__;
+
+        if (this.list[originIndex][keys.children]) {
+            this.proxyList = []; // 리셋 프록시
+            for (let _k in _updateData) {
+                this.list[originIndex][_k] = _updateData[_k];
+            }
+
+            selfHash = this.list[originIndex][keys.selfHash];
+
+            let i = 0, l = this.list.length;
+            for (; i < l; i++) {
+                if (this.list[i]) {
+                    if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
+                        for (let _k in _updateData) {
+                            this.list[i][_k] = _updateData[_k];
+                        }
+                    }
+
+                    if (!this.list[i][keys.hidden]) {
+                        this.proxyList.push(this.list[i]);
+                    }
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     const setValue = function (_dindex, _key, _value) {
         let originalValue = getValue.call(this, _dindex, _key);
         this.needToPaintSum = true;
@@ -854,6 +889,7 @@
         remove: remove,
         deleteRow: deleteRow,
         update: update,
+        updateChild: updateChild,
         sort: sort,
         initData: initData,
         clearGroupingData: clearGroupingData,

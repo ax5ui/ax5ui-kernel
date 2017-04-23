@@ -98,9 +98,12 @@
 
                     },
                     onDataChanged: function () {
-                        console.log(this);
-
-
+                        if (this.key == 'isChecked') {
+                            this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked});
+                        }
+                        else if(this.key == '__selected__'){
+                            this.self.updateChildRows(this.dindex, {__selected__: this.item.__selected__});
+                        }
                     }
                 },
                 columns: [
@@ -195,9 +198,6 @@
                 }
             });
 
-            firstGrid.onDataChanged = function () {
-                console.log(this);
-            };
 
             return this;
         },

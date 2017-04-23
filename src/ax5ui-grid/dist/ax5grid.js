@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.22"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1233,6 +1233,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Object} _row
              * @param {Number} _dindex
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.updateRow({price: 100, amount: 100, cost: 10000}, 1);
+             * ```
              */
             this.updateRow = function (_row, _dindex) {
                 GRID.data.update.call(this, _row, _dindex);
@@ -1244,12 +1248,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             /**
              * @method ax5grid.updateChildRows
-             * @param {Object} _parentRow
+             * @param {Number} _dindex
              * @param {Object} _updateData
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * onDataChanged: function () {
+             *      this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked});
+             * }
+             * ```
              */
-            this.updateChildRows = function (_parentRow, _updateData) {
-
+            this.updateChildRows = function (_dindex, _updateData) {
+                GRID.data.updateChild.call(this, _dindex, _updateData);
+                this.xvar.paintStartRowIndex = undefined;
+                this.xvar.paintStartColumnIndex = undefined;
+                GRID.body.repaint.call(this);
                 return this;
             };
 
@@ -4773,6 +4786,44 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
+    var updateChild = function updateChild(_dindex, _updateData) {
+        var keys = this.config.tree.columnKeys,
+            selfHash = void 0,
+            originIndex = void 0;
+
+        if (typeof _dindex === "undefined") return false;
+        originIndex = this.proxyList[_dindex].__origin_index__;
+
+        if (this.list[originIndex][keys.children]) {
+            this.proxyList = []; // 리셋 프록시
+            for (var _k in _updateData) {
+                this.list[originIndex][_k] = _updateData[_k];
+            }
+
+            selfHash = this.list[originIndex][keys.selfHash];
+
+            var i = 0,
+                l = this.list.length;
+            for (; i < l; i++) {
+                if (this.list[i]) {
+                    if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
+                        for (var _k2 in _updateData) {
+                            this.list[i][_k2] = _updateData[_k2];
+                        }
+                    }
+
+                    if (!this.list[i][keys.hidden]) {
+                        this.proxyList.push(this.list[i]);
+                    }
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     var setValue = function setValue(_dindex, _key, _value) {
         var originalValue = getValue.call(this, _dindex, _key);
         this.needToPaintSum = true;
@@ -5052,6 +5103,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         remove: remove,
         deleteRow: deleteRow,
         update: update,
+        updateChild: updateChild,
         sort: sort,
         initData: initData,
         clearGroupingData: clearGroupingData,
