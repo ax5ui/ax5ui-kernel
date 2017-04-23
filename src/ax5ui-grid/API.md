@@ -16,6 +16,7 @@
     * [.appendToList(_list)](#ax5grid.appendToList) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.removeRow([_dindex])](#ax5grid.removeRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateRow(_row, _dindex)](#ax5grid.updateRow) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.updateChildRows(_dindex, _updateData)](#ax5grid.updateChildRows) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.deleteRow(_dindex)](#ax5grid.deleteRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.setValue(_dindex, _key, _value)](#ax5grid.setValue) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.addColumn(_column, [_cindex])](#ax5grid.addColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -330,6 +331,26 @@ ax5Grid.removeRow(1);
 | _row | <code>Object</code> | 
 | _dindex | <code>Number</code> | 
 
+**Example**  
+```js
+firstGrid.updateRow({price: 100, amount: 100, cost: 10000}, 1);
+```
+<a name="ax5grid.updateChildRows"></a>
+
+### ax5grid.updateChildRows(_dindex, _updateData) ⇒ <code>[ax5grid](#ax5grid)</code>
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+
+| Param | Type |
+| --- | --- |
+| _dindex | <code>Number</code> | 
+| _updateData | <code>Object</code> | 
+
+**Example**  
+```js
+onDataChanged: function () {
+     this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked});
+}
+```
 <a name="ax5grid.deleteRow"></a>
 
 ### ax5grid.deleteRow(_dindex) ⇒ <code>[ax5grid](#ax5grid)</code>
