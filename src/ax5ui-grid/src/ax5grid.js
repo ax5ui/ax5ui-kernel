@@ -1369,7 +1369,7 @@
             })();
 
             /**
-             * @method ax5grid.removeCloumn
+             * @method ax5grid.removeColumn
              * @param {Number|String} [_cindex=last]
              * @returns {ax5grid}
              */
