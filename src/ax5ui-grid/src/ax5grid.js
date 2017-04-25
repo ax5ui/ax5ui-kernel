@@ -1361,7 +1361,13 @@
                         if (!U.isNumber(_cindex)) {
                             throw 'invalid argument _cindex';
                         }
-                        this.config.columns.splice(_cindex, [].concat(_column))
+                        if (U.isArray(_column)) {
+                            for (let _i = 0, _l = _column.length; _i < _l; _i++) {
+                                this.config.columns.splice(_cindex + _i, 0, _column[_i]);
+                            }
+                        } else {
+                            this.config.columns.splice(_cindex, 0, _column);
+                        }
                     }
                     onResetColumns.call(this); // 컬럼이 변경되었을 때.
                     return this;

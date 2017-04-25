@@ -317,7 +317,7 @@
                     throw 'invalid argument _dindex';
                 }
                 if (U.isArray(_row)) {
-                    for (let _i = 0, _l = row.length; _i < _l; _i++) {
+                    for (let _i = 0, _l = _row.length; _i < _l; _i++) {
                         list.splice(_dindex + _i, 0, _row[_i]);
                     }
                 } else {
