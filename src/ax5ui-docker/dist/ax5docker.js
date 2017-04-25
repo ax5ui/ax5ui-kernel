@@ -1536,36 +1536,6 @@
                 return this;
             };
 
-            this.searchPanel = function (_condition) {
-                if (U.isFunction(_condition)) {
-
-                    var findPanel = function findPanel(_panels) {
-                        var i = 0,
-                            l = _panels.length,
-                            findResult = void 0;
-                        for (; i < l; i++) {
-                            if (_panels[i].type === "panel") {
-                                if (_condition.call({
-                                    config: self.config,
-                                    panel: _panels[i]
-                                }, _panels[i])) {
-                                    return _panels[i];
-                                }
-                            } else {
-                                if (findResult = findPanel(_panels[i].panels)) {
-                                    return findResult;
-                                }
-                            }
-                        }
-                    };
-
-                    return findPanel(this.panels);
-                } else if (U.isString(_condition)) {
-
-                    return getPanel(_condition);
-                }
-            };
-
             // 클래스 생성자
             this.main = function () {
                 UI.docker_instance = UI.docker_instance || [];
