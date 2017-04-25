@@ -47,9 +47,10 @@ describe('ax5.util.date TEST', function () {
 
     //Usage 07
     it('ax5.util.date("")', function () {
-        var date = new Date(1981, 1, 22);
-        date.setHours(9);
-        should.deepEqual(ax5.util.date("1981-02-22T09:00:00+09:00"), date);
+        var date = new Date();
+        date.setUTCFullYear(1979, 11, 16);
+        date.setUTCHours(09, 00, 00, 000);
+        should.deepEqual(ax5.util.date("1979-12-16T09:00:00"), date);
     });
 
     //Usage 08
