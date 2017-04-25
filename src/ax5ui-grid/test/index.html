@@ -242,9 +242,12 @@
         $('[data-grid-control]').on("mousedown", function (e) {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    //firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true});
+                    firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true, focus: "HOME"});
+
+
+                    //firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true, focus:3});
                     //firstGrid.addRow([{},{}], "last", {sort: true});
-                    firstGrid.appendToList([{},{}]);
+                    //firstGrid.appendToList([{},{}]);
                     break;
 
                 case "row-add2":

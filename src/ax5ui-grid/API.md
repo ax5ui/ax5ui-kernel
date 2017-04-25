@@ -20,7 +20,7 @@
     * [.deleteRow(_dindex)](#ax5grid.deleteRow) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.setValue(_dindex, _key, _value)](#ax5grid.setValue) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.addColumn(_column, [_cindex])](#ax5grid.addColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
-    * [.removeCloumn([_cindex])](#ax5grid.removeCloumn) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.removeColumn([_cindex])](#ax5grid.removeColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.updateColumn(_column, _cindex)](#ax5grid.updateColumn) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.setColumnWidth(_width, _cindex)](#ax5grid.setColumnWidth) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.getColumnSortInfo()](#ax5grid.getColumnSortInfo) ⇒ <code>Object</code>
@@ -286,10 +286,14 @@ ax5Grid.setHeight(height);
 | [_dindex] | <code>Number</code> &#124; <code>String</code> | <code>last</code> |  |
 | [_options] | <code>Object</code> |  | options of addRow |
 | [_options.sort] | <code>Boolean</code> |  | sortData |
+| [_options.focus] | <code>Number</code> &#124; <code>String</code> |  | HOME|END|[dindex] |
 
 **Example**  
 ```js
 ax5Grid.addRow($.extend({}, {...}), "first");
+ax5Grid.addRow($.extend({}, {...}), "last", {focus: "END"});
+ax5Grid.addRow($.extend({}, {...}), "last", {focus: "HOME"});
+ax5Grid.addRow($.extend({}, {...}), "last", {focus: 10});
 ```
 <a name="ax5grid.appendToList"></a>
 
@@ -392,9 +396,9 @@ ax5Grid.setValue(0, "price", 100);
 | _column | <code>Object</code> |  | 
 | [_cindex] | <code>Number</code> &#124; <code>String</code> | <code>last</code> | 
 
-<a name="ax5grid.removeCloumn"></a>
+<a name="ax5grid.removeColumn"></a>
 
-### ax5grid.removeCloumn([_cindex]) ⇒ <code>[ax5grid](#ax5grid)</code>
+### ax5grid.removeColumn([_cindex]) ⇒ <code>[ax5grid](#ax5grid)</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 
 | Param | Type | Default |
