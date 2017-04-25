@@ -19,6 +19,7 @@
     * [.removePanel(clickedLabel)](#ax5docker.removePanel) ⇒ <code>[ax5docker](#ax5docker)</code>
     * [.appendPanel(_panel, _appendPath, _appendType)](#ax5docker.appendPanel) ⇒ <code>[ax5docker](#ax5docker)</code>
     * [.align()](#ax5docker.align) ⇒ <code>[ax5docker](#ax5docker)</code>
+    * [.searchPanel(_condition)](#ax5docker.searchPanel) ⇒ <code>\*</code>
 
 <a name="ax5docker.config"></a>
 
@@ -158,3 +159,18 @@ myDocker.addPanel('0.1', 'stack', {type:'panel', name:'addPanel', moduleName: 'c
 
 ### ax5docker.align() ⇒ <code>[ax5docker](#ax5docker)</code>
 **Kind**: static method of <code>[ax5docker](#ax5docker)</code>  
+<a name="ax5docker.searchPanel"></a>
+
+### ax5docker.searchPanel(_condition) ⇒ <code>\*</code>
+**Kind**: static method of <code>[ax5docker](#ax5docker)</code>  
+
+| Param |
+| --- |
+| _condition | 
+
+**Example**  
+```js
+var p = myDocker.searchPanel(function (panel) {
+ return (panel.id == "A");
+});
+```

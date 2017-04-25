@@ -1581,7 +1581,17 @@
                     return this;
                 };
 
-
+                /**
+                 * @method ax5docker.searchPanel
+                 * @param _condition
+                 * @returns {*}
+                 * @example
+                 * ```js
+                 * var p = myDocker.searchPanel(function (panel) {
+                 *  return (panel.id == "A");
+                 * });
+                 * ```
+                 */
                 this.searchPanel = function (_condition) {
                     if (U.isFunction(_condition)) {
 
