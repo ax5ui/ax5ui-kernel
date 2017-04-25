@@ -46,8 +46,8 @@
             <option value="column-bottom">column-bottom</option>
         </select>
         <button class="btn btn-default" data-docker-control="add-panel">add Panel</button>
-
         <button class="btn btn-default" data-docker-control="set-panels">set Panels</button>
+        <button class="btn btn-default" data-docker-control="find-panel">find panel</button>
     </form>
 </div>
 
@@ -78,7 +78,8 @@
                             moduleName: "content",
                             moduleState: {
                                 data1: "data2"
-                            }
+                            },
+                            key: "T"
                         }
                     ]
                 },
@@ -91,7 +92,8 @@
                             moduleName: "content",
                             moduleState: {
                                 data1: "data3"
-                            }
+                            },
+                            key: "A"
                         }
                     ]
                 }
@@ -223,10 +225,10 @@
                     // console.log(state, "init");
                 },
                 active: function (container, state) {
-                    console.log(state, "active");
+                    // console.log(state, "active");
                 },
                 deactive: function (container, state) {
-                    console.log(state, "deactive");
+                    // console.log(state, "deactive");
                 },
                 destroy: function (container, state) {
                     // console.log(state, "destroy");
@@ -277,6 +279,16 @@
                             ]
                         }
                     ]);
+
+                    break;
+
+                case "find-panel":
+
+                    var p = myDocker.searchPanel(function (panel) {
+                        console.log(panel.key);
+                        return (panel.key == "A");
+                    });
+                    console.log(p);
 
                     break;
             }
