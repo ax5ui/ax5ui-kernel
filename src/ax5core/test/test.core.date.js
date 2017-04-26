@@ -153,7 +153,7 @@ describe('ax5.util.dday TEST', function () {
 
     //Usage 04
     it('ax5.util.dday(new Date(), {thisYear: true})', function () {
-        should.deepEqual(ax5.util.dday(new Date(), {thisYear: true}), 364);
+        should.deepEqual(ax5.util.dday("1977-03-29", {today: "2016-01-28", thisYear: true}), 60);
     });
     /* end ax5.util.dday*/
 });
