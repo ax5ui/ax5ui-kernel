@@ -371,13 +371,13 @@
                         }
                     });
                     if (target) {
-
+                        if (typeof opt === "undefined") opt = {};
                         item = (function (path) {
                             if (!path) return false;
                             let item;
 
                             try {
-                                item = (Function("", "return this[" + path.substring(5).replace(/\./g, '].' + cfg.columnKeys.items + '[') + "];")).call(opt.items);
+                                item = (Function("", "return this[" + path.substring(5).replace(/\./g, '].' + cfg.columnKeys.items + '[') + "];")).call(opt.items || cfg.items);
                             } catch (e) {
                                 console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
                             }
@@ -641,7 +641,6 @@
                         index = Number(target.getAttribute("data-menu-item-index")),
                         scrollTop = (cfg.position == "fixed") ? jQuery(document).scrollTop() : 0;
 
-
                     if (cfg.items && cfg.items[index][cfg.columnKeys.items] && cfg.items[index][cfg.columnKeys.items].length) {
 
                         if (self.menuBar.openedIndex == index) {
@@ -664,7 +663,7 @@
                         opt = getOption["object"].call(this, {left: offset.left, top: offset.top + height - scrollTop}, opt);
 
                         popup.call(self, opt, cfg.items[index][cfg.columnKeys.items], 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
-                        appEventAttach.call(self, true); // 이벤트 연결
+                        appEventAttach.call(self, true, {}); // 이벤트 연결
                     }
 
                     target = null;
