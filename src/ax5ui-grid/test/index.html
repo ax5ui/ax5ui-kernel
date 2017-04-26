@@ -31,38 +31,42 @@
 
 <div style="padding: 5px;">
     <h3>height</h3>
-    <button class="btn btn-default" data-set-height="300">300px</button>
-    <button class="btn btn-default" data-set-height="400">400px</button>
-    <button class="btn btn-default" data-set-height="800">800px</button>
-    <button class="btn btn-default" data-set-height="100%">100%</button>
+    <button type="button" class="btn btn-default" data-set-height="300">300px</button>
+    <button type="button" class="btn btn-default" data-set-height="400">400px</button>
+    <button type="button" class="btn btn-default" data-set-height="800">800px</button>
+    <button type="button" class="btn btn-default" data-set-height="100%">100%</button>
 </div>
 <div style="padding: 5px;">
     <h3>row</h3>
-    <button class="btn btn-default" data-grid-control="row-add">add</button>
-    <button class="btn btn-default" data-grid-control="row-add2">add(no sort)</button>
-    <button class="btn btn-default" data-grid-control="row-remove">remove</button>
-    <button class="btn btn-default" data-grid-control="row-update">update</button>
-    <button class="btn btn-default" data-grid-control="row-delete">delete</button>
+    <button type="button" class="btn btn-default" data-grid-control="row-add">add</button>
+    <button type="button" class="btn btn-default" data-grid-control="row-add2">add(no sort)</button>
+    <button type="button" class="btn btn-default" data-grid-control="row-remove">remove</button>
+    <button type="button" class="btn btn-default" data-grid-control="row-update">update</button>
+    <button type="button" class="btn btn-default" data-grid-control="row-delete">delete</button>
 </div>
 <div style="padding: 5px;">
     <h3>column</h3>
-    <button class="btn btn-default" data-grid-control="column-add">add</button>
-    <button class="btn btn-default" data-grid-control="column-remove">remove</button>
-    <button class="btn btn-default" data-grid-control="column-update">update</button>
+    <button type="button" class="btn btn-default" data-grid-control="column-add">add</button>
+    <button type="button" class="btn btn-default" data-grid-control="column-remove">remove</button>
+    <button type="button" class="btn btn-default" data-grid-control="column-update">update</button>
 </div>
 <div style="padding: 5px;">
     <h3>etc.</h3>
-    <button class="btn btn-default" data-grid-control="width-resize">width resize</button>
-    <button class="btn btn-default" data-grid-control="delete-all">delete all</button>
+    <button type="button" class="btn btn-default" data-grid-control="width-resize">width resize</button>
+    <button type="button" class="btn btn-default" data-grid-control="delete-all">delete all</button>
 </div>
 <div style="padding: 5px;">
-    <button class="btn btn-default" data-grid-control="excel">Excel</button>
+    <button type="button" class="btn btn-default" data-grid-control="excel">Excel</button>
 </div>
 <div style="padding: 5px;">
-    <button class="btn btn-default" data-grid-control="focus-up">focus-up</button>
-    <button class="btn btn-default" data-grid-control="focus-down">focus-down</button>
-    <button class="btn btn-default" data-grid-control="focus-home">focus-home</button>
-    <button class="btn btn-default" data-grid-control="focus-end">focus-end</button>
+    <button type="button" class="btn btn-default" data-grid-control="focus-up">focus-up</button>
+    <button type="button" class="btn btn-default" data-grid-control="focus-down">focus-down</button>
+    <button type="button" class="btn btn-default" data-grid-control="focus-home">focus-home</button>
+    <button type="button" class="btn btn-default" data-grid-control="focus-end">focus-end</button>
+</div>
+<div style="padding: 5px;">
+    <button type="button" class="btn btn-default" data-grid-control="clickBody">clickBody(10)</button>
+    <button type="button" class="btn btn-default" data-grid-control="DBLClickBody">DBLClickBody(10)</button>
 </div>
 
 
@@ -125,6 +129,7 @@
                     columnHeight: 50,
                     onClick: function () {
                         this.self.select(this.dindex);
+                        console.log(this.item);
                     },
                     onDBLClick: function () {
                         console.log("DBLClick", this);
@@ -239,7 +244,7 @@
             firstGrid.setHeight(height);
         });
 
-        $('[data-grid-control]').on("mousedown", function (e) {
+        $('[data-grid-control]').on("click", function (e) {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
                     firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true, focus: "HOME"});
@@ -305,6 +310,12 @@
                 case "focus-end":
                     firstGrid.focus("END");
 
+                    break;
+                case "clickBody":
+                    firstGrid.clickBody(10);
+                    break;
+                case "DBLClickBody":
+                    firstGrid.DBLClickBody(10);
                     break;
             }
         });

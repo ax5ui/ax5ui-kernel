@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.26"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1507,6 +1507,26 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     GRID.data.select.call(this, _dindex2, _options && _options.selected);
                     GRID.body.updateRowState.call(this, ["selected"], _dindex2);
                 }
+                return this;
+            };
+
+            /**
+             * @method firstGrid.clickBody
+             * @param {Number} _dindex
+             * @returns {ax5grid}
+             */
+            this.clickBody = function (_dindex) {
+                GRID.body.click.call(this, _dindex);
+                return this;
+            };
+
+            /**
+             * @method firstGrid.DBLClickBody
+             * @param {Number} _dindex
+             * @returns {ax5grid}
+             */
+            this.DBLClickBody = function (_dindex) {
+                GRID.body.dblClick.call(this, _dindex);
                 return this;
             };
 
@@ -4212,6 +4232,42 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
+    var click = function click(_dindex) {
+        var that = {
+            self: this,
+            page: this.page,
+            list: this.list,
+            item: this.list[_dindex],
+            dindex: _dindex
+        };
+
+        moveFocus.call(this, _dindex);
+        if (this.config.body.onClick) {
+            this.config.body.onClick.call(that);
+        }
+
+        that = null;
+        // console.log(this.$["panel"]["body-scroll"].find('[data-ax5grid-tr-data-index="' + _dindex + '"]>td:first-child'));
+    };
+
+    var dblClick = function dblClick(_dindex) {
+        var that = {
+            self: this,
+            page: this.page,
+            list: this.list,
+            item: this.list[_dindex],
+            dindex: _dindex
+        };
+
+        moveFocus.call(this, _dindex);
+
+        if (this.config.body.onDBLClick) {
+            this.config.body.onDBLClick.call(that);
+        }
+
+        that = null;
+    };
+
     GRID.body = {
         init: init,
         repaint: repaint,
@@ -4224,7 +4280,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         moveFocus: moveFocus,
         inlineEdit: inlineEdit,
         getExcelString: getExcelString,
-        toggleCollapse: toggleCollapse
+        toggleCollapse: toggleCollapse,
+        click: click,
+        dblClick: dblClick
     };
 })();
 // ax5.ui.grid.collector

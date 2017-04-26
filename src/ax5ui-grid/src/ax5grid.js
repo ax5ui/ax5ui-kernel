@@ -1524,6 +1524,26 @@
             };
 
             /**
+             * @method firstGrid.clickBody
+             * @param {Number} _dindex
+             * @returns {ax5grid}
+             */
+            this.clickBody = function (_dindex) {
+                GRID.body.click.call(this, _dindex);
+                return this;
+            };
+
+            /**
+             * @method firstGrid.DBLClickBody
+             * @param {Number} _dindex
+             * @returns {ax5grid}
+             */
+            this.DBLClickBody = function (_dindex) {
+                GRID.body.dblClick.call(this, _dindex);
+                return this;
+            };
+
+            /**
              * @method ax5grid.clearSelect
              * @returns {ax5grid}
              * @example

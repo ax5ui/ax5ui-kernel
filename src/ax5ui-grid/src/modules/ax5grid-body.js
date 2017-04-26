@@ -2681,6 +2681,43 @@
         }
     };
 
+    const click = function (_dindex) {
+        let that = {
+            self: this,
+            page: this.page,
+            list: this.list,
+            item: this.list[_dindex],
+            dindex: _dindex
+        };
+
+        moveFocus.call(this, _dindex);
+        if (this.config.body.onClick) {
+            this.config.body.onClick.call(that);
+        }
+
+        that = null;
+        // console.log(this.$["panel"]["body-scroll"].find('[data-ax5grid-tr-data-index="' + _dindex + '"]>td:first-child'));
+    };
+
+    const dblClick = function (_dindex) {
+        let that = {
+            self: this,
+            page: this.page,
+            list: this.list,
+            item: this.list[_dindex],
+            dindex: _dindex
+        };
+
+        moveFocus.call(this, _dindex);
+
+        if (this.config.body.onDBLClick) {
+            this.config.body.onDBLClick.call(that);
+        }
+
+        that = null;
+    };
+
+
     GRID.body = {
         init: init,
         repaint: repaint,
@@ -2693,6 +2730,8 @@
         moveFocus: moveFocus,
         inlineEdit: inlineEdit,
         getExcelString: getExcelString,
-        toggleCollapse: toggleCollapse
+        toggleCollapse: toggleCollapse,
+        click: click,
+        dblClick: dblClick
     };
 })();
