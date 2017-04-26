@@ -150,11 +150,6 @@ describe('ax5.util.dday TEST', function () {
     it('ax5.util.dday("1977-03-29" , {today:"2016-01-28" , age:true})', function () {
         should.deepEqual(ax5.util.dday("1977-03-29", {today: "2016-01-28", age: true}), 39);
     });
-
-    //Usage 04
-    it('ax5.util.dday(new Date(), {thisYear: true})', function () {
-        should.deepEqual(ax5.util.dday("1977-03-29", {today: "2016-01-28", thisYear: true}), 60);
-    });
     /* end ax5.util.dday*/
 });
 
@@ -188,6 +183,16 @@ describe('ax5.util.weeksOfMonth TEST', function () {
             count: 5
         };
         should.deepEqual(ax5.util.weeksOfMonth("2016-04-30"), obj);
+    });
+
+    //Usage04
+    it('ax5.util.weeksOfMonth("2017-04-13")', function () {
+        var obj = {
+            year: 2017,
+            month: 4,
+            count: 2
+        };
+        should.deepEqual(ax5.util.weeksOfMonth("2017-04-13"), obj);
     });
     /* end ax5.util.weeksOfMonth */
 });
