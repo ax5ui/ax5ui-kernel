@@ -46,7 +46,7 @@ describe('ax5.util.date TEST', function () {
     });
 
     //Usage 07
-    it('ax5.util.date("")', function () {
+    it('ax5.util.date("1979-12-16T09:00:00") [string.length > 15]', function () {
         var date = new Date();
         date.setUTCFullYear(1979, 11, 16);
         date.setUTCHours(09, 00, 00, 000);
@@ -131,12 +131,6 @@ describe('ax5.util.date TEST', function () {
         should.deepEqual(ax5.util.date("2016-04-23", {add: {d: 1.5}, return: "dd"}), str);
     });
 
-    //Usage 20
-    it('ax5.util.date("2016-04-23", {add: {d: 1.5}, return: "dd"})', function () {
-        var str = "25";
-        should.deepEqual(ax5.util.date("2016-04-23", {add: {d: 1.5}, return: "dd"}), str);
-    });
-
     /* end ax5.util.date */
 });
 
@@ -155,6 +149,11 @@ describe('ax5.util.dday TEST', function () {
     //Usage 03
     it('ax5.util.dday("1977-03-29" , {today:"2016-01-28" , age:true})', function () {
         should.deepEqual(ax5.util.dday("1977-03-29", {today: "2016-01-28", age: true}), 39);
+    });
+
+    //Usage 04
+    it('ax5.util.dday(new Date(), {thisYear: true})', function () {
+        should.deepEqual(ax5.util.dday(new Date(), {thisYear: true}), 364);
     });
     /* end ax5.util.dday*/
 });
