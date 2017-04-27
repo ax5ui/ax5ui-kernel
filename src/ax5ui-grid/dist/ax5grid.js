@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.27"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -60,6 +60,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 multipleSelect: true,
                 virtualScrollY: true,
                 virtualScrollX: true,
+                virtualScrollYCountMargin: 0,
+                virtualScrollAccelerated: false,
                 height: 0,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
@@ -129,7 +131,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.xvar = {
                 bodyTrHeight: 0, // 한줄의 높이
                 scrollContentWidth: 0, // 스크롤 될 내용물의 너비 (스크롤 될 내용물 : panel['body-scroll'] 안에 컬럼이 있는)
-                scrollContentHeight: 0 // 스크롤 된 내용물의 높이
+                scrollContentHeight: 0, // 스크롤 된 내용물의 높이
+                scrollTimer: null
             };
 
             // 그리드 데이터셋
@@ -2165,6 +2168,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         });
 
         resetFrozenColumn.call(this);
+
+        // 그리드 바디에 출력할 여유 카운트
+        this.xvar.paintRowCountMargin = this.config.virtualScrollYCountMargin;
+        this.xvar.paintRowCountTopMargin = this.config.virtualScrollYCountMargin - Math.floor(this.config.virtualScrollYCountMargin / 2);
     };
 
     var resetFrozenColumn = function resetFrozenColumn() {
@@ -2467,7 +2474,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         /// 출력시작 인덱스
-        var paintStartRowIndex = !this.config.virtualScrollY ? this.xvar.frozenRowIndex : Math.floor(-this.$.panel["body-scroll"].position().top / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+        var paintStartRowIndex = void 0,
+            virtualPaintStartRowIndex = void 0;
+
+        if (this.config.virtualScrollY) {
+            virtualPaintStartRowIndex = paintStartRowIndex = Math.floor(-this.$.panel["body-scroll"].position().top / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+            if (this.xvar.paintRowCountTopMargin < paintStartRowIndex) {
+                paintStartRowIndex -= this.xvar.paintRowCountTopMargin;
+            }
+        } else {
+            paintStartRowIndex = this.xvar.frozenRowIndex;
+        }
+
         if (isNaN(paintStartRowIndex)) return this;
 
         var paintStartColumnIndex = 0,
@@ -2513,10 +2531,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             leftBodyGroupingData = this.leftBodyGroupingData,
             bodyGroupingData = this.bodyGroupingData,
             bodyAlign = cfg.body.align,
-            paintRowCount = !this.config.virtualScrollY ? list.length : Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight) + 1;
+            paintRowCount = void 0,
+            virtualPaintRowCount = void 0;
+
+        if (!this.config.virtualScrollY) {
+            virtualPaintRowCount = paintRowCount = list.length;
+        } else {
+            virtualPaintRowCount = Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight);
+            paintRowCount = virtualPaintRowCount + (this.xvar.paintRowCountMargin || 1);
+        }
+
+        // 여유범위 안에 있으면 페인팅 안할수 있게 paintStartRowIndex 변경하지 않음.
+        if (this.xvar.paintRowCountTopMargin < paintStartRowIndex && Math.abs(this.xvar.paintStartRowIndex - paintStartRowIndex) <= this.xvar.paintRowCountTopMargin) {
+            paintStartRowIndex = this.xvar.paintStartRowIndex;
+        }
 
         if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex && this.xvar.paintRowCount === paintRowCount && this.xvar.paintStartColumnIndex === paintStartColumnIndex && this.xvar.paintEndColumnIndex === paintEndColumnIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
-
 
         // bodyRowData 수정 : 페인트 컬럼 포지션이 달라지므로
         if (nopaintLeftColumnsWidth || nopaintRightColumnsWidth) {
@@ -2534,9 +2564,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
 
+        /*
         if (!this.config.virtualScrollX && document.addEventListener && ax5.info.supportTouch) {
             paintRowCount = paintRowCount * 2;
         }
+         */
 
         /// 스크롤 컨텐츠의 높이 : 그리드 스크롤의 실제 크기와는 관계 없이 데이터 갯수에 따라 스크롤 컨텐츠 높이값 구해서 저장해두기.
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
@@ -2676,7 +2708,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 SS.push('<div style="font-size:0;line-height:0;height: ' + (_list.length - di) * _scrollConfig.bodyTrHeight + 'px;"></div>');
             }
 
-            _elTarget.empty().get(0).innerHTML = SS.join('');
+            _elTarget.empty();
+            SS = SS.join('');
+
+            if (this.config.virtualScrollAccelerated && _elTargetKey !== "aside-body-scroll") {
+                setTimeout(function () {
+                    _elTarget.get(0).innerHTML = SS;
+                });
+            } else {
+                _elTarget.get(0).innerHTML = SS;
+            }
 
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
@@ -2768,7 +2809,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             SS.push('</table>');
 
-            _elTarget.empty().get(0).innerHTML = SS.join('');
+            _elTarget.empty();
+            SS = SS.join('');
+            if (this.config.virtualScrollAccelerated) {
+                setTimeout(function () {
+                    _elTarget.get(0).innerHTML = SS;
+                });
+            } else {
+                _elTarget.get(0).innerHTML = SS;
+            }
+
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
@@ -2973,8 +3023,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             mergeCellsBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, scrollConfig);
         }
 
+        this.xvar.virtualPaintStartRowIndex = virtualPaintStartRowIndex;
         this.xvar.paintStartRowIndex = paintStartRowIndex;
         this.xvar.paintRowCount = paintRowCount;
+        this.xvar.virtualPaintRowCount = virtualPaintRowCount;
         this.xvar.paintStartColumnIndex = paintStartColumnIndex;
         this.xvar.paintEndColumnIndex = paintEndColumnIndex;
         this.xvar.nopaintLeftColumnsWidth = nopaintLeftColumnsWidth;
@@ -3650,11 +3702,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.ㅊㅇ
                 (function () {
                     if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
-                        if (focusedColumn.dindex <= this.xvar.paintStartRowIndex) {
+                        if (focusedColumn.dindex <= this.xvar.virtualPaintStartRowIndex) {
                             scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight });
                             GRID.scroller.resize.call(this);
-                        } else if (focusedColumn.dindex + 1 > this.xvar.paintStartRowIndex + (this.xvar.paintRowCount - 2)) {
-                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.paintRowCount + 3) * this.xvar.bodyTrHeight });
+                        } else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
+                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3) * this.xvar.bodyTrHeight });
                             GRID.scroller.resize.call(this);
                         }
                     }
@@ -3865,11 +3917,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
                 (function () {
                     if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
-                        if (focusedColumn.dindex < this.xvar.paintStartRowIndex) {
+                        if (focusedColumn.dindex < this.xvar.virtualPaintStartRowIndex) {
                             scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight });
                             GRID.scroller.resize.call(this);
-                        } else if (focusedColumn.dindex + 1 > this.xvar.paintStartRowIndex + (this.xvar.paintRowCount - 2)) {
-                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.paintRowCount + 3) * this.xvar.bodyTrHeight });
+                        } else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
+                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3) * this.xvar.bodyTrHeight });
                             GRID.scroller.resize.call(this);
                         }
                     }
@@ -4571,6 +4623,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
 
         if (this.config.body.grouping) {}
@@ -4661,6 +4714,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
         return this;
     };
@@ -4731,6 +4785,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
         return this;
     };
@@ -4840,6 +4895,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
         return this;
     };
@@ -5066,6 +5122,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         } else {
             this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
             this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+            this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
             GRID.page.navigationUpdate.call(this);
             return this;
         }
@@ -5119,6 +5176,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
     };
 
@@ -5469,6 +5527,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (_reset) {
             resetFrozenColumn.call(this);
             this.xvar.paintStartRowIndex = undefined;
+            this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         }
         var asideHeaderData = this.asideHeaderData,
             leftHeaderData = this.leftHeaderData,
@@ -5966,8 +6025,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return;
         }
 
-        var fromRowIndex = this.xvar.paintStartRowIndex;
-        var toRowIndex = this.xvar.paintStartRowIndex + this.xvar.paintRowCount - 1;
+        var fromRowIndex = this.xvar.virtualPaintStartRowIndex;
+        var toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount - 1;
         //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
         var totalElements = this.xvar.dataRowCount;
 
@@ -6026,7 +6085,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var convertScrollBarPosition = {
         "vertical": function vertical(_top, _var) {
 
-            var type = "vertical",
+            var self = this,
+                type = "vertical",
                 _content_height = _var._content_height - _var._panel_height,
                 _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight,
                 top = _scroller_height * _top / _content_height,
@@ -6046,13 +6106,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
-                GRID.body.scrollTo.call(this, scrollPositon);
+                if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
+                this.xvar.scrollTimer = setTimeout(function () {
+                    GRID.body.scrollTo.call(self, scrollPositon);
+                });
             }
 
             return -top;
         },
         "horizontal": function horizontal(_left, _var) {
-            var type = "horizontal",
+            var self = this,
+                type = "horizontal",
                 _content_width = _var._content_width - _var._panel_width,
                 _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth,
                 left = _scroller_width * _left / _content_width,
@@ -6071,8 +6135,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
-                GRID.header.scrollTo.call(this, scrollPositon);
-                GRID.body.scrollTo.call(this, scrollPositon);
+                if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
+                this.xvar.scrollTimer = setTimeout(function () {
+                    GRID.header.scrollTo.call(self, scrollPositon);
+                    GRID.body.scrollTo.call(self, scrollPositon);
+                });
             }
 
             return -left;
@@ -6273,9 +6340,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
 
             //self.$["panel"]["body-scroll"].css({left: newLeft, top: newTop});
-            GRID.header.scrollTo.call(this, { left: newLeft });
-            GRID.body.scrollTo.call(this, { left: newLeft, top: newTop });
+
             resize.call(this);
+            GRID.header.scrollTo.call(self, { left: newLeft });
+
+            if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
+            this.xvar.scrollTimer = setTimeout(function () {
+                GRID.body.scrollTo.call(self, { left: newLeft, top: newTop });
+            }, 0);
 
             return !_top_is_end || !_left_is_end;
         },
@@ -6324,17 +6396,26 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             jQuery(document.body).on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
                 var css = getContentPosition(e);
-                GRID.header.scrollTo.call(self, { left: css.left });
-                GRID.body.scrollTo.call(self, css, "noRepaint");
+
                 resize.call(self);
+                if (self.xvar.scrollTimer) clearTimeout(self.xvar.scrollTimer);
+                self.xvar.scrollTimer = setTimeout(function () {
+                    GRID.header.scrollTo.call(self, { left: css.left });
+                    GRID.body.scrollTo.call(self, css, "noRepaint");
+                }, 0);
                 U.stopEvent(e.originalEvent);
                 self.xvar.touchmoved = true;
             }).on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
                 if (self.xvar.touchmoved) {
                     var css = getContentPosition(e);
-                    GRID.header.scrollTo.call(self, { left: css.left });
-                    GRID.body.scrollTo.call(self, css);
+
                     resize.call(self);
+                    if (self.xvar.scrollTimer) clearTimeout(self.xvar.scrollTimer);
+                    self.xvar.scrollTimer = setTimeout(function () {
+                        GRID.header.scrollTo.call(self, { left: css.left });
+                        GRID.body.scrollTo.call(self, css);
+                    }, 0);
+
                     U.stopEvent(e.originalEvent);
                     scrollContentMover.off.call(self);
                 }

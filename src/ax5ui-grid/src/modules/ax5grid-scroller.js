@@ -37,7 +37,8 @@
     const convertScrollBarPosition = {
         "vertical": function (_top, _var) {
 
-            let type = "vertical",
+            let self = this,
+                type = "vertical",
                 _content_height = _var._content_height - _var._panel_height,
                 _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight,
                 top = (_scroller_height * _top) / _content_height,
@@ -57,13 +58,17 @@
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
-                GRID.body.scrollTo.call(this, scrollPositon);
+                if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
+                this.xvar.scrollTimer = setTimeout(function () {
+                    GRID.body.scrollTo.call(self, scrollPositon);
+                });
             }
 
             return -top
         },
         "horizontal": function (_left, _var) {
-            let type = "horizontal",
+            let self = this,
+                type = "horizontal",
                 _content_width = _var._content_width - _var._panel_width,
                 _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth,
                 left = (_scroller_width * _left) / _content_width,
@@ -82,8 +87,11 @@
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
-                GRID.header.scrollTo.call(this, scrollPositon);
-                GRID.body.scrollTo.call(this, scrollPositon);
+                if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
+                this.xvar.scrollTimer = setTimeout(function () {
+                    GRID.header.scrollTo.call(self, scrollPositon);
+                    GRID.body.scrollTo.call(self, scrollPositon);
+                });
             }
 
             return -left
@@ -290,7 +298,6 @@
                 if (delta.y == 0) _top_is_end = true;
             }
 
-
             // newLeft이 범위를 넘었는지 체크
             if (newLeft >= 0) {
                 newLeft = 0;
@@ -304,9 +311,14 @@
             }
 
             //self.$["panel"]["body-scroll"].css({left: newLeft, top: newTop});
-            GRID.header.scrollTo.call(this, {left: newLeft});
-            GRID.body.scrollTo.call(this, {left: newLeft, top: newTop});
+
             resize.call(this);
+            GRID.header.scrollTo.call(self, {left: newLeft});
+
+            if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
+            this.xvar.scrollTimer = setTimeout(function () {
+                GRID.body.scrollTo.call(self, {left: newLeft, top: newTop});
+            }, 0);
 
             return !_top_is_end || !_left_is_end;
         },
@@ -355,18 +367,27 @@
             jQuery(document.body)
                 .on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
                     let css = getContentPosition(e);
-                    GRID.header.scrollTo.call(self, {left: css.left});
-                    GRID.body.scrollTo.call(self, css, "noRepaint");
+
                     resize.call(self);
+                    if (self.xvar.scrollTimer) clearTimeout(self.xvar.scrollTimer);
+                    self.xvar.scrollTimer = setTimeout(function () {
+                        GRID.header.scrollTo.call(self, {left: css.left});
+                        GRID.body.scrollTo.call(self, css, "noRepaint");
+                    }, 0);
                     U.stopEvent(e.originalEvent);
                     self.xvar.touchmoved = true;
                 })
                 .on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
                     if (self.xvar.touchmoved) {
                         let css = getContentPosition(e);
-                        GRID.header.scrollTo.call(self, {left: css.left});
-                        GRID.body.scrollTo.call(self, css);
+
                         resize.call(self);
+                        if (self.xvar.scrollTimer) clearTimeout(self.xvar.scrollTimer);
+                        self.xvar.scrollTimer = setTimeout(function () {
+                            GRID.header.scrollTo.call(self, {left: css.left});
+                            GRID.body.scrollTo.call(self, css);
+                        }, 0);
+
                         U.stopEvent(e.originalEvent);
                         scrollContentMover.off.call(self);
                     }

@@ -103,8 +103,8 @@
             return;
         }
 
-        let fromRowIndex = this.xvar.paintStartRowIndex;
-        let toRowIndex = this.xvar.paintStartRowIndex + this.xvar.paintRowCount - 1;
+        let fromRowIndex = this.xvar.virtualPaintStartRowIndex;
+        let toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount - 1;
         //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
         let totalElements = this.xvar.dataRowCount;
 

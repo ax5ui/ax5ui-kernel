@@ -187,6 +187,7 @@
         if (_reset) {
             resetFrozenColumn.call(this);
             this.xvar.paintStartRowIndex = undefined;
+            this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         }
         let asideHeaderData = this.asideHeaderData,
             leftHeaderData = this.leftHeaderData,
