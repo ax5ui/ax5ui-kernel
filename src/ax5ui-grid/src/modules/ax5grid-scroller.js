@@ -58,10 +58,14 @@
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
+                GRID.body.scrollTo.call(self, scrollPositon);
+
+                /*
                 if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
                 this.xvar.scrollTimer = setTimeout(function () {
                     GRID.body.scrollTo.call(self, scrollPositon);
                 });
+                */
             }
 
             return -top
@@ -87,11 +91,15 @@
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
+                GRID.header.scrollTo.call(self, scrollPositon);
+                GRID.body.scrollTo.call(self, scrollPositon);
+
+                /*
                 if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
                 this.xvar.scrollTimer = setTimeout(function () {
-                    GRID.header.scrollTo.call(self, scrollPositon);
-                    GRID.body.scrollTo.call(self, scrollPositon);
+
                 });
+                */
             }
 
             return -left
@@ -234,7 +242,11 @@
                     });
 
                     if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
-                    GRID.body.scrollTo.call(self, scrollPositon);
+
+                    if (self.xvar.scrollTimer) clearTimeout(self.xvar.scrollTimer);
+                    self.xvar.scrollTimer = setTimeout(function () {
+                        GRID.body.scrollTo.call(self, scrollPositon);
+                    });
                 })
                 .bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
                     scrollBarMover.off.call(self);
@@ -247,11 +259,8 @@
                 .attr('unselectable', 'on')
                 .css('user-select', 'none')
                 .on('selectstart', false);
-
-
         },
         "off": function () {
-
             GRID.scroller.moveout_timer = (new Date()).getTime();
 
             jQuery(document.body)
@@ -310,8 +319,6 @@
                 if (delta.x == 0) _left_is_end = true;
             }
 
-            //self.$["panel"]["body-scroll"].css({left: newLeft, top: newTop});
-
             resize.call(this);
             GRID.header.scrollTo.call(self, {left: newLeft});
 
@@ -359,9 +366,8 @@
                     }
                 };
 
-
-            this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
-            this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.__x_da = 0; // 이동량 변수 초기화
+            this.xvar.__y_da = 0; // 계산이 잘못 될까바
             this.xvar.touchmoved = false;
 
             jQuery(document.body)

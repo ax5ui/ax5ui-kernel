@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.29"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -181,14 +181,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             cfg = this.config;
 
-            var onStateChanged = function onStateChanged(_opts, _that) {
-                if (_opts && _opts.onStateChanged) {
-                    _opts.onStateChanged.call(_that, _that);
-                } else if (this.onStateChanged) {
-                    this.onStateChanged.call(_that, _that);
-                }
-                return true;
-            };
             var initGrid = function initGrid() {
                 // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
 
@@ -3528,8 +3520,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
             }
 
-            console.log('tr[data-ax5grid-tr-data-index="' + di + '"]');
-
             _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
         };
 
@@ -6131,10 +6121,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
+                GRID.body.scrollTo.call(self, scrollPositon);
+
+                /*
                 if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
                 this.xvar.scrollTimer = setTimeout(function () {
                     GRID.body.scrollTo.call(self, scrollPositon);
                 });
+                */
             }
 
             return -top;
@@ -6160,11 +6154,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
+                GRID.header.scrollTo.call(self, scrollPositon);
+                GRID.body.scrollTo.call(self, scrollPositon);
+
+                /*
                 if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
                 this.xvar.scrollTimer = setTimeout(function () {
-                    GRID.header.scrollTo.call(self, scrollPositon);
-                    GRID.body.scrollTo.call(self, scrollPositon);
-                });
+                 });
+                */
             }
 
             return -left;
@@ -6300,7 +6297,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 });
 
                 if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
-                GRID.body.scrollTo.call(self, scrollPositon);
+
+                if (self.xvar.scrollTimer) clearTimeout(self.xvar.scrollTimer);
+                self.xvar.scrollTimer = setTimeout(function () {
+                    GRID.body.scrollTo.call(self, scrollPositon);
+                });
             }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
                 scrollBarMover.off.call(self);
             }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
@@ -6310,7 +6311,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
         "off": function off() {
-
             GRID.scroller.moveout_timer = new Date().getTime();
 
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
@@ -6364,8 +6364,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (delta.x == 0) _left_is_end = true;
             }
 
-            //self.$["panel"]["body-scroll"].css({left: newLeft, top: newTop});
-
             resize.call(this);
             GRID.header.scrollTo.call(self, { left: newLeft });
 
@@ -6415,8 +6413,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 };
             };
 
-            this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
-            this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.__x_da = 0; // 이동량 변수 초기화
+            this.xvar.__y_da = 0; // 계산이 잘못 될까바
             this.xvar.touchmoved = false;
 
             jQuery(document.body).on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {

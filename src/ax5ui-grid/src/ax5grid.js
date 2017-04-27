@@ -177,15 +177,6 @@
 
             cfg = this.config;
 
-            const onStateChanged = function (_opts, _that) {
-                if (_opts && _opts.onStateChanged) {
-                    _opts.onStateChanged.call(_that, _that);
-                }
-                else if (this.onStateChanged) {
-                    this.onStateChanged.call(_that, _that);
-                }
-                return true;
-            };
             const initGrid = function () {
                 // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
 

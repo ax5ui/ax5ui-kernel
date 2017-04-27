@@ -1949,8 +1949,6 @@
                     '></td>');
             }
 
-            console.log('tr[data-ax5grid-tr-data-index="' + di + '"]');
-
             _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
         };
 
@@ -1962,7 +1960,6 @@
             } else {
                 replaceTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, list, _dindex);
             }
-
         }
 
         // body
@@ -1973,7 +1970,6 @@
             replaceTr.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, _dindex);
         }
 
-
         // body.grouping tr 다시 그리기..
         if (cfg.body.grouping) {
             // left
@@ -1981,7 +1977,8 @@
                 if (this.xvar.frozenRowIndex > _dindex) {
                     // 상단 행고정
                     replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
-                } else {
+                }
+                else {
                     replaceGroupTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
                 }
             }
@@ -1990,7 +1987,8 @@
             if (this.xvar.frozenRowIndex > _dindex) {
                 // 상단 행고정
                 replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
-            } else {
+            }
+            else {
                 replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
             }
         }
