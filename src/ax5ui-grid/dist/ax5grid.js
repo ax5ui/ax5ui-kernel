@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.28"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -1260,16 +1260,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @method ax5grid.updateChildRows
              * @param {Number} _dindex
              * @param {Object} _updateData
+             * @param {Object} [_options]
+             * @param {Function} [_options.filter]
              * @returns {ax5grid}
              * @example
              * ```js
              * onDataChanged: function () {
              *      this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked});
              * }
+             *
+             * onDataChanged: function () {
+             *      this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked}, {filter: function(){
+             *          return this.item.type == "A";
+             *      });
+             * }
              * ```
              */
-            this.updateChildRows = function (_dindex, _updateData) {
-                GRID.data.updateChild.call(this, _dindex, _updateData);
+            this.updateChildRows = function (_dindex, _updateData, _options) {
+                GRID.data.updateChild.call(this, _dindex, _updateData, _options);
                 this.xvar.paintStartRowIndex = undefined;
                 this.xvar.paintStartColumnIndex = undefined;
                 GRID.body.repaint.call(this);
@@ -4913,7 +4921,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var updateChild = function updateChild(_dindex, _updateData) {
+    var updateChild = function updateChild(_dindex, _updateData, _options) {
         var keys = this.config.tree.columnKeys,
             selfHash = void 0,
             originIndex = void 0;
@@ -4923,8 +4931,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         if (this.list[originIndex][keys.children]) {
             this.proxyList = []; // 리셋 프록시
-            for (var _k in _updateData) {
-                this.list[originIndex][_k] = _updateData[_k];
+
+            if (_options && _options.filter) {
+                if (_options.filter.call({ item: this.list[originIndex], dindex: originIndex }, this.list[originIndex])) {
+                    for (var _k in _updateData) {
+                        this.list[originIndex][_k] = _updateData[_k];
+                    }
+                }
+            } else {
+                for (var _k2 in _updateData) {
+                    this.list[originIndex][_k2] = _updateData[_k2];
+                }
             }
 
             selfHash = this.list[originIndex][keys.selfHash];
@@ -4934,8 +4951,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             for (; i < l; i++) {
                 if (this.list[i]) {
                     if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
-                        for (var _k2 in _updateData) {
-                            this.list[i][_k2] = _updateData[_k2];
+                        if (_options && _options.filter) {
+                            if (_options.filter.call({ item: this.list[i], dindex: i }, this.list[i])) {
+                                for (var _k3 in _updateData) {
+                                    this.list[i][_k3] = _updateData[_k3];
+                                }
+                            }
+                        } else {
+                            for (var _k4 in _updateData) {
+                                this.list[i][_k4] = _updateData[_k4];
+                            }
                         }
                     }
 

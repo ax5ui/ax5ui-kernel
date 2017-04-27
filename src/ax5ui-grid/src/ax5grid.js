@@ -1272,16 +1272,24 @@
              * @method ax5grid.updateChildRows
              * @param {Number} _dindex
              * @param {Object} _updateData
+             * @param {Object} [_options]
+             * @param {Function} [_options.filter]
              * @returns {ax5grid}
              * @example
              * ```js
              * onDataChanged: function () {
              *      this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked});
              * }
+             *
+             * onDataChanged: function () {
+             *      this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked}, {filter: function(){
+             *          return this.item.type == "A";
+             *      });
+             * }
              * ```
              */
-            this.updateChildRows = function (_dindex, _updateData) {
-                GRID.data.updateChild.call(this, _dindex, _updateData);
+            this.updateChildRows = function (_dindex, _updateData, _options) {
+                GRID.data.updateChild.call(this, _dindex, _updateData, _options);
                 this.xvar.paintStartRowIndex = undefined;
                 this.xvar.paintStartColumnIndex = undefined;
                 GRID.body.repaint.call(this);

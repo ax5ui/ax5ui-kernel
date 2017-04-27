@@ -575,7 +575,7 @@
         }
     };
 
-    const updateChild = function (_dindex, _updateData) {
+    const updateChild = function (_dindex, _updateData, _options) {
         let keys = this.config.tree.columnKeys, selfHash, originIndex;
 
         if (typeof _dindex === "undefined") return false;
@@ -583,8 +583,18 @@
 
         if (this.list[originIndex][keys.children]) {
             this.proxyList = []; // 리셋 프록시
-            for (let _k in _updateData) {
-                this.list[originIndex][_k] = _updateData[_k];
+
+            if (_options && _options.filter) {
+                if (_options.filter.call({item: this.list[originIndex], dindex: originIndex}, this.list[originIndex])) {
+                    for (let _k in _updateData) {
+                        this.list[originIndex][_k] = _updateData[_k];
+                    }
+                }
+            }
+            else {
+                for (let _k in _updateData) {
+                    this.list[originIndex][_k] = _updateData[_k];
+                }
             }
 
             selfHash = this.list[originIndex][keys.selfHash];
@@ -593,8 +603,17 @@
             for (; i < l; i++) {
                 if (this.list[i]) {
                     if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
-                        for (let _k in _updateData) {
-                            this.list[i][_k] = _updateData[_k];
+                        if (_options && _options.filter) {
+                            if (_options.filter.call({item: this.list[i], dindex: i}, this.list[i])) {
+                                for (let _k in _updateData) {
+                                    this.list[i][_k] = _updateData[_k];
+                                }
+                            }
+                        }
+                        else {
+                            for (let _k in _updateData) {
+                                this.list[i][_k] = _updateData[_k];
+                            }
                         }
                     }
 

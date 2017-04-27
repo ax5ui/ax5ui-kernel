@@ -99,7 +99,9 @@
                     },
                     onDataChanged: function () {
                         if (this.key == 'isChecked') {
-                            this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked});
+                            this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked}, {filter: function (item) {
+                                return item.saleType != "A";
+                            }});
                         }
                         else if(this.key == '__selected__'){
                             this.self.updateChildRows(this.dindex, {__selected__: this.item.__selected__});
