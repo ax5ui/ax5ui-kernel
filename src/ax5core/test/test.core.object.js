@@ -380,6 +380,14 @@ describe('ax5.util.sum TEST', function () {
         should.deepEqual(test, 0);
         // print: console.error("argument error : ax5.util.sum - use Array or Object");
     });
+
+    //Usage 04
+    it('ax5.util.sum(["H", "A", "P", "P"], "Y", function () { return this; })', function () {
+        var test = ax5.util.sum(["A", "P", "P", "Y"], "H", function () {
+            return this;
+        });
+        should.deepEqual(test, "HAPPY");
+    });
     /*end ax.util.Sum */
 });
 
@@ -479,7 +487,7 @@ describe('ax5.util.deepCopy TEST', function () {
     /* end ax5.util.deepCopy */
 });
 
-describe('ax5.util.param TEST', function (){
+describe('ax5.util.param TEST', function () {
     /* ax5.util.param */
     //Example01
     it('ax5.util.param("a=1&b=1232")', function () {
