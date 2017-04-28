@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.30"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -2692,7 +2692,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                                 }
 
-                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
                             }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
 
                             SS.push('</td>');
@@ -2798,7 +2798,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                         }
 
-                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
                     }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
                     SS.push('</td>');
@@ -3150,7 +3150,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                         }
 
-                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
                     }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
                     SS.push('</td>');
@@ -3228,7 +3228,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                                 }
 
-                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
                             }(cellHeight), getGroupingValue.call(this, _list[di], di, col), '</span>');
 
                             SS.push('</td>');
@@ -3513,7 +3513,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                         }
 
-                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
                     }(cellHeight), getFieldValue.call(this, _list, _list[di], di, col), '</span>');
                     SS.push('</td>');
                 }

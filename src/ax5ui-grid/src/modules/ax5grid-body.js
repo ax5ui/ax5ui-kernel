@@ -1046,7 +1046,7 @@
 
                                 return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
                                     ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                                    '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                                    '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
 
                             })(cellHeight), (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
 
@@ -1163,7 +1163,7 @@
 
                         return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
                             ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                            '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                            '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
 
                     })(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
@@ -1521,7 +1521,7 @@
 
                         return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
                             ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                            '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                            '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
 
                     })(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
@@ -1612,7 +1612,7 @@
 
                                 return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
                                     ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                                    '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                                    '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
 
                             })(cellHeight), getGroupingValue.call(this, _list[di], di, col), '</span>');
 
@@ -1935,7 +1935,7 @@
 
                         return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
                             ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                            '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                            '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
 
                     })(cellHeight), getFieldValue.call(this, _list, _list[di], di, col), '</span>');
                     SS.push('</td>');
