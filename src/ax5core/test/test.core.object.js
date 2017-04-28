@@ -388,6 +388,14 @@ describe('ax5.util.sum TEST', function () {
         });
         should.deepEqual(test, "HAPPY");
     });
+
+    //Usage 05
+    it('ax5.util.sum([true, false, true, false], true, function () { return this; })', function () {
+        var test = ax5.util.sum([true, false, true, false], true, function () {
+            return this;
+        });
+        should.deepEqual(test, 3);
+    });
     /*end ax.util.Sum */
 });
 
