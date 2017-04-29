@@ -2582,9 +2582,10 @@
                     if (this.isInlineEditing) {
                         if (this.inlineEditing[columnKey] && this.inlineEditing[columnKey].useReturnToSave) { // todo : 네이밍 검증 할 필요있음.
                             inlineEdit.deActive.call(this, "RETURN", columnKey);
+                        }else{
+                            return false;
                         }
                     } else {
-
                         for (var k in this.focusedColumn) {
                             let _column = this.focusedColumn[k],
                                 column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
@@ -2630,6 +2631,7 @@
                             }
                         }
                     }
+                    return true;
                 }
             };
 

@@ -1005,7 +1005,10 @@
                         for (var columnKey in this.inlineEditing) {
                             activeEditLength++;
 
-                            GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey);
+                            if(!GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey)){
+                                return false;
+                                U.stopEvent(_e);
+                            }
                             // next focus
                             if (activeEditLength == 1) {
                                 if (GRID.body.moveFocus.call(this, (_e.shiftKey) ? "UP" : "DOWN")) {

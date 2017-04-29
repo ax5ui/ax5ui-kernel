@@ -17,7 +17,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     UI.addClass({
         className: "grid",
-        version: "1.4.31"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5grid
@@ -992,7 +992,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         for (var columnKey in this.inlineEditing) {
                             activeEditLength++;
 
-                            GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey);
+                            if (!GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey)) {
+                                return false;
+                                U.stopEvent(_e);
+                            }
                             // next focus
                             if (activeEditLength == 1) {
                                 if (GRID.body.moveFocus.call(this, _e.shiftKey ? "UP" : "DOWN")) {
@@ -4140,9 +4143,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         if (this.inlineEditing[columnKey] && this.inlineEditing[columnKey].useReturnToSave) {
                             // todo : 네이밍 검증 할 필요있음.
                             inlineEdit.deActive.call(this, "RETURN", columnKey);
+                        } else {
+                            return false;
                         }
                     } else {
-
                         for (var k in this.focusedColumn) {
                             var _column = this.focusedColumn[k],
                                 column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
@@ -4186,6 +4190,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             }
                         }
                     }
+                    return true;
                 }
             };
 
@@ -5926,13 +5931,86 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
+    var edit_textarea = {
+        useReturnToSave: false,
+        editMode: "popup",
+        _getHtml: function _getHtml(_root, _columnKey, _editor, _value) {
+            // init 에서 사용하게 될 HTML 태그를 만들어 줍니다.
+            return "<div data-ax5grid-editor=\"textarea\"></div>";
+        },
+        _bindUI: function _bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
+            // 위치와 크기를 구합니다.
+            var offset = _$el.offset();
+            var box = {
+                width: _$el.width()
+            };
+            var editorHeight = 150;
+            var buttonHeight = 30;
+
+            // 새로운 엘리먼트 생성
+            var $newDiv = jQuery("<div data-ax5grid-popup=\"textarea\" style=\"z-index: 9999;\">\n    <textarea style=\"width:100%;height:" + (editorHeight - buttonHeight) + "px;\" class=\"form-control\">" + _value + "</textarea>\n    <div style=\"height:" + buttonHeight + "px;padding:5px;text-align: right;\">\n        <button class=\"btn btn-default\">OK</button>\n    </div>\n</div>");
+            var $newTextarea = $newDiv.find("textarea");
+            // 엘리먼트에 CSS 적용
+            $newDiv.css({
+                position: "absolute",
+                left: offset.left,
+                top: offset.top,
+                width: box.width,
+                height: editorHeight
+            });
+            $newDiv.find("textarea");
+
+            // 새로운 엘리먼트를 document.body에 append
+            jQuery(document.body).append($newDiv);
+            $newTextarea.focus().select();
+
+            $newTextarea.on("blur", function (e) {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey, this.value);
+                $newDiv.remove();
+                ax5.util.stopEvent(e.originalEvent);
+            });
+            $newTextarea.on("keydown", function (e) {
+                if (e.which == ax5.info.eventKeys.ESC) {
+                    GRID.body.inlineEdit.deActive.call(_root, "ESC", _columnKey);
+                    $newDiv.remove();
+                    ax5.util.stopEvent(e.originalEvent);
+                }
+            });
+
+            /// 값 변경
+            /// GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey, this.value[0][eConfig.columnKeys.optionValue]);
+            /// 에디팅 취소
+            /// GRID.body.inlineEdit.deActive.call(_root, "ESC", _columnKey);
+        },
+
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
+            // 인라인 에디팅 활성화 시작
+            /**
+             * _root : gridInstance
+             * _columnKey : di + "_" + col.colIndex + "_" + col.rowIndex
+             * _editor : col.editor
+             * _$parent : 셀
+             * _value : 값
+             */
+            var $el = void 0;
+            _$parent.append($el = jQuery(this._getHtml(_root, _columnKey, _editor, _value)));
+            // 셀에 HTML 컨텐츠 추가
+
+            this._bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            // 이벤트 바인딩
+
+            return $el;
+        }
+    };
+
     GRID.inlineEditor = {
         "text": edit_text,
         "money": edit_money,
         "number": edit_number,
         "date": edit_date,
         "select": edit_select,
-        "checkbox": edit_checkbox
+        "checkbox": edit_checkbox,
+        "textarea": edit_textarea
     };
 })();
 // ax5.ui.grid.page

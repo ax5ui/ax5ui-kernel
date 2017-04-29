@@ -123,7 +123,7 @@
                             {
                                 label: function () {
                                     return this.groupBy.labels.join(", ") + " 합계";
-                                }, colspan: 6
+                                }, colspan: 2
                             },
                             {key: "price", collector: "avg", formatter: "money", align: "right"},
                             {key: "amount", collector: "sum", formatter: "money", align: "right"},
@@ -172,10 +172,10 @@
                     {
                         key: undefined,
                         label: "필드C", columns: [
-                        {key: "price", label: "단가", align: "right", editor: {type: "money", updateWith: ['cost']}},
-                        {key: "amount", label: "수량", align: "right", formatter: "money", editor: {type: "number", updateWith: ['cost']}},
+                        {key: "price", label: "단가", align: "right", width: 60, editor: {type: "money", updateWith: ['cost']}},
+                        {key: "amount", label: "수량", align: "right", width: 50, formatter: "money", editor: {type: "number", updateWith: ['cost']}},
                         {
-                            key: "cost", label: "금액", align: "right", formatter: function () {
+                            key: "cost", label: "금액", align: "right", width: 80, formatter: function () {
                             return ax5.util.number(this.item.price * this.item.amount, {"money": true});
                         }
                         }
@@ -192,7 +192,7 @@
                     }
                     },
                     {
-                        key: "saleType", label: "판매타입", editor: {
+                        key: "saleType", label: "판매타입", width: 50, editor: {
                         type: "select", config: {
                             columnKeys: {
                                 optionValue: "CD", optionText: "NM"
@@ -221,17 +221,10 @@
                     }
                     },
                     {
-                        key: "saleDt", label: "판매일자", align: "center", editor: {
-                        type: "date", config: {}
-                    }
-                    },
-                    {
-                        key: "saleDt", label: "판매일자", align: "center", editor: {
-                        type: "date", config: {}
-                    }
-                    },
-                    {
                         key: "customer", label: "고객명", editor: {type: "text"}
+                    },
+                    {
+                        key: "desc", label: "상세설명", align: "left", width: 200, editor: {type: "textarea"}
                     }
                 ],
 
