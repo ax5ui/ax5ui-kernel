@@ -396,6 +396,14 @@ describe('ax5.util.sum TEST', function () {
         });
         should.deepEqual(test, 3);
     });
+
+    //Usage 06
+    it('ax5.util.sum([true, false, true, false], true, function () { return this; })', function () {
+        var test = ax5.util.sum([1, true, "0", false], true, function () {
+            return this;
+        });
+        should.deepEqual(test, "30false");
+    });
     /*end ax.util.Sum */
 });
 
