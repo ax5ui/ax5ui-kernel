@@ -433,6 +433,17 @@ describe('ax5.util.avg TEST', function () {
 
         should.deepEqual(rs, 10);
     });
+
+    //Example 03
+    it('ax5.util.avg(arr , function(){return this;})', function () {
+        var arr = [true, false, true, false, true, false];
+
+        var rs = ax5.util.avg(arr, function () {
+            return this;
+        });
+
+        should.deepEqual(rs, 0.5);
+    });
     /* end ax.util.avg */
 });
 
