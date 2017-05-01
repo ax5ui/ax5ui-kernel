@@ -444,6 +444,17 @@ describe('ax5.util.avg TEST', function () {
 
         should.deepEqual(rs, 0.5);
     });
+
+    //Example 03
+    it('ax5.util.avg(obj , function(){return this;})', function () {
+        var obj = { "a": 3, "b": 30, "c": 300 };
+
+        var rs = ax5.util.avg(obj, function () {
+            return this;
+        });
+
+        should.deepEqual(rs, 111);
+    });
     /* end ax.util.avg */
 });
 
