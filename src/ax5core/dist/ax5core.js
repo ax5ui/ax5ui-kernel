@@ -524,9 +524,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
                 return defaultValue / l;
             } else if (isObject(O)) {
+                l = 0;
                 for (i in O) {
                     if (typeof O[i] != "undefined") {
-                        if ((tokenValue = _fn.call(O[i], O[i])) === false) break;else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                        if ((tokenValue = _fn.call(O[i], O[i])) === false) break;else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;++l;
                     }
                 }
                 return defaultValue / l;
