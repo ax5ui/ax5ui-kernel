@@ -445,7 +445,7 @@ describe('ax5.util.avg TEST', function () {
         should.deepEqual(rs, 0.5);
     });
 
-    //Example 03
+    //Example 04
     it('ax5.util.avg(obj , function(){return this;})', function () {
         var obj = { "a": 3, "b": 30, "c": 300 };
 
@@ -454,6 +454,17 @@ describe('ax5.util.avg TEST', function () {
         });
 
         should.deepEqual(rs, 111);
+    });
+
+    //Example 05
+    it('ax5.util.avg(obj , function(){return this;})', function () {
+        var obj = { "0": true, "1": true, "2": true, "3": false, "4": false, "5": false};
+
+        var rs = ax5.util.avg(obj, function () {
+            return this;
+        });
+
+        should.deepEqual(rs, 0.5);
     });
     /* end ax.util.avg */
 });
