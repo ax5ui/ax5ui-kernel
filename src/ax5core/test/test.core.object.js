@@ -290,12 +290,19 @@ describe('ax5.util.reduce TEST', function () {
     });
 
     //Example04
-    it('ax5.util.reduce([] , function(p,n){ return ++count; })', function () {
+    it('ax5.util.reduce([5, 4, 3, 2, 1] , function(){ return ++count; })', function () {
         var count = 0;
         ax5.util.reduce([5, 4, 3, 2, 1], function () {
             return ++count;
         });
         should.deepEqual(count, 4);
+    });
+
+    //Example05
+    it('ax5.util.reduce([false, true, false, true, false], function (p, n) {return p == n;})', function () {
+        should.deepEqual(ax5.util.reduce([false, true, false, true, false], function (p, n) {
+            return p == n;
+        }), false);
     });
     /*end ax5.util.reduce*/
 });
