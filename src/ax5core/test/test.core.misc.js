@@ -64,6 +64,10 @@ describe('ax5.util.toJson TEST', function() {
         {
             args: function func() {},
             expect: '"{Function}"'
+        },
+        {
+            args: [true, false, true],
+            expect: '[true,false,true]'
         }
     ];
 
