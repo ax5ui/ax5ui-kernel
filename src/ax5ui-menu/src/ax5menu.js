@@ -131,7 +131,7 @@
          * });
          * ```
          */
-        var ax5menu = function () {
+        return function () {
             let self = this,
                 cfg;
 
@@ -161,7 +161,7 @@
 
             cfg = this.config;
 
-            let appEventAttach = function (active, opt) {
+            const appEventAttach = function (active, opt) {
                     if (active) {
                         jQuery(document).unbind("click.ax5menu-" + this.menuId).bind("click.ax5menu-" + this.menuId, clickItem.bind(this, opt));
                         jQuery(window).unbind("keydown.ax5menu-" + this.menuId).bind("keydown.ax5menu-" + this.menuId, function (e) {
@@ -178,8 +178,8 @@
                         jQuery(window).unbind("keydown.ax5menu-" + this.menuId);
                         jQuery(window).unbind("resize.ax5menu-" + this.menuId);
                     }
-                },
-                onStateChanged = function (opts, that) {
+            };
+            const onStateChanged = function (opts, that) {
                     if (opts && opts.onStateChanged) {
                         opts.onStateChanged.call(that, that);
                     }
@@ -191,16 +191,16 @@
                     opts = null;
                     that = null;
                     return true;
-                },
-                onLoad = function (that) {
+            };
+            const onLoad = function (that) {
                     if (this.onLoad) {
                         this.onLoad.call(that, that);
                     }
 
                     that = null;
                     return true;
-                },
-                popup = function (opt, items, depth, path) {
+            };
+            const popup = function (opt, items, depth, path) {
                     let data = opt,
                         activeMenu,
                         removed
@@ -361,8 +361,8 @@
                     path = null;
 
                     return this;
-                },
-                clickItem = function (opt, e) {
+                };
+            const clickItem = function (opt, e) {
                     let target, item;
 
                     target = U.findParentNode(e.target, function (target) {
@@ -438,8 +438,8 @@
                     target = null;
                     item = null;
                     return this;
-                },
-                align = function (activeMenu, data) {
+                };
+            const align = function (activeMenu, data) {
                     let $window = jQuery(window),
                         $document = jQuery(document),
                         wh = (cfg.position == "fixed") ? $window.height() : $document.height(),
@@ -834,7 +834,6 @@
                 }
             }).apply(this, arguments);
         };
-        return ax5menu;
     })());
 
     MENU = ax5.ui.menu;

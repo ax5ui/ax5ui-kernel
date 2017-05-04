@@ -28,7 +28,19 @@
             this.config = {
                 clickEventName: "click",
                 theme: 'default',
-                animateTime: 100
+                animateTime: 100,
+                colors: [
+                    {"red": "#ff0000"},
+                    {"orange": "#ff9802"},
+                    {"yellow": "#ffff00"},
+                    {"green": "#00ff36"},
+                    {"blue": "#0000ff"},
+                    {"purple": "#ba00ff"},
+                    {"skyblue": "#84e4ff"},
+                    {"pink": "#ff77c4"},
+                    {"black": "#000000"},
+                    {"white": "#ffffff"},
+                ]
             };
 
             cfg = this.config;
@@ -44,11 +56,15 @@
                 that = null;
             };
 
+            const repaint = function () {
+
+            };
+
             /**
              * Preferences of palette UI
              * @method ax5palette.setConfig
-             * @param {Object} config - 클래스 속성값
-             * @param {Element|nodelist} config.target
+             * @param {Object} config
+             * @param {(Element||nodelist)} config.target
              * @returns {ax5palette}
              * @example
              * ```js

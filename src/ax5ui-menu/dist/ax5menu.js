@@ -8,7 +8,7 @@
 
     UI.addClass({
         className: "menu",
-        version: "1.4.31"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5.ui.menu
@@ -133,7 +133,7 @@
          * });
          * ```
          */
-        var ax5menu = function ax5menu() {
+        return function () {
             var self = this,
                 cfg = void 0;
 
@@ -179,8 +179,8 @@
                     jQuery(window).unbind("keydown.ax5menu-" + this.menuId);
                     jQuery(window).unbind("resize.ax5menu-" + this.menuId);
                 }
-            },
-                onStateChanged = function onStateChanged(opts, that) {
+            };
+            var onStateChanged = function onStateChanged(opts, that) {
                 if (opts && opts.onStateChanged) {
                     opts.onStateChanged.call(that, that);
                 } else if (this.onStateChanged) {
@@ -191,16 +191,16 @@
                 opts = null;
                 that = null;
                 return true;
-            },
-                onLoad = function onLoad(that) {
+            };
+            var onLoad = function onLoad(that) {
                 if (this.onLoad) {
                     this.onLoad.call(that, that);
                 }
 
                 that = null;
                 return true;
-            },
-                popup = function popup(opt, items, depth, path) {
+            };
+            var popup = function popup(opt, items, depth, path) {
                 var data = opt,
                     activeMenu = void 0,
                     removed = void 0;
@@ -354,8 +354,8 @@
                 path = null;
 
                 return this;
-            },
-                clickItem = function clickItem(opt, e) {
+            };
+            var clickItem = function clickItem(opt, e) {
                 var target = void 0,
                     item = void 0;
 
@@ -430,8 +430,8 @@
                 target = null;
                 item = null;
                 return this;
-            },
-                align = function align(activeMenu, data) {
+            };
+            var align = function align(activeMenu, data) {
                 var $window = jQuery(window),
                     $document = jQuery(document),
                     wh = cfg.position == "fixed" ? $window.height() : $document.height(),
@@ -816,7 +816,6 @@
                 }
             }.apply(this, arguments);
         };
-        return ax5menu;
     }());
 
     MENU = ax5.ui.menu;
