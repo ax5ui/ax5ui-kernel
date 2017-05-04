@@ -160,6 +160,14 @@ var PATHS = {
         dest: "src/ax5ui-docker/dist",
         scss: "ax5docker.scss",
         js: "ax5docker"
+    },
+    "ax5ui-palette": {
+        isPlugin: true,
+        root: "src/ax5ui-palette",
+        src: "src/ax5ui-palette/src",
+        dest: "src/ax5ui-palette/dist",
+        scss: "ax5palette.scss",
+        js: "ax5palette"
     }
 };
 

@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "uploader",
-        version: "1.4.31"
+        version: "${VERSION}"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -120,7 +120,11 @@
 
                 /// selectedFiles에 현재 파일 정보 담아두기
                 if (length in files) {
-                    this.selectedFiles = U.toArray(files);
+                    if (files.length == 1) {
+                        this.selectedFiles = [files[0]];
+                    } else {
+                        this.selectedFiles = U.toArray(files);
+                    }
                 } else {
                     this.selectedFiles = [files];
                 }
@@ -413,6 +417,8 @@
                             bound_uploadComplete();
                             return this;
                         }
+
+                        if (uploadFile[0]) uploadFile = uploadFile[0];
 
                         var formData = new FormData();
                         //서버로 전송해야 할 추가 파라미터 정보 설정

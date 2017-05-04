@@ -9,7 +9,7 @@
 
     UI.addClass({
         className: "picker",
-        version: "1.4.31"
+        version: "${VERSION}"
     }, function () {
         /**
          * @class ax5picker
@@ -585,6 +585,30 @@
                     boundID = null;
                     inputIndex = null;
                     val = null;
+                    return this;
+                };
+            }();
+
+            /**
+             * @method ax5picker.getContentValue
+             * @param {String} boundID
+             * @param {Number} inputIndex
+             * @returns {ax5picker} this
+             */
+            this.getContentValue = function () {
+                return function (boundID, inputIndex) {
+                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID),
+                        item = this.queue[queIdx],
+                        _input = void 0;
+
+                    if (item) {
+                        _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(inputIndex));
+                        return _input.val();
+                    }
+
+                    item = null;
+                    boundID = null;
+                    inputIndex = null;
                     return this;
                 };
             }();
