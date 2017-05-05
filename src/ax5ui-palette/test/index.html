@@ -13,12 +13,14 @@
 </head>
 <body style="padding: 50px;">
 
-<div id="palette-target" style="width:250px;"></div>
+<div style="border:1px solid #ccc;border-radius: 6px;padding: 10px;width: 270px;">
+    <div data-ax5palette="01" style="height:500px;width:250px;"></div>
+</div>
 
 <script>
     $(document.body).ready(function () {
         window.myPalette = new ax5.ui.palette({
-            target: document.getElementById("palette-target"),
+            target: $('[data-ax5palette="01"]'),
             onClick: function () {
                 console.log(this);
             },

@@ -45,7 +45,7 @@
 
             cfg = this.config;
 
-            const onStateChanged = function (opts, that) {
+            const onStateChanged = (opts, that) => {
                 if (opts && opts.onStateChanged) {
                     opts.onStateChanged.call(that, that);
                 }
@@ -56,8 +56,13 @@
                 that = null;
             };
 
-            const repaint = function () {
-
+            const repaint = () => {
+                let box = {
+                    width: this.$target.innerWidth(),
+                    height: this.$target.innerHeight(),
+                };
+                
+                console.log(box);
             };
 
             /**
@@ -73,15 +78,15 @@
             //== class body start
             this.init = function () {
                 // after setConfig();
-
                 this.onStateChanged = cfg.onStateChanged;
                 this.onClick = cfg.onClick;
 
                 if (!cfg.target) {
                     console.log(ax5.info.getError("ax5palette", "401", "setConfig"));
                 }
-                this.target = jQuery(cfg.target);
+                this.$target = jQuery(cfg.target);
 
+                repaint(); // 팔렛트 그리기.
             };
 
             // 클래스 생성자

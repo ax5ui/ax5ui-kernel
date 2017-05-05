@@ -63,12 +63,12 @@
     };
 
     var sampleData = [
-        {a: "A", b: "A01", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
-        {a: "A", b: "B01", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
-        {a: "A", b: "C01", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
-        {a: "A", b: "A01", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
-        {a: "A", b: "B01", price: 1400, amount: 5, cost: 7000, saleDt: "2016-08-29", customer: "황세진", saleType: "D"},
-        {a: "A", b: "A01", price: 1500, amount: 2, cost: 3000, saleDt: "2016-08-26", customer: "이서연", saleType: "A"}
+        {a: "A", b: "A01", c:"장", price: 1000, amount: 12, cost: 12000, saleDt: "2016-08-29", customer: "장기영", saleType: "A"},
+        {a: "A", b: "B01", c:"장", price: 1100, amount: 11, cost: 12100, saleDt: "2016-08-28", customer: "장서우", saleType: "B"},
+        {a: "A", b: "C01", c:"이", price: 1200, amount: 10, cost: 12000, saleDt: "2016-08-27", customer: "이영희", saleType: "A"},
+        {a: "A", b: "A01", c:"황", price: 1300, amount: 8, cost: 10400, saleDt: "2016-08-25", customer: "황인서", saleType: "C"},
+        {a: "A", b: "B01", c:"황", price: 1400, amount: 5, cost: 7000, saleDt: "2016-08-29", customer: "황세진", saleType: "D"},
+        {a: "A", b: "A01", c:"이", price: 1500, amount: 2, cost: 3000, saleDt: "2016-08-26", customer: "이서연", saleType: "A"}
     ];
 
     var gridView = {
@@ -97,7 +97,7 @@
                         this.self.select(this.dindex);
                     },
                     grouping: {
-                        by: ["a", "b"],
+                        by: ["a", "b", "c"],
                         columns: [
                             {
                                 label: function () {
@@ -136,6 +136,7 @@
                         align: "center"
                     },
                     {key: "b", label: "필드B", align: "center"},
+                    {key: "c", label: "필드C", align: "center"},
                     {
                         key: undefined, label: "필드C", columns: [
                         {key: "price", label: "단가", formatter: "money", align: "right"},
@@ -149,7 +150,7 @@
                 ],
                 footSum: [
                     [
-                        {label: "전체 합계", colspan: 2, align: "center"},
+                        {label: "전체 합계", colspan: 3, align: "center"},
                         {key: "price", collector: "avg", formatter: "money", align: "right"},
                         {key: "amount", collector: "sum", formatter: "money", align: "right"},
                         {key: "cost", collector: "sum", formatter: "money", align: "right"}
