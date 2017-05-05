@@ -32,6 +32,7 @@
             lineNumber = 0;
 
         if (this.config.body.grouping) {
+
             let groupingKeys = U.map(this.bodyGrouping.by, function () {
                 return {
                     key: this,
@@ -40,53 +41,60 @@
                     list: []
                 }
             });
+
             let gi = 0, gl = groupingKeys.length, compareString, appendRow = [], ari;
             for (; i < l + 1; i++) {
                 gi = 0;
 
-                if (_list[i]) {
-                    if (_list[i][this.config.columnKeys.deleted]) {
+
+                if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
                         this.deletedList.push(_list[i]);
-                    } else {
-                        compareString = ""; // 그룹핑 구문검사용
-                        appendRow = []; // 현재줄 앞에 추가해줘야 하는 줄
+                }
 
-                        // 그룹핑 구문검사
-                        for (; gi < gl; gi++) {
-                            if (_list[i]) {
-                                compareString += "$|$" + _list[i][groupingKeys[gi].key];
-                            }
-                            if (appendIndex > 0 && compareString != groupingKeys[gi].compareString) {
-                                let appendRowItem = {keys: [], labels: [], list: groupingKeys[gi].list};
-                                for (let ki = 0; ki < gi + 1; ki++) {
-                                    appendRowItem.keys.push(groupingKeys[ki].key);
-                                    appendRowItem.labels.push(_list[i - 1][groupingKeys[ki].key]);
-                                }
-                                appendRow.push(appendRowItem);
-                                groupingKeys[gi].list = [];
-                            }
-                            groupingKeys[gi].list.push(_list[i]);
-                            groupingKeys[gi].compareString = compareString;
+                compareString = ""; // 그룹핑 구문검사용
+                appendRow = []; // 현재줄 앞에 추가해줘야 하는 줄
+
+                // 그룹핑 구문검사
+                for (; gi < gl; gi++) {
+                    if (_list[i]) {
+                        compareString += "$|$" + _list[i][groupingKeys[gi].key];
+                    }
+
+                    if (appendIndex > 0 && compareString != groupingKeys[gi].compareString) {
+                        let appendRowItem = {keys: [], labels: [], list: groupingKeys[gi].list};
+                        for (let ki = 0; ki < gi + 1; ki++) {
+                            appendRowItem.keys.push(groupingKeys[ki].key);
+                            appendRowItem.labels.push(_list[i - 1][groupingKeys[ki].key]);
                         }
-
-                        // 새로 추가해야할 그룹핑 row
-                        ari = appendRow.length;
-                        while (ari--) {
-                            returnList.push({__isGrouping: true, __groupingList: appendRow[ari].list, __groupingBy: {keys: appendRow[ari].keys, labels: appendRow[ari].labels}});
-                        }
-                        //~ 그룹핑 구문 검사 완료
-
-                        if (_list[i][this.config.columnKeys.selected]) {
-                            this.selectedDataIndexs.push(i);
-                        }
-                        _list[i]["__index"] = lineNumber;
-                        dataRealRowCount++;
-
-                        appendIndex++;
-                        lineNumber++;
-                        returnList.push(_list[i]);
+                        appendRow.push(appendRowItem);
+                        groupingKeys[gi].list = [];
+                    }
+                    if (i == l - 1) {
+                        // 마지막 줄일 때.
 
                     }
+                    groupingKeys[gi].list.push(_list[i]);
+                    groupingKeys[gi].compareString = compareString;
+                }
+
+                // 새로 추가해야할 그룹핑 row
+                ari = appendRow.length;
+                while (ari--) {
+                    returnList.push({__isGrouping: true, __groupingList: appendRow[ari].list, __groupingBy: {keys: appendRow[ari].keys, labels: appendRow[ari].labels}});
+                }
+                //~ 그룹핑 구문 검사 완료
+
+                if (_list[i]) {
+                    if (_list[i][this.config.columnKeys.selected]) {
+                        this.selectedDataIndexs.push(i);
+                    }
+                    _list[i]["__index"] = lineNumber;
+                    returnList.push(_list[i]);
+
+                    dataRealRowCount++;
+
+                    appendIndex++;
+                    lineNumber++;
                 }
             }
         }
@@ -215,34 +223,26 @@
     };
 
     const set = function (data) {
+
+        let list;
         if (U.isArray(data)) {
-
             this.page = null;
-            if (this.config.tree.use) {
-                this.list = arrangeData4tree.call(this, data);
-                this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
-            } else {
-                this.proxyList = null;
-                this.list = initData.call(this,
-                    (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data) : data
-                );
-            }
-            this.deletedList = [];
-
+            list = data;
         } else if ("page" in data) {
-
             this.page = jQuery.extend({}, data.page);
-            if (this.config.tree.use) {
-                this.list = arrangeData4tree.call(this, data.list);
-                this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
-            } else {
-                this.list = initData.call(this,
-                    (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, data.list) : data.list
-                );
-            }
-            this.deletedList = [];
-
+            list = data.list;
         }
+
+        if (this.config.tree.use) {
+            this.list = arrangeData4tree.call(this, list);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
+        } else {
+            this.proxyList = null;
+            this.list = initData.call(this,
+                (!this.config.remoteSort && Object.keys(this.sortInfo).length) ? sort.call(this, this.sortInfo, list) : list
+            );
+        }
+        this.deletedList = [];
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = (this.config.frozenRowIndex > this.list.length) ? this.list.length : this.config.frozenRowIndex;

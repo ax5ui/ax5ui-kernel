@@ -75,8 +75,8 @@
         initView: function () {
             firstGrid.setConfig({
                 target: $('[data-ax5grid="first-grid"]'),
-                frozenColumnIndex: 3,
-                frozenRowIndex: 3,
+                frozenColumnIndex: 0,
+                frozenRowIndex: 0,
                 showLineNumber: true,
                 showRowSelector: true,
                 multipleSelect: true,
@@ -97,12 +97,12 @@
                         this.self.select(this.dindex);
                     },
                     grouping: {
-                        by: ["a", "b", "c"],
+                        by: ["a", "b"],
                         columns: [
                             {
                                 label: function () {
                                     return this.groupBy.labels.join(", ") + " 합계";
-                                }, colspan: 2
+                                }, colspan: 3
                             },
                             {key: "price", collector: "avg", formatter: "money", align: "right"},
                             {key: "amount", collector: "sum", formatter: "money", align: "right"},
