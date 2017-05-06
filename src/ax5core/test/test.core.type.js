@@ -25,6 +25,10 @@ describe('ax5.util.getType TEST', function() {
             expect: 'nodelist'
         },
         {
+            args: [ document.querySelector("body") ],
+            expect: 'element'
+        },
+        {
             args: [ document.createDocumentFragment() ],
             expect: 'fragment'
         },
