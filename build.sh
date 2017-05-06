@@ -58,4 +58,5 @@ git subsplit publish --heads="master" --no-tags src/ax5ui-layout:git@github.com:
 git subsplit publish --heads="master" --no-tags src/ax5ui-binder:git@github.com:ax5ui/ax5ui-binder.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-autocomplete:git@github.com:ax5ui/ax5ui-autocomplete.git
 git subsplit publish --heads="master" --no-tags src/ax5ui-mask:git@github.com:ax5ui/ax5ui-mask.git
+git subsplit publish --heads="master" --no-tags src/ax5ui-palette:git@github.com:ax5ui/ax5ui-palette.git
 rm -rf .subsplit/
