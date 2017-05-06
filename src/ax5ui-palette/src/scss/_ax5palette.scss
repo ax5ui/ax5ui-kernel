@@ -1,30 +1,48 @@
-@mixin extend-item-theme() {
-    &.holiday {
-        color: $ax5calendar-sun-text-color;
+@mixin color-item() {
+    [data-ax5palette-color]{
+        display: table;
+        [data-panel="color-preview"]{
+            display: table-cell;
+        }
+        [data-panel="color-label"]{
+            display: table-cell;
+        }
+        [data-panel="color-slider"]{
+            display: table-cell;
+
+            [data-panel="color-track"]{}
+            [data-panel="color-handle"]{}
+        }
     }
 }
 
 // mixins --------------------------------------------- end
 
-@include keyframes(ax5-ui-calendar-fadeout) {
+@include keyframes(something-animation) {
     from {
         opacity: 1.0;
     }
     to {
         opacity: 0.5;
-    }
-}
-
-@include keyframes(ax5-ui-calendar-fadein) {
-    from {
-        opacity: 0.5;
-    }
-    to {
-        opacity: 1.0;
     }
 }
 
 [data-ax5palette] {
     box-sizing: border-box;
     position: relative;
+
+    [data-ax5palette-container="root"] {
+        [data-ax5palette-container="header"] {
+
+        }
+        [data-ax5palette-container="colors"] {
+            @include color-item();
+        }
+        [data-ax5palette-container="controls"] {
+
+        }
+        [data-ax5palette-container="bottom"] {
+
+        }
+    }
 }

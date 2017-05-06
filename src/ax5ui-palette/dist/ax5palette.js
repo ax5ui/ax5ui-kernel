@@ -122,7 +122,7 @@
     };
 
     var tmpl_colors = function tmpl_colors(columnKeys) {
-        return "\n{{#colors}}\n<div data-ax5palette-panel=\"color\">\n{{label}} : {{value}}\n</div>\n{{/colors}}\n";
+        return "\n{{#colors}}\n<div data-ax5palette-color=\"{{label}}\">\n    <div data-panel=\"color-preview\" style=\"background:{{value}};\"></div>\n    <div data-panel=\"color-label\">{{label}}</div>\n    <div data-panel=\"color-slider\">\n        <div data-panel=\"color-track\">\n            <div data-panel=\"color-handle\"></div>\n        </div>\n    </div>\n</div>\n{{/colors}}\n";
     };
 
     PALETTE.tmpl = {

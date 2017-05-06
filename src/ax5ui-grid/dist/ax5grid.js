@@ -4451,10 +4451,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         appendRow.push(appendRowItem);
                         groupingKeys[gi].list = [];
                     }
-                    if (i == l - 1) {
-                        // 마지막 줄일 때.
 
-                    }
                     groupingKeys[gi].list.push(_list[i]);
                     groupingKeys[gi].compareString = compareString;
                 }
@@ -4474,7 +4471,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     returnList.push(_list[i]);
 
                     dataRealRowCount++;
-
                     appendIndex++;
                     lineNumber++;
                 }
