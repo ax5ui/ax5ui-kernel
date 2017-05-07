@@ -38,7 +38,9 @@
                     },
                     slider: {
                         trackHeight: 8,
-                        handleHeight: 15
+                        amount: 30,
+                        handleWidth: 18,
+                        handleHeight: 18,
                     },
                     list: [
                         {label: "red", value: "#ff0000"},
@@ -47,8 +49,8 @@
                         {label: "green", value: "#00ff36"},
                         {label: "blue", value: "#0000ff"},
                         {label: "purple", value: "#ba00ff"},
-                        {label: "skyblue", value: "#84e4ff"},
-                        {label: "pink", value: "#ff77c4"},
+                        //{label: "skyblue", value: "#84e4ff"},
+                        //{label: "pink", value: "#ff77c4"},
                         {label: "black", value: "#000000"},
                         {label: "white", value: "#ffffff"},
                     ],
@@ -59,6 +61,7 @@
                 columnKeys: {}
             };
             this.xvar = {};
+            this.colors = [];
 
             cfg = this.config;
 
@@ -71,6 +74,64 @@
                 }
 
                 that = null;
+            };
+
+            /**
+             * get mouse position
+             * @param e
+             * @returns {{clientX, clientY}}
+             */
+            const getMousePosition = (e) => {
+                let mouseObj, originalEvent = (e.originalEvent) ? e.originalEvent : e;
+                mouseObj = ('changedTouches' in originalEvent && originalEvent.changedTouches) ? originalEvent.changedTouches[0] : originalEvent;
+                // clientX, Y 쓰면 스크롤에서 문제 발생
+                return {
+                    clientX: mouseObj.pageX,
+                    clientY: mouseObj.pageY
+                }
+            };
+
+            const alignHandle = (item) => {
+
+            };
+
+            const handleMoveEvent = {
+                "on": () => {
+                    jQuery(document.body)
+                        .on("mousemove.ax5palette-" + this.instanceId, function (e) {
+                            let mouseObj = getMousePosition(e),
+                                da_grow;
+
+                            mouseObj = null;
+                            da_grow = null;
+                        })
+                        .on("mouseup.ax5palette-" + this.instanceId, function (e) {
+                            handleMoveEvent.off();
+                            U.stopEvent(e);
+                        })
+                        .on("mouseleave.ax5palette-" + this.instanceId, function (e) {
+                            handleMoveEvent.off();
+                            U.stopEvent(e);
+                        });
+
+                    jQuery(document.body)
+                        .attr('unselectable', 'on')
+                        .css('user-select', 'none')
+                        .on('selectstart', false);
+                },
+                "off": () => {
+                    self.xvar.resizerLived = false;
+
+                    jQuery(document.body)
+                        .off("mousemove.ax5palette-" + this.instanceId)
+                        .off("mouseup.ax5palette-" + this.instanceId)
+                        .off("mouseleave.ax5palette-" + this.instanceId);
+
+                    jQuery(document.body)
+                        .removeAttr('unselectable')
+                        .css('user-select', 'auto')
+                        .off('selectstart');
+                }
             };
 
             const repaint = () => {
@@ -96,12 +157,40 @@
 
                 /// colors.list 색상 범위 결정
                 cfg.colors.list.forEach(function (c) {
-                    console.log(c.value);
+                    let _color = U.color(c.value);
+                    c._amount = 0;
+                    if (_color.r == 0 && _color.g == 0 && _color.b == 0) {
+                        c._color0value = "#" + _color.lighten(cfg.colors.slider.amount * 2).getHexValue();
+                        c._color1value = "#" + _color.lighten(cfg.colors.slider.amount).getHexValue();
+                        c._color2value = "#" + _color.getHexValue();
+                    } else {
+                        c._color0value = "#" + _color.lighten(cfg.colors.slider.amount).getHexValue();
+                        c._color1value = "#" + _color.getHexValue();
+                        c._color2value = "#" + _color.darken(cfg.colors.slider.amount).getHexValue();
+                    }
                 });
+
+                cfg.colors.slider.handleLeft = -cfg.colors.slider.handleWidth / 2;
+                cfg.colors.slider.handleTop = -cfg.colors.slider.handleHeight / 2;
 
                 // 팔렛트 컬러 패널 초기화
                 this.$["colors"].html(PALETTE.tmpl.get("colors", cfg, cfg.columnKeys));
 
+                this.$["colors"].find('[data-ax5palette-color-index]').each(function () {
+                    let idx = this.getAttribute("data-ax5palette-color-index");
+                    let color = cfg.colors.list[idx];
+                    let item = jQuery.extend({}, color);
+                    item.$item = jQuery(this);
+                    alignHandle(item);
+                    /////
+                    self.colors.push(item);
+                });
+
+                this.$["colors"]
+                    .off("mousedown")
+                    .on("mousedown", '[data-panel="color-handle"]', function (e) {
+                        console.log(e.target);
+                    });
                 //console.log(box);
             };
 

@@ -14,21 +14,23 @@
 
     const tmpl_colors = function (columnKeys) {
         return `
-{{#colors.list}}
-<div data-ax5palette-color="{{label}}">
-    <div data-panel="color-preview" style="padding:{{colors.preview.cellPadding}}px;width:{{colors.preview.cellWidth}}px;">
-        <div data-panel="color-box" style="width:{{colors.preview.width}}px;height:{{colors.preview.height}}px;"><div data-panel="color" style="background-color:{{value}};"></div></div>
+{{#colors}}
+{{#list}}
+<div data-ax5palette-color="{{label}}" data-ax5palette-color-index="{{@i}}">
+    <div data-panel="color-preview" style="padding:{{preview.cellPadding}}px;width:{{preview.cellWidth}}px;">
+        <div data-panel="color-box" style="width:{{preview.width}}px;height:{{preview.height}}px;"><div data-panel="color" style="background-color:{{value}};"></div></div>
     </div>
-    <div data-panel="color-label" style="width:{{colors.label.width}}px;">{{label}}</div>
+    <div data-panel="color-label" style="width:{{label.width}}px;">{{label}}</div>
     <div data-panel="color-slider">
-        <div data-panel="color-track" style="height:{{colors.slider.trackHeight}}px;background: linear-gradient(-90deg, red, orange); ">
-            <div data-panel="color-handle" data-color-lighten="0">
-                
+        <div data-panel="color-track" style="height:{{slider.trackHeight}}px;background: linear-gradient(90deg, {{_color0value}}, {{_color1value}}, {{_color2value}}); ">
+            <div data-panel="color-handle">
+                <div data-panel="color-handle-after" style="width:{{slider.handleWidth}}px;height:{{slider.handleWidth}}px;left:{{slider.handleLeft}}px;top:{{slider.handleLeft}}px;"></div>
             </div>
         </div>
     </div>
 </div>
-{{/colors.list}}
+{{/list}}
+{{/colors}}
 `;
     };
 

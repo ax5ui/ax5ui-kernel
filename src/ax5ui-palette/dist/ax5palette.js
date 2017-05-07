@@ -42,9 +42,14 @@
                     },
                     slider: {
                         trackHeight: 8,
-                        handleHeight: 15
+                        amount: 30,
+                        handleWidth: 18,
+                        handleHeight: 18
                     },
-                    list: [{ label: "red", value: "#ff0000" }, { label: "orange", value: "#ff9802" }, { label: "yellow", value: "#ffff00" }, { label: "green", value: "#00ff36" }, { label: "blue", value: "#0000ff" }, { label: "purple", value: "#ba00ff" }, { label: "skyblue", value: "#84e4ff" }, { label: "pink", value: "#ff77c4" }, { label: "black", value: "#000000" }, { label: "white", value: "#ffffff" }]
+                    list: [{ label: "red", value: "#ff0000" }, { label: "orange", value: "#ff9802" }, { label: "yellow", value: "#ffff00" }, { label: "green", value: "#00ff36" }, { label: "blue", value: "#0000ff" }, { label: "purple", value: "#ba00ff" },
+                    //{label: "skyblue", value: "#84e4ff"},
+                    //{label: "pink", value: "#ff77c4"},
+                    { label: "black", value: "#000000" }, { label: "white", value: "#ffffff" }]
                 },
                 controls: {
                     height: 30
@@ -52,6 +57,7 @@
                 columnKeys: {}
             };
             this.xvar = {};
+            this.colors = [];
 
             cfg = this.config;
 
@@ -63,6 +69,51 @@
                 }
 
                 that = null;
+            };
+
+            /**
+             * get mouse position
+             * @param e
+             * @returns {{clientX, clientY}}
+             */
+            var getMousePosition = function getMousePosition(e) {
+                var mouseObj = void 0,
+                    originalEvent = e.originalEvent ? e.originalEvent : e;
+                mouseObj = 'changedTouches' in originalEvent && originalEvent.changedTouches ? originalEvent.changedTouches[0] : originalEvent;
+                // clientX, Y 쓰면 스크롤에서 문제 발생
+                return {
+                    clientX: mouseObj.pageX,
+                    clientY: mouseObj.pageY
+                };
+            };
+
+            var alignHandle = function alignHandle(item) {};
+
+            var handleMoveEvent = {
+                "on": function on() {
+                    jQuery(document.body).on("mousemove.ax5palette-" + _this.instanceId, function (e) {
+                        var mouseObj = getMousePosition(e),
+                            da_grow = void 0;
+
+                        mouseObj = null;
+                        da_grow = null;
+                    }).on("mouseup.ax5palette-" + _this.instanceId, function (e) {
+                        handleMoveEvent.off();
+                        U.stopEvent(e);
+                    }).on("mouseleave.ax5palette-" + _this.instanceId, function (e) {
+                        handleMoveEvent.off();
+                        U.stopEvent(e);
+                    });
+
+                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+                },
+                "off": function off() {
+                    self.xvar.resizerLived = false;
+
+                    jQuery(document.body).off("mousemove.ax5palette-" + _this.instanceId).off("mouseup.ax5palette-" + _this.instanceId).off("mouseleave.ax5palette-" + _this.instanceId);
+
+                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+                }
             };
 
             var repaint = function repaint() {
@@ -88,12 +139,38 @@
 
                 /// colors.list 색상 범위 결정
                 cfg.colors.list.forEach(function (c) {
-                    console.log(c.value);
+                    var _color = U.color(c.value);
+                    c._amount = 0;
+                    if (_color.r == 0 && _color.g == 0 && _color.b == 0) {
+                        c._color0value = "#" + _color.lighten(cfg.colors.slider.amount * 2).getHexValue();
+                        c._color1value = "#" + _color.lighten(cfg.colors.slider.amount).getHexValue();
+                        c._color2value = "#" + _color.getHexValue();
+                    } else {
+                        c._color0value = "#" + _color.lighten(cfg.colors.slider.amount).getHexValue();
+                        c._color1value = "#" + _color.getHexValue();
+                        c._color2value = "#" + _color.darken(cfg.colors.slider.amount).getHexValue();
+                    }
                 });
+
+                cfg.colors.slider.handleLeft = -cfg.colors.slider.handleWidth / 2;
+                cfg.colors.slider.handleTop = -cfg.colors.slider.handleHeight / 2;
 
                 // 팔렛트 컬러 패널 초기화
                 _this.$["colors"].html(PALETTE.tmpl.get("colors", cfg, cfg.columnKeys));
 
+                _this.$["colors"].find('[data-ax5palette-color-index]').each(function () {
+                    var idx = this.getAttribute("data-ax5palette-color-index");
+                    var color = cfg.colors.list[idx];
+                    var item = jQuery.extend({}, color);
+                    item.$item = jQuery(this);
+                    alignHandle(item);
+                    /////
+                    self.colors.push(item);
+                });
+
+                _this.$["colors"].off("mousedown").on("mousedown", '[data-panel="color-handle"]', function (e) {
+                    console.log(e.target);
+                });
                 //console.log(box);
             };
 
@@ -146,7 +223,7 @@
     };
 
     var tmpl_colors = function tmpl_colors(columnKeys) {
-        return "\n{{#colors.list}}\n<div data-ax5palette-color=\"{{label}}\">\n    <div data-panel=\"color-preview\" style=\"padding:{{colors.preview.cellPadding}}px;width:{{colors.preview.cellWidth}}px;\">\n        <div data-panel=\"color-box\" style=\"width:{{colors.preview.width}}px;height:{{colors.preview.height}}px;\"><div data-panel=\"color\" style=\"background-color:{{value}};\"></div></div>\n    </div>\n    <div data-panel=\"color-label\" style=\"width:{{colors.label.width}}px;\">{{label}}</div>\n    <div data-panel=\"color-slider\">\n        <div data-panel=\"color-track\" style=\"height:{{colors.slider.trackHeight}}px;background: linear-gradient(-90deg, red, orange); \">\n            <div data-panel=\"color-handle\" data-color-lighten=\"0\">\n                \n            </div>\n        </div>\n    </div>\n</div>\n{{/colors.list}}\n";
+        return "\n{{#colors}}\n{{#list}}\n<div data-ax5palette-color=\"{{label}}\" data-ax5palette-color-index=\"{{@i}}\">\n    <div data-panel=\"color-preview\" style=\"padding:{{preview.cellPadding}}px;width:{{preview.cellWidth}}px;\">\n        <div data-panel=\"color-box\" style=\"width:{{preview.width}}px;height:{{preview.height}}px;\"><div data-panel=\"color\" style=\"background-color:{{value}};\"></div></div>\n    </div>\n    <div data-panel=\"color-label\" style=\"width:{{label.width}}px;\">{{label}}</div>\n    <div data-panel=\"color-slider\">\n        <div data-panel=\"color-track\" style=\"height:{{slider.trackHeight}}px;background: linear-gradient(90deg, {{_color0value}}, {{_color1value}}, {{_color2value}}); \">\n            <div data-panel=\"color-handle\">\n                <div data-panel=\"color-handle-after\" style=\"width:{{slider.handleWidth}}px;height:{{slider.handleWidth}}px;left:{{slider.handleLeft}}px;top:{{slider.handleLeft}}px;\"></div>\n            </div>\n        </div>\n    </div>\n</div>\n{{/list}}\n{{/colors}}\n";
     };
 
     PALETTE.tmpl = {
