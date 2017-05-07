@@ -39,6 +39,10 @@ describe('ax5.util.getType TEST', function() {
         {
             args: [ undefined ],
             expect: 'undefined'
+        },
+        {
+            args: [ window ],
+            expect: 'window'
         }
     ];
 
