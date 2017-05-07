@@ -6,8 +6,7 @@
     let COMBOBOX;
 
     UI.addClass({
-        className: "combobox",
-        version: "${VERSION}"
+        className: "combobox"
     }, (function () {
         /**
          * @class ax5combobox

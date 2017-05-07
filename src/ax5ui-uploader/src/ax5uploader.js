@@ -6,8 +6,7 @@
     let UPLOADER;
 
     UI.addClass({
-        className: "uploader",
-        version: "${VERSION}"
+        className: "uploader"
     }, (function () {
 
         let ax5uploader = function () {

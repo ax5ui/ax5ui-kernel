@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /*
  * Copyright (c) 2017. tom@axisj.com
@@ -14,8 +14,7 @@
     var DOCKER = void 0;
 
     UI.addClass({
-        className: "docker",
-        version: "1.4.39"
+        className: "docker"
     }, function () {
 
         /**
@@ -1598,14 +1597,14 @@
 
     var stack_panel = function stack_panel(columnKeys, data) {
         if (data.labelDirection === "bottom") {
-            return "<div data-ax5docker-pane=\"{{id}}\" data-ax5docker-label-direction=\"{{labelDirection}}\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <div data-ax5docker-pane-item-views=\"{{id}}\"></div>\n    <ul data-ax5docker-pane-tabs=\"{{id}}\" data-ax5docker-id=\"{{id}}\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"{{id}}\">{{{icons.more}}}</div>\n</div>";
+            return '<div data-ax5docker-pane="{{id}}" data-ax5docker-label-direction="{{labelDirection}}" data-ax5docker-path="{{panelPath}}" style="flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};">\n    <div data-ax5docker-pane-item-views="{{id}}"></div>\n    <ul data-ax5docker-pane-tabs="{{id}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}"></ul>\n    <div data-ax5docker-pane-tabs-more="{{id}}">{{{icons.more}}}</div>\n</div>';
         } else {
-            return "<div data-ax5docker-pane=\"{{id}}\" data-ax5docker-label-direction=\"{{labelDirection}}\" data-ax5docker-path=\"{{panelPath}}\" style=\"flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};\">\n    <ul data-ax5docker-pane-tabs=\"{{id}}\" data-ax5docker-id=\"{{id}}\" data-ax5docker-path=\"{{panelPath}}\"></ul>\n    <div data-ax5docker-pane-tabs-more=\"{{id}}\">{{{icons.more}}}</div>\n    <div data-ax5docker-pane-item-views=\"{{id}}\"></div>\n</div>";
+            return '<div data-ax5docker-pane="{{id}}" data-ax5docker-label-direction="{{labelDirection}}" data-ax5docker-path="{{panelPath}}" style="flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};">\n    <ul data-ax5docker-pane-tabs="{{id}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}"></ul>\n    <div data-ax5docker-pane-tabs-more="{{id}}">{{{icons.more}}}</div>\n    <div data-ax5docker-pane-item-views="{{id}}"></div>\n</div>';
         }
     };
 
     var panel_label = function panel_label() {
-        return "<li data-ax5docker-pane-tab=\"{{pIndex}}\" data-ax5docker-id=\"{{id}}\" data-ax5docker-path=\"{{panelPath}}\" class=\"{{#hasLabelColor}}hasLabelColor{{/hasLabelColor}}\">\n    <div class=\"label-icon\" style=\"{{#color}}background: {{color}};{{/color}}{{#borderColor}}border-color: {{borderColor}};{{/borderColor}}\"></div>\n    <div class=\"title\">{{{name}}}</div>\n    {{^disableClosePanel}}<div class=\"close-icon\">{{{icons.close}}}</div>{{/disableClosePanel}}\n</li><li class=\"pane-tab-margin\"></li>";
+        return '<li data-ax5docker-pane-tab="{{pIndex}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}" class="{{#hasLabelColor}}hasLabelColor{{/hasLabelColor}}">\n    <div class="label-icon" style="{{#color}}background: {{color}};{{/color}}{{#borderColor}}border-color: {{borderColor}};{{/borderColor}}"></div>\n    <div class="title">{{{name}}}</div>\n    {{^disableClosePanel}}<div class="close-icon">{{{icons.close}}}</div>{{/disableClosePanel}}\n</li><li class="pane-tab-margin"></li>';
     };
 
     DOCKER.tmpl = {

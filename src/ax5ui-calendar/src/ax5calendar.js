@@ -6,8 +6,7 @@
     let CALENDAR;
 
     UI.addClass({
-        className: "calendar",
-        version: "${VERSION}"
+        className: "calendar"
     }, (function () {
 
         /**

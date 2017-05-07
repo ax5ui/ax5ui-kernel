@@ -5,8 +5,7 @@
     const U = ax5.util;
 
     UI.addClass({
-        className: "binder",
-        version: "${VERSION}"
+        className: "binder"
     }, (function () {
 
         /**

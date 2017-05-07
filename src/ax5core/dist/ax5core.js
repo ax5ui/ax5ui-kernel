@@ -55,7 +55,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.4.39";
+        var version = "${VERSION}";
 
         /**
          * ax5 library path
@@ -2771,7 +2771,6 @@ ax5.ui = function () {
      * @method ax5.ui.addClass
      * @param {Object} config
      * @param {String} config.className - name of Class
-     * @param {String} [config.version=""] - version of Class
      * @param {Object} [config.classStore=ax5.ui] - 클래스가 저장될 경로
      * @param {Function} [config.superClass=ax5.ui.root]
      * @param {Function} cls - Class Function
@@ -2783,7 +2782,7 @@ ax5.ui = function () {
 
         // make ui definition variable
         ax5.def[config.className] = {
-            version: config.version
+            version: ax5.info.version
         };
 
         var factory = function factory(cls, arg) {

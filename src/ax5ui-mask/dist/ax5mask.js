@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // ax5.ui.mask
 (function () {
@@ -8,8 +8,7 @@
     var MASK;
 
     UI.addClass({
-        className: "mask",
-        version: "1.4.39"
+        className: "mask"
     }, function () {
         /**
          * @class ax5mask
@@ -345,7 +344,7 @@
     var MASK = ax5.ui.mask;
 
     var defaultMask = function defaultMask(columnKeys) {
-        return "\n            <div class=\"ax-mask {{theme}}\" id=\"{{maskId}}\">\n                <div class=\"ax-mask-bg\"></div>\n                <div class=\"ax-mask-content\">\n                    <div class=\"ax-mask-body\">\n                    {{{body}}}\n                    </div>\n                </div>\n            </div>\n        ";
+        return '\n            <div class="ax-mask {{theme}}" id="{{maskId}}">\n                <div class="ax-mask-bg"></div>\n                <div class="ax-mask-content">\n                    <div class="ax-mask-body">\n                    {{{body}}}\n                    </div>\n                </div>\n            </div>\n        ';
     };
 
     MASK.tmpl = {

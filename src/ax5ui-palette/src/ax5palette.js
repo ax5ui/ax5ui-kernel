@@ -6,8 +6,7 @@
     let PALETTE;
 
     UI.addClass({
-        className: "palette",
-        version: "${VERSION}"
+        className: "palette"
     }, (function () {
 
         /**
@@ -24,25 +23,38 @@
 
             this.instanceId = ax5.getGuid();
             this.target = null;
-
             this.config = {
                 clickEventName: "click",
                 theme: 'default',
                 animateTime: 100,
-                colors: [
-                    {label: "red", value: "#ff0000"},
-                    {label: "orange", value: "#ff9802"},
-                    {label: "yellow", value: "#ffff00"},
-                    {label: "green", value: "#00ff36"},
-                    {label: "blue", value: "#0000ff"},
-                    {label: "purple", value: "#ba00ff"},
-                    {label: "skyblue", value: "#84e4ff"},
-                    {label: "pink", value: "#ff77c4"},
-                    {label: "black", value: "#000000"},
-                    {label: "white", value: "#ffffff"},
-                ],
+                colors: {
+                    preview: {
+                        width: 20,
+                        height: 20,
+                        cellWidth: 30
+                    },
+                    label: {
+                       width: 80
+                    },
+                    list: [
+                        {label: "red", value: "#ff0000"},
+                        {label: "orange", value: "#ff9802"},
+                        {label: "yellow", value: "#ffff00"},
+                        {label: "green", value: "#00ff36"},
+                        {label: "blue", value: "#0000ff"},
+                        {label: "purple", value: "#ba00ff"},
+                        {label: "skyblue", value: "#84e4ff"},
+                        {label: "pink", value: "#ff77c4"},
+                        {label: "black", value: "#000000"},
+                        {label: "white", value: "#ffffff"},
+                    ],
+                },
+                controls: {
+                    height: 30,
+                },
                 columnKeys: {}
             };
+            this.xvar = {};
 
             cfg = this.config;
 
@@ -73,10 +85,13 @@
                     "controls": this.$target.find('[data-ax5palette-container="controls"]'),
                 };
 
+                //this.$["colors"].css({height: box.height - cfg.controls.height});
+                //this.xvar.colorHeight = (box.height - cfg.controls.height) / cfg.colors.length;
+
+                this.$["controls"].css({height: cfg.controls.height});
+
                 // 팔렛트 컬러 패널 초기화
-                this.$["colors"].html(PALETTE.tmpl.get("colors", {
-                    colors: cfg.colors
-                }, cfg.columnKeys));
+                this.$["colors"].html(PALETTE.tmpl.get("colors", cfg, cfg.columnKeys));
 
                 //console.log(box);
             };

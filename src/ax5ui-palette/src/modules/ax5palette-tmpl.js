@@ -14,17 +14,19 @@
 
     const tmpl_colors = function (columnKeys) {
         return `
-{{#colors}}
+{{#colors.list}}
 <div data-ax5palette-color="{{label}}">
-    <div data-panel="color-preview" style="background:{{value}};"></div>
-    <div data-panel="color-label">{{label}}</div>
+    <div data-panel="color-preview" style="padding:{{colors.preview.cellPadding}}px;width:{{colors.preview.cellWidth}}px;">
+        <div data-panel="color" style="width:{{colors.preview.width}}px;height:{{colors.preview.height}}px;background-color:{{value}};"></div>
+    </div>
+    <div data-panel="color-label" style="width:{{colors.label.width}}px;">{{label}}</div>
     <div data-panel="color-slider">
         <div data-panel="color-track">
             <div data-panel="color-handle"></div>
         </div>
     </div>
 </div>
-{{/colors}}
+{{/colors.list}}
 `;
     };
 

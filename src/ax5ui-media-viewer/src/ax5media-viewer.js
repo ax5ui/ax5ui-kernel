@@ -6,8 +6,7 @@
     var MEDIAVIEWER;
 
     UI.addClass({
-        className: "mediaViewer",
-        version: "${VERSION}"
+        className: "mediaViewer"
     }, (function () {
         /**
          * @class ax5mediaViewer

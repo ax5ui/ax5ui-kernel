@@ -6,8 +6,7 @@
     var AUTOCOMPLETE;
 
     UI.addClass({
-        className: "autocomplete",
-        version: "${VERSION}"
+        className: "autocomplete"
     }, (function () {
         /**
          * @class ax5autocomplete

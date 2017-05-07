@@ -301,26 +301,7 @@ gulp.task('version', function () {
         var __p = PATHS[k];
         if (__p.isPlugin) {
 
-            gulp.src([PATHS[k].src + '/*.js', PATHS[k].src + '/modules/*.js'])
-                .pipe(concat(__p.js + '.js'))
-                .pipe(replace("${VERSION}", packageJSON.version))
-                .pipe(babel({
-                    presets: ['es2015'],
-                    compact: false
-                }))
-                .pipe(gulp.dest(PATHS[k].dest))
-                .pipe(concat(__p.js + '.min.js'))
-                .pipe(uglify())
-                .pipe(gulp.dest(PATHS[k].dest));
-
-
-            gulp.src([PATHS[k].root + "/bower.json"])
-                .pipe(jeditor({
-                    'version': packageJSON.version
-                }))
-                .pipe(gulp.dest(PATHS[k].root));
-
-            gulp.src([PATHS[k].root + "/package.json"])
+            gulp.src([PATHS[k].root + "/bower.json", PATHS[k].root + "/package.json"])
                 .pipe(jeditor({
                     'version': packageJSON.version
                 }))
