@@ -29,12 +29,16 @@
                 animateTime: 100,
                 colors: {
                     preview: {
-                        width: 20,
-                        height: 20,
+                        width: 24,
+                        height: 24,
                         cellWidth: 30
                     },
                     label: {
                        width: 80
+                    },
+                    slider: {
+                        trackHeight: 8,
+                        handleHeight: 15
                     },
                     list: [
                         {label: "red", value: "#ff0000"},
@@ -89,6 +93,11 @@
                 //this.xvar.colorHeight = (box.height - cfg.controls.height) / cfg.colors.length;
 
                 this.$["controls"].css({height: cfg.controls.height});
+
+                /// colors.list 색상 범위 결정
+                cfg.colors.list.forEach(function (c) {
+                    console.log(c.value);
+                });
 
                 // 팔렛트 컬러 패널 초기화
                 this.$["colors"].html(PALETTE.tmpl.get("colors", cfg, cfg.columnKeys));

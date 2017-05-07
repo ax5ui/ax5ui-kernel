@@ -33,12 +33,16 @@
                 animateTime: 100,
                 colors: {
                     preview: {
-                        width: 20,
-                        height: 20,
+                        width: 24,
+                        height: 24,
                         cellWidth: 30
                     },
                     label: {
                         width: 80
+                    },
+                    slider: {
+                        trackHeight: 8,
+                        handleHeight: 15
                     },
                     list: [{ label: "red", value: "#ff0000" }, { label: "orange", value: "#ff9802" }, { label: "yellow", value: "#ffff00" }, { label: "green", value: "#00ff36" }, { label: "blue", value: "#0000ff" }, { label: "purple", value: "#ba00ff" }, { label: "skyblue", value: "#84e4ff" }, { label: "pink", value: "#ff77c4" }, { label: "black", value: "#000000" }, { label: "white", value: "#ffffff" }]
                 },
@@ -81,6 +85,11 @@
                 //this.xvar.colorHeight = (box.height - cfg.controls.height) / cfg.colors.length;
 
                 _this.$["controls"].css({ height: cfg.controls.height });
+
+                /// colors.list 색상 범위 결정
+                cfg.colors.list.forEach(function (c) {
+                    console.log(c.value);
+                });
 
                 // 팔렛트 컬러 패널 초기화
                 _this.$["colors"].html(PALETTE.tmpl.get("colors", cfg, cfg.columnKeys));
@@ -137,7 +146,7 @@
     };
 
     var tmpl_colors = function tmpl_colors(columnKeys) {
-        return "\n{{#colors.list}}\n<div data-ax5palette-color=\"{{label}}\">\n    <div data-panel=\"color-preview\" style=\"padding:{{colors.preview.cellPadding}}px;width:{{colors.preview.cellWidth}}px;\">\n        <div data-panel=\"color\" style=\"width:{{colors.preview.width}}px;height:{{colors.preview.height}}px;background-color:{{value}};\"></div>\n    </div>\n    <div data-panel=\"color-label\" style=\"width:{{colors.label.width}}px;\">{{label}}</div>\n    <div data-panel=\"color-slider\">\n        <div data-panel=\"color-track\">\n            <div data-panel=\"color-handle\"></div>\n        </div>\n    </div>\n</div>\n{{/colors.list}}\n";
+        return "\n{{#colors.list}}\n<div data-ax5palette-color=\"{{label}}\">\n    <div data-panel=\"color-preview\" style=\"padding:{{colors.preview.cellPadding}}px;width:{{colors.preview.cellWidth}}px;\">\n        <div data-panel=\"color-box\" style=\"width:{{colors.preview.width}}px;height:{{colors.preview.height}}px;\"><div data-panel=\"color\" style=\"background-color:{{value}};\"></div></div>\n    </div>\n    <div data-panel=\"color-label\" style=\"width:{{colors.label.width}}px;\">{{label}}</div>\n    <div data-panel=\"color-slider\">\n        <div data-panel=\"color-track\" style=\"height:{{colors.slider.trackHeight}}px;background: linear-gradient(-90deg, red, orange); \">\n            <div data-panel=\"color-handle\" data-color-lighten=\"0\">\n                \n            </div>\n        </div>\n    </div>\n</div>\n{{/colors.list}}\n";
     };
 
     PALETTE.tmpl = {

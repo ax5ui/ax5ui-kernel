@@ -17,12 +17,14 @@
 {{#colors.list}}
 <div data-ax5palette-color="{{label}}">
     <div data-panel="color-preview" style="padding:{{colors.preview.cellPadding}}px;width:{{colors.preview.cellWidth}}px;">
-        <div data-panel="color" style="width:{{colors.preview.width}}px;height:{{colors.preview.height}}px;background-color:{{value}};"></div>
+        <div data-panel="color-box" style="width:{{colors.preview.width}}px;height:{{colors.preview.height}}px;"><div data-panel="color" style="background-color:{{value}};"></div></div>
     </div>
     <div data-panel="color-label" style="width:{{colors.label.width}}px;">{{label}}</div>
     <div data-panel="color-slider">
-        <div data-panel="color-track">
-            <div data-panel="color-handle"></div>
+        <div data-panel="color-track" style="height:{{colors.slider.trackHeight}}px;background: linear-gradient(-90deg, red, orange); ">
+            <div data-panel="color-handle" data-color-lighten="0">
+                
+            </div>
         </div>
     </div>
 </div>
