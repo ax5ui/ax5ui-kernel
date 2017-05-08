@@ -88,7 +88,8 @@
             };
 
             var bindHandle = function bindHandle(item) {
-                item.trackWidth = item.$track.width() - cfg.colors.slider.handleWidth / 5;
+                item.originalTrackWidth = item.$track.width();
+                item.trackWidth = item.originalTrackWidth - cfg.colors.slider.handleWidth / 5;
                 var handleLeft = item._amount * (item.trackWidth / 2) / cfg.colors.slider.amount + item.trackWidth / 2;
                 item.$handle.css({ left: handleLeft });
                 item.$item.off("mousedown").on("mousedown", '[data-panel="color-handle"]', function (e) {
@@ -99,7 +100,7 @@
                 }).off("click").on("click", '[data-panel="color-label"], [data-panel="color-preview"]', function (e) {
                     //jQuery(this).parent().attr();
                     if (self.onClick) {
-                        self.onClick.call(item, item._selectedColor);
+                        self.onClick.call(item, '#' + item._selectedColor.toUpperCase());
                     }
                 });
             };
@@ -109,6 +110,10 @@
                 item.$preview.css({ "background-color": '#' + color });
                 item.$label.html('#' + color.toUpperCase());
                 item._selectedColor = color;
+
+                if (self.onUpdateColor) {
+                    self.onUpdateColor.call(item, '#' + item._selectedColor.toUpperCase());
+                }
             };
 
             var amountToColor = function amountToColor(item, amount) {
@@ -162,7 +167,7 @@
 
                         newHandleLeft = newHandleLeft < 0 ? 0 : newHandleLeft > item.trackWidth ? item.trackWidth : newHandleLeft;
                         item.$handle.css({ left: newHandleLeft });
-                        amount = cfg.colors.slider.amount * (newHandleLeft - item.trackWidth / 2) / (item.trackWidth / 2);
+                        amount = cfg.colors.slider.amount * (newHandleLeft - item.originalTrackWidth / 2) / (item.trackWidth / 2);
 
                         updatePreviewColor(item, amountToColor(item, amount));
 
@@ -309,13 +314,20 @@
                 // after setConfig();
                 this.onStateChanged = cfg.onStateChanged;
                 this.onClick = cfg.onClick;
+                this.onUpdateColor = cfg.onUpdateColor;
 
                 if (!cfg.target) {
                     console.log(ax5.info.getError("ax5palette", "401", "setConfig"));
                 }
                 this.$target = jQuery(cfg.target);
 
-                repaint(); // 팔렛트 그리기.
+                setTimeout(function () {
+                    repaint(); // 팔렛트 그리기.
+                });
+            };
+
+            this.repaint = function () {
+                repaint();
             };
 
             // 클래스 생성자
