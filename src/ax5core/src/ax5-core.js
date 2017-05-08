@@ -2479,6 +2479,18 @@
                     return color('rgba(' + convertTo255(rgb.r) + ', ' + convertTo255(rgb.g)+ ', ' + convertTo255(rgb.b) + ', ' + this.a + ')');
                 };
 
+                this.getBrightness = function () {
+                    return (this.r * 299 + this.g * 587 + this.b * 114) / 1000;
+                };
+
+                this.isDark = function() {
+                    return this.getBrightness() < 128;
+                };
+
+                this.isLight = function() {
+                    return !this.isDark();
+                };
+
             })(_hexColor);
         }
 
