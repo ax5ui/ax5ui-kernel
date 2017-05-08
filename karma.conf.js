@@ -31,6 +31,8 @@ module.exports = function (config) {
             'src/ax5ui-select/dist/ax5select.js',
             'src/ax5ui-toast/dist/ax5toast.js',
             'src/ax5ui-uploader/dist/ax5uploader.js',
+            'src/ax5ui-docker/dist/ax5docker.js',
+            'src/ax5ui-palette/dist/ax5palette.js',
 
             'src/ax5core/test/test.*.js',
             'src/ax5ui-autocomplete/test/test.*.js',
@@ -48,7 +50,9 @@ module.exports = function (config) {
             'src/ax5ui-picker/test/test.*.js',
             'src/ax5ui-select/test/test.*.js',
             'src/ax5ui-toast/test/test.*.js',
-            'src/ax5ui-uploader/test/test.*.js'
+            'src/ax5ui-uploader/test/test.*.js',
+            'src/ax5ui-docker/test/test.*.js',
+            'src/ax5ui-palette/test/test.*.js'
         ],
         // list of files to exclude
         exclude: [],
