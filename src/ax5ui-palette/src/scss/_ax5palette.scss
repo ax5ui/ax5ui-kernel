@@ -1,12 +1,45 @@
 @mixin color-item($border-color, $box-bg-color, $box-border-radius) {
     [data-ax5palette-color]{
         display: table-row;
+        user-select: none;
+
         [data-panel]{
             vertical-align: middle;
         }
+
+        &:hover{
+            [data-panel="color-preview"]{
+                [data-panel="color-box"]{
+                    background: $ax5palette-hover-color;
+                    border-color: $ax5palette-hover-border-color;
+                }
+                [data-panel="color"]{
+                    border-color: $ax5palette-hover-border-color;
+                }
+            }
+            [data-panel="color-label"]{
+                color: $ax5palette-hover-color;
+            }
+        }
+        &:active{
+            [data-panel="color-preview"]{
+                [data-panel="color-box"]{
+                    background: $ax5palette-active-color;
+                    border-color: $ax5palette-active-border-color;
+                }
+                [data-panel="color"]{
+                    border-color: $ax5palette-active-border-color;
+                }
+            }
+            [data-panel="color-label"]{
+                color: $ax5palette-active-color;
+            }
+        }
+
         [data-panel="color-preview"]{
             display: table-cell;
-            padding: 5px 0;
+            padding: $ax5palette-preview-padding;
+            cursor: pointer;
             [data-panel="color-box"]{
                 border-radius: $box-border-radius;
                 padding: 2px;
@@ -21,7 +54,7 @@
                 border-width: 1px;
                 border-style: solid;
                 height: 100%;
-                box-shadow: inset 1px 1px 2px rgba(255,255,255,.50);
+                box-shadow: inset 1px 1px 1px rgba(255,255,255,.50);
             }
         }
         [data-panel="color-label"]{

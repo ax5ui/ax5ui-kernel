@@ -38,7 +38,7 @@
                     },
                     slider: {
                         trackHeight: 8,
-                        amount: 30,
+                        amount: 32,
                         handleWidth: 18,
                         handleHeight: 18,
                     },
@@ -56,7 +56,7 @@
                     ],
                 },
                 controls: {
-                    height: 30,
+                    height: 0,
                 },
                 columnKeys: {}
             };
@@ -91,19 +91,93 @@
                 }
             };
 
-            const alignHandle = (item) => {
+            const bindHandle = (item) => {
+                item.trackWidth = item.$track.width() - (cfg.colors.slider.handleWidth / 5);
+                let handleLeft = (item._amount * (item.trackWidth / 2) / cfg.colors.slider.amount) + (item.trackWidth / 2);
+                item.$handle.css({left: handleLeft});
+                item.$item
+                    .off("mousedown")
+                    .on("mousedown", '[data-panel="color-handle"]', function (e) {
+                        let mouseObj = getMousePosition(e);
+                        item._originalHandleClientX = mouseObj.clientX;
+                        item._originalHandleLeft = item.$handle.position().left;
+                        handleMoveEvent.on(item);
+                    })
+                    .off("click")
+                    .on("click", '[data-panel="color-label"], [data-panel="color-preview"]', function (e) {
+                        //jQuery(this).parent().attr();
+                        if(self.onClick){
+                            self.onClick.call(item, item._selectedColor);
+                        }
+                    });
+            };
 
+            const updatePreviewColor = (item, color) => {
+                //console.log(color);
+                item.$preview
+                    .css({"background-color": '#' + color});
+                item.$label.html('#' + color.toUpperCase());
+                item._selectedColor = color;
+            };
+
+            const amountToColor = (item, amount) => {
+                let processor = {
+                    "black"(_color, _amount){
+                        return _color.lighten(cfg.colors.slider.amount / 2).darken(_amount).getHexValue();
+                    },
+                    "white"(_color, _amount){
+                        return _color.darken(cfg.colors.slider.amount / 2).darken(_amount).getHexValue();
+                    },
+                    "normal"(_color, _amount){
+                        return _color.darken(_amount).getHexValue();
+                    }
+                };
+
+                if (item._uniqColor in processor) {
+                    return processor[item._uniqColor](item._color, amount);
+                } else {
+                    return processor["normal"](item._color, amount);
+                }
+            };
+
+            const colorToAmount = (item, color) => {
+                /// todo : 색상에 가까운 색 표현.
+                let processor = {
+                    "black"(_color, _diffColor){
+                        //return _color.lighten(cfg.colors.slider.amount / 2).darken(_amount).getHexValue();
+                    },
+                    "white"(_color, _diffColor){
+                        //return _color.darken(cfg.colors.slider.amount / 2).darken(_amount).getHexValue();
+                    },
+                    "normal"(_color, _diffColor){
+                        //return _color.darken(_amount).getHexValue();
+                    }
+                };
+
+                if (item._uniqColor in processor) {
+                    return processor[item._uniqColor](item._color, color);
+                } else {
+                    return processor["normal"](item._color, color);
+                }
             };
 
             const handleMoveEvent = {
-                "on": () => {
+                "on": (item) => {
                     jQuery(document.body)
                         .on("mousemove.ax5palette-" + this.instanceId, function (e) {
                             let mouseObj = getMousePosition(e),
-                                da_grow;
+                                da = mouseObj.clientX - item._originalHandleClientX,
+                                newHandleLeft = item._originalHandleLeft + da,
+                                amount;
 
+                            newHandleLeft = newHandleLeft < 0 ? 0 : newHandleLeft > item.trackWidth ? item.trackWidth : newHandleLeft;
+                            item.$handle.css({left: newHandleLeft});
+                            amount = cfg.colors.slider.amount * (newHandleLeft - (item.trackWidth / 2)) / (item.trackWidth / 2);
+
+                            updatePreviewColor(item, amountToColor(item, amount));
+                            
                             mouseObj = null;
-                            da_grow = null;
+                            da = null;
                         })
                         .on("mouseup.ax5palette-" + this.instanceId, function (e) {
                             handleMoveEvent.off();
@@ -157,16 +231,25 @@
 
                 /// colors.list 색상 범위 결정
                 cfg.colors.list.forEach(function (c) {
-                    let _color = U.color(c.value);
-                    c._amount = 0;
-                    if (_color.r == 0 && _color.g == 0 && _color.b == 0) {
-                        c._color0value = "#" + _color.lighten(cfg.colors.slider.amount * 2).getHexValue();
-                        c._color1value = "#" + _color.lighten(cfg.colors.slider.amount).getHexValue();
-                        c._color2value = "#" + _color.getHexValue();
+                    c._color = U.color(c.value);
+                    c._selectedColor = c._color.getHexValue();
+                    if (c._color.r == 0 && c._color.g == 0 && c._color.b == 0) {
+                        c._amount = cfg.colors.slider.amount;
+                        c._uniqColor = "black";
+                        c._color0value = "#" + c._color.lighten(cfg.colors.slider.amount).getHexValue();
+                        c._color1value = "#" + c._color.lighten(cfg.colors.slider.amount / 2).getHexValue();
+                        c._color2value = "#" + c._color.getHexValue();
+                    } else if (c._color.r == 255 && c._color.g == 255 && c._color.b == 255) {
+                        c._amount = -cfg.colors.slider.amount;
+                        c._uniqColor = "white";
+                        c._color0value = "#" + c._color.getHexValue();
+                        c._color1value = "#" + c._color.darken(cfg.colors.slider.amount / 2).getHexValue();
+                        c._color2value = "#" + c._color.darken(cfg.colors.slider.amount).getHexValue();
                     } else {
-                        c._color0value = "#" + _color.lighten(cfg.colors.slider.amount).getHexValue();
-                        c._color1value = "#" + _color.getHexValue();
-                        c._color2value = "#" + _color.darken(cfg.colors.slider.amount).getHexValue();
+                        c._amount = 0;
+                        c._color0value = "#" + c._color.lighten(cfg.colors.slider.amount).getHexValue();
+                        c._color1value = "#" + c._color.getHexValue();
+                        c._color2value = "#" + c._color.darken(cfg.colors.slider.amount).getHexValue();
                     }
                 });
 
@@ -180,17 +263,17 @@
                     let idx = this.getAttribute("data-ax5palette-color-index");
                     let color = cfg.colors.list[idx];
                     let item = jQuery.extend({}, color);
+                    item._index = idx;
                     item.$item = jQuery(this);
-                    alignHandle(item);
+                    item.$preview = item.$item.find('[data-panel="color"]');
+                    item.$label = item.$item.find('[data-panel="color-label"]');
+                    item.$track = item.$item.find('[data-panel="color-track"]');
+                    item.$handle = item.$item.find('[data-panel="color-handle"]');
+                    bindHandle(item);
                     /////
                     self.colors.push(item);
                 });
 
-                this.$["colors"]
-                    .off("mousedown")
-                    .on("mousedown", '[data-panel="color-handle"]', function (e) {
-                        console.log(e.target);
-                    });
                 //console.log(box);
             };
 
@@ -198,10 +281,48 @@
              * Preferences of palette UI
              * @method ax5palette.setConfig
              * @param {Object} config
-             * @param {(Element||nodelist)} config.target
+             * @param {Element} config.target
+             * @param {Object} [config.colors]
+             * @param {Object} [config.colors.preview]
+             * @param {Number} [config.colors.preview.width=24]
+             * @param {Number} [config.colors.preview.height=24]
+             * @param {Number} [config.colors.preview.cellWidth=30]
+             * @param {Object} [config.colors.label]
+             * @param {Number} [config.colors.label.width=80]
+             * @param {Object} [config.colors.slider]
+             * @param {Number} [config.colors.slider.trackHeight=8]
+             * @param {Number} [config.colors.slider.amount=32]
+             * @param {Number} [config.colors.slider.handleWidth=18]
+             * @param {Number} [config.colors.slider.handleHeight=18]
+             * @param {Object[]} [config.colors.list=[red,orange,yellow,green,blue,purple,black,white]]
+             * @param {String} config.colors.list[].label
+             * @param {String} config.colors.list[].value
+             * @param {Object} [config.controls]
+             * @param {Number} [config.controls.height=0]
              * @returns {ax5palette}
              * @example
              * ```js
+             * myPalette = new ax5.ui.palette({
+             *  target: $('[data-ax5palette="01"]'),
+             *  onClick: function (hexColor) {
+             *      alert(hexColor);
+             *  }
+             * });
+             *
+             * myPalette = new ax5.ui.palette({
+             *  target: $('[data-ax5palette="01"]'),
+             *  colors: {
+             *      list: [
+             *          {label: "red", value: "#ff0000"},
+             *          {label: "orange", value: "#ff9802"},
+             *          {label: "yellow", value: "#ffff00"},
+             *          {label: "skyblue", value: "#84e4ff"},
+             *          {label: "white", value: "#ffffff"}
+             *      ]
+             *  }
+             *  onClick: function (hexColor) {
+             *  }
+             * });
              * ```
              */
             //== class body start
