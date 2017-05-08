@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-formatter",
-	"version": "1.4.43",
+	"version": "1.4.44",
 	"description": "A formatter plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
