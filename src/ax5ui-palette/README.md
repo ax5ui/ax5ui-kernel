@@ -2,7 +2,9 @@
 [![npm version](https://badge.fury.io/js/ax5ui-palette.svg)](https://badge.fury.io/js/ax5ui-palette)
 
 # ax5ui-palette
-"palette" displays dates in a palette format and enables users to select a single or multiple values.
+"palette" to easily select predefined colors. also choose the color you want by adjusting the brightness of the color.
+
+![ax5grid](src/ax5palette.gif)
 
 > *Dependencies*
 * _[jQuery 1.X+](http://jquery.com/)_
@@ -58,16 +60,16 @@ https://cdn.rawgit.com/ax5ui/ax5ui-palette/master/dist/ax5palette.min.js
 ```
 
 ### Basic Usage
+```html
+<div style="border:1px solid #ccc;border-radius: 6px;padding: 20px;width: 290px;">
+    <div data-ax5palette="01" style="height:500px;width:250px;"></div>
+</div>
+```
 ```js
-var mypalette = new ax5.ui.palette({
-    target: document.getElementById("palette-target"),
-    displayDate: (new Date()),
-    onClick: function () {
-        console.log(this);
-        console.log(mypalette.getSelection());
-    },
-    onStateChanged: function () {
-        console.log(this);
+var myPalette = new ax5.ui.palette({
+    target: $('[data-ax5palette="01"]'),
+    onClick: function (hexColor) {
+        console.log(hexColor);
     }
 });
 ```
