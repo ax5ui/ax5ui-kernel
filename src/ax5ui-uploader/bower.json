@@ -1,6 +1,6 @@
 {
 	"name": "ax5ui-uploader",
-	"version": "1.4.44",
+	"version": "1.4.45",
 	"description": "A uploader plugin that works with Bootstrap & jQuery",
 	"authors": [
 		"ThomasJ <tom@axisj.com>"
