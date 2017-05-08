@@ -751,8 +751,8 @@
         return this.list;
     };
 
-    const sort = function (_sortInfo, _list) {
-        let self = this, list = _list || this.list, sortInfoArray = [];
+    const sort = function (_sortInfo, _list, _options) {
+        let self = this, list = _list || this.list, sortInfoArray = [], lineNumber = 0;
         let getKeyValue = function (_item, _key, _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
@@ -790,6 +790,15 @@
                 }
             }
         });
+
+        if(_options && _options.resetLineNumber) {
+            i = 0, l = list.length, lineNumber = 0;
+            for (; i < l; i++) {
+                if (_list[i] && !_list[i]["__isGrouping"]) {
+                    _list[i]["__index"] = lineNumber++;
+                }
+            }
+        }
 
         if (_list) {
             return list;

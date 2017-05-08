@@ -2491,6 +2491,17 @@
                     return !this.isDark();
                 };
 
+                this.getHsl = function () {
+                    let hsl = rgbToHsl(this.r, this.g, this.b);
+                    hsl.l = Math.min(1, Math.max(0, hsl.l));
+                    hsl.h = hsl.h * 360;
+                    return {
+                        h: hsl.h,
+                        s: hsl.s,
+                        l: hsl.l
+                    }
+                };
+
             })(_hexColor);
         }
 

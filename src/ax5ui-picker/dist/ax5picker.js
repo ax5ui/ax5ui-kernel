@@ -965,8 +965,7 @@
                             var idx = this.getAttribute("data-palette-target"),
                                 dColor = input.get(idx).value;
 
-                            //paletteConfig.selectedColor = dColor;
-
+                            paletteConfig.selectedColor = dColor;
                             paletteConfig = jQuery.extend(true, paletteConfig, item.content.config || {});
                             paletteConfig.target = this;
                             paletteConfig.onClick = function (color) {

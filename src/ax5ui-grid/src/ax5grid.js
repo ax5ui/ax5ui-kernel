@@ -619,7 +619,8 @@
                         this.list = GRID.data.sort.call(this, _sortInfo,
                             GRID.data.clearGroupingData.call(this,
                                 this.list
-                            )
+                            ),
+                            {resetLineNumber: true}
                         );
                     }
                     GRID.body.repaint.call(this, true);
@@ -628,6 +629,7 @@
             };
             /// private end
 
+            /**
             /**
              * Preferences of grid UI
              * @method ax5grid.setConfig

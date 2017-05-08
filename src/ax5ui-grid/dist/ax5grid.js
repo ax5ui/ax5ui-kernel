@@ -613,7 +613,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (this.config.body.grouping) {
                         this.list = GRID.data.initData.call(this, GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list)));
                     } else {
-                        this.list = GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list));
+                        this.list = GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list), { resetLineNumber: true });
                     }
                     GRID.body.repaint.call(this, true);
                     GRID.scroller.resize.call(this);
@@ -621,6 +621,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
             /// private end
 
+            /**
             /**
              * Preferences of grid UI
              * @method ax5grid.setConfig
@@ -5092,10 +5093,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return this.list;
     };
 
-    var sort = function sort(_sortInfo, _list) {
+    var sort = function sort(_sortInfo, _list, _options) {
         var self = this,
             list = _list || this.list,
-            sortInfoArray = [];
+            sortInfoArray = [],
+            lineNumber = 0;
         var getKeyValue = function getKeyValue(_item, _key, _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
@@ -5135,6 +5137,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             }
         });
+
+        if (_options && _options.resetLineNumber) {
+            i = 0, l = list.length, lineNumber = 0;
+            for (; i < l; i++) {
+                if (_list[i] && !_list[i]["__isGrouping"]) {
+                    _list[i]["__index"] = lineNumber++;
+                }
+            }
+        }
 
         if (_list) {
             return list;

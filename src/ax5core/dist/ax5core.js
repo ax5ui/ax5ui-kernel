@@ -2450,6 +2450,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.isLight = function () {
                     return !this.isDark();
                 };
+
+                this.getHsl = function () {
+                    var hsl = rgbToHsl(this.r, this.g, this.b);
+                    hsl.l = Math.min(1, Math.max(0, hsl.l));
+                    hsl.h = hsl.h * 360;
+                    return {
+                        h: hsl.h,
+                        s: hsl.s,
+                        l: hsl.l
+                    };
+                };
             }(_hexColor);
         }
 

@@ -149,13 +149,15 @@
                 /// todo : 색상에 가까운 색 표현.
                 let processor = {
                     "black"(_color, _diffColor){
-                        //return _color.lighten(cfg.colors.slider.amount / 2).darken(_amount).getHexValue();
+                        let color1 = _color.lighten(cfg.colors.slider.amount / 2);
+                        return (color1.getHsl().l - _diffColor.getHsl().l) * 100;
                     },
                     "white"(_color, _diffColor){
-                        //return _color.darken(cfg.colors.slider.amount / 2).darken(_amount).getHexValue();
+                        let color1 = _color.darken(cfg.colors.slider.amount / 2);
+                        return (color1.getHsl().l - _diffColor.getHsl().l) * 100;
                     },
                     "normal"(_color, _diffColor){
-                        //return _color.darken(_amount).getHexValue();
+                        return (_color.getHsl().l - _diffColor.getHsl().l) * 100;
                     }
                 };
 
@@ -213,7 +215,7 @@
                 }
             };
 
-            const repaint = () => {
+            const repaint = (selectedColor) => {
                 let box = {
                     width: this.$target.innerWidth(),
                     height: this.$target.innerHeight(),
@@ -258,6 +260,22 @@
                     }
                 });
 
+                if (selectedColor) {
+                    let sColor = U.color(selectedColor);
+                    // 지정된 색이 가장 가까운 파렛 검색
+                    let minDiffColor = 255 * 3, minDiffColorIndex = 0;
+                    cfg.colors.list.forEach(function (c, cidx) {
+                        let diffColor = Math.abs(c._color.r - sColor.r) + Math.abs(c._color.g - sColor.g) + Math.abs(c._color.b - sColor.b);
+                        if (diffColor < minDiffColor) {
+                            minDiffColor = diffColor;
+                            minDiffColorIndex = cidx;
+                        }
+                    });
+
+                    cfg.colors.list[minDiffColorIndex]._amount = colorToAmount(cfg.colors.list[minDiffColorIndex], sColor);
+                    cfg.colors.list[minDiffColorIndex].label = selectedColor.toUpperCase();
+                }
+
                 cfg.colors.slider.handleLeft = -cfg.colors.slider.handleWidth / 2;
                 cfg.colors.slider.handleTop = -cfg.colors.slider.handleHeight / 2;
 
@@ -287,6 +305,7 @@
              * @method ax5palette.setConfig
              * @param {Object} config
              * @param {Element} config.target
+             * @param {String} [config.selectedColor]
              * @param {Object} [config.colors]
              * @param {Object} [config.colors.preview]
              * @param {Number} [config.colors.preview.width=24]
@@ -330,7 +349,6 @@
              * });
              * ```
              */
-            //== class body start
             this.init = function () {
                 // after setConfig();
                 this.onStateChanged = cfg.onStateChanged;
@@ -343,12 +361,17 @@
                 this.$target = jQuery(cfg.target);
 
                 setTimeout(function () {
-                    repaint(); // 팔렛트 그리기.
+                    repaint(cfg.selectedColor); // 팔렛트 그리기.
                 });
             };
 
+            /**
+             * @method ax5palette.repaint
+             * @returns {ax5palette}
+             */
             this.repaint = function () {
                 repaint();
+                return this;
             };
 
             // 클래스 생성자
