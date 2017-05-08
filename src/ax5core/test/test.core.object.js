@@ -498,6 +498,11 @@ describe('ax5.util.first TEST', function () {
     it('ax5.util.first("axisj")', function () {
         should.deepEqual(ax5.util.first("axisj"), undefined);
     });
+
+    //Example 04
+    it('ax5.util.first([{a: "axisj", b: "best"}])', function () {
+        should.deepEqual(ax5.util.first([{a: "axisj", b: "best"}, {a: "abc", b:"bcd"}]), {a: "axisj", b: "best"});
+    });
     /* end ax.util.first */
 });
 
