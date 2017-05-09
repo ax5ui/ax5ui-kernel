@@ -3,6 +3,12 @@
 ## ax5palette
 **Kind**: global class  
 **Author:** tom@axisj.com  
+
+* [ax5palette](#ax5palette)
+    * [.setConfig(config)](#ax5palette.setConfig) ⇒ <code>[ax5palette](#ax5palette)</code>
+    * [.repaint()](#ax5palette.repaint) ⇒ <code>[ax5palette](#ax5palette)</code>
+    * [.setSelectedColor(selectedColor)](#ax5palette.setSelectedColor) ⇒ <code>[ax5palette](#ax5palette)</code>
+
 <a name="ax5palette.setConfig"></a>
 
 ### ax5palette.setConfig(config) ⇒ <code>[ax5palette](#ax5palette)</code>
@@ -14,6 +20,7 @@ Preferences of palette UI
 | --- | --- | --- |
 | config | <code>Object</code> |  | 
 | config.target | <code>Element</code> |  | 
+| [config.selectedColor] | <code>String</code> |  | 
 | [config.colors] | <code>Object</code> |  | 
 | [config.colors.preview] | <code>Object</code> |  | 
 | [config.colors.preview.width] | <code>Number</code> | <code>24</code> | 
@@ -56,3 +63,16 @@ myPalette = new ax5.ui.palette({
  }
 });
 ```
+<a name="ax5palette.repaint"></a>
+
+### ax5palette.repaint() ⇒ <code>[ax5palette](#ax5palette)</code>
+**Kind**: static method of <code>[ax5palette](#ax5palette)</code>  
+<a name="ax5palette.setSelectedColor"></a>
+
+### ax5palette.setSelectedColor(selectedColor) ⇒ <code>[ax5palette](#ax5palette)</code>
+**Kind**: static method of <code>[ax5palette](#ax5palette)</code>  
+
+| Param |
+| --- |
+| selectedColor | 
+

@@ -94,7 +94,16 @@
             const bindHandle = (item) => {
                 item.originalTrackWidth = item.$track.width();
                 item.trackWidth = item.originalTrackWidth - (cfg.colors.slider.handleWidth / 5);
-                let handleLeft = (item._amount * (item.trackWidth / 2) / cfg.colors.slider.amount) + (item.trackWidth / 2);
+                let handleLeft = amountToHandleLeft(item, item._amount);
+
+                // handleLeft 가 범위를 벗어나면?
+                if (handleLeft < 0 || handleLeft > item.trackWidth) {
+                    let amount;
+                    handleLeft = handleLeft < 0 ? 0 : handleLeft > item.trackWidth ? item.trackWidth : handleLeft;
+                    amount = handleLeftToAmount(item, handleLeft);
+                    updatePreviewColor(item, amountToColor(item, amount));
+                }
+
                 item.$handle.css({left: handleLeft});
                 item.$item
                     .off("mousedown")
@@ -106,7 +115,6 @@
                     })
                     .off("click")
                     .on("click", '[data-panel="color-label"], [data-panel="color-preview"]', function (e) {
-                        //jQuery(this).parent().attr();
                         if(self.onClick){
                             self.onClick.call(item, '#' + item._selectedColor.toUpperCase());
                         }
@@ -168,6 +176,14 @@
                 }
             };
 
+            const handleLeftToAmount = (item, handleLeft) => {
+                return cfg.colors.slider.amount * (handleLeft - (item.trackWidth / 2)) / (item.originalTrackWidth / 2)
+            };
+
+            const amountToHandleLeft = (item, amount) => {
+                return (amount * (item.originalTrackWidth / 2) / cfg.colors.slider.amount) + (item.trackWidth / 2)
+            };
+
             const handleMoveEvent = {
                 "on": (item) => {
                     jQuery(document.body)
@@ -179,7 +195,7 @@
 
                             newHandleLeft = newHandleLeft < 0 ? 0 : newHandleLeft > item.trackWidth ? item.trackWidth : newHandleLeft;
                             item.$handle.css({left: newHandleLeft});
-                            amount = cfg.colors.slider.amount * (newHandleLeft - (item.originalTrackWidth / 2)) / (item.trackWidth / 2);
+                            amount = handleLeftToAmount(item, newHandleLeft);
 
                             updatePreviewColor(item, amountToColor(item, amount));
                             
@@ -231,12 +247,10 @@
                     "controls": this.$target.find('[data-ax5palette-container="controls"]'),
                 };
 
-                //this.$["colors"].css({height: box.height - cfg.controls.height});
-                //this.xvar.colorHeight = (box.height - cfg.controls.height) / cfg.colors.length;
+                // todo : controls 나중에 고민하여 구현
+                // this.$["controls"].css({height: cfg.controls.height});
 
-                this.$["controls"].css({height: cfg.controls.height});
-
-                /// colors.list 색상 범위 결정
+                /// colors.list 색상 범위 결정 / 초기화
                 cfg.colors.list.forEach(function (c) {
                     c._color = U.color(c.value);
                     c._selectedColor = c._color.getHexValue();
@@ -260,22 +274,27 @@
                     }
                 });
 
+                // 선택된 색상이 있다면 colors.list에서 조건에 맞는 색상 검색 시도.
                 if (selectedColor) {
                     let sColor = U.color(selectedColor);
                     // 지정된 색이 가장 가까운 파렛 검색
-                    let minDiffColor = 255 * 3, minDiffColorIndex = 0;
+                    let minDiffColor = 255 * 3, minDiffColorIndex = -1;
                     cfg.colors.list.forEach(function (c, cidx) {
-                        let diffColor = Math.abs(c._color.r - sColor.r) + Math.abs(c._color.g - sColor.g) + Math.abs(c._color.b - sColor.b);
+                        let c1hsl = c._color.getHsl(), c2hsl =  sColor.getHsl();
+                        let diffColor = Math.abs(c1hsl.h - c2hsl.h) + Math.abs(c1hsl.s - c2hsl.s) + Math.abs(c1hsl.l - c2hsl.l);
                         if (diffColor < minDiffColor) {
                             minDiffColor = diffColor;
                             minDiffColorIndex = cidx;
                         }
                     });
 
-                    cfg.colors.list[minDiffColorIndex]._amount = colorToAmount(cfg.colors.list[minDiffColorIndex], sColor);
-                    cfg.colors.list[minDiffColorIndex].label = selectedColor.toUpperCase();
+                    if (minDiffColorIndex > -1) {
+                        cfg.colors.list[minDiffColorIndex]._amount = colorToAmount(cfg.colors.list[minDiffColorIndex], sColor);
+                        cfg.colors.list[minDiffColorIndex].label = selectedColor.toUpperCase();
+                    }
                 }
 
+                // 색생조절 핸들의 위치 조정
                 cfg.colors.slider.handleLeft = -cfg.colors.slider.handleWidth / 2;
                 cfg.colors.slider.handleTop = -cfg.colors.slider.handleHeight / 2;
 
@@ -361,7 +380,7 @@
                 this.$target = jQuery(cfg.target);
 
                 setTimeout(function () {
-                    repaint(cfg.selectedColor); // 팔렛트 그리기.
+                    repaint((cfg.selectedColor||"").trim()); // 팔렛트 그리기.
                 });
             };
 
@@ -371,6 +390,42 @@
              */
             this.repaint = function () {
                 repaint();
+                return this;
+            };
+
+            /**
+             * @method ax5palette.setSelectedColor
+             * @param selectedColor
+             * @returns {ax5palette}
+             */
+            this.setSelectedColor = function (selectedColor) {
+
+                let sColor = U.color(selectedColor.trim());
+                // 지정된 색이 가장 가까운 파렛 검색
+                let minDiffColor = 255 * 3, minDiffColorIndex = -1;
+
+                self.colors.forEach(function (c, cidx) {
+                    let c1hsl = c._color.getHsl(), c2hsl =  sColor.getHsl();
+                    let diffColor = Math.abs(c1hsl.h - c2hsl.h) + Math.abs(c1hsl.s - c2hsl.s) + Math.abs(c1hsl.l - c2hsl.l);
+                    if (diffColor < minDiffColor) {
+                        minDiffColor = diffColor;
+                        minDiffColorIndex = cidx;
+                    }
+                });
+
+                if (minDiffColorIndex > -1) {
+                    let amount, handleLeft,
+                        item = self.colors[minDiffColorIndex];
+
+                    item._amount = colorToAmount(item, sColor);
+                    handleLeft = amountToHandleLeft(item, item._amount);
+                    //handleLeft = handleLeft < 0 ? 0 : handleLeft > item.trackWidth ? item.trackWidth : handleLeft;
+                    item.$handle.css({left: handleLeft});
+
+                    amount = handleLeftToAmount(item, handleLeft);
+                    updatePreviewColor(item, amountToColor(item, amount));
+                }
+
                 return this;
             };
 
