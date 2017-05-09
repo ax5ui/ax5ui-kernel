@@ -527,6 +527,11 @@ describe('ax5.util.last TEST', function () {
     it('ax5.util.last("axisj")', function () {
         should.deepEqual(ax5.util.last("axisj"), undefined);
     });
+
+    //Example 04
+    it('ax5.util.last([{a: "axisj", b: "best"}])', function () {
+        should.deepEqual(ax5.util.last([{a: "axisj", b: "best"}, {a: "abc", b:"bcd"}]), {a: "abc", b:"bcd"});
+    });
     /* end ax5.util.last */
 });
 
