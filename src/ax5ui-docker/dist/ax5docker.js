@@ -294,10 +294,6 @@
                     processor[_control]();
                     module = null;
 
-                    if (U.isFunction(_callback)) {
-                        _callback();
-                    }
-
                     if (U.isFunction(cfg.control.after)) {
                         cfg.control.after.call(that, that);
                     }
@@ -305,8 +301,13 @@
 
                 if (processor[_control]) {
                     if (U.isFunction(cfg.control.before)) {
-                        cfg.control.before.call(that, that, function () {
-                            runProcessor();
+                        cfg.control.before.call(that, that, function (result) {
+                            if (typeof result === "undefined") result = true;
+                            if (result) runProcessor();
+
+                            if (U.isFunction(_callback)) {
+                                _callback(result);
+                            }
                         });
                     } else {
                         runProcessor();

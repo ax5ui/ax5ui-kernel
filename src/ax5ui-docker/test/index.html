@@ -199,13 +199,15 @@
                     if (that.controlType === "destroy") {
                         if (confirm("정말 삭제 할까요?")) {
                             setTimeout(function () {
-                                callback();
+                                callback(true);
                             }, 300);
 
                             return;
+                        }else{
+                            callback(false);
                         }
                     } else {
-                        callback();
+                        callback(true);
                         return;
                     }
                 }

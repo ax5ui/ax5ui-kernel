@@ -179,7 +179,12 @@
                                 contentWidth: (contentWidth * inputLength) + ((inputLength - 1) * contentMargin),
                                 content: {width: contentWidth, margin: contentMargin},
                                 inputLength: inputLength || 1
-                            };
+                            },
+                            $colorPreview = item.$target.find('[data-ax5picker-color="preview"]');
+
+                        if ($colorPreview.get(0)) {
+                            $colorPreview.css({"background-color": "#" + U.color(_input.val() || "#000000").getHexValue()});
+                        }
 
                         if (inputLength > 1 && !item.btns) {
                             config.btns = {
@@ -187,10 +192,10 @@
                             };
                         }
 
-                        let $colorPreview = item.$target.find('[data-ax5picker-color="preview"]');
-                        if($colorPreview.get(0)){
-                            $colorPreview.css({"background-color": "#" + U.color(_input.val()||"#000000").getHexValue()});
-                        }
+                        _input.on("change", function () {
+                            console.log("change event");
+                            $colorPreview.css({"background-color": "#" + U.color(this.value || "#000000").getHexValue()});
+                        });
                         
                         this.queue[queIdx] = jQuery.extend(true, config, item);
 
@@ -594,6 +599,11 @@
 
                         if (!item.disableChangeTrigger) {
                             _input.trigger("change");
+                        } else {
+                            let $colorPreview = item.$target.find('[data-ax5picker-color="preview"]');
+                            if ($colorPreview.get(0)) {
+                                $colorPreview.css({"background-color": val});
+                            }
                         }
 
                         // picker의 입력이 2개이상인 경우
@@ -618,11 +628,6 @@
                             item.$target.find('input[type]').each(function () {
                                 that.values.push(this.value);
                             });
-                        }
-
-                        let $colorPreview = item.$target.find('[data-ax5picker-color="preview"]');
-                        if($colorPreview.get(0)){
-                            $colorPreview.css({"background-color": val});
                         }
 
                         onStateChanged.call(this, item, that);
