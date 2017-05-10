@@ -116,6 +116,10 @@ describe('ax5.util.right TEST', function() {
       {
           args: [ 'abcd.efd', '.' ],
           expect: 'efd'
+      },
+      {
+          args: [ 'vi"veri"veniversum"vivus"vici', '\"' ],
+          expect: 'vici'
       }
     ];
 
