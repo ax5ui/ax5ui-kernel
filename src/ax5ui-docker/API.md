@@ -16,7 +16,7 @@
     * [.addModule(modules)](#ax5docker.addModule) ⇒ <code>[ax5docker](#ax5docker)</code>
     * [.repaint()](#ax5docker.repaint) ⇒ <code>[ax5docker](#ax5docker)</code>
     * [.addPanel(_addPath, _addType, _panel, _panelIndex)](#ax5docker.addPanel) ⇒ <code>[ax5docker](#ax5docker)</code>
-    * [.removePanel(clickedLabel)](#ax5docker.removePanel) ⇒ <code>[ax5docker](#ax5docker)</code>
+    * [.removePanel(panelPath, callback)](#ax5docker.removePanel) ⇒ <code>[ax5docker](#ax5docker)</code>
     * [.appendPanel(_panel, _appendPath, _appendType)](#ax5docker.appendPanel) ⇒ <code>[ax5docker](#ax5docker)</code>
     * [.align()](#ax5docker.align) ⇒ <code>[ax5docker](#ax5docker)</code>
     * [.searchPanel(_condition)](#ax5docker.searchPanel) ⇒ <code>\*</code>
@@ -135,15 +135,31 @@ myDocker.addPanel('0.1', 'stack', {type:'panel', name:'addPanel', moduleName: 'c
 ```
 <a name="ax5docker.removePanel"></a>
 
-### ax5docker.removePanel(clickedLabel) ⇒ <code>[ax5docker](#ax5docker)</code>
+### ax5docker.removePanel(panelPath, callback) ⇒ <code>[ax5docker](#ax5docker)</code>
 패널 삭제하기
 
 **Kind**: static method of <code>[ax5docker](#ax5docker)</code>  
 
-| Param |
-| --- |
-| clickedLabel | 
+| Param | Type |
+| --- | --- |
+| panelPath | <code>String</code> | 
+| callback | <code>function</code> | 
 
+**Example**  
+```js
+function removePanel() {
+     var p = myDocker.searchPanel(function (panel) {
+         return (panel.key == "A");
+     });
+
+     if (p) {
+         myDocker.removePanel(p.panelPath, function () {
+             removePanel();
+         });
+     }
+}
+removePanel();
+```
 <a name="ax5docker.appendPanel"></a>
 
 ### ax5docker.appendPanel(_panel, _appendPath, _appendType) ⇒ <code>[ax5docker](#ax5docker)</code>

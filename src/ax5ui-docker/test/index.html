@@ -48,6 +48,7 @@
         <button class="btn btn-default" data-docker-control="add-panel">add Panel</button>
         <button class="btn btn-default" data-docker-control="set-panels">set Panels</button>
         <button class="btn btn-default" data-docker-control="find-panel">find panel</button>
+        <button class="btn btn-default" data-docker-control="remove-panel">remove panel</button>
     </form>
 </div>
 
@@ -56,7 +57,7 @@
 
     $(function () {
 
-        var __panel = {
+        var _panel = {
             type: "row", // type : row, column, stack
             panels: [
                 {
@@ -100,7 +101,7 @@
             ]
         };
 
-        var _panel = {
+        var __panel = {
             type: "stack",
             panels: [
                 {
@@ -162,6 +163,7 @@
                 {
                     type: "panel",
                     name: "my name 3",
+                    key: "A",
                     moduleName: "content",
                     moduleState: {
                         data1: "data3"
@@ -169,7 +171,8 @@
                 },
                 {
                     type: "panel",
-                    name: "my name 3",
+                    name: "my name 4",
+                    key: "A",
                     moduleName: "content",
                     moduleState: {
                         data1: "data3"
@@ -288,6 +291,25 @@
                         return (panel.key == "A");
                     });
                     console.log(p);
+
+                    break;
+
+                case "remove-panel":
+
+                    function removePanel() {
+                        var p = myDocker.searchPanel(function (panel) {
+                            return (panel.key == "A");
+                        });
+
+                        if (p) {
+                            myDocker.removePanel(p.panelPath, function () {
+                                removePanel();
+                            });
+                        }
+                    }
+
+                    removePanel();
+
 
                     break;
             }

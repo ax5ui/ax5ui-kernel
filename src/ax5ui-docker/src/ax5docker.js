@@ -231,7 +231,7 @@
                  * @param {Object} _panel
                  * @param {String} _control - "init","active","deactive","destroy"
                  */
-                const controlPanel = (_panel, _control) => {
+                const controlPanel = (_panel, _control, _callback) => {
                     let moduleState = jQuery.extend(_panel.moduleState, {
                             name: _panel.name
                         }),
@@ -297,6 +297,10 @@
                     let runProcessor = () => {
                         processor[_control]();
                         module = null;
+
+                        if(U.isFunction(_callback)){
+                            _callback();
+                        }
 
                         if (U.isFunction(cfg.control.after)) {
                             cfg.control.after.call(that, that);
@@ -1477,13 +1481,29 @@
                 /**
                  * 패널 삭제하기
                  * @method ax5docker.removePanel
-                 * @param clickedLabel
+                 * @param {String} panelPath
+                 * @param {Function} callback
                  * @returns {ax5docker}
+                 * @example
+                 * ```js
+                 * function removePanel() {
+                 *      var p = myDocker.searchPanel(function (panel) {
+                 *          return (panel.key == "A");
+                 *      });
+                 *
+                 *      if (p) {
+                 *          myDocker.removePanel(p.panelPath, function () {
+                 *              removePanel();
+                 *          });
+                 *      }
+                 * }
+                 * removePanel();
+                 * ```
                  */
-                this.removePanel = function (panelPath) {
+                this.removePanel = function (panelPath, callback) {
                     let panel = getPanel(panelPath);
 
-                    controlPanel(panel, "destroy");
+                    controlPanel(panel, "destroy", callback);
 
                     panel = null;
                     return this;
