@@ -978,15 +978,14 @@
 
                     if (this.panels[0]) {
                         this.panels[0] = processor[this.panels[0].type](this.panels[0]);
+                        if (this.panels[0] && this.panels[0].type === "panel") {
+                            this.panels[0] = {
+                                type: "stack",
+                                panels: [this.panels[0]]
+                            };
+                        }
                     } else {
                         this.panels = [];
-                    }
-
-                    if(this.panels[0].type === "panel"){
-                        this.panels[0] = {
-                            type: "stack",
-                            panels: [this.panels[0]]
-                        };
                     }
 
                     repaintPanels();
@@ -1617,16 +1616,18 @@
                         const findPanel = function (_panels) {
                             let i = 0, l = _panels.length, findResult;
                             for (; i < l; i++) {
-                                if (_panels[i].type === "panel") {
-                                    if (_condition.call({
-                                            config: self.config,
-                                            panel: _panels[i]
-                                        }, _panels[i])) {
-                                        return _panels[i];
-                                    }
-                                } else {
-                                    if (findResult = findPanel(_panels[i].panels)) {
-                                        return findResult;
+                                if(_panels[i]) {
+                                    if (_panels[i].type === "panel") {
+                                        if (_condition.call({
+                                                config: self.config,
+                                                panel: _panels[i]
+                                            }, _panels[i])) {
+                                            return _panels[i];
+                                        }
+                                    } else {
+                                        if (findResult = findPanel(_panels[i].panels)) {
+                                            return findResult;
+                                        }
                                     }
                                 }
                             }

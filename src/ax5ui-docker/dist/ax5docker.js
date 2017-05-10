@@ -935,15 +935,14 @@
 
                 if (_this.panels[0]) {
                     _this.panels[0] = processor[_this.panels[0].type](_this.panels[0]);
+                    if (_this.panels[0] && _this.panels[0].type === "panel") {
+                        _this.panels[0] = {
+                            type: "stack",
+                            panels: [_this.panels[0]]
+                        };
+                    }
                 } else {
                     _this.panels = [];
-                }
-
-                if (_this.panels[0].type === "panel") {
-                    _this.panels[0] = {
-                        type: "stack",
-                        panels: [_this.panels[0]]
-                    };
                 }
 
                 repaintPanels();
@@ -1574,16 +1573,18 @@
                             l = _panels.length,
                             findResult = void 0;
                         for (; i < l; i++) {
-                            if (_panels[i].type === "panel") {
-                                if (_condition.call({
-                                    config: self.config,
-                                    panel: _panels[i]
-                                }, _panels[i])) {
-                                    return _panels[i];
-                                }
-                            } else {
-                                if (findResult = findPanel(_panels[i].panels)) {
-                                    return findResult;
+                            if (_panels[i]) {
+                                if (_panels[i].type === "panel") {
+                                    if (_condition.call({
+                                        config: self.config,
+                                        panel: _panels[i]
+                                    }, _panels[i])) {
+                                        return _panels[i];
+                                    }
+                                } else {
+                                    if (findResult = findPanel(_panels[i].panels)) {
+                                        return findResult;
+                                    }
                                 }
                             }
                         }
