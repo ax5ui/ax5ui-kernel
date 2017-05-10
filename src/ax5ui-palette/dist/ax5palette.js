@@ -113,13 +113,14 @@
                 });
             };
 
-            var updatePreviewColor = function updatePreviewColor(item, color) {
-                //console.log(color);
+            var updatePreviewColor = function updatePreviewColor(item, color, event) {
+                // console.log(color);
+
                 item.$preview.css({ "background-color": '#' + color });
                 item.$label.html('#' + color.toUpperCase());
                 item._selectedColor = color;
 
-                if (self.onUpdateColor) {
+                if (event && self.onUpdateColor) {
                     self.onUpdateColor.call(item, '#' + item._selectedColor.toUpperCase());
                 }
             };
@@ -187,7 +188,7 @@
                         item.$handle.css({ left: newHandleLeft });
                         amount = handleLeftToAmount(item, newHandleLeft);
 
-                        updatePreviewColor(item, amountToColor(item, amount));
+                        updatePreviewColor(item, amountToColor(item, amount), e);
 
                         mouseObj = null;
                         da = null;
@@ -253,29 +254,7 @@
                     }
                 });
 
-                // 선택된 색상이 있다면 colors.list에서 조건에 맞는 색상 검색 시도.
-                if (selectedColor) {
-                    var sColor = U.color(selectedColor);
-                    // 지정된 색이 가장 가까운 파렛 검색
-                    var minDiffColor = 255 * 3,
-                        minDiffColorIndex = -1;
-                    cfg.colors.list.forEach(function (c, cidx) {
-                        var c1hsl = c._color.getHsl(),
-                            c2hsl = sColor.getHsl();
-                        var diffColor = Math.abs(c1hsl.h - c2hsl.h) + Math.abs(c1hsl.s - c2hsl.s) + Math.abs(c1hsl.l - c2hsl.l);
-                        if (diffColor < minDiffColor) {
-                            minDiffColor = diffColor;
-                            minDiffColorIndex = cidx;
-                        }
-                    });
-
-                    if (minDiffColorIndex > -1) {
-                        cfg.colors.list[minDiffColorIndex]._amount = colorToAmount(cfg.colors.list[minDiffColorIndex], sColor);
-                        cfg.colors.list[minDiffColorIndex].label = selectedColor.toUpperCase();
-                    }
-                }
-
-                // 색생조절 핸들의 위치 조정
+                // 색생조절 핸들의 위치 조정cfg.colors.list[minDiffColorIndex]
                 cfg.colors.slider.handleLeft = -cfg.colors.slider.handleWidth / 2;
                 cfg.colors.slider.handleTop = -cfg.colors.slider.handleHeight / 2;
 
@@ -297,7 +276,9 @@
                     self.colors.push(item);
                 });
 
-                //console.log(box);
+                if (selectedColor) {
+                    _this.setSelectedColor(selectedColor);
+                }
             };
 
             /**
