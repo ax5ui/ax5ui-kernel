@@ -112,18 +112,31 @@
                         item._originalHandleClientX = mouseObj.clientX;
                         item._originalHandleLeft = item.$handle.position().left;
                         handleMoveEvent.on(item);
+                        U.stopEvent(e.originalEvent);
                     })
                     .off("click")
                     .on("click", '[data-panel="color-label"], [data-panel="color-preview"]', function (e) {
                         if(self.onClick){
-                            self.onClick.call(item, '#' + item._selectedColor.toUpperCase());
+                            self.onClick.call(item, '#' + item._selectedColor.toUpperCase(), e);
+                        }
+                    })
+                    .on("click", '[data-panel="color-track"]', function (e) {
+                        if(e.target.getAttribute("data-panel") == "color-track") {
+                            let mouseObj = getMousePosition(e),
+                                newHandleLeft = mouseObj.clientX - item.$track.offset().left,
+                                amount = handleLeftToAmount(item, newHandleLeft);
+
+                            item.$handle.css({left: newHandleLeft});
+                            updatePreviewColor(item, amountToColor(item, amount), e);
+
+                            mouseObj = null;
+                            newHandleLeft = null;
+                            amount = null;
                         }
                     });
             };
 
             const updatePreviewColor = (item, color, event) => {
-                // console.log(color);
-
                 item.$preview
                     .css({"background-color": '#' + color});
                 item.$label.html('#' + color.toUpperCase());

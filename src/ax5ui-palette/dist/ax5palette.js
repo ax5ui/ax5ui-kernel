@@ -106,16 +106,28 @@
                     item._originalHandleClientX = mouseObj.clientX;
                     item._originalHandleLeft = item.$handle.position().left;
                     handleMoveEvent.on(item);
+                    U.stopEvent(e.originalEvent);
                 }).off("click").on("click", '[data-panel="color-label"], [data-panel="color-preview"]', function (e) {
                     if (self.onClick) {
-                        self.onClick.call(item, '#' + item._selectedColor.toUpperCase());
+                        self.onClick.call(item, '#' + item._selectedColor.toUpperCase(), e);
+                    }
+                }).on("click", '[data-panel="color-track"]', function (e) {
+                    if (e.target.getAttribute("data-panel") == "color-track") {
+                        var mouseObj = getMousePosition(e),
+                            newHandleLeft = mouseObj.clientX - item.$track.offset().left,
+                            _amount2 = handleLeftToAmount(item, newHandleLeft);
+
+                        item.$handle.css({ left: newHandleLeft });
+                        updatePreviewColor(item, amountToColor(item, _amount2), e);
+
+                        mouseObj = null;
+                        newHandleLeft = null;
+                        _amount2 = null;
                     }
                 });
             };
 
             var updatePreviewColor = function updatePreviewColor(item, color, event) {
-                // console.log(color);
-
                 item.$preview.css({ "background-color": '#' + color });
                 item.$label.html('#' + color.toUpperCase());
                 item._selectedColor = color;
