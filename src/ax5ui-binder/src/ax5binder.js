@@ -909,7 +909,7 @@
                         var val, _val, is_error;
 
                         val = (Function("", "return this" + get_real_path(dataPath) + ";")).call(_this.model);
-                        if (typeof val === "undefined") val = "";
+                        if (typeof val === "undefined" || val === null) val = "";
                         _val = val.toString();
                         is_error = false;
 
