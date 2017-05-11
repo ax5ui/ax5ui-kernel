@@ -120,6 +120,10 @@ describe('ax5.util.right TEST', function() {
       {
           args: [ 'vi"veri"veniversum"vivus"vici', '\"' ],
           expect: 'vici'
+      },
+      {
+          args: [ 'vi veri veniversum vivus vici', 10 ],
+          expect: 'vivus vici'
       }
     ];
 
