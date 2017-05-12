@@ -124,6 +124,16 @@ describe('ax5.util.right TEST', function() {
       {
           args: [ 'vi veri veniversum vivus vici', 10 ],
           expect: 'vivus vici'
+      },
+      {
+          args: [ 'coincidence', true ],
+          expect: '',
+          explanation: 'coincidence, ""'
+      },
+      {
+          args: [ 'coincidence', false ],
+          expect: '',
+          explanation: 'coincidence, ""'
       }
     ];
 
