@@ -155,6 +155,10 @@ describe('ax5.util.camelCase Test', function() {
     {
       args: [ 'innerWidth' ],
       expect: 'innerWidth'
+    },
+    {
+      args: [ '-ms-border-radius' ],
+      expect: 'msBorderRadius'
     }
   ];
   testCases.forEach(function(testCase){
