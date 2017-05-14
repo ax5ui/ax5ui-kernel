@@ -104,7 +104,7 @@
         }
 
         let fromRowIndex = this.xvar.virtualPaintStartRowIndex;
-        let toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount - 1;
+        let toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
         //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
         let totalElements = this.xvar.dataRowCount;
 

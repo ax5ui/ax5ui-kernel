@@ -4467,7 +4467,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (_list[i][this.config.columnKeys.selected]) {
                         this.selectedDataIndexs.push(i);
                     }
-                    _list[i]["__index"] = lineNumber;
+                    // 그룹핑이 적용된 경우 오리지널 인덱스 의미 없음 : 정렬보다 그룹핑이 더 중요하므로.
+                    _list[i]["__original_index"] = _list[i]["__index"] = lineNumber;
                     returnList.push(_list[i]);
 
                     dataRealRowCount++;
@@ -4484,6 +4485,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                         if (_list[i][this.config.columnKeys.selected]) {
                             this.selectedDataIndexs.push(i);
+                        }
+
+                        // __original_index 인덱스 키가 없다면 추가.
+                        if (typeof _list[i]["__original_index"] === "undefined") {
+                            _list[i]["__original_index"] = lineNumber;
                         }
                         _list[i]["__index"] = lineNumber;
                         dataRealRowCount++;
@@ -4613,6 +4619,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.page = jQuery.extend({}, data.page);
             list = data.list;
         }
+
+        // console.log(this.list.length);
 
         if (this.config.tree.use) {
             this.list = arrangeData4tree.call(this, list);
@@ -5115,6 +5123,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         sortInfoArray = U.filter(sortInfoArray, function () {
             return typeof this !== "undefined";
         });
+
+        // 정렬조건이 없으면 original_index값을 이용하여 정렬처리
+        if (_options && _options.resetLineNumber && sortInfoArray.length === 0) {
+            sortInfoArray[0] = { key: '__original_index', order: "asc" };
+        }
 
         var i = 0,
             l = sortInfoArray.length,
@@ -6129,7 +6142,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         var fromRowIndex = this.xvar.virtualPaintStartRowIndex;
-        var toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount - 1;
+        var toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
         //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
         var totalElements = this.xvar.dataRowCount;
 
