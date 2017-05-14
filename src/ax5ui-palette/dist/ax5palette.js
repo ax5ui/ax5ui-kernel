@@ -61,6 +61,12 @@
 
             cfg = this.config;
 
+            var ENM = {
+                "mousedown": ax5.info.supportTouch ? "touchstart" : "mousedown",
+                "mousemove": ax5.info.supportTouch ? "touchmove" : "mousemove",
+                "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
+            };
+
             var onStateChanged = function onStateChanged(opts, that) {
                 if (opts && opts.onStateChanged) {
                     opts.onStateChanged.call(that, that);
@@ -101,7 +107,7 @@
                 }
 
                 item.$handle.css({ left: handleLeft });
-                item.$item.off("mousedown").on("mousedown", '[data-panel="color-handle"]', function (e) {
+                item.$item.off(ENM["mousedown"]).on(ENM["mousedown"], '[data-panel="color-handle"]', function (e) {
                     var mouseObj = getMousePosition(e);
                     item._originalHandleClientX = mouseObj.clientX;
                     item._originalHandleLeft = item.$handle.position().left;
@@ -190,7 +196,7 @@
 
             var handleMoveEvent = {
                 "on": function on(item) {
-                    jQuery(document.body).on("mousemove.ax5palette-" + _this.instanceId, function (e) {
+                    jQuery(document.body).on(ENM["mousemove"] + ".ax5palette-" + _this.instanceId, function (e) {
                         var mouseObj = getMousePosition(e),
                             da = mouseObj.clientX - item._originalHandleClientX,
                             newHandleLeft = item._originalHandleLeft + da,
@@ -204,7 +210,7 @@
 
                         mouseObj = null;
                         da = null;
-                    }).on("mouseup.ax5palette-" + _this.instanceId, function (e) {
+                    }).on(ENM["mouseup"] + ".ax5palette-" + _this.instanceId, function (e) {
                         handleMoveEvent.off();
                         U.stopEvent(e);
                     }).on("mouseleave.ax5palette-" + _this.instanceId, function (e) {
@@ -217,7 +223,7 @@
                 "off": function off() {
                     self.xvar.resizerLived = false;
 
-                    jQuery(document.body).off("mousemove.ax5palette-" + _this.instanceId).off("mouseup.ax5palette-" + _this.instanceId).off("mouseleave.ax5palette-" + _this.instanceId);
+                    jQuery(document.body).off(ENM["mousemove"] + ".ax5palette-" + _this.instanceId).off(ENM["mouseup"] + ".ax5palette-" + _this.instanceId).off("mouseleave.ax5palette-" + _this.instanceId);
 
                     jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
                 }

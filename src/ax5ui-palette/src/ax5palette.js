@@ -65,6 +65,12 @@
 
             cfg = this.config;
 
+            const ENM = {
+                "mousedown": (ax5.info.supportTouch) ? "touchstart" : "mousedown",
+                "mousemove": (ax5.info.supportTouch) ? "touchmove" : "mousemove",
+                "mouseup": (ax5.info.supportTouch) ? "touchend" : "mouseup"
+            };
+
             const onStateChanged = (opts, that) => {
                 if (opts && opts.onStateChanged) {
                     opts.onStateChanged.call(that, that);
@@ -106,8 +112,8 @@
 
                 item.$handle.css({left: handleLeft});
                 item.$item
-                    .off("mousedown")
-                    .on("mousedown", '[data-panel="color-handle"]', function (e) {
+                    .off(ENM["mousedown"])
+                    .on(ENM["mousedown"], '[data-panel="color-handle"]', function (e) {
                         let mouseObj = getMousePosition(e);
                         item._originalHandleClientX = mouseObj.clientX;
                         item._originalHandleLeft = item.$handle.position().left;
@@ -201,7 +207,7 @@
             const handleMoveEvent = {
                 "on": (item) => {
                     jQuery(document.body)
-                        .on("mousemove.ax5palette-" + this.instanceId, function (e) {
+                        .on(ENM["mousemove"] + ".ax5palette-" + this.instanceId, function (e) {
                             let mouseObj = getMousePosition(e),
                                 da = mouseObj.clientX - item._originalHandleClientX,
                                 newHandleLeft = item._originalHandleLeft + da,
@@ -216,7 +222,7 @@
                             mouseObj = null;
                             da = null;
                         })
-                        .on("mouseup.ax5palette-" + this.instanceId, function (e) {
+                        .on(ENM["mouseup"] + ".ax5palette-" + this.instanceId, function (e) {
                             handleMoveEvent.off();
                             U.stopEvent(e);
                         })
@@ -234,8 +240,8 @@
                     self.xvar.resizerLived = false;
 
                     jQuery(document.body)
-                        .off("mousemove.ax5palette-" + this.instanceId)
-                        .off("mouseup.ax5palette-" + this.instanceId)
+                        .off(ENM["mousemove"] + ".ax5palette-" + this.instanceId)
+                        .off(ENM["mouseup"] + ".ax5palette-" + this.instanceId)
                         .off("mouseleave.ax5palette-" + this.instanceId);
 
                     jQuery(document.body)
