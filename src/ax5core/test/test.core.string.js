@@ -159,6 +159,18 @@ describe('ax5.util.camelCase Test', function() {
     {
       args: [ '-ms-border-radius' ],
       expect: 'msBorderRadius'
+    },
+    {
+      args: [ '-webkit-border-radius' ],
+      expect: 'WebkitBorderRadius'
+    },
+    {
+      args: [ '-moz-border-radius' ],
+      expect: 'MozBorderRadius'
+    },
+    {
+      args: [ '-o-border-radius' ],
+      expect: 'OBorderRadius'
     }
   ];
   testCases.forEach(function(testCase){
