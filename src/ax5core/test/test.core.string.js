@@ -134,6 +134,16 @@ describe('ax5.util.right TEST', function() {
           args: [ 'coincidence', false ],
           expect: '',
           explanation: 'coincidence, ""'
+      },
+      {
+          args: [ 'object', new Object ],
+          expect: '',
+          explanation: 'object, new Object'
+      },
+      {
+          args: [ 'function', new Function ],
+          expect: '',
+          explanation: 'function, new Function'
       }
     ];
 
