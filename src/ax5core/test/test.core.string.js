@@ -144,6 +144,16 @@ describe('ax5.util.right TEST', function() {
           args: [ 'function', new Function ],
           expect: '',
           explanation: 'function, new Function'
+      },
+      {
+          args: [ 'abc', []],
+          expect: '',
+          explanation: 'abc", []]'
+      },
+      {
+          args: [ 'abc', {}],
+          expect: '',
+          explanation: 'abc", {}]'
       }
     ];
 
