@@ -185,6 +185,10 @@
 
                         if ($colorPreview.get(0)) {
                             $colorPreview.css({ "background-color": "#" + U.color(_input.val() || "#000000").getHexValue() });
+                            // 컬러 피커인 경우 input의 값이 변경되면 preview를 수정
+                            _input.on("change", function () {
+                                $colorPreview.css({ "background-color": "#" + U.color(this.value || "#000000").getHexValue() });
+                            });
                         }
 
                         if (inputLength > 1 && !item.btns) {
@@ -192,11 +196,6 @@
                                 ok: { label: cfg.lang["ok"], theme: cfg.theme }
                             };
                         }
-
-                        _input.on("change", function () {
-                            console.log("change event");
-                            $colorPreview.css({ "background-color": "#" + U.color(this.value || "#000000").getHexValue() });
-                        });
 
                         this.queue[queIdx] = jQuery.extend(true, config, item);
 
