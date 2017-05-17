@@ -126,6 +126,16 @@ describe('ax5.util.right TEST', function() {
           expect: 'vivus vici'
       },
       {
+          args: [ 'abc', null ],
+          expect: '',
+          explanation: 'abc, null'
+      },
+      {
+          args: [ 'abc', undefined],
+          expect: '',
+          explanation: 'abc", undefined'
+      },
+      {
           args: [ 'coincidence', true ],
           expect: '',
           explanation: 'coincidence, ""'
