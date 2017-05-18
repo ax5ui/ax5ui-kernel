@@ -2133,7 +2133,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     rowIndex: rowIndex,
                     colIndex: colIndex,
                     item: item,
-                    column: column
+                    column: column,
+                    gridSelf: self
                 };
 
                 self.contextMenu.popup(e, {
@@ -6261,7 +6262,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 /*
                 if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
                 this.xvar.scrollTimer = setTimeout(function () {
-                 });
+                  });
                 */
             }
 

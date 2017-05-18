@@ -460,7 +460,8 @@
                     rowIndex: rowIndex,
                     colIndex: colIndex,
                     item: item,
-                    column: column
+                    column: column,
+                    gridSelf: self
                 };
 
                 self.contextMenu.popup(e, {
