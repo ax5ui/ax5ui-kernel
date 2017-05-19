@@ -484,7 +484,7 @@
                     &:before {
                         top: 2px;
                         left: 0;
-                        @include sort-arrow($ax5grid-header-sorter-size + 2, 2.5, 2.0, $ax5grid-header-sorter-color, 0.8, "up");
+                        @include sort-arrow($ax5grid-header-sorter-size + 1, 2.5, 2.0, $ax5grid-header-sorter-color, 0.8, "up");
                     }
                     &:after {
                         display: none;
@@ -497,7 +497,7 @@
                     &:after {
                         bottom: 2px;
                         left: 0;
-                        @include sort-arrow($ax5grid-header-sorter-size + 2, 2.5, 2.0, $ax5grid-header-sorter-color, 0.8, "down");
+                        @include sort-arrow($ax5grid-header-sorter-size + 1, 2.5, 2.0, $ax5grid-header-sorter-color, 0.8, "down");
                     }
                 }
 
