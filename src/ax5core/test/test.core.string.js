@@ -241,6 +241,10 @@ describe('ax5.util.snakeCase Test', function () {
         {
             args: ['OBorderRadius'],
             expect: '-o-border-radius'
+        },
+        {
+            args: ['HELLOWORLD'],
+            expect: '-h-e-l-l-o-w-o-r-l-d'
         }
     ];
     testCases.forEach(function (testCase) {
