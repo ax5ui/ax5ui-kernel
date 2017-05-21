@@ -58,6 +58,18 @@ describe('ax5.util.number TEST', function() {
         },
         {
             args: [
+              -123456789.678,
+              {
+                abs: true,
+                floor: true,
+                money: true
+              }
+            ],
+            expect: '123,456,789',
+            explanation: -123456789.678 + ',{ abs: true, floor: true, money: true }'
+        },
+        {
+            args: [
               'A-1234~~56789.8~888PX',
               {
                 abs: true,
