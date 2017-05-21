@@ -1064,10 +1064,10 @@
             this.css = function (css) {
                 if (this.activeModal && !self.fullScreen) {
                     this.activeModal.css(css);
-                    if (css.width) {
+                    if (typeof css.width !== "undefined") {
                         self.modalConfig.width = css.width;
                     }
-                    if (css.height) {
+                    if (typeof css.height !== "undefined") {
                         self.modalConfig.height = css.height;
                     }
 

@@ -810,7 +810,7 @@
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
                 this.onChange = cfg.onChange;
-                jQuery(window).bind("resize.ax5autocomplete-display-" + this.instanceId, (function () {
+                jQuery(window).on("resize.ax5autocomplete-display-" + this.instanceId, (function () {
                     alignAutocompleteDisplay.call(this);
                 }).bind(this));
             };
@@ -1007,8 +1007,8 @@
                         alignAutocompleteDisplay.call(this);
 
                         item.$display
-                            .unbind('click.ax5autocomplete')
-                            .bind('click.ax5autocomplete', autocompleteEvent.click.bind(this, queIdx));
+                            .off('click.ax5autocomplete')
+                            .on('click.ax5autocomplete', autocompleteEvent.click.bind(this, queIdx));
 
                         // autocomplete 태그에 대한 이벤트 감시
 
@@ -1025,8 +1025,8 @@
                         // select 태그에 대한 change 이벤트 감시
 
                         item.$select
-                            .unbind('change.ax5autocomplete')
-                            .bind('change.ax5autocomplete', autocompleteEvent.selectChange.bind(this, queIdx));
+                            .off('change.ax5autocomplete')
+                            .on('change.ax5autocomplete', autocompleteEvent.selectChange.bind(this, queIdx));
 
                         data = null;
                         item = null;
@@ -1140,7 +1140,7 @@
                     this.activeautocompleteQueueIndex = queIdx;
 
                     alignAutocompleteOptionGroup.call(this, "append"); // alignAutocompleteOptionGroup 에서 body append
-                    jQuery(window).bind("resize.ax5autocomplete-" + this.instanceId, (function () {
+                    jQuery(window).on("resize.ax5autocomplete-" + this.instanceId, (function () {
                         alignAutocompleteOptionGroup.call(this);
                     }).bind(this));
 
@@ -1155,7 +1155,7 @@
                         }
                     }
 
-                    jQuery(window).bind("click.ax5autocomplete-" + this.instanceId, (function (e) {
+                    jQuery(window).on("click.ax5autocomplete-" + this.instanceId, (function (e) {
                         e = e || window.event;
                         onBodyClick.call(this, e);
                         U.stopEvent(e);
@@ -1268,9 +1268,9 @@
                 this.activeautocompleteOptionGroup.addClass("destroy");
 
                 jQuery(window)
-                    .unbind("resize.ax5autocomplete-" + this.instanceId)
-                    .unbind("click.ax5autocomplete-" + this.instanceId)
-                    .unbind("keyup.ax5autocomplete-" + this.instanceId);
+                    .off("resize.ax5autocomplete-" + this.instanceId)
+                    .off("click.ax5autocomplete-" + this.instanceId)
+                    .off("keyup.ax5autocomplete-" + this.instanceId);
 
                 this.closeTimer = setTimeout((function () {
                     if (this.activeautocompleteOptionGroup) this.activeautocompleteOptionGroup.remove();
