@@ -18,8 +18,9 @@
 		"javascript ui"
 	],
 	"dependencies": {
-		"jquery": "^1.11.0",
-		"ax5core": ">=1.4.41"
+		"jquery": "",
+		"ax5core": ">=1.4.41",
+		"bootstrap-sass": ""
 	},
 	"license": "MIT",
 	"homepage": "ax5.io"
