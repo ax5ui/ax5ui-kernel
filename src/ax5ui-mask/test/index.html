@@ -29,10 +29,11 @@
             return cTmpl;
         };
         ax5.ui.mask.tmpl.customMask = customMask;
-        window.mask = new ax5.ui.mask();
+        window.mask = new ax5.ui.mask({zIndex: 1000});
 
         $("#custom-mask-open").click(function(){
             mask.open({
+
                 templateName: 'customMask',
                 content: 'custom MASK on target',
                 target: $("#user-content").get(0),
