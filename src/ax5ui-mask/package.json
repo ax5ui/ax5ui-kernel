@@ -21,13 +21,17 @@
 		"mask",
 		"ax5ui-mask"
 	],
+	"scripts": {
+		"test": "karma start karma.conf.js"
+	},
 	"dependencies": {
 		"jquery": "",
 		"ax5core": ">=1.3.0",
 		"bootstrap-sass": ""
 	},
-	"scripts": {
-		"test": "karma start karma.conf.js"
-	},
-	"devDependencies": {}
+	"devDependencies": {
+		"karma": "^1.3.0",
+		"karma-mocha": "^1.2.0",
+		"karma-phantomjs-launcher": "^1.0.2"
+	}
 }
