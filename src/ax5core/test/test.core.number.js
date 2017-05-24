@@ -72,11 +72,31 @@ describe('ax5.util.number TEST', function () {
             args: [
                 1024 * 1024,
                 {
-                    byte: true
+                    byte: true,
                 }
             ],
             expect: '1024KB',
-            explanation: 1024 * 1024 + ',{ byte: true, floor: true}'
+            explanation: 1024 * 1024 + ',{ byte: true}'
+        },
+        {
+            args: [
+                1024 * 1024 * 5,
+                {
+                    byte: true,
+                }
+            ],
+            expect: '5MB',
+            explanation: 1024 * 1024 * 5 + ',{ byte: true}'
+        },
+        {
+            args: [
+                1024 * 1024 * 1024,
+                {
+                    byte: true,
+                }
+            ],
+            expect: '1024MB',
+            explanation: 1024 * 1024 * 1024 + ',{ byte: true}'
         },
         {
             args: [
