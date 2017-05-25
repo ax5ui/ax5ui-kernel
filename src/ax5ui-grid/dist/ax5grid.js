@@ -5781,16 +5781,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function getHtml(_root, _columnKey, _editor, _value) {
-
-            if (typeof _editor.customAttr !== "undefined") {
-                var customAttrsText = "";
-                _editor.customAttr.forEach(function (o) {
+            if (typeof _editor.attributes !== "undefined") {
+                var attributesText = "";
+                _editor.attributes.forEach(function (o) {
                     var k = Object.keys(o)[0];
-                    customAttrsText += " " + k + "='" + o[k] + "'";
+                    attributesText += " " + k + "='" + o[k] + "'";
                 });
             }
-
-            return '<input type="text" data-ax5grid-editor="text" value="' + _value + '" ' + customAttrsText + '>';
+            return '<input type="text" data-ax5grid-editor="text" value="' + _value + '" ' + attributesText + '>';
         },
         init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
