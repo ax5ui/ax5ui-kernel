@@ -512,7 +512,7 @@
                 }
 
                 // binding event to els
-                this.view_target.find('[data-ax-path]').unbind("change.axbinder").bind("change.axbinder", function (e) {
+                this.view_target.find('[data-ax-path]').off("change.axbinder").on("change.axbinder", function (e) {
 
                     var i,
                         hasItem = false,
@@ -723,7 +723,7 @@
                     index = target.attr("data-ax-repeat-i");
                 var list = Function("", "return this" + get_real_path(dataPath) + ";").call(this.model);
 
-                target.find('[data-ax-repeat-click]').unbind("click.axbinder").bind("click.axbinder", function (e) {
+                target.find('[data-ax-repeat-click]').off("click.axbinder").on("click.axbinder", function (e) {
                     var target = ax5.util.findParentNode(e.target, function (el) {
                         return el.getAttribute("data-ax-repeat-click");
                     });
@@ -731,7 +731,6 @@
                         var dom = $(target),
                             value = dom.attr("data-ax-repeat-click"),
                             repeat_path = dom.attr("data-ax-repeat-path");
-
                         var that = {
                             el: target,
                             jquery: dom,
@@ -767,7 +766,7 @@
                 });
 
                 // binding event to els
-                target.find('[data-ax-item-path]').unbind("change.axbinder").bind("change.axbinder", function (e) {
+                target.find('[data-ax-item-path]').off("change.axbinder").on("change.axbinder", function (e) {
                     var i,
                         hasItem = false,
                         checked,
@@ -828,7 +827,8 @@
 
                     dom.data("changedTime", new Date().getTime());
                 });
-                target.find('[data-ax-item-path]').unbind("blur.axbinder").bind("blur.axbinder", function (e) {
+
+                target.find('[data-ax-item-path]').off("blur.axbinder").on("blur.axbinder", function (e) {
                     var dom = $(e.target);
                     if (typeof dom.data("changedTime") == "undefined" || dom.data("changedTime") < new Date().getTime() - 10) dom.trigger("change");
                 });

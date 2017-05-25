@@ -297,6 +297,19 @@ gulp.task('test-npm-install', function(){
 gulp.task('version', function () {
     var packageJSON = JSON.parse(fs.readFileSync('package.json'));
 
+    gulp.src([PATHS["ax5core"].src + '/*.js'])
+        .pipe(concat(PATHS["ax5core"].js + '.js'))
+        .pipe(replace("${VERSION}", packageJSON.version))
+        .pipe(babel({
+            presets: ['es2015'],
+            compact: false
+        }))
+        .pipe(gulp.dest(PATHS["ax5core"].dest))
+        .pipe(concat(PATHS["ax5core"].js + '.min.js'))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(PATHS["ax5core"].dest));
+
     for (var k in PATHS) {
         var __p = PATHS[k];
         if (__p.isPlugin) {
