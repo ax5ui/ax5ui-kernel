@@ -2133,7 +2133,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     rowIndex: rowIndex,
                     colIndex: colIndex,
                     item: item,
-                    column: column
+                    column: column,
+                    gridSelf: self
                 };
 
                 self.contextMenu.popup(e, {
@@ -5780,7 +5781,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function getHtml(_root, _columnKey, _editor, _value) {
-            return '<input type="text" data-ax5grid-editor="text" value="' + _value + '" >';
+            if (typeof _editor.attributes !== "undefined") {
+                var attributesText = "";
+                _editor.attributes.forEach(function (o) {
+                    var k = Object.keys(o)[0];
+                    attributesText += " " + k + "='" + o[k] + "'";
+                });
+            }
+            return '<input type="text" data-ax5grid-editor="text" value="' + _value + '" ' + attributesText + '>';
         },
         init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
@@ -6261,7 +6269,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 /*
                 if (this.xvar.scrollTimer) clearTimeout(this.xvar.scrollTimer);
                 this.xvar.scrollTimer = setTimeout(function () {
-                 });
+                  });
                 */
             }
 

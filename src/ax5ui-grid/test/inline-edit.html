@@ -13,15 +13,15 @@
 
     <title>GRID</title>
 
-    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="../../ax5ui-mask/dist/ax5mask.css"/>
     <link rel="stylesheet" type="text/css" href="../../ax5ui-calendar/dist/ax5calendar.css"/>
     <link rel="stylesheet" type="text/css" href="../../ax5ui-picker/dist/ax5picker.css"/>
     <link rel="stylesheet" type="text/css" href="../../ax5ui-select/dist/ax5select.css"/>
-    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../dist/ax5grid.css"/>
 
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../../ax5core/dist/ax5core.js"></script>
     <script src="../../ax5ui-formatter/dist/ax5formatter.min.js"></script>
     <script src="../../ax5ui-calendar/dist/ax5calendar.min.js"></script>
@@ -61,7 +61,7 @@
 </div>
 <div style="padding: 5px;">
     <button class="btn btn-default" data-grid-control="excel-export">Excel Export</button>
-    <button class="btn btn-default" data-grid-control="excel-string">get Excel String</button>
+    <button class="btn btn-default" data-zgrid-control="excel-string">get Excel String</button>
 </div>
 <div style="height: 10px;"></div>
 
@@ -162,10 +162,15 @@
                         enableFilter: true,
                         align: "center",
                         editor: {
-                            type: "text", disabled: function () {
+                            type: "text",
+                            disabled: function () {
                                 // item, value
                                 return false;
-                            }
+                            },
+                            attributes: [
+                                {'maxlength': 6},
+                                {'data-maxlength': 10}
+                            ]
                         }
                     },
                     {key: "b", label: "필드B", align: "center", editor: {type: "text"}},
@@ -174,10 +179,10 @@
                         label: "필드C", columns: [
                         {key: "price", label: "단가", align: "right", width: 60, editor: {type: "money", updateWith: ['cost']}},
                         {key: "amount", label: "수량", align: "right", width: 50, formatter: "money", editor: {type: "number", updateWith: ['cost']}},
-                        {
-                            key: "cost", label: "금액", align: "right", width: 80, formatter: function () {
-                            return ax5.util.number(this.item.price * this.item.amount, {"money": true});
-                        }
+                        {key: "cost", label: "금액", align: "right", width: 80,
+                            formatter: function () {
+                                return ax5.util.number(this.item.price * this.item.amount, {"money": true});
+                            }
                         }
                     ]
                     },
