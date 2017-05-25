@@ -9,12 +9,11 @@
         getHtml: function (_root, _columnKey, _editor, _value) {
             if(typeof _editor.attributes !== "undefined"){
                 var attributesText  = "";
-                _editor.attributes.forEach(function (o) {
-                    var k = Object.keys(o)[0];
-                    attributesText += " "+k+"='"+o[k]+"'";
-                });
+                for (var k in _editor.attributes){
+                    attributesText += ` ${k}='${_editor.attributes[k]}'`;
+                }
             }
-            return '<input type="text" data-ax5grid-editor="text" value="' + _value + '" '+attributesText+'>';
+            return `<input type="text" data-ax5grid-editor="text" value="${_value}" ${attributesText}>`;
         },
         init: function (_root, _columnKey, _editor, _$parent, _value) {
             var $el;
