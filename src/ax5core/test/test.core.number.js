@@ -70,9 +70,19 @@ describe('ax5.util.number TEST', function () {
         },
         {
             args: [
+                1023,
+                {
+                    byte: true
+                }
+            ],
+            expect: '1KB',
+            explanation: 1023 + ',{byte: true}'
+        },
+        {
+            args: [
                 1024 * 1024,
                 {
-                    byte: true,
+                    byte: true
                 }
             ],
             expect: '1024KB',
@@ -82,7 +92,7 @@ describe('ax5.util.number TEST', function () {
             args: [
                 1024 * 1024 * 5,
                 {
-                    byte: true,
+                    byte: true
                 }
             ],
             expect: '5MB',
@@ -92,7 +102,7 @@ describe('ax5.util.number TEST', function () {
             args: [
                 1024 * 1024 * 1024,
                 {
-                    byte: true,
+                    byte: true
                 }
             ],
             expect: '1024MB',
@@ -102,7 +112,7 @@ describe('ax5.util.number TEST', function () {
             args: [
                 1024 * 1024 * 1024 * 5,
                 {
-                    byte: true,
+                    byte: true
                 }
             ],
             expect: '5GB',
