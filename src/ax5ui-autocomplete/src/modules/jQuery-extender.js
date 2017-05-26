@@ -55,6 +55,8 @@ jQuery.fn.ax5autocomplete = (function () {
                     break;
                 case "blur":
                     return ax5.ui.autocomplete_instance.blur(this);
+                case "align":
+                    return ax5.ui.autocomplete_instance.align(this);
                 default:
                     return this;
             }
