@@ -131,6 +131,9 @@
             height: 100%;
             border: 0 none;
             background: $ax5grid-bg;
+            &::-ms-clear {
+                display: none;
+            }
         }
 
         [data-ax5select] {
