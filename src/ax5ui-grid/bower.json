@@ -22,8 +22,7 @@
 		"ax5ui-menu": "",
 		"ax5ui-formatter": "",
 		"ax5ui-calendar": "",
-		"ax5ui-picker": "",
-		"bootstrap-sass": ""
+		"ax5ui-picker": ""
 	},
 	"license": "MIT",
 	"homepage": "ax5.io"

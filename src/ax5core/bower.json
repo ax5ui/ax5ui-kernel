@@ -19,8 +19,6 @@
     "jquery": ""
   },
   "devDependencies": {
-    "bootstrap-sass": "",
-    "bourbon": ""
   },
   "license": "MIT",
   "homepage": "ax5.io"

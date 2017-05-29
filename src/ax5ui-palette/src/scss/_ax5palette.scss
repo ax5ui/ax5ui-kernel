@@ -110,6 +110,11 @@
 
 [data-ax5palette] {
     box-sizing: border-box;
+    *,
+    *:before,
+    *:after {
+        box-sizing: border-box;
+    }
     position: relative;
 
     [data-ax5palette-container="root"] {

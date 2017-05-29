@@ -200,6 +200,13 @@
 }
 
 [data-ax5uploader] {
+    box-sizing: border-box;
+    *,
+    *:before,
+    *:after {
+        box-sizing: border-box;
+    }
+
     position: relative;
     [data-ax5uploader-button="selector"] {
         position: relative;

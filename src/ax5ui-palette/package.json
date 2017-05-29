@@ -27,8 +27,7 @@
   },
   "dependencies": {
     "jquery": "",
-    "ax5core": ">=1.4.41",
-    "bootstrap-sass": ""
+    "ax5core": ">=1.4.41"
   },
   "devDependencies": {
     "karma": "^1.3.0",

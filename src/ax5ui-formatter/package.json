@@ -28,8 +28,7 @@
 	"dependencies": {
 		"jquery": "",
 		"ax5core": ">=1.3.0",
-		"ax5ui-menu": "",
-		"bootstrap-sass": ""
+		"ax5ui-menu": ""
 	},
 	"devDependencies": {
 		"karma": "^1.3.0",

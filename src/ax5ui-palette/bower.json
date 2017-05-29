@@ -19,8 +19,7 @@
 	],
 	"dependencies": {
 		"jquery": "",
-		"ax5core": ">=1.4.41",
-		"bootstrap-sass": ""
+		"ax5core": ">=1.4.41"
 	},
 	"license": "MIT",
 	"homepage": "ax5.io"

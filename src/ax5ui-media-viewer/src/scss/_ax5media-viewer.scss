@@ -79,9 +79,13 @@ $font-colors: (
 [data-ax5-ui-media-viewer] {
     position: relative;
     overflow: hidden;
-    *{
+    box-sizing: border-box;
+    *,
+    *:before,
+    *:after {
         box-sizing: border-box;
     }
+    
     [data-media-viewer-els="viewer-holder"] {
         position: relative;
     }
