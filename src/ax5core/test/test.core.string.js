@@ -273,6 +273,10 @@ describe('ax5.util.setDigit Test', function () {
         {
             args: [320, 8, 0, 16],
             expect: '00000140'
+        },
+        {
+            args: [10, 6, "10"],
+            expect: '1010101010'
         }
     ];
     testCases.forEach(function (testCase) {
