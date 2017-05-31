@@ -292,6 +292,22 @@ describe('ax5.util.setDigit Test', function () {
     });
 });
 
+describe('ax5.util.times Test', function () {
+    var testCases = [
+        {
+            args: [2016, 2],
+            expect: '20162016'
+        }
+    ];
+    testCases.forEach(function (testCase) {
+        it('ax5.util.times(' + testCase.args + ') expect ' + testCase.expect, function () {
+            var actual = ax5.util.times.apply(this, testCase.args);
+
+            actual.should.deepEqual(testCase.expect);
+        });
+    });
+});
+
 describe('ax5.util.escape Test', function () {
     it('ax5.util.escapeHtml("HTML <span>string</span> & "escape"") expect "HTML &lt;span&gt;string&lt;/span&gt; &amp; &quot;escape&quot;"', function () {
         var actual = ax5.util.escapeHtml('HTML <span>string</span> & "escape"');
