@@ -968,7 +968,6 @@
             SS.push('<col  />');
             SS.push('</colgroup>');
 
-
             for (di = _scrollConfig.paintStartRowIndex, dl = (function () {
                 let len;
                 len = _list.length;
@@ -1073,13 +1072,7 @@
             _elTarget.empty();
             SS = SS.join('');
 
-            if (this.config.virtualScrollAccelerated && _elTargetKey !== "aside-body-scroll") {
-                setTimeout(function () {
-                    _elTarget.get(0).innerHTML = SS;
-                });
-            } else {
-                _elTarget.get(0).innerHTML = SS;
-            }
+            _elTarget.get(0).innerHTML = SS;
 
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
@@ -1183,13 +1176,8 @@
 
             _elTarget.empty();
             SS = SS.join('');
-            if (this.config.virtualScrollAccelerated) {
-                setTimeout(function () {
-                    _elTarget.get(0).innerHTML = SS;
-                });
-            } else {
-                _elTarget.get(0).innerHTML = SS;
-            }
+
+            _elTarget.get(0).innerHTML = SS;
 
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
@@ -2007,8 +1995,9 @@
         }
     };
 
-    const scrollTo = function (css, noRepaint) {
-
+    const scrollTo = function (css, opts) {
+        let self = this;
+        if (typeof opts === "undefined") opts = {};
         if (this.isInlineEditing) {
             for (var key in this.inlineEditing) {
                 //if(this.inlineEditing[key].editor.type === "select") {}
@@ -2033,11 +2022,36 @@
             this.$.panel["bottom-body-scroll"].css({left: css.left});
         }
 
-        if (this.config.virtualScrollY && !noRepaint && "top" in css) {
-            repaint.call(this);
-        } else if (this.config.virtualScrollX && !noRepaint && "left" in css) {
-            repaint.call(this);
+        if (this.config.virtualScrollAccelerated) {
+
+            if (this.xvar.bodyScrollToTimer) clearTimeout(this.xvar.bodyScrollToTimer);
+            this.xvar.bodyScrollToTimer = setTimeout(function () {
+
+                if (self.config.virtualScrollY && !opts.noRepaint && "top" in css) {
+                    repaint.call(self);
+                } else if (self.config.virtualScrollX && !opts.noRepaint && "left" in css) {
+                    repaint.call(self);
+                }
+                if (opts.callback) {
+                    opts.callback();
+                }
+
+            }, this.config.virtualScrollAcceleratedDelayTime);
+
+        } else {
+
+            if (self.config.virtualScrollY && !opts.noRepaint && "top" in css) {
+                repaint.call(self);
+            } else if (self.config.virtualScrollX && !opts.noRepaint && "left" in css) {
+                repaint.call(self);
+            }
+            if (opts.callback) {
+                opts.callback();
+            }
+
         }
+
+
     };
 
     const blur = function () {
