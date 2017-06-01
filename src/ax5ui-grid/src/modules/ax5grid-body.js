@@ -2161,7 +2161,7 @@
                             GRID.scroller.resize.call(this);
                         }
                         else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
-                            scrollTo.call(this, {top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 2) * this.xvar.bodyTrHeight});
+                            scrollTo.call(this, {top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 1) * this.xvar.bodyTrHeight});
                             GRID.scroller.resize.call(this);
                         }
                     }
