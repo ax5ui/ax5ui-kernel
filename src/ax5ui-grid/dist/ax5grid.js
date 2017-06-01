@@ -59,9 +59,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 multipleSelect: true,
                 virtualScrollY: true,
                 virtualScrollX: true,
-                virtualScrollYCountMargin: 10,
+
+                // 스크롤될 때 body 페인팅 딜레이를 주어 성능이 좋은 않은 브라우저에서 반응을 빠르게 할 때 사용하는 옵션들
+                virtualScrollYCountMargin: 0,
                 virtualScrollAccelerated: false,
-                virtualScrollAcceleratedDelayTime: 10,
+                virtualScrollAcceleratedDelayTime: 30,
+
                 height: 0,
                 columnMinWidth: 100,
                 lineNumberColumnWidth: 30,
@@ -2542,7 +2545,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (!this.config.virtualScrollY) {
             virtualPaintRowCount = paintRowCount = list.length;
         } else {
-            virtualPaintRowCount = Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight);
+            virtualPaintRowCount = Math.floor(this.xvar.bodyHeight / this.xvar.bodyTrHeight);
             paintRowCount = virtualPaintRowCount + (this.xvar.paintRowCountMargin || 1);
         }
 
@@ -2621,10 +2624,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 } else {
                     return true;
                 }
-            }();
+            }(),
+                stripeString = '#fff 0px, #fff ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px, #eee ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px, #eee ' + cfg.body.columnHeight + 'px';
 
             if (isScrolled) {
-                SS.push('<div style="font-size:0;line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+                SS.push('<div style="background:repeating-linear-gradient(to top, ' + stripeString + ');' + 'font-size:0;' + 'line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex - 1) * _scrollConfig.bodyTrHeight + 'px;"></div>');
             }
 
             // 가로 가상 스크롤 적용하지 않는 경우
@@ -2636,7 +2640,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             SS.push('<col  />');
             SS.push('</colgroup>');
 
-            for (di = _scrollConfig.paintStartRowIndex, dl = function () {
+            for (di = _scrollConfig.paintStartRowIndex - 1, dl = function () {
                 var len = void 0;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
@@ -2710,7 +2714,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             SS.push('</table>');
 
             if (isScrolled && _list.length) {
-                SS.push('<div style="font-size:0;line-height:0;height: ' + (_list.length - di) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+                SS.push('<div style="background:repeating-linear-gradient(to bottom, ' + stripeString + ');' + 'font-size:0;' + 'line-height:0;height: ' + (_list.length - di) * _scrollConfig.bodyTrHeight + 'px;"></div>');
             }
 
             _elTarget.empty();
@@ -3716,10 +3720,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 (function () {
                     if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
                         if (focusedColumn.dindex <= this.xvar.virtualPaintStartRowIndex) {
-                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight });
+                            var newTop = (focusedColumn.dindex - this.xvar.frozenRowIndex - 1) * this.xvar.bodyTrHeight;
+                            if (newTop < 0) newTop = 0;
+                            scrollTo.call(this, { top: -newTop });
                             GRID.scroller.resize.call(this);
                         } else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
-                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3) * this.xvar.bodyTrHeight });
+                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 2) * this.xvar.bodyTrHeight });
                             GRID.scroller.resize.call(this);
                         }
                     }
