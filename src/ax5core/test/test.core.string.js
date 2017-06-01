@@ -277,11 +277,31 @@ describe('ax5.util.setDigit Test', function () {
         {
             args: [10, 6, "10"],
             expect: '1010101010'
+        },
+        {
+            args: [10, 4, 0, 4],
+            expect: '0022'
         }
     ];
     testCases.forEach(function (testCase) {
         it('ax5.util.setDigit(' + testCase.args + ') expect ' + testCase.expect, function () {
             var actual = ax5.util.setDigit.apply(this, testCase.args);
+
+            actual.should.deepEqual(testCase.expect);
+        });
+    });
+});
+
+describe('ax5.util.times Test', function () {
+    var testCases = [
+        {
+            args: [2016, 2],
+            expect: '20162016'
+        }
+    ];
+    testCases.forEach(function (testCase) {
+        it('ax5.util.times(' + testCase.args + ') expect ' + testCase.expect, function () {
+            var actual = ax5.util.times.apply(this, testCase.args);
 
             actual.should.deepEqual(testCase.expect);
         });
