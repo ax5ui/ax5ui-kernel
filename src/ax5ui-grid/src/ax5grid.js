@@ -58,7 +58,7 @@
 
                 // 스크롤될 때 body 페인팅 딜레이를 주어 성능이 좋은 않은 브라우저에서 반응을 빠르게 할 때 사용하는 옵션들
                 virtualScrollYCountMargin: 0,
-                virtualScrollAccelerated: false,
+                virtualScrollAccelerated: true,
                 virtualScrollAcceleratedDelayTime: 30,
 
                 height: 0,

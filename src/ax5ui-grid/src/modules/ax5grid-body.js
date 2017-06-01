@@ -877,7 +877,7 @@
         if (!this.config.virtualScrollY) {
             virtualPaintRowCount = paintRowCount = list.length;
         } else {
-            virtualPaintRowCount = Math.floor(this.xvar.bodyHeight / this.xvar.bodyTrHeight);
+            virtualPaintRowCount = Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight);
             paintRowCount = virtualPaintRowCount + (this.xvar.paintRowCountMargin || 1);
         }
 
@@ -933,8 +933,7 @@
          */
         let repaintBody = function (_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
             let _elTarget = this.$.panel[_elTargetKey];
-
-
+            
             if (!isFirstPaint && !_scrollConfig) {
                 this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
                 return false;
@@ -961,10 +960,9 @@
             if (isScrolled) {
                 SS.push('<div style="background:repeating-linear-gradient(to top, ' + stripeString + ');' +
                     'font-size:0;' +
-                    'line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex - 1) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+                    'line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight + 'px;"></div>');
             }
 
-            // 가로 가상 스크롤 적용하지 않는 경우
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -972,8 +970,10 @@
             }
             SS.push('<col  />');
             SS.push('</colgroup>');
+            
+            di = _scrollConfig.paintStartRowIndex;
 
-            for (di = _scrollConfig.paintStartRowIndex - 1, dl = (function () {
+            for (dl = (function () {
                 let len;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
@@ -981,6 +981,7 @@
                 }
                 return len;
             })(); di < dl; di++) {
+
                 if (_list[di]) {
                     let isGroupingRow = false, rowTable, odi = (typeof _list[di].__origin_index__ !== "undefined") ? _list[di].__origin_index__ : di;
                     if (_groupRow && "__isGrouping" in _list[di]) {
@@ -1310,19 +1311,23 @@
             virtualScrollX: this.config.virtualScrollX,
             virtualScrollY: this.config.virtualScrollY,
         };
+        let frozenScrollConfig = jQuery.extend({}, scrollConfig, {
+            paintStartRowIndex: 0,
+            paintRowCount: this.xvar.frozenRowIndex
+        });
 
         // aside
         if (cfg.asidePanelWidth > 0) {
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                repaintBody.call(this, "top-aside-body", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                repaintBody.call(this, "top-aside-body", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), frozenScrollConfig);
             }
 
             repaintBody.call(this, "aside-body-scroll", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list, scrollConfig);
 
             if (cfg.footSum) {
                 // 바닥 요약 (footSum에 대한 aside 사용안함)
-                //repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, list);
+                repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, list);
             }
         }
 
@@ -1330,10 +1335,7 @@
         if (this.xvar.frozenColumnIndex > 0) {
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                repaintBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), jQuery.extend({}, scrollConfig, {
-                    paintStartRowIndex: 0,
-                    paintRowCount: this.xvar.frozenRowIndex
-                }));
+                repaintBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), frozenScrollConfig);
             }
 
             repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list, scrollConfig);
@@ -1347,10 +1349,7 @@
         // body
         if (this.xvar.frozenRowIndex > 0) {
             // 상단 행고정
-            repaintBody.call(this, "top-body-scroll", headerColGroup, bodyRowData, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), jQuery.extend({}, scrollConfig, {
-                paintStartRowIndex: 0,
-                paintRowCount: this.xvar.frozenRowIndex
-            }));
+            repaintBody.call(this, "top-body-scroll", headerColGroup, bodyRowData, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), frozenScrollConfig);
         }
         repaintBody.call(this, "body-scroll", headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
 
