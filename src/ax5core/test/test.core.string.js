@@ -297,6 +297,14 @@ describe('ax5.util.times Test', function () {
         {
             args: [2016, 2],
             expect: '20162016'
+        },
+        {
+            args: ["", 4],
+            expect: ''
+        },
+        {
+            args: [true, 3],
+            expect: 'truetruetrue'
         }
     ];
     testCases.forEach(function (testCase) {
