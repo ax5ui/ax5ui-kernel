@@ -2572,12 +2572,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         }
 
-        /*
-        if (!this.config.virtualScrollX && document.addEventListener && ax5.info.supportTouch) {
-            paintRowCount = paintRowCount * 2;
-        }
-         */
-
         /// 스크롤 컨텐츠의 높이 : 그리드 스크롤의 실제 크기와는 관계 없이 데이터 갯수에 따라 스크롤 컨텐츠 높이값 구해서 저장해두기.
         this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
         /// 사용된 패널들의 키 모음
@@ -2836,37 +2830,34 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var _elTarget = this.$.panel[_elTargetKey];
             var token = {},
                 hasMergeTd = void 0;
-            //console.log(_elTarget);
 
             // 테이블의 td들을 수잡하여 저장해두고 스크립트로 반복하여 정리.
             var tableTrs = _elTarget.find("tr");
             for (var ri = 0, rl = tableTrs.length; ri < rl; ri++) {
                 var tableTrTds = void 0,
                     trMaps = void 0;
+                tableTrTds = tableTrs[ri].childNodes;
+                trMaps = [];
 
-                if (!tableTrs[ri].getAttribute("data-ax5grid-grouping-tr")) {
-                    tableTrTds = tableTrs[ri].childNodes;
-                    trMaps = [];
-                    for (var _ci = 0, cl = tableTrTds.length; _ci < cl; _ci++) {
-                        var tdObj = {
-                            "$": jQuery(tableTrTds[_ci])
-                        };
+                for (var _ci = 0, cl = tableTrTds.length; _ci < cl; _ci++) {
+                    var tdObj = {
+                        "$": jQuery(tableTrTds[_ci])
+                    };
 
-                        if (tdObj["$"].attr("data-ax5grid-column-col") != "null") {
-                            tdObj.dindex = tdObj["$"].attr("data-ax5grid-data-index");
-                            tdObj.tri = tdObj["$"].attr("data-ax5grid-column-row");
-                            tdObj.ci = tdObj["$"].attr("data-ax5grid-column-col");
-                            tdObj.rowIndex = tdObj["$"].attr("data-ax5grid-column-rowIndex");
-                            tdObj.colIndex = tdObj["$"].attr("data-ax5grid-column-colIndex");
-                            tdObj.rowspan = tdObj["$"].attr("rowspan");
-                            tdObj.text = tdObj["$"].text();
-                            trMaps.push(tdObj);
-                        }
-
-                        tdObj = null;
+                    if (tdObj["$"].attr("data-ax5grid-column-col") != "null") {
+                        tdObj.dindex = tdObj["$"].attr("data-ax5grid-data-index");
+                        tdObj.tri = tdObj["$"].attr("data-ax5grid-column-row");
+                        tdObj.ci = tdObj["$"].attr("data-ax5grid-column-col");
+                        tdObj.rowIndex = tdObj["$"].attr("data-ax5grid-column-rowIndex");
+                        tdObj.colIndex = tdObj["$"].attr("data-ax5grid-column-colIndex");
+                        tdObj.rowspan = tdObj["$"].attr("rowspan");
+                        tdObj.text = tdObj["$"].text();
+                        trMaps.push(tdObj);
                     }
-                    tblRowMaps.push(trMaps);
+
+                    tdObj = null;
                 }
+                tblRowMaps.push(trMaps);
             }
 
             // 두줄이상 일 때 의미가 있으니.
@@ -2878,6 +2869,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     var _loop2 = function _loop2(_ci3, _cl2) {
                         // 적용 하려는 컬럼에 editor 속성이 없다면 머지 대상입니다.
+
                         if (!_colGroup[_ci3].editor && function () {
                             if (U.isArray(cfg.body.mergeCells)) {
                                 return ax5.util.search(cfg.body.mergeCells, _colGroup[_ci3].key) > -1;
