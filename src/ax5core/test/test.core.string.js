@@ -305,6 +305,10 @@ describe('ax5.util.times Test', function () {
         {
             args: [true, 3],
             expect: 'truetruetrue'
+        },
+        {
+            args: [null, 4],
+            expect: 'nullnullnullnull'
         }
     ];
     testCases.forEach(function (testCase) {
