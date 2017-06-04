@@ -142,6 +142,10 @@ describe('ax5.util.cssNumber TEST', function() {
             expect: '100px'
         },
         {
+            args: "100",
+            expect: '100px'
+        },
+        {
             args: '100%',
             expect: '100%'
         },
