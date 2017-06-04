@@ -155,7 +155,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.isInlineEditing = false;
             this.inlineEditing = {};
             this.listIndexMap = {}; // tree데이터 사용시 데이터 인덱싱 맵
-            this.gridContextMenu = null; // contentMenu 의 인스턴스
+            this.contextMenu = null; // contentMenu 의 인스턴스
 
             // header
             this.headerTable = {};

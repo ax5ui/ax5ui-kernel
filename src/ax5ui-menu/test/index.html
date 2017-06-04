@@ -178,6 +178,7 @@
             // console.log(this);
             toast.push(JSON.stringify(this));
         };
+
         menu.onLoad = function () {
             if (!this.element) return this;
             $(this.element).find('[data-menu-btn]').click(function () {
@@ -227,7 +228,10 @@
                 }
             ]
         });
-
+        menu1.onClick = function () {
+            console.log(this);
+            //toast.push(JSON.stringify(this));
+        };
         attached();
 
         $(document.body).on("contextmenu", function (e) {
