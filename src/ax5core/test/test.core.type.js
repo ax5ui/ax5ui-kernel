@@ -215,6 +215,10 @@ describe('ax5.util.isDateFormat TEST', function() {
             expect: false
         },
         {
+            args: [ false ],
+            expect: false
+        },
+        {
             args: [ null ],
             expect: false
         },
