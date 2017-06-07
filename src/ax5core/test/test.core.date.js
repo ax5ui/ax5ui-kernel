@@ -108,24 +108,30 @@ describe('ax5.util.date TEST', function () {
     });
 
     //Usage 16
+    it('ax5.util.date("2017-04-17 11:00:00", {add: {h: 1}})', function () {
+        var date = new Date(2017, 3, 17, 12);
+        should.deepEqual(ax5.util.date("2017-04-17 11:00:00", {add: {h: 1}}), date);
+    });
+
+    //Usage 17
     it('ax5.util.date("2017-04-16", {add: {d: 1}})', function () {
         var date = new Date(2017, 3, 17, 12);
         should.deepEqual(ax5.util.date("2017-04-16", {add: {d: 1}}), date);
     });
 
-    //Usage 17
+    //Usage 18
     it('ax5.util.date("2017-05-16", {add: {m: 1}})', function () {
         var date = new Date(2017, 5, 16, 12);
         should.deepEqual(ax5.util.date("2017-05-16", {add: {m: 1}}), date);
     });
 
-    //Usage 18
+    //Usage 19
     it('ax5.util.date("2017-04-22", {add: {y: 1}})', function () {
         var date = new Date(2018, 3, 22, 12);
         should.deepEqual(ax5.util.date("2017-04-22", {add: {y: 1}}), date);
     });
 
-    //Usage 19
+    //Usage 20
     it('ax5.util.date("2016-04-23", {add: {d: 1.5}, return: "dd"})', function () {
         var str = "25";
         should.deepEqual(ax5.util.date("2016-04-23", {add: {d: 1.5}, return: "dd"}), str);
