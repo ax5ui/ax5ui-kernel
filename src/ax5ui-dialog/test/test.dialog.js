@@ -70,7 +70,7 @@ describe('dialog Confirm TEST', function(){
             that.state.should.equal('close');
             done();
         }, dialog.config.animateTime + 10);
-    }
+    };
 
     describe('dialog Confirm Basic Usages TEST', function(){
         it('ok button click expect "ok"', function(done){
