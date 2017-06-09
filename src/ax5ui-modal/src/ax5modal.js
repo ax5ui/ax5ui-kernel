@@ -182,6 +182,7 @@
                             onkeyup.call(this, e || window.event);
                         }).bind(this));
                     }
+
                     jQuery(window).bind("resize.ax-modal", (function (e) {
                         this.align(null, e || window.event);
                     }).bind(this));
@@ -1119,6 +1120,12 @@
 
                     if (fullScreen) {
                         if (opts.header) this.$.header.show();
+                        if (opts.header) {
+                            opts.headerHeight = this.$.header.outerHeight();
+                            box.height += opts.headerHeight;
+                        } else {
+                            opts.headerHeight = 0;
+                        }
                         box.width = jQuery(window).width();
                         box.height = opts.height;
                         box.left = 0;
@@ -1169,8 +1176,8 @@
                     }
 
                     this.activeModal.css(box);
-
-                    this.$["body"].css({height: box.height - opts.headerHeight});
+                    this.$["body"].css({height: box.height - (opts.headerHeight || 0)});
+                    
                     if (opts.iframe) {
                         this.$["iframe-wrap"].css({height: box.height - opts.headerHeight});
                         this.$["iframe"].css({height: box.height - opts.headerHeight});
