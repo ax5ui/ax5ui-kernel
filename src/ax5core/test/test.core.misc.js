@@ -200,11 +200,23 @@ describe('ax5.util.debounce TEST', function () {
     // TODO 대략 난감... HJ.Park 2016-09-26
     it('ax5.util.debounce', function (done) {
         ax5.util.debounce(function () {
-            ax5debounce = "test";
+            ax5debounce = "test_01";
         }, 50)();
 
         setTimeout(function () {
-           done(ax5debounce == "test" ? "" : "error debounce");
-        }, 50 + 1);
+            done(ax5debounce == "test_01" ? "" : "error debounce");
+        }, 50 + 10);
+    });
+
+    it('ax5.util.debounce & setTimeout', function (done) {
+        ax5.util.debounce(function () {
+            setTimeout(function () {
+                ax5debounce = "test_02";
+            }, 50);
+        }, 50)();
+
+        setTimeout(function () {
+            done(ax5debounce == "test_02" ? "" : "error debounce setTimeout");
+        }, 50 + 50 + 10);
     });
 });
