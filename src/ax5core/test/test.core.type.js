@@ -43,6 +43,10 @@ describe('ax5.util.getType TEST', function() {
         {
             args: [ window ],
             expect: 'window'
+        },
+        {
+            args: [ jQuery ],
+            expect: 'function'
         }
     ];
 
