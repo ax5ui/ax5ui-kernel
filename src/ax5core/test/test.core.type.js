@@ -75,7 +75,8 @@ describe('ax5.util.is{Type}', function() {
             { name: 'undefined', value: undefined },
             { name: 'Null', value: null },
             { name: 'EmptyString', value: '' },
-            { name: 'Date', value: new Date() }
+            { name: 'Date', value: new Date() },
+            { name: 'jQuery', value : jQuery}
         ];
 
         var matchedTypes = _.map(typeNames, function(typeName){
@@ -132,7 +133,7 @@ describe('ax5.util.is{Type}', function() {
         },
         {
             testMethod: 'isFunction',
-            testCases: getTestCases(['Function'])
+            testCases: getTestCases(['Function', 'jQuery'])
         },
         {
             testMethod: 'isString',
