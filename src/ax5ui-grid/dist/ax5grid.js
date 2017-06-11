@@ -1869,33 +1869,39 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var updateRowState = function updateRowState(_states, _dindex, _data) {
+    var updateRowState = function updateRowState(_states, _dindex, _doindex, _data) {
         var self = this,
             cfg = this.config,
             processor = {
-            "selected": function selected(_dindex) {
-                if (this.list[_dindex]) {
+            "selected": function selected(_dindex, _doindex) {
+                if (this.list[_doindex]) {
                     var i = this.$.livePanelKeys.length;
                     while (i--) {
-                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').attr("data-ax5grid-selected", this.list[_dindex][cfg.columnKeys.selected]);
+                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').attr("data-ax5grid-selected", this.list[_doindex][cfg.columnKeys.selected]);
                     }
                 }
             },
             "selectedClear": function selectedClear() {
                 var si = this.selectedDataIndexs.length;
                 while (si--) {
-                    var dindex = this.selectedDataIndexs[si];
+                    var _dindex3 = this.selectedDataIndexs[si];
                     var i = this.$.livePanelKeys.length;
                     while (i--) {
-                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').attr("data-ax5grid-selected", false);
-                        this.list[dindex][cfg.columnKeys.selected] = false;
+                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + _dindex3 + '"]').attr("data-ax5grid-selected", false);
+
+                        if (this.proxyList) {
+                            this.proxyList[_dindex3][cfg.columnKeys.selected] = false;
+                            this.list[this.proxyList[_dindex3].__origin_index__][cfg.columnKeys.selected] = false;
+                        } else {
+                            this.list[_dindex3][cfg.columnKeys.selected] = false;
+                        }
                     }
                 }
             },
-            "cellChecked": function cellChecked(_dindex, _data) {
-                var key = _data.key;
-                var rowIndex = _data.rowIndex;
-                var colIndex = _data.colIndex;
+            "cellChecked": function cellChecked(_dindex, _doindex, _data) {
+                var key = _data.key,
+                    rowIndex = _data.rowIndex,
+                    colIndex = _data.colIndex;
 
                 var panelName = function () {
                     var _panels = [];
@@ -1912,7 +1918,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
-            processor[_state].call(self, _dindex, _data);
+            processor[_state].call(self, _dindex, _doindex, _data);
         });
     };
 
@@ -1940,6 +1946,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 row = void 0,
                 col = void 0,
                 dindex = void 0,
+                doindex = void 0,
                 rowIndex = void 0,
                 colIndex = void 0,
                 disableSelection = void 0,
@@ -1950,7 +1957,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         self: self,
                         page: self.page,
                         list: self.list,
-                        item: self.list[_column.dindex],
+                        item: self.list[_column.doindex],
                         dindex: _column.dindex,
                         rowIndex: _column.rowIndex,
                         colIndex: _column.colIndex,
@@ -1960,7 +1967,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     if (column.editor && column.editor.type == "checkbox") {
                         // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
-                        var value = GRID.data.getValue.call(self, _column.dindex, column.key),
+                        var value = GRID.data.getValue.call(self, _column.dindex, _column.doindex, column.key),
                             checked = void 0,
                             newValue = void 0;
 
@@ -1974,9 +1981,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             newValue = checked = value == false || value == "false" || value < "1" ? "true" : "false";
                         }
 
-                        GRID.data.setValue.call(self, _column.dindex, column.key, newValue);
+                        GRID.data.setValue.call(self, _column.dindex, _column.doindex, column.key, newValue);
 
-                        updateRowState.call(self, ["cellChecked"], _column.dindex, {
+                        updateRowState.call(self, ["cellChecked"], _column.dindex, _column.doindex, {
                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                             editorConfig: column.editor.config, checked: checked
                         });
@@ -1987,24 +1994,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
                 },
                 "rowSelector": function rowSelector(_column) {
-                    if (self.list[_column.dindex][self.config.columnKeys.disableSelection]) {
+                    var item = self.list[_column.doindex];
+                    if (item[self.config.columnKeys.disableSelection]) {
                         return false;
                     }
 
-                    if (!self.config.multipleSelect && self.selectedDataIndexs[0] !== _column.dindex) {
+                    if (!self.config.multipleSelect && self.selectedDataIndexs[0] !== _column.doindex) {
                         updateRowState.call(self, ["selectedClear"]);
                         GRID.data.clearSelect.call(self);
                     }
 
-                    GRID.data.select.call(self, _column.dindex, undefined, {
+                    GRID.data.select.call(self, _column.dindex, _column.doindex, undefined, {
                         internalCall: true
                     });
-                    updateRowState.call(self, ["selected"], _column.dindex);
+                    updateRowState.call(self, ["selected"], _column.dindex, _column.doindex);
                 },
                 "lineNumber": function lineNumber(_column) {},
                 "tree-control": function treeControl(_column, _el) {
                     //console.log(_column);
-                    toggleCollapse.call(self, _column.dindex);
+                    toggleCollapse.call(self, _column.dindex, _column.doindex);
                 }
             };
 
@@ -2015,6 +2023,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             rowIndex = Number(this.getAttribute("data-ax5grid-column-rowIndex"));
             colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
             dindex = Number(this.getAttribute("data-ax5grid-data-index"));
+            doindex = Number(this.getAttribute("data-ax5grid-data-o-index"));
 
             if (attr in targetClick) {
                 targetClick[attr]({
@@ -2023,6 +2032,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     row: row,
                     col: col,
                     dindex: dindex,
+                    doindex: doindex,
                     rowIndex: rowIndex,
                     colIndex: colIndex
                 }, this);
@@ -2300,7 +2310,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }(_col.editor)) {
                 // editor가 inline타입이라면
 
-                _value = _value || GRID.data.getValue.call(this, typeof _item.__origin_index__ === "undefined" ? _index : _item.__origin_index__, _key);
+                _value = _value || GRID.data.getValue.call(this, _index, typeof _item.__origin_index__ === "undefined" ? _index : _item.__origin_index__, _key);
 
                 if (U.isFunction(_col.editor.disabled)) {
                     if (_col.editor.disabled.call({
@@ -2322,7 +2332,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 "formatter": function formatter() {
                     var that = {
                         key: _key,
-                        value: _value || GRID.data.getValue.call(this, typeof _item.__origin_index__ === "undefined" ? _index : _item.__origin_index__, _key),
+                        value: _value || GRID.data.getValue.call(this, _index, _item.__origin_index__, _key),
                         dindex: _index,
                         item: _item,
                         list: _list
@@ -2339,7 +2349,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (typeof _value !== "undefined") {
                         returnValue = _value;
                     } else {
-                        _value = GRID.data.getValue.call(this, typeof _item.__origin_index__ === "undefined" ? _index : _item.__origin_index__, _key);
+                        if (/[\.\[\]]/.test(_key)) {
+                            _value = GRID.data.getValue.call(this, _index, _item.__origin_index__, _key);
+                        } else {
+                            _value = _item[_key];
+                        }
+
                         if (_value !== null && typeof _value !== "undefined") returnValue = _value;
                     }
 
@@ -2657,13 +2672,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
 
-                        SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
+                        SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-tr-data-o-index="' + odi + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
                         for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                             col = rowTable.rows[tri].cols[ci];
                             cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
                             colAlign = col.align || bodyAlign;
 
-                            SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
+                            SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-data-o-index="' + odi + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
                                 var attrs = "";
                                 if (_focusedColumn) {
                                     attrs += 'data-ax5grid-column-focused="true" ';
@@ -2702,7 +2717,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                             SS.push('</td>');
                         }
-                        SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + odi + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                        SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-data-o-index="' + odi + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
                         SS.push('</tr>');
                     }
                 }
@@ -3461,7 +3476,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 col = void 0,
                 cellHeight = void 0,
                 colAlign = void 0,
-                rowTable = _bodyRow;
+                rowTable = _bodyRow,
+                odi = typeof _list[di].__origin_index__ !== "undefined" ? _list[di].__origin_index__ : di;
 
             for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
                 for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
@@ -3469,7 +3485,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
                     colAlign = col.align || bodyAlign;
 
-                    SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
+                    SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-data-o-index="' + odi + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
                         var attrs = "";
                         if (_focusedColumn) {
                             attrs += 'data-ax5grid-column-focused="true" ';
@@ -4160,21 +4176,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         for (var k in this.focusedColumn) {
                             var _column = this.focusedColumn[k],
                                 column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
-                                _dindex3 = _column.dindex,
+                                _dindex4 = _column.dindex,
                                 value = "",
                                 col = this.colGroup[_column.colIndex];
                             ;
 
                             if (column) {
-                                if (!this.list[_dindex3].__isGrouping) {
-                                    value = GRID.data.getValue.call(this, _dindex3, column.key);
+                                if (!this.list[_dindex4].__isGrouping) {
+                                    value = GRID.data.getValue.call(this, _dindex4, column.key);
                                 }
                             }
 
                             if (col.editor && GRID.inlineEditor[col.editor.type].editMode === "inline") {
                                 if (_options && _options.moveFocus) {} else {
                                     if (column.editor && column.editor.type == "checkbox") {
-                                        value = GRID.data.getValue.call(this, _dindex3, column.key);
+                                        value = GRID.data.getValue.call(this, _dindex4, column.key);
 
                                         var checked = void 0,
                                             newValue = void 0;
@@ -4189,7 +4205,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                         }
 
                                         GRID.data.setValue.call(this, _column.dindex, column.key, newValue);
-                                        updateRowState.call(this, ["cellChecked"], _dindex3, {
+                                        updateRowState.call(this, ["cellChecked"], _dindex4, {
                                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                             editorConfig: column.editor.config, checked: checked
                                         });
@@ -4290,14 +4306,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return po.join('');
     };
 
-    var toggleCollapse = function toggleCollapse(_dindex, _collapse) {
-        if (GRID.data.toggleCollapse.call(this, _dindex, _collapse)) {
+    var toggleCollapse = function toggleCollapse(_dindex, _doindex, _collapse) {
+        if (GRID.data.toggleCollapse.call(this, _dindex, _doindex, _collapse)) {
             this.proxyList = GRID.data.getProxyList.call(this, this.list);
             repaint.call(this);
         }
     };
 
-    var click = function click(_dindex) {
+    // todo : tree에서 dindex만으로 구현 했을 때 오류 발생 해결. (_doindex 이용)
+    var click = function click(_dindex, _doindex) {
         var that = {
             self: this,
             page: this.page,
@@ -4315,7 +4332,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         // console.log(this.$["panel"]["body-scroll"].find('[data-ax5grid-tr-data-index="' + _dindex + '"]>td:first-child'));
     };
 
-    var dblClick = function dblClick(_dindex) {
+    var dblClick = function dblClick(_dindex, _doindex) {
         var that = {
             self: this,
             page: this.page,
@@ -4660,20 +4677,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var getList = function getList(_type) {
         var returnList = [];
+        //let list = (this.proxyList) ? this.proxyList : this.list;
+        var list = this.list;
         var i = 0,
-            l = this.list.length;
+            l = list.length;
         switch (_type) {
             case "modified":
                 for (; i < l; i++) {
-                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.modified]) {
-                        returnList.push(jQuery.extend({}, this.list[i]));
+                    if (list[i] && !list[i]["__isGrouping"] && list[i][this.config.columnKeys.modified]) {
+                        returnList.push(jQuery.extend({}, list[i]));
                     }
                 }
                 break;
             case "selected":
                 for (; i < l; i++) {
-                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.selected]) {
-                        returnList.push(jQuery.extend({}, this.list[i]));
+                    if (list[i] && !list[i]["__isGrouping"] && list[i][this.config.columnKeys.selected]) {
+                        returnList.push(jQuery.extend({}, list[i]));
                     }
                 }
                 break;
@@ -4682,7 +4701,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 returnList = [].concat(this.deletedList);
                 break;
             default:
-                returnList = GRID.data.clearGroupingData.call(this, this.list);
+                returnList = GRID.data.clearGroupingData.call(this, list);
         }
         return returnList;
     };
@@ -4964,6 +4983,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             for (; i < l; i++) {
                 if (this.list[i]) {
                     if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
+
                         if (_options && _options.filter) {
                             if (_options.filter.call({ item: this.list[i], dindex: i }, this.list[i])) {
                                 for (var _k3 in _updateData) {
@@ -4989,7 +5009,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var setValue = function setValue(_dindex, _key, _value) {
+    var setValue = function setValue(_dindex, _doindex, _key, _value) {
         var originalValue = getValue.call(this, _dindex, _key);
         this.needToPaintSum = true;
 
@@ -5019,15 +5039,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return true;
     };
 
-    var getValue = function getValue(_dindex, _key, _value) {
+    var getValue = function getValue(_dindex, _doindex, _key, _value) {
         var list = this.list;
+        var listIndex = typeof _doindex === "undefined" ? _dindex : _doindex;
 
         if (/[\.\[\]]/.test(_key)) {
             try {
-                _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(list[_dindex]);
+                _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(list[listIndex]);
             } catch (e) {}
         } else {
-            _value = list[_dindex][_key];
+            _value = list[listIndex][_key];
         }
         return _value;
     };
@@ -5036,20 +5057,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.selectedDataIndexs = [];
     };
 
-    var select = function select(_dindex, _selected, _options) {
+    var select = function select(_dindex, _doindex, _selected, _options) {
         var cfg = this.config;
 
-        if (!this.list[_dindex]) return false;
-        if (this.list[_dindex].__isGrouping) return false;
-        if (this.list[_dindex][cfg.columnKeys.disableSelection]) return false;
+        if (!this.list[_doindex]) return false;
+        if (this.list[_doindex].__isGrouping) return false;
+        if (this.list[_doindex][cfg.columnKeys.disableSelection]) return false;
 
         if (typeof _selected === "undefined") {
-            if (this.list[_dindex][cfg.columnKeys.selected] = !this.list[_dindex][cfg.columnKeys.selected]) {
-                this.selectedDataIndexs.push(_dindex);
+            if (this.list[_doindex][cfg.columnKeys.selected] = !this.list[_doindex][cfg.columnKeys.selected]) {
+                this.selectedDataIndexs.push(_doindex);
+            } else {
+                this.selectedDataIndexs.splice(U.search(this.selectedDataIndexs, function () {
+                    return this == _doindex;
+                }), 1);
             }
         } else {
-            if (this.list[_dindex][cfg.columnKeys.selected] = _selected) {
-                this.selectedDataIndexs.push(_dindex);
+            if (this.list[_doindex][cfg.columnKeys.selected] = _selected) {
+                this.selectedDataIndexs.push(_doindex);
+            } else {
+                this.selectedDataIndexs.splice(U.search(this.selectedDataIndexs, function () {
+                    return this == _doindex;
+                }), 1);
             }
         }
 
@@ -5058,18 +5087,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 self: this,
                 list: this.list,
                 dindex: _dindex,
-                item: this.list[_dindex],
+                doindex: _doindex,
+                item: this.list[_doindex],
                 key: cfg.columnKeys.selected,
-                value: this.list[_dindex][cfg.columnKeys.selected]
+                value: this.list[_doindex][cfg.columnKeys.selected]
             });
         }
 
-        return this.list[_dindex][cfg.columnKeys.selected];
+        return this.list[_doindex][cfg.columnKeys.selected];
     };
 
     var selectAll = function selectAll(_selected, _options) {
         var cfg = this.config,
             dindex = this.list.length;
+
+        this.selectedDataIndexs = [];
 
         if (typeof _selected === "undefined") {
             while (dindex--) {
@@ -5233,7 +5265,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         GRID.page.navigationUpdate.call(this);
     };
 
-    var toggleCollapse = function toggleCollapse(_dindex, _collapse) {
+    var toggleCollapse = function toggleCollapse(_dindex, _doindx, _collapse) {
         var keys = this.config.tree.columnKeys,
             selfHash = void 0,
             originIndex = void 0;

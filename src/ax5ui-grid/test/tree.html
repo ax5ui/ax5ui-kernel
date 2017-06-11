@@ -48,6 +48,9 @@
     <button class="btn btn-default" data-grid-control="select-all-toggle">toggle selectAll</button>
     <button class="btn btn-default" data-grid-control="select-all-true">select selectAll</button>
     <button class="btn btn-default" data-grid-control="select-all-false">deselect selectAll</button>
+
+    <button class="btn btn-default" data-grid-control="get-list-selected">getList("selected");</button>
+
 </div>
 
 <div style="height: 10px;"></div>
@@ -261,6 +264,9 @@
                     break;
                 case "select-all-false":
                     firstGrid.selectAll({selected: false});
+                    break;
+                case "get-list-selected":
+                    console.log(firstGrid.getList("selected"));
                     break;
 
             }
