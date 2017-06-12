@@ -120,6 +120,7 @@
                 body: {
                     columnHeight: 50,
                     onClick: function () {
+                        console.log(this);
                         this.self.select(this.dindex);
                         console.log(this.item);
                     },
@@ -239,7 +240,7 @@
         $('[data-grid-control]').on("click", function (e) {
             switch (this.getAttribute("data-grid-control")) {
                 case "row-add":
-                    firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true, focus: "HOME"});
+                    firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "first", {sort: true, focus: "HOME"});
 
 
                     //firstGrid.addRow(sampleData[(Math.floor(Math.random() * sampleData.length))], "last", {sort: true, focus:3});
@@ -288,19 +289,28 @@
                     break;
 
                 case "focus-up":
-                    firstGrid.focus("UP");
+                    setTimeout(function () {
+                        firstGrid.focus("UP");
+                    });
 
                     break;
                 case "focus-down":
-                    firstGrid.focus("DOWN");
+                    setTimeout(function () {
+                        firstGrid.focus("DOWN");
+                    }, 10);
+
 
                     break;
                 case "focus-home":
-                    firstGrid.focus("HOME");
+                    setTimeout(function () {
+                        firstGrid.focus("HOME");
+                    }, 10);
 
                     break;
                 case "focus-end":
-                    firstGrid.focus("END");
+                    setTimeout(function () {
+                        firstGrid.focus("END");
+                    }, 10);
 
                     break;
                 case "clickBody":

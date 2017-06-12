@@ -1330,7 +1330,7 @@
              */
             this.setValue = function (_dindex, _key, _value) {
                 // getPanelname;
-                if (GRID.data.setValue.call(this, _dindex, _key, _value)) {
+                if (GRID.data.setValue.call(this, _dindex, undefined, _key, _value)) {
                     let repaintCell = function (_panelName, _rows, __dindex, __key, __value) {
                         for (let r = 0, rl = _rows.length; r < rl; r++) {
                             for (let c = 0, cl = _rows[r].cols.length; c < cl; c++) {
@@ -1527,8 +1527,8 @@
                         }
                     }
 
-                    GRID.data.select.call(this, dindex, _options && _options.selected);
-                    GRID.body.updateRowState.call(this, ["selected"], dindex);
+                    GRID.data.select.call(this, dindex, undefined, _options && _options.selected);
+                    GRID.body.updateRowState.call(this, ["selected"], dindex, undefined);
                 }
                 return this;
             };
@@ -1632,6 +1632,7 @@
              * ```
              */
             this.focus = function (_pos) {
+
                 if (GRID.body.moveFocus.call(this, _pos)) {
                     let focusedColumn;
                     for (let c in this.focusedColumn) {
@@ -1647,6 +1648,7 @@
                         this.select(0);
                     } else {
                         let selectedIndex = this.selectedDataIndexs[0];
+                        
                         let processor = {
                             "UP": function () {
                                 if (selectedIndex > 0) {

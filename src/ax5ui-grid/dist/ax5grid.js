@@ -1318,7 +1318,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              */
             this.setValue = function (_dindex, _key, _value) {
                 // getPanelname;
-                if (GRID.data.setValue.call(this, _dindex, _key, _value)) {
+                if (GRID.data.setValue.call(this, _dindex, undefined, _key, _value)) {
                     var repaintCell = function repaintCell(_panelName, _rows, __dindex, __key, __value) {
                         for (var r = 0, rl = _rows.length; r < rl; r++) {
                             for (var c = 0, cl = _rows[r].cols.length; c < cl; c++) {
@@ -1514,8 +1514,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     }
 
-                    GRID.data.select.call(this, _dindex2, _options && _options.selected);
-                    GRID.body.updateRowState.call(this, ["selected"], _dindex2);
+                    GRID.data.select.call(this, _dindex2, undefined, _options && _options.selected);
+                    GRID.body.updateRowState.call(this, ["selected"], _dindex2, undefined);
                 }
                 return this;
             };
@@ -1618,6 +1618,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ```
              */
             this.focus = function (_pos) {
+
                 if (GRID.body.moveFocus.call(this, _pos)) {
                     var focusedColumn = void 0;
                     for (var c in this.focusedColumn) {
@@ -1632,6 +1633,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         this.select(0);
                     } else {
                         var selectedIndex = this.selectedDataIndexs[0];
+
                         var processor = {
                             "UP": function UP() {
                                 if (selectedIndex > 0) {
@@ -1740,6 +1742,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             self.focusedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex] = {
                 panelName: column.panelName,
                 dindex: column.dindex,
+                doindex: column.doindex,
                 rowIndex: column.rowIndex,
                 colIndex: column.colIndex,
                 colspan: column.colspan
@@ -1758,6 +1761,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     return {
                         panelName: column.panelName,
                         dindex: column.dindex,
+                        doindex: column.doindex,
                         rowIndex: column.rowIndex,
                         colIndex: column.colIndex,
                         colspan: column.colspan
@@ -1773,7 +1777,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         },
         update: function update(column) {
             var self = this;
-            var dindex, colIndex, rowIndex, trl;
+            var dindex = void 0,
+                doindex = void 0,
+                colIndex = void 0,
+                rowIndex = void 0,
+                trl = void 0;
 
             self.xvar.selectedRange["end"] = [column.dindex, column.rowIndex, column.colIndex, column.colspan - 1];
             columnSelect.clear.call(self);
@@ -1820,6 +1828,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             }
             dindex = null;
+            doindex = null;
             colIndex = null;
             rowIndex = null;
 
@@ -1847,6 +1856,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     columnSelect.update.call(self, {
                         panelName: this.getAttribute("data-ax5grid-panel-name"),
                         dindex: Number(this.getAttribute("data-ax5grid-data-index")),
+                        doindex: Number(this.getAttribute("data-ax5grid-data-o-index")),
                         rowIndex: Number(this.getAttribute("data-ax5grid-column-rowIndex")),
                         colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                         colspan: Number(this.getAttribute("colspan"))
@@ -1916,6 +1926,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
         };
 
+        if (typeof _doindex === "undefined") _doindex = _dindex;
+
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
             processor[_state].call(self, _dindex, _doindex, _data);
@@ -1959,6 +1971,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         list: self.list,
                         item: self.list[_column.doindex],
                         dindex: _column.dindex,
+                        doindex: _column.doindex,
                         rowIndex: _column.rowIndex,
                         colIndex: _column.colIndex,
                         column: column,
@@ -2044,6 +2057,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 row = void 0,
                 col = void 0,
                 dindex = void 0,
+                doindex = void 0,
                 rowIndex = void 0,
                 colIndex = void 0,
                 targetDBLClick = {
@@ -2060,7 +2074,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         value = "";
                     if (column) {
                         if (!self.list[dindex].__isGrouping) {
-                            value = GRID.data.getValue.call(self, dindex, column.key);
+                            value = GRID.data.getValue.call(self, dindex, doindex, column.key);
                         }
                     }
 
@@ -2076,6 +2090,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                 list: self.list,
                                 item: self.list[_column.dindex],
                                 dindex: _column.dindex,
+                                doindex: _column.doindex,
                                 rowIndex: _column.rowIndex,
                                 colIndex: _column.colIndex,
                                 column: column,
@@ -2096,6 +2111,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             rowIndex = Number(this.getAttribute("data-ax5grid-column-rowIndex"));
             colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
             dindex = Number(this.getAttribute("data-ax5grid-data-index"));
+            doindex = Number(this.getAttribute("data-ax5grid-data-o-index"));
 
             if (attr in targetDBLClick) {
                 targetDBLClick[attr]({
@@ -2104,6 +2120,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     row: row,
                     col: col,
                     dindex: dindex,
+                    doindex: doindex,
                     rowIndex: rowIndex,
                     colIndex: colIndex
                 });
@@ -2114,6 +2131,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.$["container"]["body"].on("contextmenu", function (e) {
                 var target = void 0,
                     dindex = void 0,
+                    doindex = void 0,
                     rowIndex = void 0,
                     colIndex = void 0,
                     item = void 0,
@@ -2131,6 +2149,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     rowIndex = Number(target.getAttribute("data-ax5grid-column-rowIndex"));
                     colIndex = Number(target.getAttribute("data-ax5grid-column-colIndex"));
                     dindex = Number(target.getAttribute("data-ax5grid-data-index"));
+                    doindex = Number(target.getAttribute("data-ax5grid-data-o-index"));
                     column = self.bodyRowMap[rowIndex + "_" + colIndex];
                     item = self.list[dindex];
                 }
@@ -2144,6 +2163,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 param = {
                     element: target,
                     dindex: dindex,
+                    doindex: doindex,
                     rowIndex: rowIndex,
                     colIndex: colIndex,
                     item: item,
@@ -2161,6 +2181,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 U.stopEvent(e.originalEvent);
                 target = null;
                 dindex = null;
+                doindex = null;
                 rowIndex = null;
                 colIndex = null;
                 item = null;
@@ -2175,6 +2196,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 columnSelector.on.call(self, {
                     panelName: this.getAttribute("data-ax5grid-panel-name"),
                     dindex: Number(this.getAttribute("data-ax5grid-data-index")),
+                    doindex: Number(this.getAttribute("data-ax5grid-data-o-index")),
                     rowIndex: Number(this.getAttribute("data-ax5grid-column-rowIndex")),
                     colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                     colspan: Number(this.getAttribute("colspan"))
@@ -2310,7 +2332,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }(_col.editor)) {
                 // editor가 inline타입이라면
 
-                _value = _value || GRID.data.getValue.call(this, _index, typeof _item.__origin_index__ === "undefined" ? _index : _item.__origin_index__, _key);
+                _value = _value || GRID.data.getValue.call(this, _index, _item.__origin_index__, _key);
 
                 if (U.isFunction(_col.editor.disabled)) {
                     if (_col.editor.disabled.call({
@@ -3042,7 +3064,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         GRID.page.statusUpdate.call(this);
     };
 
-    var repaintCell = function repaintCell(_panelName, _dindex, _rowIndex, _colIndex, _newValue) {
+    var repaintCell = function repaintCell(_panelName, _dindex, _doindex, _rowIndex, _colIndex, _newValue) {
         var self = this,
             cfg = this.config,
             list = this.list;
@@ -3995,18 +4017,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
             var self = this,
-                dindex,
-                colIndex,
-                rowIndex,
-                panelName,
-                colspan,
-                col,
-                editor;
+                dindex = void 0,
+                doindex = void 0,
+                colIndex = void 0,
+                rowIndex = void 0,
+                panelName = void 0,
+                colspan = void 0,
+                col = void 0,
+                editor = void 0;
 
             // this.inlineEditing = {};
             for (var key in _focusedColumn) {
                 panelName = _focusedColumn[key].panelName;
                 dindex = _focusedColumn[key].dindex;
+                doindex = _focusedColumn[key].doindex;
                 colIndex = _focusedColumn[key].colIndex;
                 rowIndex = _focusedColumn[key].rowIndex;
                 colspan = _focusedColumn[key].colspan;
@@ -4036,7 +4060,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }(editor)) {
                     // 체크 박스 타입이면 값 변경 시도
                     if (editor.type == "checkbox") {
-                        var checked, newValue;
+                        var checked = void 0,
+                            newValue = void 0;
                         if (editor.config && editor.config.trueValue) {
                             if (checked = !(_initValue == editor.config.trueValue)) {
                                 newValue = editor.config.trueValue;
@@ -4047,7 +4072,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             newValue = checked = _initValue == false || _initValue == "false" || _initValue < "1" ? "true" : "false";
                         }
 
-                        GRID.data.setValue.call(self, dindex, col.key, newValue);
+                        GRID.data.setValue.call(self, dindex, doindex, col.key, newValue);
                         updateRowState.call(self, ["cellChecked"], dindex, {
                             key: col.key, rowIndex: rowIndex, colIndex: colIndex,
                             editorConfig: col.editor.config, checked: checked
@@ -4073,7 +4098,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
             if (this.isInlineEditing) {
 
-                var originalValue = GRID.data.getValue.call(self, dindex, col.key),
+                var originalValue = GRID.data.getValue.call(self, dindex, doindex, col.key),
                     initValue = function (__value, __editor) {
                     if (U.isNothing(__value)) {
                         __value = U.isNothing(originalValue) ? "" : originalValue;
@@ -4099,6 +4124,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             var panelName = this.inlineEditing[_key].panelName,
                 dindex = this.inlineEditing[_key].column.dindex,
+                doindex = this.inlineEditing[_key].column.doindex,
                 rowIndex = this.inlineEditing[_key].column.rowIndex,
                 colIndex = this.inlineEditing[_key].column.colIndex,
                 column = this.bodyRowMap[this.inlineEditing[_key].column.rowIndex + "_" + this.inlineEditing[_key].column.colIndex],
@@ -4126,10 +4152,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 "CANCEL": function CANCEL(_dindex, _column, _newValue) {
                     action["__clear"].call(this);
                 },
-                "RETURN": function RETURN(_dindex, _column, _newValue) {
-                    if (GRID.data.setValue.call(this, _dindex, _column.key, _newValue)) {
+                "RETURN": function RETURN(_dindex, _doindex, _column, _newValue) {
+                    if (GRID.data.setValue.call(this, _dindex, _doindex, _column.key, _newValue)) {
                         action["__clear"].call(this);
-                        GRID.body.repaintCell.call(this, panelName, dindex, rowIndex, colIndex, _newValue);
+                        GRID.body.repaintCell.call(this, panelName, _dindex, _doindex, rowIndex, colIndex, _newValue);
                     } else {
                         action["__clear"].call(this);
                     }
@@ -4152,7 +4178,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
 
             if (_msg in action) {
-                action[_msg || "RETURN"].call(this, dindex, column, newValue);
+                action[_msg || "RETURN"].call(this, dindex, doindex, column, newValue);
             } else {
                 action["__clear"].call(this);
             }
@@ -5010,7 +5036,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var setValue = function setValue(_dindex, _doindex, _key, _value) {
-        var originalValue = getValue.call(this, _dindex, _key);
+        var originalValue = getValue.call(this, _dindex, _doindex, _key);
         this.needToPaintSum = true;
 
         if (originalValue !== _value) {
@@ -5029,6 +5055,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     self: this,
                     list: this.list,
                     dindex: _dindex,
+                    doindex: _doindex,
                     item: this.list[_dindex],
                     key: _key,
                     value: _value
@@ -5059,6 +5086,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var select = function select(_dindex, _doindex, _selected, _options) {
         var cfg = this.config;
+
+        if (typeof _doindex === "undefined") _doindex = _dindex;
 
         if (!this.list[_doindex]) return false;
         if (this.list[_doindex].__isGrouping) return false;

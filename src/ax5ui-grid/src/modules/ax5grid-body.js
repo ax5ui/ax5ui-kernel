@@ -47,6 +47,7 @@
             self.focusedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex] = {
                 panelName: column.panelName,
                 dindex: column.dindex,
+                doindex: column.doindex,
                 rowIndex: column.rowIndex,
                 colIndex: column.colIndex,
                 colspan: column.colspan
@@ -65,6 +66,7 @@
                     return {
                         panelName: column.panelName,
                         dindex: column.dindex,
+                        doindex: column.doindex,
                         rowIndex: column.rowIndex,
                         colIndex: column.colIndex,
                         colspan: column.colspan
@@ -83,13 +85,13 @@
             }
         },
         update: function (column) {
-            var self = this;
-            var dindex, colIndex, rowIndex, trl;
+            const self = this;
+            let dindex, doindex, colIndex, rowIndex, trl;
 
             self.xvar.selectedRange["end"] = [column.dindex, column.rowIndex, column.colIndex, column.colspan - 1];
             columnSelect.clear.call(self);
 
-            var range = {
+            let range = {
                 r: {
                     s: Math.min(self.xvar.selectedRange["start"][0], self.xvar.selectedRange["end"][0]),
                     e: Math.max(self.xvar.selectedRange["start"][0], self.xvar.selectedRange["end"][0])
@@ -132,6 +134,7 @@
                 }
             }
             dindex = null;
+            doindex = null;
             colIndex = null;
             rowIndex = null;
 
@@ -164,6 +167,7 @@
                         columnSelect.update.call(self, {
                             panelName: this.getAttribute("data-ax5grid-panel-name"),
                             dindex: Number(this.getAttribute("data-ax5grid-data-index")),
+                            doindex: Number(this.getAttribute("data-ax5grid-data-o-index")),
                             rowIndex: Number(this.getAttribute("data-ax5grid-column-rowIndex")),
                             colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                             colspan: Number(this.getAttribute("colspan"))
@@ -253,6 +257,8 @@
                 }
             };
 
+        if(typeof _doindex === "undefined") _doindex = _dindex;
+
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
             processor[_state].call(self, _dindex, _doindex, _data);
@@ -289,6 +295,7 @@
                                 list: self.list,
                                 item: self.list[_column.doindex],
                                 dindex: _column.dindex,
+                                doindex: _column.doindex,
                                 rowIndex: _column.rowIndex,
                                 colIndex: _column.colIndex,
                                 column: column,
@@ -370,7 +377,7 @@
         });
         this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
             let panelName, attr,
-                row, col, dindex, rowIndex, colIndex,
+                row, col, dindex, doindex, rowIndex, colIndex,
                 targetDBLClick = {
                     "default": function (_column) {
                         if (self.isInlineEditing) {
@@ -384,7 +391,7 @@
                         let column = self.bodyRowMap[_column.rowIndex + "_" + _column.colIndex], value = "";
                         if (column) {
                             if (!self.list[dindex].__isGrouping) {
-                                value = GRID.data.getValue.call(self, dindex, column.key);
+                                value = GRID.data.getValue.call(self, dindex, doindex, column.key);
                             }
                         }
 
@@ -400,6 +407,7 @@
                                     list: self.list,
                                     item: self.list[_column.dindex],
                                     dindex: _column.dindex,
+                                    doindex: _column.doindex,
                                     rowIndex: _column.rowIndex,
                                     colIndex: _column.colIndex,
                                     column: column,
@@ -424,6 +432,7 @@
             rowIndex = Number(this.getAttribute("data-ax5grid-column-rowIndex"));
             colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
             dindex = Number(this.getAttribute("data-ax5grid-data-index"));
+            doindex = Number(this.getAttribute("data-ax5grid-data-o-index"));
 
             if (attr in targetDBLClick) {
                 targetDBLClick[attr]({
@@ -432,6 +441,7 @@
                     row: row,
                     col: col,
                     dindex: dindex,
+                    doindex: doindex,
                     rowIndex: rowIndex,
                     colIndex: colIndex
                 });
@@ -440,7 +450,7 @@
 
         if (this.config.contextMenu) {
             this.$["container"]["body"].on("contextmenu", function (e) {
-                let target, dindex, rowIndex, colIndex, item, column, param = {};
+                let target, dindex, doindex, rowIndex, colIndex, item, column, param = {};
 
                 target = U.findParentNode(e.target, function (t) {
                     if (t.getAttribute("data-ax5grid-column-attr")) {
@@ -453,6 +463,7 @@
                     rowIndex = Number(target.getAttribute("data-ax5grid-column-rowIndex"));
                     colIndex = Number(target.getAttribute("data-ax5grid-column-colIndex"));
                     dindex = Number(target.getAttribute("data-ax5grid-data-index"));
+                    doindex = Number(target.getAttribute("data-ax5grid-data-o-index"));
                     column = self.bodyRowMap[rowIndex + "_" + colIndex];
                     item = self.list[dindex];
                 }
@@ -466,6 +477,7 @@
                 param = {
                     element: target,
                     dindex: dindex,
+                    doindex: doindex,
                     rowIndex: rowIndex,
                     colIndex: colIndex,
                     item: item,
@@ -483,6 +495,7 @@
                 U.stopEvent(e.originalEvent);
                 target = null;
                 dindex = null;
+                doindex = null;
                 rowIndex = null;
                 colIndex = null;
                 item = null;
@@ -498,6 +511,7 @@
                     columnSelector.on.call(self, {
                         panelName: this.getAttribute("data-ax5grid-panel-name"),
                         dindex: Number(this.getAttribute("data-ax5grid-data-index")),
+                        doindex: Number(this.getAttribute("data-ax5grid-data-o-index")),
                         rowIndex: Number(this.getAttribute("data-ax5grid-column-rowIndex")),
                         colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                         colspan: Number(this.getAttribute("colspan"))
@@ -633,7 +647,7 @@
                     return false;
                 })(_col.editor)) { // editor가 inline타입이라면
 
-                _value = _value || GRID.data.getValue.call(this, _index, (typeof _item.__origin_index__ === "undefined") ? _index : _item.__origin_index__, _key);
+                _value = _value || GRID.data.getValue.call(this, _index, _item.__origin_index__, _key);
 
                 if (U.isFunction(_col.editor.disabled)) {
                     if (_col.editor.disabled.call({
@@ -1402,7 +1416,7 @@
         GRID.page.statusUpdate.call(this);
     };
 
-    const repaintCell = function (_panelName, _dindex, _rowIndex, _colIndex, _newValue) {
+    const repaintCell = function (_panelName, _dindex, _doindex, _rowIndex, _colIndex, _newValue) {
         let self = this,
             cfg = this.config,
             list = this.list;
@@ -2442,14 +2456,15 @@
 
     const inlineEdit = {
         active(_focusedColumn, _e, _initValue) {
-            var self = this,
-                dindex, colIndex, rowIndex, panelName, colspan,
+            let self = this,
+                dindex, doindex, colIndex, rowIndex, panelName, colspan,
                 col, editor;
 
             // this.inlineEditing = {};
             for (var key in _focusedColumn) {
                 panelName = _focusedColumn[key].panelName;
                 dindex = _focusedColumn[key].dindex;
+                doindex = _focusedColumn[key].doindex;
                 colIndex = _focusedColumn[key].colIndex;
                 rowIndex = _focusedColumn[key].rowIndex;
                 colspan = _focusedColumn[key].colspan;
@@ -2479,7 +2494,7 @@
                     })(editor)) {
                     // 체크 박스 타입이면 값 변경 시도
                     if (editor.type == "checkbox") {
-                        var checked, newValue;
+                        let checked, newValue;
                         if (editor.config && editor.config.trueValue) {
                             if (checked = !(_initValue == editor.config.trueValue)) {
                                 newValue = editor.config.trueValue;
@@ -2490,7 +2505,7 @@
                             newValue = checked = (_initValue == false || _initValue == "false" || _initValue < "1") ? "true" : "false";
                         }
 
-                        GRID.data.setValue.call(self, dindex, col.key, newValue);
+                        GRID.data.setValue.call(self, dindex, doindex, col.key, newValue);
                         updateRowState.call(self, ["cellChecked"], dindex, {
                             key: col.key, rowIndex: rowIndex, colIndex: colIndex,
                             editorConfig: col.editor.config, checked: checked
@@ -2516,7 +2531,7 @@
             }
             if (this.isInlineEditing) {
 
-                let originalValue = GRID.data.getValue.call(self, dindex, col.key),
+                let originalValue = GRID.data.getValue.call(self, dindex, doindex, col.key),
                     initValue = (function (__value, __editor) {
                         if (U.isNothing(__value)) {
                             __value = U.isNothing(originalValue) ? "" : originalValue;
@@ -2546,6 +2561,7 @@
 
             let panelName = this.inlineEditing[_key].panelName,
                 dindex = this.inlineEditing[_key].column.dindex,
+                doindex = this.inlineEditing[_key].column.doindex,
                 rowIndex = this.inlineEditing[_key].column.rowIndex,
                 colIndex = this.inlineEditing[_key].column.colIndex,
                 column = this.bodyRowMap[this.inlineEditing[_key].column.rowIndex + "_" + this.inlineEditing[_key].column.colIndex],
@@ -2574,10 +2590,10 @@
                 "CANCEL"(_dindex, _column, _newValue) {
                     action["__clear"].call(this);
                 },
-                "RETURN"(_dindex, _column, _newValue) {
-                    if (GRID.data.setValue.call(this, _dindex, _column.key, _newValue)) {
+                "RETURN"(_dindex, _doindex, _column, _newValue) {
+                    if (GRID.data.setValue.call(this, _dindex, _doindex, _column.key, _newValue)) {
                         action["__clear"].call(this);
-                        GRID.body.repaintCell.call(this, panelName, dindex, rowIndex, colIndex, _newValue);
+                        GRID.body.repaintCell.call(this, panelName, _dindex, _doindex, rowIndex, colIndex, _newValue);
                     } else {
                         action["__clear"].call(this);
                     }
@@ -2600,7 +2616,7 @@
             };
 
             if (_msg in action) {
-                action[_msg || "RETURN"].call(this, dindex, column, newValue);
+                action[_msg || "RETURN"].call(this, dindex, doindex, column, newValue);
             } else {
                 action["__clear"].call(this);
             }

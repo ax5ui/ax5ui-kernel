@@ -636,7 +636,7 @@
     };
 
     const setValue = function (_dindex, _doindex, _key, _value) {
-        let originalValue = getValue.call(this, _dindex, _key);
+        let originalValue = getValue.call(this, _dindex, _doindex, _key);
         this.needToPaintSum = true;
 
         if (originalValue !== _value) {
@@ -657,6 +657,7 @@
                     self: this,
                     list: this.list,
                     dindex: _dindex,
+                    doindex: _doindex,
                     item: this.list[_dindex],
                     key: _key,
                     value: _value
@@ -689,6 +690,8 @@
 
     const select = function (_dindex, _doindex, _selected, _options) {
         let cfg = this.config;
+
+        if(typeof _doindex === "undefined") _doindex = _dindex;
 
         if (!this.list[_doindex]) return false;
         if (this.list[_doindex].__isGrouping) return false;
