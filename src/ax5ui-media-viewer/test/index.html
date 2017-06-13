@@ -18,19 +18,23 @@
 <body style="padding: 0px;">
 
 <div style="overflow: hidden;">
-    <div id="media-viewer-target-0" style="width: 100%;"></div>
-    <div id="media-viewer-target-1" style="width: 100%;"></div>
-    <div id="media-viewer-target-2" style="width: 100%;"></div>
+    <div id="media-viewer-target-0" style="width: 100px;"></div>
+    <div id="media-viewer-target-1" style="width: 100px;"></div>
+    <div id="media-viewer-target-2" style="width: 100px;"></div>
 </div>
 <script>
     $(document.body).ready(function () {
 
-        var myViewer_0 = new ax5.ui.mediaViewer({
+        window.myViewer_0 = new ax5.ui.mediaViewer({
             theme: "danger",
             target: $("#media-viewer-target-0"),
             loading: {
                 icon: '<i class="fa fa-spinner fa-pulse fa-2x fa-fw margin-bottom" aria-hidden="true"></i>',
                 text: '<div>Now Loading</div>'
+            },
+            hideMediaList: true,
+            viewer: {
+                ratio: 4 / 3
             },
             media: {
                 width: '11%', height: '11%',
@@ -98,6 +102,8 @@
                 console.log(this);
             }
         });
+
+
 
         var myViewer_1 = new ax5.ui.mediaViewer({
             theme: "primary",

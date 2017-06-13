@@ -129,6 +129,7 @@
                     nextHandle: false,
                     ratio: 16 / 9
                 },
+                hideMediaList: false,
                 media: {
                     prevHandle: '<',
                     nextHandle: '>',
@@ -533,9 +534,49 @@
                 return this;
             };
 
+            this.move = function (direction) {
+                var processor = {
+                    'prev': function prev() {
+                        if (this.selectedIndex > 0) {
+                            this.select(this.selectedIndex - 1);
+                        } else {
+                            this.select(cfg.media.list.length - 1);
+                        }
+                    },
+                    'next': function next() {
+                        if (this.selectedIndex < cfg.media.list.length - 1) {
+                            this.select(this.selectedIndex + 1);
+                        } else {
+                            this.select(0);
+                        }
+                    }
+                };
+
+                if (!direction) direction = "next";
+
+                if (direction in processor) {
+                    processor[direction].call(this);
+                }
+            };
+
+            this.play = function (_opt) {
+                var opt = jQuery.extend({
+                    interval: 5000
+                }, _opt);
+
+                if (this.playTimer) clearTimeout(this.playTimer);
+                this.playTimer = setTimeout(function () {
+                    self.move("next");
+                    self.play(opt);
+                }, opt.interval);
+            };
+
+            this.stop = function () {
+                if (this.playTimer) clearTimeout(this.playTimer);
+            };
+
             // 클래스 생성자
             this.main = function () {
-
                 UI.mediaViewer_instance = UI.mediaViewer_instance || [];
                 UI.mediaViewer_instance.push(this);
 
@@ -556,7 +597,7 @@
     var MEDIAVIEWER = ax5.ui.mediaViewer;
 
     var frame = function frame(columnKeys) {
-        return "\n            <div data-ax5-ui-media-viewer=\"{{id}}\" class=\"{{theme}}\">\n                <div data-media-viewer-els=\"viewer-holder\">\n                <div data-media-viewer-els=\"viewer\"></div>\n                </div>\n                <div data-media-viewer-els=\"viewer-loading\">\n                <div class=\"ax5-ui-media-viewer-loading-holder\">\n                <div class=\"ax5-ui-media-viewer-loading-cell\">\n                {{{loading.icon}}}\n            {{{loading.text}}}\n            </div>\n            </div>\n            </div>\n            {{#media}}\n            <div data-media-viewer-els=\"media-list-holder\">\n                <div data-media-viewer-els=\"media-list-prev-handle\">{{{prevHandle}}}</div>\n            <div data-media-viewer-els=\"media-list\">\n                <div data-media-viewer-els=\"media-list-table\">\n                {{#list}}\n            <div data-media-viewer-els=\"media-list-table-td\">\n                {{#image}}\n            <div data-media-thumbnail=\"{{@i}}\">\n                <img src=\"{{" + columnKeys.poster + "}}\" data-media-thumbnail-image=\"{{@i}}\" />\n                </div>\n                {{/image}}\n            {{#video}}\n            <div data-media-thumbnail=\"{{@i}}\">{{#" + columnKeys.poster + "}}<img src=\"{{.}}\" data-media-thumbnail-video=\"{{@i}}\" />>{{/" + columnKeys.poster + "}}{{^" + columnKeys.poster + "}}<a data-media-thumbnail-video=\"{{@i}}\">{{{media." + columnKeys.poster + "}}}</a>{{/" + columnKeys.poster + "}}</div>\n            {{/video}}\n            </div>\n                {{/list}}\n            </div>\n                </div>\n                <div data-media-viewer-els=\"media-list-next-handle\">{{{nextHandle}}}</div>\n                </div>\n                {{/media}}\n            </div>\n        ";
+        return "\n<div data-ax5-ui-media-viewer=\"{{id}}\" class=\"{{theme}}\">\n    <div data-media-viewer-els=\"viewer-holder\">\n        <div data-media-viewer-els=\"viewer\"></div>\n    </div>\n    <div data-media-viewer-els=\"viewer-loading\">\n        <div class=\"ax5-ui-media-viewer-loading-holder\">\n            <div class=\"ax5-ui-media-viewer-loading-cell\">\n            {{{loading.icon}}}\n            {{{loading.text}}}\n            </div>\n        </div>\n    </div>\n    \n    {{#media}}\n    <div data-media-viewer-els=\"media-list-holder\" {{#hideMediaList}}style=\"display:none;\"{{/hideMediaList}}>\n        <div data-media-viewer-els=\"media-list-prev-handle\">{{{prevHandle}}}</div>\n        <div data-media-viewer-els=\"media-list\">\n            <div data-media-viewer-els=\"media-list-table\">\n            {{#list}}\n                <div data-media-viewer-els=\"media-list-table-td\">\n                {{#image}}\n                <div data-media-thumbnail=\"{{@i}}\">\n                <img src=\"{{" + columnKeys.poster + "}}\" data-media-thumbnail-image=\"{{@i}}\" />\n                </div>\n                {{/image}}\n                {{#video}}\n                <div data-media-thumbnail=\"{{@i}}\">{{#" + columnKeys.poster + "}}<img src=\"{{.}}\" data-media-thumbnail-video=\"{{@i}}\" />>{{/" + columnKeys.poster + "}}{{^" + columnKeys.poster + "}}<a data-media-thumbnail-video=\"{{@i}}\">{{{media." + columnKeys.poster + "}}}</a>{{/" + columnKeys.poster + "}}</div>\n                {{/video}}\n                </div>\n            {{/list}}\n            </div>\n        </div>\n        <div data-media-viewer-els=\"media-list-next-handle\">{{{nextHandle}}}</div>\n    </div>\n    {{/media}}\n    \n</div>";
     };
 
     MEDIAVIEWER.tmpl = {

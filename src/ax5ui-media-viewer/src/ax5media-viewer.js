@@ -127,6 +127,7 @@
                     nextHandle: false,
                     ratio: 16 / 9
                 },
+                hideMediaList: false,
                 media: {
                     prevHandle: '<',
                     nextHandle: '>',
@@ -563,9 +564,49 @@
                 return this;
             };
 
+            this.move = function (direction) {
+                var processor = {
+                    'prev': function () {
+                        if (this.selectedIndex > 0) {
+                            this.select(this.selectedIndex - 1);
+                        } else {
+                            this.select(cfg.media.list.length - 1);
+                        }
+                    },
+                    'next': function () {
+                        if (this.selectedIndex < cfg.media.list.length - 1) {
+                            this.select(this.selectedIndex + 1);
+                        } else {
+                            this.select(0);
+                        }
+                    }
+                };
+
+                if(!direction) direction = "next";
+
+                if(direction in processor){
+                    processor[direction].call(this);
+                }
+            };
+
+            this.play = function (_opt) {
+                var opt = jQuery.extend({
+                    interval: 5000
+                }, _opt);
+
+                if(this.playTimer) clearTimeout(this.playTimer);
+                this.playTimer = setTimeout(function () {
+                    self.move("next");
+                    self.play(opt);
+                }, opt.interval);
+            };
+
+            this.stop = function () {
+                if(this.playTimer) clearTimeout(this.playTimer);
+            };
+
             // 클래스 생성자
             this.main = (function () {
-
                 UI.mediaViewer_instance = UI.mediaViewer_instance || [];
                 UI.mediaViewer_instance.push(this);
 
