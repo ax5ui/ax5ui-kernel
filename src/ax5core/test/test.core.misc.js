@@ -226,4 +226,12 @@ describe('ax5.util.debounce TEST', function () {
         }, 40)();
     });
 
+    it('ax5.util.debounce', function (done) {
+        var doneFn = ax5.util.debounce(function () {
+            done();
+        }, 40);
+
+        doneFn();
+    });
+
 });
