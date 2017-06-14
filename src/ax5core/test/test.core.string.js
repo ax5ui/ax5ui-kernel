@@ -354,6 +354,11 @@ describe('ax5.util.escape Test', function () {
         var actual = ax5.util.unescapeHtml({"foo": 1});
         should(actual).be.deepEqual({"foo": 1});
     });
+
+    it('ax5.util.unescapeHtml("&lt;div id=&quot;hello-world&quot; class=&quot;happy&quot;&gt;:)&lt;/div&gt;") expect "<div id="hello-world" class="happy">:)</div>"', function () {
+        var actual = ax5.util.unescapeHtml('&lt;div id=&quot;hello-world&quot; class=&quot;happy&quot;&gt;:)&lt;/div&gt;');
+        should(actual).be.equal('<div id="hello-world" class="happy">:)</div>');
+    });
 });
 
 
