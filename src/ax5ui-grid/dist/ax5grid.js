@@ -1318,23 +1318,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              */
             this.setValue = function (_dindex, _key, _value) {
                 // getPanelname;
-                if (GRID.data.setValue.call(this, _dindex, undefined, _key, _value)) {
-                    var repaintCell = function repaintCell(_panelName, _rows, __dindex, __key, __value) {
+                // let doindex = (typeof _doindex === "undefined") ? _dindex : _doindex;
+                // setValue를 doindex로 처리하는 상황이 아직 발생전으므로 선언만 하고 넘어감
+                var doindex = void 0;
+
+                if (GRID.data.setValue.call(this, _dindex, doindex, _key, _value)) {
+                    var repaintCell = function repaintCell(_panelName, _rows, __dindex, __doindex, __key, __value) {
                         for (var r = 0, rl = _rows.length; r < rl; r++) {
                             for (var c = 0, cl = _rows[r].cols.length; c < cl; c++) {
                                 if (_rows[r].cols[c].key == __key) {
                                     if (this.xvar.frozenRowIndex > __dindex) {
-                                        GRID.body.repaintCell.call(this, "top-" + _panelName, __dindex, r, c, __value);
+                                        GRID.body.repaintCell.call(this, "top-" + _panelName, __dindex, __doindex, r, c, __value);
                                     } else {
-                                        GRID.body.repaintCell.call(this, _panelName + "-scroll", __dindex, r, c, __value);
+                                        GRID.body.repaintCell.call(this, _panelName + "-scroll", __dindex, __doindex, r, c, __value);
                                     }
                                 }
                             }
                         }
                     };
 
-                    repaintCell.call(this, "left-body", this.leftBodyRowData.rows, _dindex, _key, _value);
-                    repaintCell.call(this, "body", this.bodyRowData.rows, _dindex, _key, _value);
+                    repaintCell.call(this, "left-body", this.leftBodyRowData.rows, _dindex, doindex, _key, _value);
+                    repaintCell.call(this, "body", this.bodyRowData.rows, _dindex, doindex, _key, _value);
                 }
 
                 return this;
@@ -1892,19 +1896,34 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             },
             "selectedClear": function selectedClear() {
-                var si = this.selectedDataIndexs.length;
-                while (si--) {
-                    var _dindex3 = this.selectedDataIndexs[si];
-                    var i = this.$.livePanelKeys.length;
-                    while (i--) {
-                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + _dindex3 + '"]').attr("data-ax5grid-selected", false);
+                var di = this.list.length;
+                var pi = void 0;
 
-                        if (this.proxyList) {
-                            this.proxyList[_dindex3][cfg.columnKeys.selected] = false;
-                            this.list[this.proxyList[_dindex3].__origin_index__][cfg.columnKeys.selected] = false;
-                        } else {
-                            this.list[_dindex3][cfg.columnKeys.selected] = false;
+                if (!this.proxyList) {
+                    while (di--) {
+                        if (this.list[di][cfg.columnKeys.selected]) {
+                            pi = this.$.livePanelKeys.length;
+                            while (pi--) {
+                                this.$.panel[this.$.livePanelKeys[pi]].find('[data-ax5grid-tr-data-index="' + di + '"]').attr("data-ax5grid-selected", false);
+                            }
                         }
+                        this.list[di][cfg.columnKeys.selected] = false;
+                    }
+                } else {
+                    while (di--) {
+                        this.list[di][cfg.columnKeys.selected] = false;
+                    }
+                    di = this.proxyList.length;
+                    while (di--) {
+                        if (this.list[doi][cfg.columnKeys.selected]) {
+                            pi = this.$.livePanelKeys.length;
+                            while (pi--) {
+                                this.$.panel[this.$.livePanelKeys[pi]].find('[data-ax5grid-tr-data-index="' + di + '"]').attr("data-ax5grid-selected", false);
+                            }
+                        }
+
+                        this.proxyList[di][cfg.columnKeys.selected] = false;
+                        var doi = this.proxyList[di].__original_index__;
                     }
                 }
             },
@@ -2313,6 +2332,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value, _returnPlainText) {
+
         var _key = _col.key,
             tagsToReplace = {
             '<': '&lt;',
@@ -4026,7 +4046,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 col = void 0,
                 editor = void 0;
 
-            // this.inlineEditing = {};
             for (var key in _focusedColumn) {
                 panelName = _focusedColumn[key].panelName;
                 dindex = _focusedColumn[key].dindex;
@@ -4087,6 +4106,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (key in this.inlineEditing) {
                     return false;
                 }
+
                 this.inlineEditing[key] = {
                     editor: editor,
                     panelName: panelName,
@@ -4199,24 +4219,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             return false;
                         }
                     } else {
+
                         for (var k in this.focusedColumn) {
                             var _column = this.focusedColumn[k],
                                 column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
-                                _dindex4 = _column.dindex,
+                                _dindex3 = _column.dindex,
                                 value = "",
                                 col = this.colGroup[_column.colIndex];
-                            ;
 
                             if (column) {
-                                if (!this.list[_dindex4].__isGrouping) {
-                                    value = GRID.data.getValue.call(this, _dindex4, column.key);
+                                if (!this.list[_dindex3].__isGrouping) {
+                                    value = GRID.data.getValue.call(this, _dindex3, column.key);
                                 }
                             }
 
                             if (col.editor && GRID.inlineEditor[col.editor.type].editMode === "inline") {
                                 if (_options && _options.moveFocus) {} else {
                                     if (column.editor && column.editor.type == "checkbox") {
-                                        value = GRID.data.getValue.call(this, _dindex4, column.key);
+                                        value = GRID.data.getValue.call(this, _dindex3, column.key);
 
                                         var checked = void 0,
                                             newValue = void 0;
@@ -4231,7 +4251,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                         }
 
                                         GRID.data.setValue.call(this, _column.dindex, column.key, newValue);
-                                        updateRowState.call(this, ["cellChecked"], _dindex4, {
+                                        updateRowState.call(this, ["cellChecked"], _dindex3, {
                                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                             editorConfig: column.editor.config, checked: checked
                                         });
@@ -4287,7 +4307,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
 
-                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, undefined, "text"), '&nbsp;</td>');
+                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, "text"), '&nbsp;</td>');
                     }
                     SS.push('\n</tr>');
                 }

@@ -222,29 +222,26 @@ describe('ax5grid TEST', function () {
         myUI.setHeight(500);
         done(myUI.$target.css("height") == "500px" ? "" : "error setHeight");
     });
-    /*
+
     it('13 appendToList ax5grid', function (done) {
         myUI.appendToList([
             {a: "D", b: "D", price: 1600, amount: 2600, cost: 2000, saleDt: "2016-01-01", isChecked: "Y", saleType: "D", customer: "name04"},
             {a: "E", b: "E", price: 1800, amount: 2800, cost: 2500, saleDt: "2017-01-01", isChecked: "Y", saleType: "A", customer: "name05"},
             {a: "F", b: "F", price: 2000, amount: 3000, cost: 3000, saleDt: "2017-02-01", isChecked: "N", saleType: "B", customer: "name06"}
         ]);
-        done(myUI.getList().length == "6" ? "" : "error appendToList");
+
+        done(myUI.getList().length == 7 ? "" : "error appendToList");
     });
-    */
 
     it('14 removeRow ax5grid', function (done) {
         // 리스트에서 완전 제거
         myUI.removeRow();
-        done(myUI.getList().length == 3 ? "" : "error removeRow");
+        done(myUI.getList().length == 6 ? "" : "error removeRow, length : " + myUI.getList().length);
     });
 
     it('15 updateRow ax5grid', function (done) {
         myUI.updateRow({a: "G", b: "G", price: 3000, amount: 4000, cost: 5000, saleDt: "2017-02-02", isChecked: "Y", saleType: "A", customer: "name06"}, 0);
         var data = myUI.getList()[0];
-        
-        console.log(data);
-        
         done(data.a == "G" && data.b == "G" ? "" : "error updateRow");
     });
 
@@ -264,7 +261,7 @@ describe('ax5grid TEST', function () {
         done(myUI.columns.length == 7 ? "" : "error removeColumn");
     });
 
-    it('updateColumn', function (done) {
+    it('19 updateColumn', function (done) {
         myUI.addColumn({key: "color", label: "색상", align: "center"});
         myUI.updateColumn({key: "c-o-l-o-r", label: "색깔", align: "left"}, 7);
         var lastCol = myUI.columns[myUI.columns.length -1];
@@ -278,32 +275,25 @@ describe('ax5grid TEST', function () {
     });
     */
 
-    it('getColumnSortInfo', function (done) {
+    it('20 getColumnSortInfo', function (done) {
         var sortInfo = myUI.getColumnSortInfo()[0];
         done(sortInfo.key == "b" && sortInfo.orderBy == "asc" && sortInfo.seq == 0 ? "" : "error getColumnSortInfo");
     });
 
-    it('setColumnSort', function (done) {
+    it('21 setColumnSort', function (done) {
         var sortInfo = myUI.setColumnSort({price:{seq:0, orderBy:"desc"}, amount:{seq:1, orderBy:"asc"}}).getColumnSortInfo();
         done(sortInfo[0].key == "price" && sortInfo[1].key == "amount" ? "" : "error setColumnSort");
     });
 
-    it('select', function (done) {
-        myUI.select(0, {selected: true});
-        var selectedList = myUI.getList("selected");
-        done(selectedList[0].__index == 0 && selectedList[0].__selected__ ? "" : "error select");
-    });
-
-    it('clearSelect', function (done) {
+    it('23 clearSelect', function (done) {
         myUI.clearSelect();
         done(myUI.getList("selected").length == 0 ? "" : "error clearSelect");
     });
 
-    it('selectAll', function (done) {
+    it('24 selectAll', function (done) {
         myUI.selectAll();
         done(ae.equalAll(myUI.getList(), myUI.getList("selected")));
     });
-
 
     /*
     it('focus', function (done) {
@@ -369,8 +359,6 @@ describe('ax5grid TEST', function () {
         }, 200);
     });
     */
-
-
 
    it('destroy', function (done) {
         myUI.destroy();

@@ -1330,24 +1330,27 @@
              */
             this.setValue = function (_dindex, _key, _value) {
                 // getPanelname;
-                if (GRID.data.setValue.call(this, _dindex, undefined, _key, _value)) {
-                    let repaintCell = function (_panelName, _rows, __dindex, __key, __value) {
+                // let doindex = (typeof _doindex === "undefined") ? _dindex : _doindex;
+                // setValue를 doindex로 처리하는 상황이 아직 발생전으므로 선언만 하고 넘어감
+                let doindex;
+
+                if (GRID.data.setValue.call(this, _dindex, doindex, _key, _value)) {
+                    let repaintCell = function (_panelName, _rows, __dindex, __doindex, __key, __value) {
                         for (let r = 0, rl = _rows.length; r < rl; r++) {
                             for (let c = 0, cl = _rows[r].cols.length; c < cl; c++) {
                                 if (_rows[r].cols[c].key == __key) {
                                     if (this.xvar.frozenRowIndex > __dindex) {
-                                        GRID.body.repaintCell.call(this, "top-" + _panelName, __dindex, r, c, __value);
+                                        GRID.body.repaintCell.call(this, "top-" + _panelName, __dindex, __doindex, r, c, __value);
                                     } else {
-                                        GRID.body.repaintCell.call(this, _panelName + "-scroll", __dindex, r, c, __value);
+                                        GRID.body.repaintCell.call(this, _panelName + "-scroll", __dindex, __doindex, r, c, __value);
                                     }
                                 }
                             }
                         }
                     };
 
-                    repaintCell.call(this, "left-body", this.leftBodyRowData.rows, _dindex, _key, _value);
-                    repaintCell.call(this, "body", this.bodyRowData.rows, _dindex, _key, _value);
-
+                    repaintCell.call(this, "left-body", this.leftBodyRowData.rows, _dindex, doindex, _key, _value);
+                    repaintCell.call(this, "body", this.bodyRowData.rows, _dindex, doindex, _key, _value);
                 }
 
                 return this;

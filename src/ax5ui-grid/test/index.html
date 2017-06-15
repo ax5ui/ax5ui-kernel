@@ -211,6 +211,10 @@
             });
             */
 
+            firstGrid.select(0, {selected: true});
+            firstGrid.clearSelect();
+            console.log(firstGrid.getList("selected"));
+
             return this;
         },
         setSortData: function (sortInfo) {

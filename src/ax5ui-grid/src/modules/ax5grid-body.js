@@ -216,22 +216,38 @@
                     }
                 },
                 "selectedClear": function () {
-                    let si = this.selectedDataIndexs.length;
-                    while (si--) {
-                        let dindex = this.selectedDataIndexs[si];
-                        let i = this.$.livePanelKeys.length;
-                        while (i--) {
-                            this.$.panel[this.$.livePanelKeys[i]]
-                                .find('[data-ax5grid-tr-data-index="' + dindex + '"]')
-                                .attr("data-ax5grid-selected", false);
+                    let di = this.list.length;
+                    let pi;
 
-                            if (this.proxyList) {
-                                this.proxyList[dindex][cfg.columnKeys.selected] = false;
-                                this.list[this.proxyList[dindex].__origin_index__][cfg.columnKeys.selected] = false;
-                            } else {
-                                this.list[dindex][cfg.columnKeys.selected] = false;
+                    if (!this.proxyList) {
+                        while (di--) {
+                            if (this.list[di][cfg.columnKeys.selected]) {
+                                pi = this.$.livePanelKeys.length;
+                                while (pi--) {
+                                    this.$.panel[this.$.livePanelKeys[pi]]
+                                        .find('[data-ax5grid-tr-data-index="' + di + '"]')
+                                        .attr("data-ax5grid-selected", false);
+                                }
+                            }
+                            this.list[di][cfg.columnKeys.selected] = false;
+                        }
+                    } else {
+                        while (di--) {
+                            this.list[di][cfg.columnKeys.selected] = false;
+                        }
+                        di = this.proxyList.length;
+                        while (di--) {
+                            if(this.list[doi][cfg.columnKeys.selected]){
+                                pi = this.$.livePanelKeys.length;
+                                while (pi--) {
+                                    this.$.panel[this.$.livePanelKeys[pi]]
+                                        .find('[data-ax5grid-tr-data-index="' + di + '"]')
+                                        .attr("data-ax5grid-selected", false);
+                                }
                             }
 
+                            this.proxyList[di][cfg.columnKeys.selected] = false;
+                            let doi = this.proxyList[di].__original_index__;
                         }
                     }
                 },
@@ -628,6 +644,7 @@
     };
 
     const getFieldValue = function (_list, _item, _index, _col, _value, _returnPlainText) {
+
         let _key = _col.key, tagsToReplace = {
             '<': '&lt;',
             '>': '&gt;'
@@ -2460,7 +2477,6 @@
                 dindex, doindex, colIndex, rowIndex, panelName, colspan,
                 col, editor;
 
-            // this.inlineEditing = {};
             for (var key in _focusedColumn) {
                 panelName = _focusedColumn[key].panelName;
                 dindex = _focusedColumn[key].dindex;
@@ -2520,6 +2536,7 @@
                 if (key in this.inlineEditing) {
                     return false;
                 }
+
                 this.inlineEditing[key] = {
                     editor: editor,
                     panelName: panelName,
@@ -2636,13 +2653,13 @@
                             return false;
                         }
                     } else {
+
                         for (var k in this.focusedColumn) {
                             let _column = this.focusedColumn[k],
                                 column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
                                 dindex = _column.dindex,
                                 value = "",
                                 col = this.colGroup[_column.colIndex];
-                            ;
 
                             if (column) {
                                 if (!this.list[dindex].__isGrouping) {
@@ -2725,7 +2742,7 @@
                         SS.push('<td ',
                             'colspan="' + col.colspan + '" ',
                             'rowspan="' + col.rowspan + '" ',
-                            '>', (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, undefined, "text"), '&nbsp;</td>');
+                            '>', (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, "text"), '&nbsp;</td>');
                     }
                     SS.push('\n</tr>');
                 }
