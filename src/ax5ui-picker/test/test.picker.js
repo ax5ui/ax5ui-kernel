@@ -184,6 +184,19 @@ describe('ax5picker TEST', function () {
         });
         done(ae.equalAll('numpad', myUI.queue[4].content.type));
     });
+
+    it('bind select type [color]', function(done){
+        myUI.bind({
+            target: $('[data-ax5picker="basic"]'),
+            direction: "top",
+            content: {
+                width: 300,
+                margin: 10,
+                type: 'color'
+            }
+        });
+        done(ae.equalAll('color', myUI.queue[5].content.type));
+    });
 });
 
 describe('ax5picker method TEST', function () {
