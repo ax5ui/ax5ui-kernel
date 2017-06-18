@@ -20,6 +20,7 @@
     * [.appendPanel(_panel, _appendPath, _appendType)](#ax5docker.appendPanel) ⇒ <code>[ax5docker](#ax5docker)</code>
     * [.align()](#ax5docker.align) ⇒ <code>[ax5docker](#ax5docker)</code>
     * [.searchPanel(_condition)](#ax5docker.searchPanel) ⇒ <code>\*</code>
+    * [.activePanel(_panelPath, callback)](#ax5docker.activePanel) ⇒ <code>[ax5docker](#ax5docker)</code>
 
 <a name="ax5docker.config"></a>
 
@@ -189,4 +190,19 @@ removePanel();
 var p = myDocker.searchPanel(function (panel) {
  return (panel.id == "A");
 });
+```
+<a name="ax5docker.activePanel"></a>
+
+### ax5docker.activePanel(_panelPath, callback) ⇒ <code>[ax5docker](#ax5docker)</code>
+**Kind**: static method of <code>[ax5docker](#ax5docker)</code>  
+
+| Param | Type |
+| --- | --- |
+| _panelPath | <code>String</code> | 
+| callback | <code>function</code> | 
+
+**Example**  
+```js
+myDocker.activePanel("0.1");
+myDocker.activePanel("0.0.1");
 ```

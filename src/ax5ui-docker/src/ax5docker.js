@@ -1644,6 +1644,43 @@
                     }
                 };
 
+                /**
+                 * @method ax5docker.activePanel
+                 * @param {String} _panelPath
+                 * @param {Function} callback
+                 * @returns {ax5docker}
+                 * @example
+                 * ```js
+                 * myDocker.activePanel("0.1");
+                 * myDocker.activePanel("0.0.1");
+                 * ```
+                 */
+                this.activePanel = function (_panelPath, callback) {
+                    let activePanelPath = "";
+                    let pane;
+                    let parent;
+
+                    if (this.panels.length === 0 || !this.panels[0]) {
+                        // 액티브 대상 없음.
+                        return this;
+                    } else {
+                        if (typeof _panelPath == "undefined") {
+                            activePanelPath = "0";
+                        } else {
+                            activePanelPath = _panelPath
+                                .replace(/[a-zA-Z\[\]]+/g, "")
+                                .replace(/(\d+)/g, function (a, b) {
+                                    return "panels[" + a + "]";
+                                });
+                        }
+                        pane = getPanel(activePanelPath);
+                        parent = getPanelParent(pane);
+                    }
+
+                    changeActiveStackPanel(parent, pane.panelIndex);
+                    return this;
+                };
+
                 // 클래스 생성자
                 this.main = (function () {
                     UI.docker_instance = UI.docker_instance || [];

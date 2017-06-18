@@ -49,6 +49,8 @@
         <button class="btn btn-default" data-docker-control="set-panels">set Panels</button>
         <button class="btn btn-default" data-docker-control="find-panel">find panel</button>
         <button class="btn btn-default" data-docker-control="remove-panel">remove panel</button>
+
+        <button class="btn btn-default" data-docker-control="active-panel">active panel</button>
     </form>
 </div>
 
@@ -300,20 +302,33 @@
 
                 case "remove-panel":
 
+
                     function removePanel() {
                         var p = myDocker.searchPanel(function (panel) {
                             return (panel.key == "A");
                         });
 
                         if (p) {
-                            myDocker.removePanel(p.panelPath, function () {
-                                removePanel();
+
+                            // removePanel 결과가 성공일 때 다음 액션
+                            myDocker.removePanel(p.panelPath, function (result) {
+                                if (result) {
+                                    removePanel();
+                                } else {
+
+                                }
                             });
                         }
                     }
 
                     removePanel();
 
+
+                    break;
+
+                case "active-panel":
+
+                    myDocker.activePanel("0.1");
 
                     break;
             }
