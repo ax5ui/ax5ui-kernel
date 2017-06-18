@@ -28,7 +28,7 @@ describe('ax5.palette TEST', function () {
     });
 
     it('palette setSelectedColor', function (done) {
-        let color = "4a0066";
+        var color = "4a0066";
         setTimeout(function () {
             done(myPalette.setSelectedColor(color).colors[5]._selectedColor == color ? "" : "setSelectedColor error");
         }, myPalette.config.animateTime);
