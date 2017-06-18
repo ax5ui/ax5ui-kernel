@@ -2,10 +2,10 @@
  test.calendar.js
  TODO event test
  */
-var myPalette;
+
 /* ax5.calendar.setConfig */
 describe('ax5.palette TEST', function () {
-
+    var myPalette;
     var tmpl = '<div data-ax5palette="01" style="' +
         'width:300px;"></div>';
 
