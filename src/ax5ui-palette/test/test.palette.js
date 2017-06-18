@@ -2,10 +2,10 @@
  test.calendar.js
  TODO event test
  */
-
+var myPalette;
 /* ax5.calendar.setConfig */
 describe('ax5.palette TEST', function () {
-    var myPalette;
+
     var tmpl = '<div data-ax5palette="01" style="' +
         'width:300px;"></div>';
 
@@ -24,6 +24,13 @@ describe('ax5.palette TEST', function () {
             }
         });
 
-            done();
+        done();
+    });
+
+    it('palette setSelectedColor', function (done) {
+        let color = "4a0066";
+        setTimeout(function () {
+            done(myPalette.setSelectedColor(color).colors[5]._selectedColor == color ? "" : "setSelectedColor error");
+        }, myPalette.config.animateTime);
     });
 });
