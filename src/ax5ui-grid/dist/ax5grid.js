@@ -5910,9 +5910,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         },
         bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             _$el.data("binded-ax5ui", "ax5formater");
-            _$el.ax5formatter({
+            _$el.ax5formatter($.extend(true, {
                 pattern: "money"
-            });
+            }, _editor.config));
             _$el.focus().select();
         }
     };
@@ -5934,9 +5934,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         },
         bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             _$el.data("binded-ax5ui", "ax5formater");
-            _$el.ax5formatter({
+            _$el.ax5formatter($.extend(true, {
                 pattern: "number"
-            });
+            }, _editor.config));
             _$el.focus().select();
         }
     };
@@ -5956,7 +5956,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             var self = _root;
             _$el.data("binded-ax5ui", "ax5picker");
-            _$el.ax5picker({
+
+            _$el.ax5picker($.extend(true, {
                 direction: "auto",
                 content: {
                     type: 'date',
@@ -5971,7 +5972,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         GRID.body.inlineEdit.deActive.call(self, "RETURN", _columnKey);
                     }
                 }
-            });
+            }, _editor.config));
+
             _$el.focus().select();
         }
     };
@@ -6008,7 +6010,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             var self = _root;
             _$el.data("binded-ax5ui", "ax5select");
-            _$el.ax5select({
+            _$el.ax5select($.extend(true, {
                 direction: "auto",
                 columnKeys: eConfig.columnKeys,
                 options: eConfig.options,
@@ -6021,7 +6023,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         GRID.body.inlineEdit.deActive.call(self, "ESC", _columnKey);
                     }
                 }
-            });
+            }, _editor.config));
             _$el.ax5select("open");
             _$el.ax5select("setValue", _value);
             _$el.find("a").focus();

@@ -222,7 +222,13 @@
                     },
                     {
                         key: "saleDt", label: "판매일자", align: "center", editor: {
-                        type: "date", config: {}
+                        type: "date", config: {
+                            content: {
+                                config: {
+                                    mode: "year", selectMode: "year"
+                                }
+                            }
+                        }
                     }
                     },
                     {
