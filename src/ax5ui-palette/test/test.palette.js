@@ -27,7 +27,14 @@ describe('ax5.palette TEST', function () {
         done();
     });
 
-    it('palette setSelectedColor', function (done) {
+    it('palette setSelectedColor on red', function (done) {
+        var color = "ff4b4b";
+        setTimeout(function () {
+            done(myPalette.setSelectedColor(color).colors[0]._selectedColor == color ? "" : "setSelectedColor error");
+        }, myPalette.config.animateTime);
+    });
+
+    it('palette setSelectedColor on purple', function (done) {
         var color = "4a0066";
         setTimeout(function () {
             done(myPalette.setSelectedColor(color).colors[5]._selectedColor == color ? "" : "setSelectedColor error");
