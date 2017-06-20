@@ -61,7 +61,7 @@
 </div>
 <div style="padding: 5px;">
     <button class="btn btn-default" data-grid-control="excel-export">Excel Export</button>
-    <button class="btn btn-default" data-zgrid-control="excel-string">get Excel String</button>
+    <button class="btn btn-default" data-grid-control="excel-string">get Excel String</button>
 </div>
 <div style="height: 10px;"></div>
 
@@ -346,7 +346,7 @@
                     firstGrid.exportExcel("grid-to-excel.xls"); // ie 풀테스트
                     break;
                 case "excel-string":
-                    $(document.body).append(firstGrid.exportExcel());
+                    $("body").append(firstGrid.exportExcel());
                     break;
             }
         });
