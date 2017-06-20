@@ -5897,7 +5897,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function getHtml(_root, _columnKey, _editor, _value) {
-            return '<input type="text" data-ax5grid-editor="money" value="' + _value + '" >';
+            if (typeof _editor.attributes !== "undefined") {
+                var attributesText = "";
+                for (var k in _editor.attributes) {
+                    attributesText += " " + k + "='" + _editor.attributes[k] + "'";
+                }
+            }
+            return '<input type="text" data-ax5grid-editor="money" value="' + _value + '" ${attributesText}>';
         },
         init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
@@ -5921,7 +5927,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function getHtml(_root, _columnKey, _editor, _value) {
-            return '<input type="text" data-ax5grid-editor="number" value="' + _value + '" >';
+            if (typeof _editor.attributes !== "undefined") {
+                var attributesText = "";
+                for (var k in _editor.attributes) {
+                    attributesText += " " + k + "='" + _editor.attributes[k] + "'";
+                }
+            }
+            return '<input type="text" data-ax5grid-editor="number" value="' + _value + '" ${attributesText}>';
         },
         init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
