@@ -48,6 +48,20 @@ describe('ax5.palette TEST', function () {
         }, myPalette.config.animateTime);
     });
 
+    it('palette setSelectedColor on green', function (done) {
+        var color = "007a1a";
+        setTimeout(function () {
+            done(myPalette.setSelectedColor(color).colors[3]._selectedColor == color ? "" : "setSelectedColor error");
+        }, myPalette.config.animateTime);
+    });
+
+    it('palette setSelectedColor on blue', function (done) {
+        var color = "4b4bff";
+        setTimeout(function () {
+            done(myPalette.setSelectedColor(color).colors[4]._selectedColor == color ? "" : "setSelectedColor error");
+        }, myPalette.config.animateTime);
+    });
+
     it('palette setSelectedColor on purple', function (done) {
         var color = "4a0066";
         setTimeout(function () {
