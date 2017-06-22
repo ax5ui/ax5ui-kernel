@@ -49,7 +49,7 @@
                     margin: 10
                 },
                 minimizePosition: "bottom-right",
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
+                clickEventName: 'ontouchstart' in document.documentElement ? "touchstart" : "click",
                 theme: 'default',
                 width: 300,
                 height: 400,
