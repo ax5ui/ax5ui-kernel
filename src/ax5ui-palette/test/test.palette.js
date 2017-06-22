@@ -68,4 +68,18 @@ describe('ax5.palette TEST', function () {
             done(myPalette.setSelectedColor(color).colors[5]._selectedColor == color ? "" : "setSelectedColor error");
         }, myPalette.config.animateTime);
     });
+
+    it('palette setSelectedColor on black', function (done) {
+        var color = "1e1e1e";
+        setTimeout(function () {
+            done(myPalette.setSelectedColor(color).colors[6]._selectedColor == color ? "" : "setSelectedColor error");
+        }, myPalette.config.animateTime);
+    });
+
+    it('palette setSelectedColor on white', function (done) {
+        var color = "e1e1e1";
+        setTimeout(function () {
+            done(myPalette.setSelectedColor(color).colors[7]._selectedColor == color ? "" : "setSelectedColor error");
+        }, myPalette.config.animateTime);
+    });
 });
