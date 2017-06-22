@@ -270,6 +270,34 @@
                     pattern: 'number'
                 }
             },
+            btns: {
+                today: {
+                    label: "오늘", onClick: function () {
+                        if (this.item.inputLength == 1) {
+                            this.self.setContentValue(this.item.id, 0, ax5.util.date(new Date(), {"return": "yyyy-MM-dd"}));
+                        }
+                        else {
+                            this.self.setContentValue(this.item.id, 0, ax5.util.date(new Date(), {"return": "yyyy-MM-dd"}));
+                            this.self.setContentValue(this.item.id, 1, ax5.util.date(new Date(), {"return": "yyyy-MM-dd"}));
+                            this.self.close();
+                        }
+                    }
+                },
+                thisMonth: {
+                    label: "이번달 1일", onClick: function () {
+                        var today = new Date();
+                        if (this.item.inputLength == 1) {
+                            this.self.setContentValue(this.item.id, 0, ax5.util.date(today, {"return": "yyyy-MM-01"}));
+                        }
+                        else {
+                            this.self.setContentValue(this.item.id, 0, ax5.util.date(today, {"return": "yyyy-MM-01"}));
+                            this.self.setContentValue(this.item.id, 1, ax5.util.date(today, {"return": "yyyy-MM"}) + '-' + ax5.util.daysOfMonth(today.getFullYear(), today.getMonth()));
+                            this.self.close();
+                        }
+                    }
+                },
+                ok: {label: "확인", theme: "default"}
+            },
             onStateChanged: function () {
                 console.log(this);
                 if (this.value && this.value.length > 3) {

@@ -184,13 +184,7 @@
                     this.align(null, e || window.event);
                 }.bind(this));
 
-                this.activeModal.on(cfg.clickEventName, "[data-modal-header-btn]", function (e) {
-                    btnOnClick.call(this, e || window.event, opts);
-                }.bind(this));
-
                 this.$.header.off(ENM["mousedown"]).off("dragstart").on(ENM["mousedown"], function (e) {
-                    if (opts.isFullScreen) return false;
-
                     /// 이벤트 필터링 추가 : 버튼엘리먼트로 부터 발생된 이벤트이면 moveModal 시작하지 않도록 필터링
                     var isButton = U.findParentNode(e.target, function (_target) {
                         if (_target.getAttribute("data-modal-header-btn")) {
@@ -198,9 +192,12 @@
                         }
                     });
 
-                    if (!isButton && opts.disableDrag != true) {
+                    if (!opts.isFullScreen && !isButton && opts.disableDrag != true) {
                         self.mousePosition = getMousePosition(e);
                         moveModal.on.call(self);
+                    }
+                    if (isButton) {
+                        btnOnClick.call(self, e || window.event, opts);
                     }
                 }).on("dragstart", function (e) {
                     U.stopEvent(e.originalEvent);
