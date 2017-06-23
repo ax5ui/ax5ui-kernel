@@ -82,4 +82,11 @@ describe('ax5.palette TEST', function () {
             done(myPalette.setSelectedColor(color).colors[7]._selectedColor == color ? "" : "setSelectedColor error");
         }, myPalette.config.animateTime);
     });
+
+    it('palette repaint', function (done) {
+        setTimeout(function () {
+            myPalette.repaint();
+            done();
+        },  myPalette.config.animateTime * 1.3);
+    });
 });
