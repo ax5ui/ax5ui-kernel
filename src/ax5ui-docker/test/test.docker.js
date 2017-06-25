@@ -99,7 +99,11 @@ describe('ax5.docker TEST', function () {
         done();
     });
 
-    it('dock repaint', function (done) {
-        done(typeof myDocker.repaint() == "object" ? "" : "docker repaint error");
+    it('docker repaint', function (done) {
+        done(myDocker.repaint() === myDocker ? "" : "docker repaint error");
+    });
+
+    it('docker addPanel', function (done) {
+        done(myDocker.addPanel('0.1', 'stack', {type: 'panel', name: 'addPanel', moduleName: 'content'}) === myDocker ? "" : "docker addPanel error");
     });
 });
