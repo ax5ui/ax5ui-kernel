@@ -4224,19 +4224,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             var _column = this.focusedColumn[k],
                                 column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
                                 _dindex3 = _column.dindex,
+                                doindex = _column.doindex,
                                 value = "",
                                 col = this.colGroup[_column.colIndex];
 
                             if (column) {
                                 if (!this.list[_dindex3].__isGrouping) {
-                                    value = GRID.data.getValue.call(this, _dindex3, column.key);
+                                    value = GRID.data.getValue.call(this, _dindex3, doindex, column.key);
                                 }
                             }
 
                             if (col.editor && GRID.inlineEditor[col.editor.type].editMode === "inline") {
                                 if (_options && _options.moveFocus) {} else {
                                     if (column.editor && column.editor.type == "checkbox") {
-                                        value = GRID.data.getValue.call(this, _dindex3, column.key);
+                                        value = GRID.data.getValue.call(this, _dindex3, doindex, column.key);
 
                                         var checked = void 0,
                                             newValue = void 0;
@@ -4250,7 +4251,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                             newValue = checked = value == false || value == "false" || value < "1" ? "true" : "false";
                                         }
 
-                                        GRID.data.setValue.call(this, _column.dindex, column.key, newValue);
+                                        GRID.data.setValue.call(this, _column.dindex, _column.doindex, column.key, newValue);
                                         updateRowState.call(this, ["cellChecked"], _dindex3, {
                                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                             editorConfig: column.editor.config, checked: checked

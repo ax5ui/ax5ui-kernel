@@ -2658,12 +2658,13 @@
                             let _column = this.focusedColumn[k],
                                 column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
                                 dindex = _column.dindex,
+                                doindex = _column.doindex,
                                 value = "",
                                 col = this.colGroup[_column.colIndex];
 
                             if (column) {
                                 if (!this.list[dindex].__isGrouping) {
-                                    value = GRID.data.getValue.call(this, dindex, column.key);
+                                    value = GRID.data.getValue.call(this, dindex, doindex, column.key);
                                 }
                             }
 
@@ -2673,7 +2674,7 @@
                                 }
                                 else {
                                     if (column.editor && column.editor.type == "checkbox") {
-                                        value = GRID.data.getValue.call(this, dindex, column.key);
+                                        value = GRID.data.getValue.call(this, dindex, doindex, column.key);
 
                                         let checked, newValue;
                                         if (column.editor.config && column.editor.config.trueValue) {
@@ -2686,7 +2687,7 @@
                                             newValue = checked = (value == false || value == "false" || value < "1") ? "true" : "false";
                                         }
 
-                                        GRID.data.setValue.call(this, _column.dindex, column.key, newValue);
+                                        GRID.data.setValue.call(this, _column.dindex, _column.doindex, column.key, newValue);
                                         updateRowState.call(this, ["cellChecked"], dindex, {
                                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                             editorConfig: column.editor.config, checked: checked
