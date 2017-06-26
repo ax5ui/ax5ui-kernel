@@ -106,4 +106,35 @@ describe('ax5.docker TEST', function () {
     it('docker addPanel', function (done) {
         done(myDocker.addPanel('0.1', 'stack', {type: 'panel', name: 'addPanel', moduleName: 'content'}) === myDocker ? "" : "docker addPanel error");
     });
+
+    it('docker setPanels', function (done) {
+        done(myDocker.setPanels([
+            {
+                type: "row", // type : row, column, stack
+                panels: [
+                    {
+                        type: "column",
+                        panels: [
+                            {
+                                type: "panel",
+                                name: "my name set",
+                                moduleName: "content",
+                                moduleState: {
+                                    data1: "data1"
+                                }
+                            },
+                            {
+                                type: "panel",
+                                name: "my name panels",
+                                moduleName: "content",
+                                moduleState: {
+                                    data1: "data2"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]) === myDocker ? "" : "docker setPanels error");
+    });
 });
