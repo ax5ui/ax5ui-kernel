@@ -10,9 +10,8 @@
  */
 
 /* ax5.calendar.setConfig */
-var myDocker;
 describe('ax5.docker TEST', function () {
-
+    var myDocker;
     var tmpl = '<div data-ax5docker="docker1" style="height: 500px;background: #eee;padding: 5px;"></div>';
 
     $(document.body).append(tmpl);
