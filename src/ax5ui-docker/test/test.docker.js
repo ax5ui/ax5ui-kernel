@@ -10,8 +10,9 @@
  */
 
 /* ax5.calendar.setConfig */
+var myDocker;
 describe('ax5.docker TEST', function () {
-    var myDocker;
+
     var tmpl = '<div data-ax5docker="docker1" style="height: 500px;background: #eee;padding: 5px;"></div>';
 
     $(document.body).append(tmpl);
@@ -104,7 +105,11 @@ describe('ax5.docker TEST', function () {
     });
 
     it('docker addPanel', function (done) {
-        done(myDocker.addPanel('0.1', 'stack', {type: 'panel', name: 'addPanel', moduleName: 'content'}) === myDocker ? "" : "docker addPanel error");
+        done(myDocker.addPanel('0.1', 'stack', {
+            type: 'panel',
+            name: 'addPanel',
+            moduleName: 'content'
+        }) === myDocker ? "" : "docker addPanel error");
     });
 
     it('docker setPanels', function (done) {
@@ -136,5 +141,9 @@ describe('ax5.docker TEST', function () {
                 ]
             }
         ]) === myDocker ? "" : "docker setPanels error");
+    });
+
+    it('docker activePanel', function (done) {
+        done(myDocker.activePanel("panels[0].panels[0].panels[1]") === myDocker ? "" : "docker activePanel error");
     });
 });
