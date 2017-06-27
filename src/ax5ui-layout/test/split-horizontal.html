@@ -35,21 +35,33 @@
     </div>
     <div data-splitter='{}'></div>
     <div data-split-panel='{height: "*", minHeight: 100}'>
-        <div style="padding: 10px;height: 100%;">
-            <div style="border: 1px solid #000;height: 100%;"></div>
+
+        <div data-ax5layout="ax1" data-config='{layout:"split-panel", orientation: "vertical"}' style="height: 100%;">
+            <div data-split-panel='{width: "10%", minWidth:50}'>
+                <h1>H!</h1>
+            </div>
+            <div data-splitter='{}'></div>
+            <div data-split-panel='{width: "*"}' style="background: #eee;">
+                <h1>H2</h1>
+
+            </div>
         </div>
+
     </div>
 </div>
 <script>
     // todo : panel show & hide
     jQuery(document.body).ready(function () {
-        jQuery('[data-ax5layout="ax2"]').ax5layout({
+
+
+        jQuery('[data-ax5layout]').ax5layout({
             autoResize: false,
             onResize: function () {
                 //console.log(this.$target);
                 //console.log(this);
             }
         });
+
 
         $(window).resize(function(){
             jQuery('[data-ax5layout]').ax5layout("resize", true);

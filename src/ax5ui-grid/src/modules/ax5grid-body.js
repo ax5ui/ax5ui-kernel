@@ -2045,7 +2045,7 @@
 
     const scrollTo = function (css, opts) {
         let self = this;
-        if (typeof opts === "undefined") opts = {};
+        if (typeof opts === "undefined") opts = {timeoutUnUse: false};
         if (this.isInlineEditing) {
             for (var key in this.inlineEditing) {
                 //if(this.inlineEditing[key].editor.type === "select") {}
@@ -2070,8 +2070,7 @@
             this.$.panel["bottom-body-scroll"].css({left: css.left});
         }
 
-        if (this.config.virtualScrollAccelerated) {
-
+        if (this.config.virtualScrollAccelerated && !opts.timeoutUnUse) {
             if (this.xvar.bodyScrollToTimer) clearTimeout(this.xvar.bodyScrollToTimer);
             this.xvar.bodyScrollToTimer = setTimeout(function () {
 
@@ -2087,7 +2086,6 @@
             }, this.config.virtualScrollAcceleratedDelayTime);
 
         } else {
-
             if (self.config.virtualScrollY && !opts.noRepaint && "top" in css) {
                 repaint.call(self);
             } else if (self.config.virtualScrollX && !opts.noRepaint && "left" in css) {
@@ -2096,7 +2094,6 @@
             if (opts.callback) {
                 opts.callback();
             }
-
         }
 
 
@@ -2129,6 +2126,7 @@
                 columnSelect.clear.call(this);
 
                 if (_dy > 0) {
+                    // 아래로
                     if (focusedColumn.rowIndex + (originalColumn.rowspan - 1) + _dy > this.bodyRowTable.rows.length - 1) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
                         focusedColumn.rowIndex = 0;
@@ -2141,6 +2139,7 @@
                     }
                 }
                 else {
+                    // 위로
                     if (focusedColumn.rowIndex + _dy < 0) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
                         focusedColumn.rowIndex = this.bodyRowTable.rows.length - 1;
@@ -2193,20 +2192,20 @@
                 focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.ㅊㅇ
-                (function () {
-                    if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
-                        if (focusedColumn.dindex <= this.xvar.virtualPaintStartRowIndex) {
-                            let newTop = (focusedColumn.dindex - this.xvar.frozenRowIndex - 1) * this.xvar.bodyTrHeight;
-                            if (newTop < 0) newTop = 0;
-                            scrollTo.call(this, {top: -newTop});
-                            GRID.scroller.resize.call(this);
-                        }
-                        else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
-                            scrollTo.call(this, {top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 1) * this.xvar.bodyTrHeight});
-                            GRID.scroller.resize.call(this);
-                        }
+
+                if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
+                    if (focusedColumn.dindex <= this.xvar.virtualPaintStartRowIndex) {
+                        let newTop = (focusedColumn.dindex - this.xvar.frozenRowIndex - 1) * this.xvar.bodyTrHeight;
+                        if (newTop < 0) newTop = 0;
+
+                        scrollTo.call(this, {top: -newTop, timeoutUnUse: false});
+                        GRID.scroller.resize.call(this);
                     }
-                }).call(this);
+                    else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
+                        scrollTo.call(this, {top: (this.xvar.virtualPaintRowCount - 2 - focusedColumn.dindex) * this.xvar.bodyTrHeight, timeoutUnUse: false});
+                        GRID.scroller.resize.call(this);
+                    }
+                }
 
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
                 this.$.panel[focusedColumn.panelName]
