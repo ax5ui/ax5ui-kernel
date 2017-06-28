@@ -9,9 +9,10 @@
  TODO event test
  */
 
+var myDocker;
 /* ax5.calendar.setConfig */
 describe('ax5.docker TEST', function () {
-    var myDocker;
+
     var tmpl = '<div data-ax5docker="docker1" style="height: 500px;background: #eee;padding: 5px;"></div>';
 
     $(document.body).append(tmpl);
@@ -144,5 +145,9 @@ describe('ax5.docker TEST', function () {
 
     it('docker activePanel', function (done) {
         done(myDocker.activePanel("panels[0].panels[0].panels[1]") === myDocker ? "" : "docker activePanel error");
+    });
+
+    it('docker searchPanel', function (done) {
+        done(typeof myDocker.searchPanel("panels[0]") == "object" ? "" : "docker searchPanel error");
     });
 });
