@@ -919,7 +919,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                     if (self.focused) {
                                         GRID.body.blur.call(self);
                                     }
-                                } else if (e.which == ax5.info.eventKeys.RETURN || ax5.info.eventKeys.SPACE) {
+                                } else if (e.which == ax5.info.eventKeys.RETURN || e.which == ax5.info.eventKeys.SPACE) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 } else if (e.which == ax5.info.eventKeys.TAB) {
                                     //self.keyDown("RETURN", e.originalEvent);
@@ -3707,9 +3707,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     // 아래로
                     if (focusedColumn.rowIndex + (originalColumn.rowspan - 1) + _dy > this.bodyRowTable.rows.length - 1) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.doindex = focusedColumn.doindex + _dy;
                         focusedColumn.rowIndex = 0;
                         if (focusedColumn.dindex > this.list.length - 1) {
-                            focusedColumn.dindex = this.list.length - 1;
+                            focusedColumn.dindex = focusedColumn.doindex = this.list.length - 1;
                             moveResult = false;
                         }
                     } else {
@@ -3719,9 +3720,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     // 위로
                     if (focusedColumn.rowIndex + _dy < 0) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.doindex = focusedColumn.doindex + _dy;
                         focusedColumn.rowIndex = this.bodyRowTable.rows.length - 1;
                         if (focusedColumn.dindex < 0) {
-                            focusedColumn.dindex = 0;
+                            focusedColumn.dindex = focusedColumn.doindex = 0;
                             moveResult = false;
                         }
                     } else {
@@ -4241,16 +4243,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                         var checked = void 0,
                                             newValue = void 0;
                                         if (column.editor.config && column.editor.config.trueValue) {
-                                            if (checked = !(value == column.editor.config.trueValue)) {
+                                            // console.log(value, column.editor.config.trueValue);
+
+                                            if (value != column.editor.config.trueValue) {
                                                 newValue = column.editor.config.trueValue;
+                                                checked = true;
                                             } else {
                                                 newValue = column.editor.config.falseValue;
+                                                checked = false;
                                             }
                                         } else {
                                             newValue = checked = value == false || value == "false" || value < "1" ? "true" : "false";
                                         }
 
-                                        GRID.data.setValue.call(this, _column.dindex, _column.doindex, column.key, newValue);
+                                        GRID.data.setValue.call(this, _dindex3, doindex, column.key, newValue);
                                         updateRowState.call(this, ["cellChecked"], _dindex3, doindex, {
                                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                             editorConfig: column.editor.config, checked: checked
@@ -5058,17 +5064,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var setValue = function setValue(_dindex, _doindex, _key, _value) {
         var originalValue = getValue.call(this, _dindex, _doindex, _key);
+        var list = this.list;
+        var listIndex = typeof _doindex === "undefined" ? _dindex : _doindex;
         this.needToPaintSum = true;
 
         if (originalValue !== _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
-                    this.list[_dindex][this.config.columnKeys.modified] = true;
-                    Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;").call(this.list[_dindex], _value);
+                    list[listIndex][this.config.columnKeys.modified] = true;
+                    Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;").call(list[listIndex], _value);
                 } catch (e) {}
             } else {
-                this.list[_dindex][this.config.columnKeys.modified] = true;
-                this.list[_dindex][_key] = _value;
+                list[listIndex][this.config.columnKeys.modified] = true;
+                list[listIndex][_key] = _value;
             }
 
             if (this.onDataChanged) {

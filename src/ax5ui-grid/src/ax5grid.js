@@ -932,7 +932,7 @@
                                     if (self.focused) {
                                         GRID.body.blur.call(self);
                                     }
-                                } else if (e.which == ax5.info.eventKeys.RETURN || ax5.info.eventKeys.SPACE) {
+                                } else if (e.which == ax5.info.eventKeys.RETURN || e.which == ax5.info.eventKeys.SPACE) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 } else if (e.which == ax5.info.eventKeys.TAB) {
                                     //self.keyDown("RETURN", e.originalEvent);
@@ -941,7 +941,6 @@
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
                             }
-
                         }
                     }
                 });

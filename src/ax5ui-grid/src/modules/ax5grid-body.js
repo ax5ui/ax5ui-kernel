@@ -2129,9 +2129,10 @@
                     // 아래로
                     if (focusedColumn.rowIndex + (originalColumn.rowspan - 1) + _dy > this.bodyRowTable.rows.length - 1) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.doindex = focusedColumn.doindex + _dy;
                         focusedColumn.rowIndex = 0;
                         if (focusedColumn.dindex > this.list.length - 1) {
-                            focusedColumn.dindex = this.list.length - 1;
+                            focusedColumn.dindex = focusedColumn.doindex = this.list.length - 1;
                             moveResult = false;
                         }
                     } else {
@@ -2142,9 +2143,10 @@
                     // 위로
                     if (focusedColumn.rowIndex + _dy < 0) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.doindex = focusedColumn.doindex + _dy;
                         focusedColumn.rowIndex = this.bodyRowTable.rows.length - 1;
                         if (focusedColumn.dindex < 0) {
-                            focusedColumn.dindex = 0;
+                            focusedColumn.dindex = focusedColumn.doindex = 0;
                             moveResult = false;
                         }
                     } else {
@@ -2676,16 +2678,20 @@
 
                                         let checked, newValue;
                                         if (column.editor.config && column.editor.config.trueValue) {
-                                            if (checked = !(value == column.editor.config.trueValue)) {
+                                            // console.log(value, column.editor.config.trueValue);
+
+                                            if (value != column.editor.config.trueValue) {
                                                 newValue = column.editor.config.trueValue;
+                                                checked = true;
                                             } else {
                                                 newValue = column.editor.config.falseValue;
+                                                checked = false;
                                             }
                                         } else {
                                             newValue = checked = (value == false || value == "false" || value < "1") ? "true" : "false";
                                         }
 
-                                        GRID.data.setValue.call(this, _column.dindex, _column.doindex, column.key, newValue);
+                                        GRID.data.setValue.call(this, dindex, doindex, column.key, newValue);
                                         updateRowState.call(this, ["cellChecked"], dindex, doindex, {
                                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                             editorConfig: column.editor.config, checked: checked

@@ -637,19 +637,21 @@
 
     const setValue = function (_dindex, _doindex, _key, _value) {
         let originalValue = getValue.call(this, _dindex, _doindex, _key);
+        let list = this.list;
+        let listIndex = (typeof _doindex === "undefined") ? _dindex : _doindex;
         this.needToPaintSum = true;
 
         if (originalValue !== _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
-                    this.list[_dindex][this.config.columnKeys.modified] = true;
-                    (Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;")).call(this.list[_dindex], _value);
+                    list[listIndex][this.config.columnKeys.modified] = true;
+                    (Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;")).call(list[listIndex], _value);
                 } catch (e) {
 
                 }
             } else {
-                this.list[_dindex][this.config.columnKeys.modified] = true;
-                this.list[_dindex][_key] = _value;
+                list[listIndex][this.config.columnKeys.modified] = true;
+                list[listIndex][_key] = _value;
             }
 
             if (this.onDataChanged) {
