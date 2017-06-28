@@ -2197,7 +2197,6 @@
                     if (focusedColumn.dindex <= this.xvar.virtualPaintStartRowIndex) {
                         let newTop = (focusedColumn.dindex - this.xvar.frozenRowIndex - 1) * this.xvar.bodyTrHeight;
                         if (newTop < 0) newTop = 0;
-
                         scrollTo.call(this, {top: -newTop, timeoutUnUse: false});
                         GRID.scroller.resize.call(this);
                     }
@@ -2521,7 +2520,7 @@
                         }
 
                         GRID.data.setValue.call(self, dindex, doindex, col.key, newValue);
-                        updateRowState.call(self, ["cellChecked"], dindex, {
+                        updateRowState.call(self, ["cellChecked"], dindex, doindex, {
                             key: col.key, rowIndex: rowIndex, colIndex: colIndex,
                             editorConfig: col.editor.config, checked: checked
                         });
@@ -2687,7 +2686,7 @@
                                         }
 
                                         GRID.data.setValue.call(this, _column.dindex, _column.doindex, column.key, newValue);
-                                        updateRowState.call(this, ["cellChecked"], dindex, {
+                                        updateRowState.call(this, ["cellChecked"], dindex, doindex, {
                                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                             editorConfig: column.editor.config, checked: checked
                                         });

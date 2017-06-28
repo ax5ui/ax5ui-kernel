@@ -919,12 +919,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                     if (self.focused) {
                                         GRID.body.blur.call(self);
                                     }
-                                } else if (e.which == ax5.info.eventKeys.RETURN) {
+                                } else if (e.which == ax5.info.eventKeys.RETURN || ax5.info.eventKeys.SPACE) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 } else if (e.which == ax5.info.eventKeys.TAB) {
                                     //self.keyDown("RETURN", e.originalEvent);
                                     U.stopEvent(e);
-                                } else if (e.which != ax5.info.eventKeys.SPACE && Object.keys(self.focusedColumn).length) {
+                                } else if (Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
                             }
@@ -3772,7 +3772,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     if (focusedColumn.dindex <= this.xvar.virtualPaintStartRowIndex) {
                         var newTop = (focusedColumn.dindex - this.xvar.frozenRowIndex - 1) * this.xvar.bodyTrHeight;
                         if (newTop < 0) newTop = 0;
-
                         scrollTo.call(this, { top: -newTop, timeoutUnUse: false });
                         GRID.scroller.resize.call(this);
                     } else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
@@ -4092,7 +4091,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
 
                         GRID.data.setValue.call(self, dindex, doindex, col.key, newValue);
-                        updateRowState.call(self, ["cellChecked"], dindex, {
+                        updateRowState.call(self, ["cellChecked"], dindex, doindex, {
                             key: col.key, rowIndex: rowIndex, colIndex: colIndex,
                             editorConfig: col.editor.config, checked: checked
                         });
@@ -4252,7 +4251,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                         }
 
                                         GRID.data.setValue.call(this, _column.dindex, _column.doindex, column.key, newValue);
-                                        updateRowState.call(this, ["cellChecked"], _dindex3, {
+                                        updateRowState.call(this, ["cellChecked"], _dindex3, doindex, {
                                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                             editorConfig: column.editor.config, checked: checked
                                         });
