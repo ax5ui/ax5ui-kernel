@@ -72,22 +72,6 @@ describe('ax5.docker TEST', function () {
             ],
             disableClosePanel: false,
             disableDragPanel: false,
-            control: {
-                before: function (that, callback) {
-                    if (that.controlType === "destroy") {
-                        if (confirm("Do you want to Delete?")) {
-                            setTimeout(function () {
-                                callback();
-                            }, 300);
-
-                            return;
-                        }
-                    } else {
-                        callback();
-                        return;
-                    }
-                }
-            },
             menu: {
                 theme: 'default',
                 position: "absolute",
@@ -153,5 +137,9 @@ describe('ax5.docker TEST', function () {
 
     it('docker align', function (done) {
         done(typeof myDocker.align() == "object" ? "" : "docker align error");
+    });
+
+    it('docker removePanel', function (done) {
+        done(myDocker.removePanel("panels[0].panels[0].panels[1]") === myDocker ? "" : "docker removePanel error");
     });
 });
