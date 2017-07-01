@@ -84,6 +84,25 @@ describe('ax5.docker TEST', function () {
         done();
     });
 
+    it('docker addModule', function (done) {
+        done(typeof myDocker.addModule({
+            "content": {
+                init: function (container, state) {
+                    container["$element"].html(JSON.stringify(state));
+                },
+                active: function (container, state) {
+                    // console.log(state, "active");
+                },
+                deactive: function (container, state) {
+                    // console.log(state, "deactive");
+                },
+                destroy: function (container, state) {
+                    // console.log(state, "destroy");
+                }
+            }
+        }) == "object" ? "" : "docker addModule error");
+    });
+
     it('docker repaint', function (done) {
         done(myDocker.repaint() === myDocker ? "" : "docker repaint error");
     });
@@ -131,15 +150,15 @@ describe('ax5.docker TEST', function () {
         done(myDocker.activePanel("panels[0].panels[0].panels[1]") === myDocker ? "" : "docker activePanel error");
     });
 
-    it('docker searchPanel', function (done) {
-        done(typeof myDocker.searchPanel("panels[0]") == "object" ? "" : "docker searchPanel error");
-    });
-
     it('docker align', function (done) {
         done(typeof myDocker.align() == "object" ? "" : "docker align error");
     });
 
     it('docker removePanel', function (done) {
         done(myDocker.removePanel("panels[0].panels[0].panels[1]") === myDocker ? "" : "docker removePanel error");
+    });
+
+    it('docker searchPanel', function (done) {
+        done(typeof myDocker.searchPanel("panels[0]") == "object" ? "" : "docker searchPanel error");
     });
 });
