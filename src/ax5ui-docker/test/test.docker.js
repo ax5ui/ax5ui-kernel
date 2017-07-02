@@ -107,6 +107,15 @@ describe('ax5.docker TEST', function () {
         done(myDocker.repaint() === myDocker ? "" : "docker repaint error");
     });
 
+    it('docker appendPanel', function (done) {
+        done(myDocker.appendPanel({
+            type: 'panel',
+            name: 'appendPanel',
+            moduleName: 'content',
+            panelPath: "panels[1]"
+        }, "panels[0].panels[0]", ["right", "middle"]) === myDocker ? "" : "docker appendPanel error");
+    });
+
     it('docker addPanel', function (done) {
         done(myDocker.addPanel('0.1', 'stack', {
             type: 'panel',
