@@ -27,60 +27,57 @@ describe('ax5.palette TEST', function () {
         done();
     });
 
-    it('palette setSelectedColor on red', function (done) {
-        var color = "ff4b4b";
-        setTimeout(function () {
-            done(myPalette.setSelectedColor(color).colors[0]._selectedColor == color ? "" : "setSelectedColor error");
-        }, myPalette.config.animateTime);
-    });
+    // setSelectedColor testCases
+    var testCases = [
+        {
+            index: 0,
+            colorHex: "ff4b4b",
+            colorName: "red"
+        },
+        {
+            index: 1,
+            colorHex: "a66200",
+            colorName: "orange"
+        },
+        {
+            index: 2,
+            colorHex: "c0c000",
+            colorName: "yellow"
+        },
+        {
+            index: 3,
+            colorHex: "007a1a",
+            colorName: "green"
+        },
+        {
+            index: 4,
+            colorHex: "4b4bff",
+            colorName: "blue"
+        },
+        {
+            index: 5,
+            colorHex: "4a0066",
+            colorName: "purple"
+        },
+        {
+            index: 6,
+            colorHex: "1e1e1e",
+            colorName: "black"
+        },
+        {
+            index: 7,
+            colorHex: "e1e1e1",
+            colorName: "white"
+        }
+    ];
 
-    it('palette setSelectedColor on orange', function (done) {
-        var color = "a66200";
-        setTimeout(function () {
-            done(myPalette.setSelectedColor(color).colors[1]._selectedColor == color ? "" : "setSelectedColor error");
-        }, myPalette.config.animateTime);
-    });
-
-    it('palette setSelectedColor on yellow', function (done) {
-        var color = "c0c000";
-        setTimeout(function () {
-            done(myPalette.setSelectedColor(color).colors[2]._selectedColor == color ? "" : "setSelectedColor error");
-        }, myPalette.config.animateTime);
-    });
-
-    it('palette setSelectedColor on green', function (done) {
-        var color = "007a1a";
-        setTimeout(function () {
-            done(myPalette.setSelectedColor(color).colors[3]._selectedColor == color ? "" : "setSelectedColor error");
-        }, myPalette.config.animateTime);
-    });
-
-    it('palette setSelectedColor on blue', function (done) {
-        var color = "4b4bff";
-        setTimeout(function () {
-            done(myPalette.setSelectedColor(color).colors[4]._selectedColor == color ? "" : "setSelectedColor error");
-        }, myPalette.config.animateTime);
-    });
-
-    it('palette setSelectedColor on purple', function (done) {
-        var color = "4a0066";
-        setTimeout(function () {
-            done(myPalette.setSelectedColor(color).colors[5]._selectedColor == color ? "" : "setSelectedColor error");
-        }, myPalette.config.animateTime);
-    });
-
-    it('palette setSelectedColor on black', function (done) {
-        var color = "1e1e1e";
-        setTimeout(function () {
-            done(myPalette.setSelectedColor(color).colors[6]._selectedColor == color ? "" : "setSelectedColor error");
-        }, myPalette.config.animateTime);
-    });
-
-    it('palette setSelectedColor on white', function (done) {
-        var color = "e1e1e1";
-        setTimeout(function () {
-            done(myPalette.setSelectedColor(color).colors[7]._selectedColor == color ? "" : "setSelectedColor error");
-        }, myPalette.config.animateTime);
+    testCases.forEach(function(testCase){
+        it('palette setSelectedColor on ' + testCase.colorName, function (done) {
+            var color = testCase.colorHex;
+            setTimeout(function () {
+                done(myPalette.setSelectedColor(color).colors[testCase.index]._selectedColor == color ? "" : "setSelectedColor error");
+            }, myPalette.config.animateTime);
+        });
     });
 
     it('palette repaint', function (done) {
