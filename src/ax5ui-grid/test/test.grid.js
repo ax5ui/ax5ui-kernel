@@ -295,6 +295,11 @@ describe('ax5grid TEST', function () {
         done(ae.equalAll(myUI.getList(), myUI.getList("selected")));
     });
 
+    it('25 removeRow selected', function (done) {
+        myUI.removeRow("selected");
+        done(ae.equalAll(myUI.getList(), []));
+    });
+
     /*
     it('focus', function (done) {
         myUI.focusedColumn = {
