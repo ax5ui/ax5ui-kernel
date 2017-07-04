@@ -394,9 +394,8 @@
                 if (this.config.tree.use) {
                     processor.tree.call(this, "selected");
                 } else {
-                    let i = list.length;
                     let __list = [];
-                    while (i--) {
+                    for (let i = 0, l = list.length; i < l; i++) {
                         if (!list[i][this.config.columnKeys.selected]) {
                             __list.push(list[i]);
                         }
