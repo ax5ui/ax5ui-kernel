@@ -390,6 +390,22 @@
                     list.splice(_dindex, 1);
                 }
             },
+            "selected": function () {
+                if (this.config.tree.use) {
+                    processor.tree.call(this, "selected");
+                } else {
+                    let i = list.length;
+                    let __list = [];
+                    while (i--) {
+                        if (!list[i][this.config.columnKeys.selected]) {
+                            __list.push(list[i]);
+                        }
+                    }
+                    list = __list;
+                    __list = null;
+                    i = null;
+                }
+            },
             "tree": function (_dindex) {
                 let treeKeys = this.config.tree.columnKeys, selfHash = list[_dindex][this.config.tree.columnKeys.selfHash];
                 list = U.filter(list, function () {

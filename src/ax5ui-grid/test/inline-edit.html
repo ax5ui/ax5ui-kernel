@@ -40,6 +40,7 @@
 <div style="padding: 10px;">
     <button class="btn btn-default" data-grid-control="row-add">row add</button>
     <button class="btn btn-default" data-grid-control="row-remove">row remove</button>
+    <button class="btn btn-default" data-grid-control="selected-row-remove">selected row remove</button>
     <button class="btn btn-default" data-grid-control="row-delete">row delete</button>
     <button class="btn btn-default" data-grid-control="row-update">row update</button>
 
@@ -305,6 +306,9 @@
                     break;
                 case "row-remove":
                     firstGrid.removeRow();
+                    break;
+                case "selected-row-remove":
+                    firstGrid.removeRow("selected");
                     break;
                 case "row-delete":
                     firstGrid.deleteRow("selected");

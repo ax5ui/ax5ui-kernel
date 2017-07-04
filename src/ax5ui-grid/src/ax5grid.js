@@ -1237,6 +1237,7 @@
              * ax5Grid.removeRow("first");
              * ax5Grid.removeRow("last");
              * ax5Grid.removeRow(1);
+             * ax5Grid.removeRow("selected");
              * ```
              */
             this.removeRow = function (_dindex) {

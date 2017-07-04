@@ -1226,6 +1226,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ax5Grid.removeRow("first");
              * ax5Grid.removeRow("last");
              * ax5Grid.removeRow(1);
+             * ax5Grid.removeRow("selected");
              * ```
              */
             this.removeRow = function (_dindex) {
@@ -4838,6 +4839,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     processor.tree.call(this, _dindex);
                 } else {
                     list.splice(_dindex, 1);
+                }
+            },
+            "selected": function selected() {
+                if (this.config.tree.use) {
+                    processor.tree.call(this, "selected");
+                } else {
+                    var i = list.length;
+                    var __list = [];
+                    while (i--) {
+                        if (!list[i][this.config.columnKeys.selected]) {
+                            __list.push(list[i]);
+                        }
+                    }
+                    list = __list;
+                    __list = null;
+                    i = null;
                 }
             },
             "tree": function tree(_dindex) {
