@@ -35,6 +35,7 @@
 <a name="ax5grid.setConfig"></a>
 
 ### ax5grid.setConfig(_config) ⇒ <code>[ax5grid](#ax5grid)</code>
+/**
 Preferences of grid UI
 
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
@@ -62,8 +63,9 @@ Preferences of grid UI
 | [_config.header.columnPadding] | <code>Number</code> | <code>3</code> |  |
 | [_config.header.columnBorderWidth] | <code>Number</code> | <code>1</code> |  |
 | [_config.body] | <code>Object</code> |  |  |
-| [_config.onClick] | <code>function</code> |  |  |
-| [_config.onDBLClick] | <code>function</code> |  |  |
+| [_config.body.onClick] | <code>function</code> |  |  |
+| [_config.body.onDBLClick] | <code>function</code> |  |  |
+| [_config.body.onDataChanged] | <code>function</code> |  |  |
 | [_config.body.mergeCells] | <code>String</code> &#124; <code>Array</code> | <code>false</code> | - |
 | [_config.body.align] | <code>String</code> |  |  |
 | [_config.body.columnHeight] | <code>Number</code> | <code>25</code> |  |
@@ -72,6 +74,7 @@ Preferences of grid UI
 | [_config.body.grouping] | <code>Object</code> |  |  |
 | [_config.body.grouping.by] | <code>Array</code> |  | list grouping keys |
 | [_config.body.grouping.columns] | <code>Array</code> |  | list grouping columns |
+| [_config.body.trStyleClass] | <code>String</code> &#124; <code>function</code> |  |  |
 | [_config.page] | <code>Object</code> |  |  |
 | [_config.page.height] | <code>Number</code> | <code>25</code> |  |
 | [_config.page.display] | <code>Boolean</code> | <code>true</code> | grid page display |
@@ -324,6 +327,7 @@ ax5Grid.removeRow();
 ax5Grid.removeRow("first");
 ax5Grid.removeRow("last");
 ax5Grid.removeRow(1);
+ax5Grid.removeRow("selected");
 ```
 <a name="ax5grid.updateRow"></a>
 

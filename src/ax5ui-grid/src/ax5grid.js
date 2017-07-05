@@ -658,8 +658,9 @@
              * @param {Number} [_config.header.columnPadding=3]
              * @param {Number} [_config.header.columnBorderWidth=1]
              * @param {Object} [_config.body]
-             * @param {Function} [_config.onClick]
-             * @param {Function} [_config.onDBLClick]
+             * @param {Function} [_config.body.onClick]
+             * @param {Function} [_config.body.onDBLClick]
+             * @param {Function} [_config.body.onDataChanged]
              * @param {String|Array} [_config.body.mergeCells=false] -
              * @param {String} [_config.body.align]
              * @param {Number} [_config.body.columnHeight=25]
@@ -668,6 +669,8 @@
              * @param {Object} [_config.body.grouping]
              * @param {Array} [_config.body.grouping.by] - list grouping keys
              * @param {Array} [_config.body.grouping.columns] - list grouping columns
+             * @param {(String|Function)} [_config.body.trStyleClass]
+             *
              * @param {Object} [_config.page]
              * @param {Number} [_config.page.height=25]
              * @param {Boolean} [_config.page.display=true] - grid page display

@@ -382,8 +382,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }(),
                     frozenPanelWidth = cfg.frozenPanelWidth = function (colGroup, endIndex) {
                     var width = 0;
-                    for (var i = 0, l = endIndex; i < l; i++) {
-                        width += colGroup[i]._width;
+                    for (var _i2 = 0, l = endIndex; _i2 < l; _i2++) {
+                        width += colGroup[_i2]._width;
                     }
                     return width;
                 }(this.colGroup, cfg.frozenColumnIndex),
@@ -410,8 +410,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         // aside 빼고 너비
                         // 수직 스크롤이 있으면 또 빼고 비교
                         var bodyWidth = CT_WIDTH - asidePanelWidth - verticalScrollerWidth;
-                        for (var i = 0, l = this.colGroup.length; i < l; i++) {
-                            totalColGroupWidth += this.colGroup[i]._width;
+                        for (var _i3 = 0, l = this.colGroup.length; _i3 < l; _i3++) {
+                            totalColGroupWidth += this.colGroup[_i3]._width;
                         }
                         return totalColGroupWidth > bodyWidth ? this.config.scroller.size : 0;
                     }.call(this);
@@ -650,8 +650,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Number} [_config.header.columnPadding=3]
              * @param {Number} [_config.header.columnBorderWidth=1]
              * @param {Object} [_config.body]
-             * @param {Function} [_config.onClick]
-             * @param {Function} [_config.onDBLClick]
+             * @param {Function} [_config.body.onClick]
+             * @param {Function} [_config.body.onDBLClick]
+             * @param {Function} [_config.body.onDataChanged]
              * @param {String|Array} [_config.body.mergeCells=false] -
              * @param {String} [_config.body.align]
              * @param {Number} [_config.body.columnHeight=25]
@@ -660,6 +661,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Object} [_config.body.grouping]
              * @param {Array} [_config.body.grouping.by] - list grouping keys
              * @param {Array} [_config.body.grouping.columns] - list grouping columns
+             * @param {(String|Function)} [_config.body.trStyleClass]
+             *
              * @param {Object} [_config.page]
              * @param {Number} [_config.page.height=25]
              * @param {Boolean} [_config.page.display=true] - grid page display
@@ -1890,9 +1893,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             processor = {
             "selected": function selected(_dindex, _doindex) {
                 if (this.list[_doindex]) {
-                    var i = this.$.livePanelKeys.length;
-                    while (i--) {
-                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').attr("data-ax5grid-selected", this.list[_doindex][cfg.columnKeys.selected]);
+                    var _i4 = this.$.livePanelKeys.length;
+                    while (_i4--) {
+                        this.$.panel[this.$.livePanelKeys[_i4]].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').attr("data-ax5grid-selected", this.list[_doindex][cfg.columnKeys.selected]);
                     }
                 }
             },
@@ -2240,9 +2243,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         this.asideBodyRowData = function (dataTable) {
             var data = { rows: [] };
-            for (var i = 0, l = dataTable.rows.length; i < l; i++) {
-                data.rows[i] = { cols: [] };
-                if (i === 0) {
+            for (var _i5 = 0, l = dataTable.rows.length; _i5 < l; _i5++) {
+                data.rows[_i5] = { cols: [] };
+                if (_i5 === 0) {
                     var col = {
                         label: "",
                         colspan: 1,
@@ -2258,7 +2261,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             columnAttr: "lineNumber",
                             label: "&nbsp;", key: "__d-index__"
                         });
-                        data.rows[i].cols.push(_col);
+                        data.rows[_i5].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
                         _col = jQuery.extend({}, col, {
@@ -2267,7 +2270,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             columnAttr: "rowSelector",
                             label: "", key: "__d-checkbox__"
                         });
-                        data.rows[i].cols.push(_col);
+                        data.rows[_i5].cols.push(_col);
                     }
                 }
             }
@@ -2284,9 +2287,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var dividedBodyGroupingObj = GRID.util.divideTableByFrozenColumnIndex(this.bodyGroupingTable, this.xvar.frozenColumnIndex);
             this.asideBodyGroupingData = function (dataTable) {
                 var data = { rows: [] };
-                for (var i = 0, l = dataTable.rows.length; i < l; i++) {
-                    data.rows[i] = { cols: [] };
-                    if (i === 0) {
+                for (var _i6 = 0, l = dataTable.rows.length; _i6 < l; _i6++) {
+                    data.rows[_i6] = { cols: [] };
+                    if (_i6 === 0) {
                         var col = {
                             label: "",
                             colspan: 1,
@@ -2302,7 +2305,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                 columnAttr: "lineNumber",
                                 label: "&nbsp;", key: "__d-index__"
                             });
-                            data.rows[i].cols.push(_col);
+                            data.rows[_i6].cols.push(_col);
                         }
                         if (cfg.showRowSelector) {
                             _col = jQuery.extend({}, col, {
@@ -2311,7 +2314,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                                 columnAttr: "rowSelector",
                                 label: "", key: "__d-checkbox__"
                             });
-                            data.rows[i].cols.push(_col);
+                            data.rows[_i6].cols.push(_col);
                         }
                     }
                 }
@@ -2715,7 +2718,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
 
-                        SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-tr-data-o-index="' + odi + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
+                        SS.push('<tr class="tr-' + di % 4 + '', cfg.body.trStyleClass ? U.isFunction(cfg.body.trStyleClass) ? ' ' + cfg.body.trStyleClass.call({
+                            item: _list[di],
+                            index: di
+                        }, _list[di], di) : ' ' + cfg.body.trStyleClass : '', '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-tr-data-o-index="' + odi + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
                         for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                             col = rowTable.rows[tri].cols[ci];
                             cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
@@ -4845,11 +4851,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (this.config.tree.use) {
                     processor.tree.call(this, "selected");
                 } else {
-                    var i = list.length;
                     var __list = [];
-                    while (i--) {
-                        if (!list[i][this.config.columnKeys.selected]) {
-                            __list.push(list[i]);
+                    for (var _i7 = 0, l = list.length; _i7 < l; _i7++) {
+                        if (!list[_i7][this.config.columnKeys.selected]) {
+                            __list.push(list[_i7]);
                         }
                     }
                     list = __list;
@@ -4925,13 +4930,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 if (this.config.tree.use) {
                     processor.tree.call(this, "selected");
                 } else {
-                    var i = list.length;
-                    while (i--) {
-                        if (list[i][this.config.columnKeys.selected]) {
-                            list[i][this.config.columnKeys.deleted] = true;
+                    var _i8 = list.length;
+                    while (_i8--) {
+                        if (list[_i8][this.config.columnKeys.selected]) {
+                            list[_i8][this.config.columnKeys.deleted] = true;
                         }
                     }
-                    i = null;
+                    _i8 = null;
                 }
             },
             "tree": function tree(_dindex) {
@@ -4940,12 +4945,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 if (_dindex === "selected") {
 
-                    var i = list.length;
-                    while (i--) {
-                        if (list[i][this.config.columnKeys.selected]) {
-                            list[i][this.config.columnKeys.deleted] = true;
+                    var _i9 = list.length;
+                    while (_i9--) {
+                        if (list[_i9][this.config.columnKeys.selected]) {
+                            list[_i9][this.config.columnKeys.deleted] = true;
 
-                            var selfHash = list[i][treeKeys.selfHash];
+                            var selfHash = list[_i9][treeKeys.selfHash];
                             var ii = list.length;
 
                             while (ii--) {
@@ -4958,17 +4963,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             ii = null;
                         }
                     }
-                    i = null;
+                    _i9 = null;
                 } else {
                     var _selfHash = list[_dindex][treeKeys.selfHash];
-                    var _i2 = list.length;
-                    while (_i2--) {
-                        if (list[_i2][treeKeys.selfHash].substr(0, _selfHash.length) !== _selfHash) {
-                            list[_i2][keys.deleted] = true;
+                    var _i10 = list.length;
+                    while (_i10--) {
+                        if (list[_i10][treeKeys.selfHash].substr(0, _selfHash.length) !== _selfHash) {
+                            list[_i10][keys.deleted] = true;
                         }
                     }
                     _selfHash = null;
-                    _i2 = null;
+                    _i10 = null;
                 }
 
                 keys = null;
@@ -5048,27 +5053,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             selfHash = this.list[originIndex][keys.selfHash];
 
-            var i = 0,
+            var _i11 = 0,
                 l = this.list.length;
-            for (; i < l; i++) {
-                if (this.list[i]) {
-                    if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
+            for (; _i11 < l; _i11++) {
+                if (this.list[_i11]) {
+                    if (this.list[_i11][keys.parentHash].substr(0, selfHash.length) === selfHash) {
 
                         if (_options && _options.filter) {
-                            if (_options.filter.call({ item: this.list[i], dindex: i }, this.list[i])) {
+                            if (_options.filter.call({ item: this.list[_i11], dindex: _i11 }, this.list[_i11])) {
                                 for (var _k3 in _updateData) {
-                                    this.list[i][_k3] = _updateData[_k3];
+                                    this.list[_i11][_k3] = _updateData[_k3];
                                 }
                             }
                         } else {
                             for (var _k4 in _updateData) {
-                                this.list[i][_k4] = _updateData[_k4];
+                                this.list[_i11][_k4] = _updateData[_k4];
                             }
                         }
                     }
 
-                    if (!this.list[i][keys.hidden]) {
-                        this.proxyList.push(this.list[i]);
+                    if (!this.list[_i11][keys.hidden]) {
+                        this.proxyList.push(this.list[_i11]);
                     }
                 }
             }
@@ -5357,16 +5362,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.list[originIndex][keys.collapse] = _collapse;
             selfHash = this.list[originIndex][keys.selfHash];
 
-            var i = this.list.length;
-            while (i--) {
-                if (this.list[i]) {
+            var _i12 = this.list.length;
+            while (_i12--) {
+                if (this.list[_i12]) {
                     // console.log(this.list[i][keys.parentHash].substr(0, selfHash.length), selfHash);
-                    if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
-                        this.list[i][keys.hidden] = _collapse;
+                    if (this.list[_i12][keys.parentHash].substr(0, selfHash.length) === selfHash) {
+                        this.list[_i12][keys.hidden] = _collapse;
                     }
 
-                    if (!this.list[i][keys.hidden]) {
-                        this.proxyList.push(this.list[i]);
+                    if (!this.list[_i12][keys.hidden]) {
+                        this.proxyList.push(this.list[_i12]);
                     }
                 }
             }
@@ -5647,9 +5652,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.asideHeaderData = function (dataTable) {
             var colGroup = [];
             var data = { rows: [] };
-            for (var i = 0, l = dataTable.rows.length; i < l; i++) {
-                data.rows[i] = { cols: [] };
-                if (i === 0) {
+            for (var _i13 = 0, l = dataTable.rows.length; _i13 < l; _i13++) {
+                data.rows[_i13] = { cols: [] };
+                if (_i13 === 0) {
                     var col = {
                         label: "",
                         colspan: 1,
@@ -5666,7 +5671,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             key: "__index_header__", label: "&nbsp;"
                         });
                         colGroup.push(_col);
-                        data.rows[i].cols.push(_col);
+                        data.rows[_i13].cols.push(_col);
                     }
                     if (cfg.showRowSelector) {
                         _col = jQuery.extend({}, col, {
@@ -5676,7 +5681,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             key: "__checkbox_header__", label: ""
                         });
                         colGroup.push(_col);
-                        data.rows[i].cols.push(_col);
+                        data.rows[_i13].cols.push(_col);
                     }
 
                     col = null;

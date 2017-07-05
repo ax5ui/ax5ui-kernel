@@ -1032,7 +1032,11 @@
 
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
 
-                        SS.push('<tr class="tr-' + (di % 4) + '"',
+                        SS.push('<tr class="tr-' + (di % 4) + '', (cfg.body.trStyleClass) ? (U.isFunction(cfg.body.trStyleClass)) ? ' ' + cfg.body.trStyleClass.call({
+                                    item: _list[di],
+                                    index: di
+                                }, _list[di], di) : ' ' + cfg.body.trStyleClass : '','"',
+
                             (isGroupingRow) ? ' data-ax5grid-grouping-tr="true"' : '',
                             ' data-ax5grid-tr-data-index="' + di + '"',
                             ' data-ax5grid-tr-data-o-index="' + odi + '"',
