@@ -7,8 +7,10 @@ var myUI;
 describe('ax5grid TEST', function () {
 
     var tmpl = '<div data-ax5grid="first-grid" data-ax5grid-config="" style="height: 300px;"></div>';
+    var style = '<style> .gray {background: gray;}</style>';
 
     $(document.body).append(tmpl);
+    $(document.head).append(style);
 
     ///
     it('1 new ax5grid', function (done) {
@@ -38,6 +40,9 @@ describe('ax5grid TEST', function () {
                 columnHeight: 28
             },
             body: {
+                trStyleClass: function () {
+                    return this.item.amount > 100 ? "gray" : "";
+                },
                 mergeCells: true,
                 align: "center",
                 columnHeight: 28,
@@ -298,6 +303,10 @@ describe('ax5grid TEST', function () {
     it('25 removeRow selected', function (done) {
         myUI.removeRow("selected");
         done(ae.equalAll(myUI.getList(), []));
+    });
+
+    it('26 body trStyleClass', function (done) {
+        done(jQuery(".gray").length > 0 ? "" : "error body trStyleClass");
     });
 
     /*
