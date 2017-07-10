@@ -397,8 +397,9 @@
                 if (this.config.tree.use) {
                     processor.tree.call(this, "selected");
                 } else {
-                    let __list = [];
-                    for (let i = 0, l = list.length; i < l; i++) {
+                    let __list = [], i, l;
+
+                    for (i = 0, l = list.length; i < l; i++) {
                         if (!list[i][this.config.columnKeys.selected]) {
                             __list.push(list[i]);
                         }
@@ -626,7 +627,7 @@
             for (; i < l; i++) {
                 if (this.list[i]) {
                     if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
-                        
+
                         if (_options && _options.filter) {
                             if (_options.filter.call({item: this.list[i], dindex: i}, this.list[i])) {
                                 for (let _k in _updateData) {
@@ -876,7 +877,7 @@
 
         this.appendProgress = true;
         GRID.page.statusUpdate.call(this);
-        
+
         if (this.appendDebouncer) {
             if (self.appendDebounceTimes < this.config.debounceTime / 10) {
                 clearTimeout(this.appendDebouncer);
