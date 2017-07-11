@@ -51,7 +51,11 @@
     <button class="btn btn-default" data-grid-control="column-remove">column remove</button>
     <button class="btn btn-default" data-grid-control="column-update">column update</button>
 </div>
-
+<style>
+    .RED{
+        background: #ffb2b0 !important;
+    }
+</style>
 <div style="height: 10px;"></div>
 
 <TEXTAREA ID="holdtext" STYLE="position:absolute;top:-1000px;"></TEXTAREA>
@@ -121,6 +125,9 @@
                     onClick: function () {
                         // console.log(this);
                         this.self.select(this.dindex);
+                    },
+                    trStyleClass: function(){
+                        return (this.item.saleType === "A") ? "RED" : "";
                     }
                     /*
                     grouping: {
