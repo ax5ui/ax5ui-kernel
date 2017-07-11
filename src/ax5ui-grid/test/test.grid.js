@@ -3,9 +3,8 @@
  * - github.com/thomasjang
  * - www.axisj.com
  */
-var myUI;
 describe('ax5grid TEST', function () {
-
+    var myUI;
     var tmpl = '<div data-ax5grid="first-grid" data-ax5grid-config="" style="height: 300px;"></div>';
     var style = '<style> .gray {background: gray;}</style>';
 
@@ -405,7 +404,24 @@ describe('ax5grid TEST', function () {
         ax5.util.debounce(function () {
             done(myUI.getList().length == 0 ? "" : "error removeRow[selected]");
         }, 50)();
+    });
 
+    it('27 removeRow[first]', function (done) {
+        myUI.addRow({
+            a: "D",
+            b: "D",
+            price: 1600,
+            amount: 2600,
+            cost: 2000,
+            saleDt: "2016-01-01",
+            isChecked: "Y",
+            saleType: "D",
+            customer: "name04",
+            __selected__: true
+        });
+        myUI.removeRow('last');
+
+        done(myUI.getList().length == 0 ? "" : "error removeRow[first]");
     });
 
     /*
@@ -463,12 +479,12 @@ describe('ax5grid TEST', function () {
      });
 
 
-    it('exportExcel', function (done) {
-        var _this = myUI.exportExcel("fileName");
-        setTimeout(function () {
-            done(ae.equalAll(_this, myUI));
-        }, 200);
-    });
+     it('exportExcel', function (done) {
+     var _this = myUI.exportExcel("fileName");
+     setTimeout(function () {
+     done(ae.equalAll(_this, myUI));
+     }, 200);
+     });
      */
 
     it('destroy', function (done) {
