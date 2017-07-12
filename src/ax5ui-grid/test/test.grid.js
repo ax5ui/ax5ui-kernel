@@ -24,6 +24,7 @@ describe('ax5grid TEST', function () {
         myUI.setConfig({
             target: $('[data-ax5grid="first-grid"]'),
             frozenColumnIndex: 3,
+            frozenRowIndex: 1,
             showLineNumber: true,
             showRowSelector: true,
             multipleSelect: true,
