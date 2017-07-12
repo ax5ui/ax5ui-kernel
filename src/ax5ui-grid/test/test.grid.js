@@ -24,7 +24,6 @@ describe('ax5grid TEST', function () {
         myUI.setConfig({
             target: $('[data-ax5grid="first-grid"]'),
             frozenColumnIndex: 3,
-            frozenRowIndex: 1,
             showLineNumber: true,
             showRowSelector: true,
             multipleSelect: true,
@@ -407,21 +406,41 @@ describe('ax5grid TEST', function () {
     });
 
     it('27 removeRow[first]', function (done) {
-        myUI.addRow({
-            a: "D",
-            b: "D",
-            price: 1600,
-            amount: 2600,
-            cost: 2000,
-            saleDt: "2016-01-01",
-            isChecked: "Y",
-            saleType: "D",
-            customer: "name04",
-            __selected__: true
-        });
-        myUI.removeRow('last');
-
+        myUI.addRow(
+            {
+                a: "D",
+                b: "D",
+                price: 1600,
+                amount: 2600,
+                cost: 2000,
+                saleDt: "2016-01-01",
+                isChecked: "Y",
+                saleType: "D",
+                customer: "name04",
+                __selected__: true
+            }
+        );
+        myUI.removeRow("first");
         done(myUI.getList().length == 0 ? "" : "error removeRow[first]");
+    });
+
+    it('28 removeRow[last]', function (done) {
+        myUI.addRow(
+            {
+                a: "E",
+                b: "E",
+                price: 1800,
+                amount: 2800,
+                cost: 2000,
+                saleDt: "2016-01-02",
+                isChecked: "Y",
+                saleType: "D",
+                customer: "name05",
+                __selected__: true
+            }
+        );
+        myUI.removeRow("last");
+        done(myUI.getList().length == 0 ? "" : "error removeRow[last]");
     });
 
     /*
