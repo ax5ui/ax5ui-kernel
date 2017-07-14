@@ -1,6 +1,6 @@
 ![build](https://travis-ci.org/ax5ui/ax5core.svg?branch=master)
 [![npm version](https://badge.fury.io/js/ax5core.svg)](https://badge.fury.io/js/ax5core)
-
+[![](https://img.shields.io/npm/dm/ax5core.svg)](https://www.npmjs.com/package/ax5core)
 
 # ax5core
 "ax5core" is a collection of utility functions which were designed to be used in ax5ui. It consists of "ax5" keys such as "ax5.info", "ax5.util" and others, and class variables can be added under "ax5.ui".

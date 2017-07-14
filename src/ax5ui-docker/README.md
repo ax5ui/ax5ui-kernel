@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-docker.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-docker)
 [![npm version](https://badge.fury.io/js/ax5ui-docker.svg)](https://badge.fury.io/js/ax5ui-docker)
+[![](https://img.shields.io/npm/dm/ax5ui-docker.svg)](https://www.npmjs.com/package/ax5ui-docker)
 
 # ax5ui-docker
 "docker" dock panel UI

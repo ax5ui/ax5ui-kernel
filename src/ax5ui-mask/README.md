@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-mask.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-mask)
 [![npm version](https://badge.fury.io/js/ax5ui-mask.svg)](https://badge.fury.io/js/ax5ui-mask)
+[![](https://img.shields.io/npm/dm/ax5ui-mask.svg)](https://www.npmjs.com/package/ax5ui-mask)
 
 # ax5ui-mask
 "mask" allows users to prevent user actions while an application is running.

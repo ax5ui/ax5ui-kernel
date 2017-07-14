@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-select.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-select)
 [![npm version](https://badge.fury.io/js/ax5ui-select.svg)](https://badge.fury.io/js/ax5ui-select)
+[![](https://img.shields.io/npm/dm/ax5ui-select.svg)](https://www.npmjs.com/package/ax5ui-select)
 
 # ax5ui-select
 "select" allows users to select a collection of items.

@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-combobox.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-combobox)
 [![npm version](https://badge.fury.io/js/ax5ui-combobox.svg)](https://badge.fury.io/js/ax5ui-combobox)
+[![](https://img.shields.io/npm/dm/ax5ui-combobox.svg)](https://www.npmjs.com/package/ax5ui-combox)
 
 # ax5ui-combobox
 "combobox" lets users make a selection from a drop-down list.

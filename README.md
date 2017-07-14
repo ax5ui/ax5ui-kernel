@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-kernel.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-kernel)
 [![Backers on Open Collective](https://opencollective.com/ax5ui-kernel/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/ax5ui-kernel/sponsors/badge.svg)](#sponsors)
+[![](https://img.shields.io/npm/dm/ax5core.svg)](https://www.npmjs.com/package/ax5core)
 
 ![ax5ui preview](src/preview.png)
 

@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-calendar.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-calendar)
 [![npm version](https://badge.fury.io/js/ax5ui-calendar.svg)](https://badge.fury.io/js/ax5ui-calendar)
+[![](https://img.shields.io/npm/dm/ax5ui-calendar.svg)](https://www.npmjs.com/package/ax5ui-calendar)
 
 # ax5ui-calendar
 "calendar" displays dates in a calendar format and enables users to select a single or multiple values.

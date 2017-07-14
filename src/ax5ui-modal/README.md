@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-modal.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-modal)
 [![npm version](https://badge.fury.io/js/ax5ui-modal.svg)](https://badge.fury.io/js/ax5ui-modal)
+[![](https://img.shields.io/npm/dm/ax5ui-modal.svg)](https://www.npmjs.com/package/ax5ui-modal)
 
 # ax5ui-modal
 "modal" to display content on a secondary window which disables interactions with the main view.

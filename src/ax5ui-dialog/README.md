@@ -1,5 +1,6 @@
 ![ax5ui-travis-passing](https://travis-ci.org/ax5ui/ax5ui-dialog.svg?branch=master)
 [![npm version](https://badge.fury.io/js/ax5ui-dialog.svg)](https://badge.fury.io/js/ax5ui-dialog)
+[![](https://img.shields.io/npm/dm/ax5ui-dialog.svg)](https://www.npmjs.com/package/ax5ui-dialog)
 
 # ax5ui-dialog
 "dialog" displays information on a popup window and also enables users to enter input values.

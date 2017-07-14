@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-layout.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-layout)
 [![npm version](https://badge.fury.io/js/ax5ui-layout.svg)](https://badge.fury.io/js/ax5ui-layout)
+[![](https://img.shields.io/npm/dm/ax5ui-layout.svg)](https://www.npmjs.com/package/ax5ui-layout)
 
 # ax5ui-layout
 "layout" helps users set position and size of multiple panels on a page.

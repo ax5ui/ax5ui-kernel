@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-picker.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-picker)
 [![npm version](https://badge.fury.io/js/ax5ui-picker.svg)](https://badge.fury.io/js/ax5ui-picker)
+[![](https://img.shields.io/npm/dm/ax5ui-picker.svg)](https://www.npmjs.com/package/ax5ui-picker)
 
 # ax5ui-picker
 "picker" provides users a simple way to select a single value from a pre-determined set of values.

@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-palette.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-palette)
 [![npm version](https://badge.fury.io/js/ax5ui-palette.svg)](https://badge.fury.io/js/ax5ui-palette)
+[![](https://img.shields.io/npm/dm/ax5ui-palette.svg)](https://www.npmjs.com/package/ax5ui-palette)
 
 # ax5ui-palette
 "palette" to easily select predefined colors. also choose the color you want by adjusting the brightness of the color.
