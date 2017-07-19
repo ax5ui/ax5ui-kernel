@@ -194,7 +194,6 @@ gulp.task('default', function () {
             gulp.watch(PATHS[k].src + '/**/*.scss', [k + '-scss']);
         }
     }
-
 });
 
 /**

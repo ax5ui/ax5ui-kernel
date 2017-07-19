@@ -5,6 +5,9 @@
     <title>Title</title>
 
     <!--link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/-->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
     <link rel="stylesheet" type="text/css" href="../../ax5ui-mask/dist/ax5mask.css"/>
     <link rel="stylesheet" type="text/css" href="../../ax5ui-calendar/dist/ax5calendar.css"/>
     <link rel="stylesheet" type="text/css" href="../../ax5ui-palette/dist/ax5palette.css"/>
@@ -172,7 +175,7 @@
                             if(this.item && this.item.calendar){
                                 var today = new Date();
                                 this.item.pickerCalendar[0].ax5uiInstance.setSelection([ax5.util.date(today, {'add': {d: 0}})]);
-                                this.item.pickerCalendar[1].ax5uiInstance.setSelection([ax5.util.date(today, {'add': {d: 0}})]);
+                                if(this.item.pickerCalendar[1]) this.item.pickerCalendar[1].ax5uiInstance.setSelection([ax5.util.date(today, {'add': {d: 0}})]);
                             }
                         }
                         else if (this.state == "changeValue") {
