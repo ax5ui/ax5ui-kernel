@@ -97,7 +97,8 @@ More detailed information will be covered next time. For now, just ask.
 
 ## Question
 
-https://github.com/ax5ui/ax5ui-kernel/issues 
+- https://jsdev.kr/c/axisj/ax5ui
+- https://github.com/ax5ui/ax5ui-kernel/issues 
 
 - - -
 
