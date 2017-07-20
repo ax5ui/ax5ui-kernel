@@ -58,15 +58,11 @@
         }
     });
     modal.onStateChanged = function () {
-        console.log(this);
+        //console.log(this);
     };
     modal.onResize = function () {
         //console.log(this);
     };
-
-    function modalCallBack() {
-        modal.close();
-    }
 
     $(document.body).ready(function () {
 
@@ -88,7 +84,12 @@
                     });
                     break;
                 case "iframe-modal-close":
-                    modal.close();
+                    modal.close({
+                        callback: function () {
+                            console.log("close", this);
+
+                        }
+                    });
                     break;
                 case "modal-open":
                     modal.open({
@@ -108,7 +109,12 @@
                     });
                     break;
                 case "modal-close":
-                    modal.close();
+                    modal.close({
+                        callback: function () {
+                            console.log("close", this);
+
+                        }
+                    });
                     break;
                 case "abs-modal-open":
                     modal.open({
@@ -136,22 +142,26 @@
                     modal.setModalConfig({fullScreen: true});
                     break;
                 case "modal-close-open":
-                    modal.close();
-                    modal.open({
-                        position: {
-                            left: "center",
-                            top: "middle",
-                            margin: 10
-                        },
-                        width: 800,
-                        height: 600,
-                        disableDrag: false,
-                        fullScreen: function () {
-                            return ($(window).width() < 600);
+                    modal.close({
+                        callback: function () {
+                            modal.open({
+                                position: {
+                                    left: "center",
+                                    top: "middle",
+                                    margin: 10
+                                },
+                                width: 800,
+                                height: 600,
+                                disableDrag: false,
+                                fullScreen: function () {
+                                    return ($(window).width() < 600);
+                                }
+                            }, function () {
+                                this.$["body-frame"].append('<h1>div contents</h1>');
+                            });
                         }
-                    }, function () {
-                        this.$["body-frame"].append('<h1>div contents</h1>');
                     });
+
                     break;
             }
         });
