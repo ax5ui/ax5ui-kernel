@@ -2235,6 +2235,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         // 그리드 바디에 출력할 여유 카운트
         this.xvar.paintRowCountMargin = this.config.virtualScrollYCountMargin;
         this.xvar.paintRowCountTopMargin = this.config.virtualScrollYCountMargin - Math.floor(this.config.virtualScrollYCountMargin / 2);
+
+        if (this.config.virtualScrollAccelerated) {
+            this.__throttledScroll = U.throttle(function (css, opts) {
+                if (this.config.virtualScrollY && !opts.noRepaint && "top" in css) {
+                    repaint.call(this);
+                } else if (this.config.virtualScrollX && !opts.noRepaint && "left" in css) {
+                    repaint.call(this);
+                }
+                if (opts.callback) {
+                    opts.callback();
+                }
+            }, this.config.virtualScrollAcceleratedDelayTime);
+        } else {
+            this.__throttledScroll = false;
+        }
     };
 
     var resetFrozenColumn = function resetFrozenColumn() {
@@ -3657,24 +3672,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.$.panel["bottom-body-scroll"].css({ left: css.left });
         }
 
-        if (this.config.virtualScrollAccelerated && !opts.timeoutUnUse) {
-            if (this.xvar.bodyScrollToTimer) clearTimeout(this.xvar.bodyScrollToTimer);
-            this.xvar.bodyScrollToTimer = setTimeout(function () {
-
-                if (self.config.virtualScrollY && !opts.noRepaint && "top" in css) {
-                    repaint.call(self);
-                } else if (self.config.virtualScrollX && !opts.noRepaint && "left" in css) {
-                    repaint.call(self);
-                }
-                if (opts.callback) {
-                    opts.callback();
-                }
-            }, this.config.virtualScrollAcceleratedDelayTime);
+        // 바디 리페인팅 this.__throttledScroll 은 body init 에서 초기화
+        if (this.__throttledScroll) {
+            this.__throttledScroll(css, opts);
         } else {
-            if (self.config.virtualScrollY && !opts.noRepaint && "top" in css) {
-                repaint.call(self);
-            } else if (self.config.virtualScrollX && !opts.noRepaint && "left" in css) {
-                repaint.call(self);
+            if (this.config.virtualScrollY && !opts.noRepaint && "top" in css) {
+                repaint.call(this);
+            } else if (this.config.virtualScrollX && !opts.noRepaint && "left" in css) {
+                repaint.call(this);
             }
             if (opts.callback) {
                 opts.callback();
@@ -6667,11 +6672,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var css = getContentPosition(e);
 
                 resize.call(self);
-                //if (self.xvar.scrollTimer) clearTimeout(self.xvar.scrollTimer);
-                //self.xvar.scrollTimer = setTimeout(function () {
                 GRID.header.scrollTo.call(self, { left: css.left });
                 GRID.body.scrollTo.call(self, css, { noRepaint: "noRepaint" });
-                //}, 0);
                 U.stopEvent(e.originalEvent);
                 self.xvar.touchmoved = true;
             }).on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
@@ -6679,12 +6681,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     var css = getContentPosition(e);
 
                     resize.call(self);
-                    //if (self.xvar.scrollTimer) clearTimeout(self.xvar.scrollTimer);
-                    //self.xvar.scrollTimer = setTimeout(function () {
                     GRID.header.scrollTo.call(self, { left: css.left });
                     GRID.body.scrollTo.call(self, css);
-                    //}, 0);
-
                     U.stopEvent(e.originalEvent);
                     scrollContentMover.off.call(self);
                 }
