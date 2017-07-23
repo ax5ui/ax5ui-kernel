@@ -59,6 +59,8 @@
             };
             this.activeDialog = null;
             this.autoCloseTimer = null;
+            this.queue = [];
+
             cfg = this.config;
 
             var onStateChanged = function onStateChanged(opts, that) {
@@ -119,8 +121,13 @@
                 };
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
+                this.dialogConfig = opts;
                 this.activeDialog = jQuery('#' + opts.id);
                 this.activeDialog.css({ width: box.width });
+
+                if (typeof callback === "undefined") {
+                    callback = opts.callback;
+                }
 
                 // dialog 높이 구하기 - 너비가 정해지면 높이가 변경 될 것.
                 opts.height = box.height = this.activeDialog.height();
@@ -367,22 +374,7 @@
                     };
                 }
 
-                if (this.activeDialog) {
-                    // try one more
-                    if (!tryCount) {
-                        setTimeout(function () {
-                            this.alert(opts, callback, 1);
-                        }.bind(this), Number(cfg.animateTime) + 100);
-                    } else {
-                        console.log(ax5.info.getError("ax5dialog", "501", "alert"));
-                    }
-                    return this;
-                }
-
-                self.dialogConfig = {};
-                jQuery.extend(true, self.dialogConfig, cfg, opts);
-                opts = self.dialogConfig;
-
+                opts = jQuery.extend(true, {}, cfg, opts);
                 opts.dialogType = "alert";
                 opts.theme = opts.theme || cfg.theme || "";
                 opts.callback = callback;
@@ -392,8 +384,12 @@
                         ok: { label: cfg.lang["ok"], theme: opts.theme }
                     };
                 }
-                open.call(this, opts, callback);
 
+                if (this.activeDialog) {
+                    this.queue.push(opts);
+                } else {
+                    open.call(this, opts, callback);
+                }
                 return this;
             };
 
@@ -433,22 +429,7 @@
                     };
                 }
 
-                if (this.activeDialog) {
-                    // try one more
-                    if (!tryCount) {
-                        setTimeout(function () {
-                            this.confirm(opts, callback, 1);
-                        }.bind(this), Number(cfg.animateTime) + 100);
-                    } else {
-                        console.log(ax5.info.getError("ax5dialog", "501", "confirm"));
-                    }
-                    return this;
-                }
-
-                self.dialogConfig = {};
-                jQuery.extend(true, self.dialogConfig, cfg, opts);
-                opts = self.dialogConfig;
-
+                opts = jQuery.extend(true, {}, cfg, opts);
                 opts.dialogType = "confirm";
                 opts.theme = opts.theme || cfg.theme || "";
                 opts.callback = callback;
@@ -459,7 +440,12 @@
                         cancel: { label: cfg.lang["cancel"] }
                     };
                 }
-                open.call(this, opts, callback);
+
+                if (this.activeDialog) {
+                    this.queue.push(opts);
+                } else {
+                    open.call(this, opts, callback);
+                }
 
                 return this;
             };
@@ -497,21 +483,7 @@
                     };
                 }
 
-                if (this.activeDialog) {
-                    // try one more
-                    if (!tryCount) {
-                        setTimeout(function () {
-                            this.prompt(opts, callback, 1);
-                        }.bind(this), Number(cfg.animateTime) + 100);
-                    } else {
-                        console.log(ax5.info.getError("ax5dialog", "501", "prompt"));
-                    }
-                    return this;
-                }
-
-                self.dialogConfig = {};
-                jQuery.extend(true, self.dialogConfig, cfg, opts);
-                opts = self.dialogConfig;
+                opts = jQuery.extend(true, {}, cfg, opts);
                 opts.dialogType = "prompt";
                 opts.theme = opts.theme || cfg.theme || "";
                 opts.callback = callback;
@@ -527,7 +499,12 @@
                         cancel: { label: cfg.lang["cancel"] }
                     };
                 }
-                open.call(this, opts, callback);
+
+                if (this.activeDialog) {
+                    this.queue.push(opts);
+                } else {
+                    open.call(this, opts, callback);
+                }
 
                 return this;
             };
@@ -549,6 +526,7 @@
                     if (this.autoCloseTimer) clearTimeout(this.autoCloseTimer);
 
                     opts = self.dialogConfig;
+
                     this.activeDialog.addClass("destroy");
                     jQuery(window).unbind("keydown.ax5dialog");
                     jQuery(window).unbind("resize.ax5dialog");
@@ -573,6 +551,10 @@
                             opts.onStateChanged.call(that, that);
                         } else if (this.onStateChanged) {
                             this.onStateChanged.call(that, that);
+                        }
+
+                        if (this.queue && this.queue.length) {
+                            open.call(this, this.queue.shift());
                         }
 
                         opts = null;
