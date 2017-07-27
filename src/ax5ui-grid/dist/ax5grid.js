@@ -254,6 +254,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 return this;
             };
             var initColumns = function initColumns(_columns) {
+                if (!U.isArray(_columns)) _columns = [];
                 this.columns = U.deepCopy(_columns);
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex || 0;

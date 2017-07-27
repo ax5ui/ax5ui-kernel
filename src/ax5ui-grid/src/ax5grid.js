@@ -250,6 +250,7 @@
                 return this;
             };
             const initColumns = function (_columns) {
+                if(!U.isArray(_columns)) _columns = [];
                 this.columns = U.deepCopy(_columns);
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex || 0;
