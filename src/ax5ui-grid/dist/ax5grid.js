@@ -6311,8 +6311,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         var fromRowIndex = this.xvar.virtualPaintStartRowIndex;
         var toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
-        //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
-        var totalElements = this.xvar.dataRowCount;
+        var totalElements = this.page && this.page.totalElements ? this.page.totalElements : false;
 
         if (toRowIndex > totalElements) {
             toRowIndex = totalElements;
@@ -6321,8 +6320,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
             fromRowIndex: U.number(fromRowIndex + 1, { "money": true }),
             toRowIndex: U.number(toRowIndex, { "money": true }),
-            totalElements: U.number(totalElements, { "money": true }),
-            dataRowCount: totalElements !== this.xvar.dataRealRowCount ? U.number(this.xvar.dataRealRowCount, { "money": true }) : false,
+            totalElements: totalElements ? U.number(totalElements, { "money": true }) : false,
+            dataRealRowCount: this.xvar.dataRowCount !== this.xvar.dataRealRowCount ? U.number(this.xvar.dataRealRowCount, { "money": true }) : false,
+            dataRowCount: U.number(this.xvar.dataRowCount, { "money": true }),
             progress: this.appendProgress ? this.config.appendProgressIcon : ""
         }));
     };
@@ -6846,7 +6846,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var page_status = function page_status() {
-        return "<span>{{{progress}}} {{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}{{#dataRowCount}} ({{dataRowCount}}){{/dataRowCount}}</span>";
+        return "<span>{{{progress}}} {{fromRowIndex}} - {{toRowIndex}} of {{dataRowCount}} {{#dataRealRowCount}}&nbsp; Current {{.}}{{/dataRealRowCount}} {{#totalElements}}&nbsp; Total {{.}}{{/totalElements}}</span>";
     };
 
     GRID.tmpl = {
