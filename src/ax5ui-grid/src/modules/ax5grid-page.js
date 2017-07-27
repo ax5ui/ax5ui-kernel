@@ -105,8 +105,7 @@
 
         let fromRowIndex = this.xvar.virtualPaintStartRowIndex;
         let toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
-        //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
-        let totalElements = this.xvar.dataRowCount;
+        let totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : false;
 
         if (toRowIndex > totalElements) {
             toRowIndex = totalElements;
@@ -115,8 +114,9 @@
         this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
             fromRowIndex: U.number(fromRowIndex + 1, {"money": true}),
             toRowIndex: U.number(toRowIndex, {"money": true}),
-            totalElements: U.number(totalElements, {"money": true}),
-            dataRowCount: (totalElements !== this.xvar.dataRealRowCount) ? U.number(this.xvar.dataRealRowCount, {"money": true}) : false,
+            totalElements: totalElements ? U.number(totalElements, {"money": true}) : false,
+            dataRealRowCount: (this.xvar.dataRowCount !== this.xvar.dataRealRowCount) ? U.number(this.xvar.dataRealRowCount, {"money": true}) : false,
+            dataRowCount: U.number(this.xvar.dataRowCount, {"money": true}),
             progress: (this.appendProgress) ? this.config.appendProgressIcon : ""
         }));
     };
