@@ -107,7 +107,7 @@
         let toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
         let totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : false;
 
-        if (toRowIndex > totalElements) {
+        if (totalElements && toRowIndex > totalElements) {
             toRowIndex = totalElements;
         }
 

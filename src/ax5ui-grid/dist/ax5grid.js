@@ -6313,7 +6313,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
         var totalElements = this.page && this.page.totalElements ? this.page.totalElements : false;
 
-        if (toRowIndex > totalElements) {
+        if (totalElements && toRowIndex > totalElements) {
             toRowIndex = totalElements;
         }
 
