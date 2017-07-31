@@ -1137,10 +1137,10 @@
                 GRID.data.set.call(this, _data);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this);
+                if (!isFirstPaint) GRID.body.scrollTo.call(this, {top: 0});
+                
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
-
-                if (!isFirstPaint) GRID.body.scrollTo.call(this, {top: 0});
 
                 isFirstPaint = null;
                 return this;

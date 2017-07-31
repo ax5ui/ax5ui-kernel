@@ -1936,76 +1936,78 @@
                 tri, trl, ci, cl, col, cellHeight, colAlign, rowTable = _bodyRow,
                 odi = (typeof _list[di].__origin_index__ !== "undefined") ? _list[di].__origin_index__ : di;
 
-            for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
-                for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
-                    col = rowTable.rows[tri].cols[ci];
-                    cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
-                    colAlign = col.align || bodyAlign;
+            let tr_element = _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0);
+            if(tr_element) {
+                for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+                    for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                        col = rowTable.rows[tri].cols[ci];
+                        cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                        colAlign = col.align || bodyAlign;
 
-                    SS.push('<td ',
-                        'data-ax5grid-panel-name="' + _elTargetKey + '" ',
-                        'data-ax5grid-data-index="' + di + '" ',
-                        'data-ax5grid-data-o-index="' + odi + '" ',
-                        'data-ax5grid-column-row="' + tri + '" ',
-                        'data-ax5grid-column-col="' + ci + '" ',
-                        'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ',
-                        'data-ax5grid-column-colIndex="' + col.colIndex + '" ',
-                        'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
-                        (function (_focusedColumn, _selectedColumn) {
-                            let attrs = "";
-                            if (_focusedColumn) {
-                                attrs += 'data-ax5grid-column-focused="true" ';
-                            }
-                            if (_selectedColumn) {
-                                attrs += 'data-ax5grid-column-selected="true" ';
-                            }
-                            return attrs;
-                        })(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]),
-                        'colspan="' + col.colspan + '" ',
-                        'rowspan="' + col.rowspan + '" ',
-                        'class="' + (function (_col) {
-                            let tdCSS_class = "";
-                            if (_col.styleClass) {
-                                if (U.isFunction(_col.styleClass)) {
-                                    tdCSS_class += _col.styleClass.call({
+                        SS.push('<td ',
+                            'data-ax5grid-panel-name="' + _elTargetKey + '" ',
+                            'data-ax5grid-data-index="' + di + '" ',
+                            'data-ax5grid-data-o-index="' + odi + '" ',
+                            'data-ax5grid-column-row="' + tri + '" ',
+                            'data-ax5grid-column-col="' + ci + '" ',
+                            'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ',
+                            'data-ax5grid-column-colIndex="' + col.colIndex + '" ',
+                            'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ',
+                            (function (_focusedColumn, _selectedColumn) {
+                                let attrs = "";
+                                if (_focusedColumn) {
+                                    attrs += 'data-ax5grid-column-focused="true" ';
+                                }
+                                if (_selectedColumn) {
+                                    attrs += 'data-ax5grid-column-selected="true" ';
+                                }
+                                return attrs;
+                            })(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]),
+                            'colspan="' + col.colspan + '" ',
+                            'rowspan="' + col.rowspan + '" ',
+                            'class="' + (function (_col) {
+                                let tdCSS_class = "";
+                                if (_col.styleClass) {
+                                    if (U.isFunction(_col.styleClass)) {
+                                        tdCSS_class += _col.styleClass.call({
                                             column: _col,
                                             key: _col.key,
                                             item: _list[di],
                                             index: di
                                         }) + " ";
-                                } else {
-                                    tdCSS_class += _col.styleClass + " ";
+                                    } else {
+                                        tdCSS_class += _col.styleClass + " ";
+                                    }
                                 }
+                                if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                                if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                                return tdCSS_class;
+                            }).call(this, col) + '" ',
+                            'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                        SS.push((function (_cellHeight) {
+                            let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
+                            if (!col.multiLine) {
+                                _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                             }
-                            if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
-                            if (ci == cl - 1) tdCSS_class += "isLastColumn ";
-                            return tdCSS_class;
-                        }).call(this, col) + '" ',
-                        'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
-                    SS.push((function (_cellHeight) {
-                        let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
-                        if (!col.multiLine) {
-                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                        }
+                            return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
+                                ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
+                                '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
 
-                        return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
-                            ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                            '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
-
-                    })(cellHeight), getFieldValue.call(this, _list, _list[di], di, col), '</span>');
-                    SS.push('</td>');
+                        })(cellHeight), getFieldValue.call(this, _list, _list[di], di, col), '</span>');
+                        SS.push('</td>');
+                    }
+                    SS.push('<td ',
+                        'data-ax5grid-column-row="null" ',
+                        'data-ax5grid-column-col="null" ',
+                        'data-ax5grid-data-index="' + di + '" ',
+                        'data-ax5grid-column-attr="' + ("default") + '" ',
+                        'style="height: ' + (cfg.body.columnHeight) + 'px;min-height: 1px;" ',
+                        '></td>');
                 }
-                SS.push('<td ',
-                    'data-ax5grid-column-row="null" ',
-                    'data-ax5grid-column-col="null" ',
-                    'data-ax5grid-data-index="' + di + '" ',
-                    'data-ax5grid-column-attr="' + ("default") + '" ',
-                    'style="height: ' + (cfg.body.columnHeight) + 'px;min-height: 1px;" ',
-                    '></td>');
+                tr_element.innerHTML = SS.join('');
             }
-
-            _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
         };
 
         // left
@@ -2063,7 +2065,6 @@
     };
 
     const scrollTo = function (css, opts) {
-        let self = this;
         if (typeof opts === "undefined") opts = {timeoutUnUse: false};
         if (this.isInlineEditing) {
             for (var key in this.inlineEditing) {

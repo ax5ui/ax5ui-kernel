@@ -84,28 +84,6 @@
                     onClick: function () {
                         // console.log(this);
                         this.self.select(this.dindex);
-                    },
-                    grouping: {
-                        by: ["b"],
-                        columns: [
-                            {
-                                label: function () {
-                                    return this.groupBy.labels.join(", ") + " 합계";
-                                }, colspan: 2
-                            },
-                            {key: "price", collector: "avg", formatter: "money", align: "right"},
-                            {key: "amount", collector: "sum", formatter: "money", align: "right"},
-                            {
-                                key: "cost", collector: function () {
-                                var value = 0;
-                                this.list.forEach(function (n) {
-                                    if (!n.__isGrouping) value += (n.price * n.amount);
-                                });
-                                return ax5.util.number(value, {"money": 1});
-                            }, align: "right"
-                            },
-                            {label: "~~~", colspan: 3}
-                        ]
                     }
                 },
                 page: {
@@ -201,7 +179,7 @@
         setData: function (_pageNo) {
 
             var list = [];
-            var pageSize = 6;
+            var pageSize = 50;
 
             for (var i = 0, l = pageSize; i < l; i++) {
                 list.push($.extend({}, sampleData[(Math.floor(Math.random() * sampleData.length))]));
@@ -216,6 +194,7 @@
                     totalPages: 100
                 }
             });
+            //this.target.focus(0);
 
             return this;
         }
