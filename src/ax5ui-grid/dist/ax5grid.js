@@ -6317,6 +6317,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             toRowIndex = totalElements;
         }
 
+        if (toRowIndex > this.xvar.dataRowCount) {
+            toRowIndex = this.xvar.dataRowCount;
+        }
+
         this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
             fromRowIndex: U.number(fromRowIndex + 1, { "money": true }),
             toRowIndex: U.number(toRowIndex, { "money": true }),
