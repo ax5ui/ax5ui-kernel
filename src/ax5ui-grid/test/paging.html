@@ -44,7 +44,11 @@
 <script>
 
     ax5.ui.grid.tmpl.page_status = function(){
-        return '<span>{{{progress}}} {{fromRowIndex}} - {{toRowIndex}} of {{dataRowCount}} {{#dataRealRowCount}}&nbsp; 현재페이지 {{.}}{{/dataRealRowCount}} {{#totalElements}}&nbsp; Total {{.}}{{/totalElements}}</span>';
+        return '<span>{{{progress}}} {{fromRowIndex}} - {{toRowIndex}} of {{dataRowCount}} {{#totalElements}}&nbsp; Total {{.}}{{/totalElements}}</span>';
+    };
+
+    ax5.ui.grid.tmpl.page_status = function(){
+        return '<span>{{{progress}}} {{fromRowIndex_page}} - {{toRowIndex_page}} of {{totalElements}}</span>';
     };
 
     var sampleData = [
@@ -197,7 +201,7 @@
         setData: function (_pageNo) {
 
             var list = [];
-            for (var i = 0, l = 100; i < l; i++) {
+            for (var i = 0, l = 50; i < l; i++) {
                 list.push($.extend({}, sampleData[(Math.floor(Math.random() * sampleData.length))]));
             }
 
@@ -216,7 +220,6 @@
     };
 
     $(document.body).ready(function () {
-
         gridView
             .initView()
             .setData();

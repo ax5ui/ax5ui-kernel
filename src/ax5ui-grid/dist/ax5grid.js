@@ -146,7 +146,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             this.list = []; // 그리드의 데이터
             this.proxyList = null; // 그리드 데이터의 대리자
-            this.page = {}; // 그리드의 페이지 정보
+            this.page = null; // 그리드의 페이지 정보
             this.selectedDataIndexs = [];
             this.deletedList = [];
             this.sortInfo = {}; // 그리드의 헤더 정렬 정보
@@ -6309,26 +6309,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             return;
         }
 
-        var fromRowIndex = this.xvar.virtualPaintStartRowIndex;
-        var toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
-        var totalElements = this.page && this.page.totalElements ? this.page.totalElements : false;
+        var toRowIndex = void 0;
+        var data = {};
 
-        if (totalElements && toRowIndex > totalElements) {
-            toRowIndex = totalElements;
-        }
+        toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
 
         if (toRowIndex > this.xvar.dataRowCount) {
             toRowIndex = this.xvar.dataRowCount;
         }
 
-        this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
-            fromRowIndex: U.number(fromRowIndex + 1, { "money": true }),
-            toRowIndex: U.number(toRowIndex, { "money": true }),
-            totalElements: totalElements ? U.number(totalElements, { "money": true }) : false,
-            dataRealRowCount: this.xvar.dataRowCount !== this.xvar.dataRealRowCount ? U.number(this.xvar.dataRealRowCount, { "money": true }) : false,
-            dataRowCount: U.number(this.xvar.dataRowCount, { "money": true }),
-            progress: this.appendProgress ? this.config.appendProgressIcon : ""
-        }));
+        data.fromRowIndex = U.number(this.xvar.virtualPaintStartRowIndex + 1, { "money": true });
+        data.toRowIndex = U.number(toRowIndex, { "money": true });
+        data.totalElements = false;
+        data.dataRealRowCount = this.xvar.dataRowCount !== this.xvar.dataRealRowCount ? U.number(this.xvar.dataRealRowCount, { "money": true }) : false;
+        data.dataRowCount = U.number(this.xvar.dataRowCount, { "money": true });
+        data.progress = this.appendProgress ? this.config.appendProgressIcon : "";
+
+        if (this.page) {
+            data.fromRowIndex_page = U.number(this.xvar.virtualPaintStartRowIndex + this.page.currentPage * this.page.pageSize + 1, { "money": true });
+            data.toRowIndex_page = U.number(this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount + this.page.currentPage * this.page.pageSize, { "money": true });
+            data.totalElements = U.number(this.page.totalElements, { "money": true });
+        }
+
+        this.$["page"]["status"].html(GRID.tmpl.get("page_status", data));
     };
 
     GRID.page = {
@@ -6850,7 +6853,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var page_status = function page_status() {
-        return "<span>{{{progress}}} {{fromRowIndex}} - {{toRowIndex}} of {{dataRowCount}} {{#dataRealRowCount}}&nbsp; Current {{.}}{{/dataRealRowCount}} {{#totalElements}}&nbsp; Total {{.}}{{/totalElements}}</span>";
+        return "<span>{{{progress}}} {{fromRowIndex}} - {{toRowIndex}} of {{dataRowCount}} {{#totalElements}}&nbsp; Total {{.}}{{/totalElements}}</span>";
     };
 
     GRID.tmpl = {

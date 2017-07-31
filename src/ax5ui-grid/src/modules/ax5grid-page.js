@@ -41,7 +41,7 @@
             processor[_act].call(this);
         }
         else {
-            callback.call(this, _act-1);
+            callback.call(this, _act - 1);
         }
     };
 
@@ -73,7 +73,7 @@
                     endI = startI + navigationItemCount;
                 }
 
-                if(endI - startI < navigationItemCount){
+                if (endI - startI < navigationItemCount) {
                     startI = endI - navigationItemCount;
                 }
                 if (startI < 0) startI = 0;
@@ -84,7 +84,7 @@
                 return returns;
             })();
 
-            if(page["@paging"].length > 0){
+            if (page["@paging"].length > 0) {
                 page.hasPage = true;
             }
 
@@ -99,30 +99,35 @@
     };
 
     const statusUpdate = function () {
-        if(!this.config.page.statusDisplay){
+        if (!this.config.page.statusDisplay) {
             return;
         }
 
-        let fromRowIndex = this.xvar.virtualPaintStartRowIndex;
-        let toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
-        let totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : false;
+        let toRowIndex;
+        let data = {};
 
-        if (totalElements && toRowIndex > totalElements) {
-            toRowIndex = totalElements;
-        }
+        toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
 
-        if(toRowIndex > this.xvar.dataRowCount){
+        if (toRowIndex > this.xvar.dataRowCount) {
             toRowIndex = this.xvar.dataRowCount;
         }
 
-        this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
-            fromRowIndex: U.number(fromRowIndex + 1, {"money": true}),
-            toRowIndex: U.number(toRowIndex, {"money": true}),
-            totalElements: totalElements ? U.number(totalElements, {"money": true}) : false,
-            dataRealRowCount: (this.xvar.dataRowCount !== this.xvar.dataRealRowCount) ? U.number(this.xvar.dataRealRowCount, {"money": true}) : false,
-            dataRowCount: U.number(this.xvar.dataRowCount, {"money": true}),
-            progress: (this.appendProgress) ? this.config.appendProgressIcon : ""
-        }));
+        data.fromRowIndex = U.number(this.xvar.virtualPaintStartRowIndex + 1, {"money": true});
+        data.toRowIndex = U.number(toRowIndex, {"money": true});
+        data.totalElements = false;
+        data.dataRealRowCount = (this.xvar.dataRowCount !== this.xvar.dataRealRowCount) ? U.number(this.xvar.dataRealRowCount, {"money": true}) : false;
+        data.dataRowCount = U.number(this.xvar.dataRowCount, {"money": true});
+        data.progress = (this.appendProgress) ? this.config.appendProgressIcon : "";
+
+        if (this.page) {
+            data.fromRowIndex_page = U.number(this.xvar.virtualPaintStartRowIndex + (this.page.currentPage * this.page.pageSize) + 1, {"money": true});
+            data.toRowIndex_page = U.number(this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount + (this.page.currentPage * this.page.pageSize), {"money": true});
+            data.totalElements = U.number(this.page.totalElements, {"money": true});
+        }
+
+        this.$["page"]["status"].html(
+            GRID.tmpl.get("page_status", data)
+        );
     };
 
     GRID.page = {

@@ -142,7 +142,7 @@
 
             this.list = []; // 그리드의 데이터
             this.proxyList = null; // 그리드 데이터의 대리자
-            this.page = {}; // 그리드의 페이지 정보
+            this.page = null; // 그리드의 페이지 정보
             this.selectedDataIndexs = [];
             this.deletedList = [];
             this.sortInfo = {}; // 그리드의 헤더 정렬 정보
