@@ -179,19 +179,27 @@
         setData: function (_pageNo) {
 
             var list = [];
-            var pageSize = 50;
+            var pageSize = 11;
 
-            for (var i = 0, l = pageSize; i < l; i++) {
-                list.push($.extend({}, sampleData[(Math.floor(Math.random() * sampleData.length))]));
+            if(_pageNo == 4){
+                for (var i = 0, l = 4; i < l; i++) {
+                    list.push($.extend({}, sampleData[(Math.floor(Math.random() * sampleData.length))]));
+                }
             }
+            else{
+                for (var i = 0, l = pageSize; i < l; i++) {
+                    list.push($.extend({}, sampleData[(Math.floor(Math.random() * sampleData.length))]));
+                }
+            }
+
 
             this.target.setData({
                 list: list,
                 page: {
                     currentPage: _pageNo || 0,
-                    pageSize: 50,
-                    totalElements: 5000,
-                    totalPages: 100
+                    pageSize: pageSize,
+                    totalElements: 48,
+                    totalPages: 5
                 }
             });
 

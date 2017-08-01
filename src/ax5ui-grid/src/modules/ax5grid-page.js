@@ -103,10 +103,10 @@
             return;
         }
 
-        let toRowIndex;
+        let toRowIndex, rangeCount = Math.min(this.xvar.dataRowCount, this.xvar.virtualPaintRowCount);
         let data = {};
 
-        toRowIndex = this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount;
+        toRowIndex = this.xvar.virtualPaintStartRowIndex + rangeCount;
 
         if (toRowIndex > this.xvar.dataRowCount) {
             toRowIndex = this.xvar.dataRowCount;
@@ -121,7 +121,7 @@
 
         if (this.page) {
             data.fromRowIndex_page = U.number(this.xvar.virtualPaintStartRowIndex + (this.page.currentPage * this.page.pageSize) + 1, {"money": true});
-            data.toRowIndex_page = U.number(this.xvar.virtualPaintStartRowIndex + this.xvar.virtualPaintRowCount + (this.page.currentPage * this.page.pageSize), {"money": true});
+            data.toRowIndex_page = U.number(this.xvar.virtualPaintStartRowIndex + rangeCount + (this.page.currentPage * this.page.pageSize), {"money": true});
             data.totalElements = U.number(this.page.totalElements, {"money": true});
 
             if (data.toRowIndex_page > this.page.totalElements) {
