@@ -362,6 +362,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
             };
             var alignGrid = function alignGrid(_isFirst) {
+                var list = this.proxyList ? this.proxyList : this.list;
                 // 대상이 크기가 컬럼의 최소 크기 보다 작업 금지
                 if (Math.min(this.$target.innerWidth(), this.$target.innerHeight()) < 5) {
                     return false;
@@ -404,7 +405,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     pageHeight = cfg.page.display ? cfg.page.height : 0;
 
                 (function () {
-                    verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
+                    verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight < list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
                     // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
                     horizontalScrollerHeight = function () {
                         var totalColGroupWidth = 0;
@@ -418,7 +419,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }.call(this);
 
                     if (horizontalScrollerHeight > 0) {
-                        verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight - horizontalScrollerHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
+                        verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight - horizontalScrollerHeight < list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
                     }
                 }).call(this);
 
@@ -1124,10 +1125,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
 
                 GRID.data.set.call(this, _data);
-                alignGrid.call(this);
                 GRID.body.repaint.call(this);
                 if (!isFirstPaint) GRID.body.scrollTo.call(this, { top: 0 });
 
+                alignGrid.call(this);
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
 
@@ -2577,7 +2578,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             paintEndColumnIndex = 0,
             nopaintLeftColumnsWidth = null,
             nopaintRightColumnsWidth = null;
-
         var bodyScrollLeft = -this.$.panel["body-scroll"].position().left;
 
         if (this.config.virtualScrollX) {
@@ -2650,7 +2650,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         /// 스크롤 컨텐츠의 높이 : 그리드 스크롤의 실제 크기와는 관계 없이 데이터 갯수에 따라 스크롤 컨텐츠 높이값 구해서 저장해두기.
-        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
+        // todo scrollContentHeight
+        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (list.length - this.xvar.frozenRowIndex);
+        if (this.xvar.scrollContentHeight < 0) this.xvar.scrollContentHeight = 0;
+
         /// 사용된 패널들의 키 모음
         this.$.livePanelKeys = [];
 
@@ -3038,7 +3041,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             if (cfg.footSum) {
                 // 바닥 요약 (footSum에 대한 aside 사용안함)
-                repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, list);
+                repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, this.list);
             }
         }
 
@@ -3053,7 +3056,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
             if (cfg.footSum && this.needToPaintSum) {
                 // 바닥 요약
-                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, this.list);
             }
         }
 
@@ -3066,7 +3069,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         // 바닥 요약
         if (cfg.footSum && this.needToPaintSum) {
-            repaintSum.call(this, "bottom-body-scroll", headerColGroup, footSumData, list, scrollConfig);
+            repaintSum.call(this, "bottom-body-scroll", headerColGroup, footSumData, this.list, scrollConfig);
         }
         // right
         if (cfg.rightSum) {}
@@ -3074,7 +3077,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
         /// mergeCells
-        if (cfg.body.mergeCells && this.list.length) {
+        if (cfg.body.mergeCells && list.length) {
             // left
             if (this.xvar.frozenColumnIndex > 0) {
                 if (this.xvar.frozenRowIndex > 0) {
@@ -4375,7 +4378,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var toggleCollapse = function toggleCollapse(_dindex, _doindex, _collapse) {
         if (GRID.data.toggleCollapse.call(this, _dindex, _doindex, _collapse)) {
             this.proxyList = GRID.data.getProxyList.call(this, this.list);
-            repaint.call(this);
+            this.align();
         }
     };
 

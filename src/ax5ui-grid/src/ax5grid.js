@@ -355,6 +355,7 @@
                 }
             };
             const alignGrid = function (_isFirst) {
+                let list = (this.proxyList) ? this.proxyList : this.list;
                 // 대상이 크기가 컬럼의 최소 크기 보다 작업 금지
                 if (Math.min(this.$target.innerWidth(), this.$target.innerHeight()) < 5) {
                     return false;
@@ -395,7 +396,7 @@
                     pageHeight = (cfg.page.display) ? cfg.page.height : 0;
 
                 (function () {
-                    verticalScrollerWidth = ((CT_HEIGHT - headerHeight - pageHeight - footSumHeight) < this.list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
+                    verticalScrollerWidth = ((CT_HEIGHT - headerHeight - pageHeight - footSumHeight) < list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
                     // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
                     horizontalScrollerHeight = (function () {
                         let totalColGroupWidth = 0;
@@ -409,7 +410,7 @@
                     }).call(this);
 
                     if (horizontalScrollerHeight > 0) {
-                        verticalScrollerWidth = ((CT_HEIGHT - headerHeight - pageHeight - footSumHeight - horizontalScrollerHeight) < this.list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
+                        verticalScrollerWidth = ((CT_HEIGHT - headerHeight - pageHeight - footSumHeight - horizontalScrollerHeight) < list.length * this.xvar.bodyTrHeight) ? this.config.scroller.size : 0;
                     }
                 }).call(this);
 
@@ -1135,10 +1136,10 @@
                 let isFirstPaint = (typeof this.xvar.paintStartRowIndex === "undefined");
 
                 GRID.data.set.call(this, _data);
-                alignGrid.call(this);
                 GRID.body.repaint.call(this);
                 if (!isFirstPaint) GRID.body.scrollTo.call(this, {top: 0});
-                
+
+                alignGrid.call(this);
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
 

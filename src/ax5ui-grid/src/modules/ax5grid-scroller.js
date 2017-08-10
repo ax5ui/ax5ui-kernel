@@ -482,7 +482,7 @@
 
         if (verticalScrollBarHeight < this.config.scroller.barMinSize) verticalScrollBarHeight = this.config.scroller.barMinSize;
         if (horizontalScrollBarWidth < this.config.scroller.barMinSize) horizontalScrollBarWidth = this.config.scroller.barMinSize;
-
+        
         this.$["scroller"]["vertical-bar"].css({
             top: convertScrollBarPosition.vertical.call(this, this.$.panel["body-scroll"].position().top, {
                 _content_width: _content_width,

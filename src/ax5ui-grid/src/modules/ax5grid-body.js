@@ -894,7 +894,6 @@
         if (isNaN(paintStartRowIndex)) return this;
 
         let paintStartColumnIndex = 0, paintEndColumnIndex = 0, nopaintLeftColumnsWidth = null, nopaintRightColumnsWidth = null;
-
         let bodyScrollLeft = -(this.$.panel["body-scroll"].position().left);
 
         if (this.config.virtualScrollX) { // 페인트 시작컬럼위치와 종료컬럼위치 구하기
@@ -971,7 +970,10 @@
         }
 
         /// 스크롤 컨텐츠의 높이 : 그리드 스크롤의 실제 크기와는 관계 없이 데이터 갯수에 따라 스크롤 컨텐츠 높이값 구해서 저장해두기.
-        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
+        // todo scrollContentHeight
+        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (list.length - this.xvar.frozenRowIndex);
+        if (this.xvar.scrollContentHeight < 0) this.xvar.scrollContentHeight = 0;
+
         /// 사용된 패널들의 키 모음
         this.$.livePanelKeys = [];
 
@@ -1385,7 +1387,7 @@
 
             if (cfg.footSum) {
                 // 바닥 요약 (footSum에 대한 aside 사용안함)
-                repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, list);
+                repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, this.list);
             }
         }
 
@@ -1400,7 +1402,7 @@
 
             if (cfg.footSum && this.needToPaintSum) {
                 // 바닥 요약
-                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, this.list);
             }
         }
 
@@ -1413,7 +1415,7 @@
 
         // 바닥 요약
         if (cfg.footSum && this.needToPaintSum) {
-            repaintSum.call(this, "bottom-body-scroll", headerColGroup, footSumData, list, scrollConfig);
+            repaintSum.call(this, "bottom-body-scroll", headerColGroup, footSumData, this.list, scrollConfig);
         }
         // right
         if (cfg.rightSum) {
@@ -1421,7 +1423,7 @@
         }
 
         /// mergeCells
-        if (cfg.body.mergeCells && this.list.length) {
+        if (cfg.body.mergeCells && list.length) {
             // left
             if (this.xvar.frozenColumnIndex > 0) {
                 if (this.xvar.frozenRowIndex > 0) { // 상단 행고정
@@ -2801,7 +2803,7 @@
     const toggleCollapse = function (_dindex, _doindex, _collapse) {
         if (GRID.data.toggleCollapse.call(this, _dindex, _doindex, _collapse)) {
             this.proxyList = GRID.data.getProxyList.call(this, this.list);
-            repaint.call(this);
+            this.align();
         }
     };
 

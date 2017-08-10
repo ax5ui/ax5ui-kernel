@@ -247,6 +247,9 @@
                 case "column-update":
                     firstGrid.updateColumn({key: "b", label: "필드B"}, 0);
                     break;
+                case "excel":
+                    firstGrid.exportExcel("myExcel.xls");
+                    break;
             }
         });
 

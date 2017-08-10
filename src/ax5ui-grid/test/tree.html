@@ -36,7 +36,6 @@
     <button class="btn btn-default" data-grid-control="row-remove">row remove</button>
     <button class="btn btn-default" data-grid-control="row-delete">row delete</button>
     <button class="btn btn-default" data-grid-control="row-update">row update</button>
-
     <button class="btn btn-default" data-grid-control="cell-update">cell update</button>
 </div>
 
@@ -44,19 +43,28 @@
     <button class="btn btn-default" data-grid-control="select-row-toggle">toggle select list[0]</button>
     <button class="btn btn-default" data-grid-control="select-row-true">select list[0]</button>
     <button class="btn btn-default" data-grid-control="select-row-false">deselect list[0]</button>
-
     <button class="btn btn-default" data-grid-control="select-all-toggle">toggle selectAll</button>
     <button class="btn btn-default" data-grid-control="select-all-true">select selectAll</button>
     <button class="btn btn-default" data-grid-control="select-all-false">deselect selectAll</button>
-
     <button class="btn btn-default" data-grid-control="get-list-selected">getList("selected");</button>
-
+    <button type="button" class="btn btn-default" data-grid-control="excel">Excel</button>
 </div>
 
 <div style="height: 10px;"></div>
 
-<div style="border:1px solid #0a68b4;position: relative;height:400px;" id="grid-parent">
-    <div data-ax5grid="first-grid" data-ax5grid-config='{name:"my first grid"}' style="height: 100%;"></div>
+<div style="border:1px solid #0a68b4;position: relative;" id="grid-parent">
+    <div
+            data-ax5grid="first-grid"
+            data-ax5grid-config="{
+                      frozenColumnIndex: 2,
+                      frozenRowIndex: 2,
+                      showLineNumber: true,
+                      showRowSelector: true,
+                      lineNumberColumnWidth: 60,
+                      rowSelectorColumnWidth: 25
+                  }"
+            style="height: 300px;">
+    </div>
 </div>
 
 <TEXTAREA ID="holdtext" STYLE="position:absolute;top:-1000px;"></TEXTAREA>
@@ -73,6 +81,16 @@
         {pid: "4", id: "7", name: "Bill", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "이하종", saleType: "B", isChecked: "N"},
         {pid: "0", id: "8", name: "Aeei", price: 1400, amount: 5, saleDt: "2016-08-29", customer: "김혜미", saleType: "C", isChecked: "N"}
     ];
+
+    ax5.ui.grid.collector["depth0sum"] = function () {
+        var value = 0, i = this.list.length;
+        while (i--) {
+            if (!("__groupingList" in this.list[i]) && this.list[i].__depth__ == 0) {
+                value += ax5.util.number(this.list[i][this.key]);
+            }
+        }
+        return value;
+    };
 
     ///
     var gridView = {
@@ -102,11 +120,13 @@
                     },
                     onDataChanged: function () {
                         if (this.key == 'isChecked') {
-                            this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked}, {filter: function (item) {
-                                return item.saleType != "A";
-                            }});
+                            this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked}, {
+                                filter: function (item) {
+                                    return item.saleType != "A";
+                                }
+                            });
                         }
-                        else if(this.key == '__selected__'){
+                        else if (this.key == '__selected__') {
                             this.self.updateChildRows(this.dindex, {__selected__: this.item.__selected__});
                         }
                     }
@@ -134,6 +154,9 @@
                         type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
                     }
                     },
+                    {key: "price", label: "단가", formatter: "money", align: "right"},
+                    {key: "amount", label: "수량", formatter: "money", align: "right"},
+                    {key: "cost", label: "금액", align: "right", formatter: "money"},
                     {
                         key: "saleType", label: "판매타입", editor: {
                         type: "select", config: {
@@ -200,7 +223,14 @@
                         parentKey: "pid",
                         selfKey: "id"
                     }
-                }
+                },
+                footSum: [
+                    [
+                        {label: "전체 합계", colspan: 3, align: "center"},
+                        {key: "price", collector: "depth0sum", formatter: "money", align: "right"},
+                        {key: "amount", collector: "depth0sum", formatter: "money", align: "right"},
+                        {key: "cost", collector: "depth0sum", formatter: "money", align: "right"}
+                    ]]
             });
 
 
@@ -268,7 +298,9 @@
                 case "get-list-selected":
                     console.log(firstGrid.getList("selected"));
                     break;
-
+                case "excel":
+                    $("body").append(firstGrid.exportExcel());
+                    break;
             }
         });
 
