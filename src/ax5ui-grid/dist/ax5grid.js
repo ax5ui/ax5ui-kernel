@@ -4327,8 +4327,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     SS.push('\n<tr>');
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
-
-                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, val, "text"), '&nbsp;</td>');
+                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', (isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, val, "text")) || '&nbsp;', '</td>');
                     }
                     SS.push('\n</tr>');
                 }

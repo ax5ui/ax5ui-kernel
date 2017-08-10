@@ -237,7 +237,7 @@
                         }
                         di = this.proxyList.length;
                         while (di--) {
-                            if(this.list[doi][cfg.columnKeys.selected]){
+                            if (this.list[doi][cfg.columnKeys.selected]) {
                                 pi = this.$.livePanelKeys.length;
                                 while (pi--) {
                                     this.$.panel[this.$.livePanelKeys[pi]]
@@ -273,7 +273,7 @@
                 }
             };
 
-        if(typeof _doindex === "undefined") _doindex = _dindex;
+        if (typeof _doindex === "undefined") _doindex = _dindex;
 
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
@@ -601,9 +601,9 @@
 
             return data;
         }).call(this, this.bodyRowTable);
-        
+
         //console.log(dividedBodyRowObj);
-        
+
         this.leftBodyRowData = dividedBodyRowObj.leftData;
         this.bodyRowData = dividedBodyRowObj.rightData;
 
@@ -720,7 +720,7 @@
                     } else {
                         if (/[\.\[\]]/.test(_key)) {
                             _value = GRID.data.getValue.call(this, _index, _item.__origin_index__, _key);
-                        }else{
+                        } else {
                             _value = _item[_key];
                         }
 
@@ -729,8 +729,8 @@
 
                     // 키값이 Boolean일때 오류 발생하여 수정.
                     return (typeof returnValue !== "string") ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
-                            return tagsToReplace[tag] || tag;
-                        });
+                        return tagsToReplace[tag] || tag;
+                    });
                 },
                 "treeControl": function (__value) {
                     let cfg = this.config,
@@ -987,7 +987,7 @@
          */
         let repaintBody = function (_elTargetKey, _colGroup, _bodyRow, _groupRow, _list, _scrollConfig) {
             let _elTarget = this.$.panel[_elTargetKey];
-            
+
             if (!isFirstPaint && !_scrollConfig) {
                 this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
                 return false;
@@ -1024,7 +1024,7 @@
             }
             SS.push('<col  />');
             SS.push('</colgroup>');
-            
+
             di = _scrollConfig.paintStartRowIndex;
 
             for (dl = (function () {
@@ -1048,9 +1048,9 @@
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
 
                         SS.push('<tr class="tr-' + (di % 4) + '', (cfg.body.trStyleClass) ? (U.isFunction(cfg.body.trStyleClass)) ? ' ' + cfg.body.trStyleClass.call({
-                                    item: _list[di],
-                                    index: di
-                                }, _list[di], di) : ' ' + cfg.body.trStyleClass : '','"',
+                                item: _list[di],
+                                index: di
+                            }, _list[di], di) : ' ' + cfg.body.trStyleClass : '', '"',
 
                             (isGroupingRow) ? ' data-ax5grid-grouping-tr="true"' : '',
                             ' data-ax5grid-tr-data-index="' + di + '"',
@@ -1089,11 +1089,11 @@
                                     if (_col.styleClass) {
                                         if (U.isFunction(_col.styleClass)) {
                                             tdCSS_class += _col.styleClass.call({
-                                                    column: _col,
-                                                    key: _col.key,
-                                                    item: _list[di],
-                                                    index: di
-                                                }) + " ";
+                                                column: _col,
+                                                key: _col.key,
+                                                item: _list[di],
+                                                index: di
+                                            }) + " ";
                                         } else {
                                             tdCSS_class += _col.styleClass + " ";
                                         }
@@ -1112,7 +1112,7 @@
 
                                 return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
                                     ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                                    '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
+                                    '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
 
                             })(cellHeight), (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
 
@@ -1205,10 +1205,10 @@
                             if (_col.styleClass) {
                                 if (U.isFunction(_col.styleClass)) {
                                     tdCSS_class += _col.styleClass.call({
-                                            column: _col,
-                                            key: _col.key,
-                                            isFootSum: true
-                                        }) + " ";
+                                        column: _col,
+                                        key: _col.key,
+                                        isFootSum: true
+                                    }) + " ";
                                 } else {
                                     tdCSS_class += _col.styleClass + " ";
                                 }
@@ -1227,7 +1227,7 @@
 
                         return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
                             ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                            '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
+                            '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
 
                     })(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
@@ -1270,8 +1270,8 @@
             let tableTrs = _elTarget.find("tr");
             for (let ri = 0, rl = tableTrs.length; ri < rl; ri++) {
                 let tableTrTds, trMaps;
-                    tableTrTds = tableTrs[ri].childNodes;
-                    trMaps = [];
+                tableTrTds = tableTrs[ri].childNodes;
+                trMaps = [];
 
                 for (let ci = 0, cl = tableTrTds.length; ci < cl; ci++) {
                     let tdObj = {
@@ -1553,10 +1553,10 @@
                             if (_col.styleClass) {
                                 if (U.isFunction(_col.styleClass)) {
                                     tdCSS_class += _col.styleClass.call({
-                                            column: _col,
-                                            key: _col.key,
-                                            isFootSum: true
-                                        }) + " ";
+                                        column: _col,
+                                        key: _col.key,
+                                        isFootSum: true
+                                    }) + " ";
                                 } else {
                                     tdCSS_class += _col.styleClass + " ";
                                 }
@@ -1575,7 +1575,7 @@
 
                         return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
                             ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                            '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
+                            '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
 
                     })(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
@@ -1643,11 +1643,11 @@
                                     if (_col.styleClass) {
                                         if (U.isFunction(_col.styleClass)) {
                                             tdCSS_class += _col.styleClass.call({
-                                                    column: _col,
-                                                    key: _col.key,
-                                                    item: _list[di],
-                                                    index: di
-                                                }) + " ";
+                                                column: _col,
+                                                key: _col.key,
+                                                item: _list[di],
+                                                index: di
+                                            }) + " ";
                                         } else {
                                             tdCSS_class += _col.styleClass + " ";
                                         }
@@ -1666,7 +1666,7 @@
 
                                 return '<span data-ax5grid-cellHolder="' + ((col.multiLine) ? 'multiLine' : '') + '" ' +
                                     ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                                    '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '':'line-height: ' + lineHeight + 'px;') + '">';
+                                    '" style="height:' + _cellHeight + 'px;' + ((col.multiLine) ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
 
                             })(cellHeight), getGroupingValue.call(this, _list[di], di, col), '</span>');
 
@@ -1793,10 +1793,10 @@
                             if (_col.styleClass) {
                                 if (U.isFunction(_col.styleClass)) {
                                     tdCSS_class += _col.styleClass.call({
-                                            column: _col,
-                                            key: _col.key,
-                                            isFootSum: true
-                                        }) + " ";
+                                        column: _col,
+                                        key: _col.key,
+                                        isFootSum: true
+                                    }) + " ";
                                 } else {
                                     tdCSS_class += _col.styleClass + " ";
                                 }
@@ -1889,11 +1889,11 @@
                                     if (_col.styleClass) {
                                         if (U.isFunction(_col.styleClass)) {
                                             tdCSS_class += _col.styleClass.call({
-                                                    column: _col,
-                                                    key: _col.key,
-                                                    item: _list[di],
-                                                    index: di
-                                                }) + " ";
+                                                column: _col,
+                                                key: _col.key,
+                                                item: _list[di],
+                                                index: di
+                                            }) + " ";
                                         } else {
                                             tdCSS_class += _col.styleClass + " ";
                                         }
@@ -1937,7 +1937,7 @@
                 odi = (typeof _list[di].__origin_index__ !== "undefined") ? _list[di].__origin_index__ : di;
 
             let tr_element = _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0);
-            if(tr_element) {
+            if (tr_element) {
                 for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
@@ -2655,7 +2655,7 @@
                     if (this.isInlineEditing) {
                         if (this.inlineEditing[columnKey] && this.inlineEditing[columnKey].useReturnToSave) { // todo : 네이밍 검증 할 필요있음.
                             inlineEdit.deActive.call(this, "RETURN", columnKey);
-                        }else{
+                        } else {
                             return false;
                         }
                     } else {
@@ -2749,11 +2749,10 @@
                     SS.push('\n<tr>');
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
-
                         SS.push('<td ',
                             'colspan="' + col.colspan + '" ',
                             'rowspan="' + col.rowspan + '" ',
-                            '>', (isGroupingRow) ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, val, "text"), '&nbsp;</td>');
+                            '>', ((isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, val, "text")) || '&nbsp;'), '</td>');
                     }
                     SS.push('\n</tr>');
                 }
