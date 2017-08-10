@@ -1139,7 +1139,9 @@
                 GRID.body.repaint.call(this);
                 if (!isFirstPaint) GRID.body.scrollTo.call(this, {top: 0});
 
+                // 가로/세로 스크롤바 show/hide 처리
                 alignGrid.call(this);
+                // 가로세로 스크롤바의 크기 재 계산.
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
 
