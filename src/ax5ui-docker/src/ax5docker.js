@@ -1126,6 +1126,7 @@
                  * ```
                  */
                 this.addPanel = function (_addPath, _addType, _panel, _panelIndex) {
+                    console.log(_addPath, _addType);
                     let addPath = "";
                     let pane;
                     let parent;
@@ -1152,6 +1153,12 @@
                         pane = parent;
                         addPath = pane.panelPath;
                     }
+
+
+                    console.log(pane);
+                    console.log(parent);
+                    console.log(addPath);
+
                     let panelProcessor = {
                         "stack"(_pane, _addType, _panel, _panelIndex){
                             let copyPanel = jQuery.extend({}, _pane),
@@ -1518,7 +1525,7 @@
                  * @returns {ax5docker}
                  */
                 this.appendPanel = function (_panel, _appendPath, _appendType) {
-
+                    console.log(_panel);
                     let copiedPanel = $.extend({}, _panel, {panelPath: ""}),
                         addType;
 
@@ -1586,6 +1593,8 @@
                     // todo : deactive call
 
                     setPanel(removePanelPath, null);
+                    
+                    console.log(_appendPath, addType, copiedPanel, appendPanelIndex);
                     this.addPanel(_appendPath, addType, copiedPanel, appendPanelIndex);
 
                     copiedPanel = null;

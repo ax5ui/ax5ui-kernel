@@ -227,9 +227,10 @@
                         btnTarget: target
                     };
                     if (opts.dialogType === "prompt") {
+                        that.input = {};
                         for (var oi in opts.input) {
-                            that[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
-                            if (that[oi] == "" || that[oi] == null) {
+                            that.input[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
+                            if (opts.input[oi].required && (that.input[oi] == "" || that.input[oi] == null)) {
                                 emptyKey = oi;
                                 break;
                             }

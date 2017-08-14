@@ -93,7 +93,7 @@
                             return additionalContent.call(opts);
                         }
                         else {
-                             return additionalContent;
+                            return additionalContent;
                         }
                     })(opts.additionalContent)
                 };
@@ -124,7 +124,7 @@
                 this.activeDialog = jQuery('#' + opts.id);
                 this.activeDialog.css({width: box.width});
 
-                if(typeof callback === "undefined"){
+                if (typeof callback === "undefined") {
                     callback = opts.callback;
                 }
 
@@ -171,7 +171,7 @@
                     state: "open"
                 });
 
-                if(opts.autoCloseTime) {
+                if (opts.autoCloseTime) {
                     this.autoCloseTimer = setTimeout(function () {
                         self.close();
                     }, opts.autoCloseTime);
@@ -229,9 +229,10 @@
                         btnTarget: target
                     };
                     if (opts.dialogType === "prompt") {
+                        that.input = {};
                         for (let oi in opts.input) {
-                            that[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
-                            if (that[oi] == "" || that[oi] == null) {
+                            that.input[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
+                            if (opts.input[oi].required && (that.input[oi] == "" || that.input[oi] == null)) {
                                 emptyKey = oi;
                                 break;
                             }
@@ -449,7 +450,7 @@
 
                 if (this.activeDialog) {
                     this.queue.push(opts);
-                }else{
+                } else {
                     open.call(this, opts, callback);
                 }
 
@@ -508,7 +509,7 @@
 
                 if (this.activeDialog) {
                     this.queue.push(opts);
-                }else{
+                } else {
                     open.call(this, opts, callback);
                 }
 
@@ -528,7 +529,7 @@
                 let opts, that;
 
                 if (this.activeDialog) {
-                    if(this.autoCloseTimer) clearTimeout(this.autoCloseTimer);
+                    if (this.autoCloseTimer) clearTimeout(this.autoCloseTimer);
 
                     opts = self.dialogConfig;
 
@@ -559,7 +560,7 @@
                             this.onStateChanged.call(that, that);
                         }
 
-                        if(this.queue && this.queue.length) {
+                        if (this.queue && this.queue.length) {
                             open.call(this, this.queue.shift());
                         }
 
