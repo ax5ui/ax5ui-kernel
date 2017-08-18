@@ -59,6 +59,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 multipleSelect: true,
                 virtualScrollY: true,
                 virtualScrollX: true,
+                headerSelect: true,
 
                 // 스크롤될 때 body 페인팅 딜레이를 주어 성능이 좋은 않은 브라우저에서 반응을 빠르게 할 때 사용하는 옵션들
                 virtualScrollYCountMargin: 0,
@@ -77,7 +78,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     align: false,
                     columnHeight: 26,
                     columnPadding: 3,
-                    columnBorderWidth: 1
+                    columnBorderWidth: 1,
+                    selector: true
                 },
                 body: {
                     align: false,
@@ -647,6 +649,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * @param {Boolean} [_config.virtualScrollY=true] - 세로축 가상스크롤 처리여부
              * @param {Boolean} [_config.virtualScrollX=true] - 가로축 가상스크롤 처리여부
              * @param {Object} [_config.header]
+             * @param {Object} [_config.header.selector=true] - 헤더 checkbox 표시여부
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
              * @param {Number} [_config.header.columnPadding=3]
@@ -1128,7 +1131,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 GRID.body.repaint.call(this);
                 if (!isFirstPaint) GRID.body.scrollTo.call(this, { top: 0 });
 
+                // 가로/세로 스크롤바 show/hide 처리
                 alignGrid.call(this);
+                // 가로세로 스크롤바의 크기 재 계산.
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
 
@@ -5621,7 +5626,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             //rowIndex = this.getAttribute("data-ax5grid-column-rowindex"),
             col = self.colGroup[colIndex];
 
-            if (key === "__checkbox_header__") {
+            if (key === "__checkbox_header__" && self.config.header.selector) {
                 var selected = this.getAttribute("data-ax5grid-selected");
                 selected = U.isNothing(selected) ? true : selected !== "true";
 
@@ -5711,7 +5716,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var getFieldValue = function getFieldValue(_col) {
-        return _col.key === "__checkbox_header__" ? "<div class=\"checkBox\" style=\"max-height: " + (_col.width - 10) + "px;min-height: " + (_col.width - 10) + "px;\"></div>" : _col.label || "&nbsp;";
+        return _col.key === "__checkbox_header__" ? this.config.header.selector ? "<div class=\"checkBox\" style=\"max-height: " + (_col.width - 10) + "px;min-height: " + (_col.width - 10) + "px;\"></div>" : "&nbsp;" : _col.label || "&nbsp;";
     };
 
     var repaint = function repaint(_reset) {

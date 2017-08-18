@@ -55,6 +55,7 @@
                 multipleSelect: true,
                 virtualScrollY: true,
                 virtualScrollX: true,
+                headerSelect: true,
 
                 // 스크롤될 때 body 페인팅 딜레이를 주어 성능이 좋은 않은 브라우저에서 반응을 빠르게 할 때 사용하는 옵션들
                 virtualScrollYCountMargin: 0,
@@ -73,7 +74,8 @@
                     align: false,
                     columnHeight: 26,
                     columnPadding: 3,
-                    columnBorderWidth: 1
+                    columnBorderWidth: 1,
+                    selector: true
                 },
                 body: {
                     align: false,
@@ -655,6 +657,7 @@
              * @param {Boolean} [_config.virtualScrollY=true] - 세로축 가상스크롤 처리여부
              * @param {Boolean} [_config.virtualScrollX=true] - 가로축 가상스크롤 처리여부
              * @param {Object} [_config.header]
+             * @param {Object} [_config.header.selector=true] - 헤더 checkbox 표시여부
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
              * @param {Number} [_config.header.columnPadding=3]
