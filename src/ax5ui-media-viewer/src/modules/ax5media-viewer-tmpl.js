@@ -8,6 +8,7 @@
     <div data-media-viewer-els="viewer-holder">
         <div data-media-viewer-els="viewer"></div>
     </div>
+    {{#loading}}
     <div data-media-viewer-els="viewer-loading">
         <div class="ax5-ui-media-viewer-loading-holder">
             <div class="ax5-ui-media-viewer-loading-cell">
@@ -16,6 +17,10 @@
             </div>
         </div>
     </div>
+    {{/loading}}
+    {{^loading}}
+    <div data-media-viewer-els="viewer-prev"></div>
+    {{/loading}}
     
     {{#media}}
     <div data-media-viewer-els="media-list-holder" {{#hideMediaList}}style="display:none;"{{/hideMediaList}}>

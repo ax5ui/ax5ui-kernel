@@ -111,7 +111,7 @@
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
-                animateTime: 250,
+                animateTime: 500,
 
                 columnKeys: {
                     src: 'src',
@@ -408,6 +408,7 @@
                     "root": this.target.find('[data-ax5-ui-media-viewer]'),
                     "viewer-holder": this.target.find('[data-media-viewer-els="viewer-holder"]'),
                     "viewer": this.target.find('[data-media-viewer-els="viewer"]'),
+                    "viewer-prev": this.target.find('[data-media-viewer-els="viewer-prev"]'),
                     "viewer-loading": this.target.find('[data-media-viewer-els="viewer-loading"]'),
                     "list-holder": this.target.find('[data-media-viewer-els="media-list-holder"]'),
                     "list-prev-handle": this.target.find('[data-media-viewer-els="media-list-prev-handle"]'),
@@ -492,17 +493,55 @@
             this.select = (function () {
                 var mediaView = {
                     image: function (obj, callback) {
-                        self.$["viewer-loading"].show();
-                        var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
-                        var img = new Image();
-                        img.src = obj.image[cfg.columnKeys.src];
-                        img.onload = function () {
-                            self.$["viewer-loading"].fadeOut();
-                            var h = dim[1];
-                            var w = h * img.width / img.height;
-                            callback(img, Math.floor(w), h);
-                        };
-                        return img;
+
+                        if (cfg.loading) {
+
+                            self.$["viewer-loading"].show();
+                            var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
+                            var img = new Image();
+                            img.src = obj.image[cfg.columnKeys.src];
+                            img.onload = function () {
+                                self.$["viewer-loading"].fadeOut();
+                                var h = dim[1];
+                                var w = h * img.width / img.height;
+                                callback(img, Math.floor(w), h);
+                            };
+                            return img;
+                        } else {
+                            var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
+                            var img = new Image();
+                            img.src = obj.image[cfg.columnKeys.src];
+
+                            if(this.$["viewer"].find("img").get(0)){
+
+                                self.$["viewer-prev"]
+                                    .html(this.$["viewer"].html())
+                                    .addClass("slide-out");
+
+                                img.onload = function () {
+
+                                    var h = dim[1];
+                                    var w = h * img.width / img.height;
+                                    callback(img, Math.floor(w), h);
+
+                                    setTimeout(function () {
+                                        self.$["viewer-prev"].removeClass("slide-out");
+                                    }, cfg.animateTime);
+
+                                };
+                                return img;
+
+
+                            }else{
+                                img.onload = function () {
+                                    var h = dim[1];
+                                    var w = h * img.width / img.height;
+                                    callback(img, Math.floor(w), h);
+                                };
+                                return img;
+                            }
+                        }
+
                     },
                     video: function (obj, callback) {
                         self.$["viewer-loading"].show();
@@ -582,9 +621,9 @@
                     }
                 };
 
-                if(!direction) direction = "next";
+                if (!direction) direction = "next";
 
-                if(direction in processor){
+                if (direction in processor) {
                     processor[direction].call(this);
                 }
             };
@@ -594,7 +633,7 @@
                     interval: 5000
                 }, _opt);
 
-                if(this.playTimer) clearTimeout(this.playTimer);
+                if (this.playTimer) clearTimeout(this.playTimer);
                 this.playTimer = setTimeout(function () {
                     self.move("next");
                     self.play(opt);
@@ -602,7 +641,7 @@
             };
 
             this.stop = function () {
-                if(this.playTimer) clearTimeout(this.playTimer);
+                if (this.playTimer) clearTimeout(this.playTimer);
             };
 
             // 클래스 생성자

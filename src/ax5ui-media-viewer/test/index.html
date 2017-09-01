@@ -19,7 +19,7 @@
 
 <div style="overflow: hidden;">
     <div id="media-viewer-target-0" style="width: 100px;"></div>
-    <div id="media-viewer-target-1" style="width: 100px;"></div>
+    <div id="media-viewer-target-1" style="width: 300px;margin:0 auto;"></div>
     <div id="media-viewer-target-2" style="width: 100px;"></div>
 </div>
 <script>
@@ -108,10 +108,7 @@
         var myViewer_1 = new ax5.ui.mediaViewer({
             theme: "primary",
             target: $("#media-viewer-target-1"),
-            loading: {
-                icon: '<i class="fa fa-spinner fa-pulse fa-2x fa-fw margin-bottom" aria-hidden="true"></i>',
-                text: '<div>Now Loading</div>'
-            },
+            loading: false,
             viewer: {
                 ratio: 4 / 3
             },

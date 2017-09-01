@@ -113,7 +113,7 @@
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
-                animateTime: 250,
+                animateTime: 500,
 
                 columnKeys: {
                     src: 'src',
@@ -384,6 +384,7 @@
                     "root": this.target.find('[data-ax5-ui-media-viewer]'),
                     "viewer-holder": this.target.find('[data-media-viewer-els="viewer-holder"]'),
                     "viewer": this.target.find('[data-media-viewer-els="viewer"]'),
+                    "viewer-prev": this.target.find('[data-media-viewer-els="viewer-prev"]'),
                     "viewer-loading": this.target.find('[data-media-viewer-els="viewer-loading"]'),
                     "list-holder": this.target.find('[data-media-viewer-els="media-list-holder"]'),
                     "list-prev-handle": this.target.find('[data-media-viewer-els="media-list-prev-handle"]'),
@@ -462,17 +463,49 @@
             this.select = function () {
                 var mediaView = {
                     image: function image(obj, callback) {
-                        self.$["viewer-loading"].show();
-                        var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
-                        var img = new Image();
-                        img.src = obj.image[cfg.columnKeys.src];
-                        img.onload = function () {
-                            self.$["viewer-loading"].fadeOut();
-                            var h = dim[1];
-                            var w = h * img.width / img.height;
-                            callback(img, Math.floor(w), h);
-                        };
-                        return img;
+
+                        if (cfg.loading) {
+
+                            self.$["viewer-loading"].show();
+                            var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
+                            var img = new Image();
+                            img.src = obj.image[cfg.columnKeys.src];
+                            img.onload = function () {
+                                self.$["viewer-loading"].fadeOut();
+                                var h = dim[1];
+                                var w = h * img.width / img.height;
+                                callback(img, Math.floor(w), h);
+                            };
+                            return img;
+                        } else {
+                            var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
+                            var img = new Image();
+                            img.src = obj.image[cfg.columnKeys.src];
+
+                            if (this.$["viewer"].find("img").get(0)) {
+
+                                self.$["viewer-prev"].html(this.$["viewer"].html()).addClass("slide-out");
+
+                                img.onload = function () {
+
+                                    var h = dim[1];
+                                    var w = h * img.width / img.height;
+                                    callback(img, Math.floor(w), h);
+
+                                    setTimeout(function () {
+                                        self.$["viewer-prev"].removeClass("slide-out");
+                                    }, cfg.animateTime);
+                                };
+                                return img;
+                            } else {
+                                img.onload = function () {
+                                    var h = dim[1];
+                                    var w = h * img.width / img.height;
+                                    callback(img, Math.floor(w), h);
+                                };
+                                return img;
+                            }
+                        }
                     },
                     video: function video(obj, callback) {
                         self.$["viewer-loading"].show();
@@ -597,7 +630,7 @@
     var MEDIAVIEWER = ax5.ui.mediaViewer;
 
     var frame = function frame(columnKeys) {
-        return "\n<div data-ax5-ui-media-viewer=\"{{id}}\" class=\"{{theme}}\">\n    <div data-media-viewer-els=\"viewer-holder\">\n        <div data-media-viewer-els=\"viewer\"></div>\n    </div>\n    <div data-media-viewer-els=\"viewer-loading\">\n        <div class=\"ax5-ui-media-viewer-loading-holder\">\n            <div class=\"ax5-ui-media-viewer-loading-cell\">\n            {{{loading.icon}}}\n            {{{loading.text}}}\n            </div>\n        </div>\n    </div>\n    \n    {{#media}}\n    <div data-media-viewer-els=\"media-list-holder\" {{#hideMediaList}}style=\"display:none;\"{{/hideMediaList}}>\n        <div data-media-viewer-els=\"media-list-prev-handle\">{{{prevHandle}}}</div>\n        <div data-media-viewer-els=\"media-list\">\n            <div data-media-viewer-els=\"media-list-table\">\n            {{#list}}\n                <div data-media-viewer-els=\"media-list-table-td\">\n                {{#image}}\n                <div data-media-thumbnail=\"{{@i}}\">\n                <img src=\"{{" + columnKeys.poster + "}}\" data-media-thumbnail-image=\"{{@i}}\" />\n                </div>\n                {{/image}}\n                {{#video}}\n                <div data-media-thumbnail=\"{{@i}}\">{{#" + columnKeys.poster + "}}<img src=\"{{.}}\" data-media-thumbnail-video=\"{{@i}}\" />>{{/" + columnKeys.poster + "}}{{^" + columnKeys.poster + "}}<a data-media-thumbnail-video=\"{{@i}}\">{{{media." + columnKeys.poster + "}}}</a>{{/" + columnKeys.poster + "}}</div>\n                {{/video}}\n                </div>\n            {{/list}}\n            </div>\n        </div>\n        <div data-media-viewer-els=\"media-list-next-handle\">{{{nextHandle}}}</div>\n    </div>\n    {{/media}}\n    \n</div>";
+        return "\n<div data-ax5-ui-media-viewer=\"{{id}}\" class=\"{{theme}}\">\n    <div data-media-viewer-els=\"viewer-holder\">\n        <div data-media-viewer-els=\"viewer\"></div>\n    </div>\n    {{#loading}}\n    <div data-media-viewer-els=\"viewer-loading\">\n        <div class=\"ax5-ui-media-viewer-loading-holder\">\n            <div class=\"ax5-ui-media-viewer-loading-cell\">\n            {{{loading.icon}}}\n            {{{loading.text}}}\n            </div>\n        </div>\n    </div>\n    {{/loading}}\n    {{^loading}}\n    <div data-media-viewer-els=\"viewer-prev\"></div>\n    {{/loading}}\n    \n    {{#media}}\n    <div data-media-viewer-els=\"media-list-holder\" {{#hideMediaList}}style=\"display:none;\"{{/hideMediaList}}>\n        <div data-media-viewer-els=\"media-list-prev-handle\">{{{prevHandle}}}</div>\n        <div data-media-viewer-els=\"media-list\">\n            <div data-media-viewer-els=\"media-list-table\">\n            {{#list}}\n                <div data-media-viewer-els=\"media-list-table-td\">\n                {{#image}}\n                <div data-media-thumbnail=\"{{@i}}\">\n                <img src=\"{{" + columnKeys.poster + "}}\" data-media-thumbnail-image=\"{{@i}}\" />\n                </div>\n                {{/image}}\n                {{#video}}\n                <div data-media-thumbnail=\"{{@i}}\">{{#" + columnKeys.poster + "}}<img src=\"{{.}}\" data-media-thumbnail-video=\"{{@i}}\" />>{{/" + columnKeys.poster + "}}{{^" + columnKeys.poster + "}}<a data-media-thumbnail-video=\"{{@i}}\">{{{media." + columnKeys.poster + "}}}</a>{{/" + columnKeys.poster + "}}</div>\n                {{/video}}\n                </div>\n            {{/list}}\n            </div>\n        </div>\n        <div data-media-viewer-els=\"media-list-next-handle\">{{{nextHandle}}}</div>\n    </div>\n    {{/media}}\n    \n</div>";
     };
 
     MEDIAVIEWER.tmpl = {

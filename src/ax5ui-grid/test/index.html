@@ -117,12 +117,13 @@
                 multiSort: true,
                 multipleSelect: false,
                 appendProgressIcon: '<i class="fa fa-circle-o-notch fa-spin fa-fw"></i>',
-                header:{
+                header: {
+                    columnHeight: 50,
                     selector: false,
                 },
                 body: {
                     columnHeight: 50,
-                    trStyleClass: function(){
+                    trStyleClass: function () {
                         return (this.item.saleType === "A") ? "RED" : "";
                     },
                     onClick: function () {
@@ -148,10 +149,12 @@
                 },
                 columns: [
                     {key: "b", label: "필드B", align: "center"},
-                    {key: "companyJson.대표자명", label: "대표자명", width: 100, align: "center"},
-                    {key: "saleDt", label: "판매일자", width: "*", align: "center", formatter: function formatter() {
-                        return ax5.util.date(this.value, {"return":'yyyy/MM/dd'});
-                    }},
+                    {key: "companyJson.대표자명", label: "<span style='display:inline-block;line-height: 14px;vertical-align: middle'>대표<br/>자명</span>", width: 100, align: "center"},
+                    {
+                        key: "saleDt", label: "판매일자", width: "*", align: "center", formatter: function formatter() {
+                        return ax5.util.date(this.value, {"return": 'yyyy/MM/dd'});
+                    }
+                    },
                     {key: "customer", label: "고객명"},
                     {key: "saleType", label: "판매타입"}
                 ]
@@ -234,8 +237,8 @@
     $(document.body).ready(function () {
 
         gridView
-                .initView()
-                .setData();
+            .initView()
+            .setData();
 
         $('[data-set-height]').click(function () {
             var height = this.getAttribute("data-set-height");
