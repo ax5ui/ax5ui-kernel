@@ -121,12 +121,12 @@
             },
             colIndex = 0,
             maekRows = function (_columns, depth, parentField) {
-                var row = {cols: []};
-                var i = 0, l = _columns.length;
+                let row = {cols: []};
+                let i = 0, l = _columns.length;
 
                 for (; i < l; i++) {
-                    var field = jQuery.extend({}, _columns[i]);
-                    var colspan = 1;
+                    let field = jQuery.extend({}, _columns[i]);
+                    let colspan = 1;
 
                     if (!field.hidden) {
                         field.colspan = 1;
@@ -142,7 +142,7 @@
                             }
                         })();
 
-                        row.cols.push(field);
+                        row.cols.push(field); // 복제된 필드 삽입
 
                         if ('columns' in field) {
                             colspan = maekRows(field.columns, depth + 1, field);
