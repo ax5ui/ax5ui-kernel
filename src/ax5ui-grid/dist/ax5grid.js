@@ -6089,6 +6089,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var self = _root;
             _$el.data("binded-ax5ui", "ax5select");
             _$el.ax5select($.extend(true, {
+                tabIndex: 1,
                 direction: "auto",
                 columnKeys: eConfig.columnKeys,
                 options: eConfig.options,
@@ -7006,10 +7007,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var row = { cols: [] };
             var i = 0,
                 l = _columns.length;
+            var colspan = 1;
 
             for (; i < l; i++) {
                 var field = jQuery.extend({}, _columns[i]);
-                var colspan = 1;
+                colspan = 1;
 
                 if (!field.hidden) {
                     field.colspan = 1;
@@ -7025,7 +7027,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }
                     }();
 
-                    row.cols.push(field);
+                    row.cols.push(field); // 복제된 필드 삽입
 
                     if ('columns' in field) {
                         colspan = maekRows(field.columns, depth + 1, field);

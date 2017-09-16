@@ -123,10 +123,11 @@
             maekRows = function (_columns, depth, parentField) {
                 let row = {cols: []};
                 let i = 0, l = _columns.length;
+                let colspan = 1;
 
                 for (; i < l; i++) {
                     let field = jQuery.extend({}, _columns[i]);
-                    let colspan = 1;
+                    colspan = 1;
 
                     if (!field.hidden) {
                         field.colspan = 1;
