@@ -75,8 +75,8 @@
         initView: function () {
             firstGrid.setConfig({
                 target: $('[data-ax5grid="first-grid"]'),
-                frozenColumnIndex: 2,
-                frozenRowIndex: 3,
+                //frozenColumnIndex: 2,
+                //frozenRowIndex: 3,
                 showLineNumber: true,
                 showRowSelector: true,
                 multipleSelect: true,
@@ -95,20 +95,6 @@
                     onClick: function () {
                         // console.log(this);
                         this.self.select(this.dindex);
-                    },
-                    grouping: {
-                        by: ["a", "b"],
-                        columns: [
-                            {
-                                label: function () {
-                                    return this.groupBy.labels.join(", ") + " 합계";
-                                }, colspan: 2
-                            },
-                            {key: "price", collector: "avg", formatter: "money", align: "right"},
-                            {key: "amount", collector: "sum", formatter: "money", align: "right"},
-                            {key: "cost", collector: "sum", formatter: "money", align: "right"},
-                            {label: "~~~", colspan: 3}
-                        ]
                     }
                 },
                 page: {
@@ -124,26 +110,28 @@
                     }
                 },
                 columns: [
-                    {key: "a", label: "field A", width: 80},
-                    {key: "b", label: "field B", width: 80},
+                    {key: "no", label: "지사", width: 80, align: "center"}, // 0
                     {
-                        label: "Group", columns: [ // child columns
-                        {key: "price", label: "field D"},
-                        {key: "amount", label: "field E"},
-                        {key: "cost", label: "field F"}
-                    ]
-                    },
-                    {key: "saleDt", label: "field C", width: 200},
-                    {key: "g", label: "field G", width: 300},
-                    {key: "h", label: "field H"}
-                ],
-                footSum: [
-                    [
-                        {label: "전체 합계", colspan: 2, align: "center"},
-                        {key: "price", collector: "avg", formatter: "money", align: "right"},
-                        {key: "amount", collector: "sum", formatter: "money", align: "right"},
-                        {key: "cost", collector: "sum", formatter: "money", align: "right"}
-                    ]]
+                        label: "TODAY", width: 120, align: "center", // 1
+                        columns: [
+                            {key: "placeName", label: "완료", width: 150, align: "center"}, // 1
+                            {key: "placeName", label: "미완료 TOTAL", width: 150, align: "center"}, // 2
+                            {
+                                label: "미완료진행사항", align: "center", // 3
+                                columns: [
+                                    {key: "grade", label: "승인", width: 100, align: "center"} // 3
+                                ]
+                            },
+                            {
+                                label: "미완료(유형)", align: "center", // 4
+                                columns: [
+                                    {key: "grade", label: "SWP", width: 100, align: "center"}, // 4
+                                    {key: "placeName", label: "ST", width: 100, align: "center"} // 5
+                                ]
+                            }
+                        ]
+                    }
+                ]
             });
             return this;
         },
@@ -167,8 +155,8 @@
     $(document.body).ready(function () {
 
         gridView
-                .initView()
-                .setData();
+            .initView()
+            .setData();
 
         $('[data-set-height]').click(function () {
             var height = this.getAttribute("data-set-height");

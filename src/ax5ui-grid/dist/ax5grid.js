@@ -258,6 +258,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var initColumns = function initColumns(_columns) {
                 if (!U.isArray(_columns)) _columns = [];
                 this.columns = U.deepCopy(_columns);
+
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
                 this.xvar.frozenColumnIndex = cfg.frozenColumnIndex || 0;
 
@@ -5826,6 +5827,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         if (cfg.frozenColumnIndex > 0) {
             repaintHeader.call(this, this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
+
         this.xvar.scrollContentWidth = repaintHeader.call(this, this.$.panel["header-scroll"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {}
@@ -6994,7 +6996,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var makeHeaderTable = function makeHeaderTable(_columns) {
-        var columns = U.deepCopy(_columns),
+        var columns = _columns,
             cfg = this.config,
             table = {
             rows: []
@@ -7006,7 +7008,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 l = _columns.length;
 
             for (; i < l; i++) {
-                var field = _columns[i];
+                var field = jQuery.extend({}, _columns[i]);
                 var colspan = 1;
 
                 if (!field.hidden) {
@@ -7060,7 +7062,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
 
     var makeBodyRowTable = function makeBodyRowTable(_columns) {
-        var columns = U.deepCopy(_columns),
+        var columns = _columns,
             table = {
             rows: []
         },
@@ -7075,7 +7077,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 var i = 0,
                     l = __columns.length;
                 for (; i < l; i++) {
-                    var field = __columns[i],
+                    var field = jQuery.extend({}, __columns[i]),
                         _colspan = 1;
 
                     if (!field.hidden) {
@@ -7109,7 +7111,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             };
 
             for (; i < l; i++) {
-                var field = _columns[i];
+                var field = jQuery.extend({}, _columns[i]);
                 colspan = 1;
 
                 if (!field.hidden) {
