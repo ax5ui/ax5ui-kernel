@@ -948,6 +948,33 @@
                                     //self.keyDown("RETURN", e.originalEvent);
                                     U.stopEvent(e);
                                 } else if (Object.keys(self.focusedColumn).length) {
+                                    /*
+                                    self.keyDown("INLINE_EDIT", e.originalEvent);
+                                    */
+                                }
+                            }
+                        }
+                    }
+                });
+
+                jQuery(window).on("keyup.ax5grid-" + this.instanceId, function (e) {
+                    if (self.focused) {
+                        if (self.isInlineEditing) {
+
+                        }
+                        else {
+                            if (e.metaKey || e.ctrlKey) {
+
+                            } else {
+                                if (ctrlKeys[e.which]) {
+
+                                } else if (e.which == ax5.info.eventKeys.ESC) {
+
+                                } else if (e.which == ax5.info.eventKeys.RETURN || e.which == ax5.info.eventKeys.SPACE) {
+
+                                } else if (e.which == ax5.info.eventKeys.TAB) {
+
+                                } else if (Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
                             }
@@ -1663,7 +1690,7 @@
                         this.select(0);
                     } else {
                         let selectedIndex = this.selectedDataIndexs[0];
-                        
+
                         let processor = {
                             "UP": function () {
                                 if (selectedIndex > 0) {
