@@ -148,7 +148,7 @@ describe('dialog Prompt TEST', function() {
             title: "Confirm Title",
             msg: 'Confirm message'
         }, function(){
-            should.equal(this.value, data1);
+            should.equal(this.input.value, data1);
 
             done();
         });
@@ -172,8 +172,8 @@ describe('dialog Prompt TEST', function() {
                 data2: {label: "data2의 라벨"}
             }
         }, function () {
-            var inputValue1 = this.data1;
-            var inputValue2 = this.data2;
+            var inputValue1 = this.input.data1;
+            var inputValue2 = this.input.data2;
 
             inputValue1.should.equal(data1);
             inputValue2.should.equal(data2);
