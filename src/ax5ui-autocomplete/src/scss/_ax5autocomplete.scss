@@ -387,7 +387,8 @@ $hover-types: (
                 display: block;
                 float: left;
                 background: transparent;
-                padding: 0px 3px;
+                box-sizing: border-box;
+                padding: 0 3px;
                 border: 1px solid transparent;
                 margin: 1px 3px 1px 0;
 
@@ -398,7 +399,7 @@ $hover-types: (
                 max-width: 100%;
 
                 &:first-child {
-                    margin-left: 0px;
+                    margin-left: 0;
                 }
 
                 [data-ax5autocomplete-remove] {
