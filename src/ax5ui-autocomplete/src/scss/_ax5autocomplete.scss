@@ -389,15 +389,13 @@ $hover-types: (
                 background: transparent;
                 padding: 0px 3px;
                 border: 1px solid transparent;
-                border-radius: 0px;
-                margin: 1px 0px 1px -0.5em;
+                margin: 1px 3px 1px 0;
 
                 @include ax-background(top, $ax5autocomplete-label-bg-colors);
                 border: $ax5autocomplete-label-border;
                 color: $ax5autocomplete-label-color;
                 border-radius: 3px;
-                margin-left: 0px;
-                margin-right: 3px;
+                max-width: 100%;
 
                 &:first-child {
                     margin-left: 0px;
@@ -413,6 +411,10 @@ $hover-types: (
                 }
                 span {
                     padding-right: 15px;
+                    display: block;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 }
             }
             [data-ax5autocomplete-display="input"] {
