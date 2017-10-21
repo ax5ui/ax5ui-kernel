@@ -2762,6 +2762,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             item: _list[di],
                             index: di
                         }, _list[di], di) : ' ' + cfg.body.trStyleClass : '', '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-tr-data-o-index="' + odi + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
+
                         for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                             col = rowTable.rows[tri].cols[ci];
                             cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
@@ -6593,14 +6594,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
                 GRID.body.scrollTo.call(self, scrollPositon);
             }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
-                scrollBarMover.off.call(self);
+                scrollBarMover.off.call(self, e);
             }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
-                scrollBarMover.off.call(self);
+                scrollBarMover.off.call(self, e);
             });
 
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
-        "off": function off() {
+        "off": function off(e) {
+            ax5.util.stopEvent(e.originalEvent);
             GRID.scroller.moveout_timer = new Date().getTime();
 
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);

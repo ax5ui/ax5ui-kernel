@@ -229,21 +229,23 @@
 
                     if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
 
-                        GRID.body.scrollTo.call(self, scrollPositon);
+                    GRID.body.scrollTo.call(self, scrollPositon);
                 })
                 .bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
-                    scrollBarMover.off.call(self);
+                    scrollBarMover.off.call(self, e);
                 })
                 .bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
-                    scrollBarMover.off.call(self);
+                    scrollBarMover.off.call(self, e);
                 });
 
             jQuery(document.body)
                 .attr('unselectable', 'on')
                 .css('user-select', 'none')
                 .on('selectstart', false);
+
         },
-        "off": function () {
+        "off": function (e) {
+            ax5.util.stopEvent(e.originalEvent);
             GRID.scroller.moveout_timer = (new Date()).getTime();
 
             jQuery(document.body)
@@ -482,7 +484,7 @@
 
         if (verticalScrollBarHeight < this.config.scroller.barMinSize) verticalScrollBarHeight = this.config.scroller.barMinSize;
         if (horizontalScrollBarWidth < this.config.scroller.barMinSize) horizontalScrollBarWidth = this.config.scroller.barMinSize;
-        
+
         this.$["scroller"]["vertical-bar"].css({
             top: convertScrollBarPosition.vertical.call(this, this.$.panel["body-scroll"].position().top, {
                 _content_width: _content_width,
