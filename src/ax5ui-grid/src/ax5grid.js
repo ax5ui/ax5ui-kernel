@@ -997,6 +997,10 @@
              * align grid size
              * @method ax5grid.align
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.repaint();
+             * ```
              */
             this.align = function () {
                 if (alignGrid.call(this)) {
@@ -1007,9 +1011,13 @@
             };
 
             /**
-             *
+             * repaint grid
              * @method ax5grid.repaint
              * @return {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.repaint();
+             * ```
              */
             this.repaint = function () {
                 GRID.header.repaint.call(this);
