@@ -1008,7 +1008,7 @@
 
             /**
              *
-             * @method ax5grid.repain
+             * @method ax5grid.repaint
              * @return {ax5grid}
              */
             this.repaint = function () {

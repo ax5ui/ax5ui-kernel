@@ -7,7 +7,7 @@
 * [ax5grid](#ax5grid)
     * [.setConfig(_config)](#ax5grid.setConfig) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.align()](#ax5grid.align) ⇒ <code>[ax5grid](#ax5grid)</code>
-    * [.repain()](#ax5grid.repain) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.repaint()](#ax5grid.repaint) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.keyDown(_keyName, _data)](#ax5grid.keyDown) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.copySelect()](#ax5grid.copySelect) ⇒ <code>Boolean</code>
     * [.setData(_data)](#ax5grid.setData) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -212,9 +212,9 @@ firstGrid.setConfig({
 align grid size
 
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
-<a name="ax5grid.repain"></a>
+<a name="ax5grid.repaint"></a>
 
-### ax5grid.repain() ⇒ <code>[ax5grid](#ax5grid)</code>
+### ax5grid.repaint() ⇒ <code>[ax5grid](#ax5grid)</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 <a name="ax5grid.keyDown"></a>
 
