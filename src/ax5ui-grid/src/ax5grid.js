@@ -1007,6 +1007,18 @@
             };
 
             /**
+             *
+             * @method ax5grid.repain
+             * @return {ax5grid}
+             */
+            this.repaint = function () {
+                GRID.header.repaint.call(this);
+                GRID.body.repaint.call(this, true); // 강제로 다시 그리기
+                GRID.scroller.resize.call(this);
+                return this;
+            };
+
+            /**
              * @method ax5grid.keyDown
              * @param {String} _keyName
              * @param {Event|Object} _data

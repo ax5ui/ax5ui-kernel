@@ -7,7 +7,7 @@
 * [ax5modal](#ax5modal)
     * [.setConfig(config)](#ax5modal.setConfig) ⇒ <code>[ax5modal](#ax5modal)</code>
     * [.open()](#ax5modal.open) ⇒ <code>[ax5modal](#ax5modal)</code>
-    * [.close()](#ax5modal.close) ⇒ <code>[ax5modal](#ax5modal)</code>
+    * [.close(_option)](#ax5modal.close) ⇒ <code>[ax5modal](#ax5modal)</code>
     * [.minimize()](#ax5modal.minimize) ⇒ <code>[ax5modal](#ax5modal)</code>
     * [.restore()](#ax5modal.restore) ⇒ <code>[ax5modal](#ax5modal)</code>
     * [.css(css)](#ax5modal.css) ⇒ <code>[ax5modal](#ax5modal)</code>
@@ -105,13 +105,22 @@ moaal.open({}, function(){
 ```
 <a name="ax5modal.close"></a>
 
-### ax5modal.close() ⇒ <code>[ax5modal](#ax5modal)</code>
+### ax5modal.close(_option) ⇒ <code>[ax5modal](#ax5modal)</code>
 close the modal
 
 **Kind**: static method of <code>[ax5modal](#ax5modal)</code>  
+
+| Param |
+| --- |
+| _option | 
+
 **Example**  
 ```
 my_modal.close();
+my_modal.close({callback: function(){
+ // on close event
+});
+// close 함수에 callback을 전달하면 정확한 close 타이밍을 캐치할 수 있습니다
 ```
 <a name="ax5modal.minimize"></a>
 

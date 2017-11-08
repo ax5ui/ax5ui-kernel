@@ -1,3 +1,18 @@
+## Classes
+
+<dl>
+<dt><a href="#ax5binder">ax5binder</a></dt>
+<dd></dd>
+</dl>
+
+## Functions
+
+<dl>
+<dt><a href="#childRemove">childRemove(dataPath, index, child_path, child_index)</a></dt>
+<dd><p>ax5binder.childRemove</p>
+</dd>
+</dl>
+
 <a name="ax5binder"></a>
 
 ## ax5binder
@@ -250,3 +265,17 @@ if(rs.error) {
      return;
  }
 ```
+<a name="childRemove"></a>
+
+## childRemove(dataPath, index, child_path, child_index)
+ax5binder.childRemove
+
+**Kind**: global function  
+
+| Param |
+| --- |
+| dataPath | 
+| index | 
+| child_path | 
+| child_index | 
+

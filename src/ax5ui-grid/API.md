@@ -7,6 +7,7 @@
 * [ax5grid](#ax5grid)
     * [.setConfig(_config)](#ax5grid.setConfig) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.align()](#ax5grid.align) ⇒ <code>[ax5grid](#ax5grid)</code>
+    * [.repain()](#ax5grid.repain) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.keyDown(_keyName, _data)](#ax5grid.keyDown) ⇒ <code>[ax5grid](#ax5grid)</code>
     * [.copySelect()](#ax5grid.copySelect) ⇒ <code>Boolean</code>
     * [.setData(_data)](#ax5grid.setData) ⇒ <code>[ax5grid](#ax5grid)</code>
@@ -58,6 +59,7 @@ Preferences of grid UI
 | [_config.virtualScrollY] | <code>Boolean</code> | <code>true</code> | 세로축 가상스크롤 처리여부 |
 | [_config.virtualScrollX] | <code>Boolean</code> | <code>true</code> | 가로축 가상스크롤 처리여부 |
 | [_config.header] | <code>Object</code> |  |  |
+| [_config.header.selector] | <code>Object</code> | <code>true</code> | 헤더 checkbox 표시여부 |
 | [_config.header.align] | <code>String</code> |  |  |
 | [_config.header.columnHeight] | <code>Number</code> | <code>25</code> |  |
 | [_config.header.columnPadding] | <code>Number</code> | <code>3</code> |  |
@@ -209,6 +211,10 @@ firstGrid.setConfig({
 ### ax5grid.align() ⇒ <code>[ax5grid](#ax5grid)</code>
 align grid size
 
+**Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
+<a name="ax5grid.repain"></a>
+
+### ax5grid.repain() ⇒ <code>[ax5grid](#ax5grid)</code>
 **Kind**: static method of <code>[ax5grid](#ax5grid)</code>  
 <a name="ax5grid.keyDown"></a>
 

@@ -44,6 +44,17 @@ Preferences of layout UI
 
 **Example**  
 ```js
+jQuery('[data-ax5layout="ax1"]').ax5layout({
+    onResize: function () {
+    }
+});
+
+jQuery('[data-ax5layout="ax1"]').ax5layout("resize", {
+    top: {height: 100},
+    bottom: 100,
+    left: 100,
+    right: 100
+});
 ```
 <a name="ax5layout.bind"></a>
 
@@ -120,5 +131,10 @@ ax5layout jquery extends
 
 **Example**  
 ```js
-jQuery('[data-ax5layout="ax1"]').ax5layout();
+jQuery('[data-ax5layout="ax1"]').ax5layout("align");
+jQuery('[data-ax5layout="ax1"]').ax5layout("resize");
+jQuery('[data-ax5layout="ax1"]').ax5layout("reset");
+jQuery('[data-ax5layout="ax1"]').ax5layout("hide");
+jQuery('[data-ax5layout="ax1"]').ax5layout("onResize");
+jQuery('[data-ax5layout="ax1"]').ax5layout("tabOpen", 1);
 ```
