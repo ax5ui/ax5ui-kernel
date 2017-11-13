@@ -1232,14 +1232,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
              * ```
              */
             this.addRow = function (_row, _dindex, _options) {
+                var _this = this;
+
                 GRID.data.add.call(this, _row, _dindex, _options);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
+
                 if (_options && _options.focus) {
                     //GRID.body.moveFocus.call(this, (this.config.body.grouping) ? "START" : "END");
-                    GRID.body.moveFocus.call(this, _options.focus);
+                    setTimeout(function () {
+                        GRID.body.moveFocus.call(_this, _options.focus);
+                    }, 1);
+                } else {
+                    GRID.scroller.resize.call(this);
                 }
-                GRID.scroller.resize.call(this);
+
                 return this;
             };
 
@@ -4044,17 +4051,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
-                (function () {
+                {
                     if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
-                        if (focusedColumn.dindex < this.xvar.virtualPaintStartRowIndex) {
+                        var virtualPaintStartRowIndex = this.xvar.virtualPaintStartRowIndex || 0;
+
+                        if (focusedColumn.dindex < virtualPaintStartRowIndex) {
                             scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight });
                             GRID.scroller.resize.call(this);
-                        } else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
-                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3) * this.xvar.bodyTrHeight });
+                        } else if (focusedColumn.dindex + 1 > virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
+                            //debugger;
+                            //console.log((focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3));
+                            var scrollTopValue = !this.config.virtualScrollY ? focusedColumn.dindex - this.xvar.frozenRowIndex : focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3;
+                            scrollTo.call(this, { top: -scrollTopValue * this.xvar.bodyTrHeight });
                             GRID.scroller.resize.call(this);
                         }
                     }
-                }).call(this);
+                }
 
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
                 this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");

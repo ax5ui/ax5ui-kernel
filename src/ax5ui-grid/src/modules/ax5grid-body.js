@@ -2426,18 +2426,23 @@
                 focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
-                (function () {
+                {
                     if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
-                        if (focusedColumn.dindex < this.xvar.virtualPaintStartRowIndex) {
+                        let virtualPaintStartRowIndex = this.xvar.virtualPaintStartRowIndex || 0;
+
+                        if (focusedColumn.dindex < virtualPaintStartRowIndex) {
                             scrollTo.call(this, {top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight});
                             GRID.scroller.resize.call(this);
                         }
-                        else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
-                            scrollTo.call(this, {top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3) * this.xvar.bodyTrHeight});
+                        else if (focusedColumn.dindex + 1 > virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
+                            //debugger;
+                            //console.log((focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3));
+                            let scrollTopValue = (!this.config.virtualScrollY) ? focusedColumn.dindex - this.xvar.frozenRowIndex : (focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3);
+                            scrollTo.call(this, {top: -scrollTopValue * this.xvar.bodyTrHeight});
                             GRID.scroller.resize.call(this);
                         }
                     }
-                }).call(this);
+                }
 
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
                 this.$.panel[focusedColumn.panelName]

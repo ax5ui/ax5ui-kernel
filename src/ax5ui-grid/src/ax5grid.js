@@ -1259,11 +1259,16 @@
                 GRID.data.add.call(this, _row, _dindex, _options);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
+
                 if(_options && _options.focus) {
                     //GRID.body.moveFocus.call(this, (this.config.body.grouping) ? "START" : "END");
-                    GRID.body.moveFocus.call(this, _options.focus);
+                    setTimeout(() => {
+                        GRID.body.moveFocus.call(this, _options.focus);
+                    }, 1);
+                }else{
+                    GRID.scroller.resize.call(this);
                 }
-                GRID.scroller.resize.call(this);
+
                 return this;
             };
 

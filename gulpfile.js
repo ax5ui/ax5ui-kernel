@@ -322,3 +322,8 @@ gulp.task('version', function () {
         }
     }
 });
+
+
+// npm version patch -m "버전 메세지"
+// gulp version
+// git push
