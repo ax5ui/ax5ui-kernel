@@ -453,11 +453,11 @@
                         formData.append(cfg.form.fileName, uploadFile);
 
                         this.xhr = new XMLHttpRequest();
-                        this.xhr.open("post", cfg.form.action, true);
+                        this.xhr.open("post", U.isString(cfg.form.action) ? cfg.form.action : cfg.form.action(), true);
                         this.xhr.onload = function (e) {
                             let res = e.target.response;
                             try {
-                                if (typeof res == "string") res = U.parseJson(res);
+                                if (typeof res === "string") res = U.parseJson(res);
                             } catch (e) {
                                 return false;
                             }
@@ -488,6 +488,7 @@
                                 }, e);
                             }
                         };
+
                         this.xhr.send(formData);  // multipart/form-data
 
                     },
