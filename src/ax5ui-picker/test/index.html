@@ -103,8 +103,8 @@
             content: {
                 type: 'date',
                 config: {
-                    mode: "year",
-                    selectMode: "month"
+                    mode: "month",
+                    selectMode: "day"
                 },
                 formatter: {
                     pattern: 'date(month)'
@@ -136,7 +136,8 @@
                                 yearTmpl: "%s년",
                                 months: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
                                 dayTmpl: "%s"
-                            }
+                            },
+                            mode: "month"
                         },
                         formatter: {
                             pattern: 'date'

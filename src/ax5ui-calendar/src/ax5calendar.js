@@ -380,7 +380,7 @@
                                     row: i,
                                     col: k,
                                     isStartOfRow: (k == 0),
-                                    thisMonth: dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2),
+                                    thisMonth: dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-01', // + U.setDigit(dotDate.getDate(), 2),
                                     thisMonthLabel: cfg.lang.months[m],
                                     itemStyles: U.css(itemStyles),
                                     addClass: (function () {
@@ -478,7 +478,7 @@
                                     row: i,
                                     col: k,
                                     isStartOfRow: (k == 0),
-                                    thisYear: y + '-' + U.setDigit(dotDate.getMonth() + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2),
+                                    thisYear: y + '-' + U.setDigit(dotDate.getMonth() + 1, 2) + '-01', // + U.setDigit(dotDate.getDate(), 2),
                                     thisYearLabel: cfg.lang.yearTmpl.replace('%s', (y)),
                                     itemStyles: U.css(itemStyles),
                                     addClass: (function () {
