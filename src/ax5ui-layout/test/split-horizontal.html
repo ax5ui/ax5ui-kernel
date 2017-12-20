@@ -37,7 +37,7 @@
     <div data-split-panel='{height: "*", minHeight: 100}'>
 
         <div data-ax5layout="ax1" data-config='{layout:"split-panel", orientation: "vertical"}' style="height: 100%;">
-            <div data-split-panel='{width: "10%", minWidth:50}'>
+            <div data-split-panel='{width: "*"}'>
                 <h1>H!</h1>
             </div>
             <div data-splitter='{}'></div>
@@ -52,8 +52,6 @@
 <script>
     // todo : panel show & hide
     jQuery(document.body).ready(function () {
-
-
         jQuery('[data-ax5layout]').ax5layout({
             autoResize: false,
             onResize: function () {
@@ -62,9 +60,8 @@
             }
         });
 
-
         $(window).resize(function(){
-            jQuery('[data-ax5layout]').ax5layout("resize", true);
+            jQuery('[data-ax5layout]').ax5layout("align", "windowResize");
         })
     });
 </script>

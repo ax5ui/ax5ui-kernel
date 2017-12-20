@@ -329,10 +329,10 @@
                         });
                     }
                 };
-                var childResize = function childResize(item) {
+                var childResize = function childResize(item, callback, windowResize) {
                     var i = item.childQueIdxs.length;
                     while (i--) {
-                        alignLayout.call(this, item.childQueIdxs[i]);
+                        alignLayout.call(this, item.childQueIdxs[i], callback, windowResize);
                     }
                 };
 
@@ -349,7 +349,7 @@
                         layoutProcessor[item.layout].call(this, item, windowResize);
                     }
 
-                    if (item.childQueIdxs) childResize.call(this, item, windowResize);
+                    if (item.childQueIdxs) childResize.call(this, item, callback, windowResize);
                     if (item.onResize) {
                         setTimeout(function () {
                             this.onResize.call(this, this);
@@ -828,6 +828,7 @@
                 var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
 
                 if (queIdx === -1) {
+
                     var i = this.queue.length;
                     while (i--) {
                         alignLayout.call(this, i, null, windowResize);
