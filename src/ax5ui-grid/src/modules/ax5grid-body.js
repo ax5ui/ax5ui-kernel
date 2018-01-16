@@ -646,6 +646,7 @@
             }).call(this, this.bodyGroupingTable);
             this.leftBodyGroupingData = dividedBodyGroupingObj.leftData;
             this.bodyGroupingData = dividedBodyGroupingObj.rightData;
+
             this.bodyGroupingMap = GRID.util.makeBodyRowMap.call(this, this.bodyGroupingTable);
         }
 

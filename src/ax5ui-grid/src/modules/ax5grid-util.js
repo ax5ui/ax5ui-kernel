@@ -316,7 +316,7 @@
         return map;
     };
 
-    let makeFootSumTable = function (_footSumColumns) {
+    const makeFootSumTable = function (_footSumColumns) {
         let table = {
             rows: []
         };
@@ -380,7 +380,8 @@
 
         table.rows[r] = {cols: []};
         for (let c = 0, cl = _bodyGroupingColumns.length; c < cl; c++) {
-            if (addC > this.columns.length) break;
+            if (addC > this.colGroup.length) break;
+            
             let colspan = _bodyGroupingColumns[c].colspan || 1;
             if (_bodyGroupingColumns[c].label || _bodyGroupingColumns[c].key) {
                 table.rows[r].cols.push({

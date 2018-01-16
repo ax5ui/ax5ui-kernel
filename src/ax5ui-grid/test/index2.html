@@ -53,7 +53,7 @@
 </div>
 <style>
     .RED{
-        background: #ffb2b0 !important;
+        // background: #ffb2b0 !important;
     }
 </style>
 <div style="height: 10px;"></div>
@@ -128,8 +128,8 @@
                     },
                     trStyleClass: function(){
                         return (this.item.saleType === "A") ? "RED" : "";
-                    }
-                    /*
+                    },
+
                     grouping: {
                         by: ["a", "b"],
                         columns: [
@@ -141,10 +141,11 @@
                             {key: "price", collector: "avg", formatter: "money", align: "right"},
                             {key: "amount", collector: "sum", formatter: "money", align: "right"},
                             {key: "cost", collector: "sum", formatter: "money", align: "right"},
-                            {label: "~~~", colspan: 3}
+                            {key: "price", collector: "avg", formatter: "money", align: "right"},
+                            {key: "amount", collector: "sum", formatter: "money", align: "right"},
+                            {key: "cost", collector: "sum", formatter: "money", align: "right"}
                         ]
                     }
-                    */
                 },
                 page: {
                     navigationItemCount: 9,
@@ -186,6 +187,9 @@
                 footSum: [
                     [
                         {label: "전체 합계", colspan: 3, align: "center"},
+                        {key: "price", collector: "avg", formatter: "money", align: "right"},
+                        {key: "amount", collector: "sum", formatter: "money", align: "right"},
+                        {key: "cost", collector: "sum", formatter: "money", align: "right"},
                         {key: "price", collector: "avg", formatter: "money", align: "right"},
                         {key: "amount", collector: "sum", formatter: "money", align: "right"},
                         {key: "cost", collector: "sum", formatter: "money", align: "right"}

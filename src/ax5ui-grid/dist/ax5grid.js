@@ -2388,6 +2388,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }.call(this, this.bodyGroupingTable);
             this.leftBodyGroupingData = dividedBodyGroupingObj.leftData;
             this.bodyGroupingData = dividedBodyGroupingObj.rightData;
+
             this.bodyGroupingMap = GRID.util.makeBodyRowMap.call(this, this.bodyGroupingTable);
         }
 
@@ -7304,7 +7305,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         table.rows[r] = { cols: [] };
         for (var _c2 = 0, cl = _bodyGroupingColumns.length; _c2 < cl; _c2++) {
-            if (addC > this.columns.length) break;
+            if (addC > this.colGroup.length) break;
+
             var colspan = _bodyGroupingColumns[_c2].colspan || 1;
             if (_bodyGroupingColumns[_c2].label || _bodyGroupingColumns[_c2].key) {
                 table.rows[r].cols.push({
