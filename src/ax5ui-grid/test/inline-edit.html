@@ -157,7 +157,7 @@
                             type: "text",
                             disabled: function () {
                                 // item, value
-                                return false;
+                                return true;
                             },
                             attributes: {
                                 'maxlength': 5,
@@ -172,7 +172,7 @@
                         {key: "price", label: "단가", align: "right", width: 60, editor: {type: "money", updateWith: ['cost']}},
                         {
                             key: "amount", label: "수량", align: "right", width: 50, formatter: "money",
-                            editor: {type: "number", updateWith: ['cost', 'a'], attributes: {maxlength: 4}}
+                            editor: {type: "number", updateWith: ['cost', 'a', 'isChecked'], attributes: {maxlength: 4}}
                         },
                         {
                             key: "cost", label: "금액", align: "right", width: 80,
@@ -189,7 +189,11 @@
                     },
                     {
                         key: "isChecked", label: "체크박스", width: 50, sortable: false, editor: {
-                        type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
+                        type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"},
+                        disabled: function () {
+                            // item, value
+                            return this.item.amount < 3;
+                        }
                     }
                     },
                     {
