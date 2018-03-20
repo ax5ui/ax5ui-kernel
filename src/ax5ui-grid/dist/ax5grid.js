@@ -2051,7 +2051,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         value: self.list[_column.dindex][column.key]
                     };
 
-                    if (column.editor && column.editor.type == "checkbox") {
+                    if (column.editor && column.editor.type === "checkbox") {
                         // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
                         var value = GRID.data.getValue.call(self, _column.dindex, _column.doindex, column.key),
                             checked = void 0,
@@ -2073,10 +2073,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                             editorConfig: column.editor.config, checked: checked
                         });
-                    } else {
-                        if (self.config.body.onClick) {
-                            self.config.body.onClick.call(that);
-                        }
+                    }
+
+                    if (self.config.body.onClick) {
+                        self.config.body.onClick.call(that);
                     }
                 },
                 "rowSelector": function rowSelector(_column) {

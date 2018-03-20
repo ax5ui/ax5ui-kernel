@@ -318,7 +318,7 @@
                                 value: self.list[_column.dindex][column.key]
                             };
 
-                        if (column.editor && column.editor.type == "checkbox") { // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
+                        if (column.editor && column.editor.type === "checkbox") { // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
                             let value = GRID.data.getValue.call(self, _column.dindex, _column.doindex, column.key),
                                 checked, newValue;
 
@@ -338,10 +338,10 @@
                                 key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                 editorConfig: column.editor.config, checked: checked
                             });
-                        } else {
-                            if (self.config.body.onClick) {
-                                self.config.body.onClick.call(that);
-                            }
+                        }
+
+                        if (self.config.body.onClick) {
+                            self.config.body.onClick.call(that);
                         }
                     },
                     "rowSelector": function (_column) {
