@@ -126,10 +126,12 @@
                     trStyleClass: function () {
                         return (this.item.saleType === "A") ? "RED" : "";
                     },
-                    onClick: function () {
-                        console.log(this);
-                        this.self.select(this.dindex);
-                        console.log(this.item);
+                    onClick: function (that, e) {
+                        console.log(that);
+                        console.log(e.target);
+                        //console.log(this);
+                        //this.self.select(this.dindex);
+                        //console.log(this.item);
                     },
                     onDBLClick: function () {
                         console.log("DBLClick", this);

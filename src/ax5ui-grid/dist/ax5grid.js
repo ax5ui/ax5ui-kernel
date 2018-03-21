@@ -2076,7 +2076,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }
 
                     if (self.config.body.onClick) {
-                        self.config.body.onClick.call(that);
+                        self.config.body.onClick.call(that, that, e);
                     }
                 },
                 "rowSelector": function rowSelector(_column) {
@@ -4452,7 +4452,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         moveFocus.call(this, _dindex);
         if (this.config.body.onClick) {
-            this.config.body.onClick.call(that);
+            this.config.body.onClick.call(that, that);
         }
 
         that = null;
