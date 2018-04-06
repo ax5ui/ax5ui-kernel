@@ -8,7 +8,6 @@
 
 // ax5.ui.modal
 (function () {
-
     var UI = ax5.ui;
     var U = ax5.util;
     var MODAL = void 0;
@@ -25,13 +24,13 @@
             var self = this,
                 cfg = void 0,
                 ENM = {
-                "mousedown": ax5.info.supportTouch ? "touchstart" : "mousedown",
-                "mousemove": ax5.info.supportTouch ? "touchmove" : "mousemove",
-                "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
+                mousedown: ax5.info.supportTouch ? "touchstart" : "mousedown",
+                mousemove: ax5.info.supportTouch ? "touchmove" : "mousemove",
+                mouseup: ax5.info.supportTouch ? "touchend" : "mouseup"
             },
                 getMousePosition = function getMousePosition(e) {
                 var mouseObj = e;
-                if ('changedTouches' in e && e.changedTouches) {
+                if ("changedTouches" in e && e.changedTouches) {
                     mouseObj = e.changedTouches[0];
                 }
                 return {
@@ -42,15 +41,15 @@
 
             this.instanceId = ax5.getGuid();
             this.config = {
-                id: 'ax5-modal-' + this.instanceId,
+                id: "ax5-modal-" + this.instanceId,
                 position: {
                     left: "center",
                     top: "middle",
                     margin: 10
                 },
                 minimizePosition: "bottom-right",
-                clickEventName: 'ontouchstart' in document.documentElement ? "touchstart" : "click",
-                theme: 'default',
+                clickEventName: "ontouchstart" in document.documentElement ? "touchstart" : "click",
+                theme: "default",
                 width: 300,
                 height: 400,
                 closeToEsc: true,
@@ -67,14 +66,14 @@
 
             var onStateChanged = function onStateChanged(opts, that) {
                 var eventProcessor = {
-                    "resize": function resize(that) {
+                    resize: function resize(that) {
                         if (opts && opts.onResize) {
                             opts.onResize.call(that, that);
                         } else if (this.onResize) {
                             this.onResize.call(that, that);
                         }
                     },
-                    "move": function move() {}
+                    move: function move() {}
                 };
                 if (that.state in eventProcessor) {
                     eventProcessor[that.state].call(this, that);
@@ -116,12 +115,12 @@
                 var that = void 0;
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
-                this.activeModal = jQuery('#' + opts.id);
+                this.activeModal = jQuery("#" + opts.id);
                 // 파트수집
                 this.$ = {
-                    "root": this.activeModal,
-                    "header": this.activeModal.find('[data-modal-els="header"]'),
-                    "body": this.activeModal.find('[data-modal-els="body"]')
+                    root: this.activeModal,
+                    header: this.activeModal.find('[data-modal-els="header"]'),
+                    body: this.activeModal.find('[data-modal-els="body"]')
                 };
 
                 if (opts.iframe) {
@@ -151,9 +150,9 @@
                     this.$["iframe"].css({ height: opts.height });
 
                     // iframe content load
-                    this.$["iframe-form"].attr({ "method": opts.iframe.method });
-                    this.$["iframe-form"].attr({ "target": opts.id + "-frame" });
-                    this.$["iframe-form"].attr({ "action": opts.iframe.url });
+                    this.$["iframe-form"].attr({ method: opts.iframe.method });
+                    this.$["iframe-form"].attr({ target: opts.id + "-frame" });
+                    this.$["iframe-form"].attr({ action: opts.iframe.url });
                     this.$["iframe"].on("load", function () {
                         that.state = "load";
                         if (opts.iframeLoadingMsg) {
@@ -228,7 +227,8 @@
 
                     that = {
                         self: this,
-                        key: k, value: opts.header.btns[k],
+                        key: k,
+                        value: opts.header.btns[k],
                         dialogId: opts.id,
                         btnTarget: target
                     };
@@ -267,11 +267,12 @@
                 }
             },
                 moveModal = {
-                "on": function on() {
+                on: function on() {
                     var modalZIndex = this.activeModal.css("z-index"),
                         modalOffset = this.activeModal.position(),
                         modalBox = {
-                        width: this.activeModal.outerWidth(), height: this.activeModal.outerHeight()
+                        width: this.activeModal.outerWidth(),
+                        height: this.activeModal.outerHeight()
                     },
                         windowBox = {
                         width: jQuery(window).width(),
@@ -332,9 +333,9 @@
                         moveModal.off.call(self);
                     });
 
-                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+                    jQuery(document.body).attr("unselectable", "on").css("user-select", "none").on("selectstart", false);
                 },
-                "off": function off() {
+                off: function off() {
                     var setModalPosition = function setModalPosition() {
                         var box = this.resizer.offset();
                         if (!this.modalConfig.absolute) {
@@ -359,7 +360,7 @@
 
                     jQuery(document.body).off(ENM["mousemove"] + ".ax5modal-move-" + this.instanceId).off(ENM["mouseup"] + ".ax5modal-move-" + this.instanceId).off("mouseleave.ax5modal-move-" + this.instanceId);
 
-                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+                    jQuery(document.body).removeAttr("unselectable").css("user-select", "auto").off("selectstart");
 
                     onStateChanged.call(this, self.modalConfig, {
                         self: this,
@@ -368,11 +369,12 @@
                 }
             },
                 resizeModal = {
-                "on": function on(resizerType) {
+                on: function on(resizerType) {
                     var modalZIndex = this.activeModal.css("z-index"),
                         modalOffset = this.activeModal.position(),
                         modalBox = {
-                        width: this.activeModal.outerWidth(), height: this.activeModal.outerHeight()
+                        width: this.activeModal.outerWidth(),
+                        height: this.activeModal.outerHeight()
                     },
                         windowBox = {
                         width: jQuery(window).width(),
@@ -381,14 +383,12 @@
                         scrollTop: this.modalConfig.absolute ? 0 : jQuery(document).scrollTop()
                     },
                         resizerProcessor = {
-                        "top": function top(e) {
-
+                        top: function top(e) {
                             if (minHeight > modalBox.height - self.__dy) {
                                 self.__dy = modalBox.height - minHeight;
                             }
 
                             if (e.shiftKey) {
-
                                 if (minHeight > modalBox.height - self.__dy * 2) {
                                     self.__dy = (modalBox.height - minHeight) / 2;
                                 }
@@ -400,7 +400,6 @@
                                     height: modalBox.height - self.__dy * 2
                                 };
                             } else if (e.altKey) {
-
                                 if (minHeight > modalBox.height - self.__dy * 2) {
                                     self.__dy = (modalBox.height - minHeight) / 2;
                                 }
@@ -420,14 +419,12 @@
                                 };
                             }
                         },
-                        "bottom": function bottom(e) {
-
+                        bottom: function bottom(e) {
                             if (minHeight > modalBox.height + self.__dy) {
                                 self.__dy = -modalBox.height + minHeight;
                             }
 
                             if (e.shiftKey) {
-
                                 if (minHeight > modalBox.height + self.__dy * 2) {
                                     self.__dy = (-modalBox.height + minHeight) / 2;
                                 }
@@ -439,7 +436,6 @@
                                     height: modalBox.height + self.__dy * 2
                                 };
                             } else if (e.altKey) {
-
                                 if (minHeight > modalBox.height + self.__dy * 2) {
                                     self.__dy = (-modalBox.height + minHeight) / 2;
                                 }
@@ -459,14 +455,12 @@
                                 };
                             }
                         },
-                        "left": function left(e) {
-
+                        left: function left(e) {
                             if (minWidth > modalBox.width - self.__dx) {
                                 self.__dx = modalBox.width - minWidth;
                             }
 
                             if (e.shiftKey) {
-
                                 if (minWidth > modalBox.width - self.__dx * 2) {
                                     self.__dx = (modalBox.width - minWidth) / 2;
                                 }
@@ -478,7 +472,6 @@
                                     height: modalBox.height
                                 };
                             } else if (e.altKey) {
-
                                 if (minWidth > modalBox.width - self.__dx * 2) {
                                     self.__dx = (modalBox.width - minWidth) / 2;
                                 }
@@ -498,14 +491,12 @@
                                 };
                             }
                         },
-                        "right": function right(e) {
-
+                        right: function right(e) {
                             if (minWidth > modalBox.width + self.__dx) {
                                 self.__dx = -modalBox.width + minWidth;
                             }
 
                             if (e.shiftKey) {
-
                                 if (minWidth > modalBox.width + self.__dx * 2) {
                                     self.__dx = (-modalBox.width + minWidth) / 2;
                                 }
@@ -517,7 +508,6 @@
                                     height: modalBox.height
                                 };
                             } else if (e.altKey) {
-
                                 if (minWidth > modalBox.width + self.__dx * 2) {
                                     self.__dx = (-modalBox.width + minWidth) / 2;
                                 }
@@ -538,7 +528,6 @@
                             }
                         },
                         "top-left": function topLeft(e) {
-
                             if (minWidth > modalBox.width - self.__dx) {
                                 self.__dx = modalBox.width - minWidth;
                             }
@@ -548,7 +537,6 @@
                             }
 
                             if (e.shiftKey || e.altKey) {
-
                                 if (minHeight > modalBox.height - self.__dy * 2) {
                                     self.__dy = (modalBox.height - minHeight) / 2;
                                 }
@@ -563,7 +551,6 @@
                                     height: modalBox.height - self.__dy * 2
                                 };
                             } else {
-
                                 if (minHeight > modalBox.height - self.__dy * 2) {
                                     self.__dy = (modalBox.height - minHeight) / 2;
                                 }
@@ -580,7 +567,6 @@
                             }
                         },
                         "top-right": function topRight(e) {
-
                             if (minWidth > modalBox.width + self.__dx) {
                                 self.__dx = -modalBox.width + minWidth;
                             }
@@ -590,7 +576,6 @@
                             }
 
                             if (e.shiftKey || e.altKey) {
-
                                 if (minHeight > modalBox.height - self.__dy * 2) {
                                     self.__dy = (modalBox.height - minHeight) / 2;
                                 }
@@ -614,7 +599,6 @@
                             }
                         },
                         "bottom-left": function bottomLeft(e) {
-
                             if (minWidth > modalBox.width - self.__dx) {
                                 self.__dx = modalBox.width - minWidth;
                             }
@@ -646,7 +630,6 @@
                             }
                         },
                         "bottom-right": function bottomRight(e) {
-
                             if (minWidth > modalBox.width + self.__dx) {
                                 self.__dx = -modalBox.width + minWidth;
                             }
@@ -694,10 +677,10 @@
                         minHeight = 100;
 
                     var cursorType = {
-                        "top": "row-resize",
-                        "bottom": "row-resize",
-                        "left": "col-resize",
-                        "right": "col-resize",
+                        top: "row-resize",
+                        bottom: "row-resize",
+                        left: "col-resize",
+                        right: "col-resize",
                         "top-left": "nwse-resize",
                         "top-right": "nesw-resize",
                         "bottom-left": "nesw-resize",
@@ -733,9 +716,9 @@
                         resizeModal.off.call(self);
                     });
 
-                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').bind('selectstart', false);
+                    jQuery(document.body).attr("unselectable", "on").css("user-select", "none").bind("selectstart", false);
                 },
-                "off": function off() {
+                off: function off() {
                     var setModalPosition = function setModalPosition() {
                         var box = this.resizer.offset();
                         jQuery.extend(box, {
@@ -752,10 +735,16 @@
                         this.modalConfig.top = box.top;
                         this.modalConfig.width = box.width;
                         this.modalConfig.height = box.height;
-                        this.$["body"].css({ height: box.height - this.modalConfig.headerHeight });
+                        this.$["body"].css({
+                            height: box.height - this.modalConfig.headerHeight
+                        });
                         if (this.modalConfig.iframe) {
-                            this.$["iframe-wrap"].css({ height: box.height - this.modalConfig.headerHeight });
-                            this.$["iframe"].css({ height: box.height - this.modalConfig.headerHeight });
+                            this.$["iframe-wrap"].css({
+                                height: box.height - this.modalConfig.headerHeight
+                            });
+                            this.$["iframe"].css({
+                                height: box.height - this.modalConfig.headerHeight
+                            });
                         }
 
                         box = null;
@@ -776,7 +765,7 @@
 
                     jQuery(document.body).unbind(ENM["mousemove"] + ".ax5modal-resize-" + this.instanceId).unbind(ENM["mouseup"] + ".ax5modal-resize-" + this.instanceId).unbind("mouseleave.ax5modal-resize-" + this.instanceId);
 
-                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').unbind('selectstart');
+                    jQuery(document.body).removeAttr("unselectable").css("user-select", "auto").unbind("selectstart");
                 }
             };
 
@@ -806,47 +795,47 @@
              * @example
              * ```js
              * var modal = new ax5.ui.modal({
-             *     iframeLoadingMsg: '<i class="fa fa-spinner fa-5x fa-spin" aria-hidden="true"></i>',
-             *     header: {
-             *         title: "MODAL TITLE",
-             *         btns: {
-             *             minimize: {
-             *                 label: '<i class="fa fa-minus-circle" aria-hidden="true"></i>', onClick: function () {
-             *                     modal.minimize();
-             *                 }
-             *             },
-             *             maximize: {
-             *                 label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function () {
-             *                     modal.maximize();
-             *                 }
-             *             },
-             *             close: {
-             *                 label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function () {
-             *                     modal.close();
-             *                 }
-             *             }
-             *         }
-             *     }
-             * });
+            *     iframeLoadingMsg: '<i class="fa fa-spinner fa-5x fa-spin" aria-hidden="true"></i>',
+            *     header: {
+            *         title: "MODAL TITLE",
+            *         btns: {
+            *             minimize: {
+            *                 label: '<i class="fa fa-minus-circle" aria-hidden="true"></i>', onClick: function () {
+            *                     modal.minimize();
+            *                 }
+            *             },
+            *             maximize: {
+            *                 label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function () {
+            *                     modal.maximize();
+            *                 }
+            *             },
+            *             close: {
+            *                 label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function () {
+            *                     modal.close();
+            *                 }
+            *             }
+            *         }
+            *     }
+            * });
              *
              * modal.open({
-             *     width: 800,
-             *     height: 600,
-             *     fullScreen: function(){
-             *         return ($(window).width() < 600);
-             *     },
-             *     iframe: {
-             *         method: "get",
-             *         url: "http://chequer-app:2017/html/login.html",
-             *         param: "callback=modalCallback"
-             *     },
-             *     onStateChanged: function(){
-             *          console.log(this);
-             *     },
-             *     onResize: function(){
-             *          console.log(this);
-             *     }
-             * });
+            *     width: 800,
+            *     height: 600,
+            *     fullScreen: function(){
+            *         return ($(window).width() < 600);
+            *     },
+            *     iframe: {
+            *         method: "get",
+            *         url: "http://chequer-app:2017/html/login.html",
+            *         param: "callback=modalCallback"
+            *     },
+            *     onStateChanged: function(){
+            *          console.log(this);
+            *     },
+            *     onResize: function(){
+            *          console.log(this);
+            *     }
+            * });
              * ```
              */
             //== class body start
@@ -863,12 +852,12 @@
              * ```
              * modal.open();
              * modal.open({
-             *  width: 500,
-             *  height: 500
-             * });
+            *  width: 500,
+            *  height: 500
+            * });
              * moaal.open({}, function(){
-             *  console.log(this);
-             * });
+            *  console.log(this);
+            * });
              * ```
              */
             this.open = function (opts, callback, tryCount) {
@@ -899,11 +888,11 @@
              * ```
              * my_modal.close();
              * my_modal.close({callback: function(){
-             *  // on close event
-             * });
-             * // close 함수에 callback을 전달하면 정확한 close 타이밍을 캐치할 수 있습니다
-             * ```
-             */
+            *  // on close event
+            * });
+            * // close 함수에 callback을 전달하면 정확한 close 타이밍을 캐치할 수 있습니다
+            * ```
+            */
 
             this.close = function (_option) {
                 var opts = void 0,
@@ -929,7 +918,7 @@
                                     });
                                 } catch (e) {}
                                 idoc.innerHTML = "";
-                                $iframe.attr('src', 'about:blank').remove();
+                                $iframe.attr("src", "about:blank").remove();
 
                                 // force garbarge collection for IE only
                                 window.CollectGarbage && window.CollectGarbage();
@@ -972,11 +961,8 @@
              * @returns {ax5modal}
              */
             this.minimize = function () {
-
                 return function (minimizePosition) {
-
                     if (this.minimized !== true) {
-
                         var opts = self.modalConfig;
                         if (typeof minimizePosition === "undefined") minimizePosition = cfg.minimizePosition;
 
@@ -1061,7 +1047,6 @@
              * ```
              */
             this.align = function () {
-
                 return function (position, e) {
                     if (!this.activeModal) return this;
 
@@ -1127,13 +1112,23 @@
                         }
                         if (box.left < 0) box.left = 0;
                         if (box.top < 0) box.top = 0;
+
+                        if (opts.absolute) {
+                            box.top += jQuery(window).scrollTop();
+                            box.left += jQuery(window).scrollLeft();
+                        }
                     }
 
                     this.activeModal.css(box);
-                    this.$["body"].css({ height: box.height - (opts.headerHeight || 0) });
+
+                    this.$["body"].css({
+                        height: box.height - (opts.headerHeight || 0)
+                    });
 
                     if (opts.iframe) {
-                        this.$["iframe-wrap"].css({ height: box.height - opts.headerHeight });
+                        this.$["iframe-wrap"].css({
+                            height: box.height - opts.headerHeight
+                        });
                         this.$["iframe"].css({ height: box.height - opts.headerHeight });
                     } else {}
                     return this;
@@ -1142,7 +1137,6 @@
 
             // 클래스 생성자
             this.main = function () {
-
                 UI.modal_instance = UI.modal_instance || [];
                 UI.modal_instance.push(this);
 
