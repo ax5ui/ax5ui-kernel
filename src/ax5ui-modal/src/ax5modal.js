@@ -304,7 +304,7 @@
           moveModal = {
             on: function() {
               let modalZIndex = this.activeModal.css("z-index"),
-                modalOffset = this.activeModal.position(),
+                modalOffset = this.activeModal.offset(),
                 modalBox = {
                   width: this.activeModal.outerWidth(),
                   height: this.activeModal.outerHeight()
@@ -312,17 +312,14 @@
                 windowBox = {
                   width: jQuery(window).width(),
                   height: jQuery(window).height(),
-                  scrollLeft: self.modalConfig.absolute
-                    ? 0
-                    : jQuery(document).scrollLeft(),
-                  scrollTop: self.modalConfig.absolute
-                    ? 0
-                    : jQuery(document).scrollTop()
+                  scrollLeft: jQuery(document).scrollLeft(),
+                  scrollTop: jQuery(document).scrollTop()
                 },
                 getResizerPosition = function(e) {
                   self.__dx = e.clientX - self.mousePosition.clientX;
                   self.__dy = e.clientY - self.mousePosition.clientY;
 
+                  /*
                   if (minX > modalOffset.left + self.__dx) {
                     self.__dx = -modalOffset.left;
                   } else if (maxX < modalOffset.left + self.__dx) {
@@ -334,10 +331,11 @@
                   } else if (maxY < modalOffset.top + self.__dy) {
                     self.__dy = maxY - modalOffset.top;
                   }
+                    */
 
                   return {
-                    left: modalOffset.left + self.__dx + windowBox.scrollLeft,
-                    top: modalOffset.top + self.__dy + windowBox.scrollTop
+                    left: modalOffset.left + self.__dx,
+                    top: modalOffset.top + self.__dy
                   };
                 };
 
@@ -358,8 +356,8 @@
               );
               self.resizerBg.css({ zIndex: modalZIndex });
               self.resizer.css({
-                left: modalOffset.left + windowBox.scrollLeft,
-                top: modalOffset.top + windowBox.scrollTop,
+                left: modalOffset.left,
+                top: modalOffset.top,
                 width: modalBox.width,
                 height: modalBox.height,
                 zIndex: modalZIndex + 1
@@ -368,6 +366,7 @@
               jQuery(document.body)
                 .append(self.resizerBg)
                 .append(self.resizer);
+
               self.activeModal.addClass("draged");
 
               jQuery(document.body)
@@ -434,7 +433,7 @@
           resizeModal = {
             on: function(resizerType) {
               let modalZIndex = this.activeModal.css("z-index"),
-                modalOffset = this.activeModal.position(),
+                modalOffset = this.activeModal.offset(),
                 modalBox = {
                   width: this.activeModal.outerWidth(),
                   height: this.activeModal.outerHeight()
@@ -442,12 +441,8 @@
                 windowBox = {
                   width: jQuery(window).width(),
                   height: jQuery(window).height(),
-                  scrollLeft: this.modalConfig.absolute
-                    ? 0
-                    : jQuery(document).scrollLeft(),
-                  scrollTop: this.modalConfig.absolute
-                    ? 0
-                    : jQuery(document).scrollTop()
+                  scrollLeft: jQuery(document).scrollLeft(),
+                  scrollTop: jQuery(document).scrollTop()
                 },
                 resizerProcessor = {
                   top: function(e) {
@@ -734,11 +729,6 @@
 
                   return resizerProcessor[resizerType](e);
                 };
-
-              if (!this.modalConfig.absolute) {
-                modalOffset.left += windowBox.scrollLeft;
-                modalOffset.top += windowBox.scrollTop;
-              }
 
               let minWidth = 100,
                 minHeight = 100;
