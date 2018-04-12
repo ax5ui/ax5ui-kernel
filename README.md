@@ -1,3 +1,4 @@
+//Test Data!!
 [![Build Status](https://travis-ci.org/ax5ui/ax5ui-kernel.svg?branch=master)](https://travis-ci.org/ax5ui/ax5ui-kernel)
 [![Backers on Open Collective](https://opencollective.com/ax5ui-kernel/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/ax5ui-kernel/sponsors/badge.svg)](#sponsors)
@@ -154,53 +155,53 @@ Then, open the html file, you can test the code in development.
 ## Structure
 ```
 ax5ui-kernel/
-â”œâ”€â”€ build/
-|   â”œâ”€â”€ jsdoc2md.sh (jsdoc to markdown shell script)
-|   â”œâ”€â”€ split.sh (gitsubsplit shell script)
-|   â””â”€â”€ split_jenkins.sh (gitsubsplit shell script for jenkins)
-â”œâ”€â”€ dist/
-â”œâ”€â”€ src/
-|   â”œâ”€â”€ ax5core/
-|   |   â”œâ”€â”€ dist/
-|   |   â”œâ”€â”€ src/
-|   |   â”œâ”€â”€ test/
-â”‚   |   â”œâ”€â”€ API...
-â”‚   |   â”œâ”€â”€ bower.json
-â”‚   |   â”œâ”€â”€ deploy.sh
-â”‚   |   â”œâ”€â”€ package.json
-â”‚   |   â””â”€â”€ README.md
-|   â”œâ”€â”€ ax5ui-autocomplete/
-|   |   â”œâ”€â”€ dist/
-|   |   |   â”œâ”€â”€ ax5autocomplete.css
-|   |   |   â”œâ”€â”€ ax5autocomplete.js
-|   |   |   â””â”€â”€ ax5autocomplete.min.js
-|   |   â”œâ”€â”€ src/
-|   |   |   â”œâ”€â”€ modules/
-|   |   |   |   â”œâ”€â”€ ax5autocomplete-tmpl.js
-|   |   |   |   â””â”€â”€ ax5autocomplete-util.js
-|   |   |   â”œâ”€â”€ scss/
-|   |   |   |   â”œâ”€â”€ _ax5autocomplete.scss
-|   |   |   |   â””â”€â”€ _ax5autocomplete_variables.scss
-|   |   |   â”œâ”€â”€ ax5autocomplete.js
-|   |   |   â””â”€â”€ ax5autocomplete.scss
-|   |   â”œâ”€â”€ test/
-|   |   |   â”œâ”€â”€ bower.json (you can run `$bower install` initialize test environment)
-|   |   |   â””â”€â”€ index.html
-|   |   â”œâ”€â”€ bootstrap.min.js
-â”‚   |   â”œâ”€â”€ chartist.min.js
-â”‚   |   â”œâ”€â”€ demo.js
-â”‚   |   â”œâ”€â”€ jquery-1.10.2.js
-â”‚   |   â””â”€â”€ light-bootstrap-dashboard.js
-|   â”œâ”€â”€ ax5ui-.../
-|   â””â”€â”€ ax5ui-.../
+?œâ??€ build/
+|   ?œâ??€ jsdoc2md.sh (jsdoc to markdown shell script)
+|   ?œâ??€ split.sh (gitsubsplit shell script)
+|   ?”â??€ split_jenkins.sh (gitsubsplit shell script for jenkins)
+?œâ??€ dist/
+?œâ??€ src/
+|   ?œâ??€ ax5core/
+|   |   ?œâ??€ dist/
+|   |   ?œâ??€ src/
+|   |   ?œâ??€ test/
+??  |   ?œâ??€ API...
+??  |   ?œâ??€ bower.json
+??  |   ?œâ??€ deploy.sh
+??  |   ?œâ??€ package.json
+??  |   ?”â??€ README.md
+|   ?œâ??€ ax5ui-autocomplete/
+|   |   ?œâ??€ dist/
+|   |   |   ?œâ??€ ax5autocomplete.css
+|   |   |   ?œâ??€ ax5autocomplete.js
+|   |   |   ?”â??€ ax5autocomplete.min.js
+|   |   ?œâ??€ src/
+|   |   |   ?œâ??€ modules/
+|   |   |   |   ?œâ??€ ax5autocomplete-tmpl.js
+|   |   |   |   ?”â??€ ax5autocomplete-util.js
+|   |   |   ?œâ??€ scss/
+|   |   |   |   ?œâ??€ _ax5autocomplete.scss
+|   |   |   |   ?”â??€ _ax5autocomplete_variables.scss
+|   |   |   ?œâ??€ ax5autocomplete.js
+|   |   |   ?”â??€ ax5autocomplete.scss
+|   |   ?œâ??€ test/
+|   |   |   ?œâ??€ bower.json (you can run `$bower install` initialize test environment)
+|   |   |   ?”â??€ index.html
+|   |   ?œâ??€ bootstrap.min.js
+??  |   ?œâ??€ chartist.min.js
+??  |   ?œâ??€ demo.js
+??  |   ?œâ??€ jquery-1.10.2.js
+??  |   ?”â??€ light-bootstrap-dashboard.js
+|   ?œâ??€ ax5ui-.../
+|   ?”â??€ ax5ui-.../
 |
-â”œâ”€â”€ .babelrc
-â”œâ”€â”€ .gitignore
-â”œâ”€â”€ gulpfile.js
-â”œâ”€â”€ LICENSE
-â”œâ”€â”€ package.json
-â”œâ”€â”€ README.md
-â””â”€â”€ README-kor.md
+?œâ??€ .babelrc
+?œâ??€ .gitignore
+?œâ??€ gulpfile.js
+?œâ??€ LICENSE
+?œâ??€ package.json
+?œâ??€ README.md
+?”â??€ README-kor.md
 ```
 
 
