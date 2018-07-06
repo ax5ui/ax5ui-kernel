@@ -24,9 +24,9 @@
       var self = this,
           cfg = void 0,
           ENM = {
-        mousedown: ax5.info.supportTouch ? "touchstart" : "mousedown",
-        mousemove: ax5.info.supportTouch ? "touchmove" : "mousemove",
-        mouseup: ax5.info.supportTouch ? "touchend" : "mouseup"
+        mousedown: "mousedown",
+        mousemove: "mousemove",
+        mouseup: "mouseup"
       },
           getMousePosition = function getMousePosition(e) {
         var mouseObj = e;
