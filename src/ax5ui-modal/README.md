@@ -13,7 +13,7 @@
 
 ### Install with bower
 ```sh
-bower install ax5ui-mask
+bower install ax5ui-modal
 ```
 [bower](http://bower.io/#install-bower) is web front-end package manager.
 When you install `bower`, it will be installed under the `bower_components` folder to resolve the plug-in dependencies.  
