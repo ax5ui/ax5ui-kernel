@@ -1116,6 +1116,7 @@
                     copyTextArray = [], copyText = "",
                     _rowIndex, _colIndex, _dindex, _di = 0;
 
+
                 for (let c in this.selectedColumn) {
                     let _column = this.selectedColumn[c];
 
@@ -1153,7 +1154,7 @@
                     copyText += r.join('\t') + "\n";
                 });
 
-                $clipBoard.get(0).innerText = copyText;
+                $clipBoard.get(0).value = copyText;
                 $clipBoard.select();
 
                 try {

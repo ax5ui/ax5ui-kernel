@@ -55,7 +55,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.3.82";
+        var version = "1.4.127";
 
         /**
          * ax5 library path
@@ -524,9 +524,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 }
                 return defaultValue / l;
             } else if (isObject(O)) {
+                l = 0;
                 for (i in O) {
                     if (typeof O[i] != "undefined") {
-                        if ((tokenValue = _fn.call(O[i], O[i])) === false) break;else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;
+                        if ((tokenValue = _fn.call(O[i], O[i])) === false) break;else if (typeof tokenValue !== "undefined") defaultValue += tokenValue;++l;
                     }
                 }
                 return defaultValue / l;
@@ -1160,9 +1161,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         function number(str, cond) {
             var result,
                 pair = ('' + str).split(reDot),
-                isMinus = Number(pair[0]) < 0 || pair[0] == "-0",
-                returnValue = 0.0;
+                isMinus,
+                returnValue;
+
+            isMinus = Number(pair[0].replace(/,/g, "")) < 0 || pair[0] == "-0";
+            returnValue = 0.0;
             pair[0] = pair[0].replace(reInt, "");
+
             if (pair[1]) {
                 pair[1] = pair[1].replace(reNotNum, "");
                 returnValue = Number(pair[0] + "." + pair[1]) || 0;
@@ -1426,7 +1431,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             _d = new Date(yy, mm, dd, 12);
                         } else if (typeof opts["y"] !== "undefined") {
                             _d.setTime(_d.getTime() + opts["y"] * 365 * DyMilli);
+                        } else if (typeof opts["h"] !== "undefined") {
+                            _d.setTime(_d.getTime() + opts["h"] * 1000 * 60 * 60);
                         }
+
                         return _d;
                     }(new Date(d), cond["add"]);
                 }
@@ -1953,7 +1961,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * @method ax5.util.debounce
          * @param {Function} func
          * @param {Number} wait
-         * @param {Boolean} immediately
+         * @param {Object} options
          * @returns {debounced}
          * @example
          * ```js
@@ -1963,37 +1971,158 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * });
          * ```
          */
-        var debounce = function debounce(func, wait, immediately) {
-            var timeout, removeTimeout;
-            var debounced = function debounced() {
-                var args = toArray(arguments);
+        // https://github.com/lodash/lodash/blob/master/debounce.js
+        function debounce(func, wait, options) {
+            var lastArgs = void 0,
+                lastThis = void 0,
+                maxWait = void 0,
+                result = void 0,
+                timerId = void 0,
+                lastCallTime = void 0;
 
-                if (removeTimeout) clearTimeout(removeTimeout);
-                if (timeout) {
-                    // 두번째 호출
-                    if (timeout) clearTimeout(timeout);
-                    timeout = setTimeout(function (args) {
-                        func.apply(this, args);
-                    }.bind(this, args), wait);
-                } else {
-                    // 첫 호출
-                    timeout = setTimeout(function (args) {
-                        func.apply(this, args);
-                    }.bind(this, args), immediately ? 0 : wait);
+            var lastInvokeTime = 0;
+            var leading = false;
+            var maxing = false;
+            var trailing = true;
+
+            if (typeof func != 'function') {
+                throw new TypeError('Expected a function');
+            }
+            wait = +wait || 0;
+            if (isObject(options)) {
+                leading = !!options.leading;
+                maxing = 'maxWait' in options;
+                maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : maxWait;
+                trailing = 'trailing' in options ? !!options.trailing : trailing;
+            }
+
+            function invokeFunc(time) {
+                var args = lastArgs;
+                var thisArg = lastThis;
+
+                lastArgs = lastThis = undefined;
+                lastInvokeTime = time;
+                result = func.apply(thisArg, args);
+                return result;
+            }
+
+            function leadingEdge(time) {
+                // Reset any `maxWait` timer.
+                lastInvokeTime = time;
+                // Start the timer for the trailing edge.
+                timerId = setTimeout(timerExpired, wait);
+                // Invoke the leading edge.
+                return leading ? invokeFunc(time) : result;
+            }
+
+            function remainingWait(time) {
+                var timeSinceLastCall = time - lastCallTime;
+                var timeSinceLastInvoke = time - lastInvokeTime;
+                var result = wait - timeSinceLastCall;
+
+                return maxing ? Math.min(result, maxWait - timeSinceLastInvoke) : result;
+            }
+
+            function shouldInvoke(time) {
+                var timeSinceLastCall = time - lastCallTime;
+                var timeSinceLastInvoke = time - lastInvokeTime;
+
+                // Either this is the first call, activity has stopped and we're at the
+                // trailing edge, the system time has gone backwards and we're treating
+                // it as the trailing edge, or we've hit the `maxWait` limit.
+                return lastCallTime === undefined || timeSinceLastCall >= wait || timeSinceLastCall < 0 || maxing && timeSinceLastInvoke >= maxWait;
+            }
+
+            function timerExpired() {
+                var time = Date.now();
+                if (shouldInvoke(time)) {
+                    return trailingEdge(time);
                 }
-                removeTimeout = setTimeout(function () {
-                    clearTimeout(timeout);
-                    timeout = null;
-                }, wait);
-            };
-            debounced.cancel = function () {
-                clearTimeout(timeout);
-                clearTimeout(removeTimeout);
-                timeout = null;
-            };
+                // Restart the timer.
+                timerId = setTimeout(timerExpired, remainingWait(time));
+            }
 
+            function trailingEdge(time) {
+                timerId = undefined;
+
+                // Only invoke if we have `lastArgs` which means `func` has been
+                // debounced at least once.
+                if (trailing && lastArgs) {
+                    return invokeFunc(time);
+                }
+                lastArgs = lastThis = undefined;
+                return result;
+            }
+
+            function cancel() {
+                if (timerId !== undefined) {
+                    clearTimeout(timerId);
+                }
+                lastInvokeTime = 0;
+                lastArgs = lastCallTime = lastThis = timerId = undefined;
+            }
+
+            function flush() {
+                return timerId === undefined ? result : trailingEdge(Date.now());
+            }
+
+            function debounced() {
+                var time = Date.now();
+                var isInvoking = shouldInvoke(time);
+
+                for (var _len = arguments.length, args = Array(_len), _key2 = 0; _key2 < _len; _key2++) {
+                    args[_key2] = arguments[_key2];
+                }
+
+                lastArgs = args;
+                lastThis = this;
+                lastCallTime = time;
+
+                if (isInvoking) {
+                    if (timerId === undefined) {
+                        return leadingEdge(lastCallTime);
+                    }
+                    if (maxing) {
+                        // Handle invocations in a tight loop.
+                        timerId = setTimeout(timerExpired, wait);
+                        return invokeFunc(lastCallTime);
+                    }
+                }
+                if (timerId === undefined) {
+                    timerId = setTimeout(timerExpired, wait);
+                }
+                return result;
+            }
+            debounced.cancel = cancel;
+            debounced.flush = flush;
             return debounced;
-        };
+        }
+
+        /**
+         * @method ax5.util.throttle
+         * @param func
+         * @param wait
+         * @param options
+         * @return {debounced}
+         */
+        //https://github.com/lodash/lodash/blob/master/throttle.js
+        function throttle(func, wait, options) {
+            var leading = true;
+            var trailing = true;
+
+            if (typeof func != 'function') {
+                throw new TypeError('Expected a function');
+            }
+            if (isObject(options)) {
+                leading = 'leading' in options ? !!options.leading : leading;
+                trailing = 'trailing' in options ? !!options.trailing : trailing;
+            }
+            return debounce(func, wait, {
+                'leading': leading,
+                'maxWait': wait,
+                'trailing': trailing
+            });
+        }
 
         /**
          * @method ax5.util.deepCopy
@@ -2104,7 +2233,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ```
          */
         function string(_string) {
-            function ax5string(_string) {
+            return new function (_string) {
                 this.value = _string;
                 this.toString = function () {
                     return this.value;
@@ -2180,9 +2309,287 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 this.snakeCase = function () {
                     return snakeCase(this.value);
                 };
+            }(_string);
+        }
+
+        /**
+         * @method ax5.util.color
+         * @param _hexColor
+         * @return {ax5color}
+         * @example
+         * ```js
+         * ax5.util.color("#ff3300").lighten(10).getHexValue()
+         * console.log(ax5.util.color("#ff3300").darken(10).getHexValue());
+         * ```
+         */
+        function color(_hexColor) {
+
+            var matchers = function () {
+
+                // <http://www.w3.org/TR/css3-values/#integers>
+                var CSS_INTEGER = "[-\\+]?\\d+%?";
+
+                // <http://www.w3.org/TR/css3-values/#number-value>
+                var CSS_NUMBER = "[-\\+]?\\d*\\.\\d+%?";
+
+                // Allow positive/negative integer/number.  Don't capture the either/or, just the entire outcome.
+                var CSS_UNIT = "(?:" + CSS_NUMBER + ")|(?:" + CSS_INTEGER + ")";
+
+                // Actual matching.
+                // Parentheses and commas are optional, but not required.
+                // Whitespace can take the place of commas or opening paren
+                var PERMISSIVE_MATCH3 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
+                var PERMISSIVE_MATCH4 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
+
+                return {
+                    CSS_UNIT: new RegExp(CSS_UNIT),
+                    rgb: new RegExp("rgb" + PERMISSIVE_MATCH3),
+                    rgba: new RegExp("rgba" + PERMISSIVE_MATCH4),
+                    hsl: new RegExp("hsl" + PERMISSIVE_MATCH3),
+                    hsla: new RegExp("hsla" + PERMISSIVE_MATCH4),
+                    hsv: new RegExp("hsv" + PERMISSIVE_MATCH3),
+                    hsva: new RegExp("hsva" + PERMISSIVE_MATCH4),
+                    hex3: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+                    hex6: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+                    hex4: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+                    hex8: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+                };
+            }();
+
+            var convertObject = function convertObject(_color) {
+                var match = void 0;
+                if (match = matchers.rgb.exec(_color)) {
+                    return { r: match[1], g: match[2], b: match[3] };
+                }
+                if (match = matchers.rgba.exec(_color)) {
+                    return { r: match[1], g: match[2], b: match[3], a: match[4] };
+                }
+                if (match = matchers.hsl.exec(_color)) {
+                    return { h: match[1], s: match[2], l: match[3] };
+                }
+                if (match = matchers.hsla.exec(_color)) {
+                    return { h: match[1], s: match[2], l: match[3], a: match[4] };
+                }
+                if (match = matchers.hsv.exec(_color)) {
+                    return { h: match[1], s: match[2], v: match[3] };
+                }
+                if (match = matchers.hsva.exec(_color)) {
+                    return { h: match[1], s: match[2], v: match[3], a: match[4] };
+                }
+                if (match = matchers.hex8.exec(_color)) {
+                    return {
+                        r: parseInt(match[1], 16),
+                        g: parseInt(match[2], 16),
+                        b: parseInt(match[3], 16),
+                        a: parseInt(match[4] / 255, 16),
+                        format: "hex8"
+                    };
+                }
+                if (match = matchers.hex6.exec(_color)) {
+                    return {
+                        r: parseInt(match[1], 16),
+                        g: parseInt(match[2], 16),
+                        b: parseInt(match[3], 16),
+                        format: "hex"
+                    };
+                }
+                if (match = matchers.hex4.exec(_color)) {
+                    return {
+                        r: parseInt(match[1] + '' + match[1], 16),
+                        g: parseInt(match[2] + '' + match[2], 16),
+                        b: parseInt(match[3] + '' + match[3], 16),
+                        a: parseInt(match[4] + '' + match[4], 16),
+                        format: "hex8"
+                    };
+                }
+                if (match = matchers.hex3.exec(_color)) {
+                    return {
+                        r: parseInt(match[1] + '' + match[1], 16),
+                        g: parseInt(match[2] + '' + match[2], 16),
+                        b: parseInt(match[3] + '' + match[3], 16),
+                        format: "hex"
+                    };
+                }
+
+                return false;
+            };
+
+            function isOnePointZero(n) {
+                return typeof n == "string" && n.indexOf('.') != -1 && parseFloat(n) === 1;
             }
 
-            return new ax5string(_string);
+            function isPercentage(n) {
+                return typeof n === "string" && n.indexOf('%') != -1;
+            }
+
+            function convertToPercentage(n) {
+                if (n <= 1) {
+                    n = n * 100 + "%";
+                }
+
+                return n;
+            }
+
+            function convertTo255(n) {
+                return ax5.util.number(Math.min(255, Math.max(n, 0)), { 'round': 2 });
+            }
+
+            function convertToHex(n) {
+                return setDigit(Math.round(n).toString(16), 2);
+            }
+
+            function bound01(n, max) {
+                if (isOnePointZero(n)) {
+                    n = "100%";
+                }
+
+                var processPercent = isPercentage(n);
+                n = Math.min(max, Math.max(0, parseFloat(n)));
+
+                // Automatically convert percentage into number
+                if (processPercent) {
+                    n = parseInt(n * max, 10) / 100;
+                }
+
+                // Handle floating point rounding errors
+                if (Math.abs(n - max) < 0.000001) {
+                    return 1;
+                }
+
+                // Convert into [0, 1] range if it isn't already
+                return n % max / parseFloat(max);
+            }
+
+            function rgbToHsl(r, g, b) {
+                r = bound01(r, 255);
+                g = bound01(g, 255);
+                b = bound01(b, 255);
+
+                var max = Math.max(r, g, b),
+                    min = Math.min(r, g, b);
+                var h,
+                    s,
+                    l = (max + min) / 2;
+
+                if (max == min) {
+                    h = s = 0; // achromatic
+                } else {
+                    var d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) {
+                        case r:
+                            h = (g - b) / d + (g < b ? 6 : 0);
+                            break;
+                        case g:
+                            h = (b - r) / d + 2;
+                            break;
+                        case b:
+                            h = (r - g) / d + 4;
+                            break;
+                    }
+
+                    h /= 6;
+                }
+
+                return { h: h, s: s, l: l };
+            }
+
+            function hslToRgb(h, s, l) {
+                var r = void 0,
+                    g = void 0,
+                    b = void 0;
+
+                h = bound01(h, 360);
+                s = bound01(s, 100);
+                l = bound01(l, 100);
+
+                function hue2rgb(p, q, t) {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                }
+
+                if (s === 0) {
+                    r = g = b = l; // achromatic
+                } else {
+                    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                    var p = 2 * l - q;
+                    r = hue2rgb(p, q, h + 1 / 3);
+                    g = hue2rgb(p, q, h);
+                    b = hue2rgb(p, q, h - 1 / 3);
+                }
+
+                return { r: r * 255, g: g * 255, b: b * 255 };
+            }
+
+            return new function (_color) {
+                this._originalValue = _color;
+                _color = convertObject(_color);
+                this.r = _color.r;
+                this.g = _color.g;
+                this.b = _color.b;
+                this.a = _color.a || 1;
+                this._format = _color.format;
+                this._hex = convertToHex(this.r) + convertToHex(this.g) + convertToHex(this.b);
+
+                this.getHexValue = function () {
+                    return this._hex;
+                };
+
+                this.lighten = function (amount) {
+                    amount = amount === 0 ? 0 : amount || 10;
+                    var hsl = rgbToHsl(this.r, this.g, this.b),
+                        rgb = {};
+
+                    hsl.l += amount / 100;
+                    hsl.l = Math.min(1, Math.max(0, hsl.l));
+                    hsl.h = hsl.h * 360;
+
+                    rgb = hslToRgb(hsl.h, convertToPercentage(hsl.s), convertToPercentage(hsl.l));
+
+                    return color('rgba(' + convertTo255(rgb.r) + ', ' + convertTo255(rgb.g) + ', ' + convertTo255(rgb.b) + ', ' + this.a + ')');
+                };
+
+                this.darken = function (amount) {
+                    amount = amount === 0 ? 0 : amount || 10;
+                    var hsl = rgbToHsl(this.r, this.g, this.b),
+                        rgb = {};
+
+                    hsl.l -= amount / 100;
+                    hsl.l = Math.min(1, Math.max(0, hsl.l));
+                    hsl.h = hsl.h * 360;
+
+                    rgb = hslToRgb(hsl.h, convertToPercentage(hsl.s), convertToPercentage(hsl.l));
+
+                    return color('rgba(' + convertTo255(rgb.r) + ', ' + convertTo255(rgb.g) + ', ' + convertTo255(rgb.b) + ', ' + this.a + ')');
+                };
+
+                this.getBrightness = function () {
+                    return (this.r * 299 + this.g * 587 + this.b * 114) / 1000;
+                };
+
+                this.isDark = function () {
+                    return this.getBrightness() < 128;
+                };
+
+                this.isLight = function () {
+                    return !this.isDark();
+                };
+
+                this.getHsl = function () {
+                    var hsl = rgbToHsl(this.r, this.g, this.b);
+                    hsl.l = Math.min(1, Math.max(0, hsl.l));
+                    hsl.h = hsl.h * 360;
+                    return {
+                        h: hsl.h,
+                        s: hsl.s,
+                        l: hsl.l
+                    };
+                };
+            }(_hexColor);
         }
 
         return {
@@ -2237,10 +2644,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             stopEvent: stopEvent,
             selectRange: selectRange,
             debounce: debounce,
+            throttle: throttle,
             escapeHtml: escapeHtml,
             unescapeHtml: unescapeHtml,
 
-            string: string
+            string: string,
+            color: color
         };
     }();
 
@@ -2770,7 +3179,6 @@ ax5.ui = function () {
      * @method ax5.ui.addClass
      * @param {Object} config
      * @param {String} config.className - name of Class
-     * @param {String} [config.version=""] - version of Class
      * @param {Object} [config.classStore=ax5.ui] - 클래스가 저장될 경로
      * @param {Function} [config.superClass=ax5.ui.root]
      * @param {Function} cls - Class Function
@@ -2782,7 +3190,7 @@ ax5.ui = function () {
 
         // make ui definition variable
         ax5.def[config.className] = {
-            version: config.version
+            version: ax5.info.version
         };
 
         var factory = function factory(cls, arg) {
@@ -3443,11 +3851,10 @@ ax5.ui = function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
-    var DIALOG;
+    var DIALOG = void 0;
 
     UI.addClass({
-        className: "dialog",
-        version: "1.3.82"
+        className: "dialog"
     }, function () {
         /**
          * @class ax5dialog
@@ -3480,7 +3887,7 @@ ax5.ui = function () {
          */
         var ax5dialog = function ax5dialog() {
             var self = this,
-                cfg;
+                cfg = void 0;
 
             this.instanceId = ax5.getGuid();
             this.config = {
@@ -3493,9 +3900,13 @@ ax5.ui = function () {
                 lang: {
                     "ok": "ok", "cancel": "cancel"
                 },
-                animateTime: 150
+                animateTime: 150,
+                autoCloseTime: 0
             };
             this.activeDialog = null;
+            this.autoCloseTimer = null;
+            this.queue = [];
+
             cfg = this.config;
 
             var onStateChanged = function onStateChanged(opts, that) {
@@ -3507,15 +3918,15 @@ ax5.ui = function () {
 
                 that = null;
                 return true;
-            },
-
+            };
             /**
-             * @method ax5dialog.getContent
+             * @private ax5dialog.getContent
              * @param {String} dialogId
              * @param {Object} opts
              * @returns dialogDisplay
              */
-            getContent = function getContent(dialogId, opts) {
+            var getContent = function getContent(dialogId, opts) {
+
                 var data = {
                     dialogId: dialogId,
                     title: opts.title || cfg.title || "",
@@ -3524,7 +3935,14 @@ ax5.ui = function () {
                     btns: opts.btns,
                     '_crlf': function _crlf() {
                         return this.replace(/\n/g, "<br/>");
-                    }
+                    },
+                    additionalContent: function (additionalContent) {
+                        if (U.isFunction(additionalContent)) {
+                            return additionalContent.call(opts);
+                        } else {
+                            return additionalContent;
+                        }
+                    }(opts.additionalContent)
                 };
 
                 try {
@@ -3532,16 +3950,15 @@ ax5.ui = function () {
                 } finally {
                     data = null;
                 }
-            },
-
+            };
             /**
-             * @method ax5dialog.open
+             * @private ax5dialog.open
              * @param {Object} opts
              * @param callback
              */
-            open = function open(opts, callback) {
+            var open = function open(opts, callback) {
                 var pos = {},
-                    box;
+                    box = void 0;
 
                 opts.id = opts.id || cfg.id;
 
@@ -3550,8 +3967,13 @@ ax5.ui = function () {
                 };
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
+                this.dialogConfig = opts;
                 this.activeDialog = jQuery('#' + opts.id);
                 this.activeDialog.css({ width: box.width });
+
+                if (typeof callback === "undefined") {
+                    callback = opts.callback;
+                }
 
                 // dialog 높이 구하기 - 너비가 정해지면 높이가 변경 될 것.
                 opts.height = box.height = this.activeDialog.height();
@@ -3594,16 +4016,23 @@ ax5.ui = function () {
                     state: "open"
                 });
 
+                if (opts.autoCloseTime) {
+                    this.autoCloseTimer = setTimeout(function () {
+                        self.close();
+                    }, opts.autoCloseTime);
+                }
+
                 pos = null;
                 box = null;
-            },
-                align = function align(e) {
+            };
+            var align = function align(e) {
                 if (!this.activeDialog) return this;
                 var opts = self.dialogConfig,
                     box = {
                     width: opts.width,
                     height: opts.height
                 };
+
                 //- position 정렬
                 if (typeof opts.position === "undefined" || opts.position === "center") {
                     box.top = window.innerHeight / 2 - box.height / 2;
@@ -3621,9 +4050,11 @@ ax5.ui = function () {
                 box = null;
 
                 return this;
-            },
-                btnOnClick = function btnOnClick(e, opts, callback, target, k) {
-                var that;
+            };
+            var btnOnClick = function btnOnClick(e, opts, callback, target, k) {
+                var that = void 0,
+                    emptyKey = null;
+
                 if (e.srcElement) e.target = e.srcElement;
 
                 target = U.findParentNode(e.target, function (target) {
@@ -3642,10 +4073,10 @@ ax5.ui = function () {
                         btnTarget: target
                     };
                     if (opts.dialogType === "prompt") {
-                        var emptyKey = null;
+                        that.input = {};
                         for (var oi in opts.input) {
-                            that[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
-                            if (that[oi] == "" || that[oi] == null) {
+                            that.input[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
+                            if (opts.input[oi].required && (that.input[oi] == "" || that.input[oi] == null)) {
                                 emptyKey = oi;
                                 break;
                             }
@@ -3676,9 +4107,9 @@ ax5.ui = function () {
                 callback = null;
                 target = null;
                 k = null;
-            },
-                onKeyup = function onKeyup(e, opts, callback, target, k) {
-                var that,
+            };
+            var onKeyup = function onKeyup(e, opts, callback, target, k) {
+                var that = void 0,
                     emptyKey = null;
 
                 if (e.keyCode == ax5.info.eventKeys.ESC) {
@@ -3692,10 +4123,11 @@ ax5.ui = function () {
                             dialogId: opts.id,
                             btnTarget: target
                         };
+                        that.input = {};
 
                         for (var oi in opts.input) {
-                            that[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
-                            if (that[oi] == "" || that[oi] == null) {
+                            that.input[oi] = this.activeDialog.find('[data-dialog-prompt=' + oi + ']').val();
+                            if (opts.input[oi].required && (that.input[oi] == "" || that.input[oi] == null)) {
                                 emptyKey = oi;
                                 break;
                             }
@@ -3722,15 +4154,37 @@ ax5.ui = function () {
              * Preferences of dialog UI
              * @method ax5dialog.setConfig
              * @param {Object} config - 클래스 속성값
+             * @param {String} [config.theme="default"]
+             * @param {Number} [config.width=300]
+             * @param {String} [config.title=""]
              * @param {Number} [config.zIndex]
+             * @param {Function} [config.onStateChanged] - `onStateChanged` function can be defined in setConfig method or new ax5.ui.dialog initialization method. However, you can us to define an
+             * event function after initialization, if necessary
+             * @param {Object} [config.lang]
+             * @param {String} [config.lang.ok="ok"]
+             * @param {String} [config.lang.cancel="cancel"]
+             * @param {Number} [config.animateTime=150]
+             * @param {Number} [config.autoCloseTime=0] - 0보다 크면 autoCloseTime 프레임후에 dialog auto close
              * @returns {ax5dialog}
              * @example
              * ```
+             * var dialog = new ax5.ui.dialog();
+             * dialog.setConfig({
+             *      title: "app dialog title",
+             *      zIndex: 5000,
+             *      onStateChanged: function () {
+             *          if (this.state === "open") {
+             *              mask.open();
+             *          }
+             *          else if (this.state === "close") {
+             *              mask.close();
+             *          }
+             *      }
+             * });
              * ```
              */
             //== class body start
             this.init = function () {
-
                 this.onStateChanged = cfg.onStateChanged;
                 // this.onLoad = cfg.onLoad;
             };
@@ -3738,7 +4192,18 @@ ax5.ui = function () {
             /**
              * open the dialog of alert type
              * @method ax5dialog.alert
-             * @param {Object|String} [{theme, title, msg, btns}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
+             * @param {Object|String} config - dialog 속성을 json으로 정의하거나 msg만 전달
+             * @param {String} [config.theme="default"]
+             * @param {Number} [config.width=300]
+             * @param {String} [config.title=""]
+             * @param {Number} [config.zIndex]
+             * @param {Function} [config.onStateChanged]
+             * @param {Object} [config.lang]
+             * @param {String} [config.lang.ok="ok"]
+             * @param {String} [config.lang.cancel="cancel"]
+             * @param {Number} [config.animateTime=150]
+             * @param {Number} [config.autoCloseTime=0] - 0보다 크면 autoCloseTime 프레임후에 dialog auto close
+             * @param {Function|String} [config.additionalContent]
              * @param {Function} [callback] - 사용자 확인 이벤트시 호출될 callback 함수
              * @returns {ax5dialog}
              * @example
@@ -3757,22 +4222,7 @@ ax5.ui = function () {
                     };
                 }
 
-                if (this.activeDialog) {
-                    // try one more
-                    if (!tryCount) {
-                        setTimeout(function () {
-                            this.alert(opts, callback, 1);
-                        }.bind(this), Number(cfg.animateTime) + 100);
-                    } else {
-                        console.log(ax5.info.getError("ax5dialog", "501", "alert"));
-                    }
-                    return this;
-                }
-
-                self.dialogConfig = {};
-                jQuery.extend(true, self.dialogConfig, cfg, opts);
-                opts = self.dialogConfig;
-
+                opts = jQuery.extend(true, {}, cfg, opts);
                 opts.dialogType = "alert";
                 opts.theme = opts.theme || cfg.theme || "";
                 opts.callback = callback;
@@ -3782,22 +4232,40 @@ ax5.ui = function () {
                         ok: { label: cfg.lang["ok"], theme: opts.theme }
                     };
                 }
-                open.call(this, opts, callback);
 
+                if (this.activeDialog) {
+                    this.queue.push(opts);
+                } else {
+                    open.call(this, opts, callback);
+                }
                 return this;
             };
 
             /**
              * open the dialog of confirm type
              * @method ax5dialog.confirm
-             * @param {Object|String} [{theme, title, msg, btns}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
+             * @param {Object|String} config - dialog 속성을 json으로 정의하거나 msg만 전달
+             * @param {String} [config.theme="default"]
+             * @param {Number} [config.width=300]
+             * @param {String} [config.title=""]
+             * @param {Number} [config.zIndex]
+             * @param {Function} [config.onStateChanged]
+             * @param {Object} [config.lang]
+             * @param {String} [config.lang.ok="ok"]
+             * @param {String} [config.lang.cancel="cancel"]
+             * @param {Number} [config.animateTime=150]
+             * @param {Number} [config.autoCloseTime=0] - 0보다 크면 autoCloseTime 프레임후에 dialog auto close
+             * @param {Function|String} [config.additionalContent]
              * @param {Function} [callback] - 사용자 확인 이벤트시 호출될 callback 함수
              * @returns {ax5dialog}
              * @example
              * ```
              * myDialog.confirm({
-             *  title: 'app title',
-             *  msg: 'confirm'
+             *      title: 'app title',
+             *      msg: 'confirm',
+             *      additionalContent: function () {
+             *          return "<div style='border:1px solid #ccc;border-radius: 5px;background: #eee;padding: 10px;'>추가정보</div>";
+             *      }
              * }, function(){});
              * ```
              */
@@ -3809,22 +4277,7 @@ ax5.ui = function () {
                     };
                 }
 
-                if (this.activeDialog) {
-                    // try one more
-                    if (!tryCount) {
-                        setTimeout(function () {
-                            this.confirm(opts, callback, 1);
-                        }.bind(this), Number(cfg.animateTime) + 100);
-                    } else {
-                        console.log(ax5.info.getError("ax5dialog", "501", "confirm"));
-                    }
-                    return this;
-                }
-
-                self.dialogConfig = {};
-                jQuery.extend(true, self.dialogConfig, cfg, opts);
-                opts = self.dialogConfig;
-
+                opts = jQuery.extend(true, {}, cfg, opts);
                 opts.dialogType = "confirm";
                 opts.theme = opts.theme || cfg.theme || "";
                 opts.callback = callback;
@@ -3835,7 +4288,12 @@ ax5.ui = function () {
                         cancel: { label: cfg.lang["cancel"] }
                     };
                 }
-                open.call(this, opts, callback);
+
+                if (this.activeDialog) {
+                    this.queue.push(opts);
+                } else {
+                    open.call(this, opts, callback);
+                }
 
                 return this;
             };
@@ -3843,7 +4301,18 @@ ax5.ui = function () {
             /**
              * open the dialog of prompt type
              * @method ax5dialog.prompt
-             * @param {Object|String} [{theme, title, msg, btns, input}|msg] - dialog 속성을 json으로 정의하거나 msg만 전달
+             * @param {Object|String} config - dialog 속성을 json으로 정의하거나 msg만 전달
+             * @param {String} [config.theme="default"]
+             * @param {Number} [config.width=300]
+             * @param {String} [config.title=""]
+             * @param {Number} [config.zIndex]
+             * @param {Function} [config.onStateChanged]
+             * @param {Object} [config.lang]
+             * @param {String} [config.lang.ok="ok"]
+             * @param {String} [config.lang.cancel="cancel"]
+             * @param {Number} [config.animateTime=150]
+             * @param {Number} [config.autoCloseTime=0] - 0보다 크면 autoCloseTime 프레임후에 dialog auto close
+             * @param {Function|String} [config.additionalContent]
              * @param {Function} [callback] - 사용자 확인 이벤트시 호출될 callback 함수
              * @returns {ax5dialog}
              * @example
@@ -3862,21 +4331,7 @@ ax5.ui = function () {
                     };
                 }
 
-                if (this.activeDialog) {
-                    // try one more
-                    if (!tryCount) {
-                        setTimeout(function () {
-                            this.prompt(opts, callback, 1);
-                        }.bind(this), Number(cfg.animateTime) + 100);
-                    } else {
-                        console.log(ax5.info.getError("ax5dialog", "501", "prompt"));
-                    }
-                    return this;
-                }
-
-                self.dialogConfig = {};
-                jQuery.extend(true, self.dialogConfig, cfg, opts);
-                opts = self.dialogConfig;
+                opts = jQuery.extend(true, {}, cfg, opts);
                 opts.dialogType = "prompt";
                 opts.theme = opts.theme || cfg.theme || "";
                 opts.callback = callback;
@@ -3892,7 +4347,12 @@ ax5.ui = function () {
                         cancel: { label: cfg.lang["cancel"] }
                     };
                 }
-                open.call(this, opts, callback);
+
+                if (this.activeDialog) {
+                    this.queue.push(opts);
+                } else {
+                    open.call(this, opts, callback);
+                }
 
                 return this;
             };
@@ -3907,9 +4367,14 @@ ax5.ui = function () {
              * ```
              */
             this.close = function (_option) {
-                var opts, that;
+                var opts = void 0,
+                    that = void 0;
+
                 if (this.activeDialog) {
+                    if (this.autoCloseTimer) clearTimeout(this.autoCloseTimer);
+
                     opts = self.dialogConfig;
+
                     this.activeDialog.addClass("destroy");
                     jQuery(window).unbind("keydown.ax5dialog");
                     jQuery(window).unbind("resize.ax5dialog");
@@ -3936,6 +4401,10 @@ ax5.ui = function () {
                             this.onStateChanged.call(that, that);
                         }
 
+                        if (this.queue && this.queue.length) {
+                            open.call(this, this.queue.shift());
+                        }
+
                         opts = null;
                         that = null;
                     }.bind(this), cfg.animateTime);
@@ -3956,6 +4425,7 @@ ax5.ui = function () {
         };
         return ax5dialog;
     }());
+
     DIALOG = ax5.ui.dialog;
 })();
 
@@ -3965,7 +4435,7 @@ ax5.ui = function () {
     var DIALOG = ax5.ui.dialog;
 
     var dialogDisplay = function dialogDisplay(columnKeys) {
-        return ' \n        <div id="{{dialogId}}" data-ax5-ui="dialog" class="ax5-ui-dialog {{theme}}">\n            <div class="ax-dialog-header">\n                {{{title}}}\n            </div>\n            <div class="ax-dialog-body">\n                <div class="ax-dialog-msg">{{{msg}}}</div>\n                \n                {{#input}}\n                <div class="ax-dialog-prompt">\n                    {{#@each}}\n                    <div class="form-group">\n                    {{#@value.label}}\n                    <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>\n                    {{/@value.label}}\n                    <input type="{{@value.type}}" placeholder="{{@value.placeholder}}" class="form-control {{@value.theme}}" data-dialog-prompt="{{@key}}" style="width:100%;" value="{{@value.value}}" />\n                    {{#@value.help}}\n                    <p class="help-block">{{#_crlf}}{{.}}{{/_crlf}}</p>\n                    {{/@value.help}}\n                    </div>\n                    {{/@each}}\n                </div>\n                {{/input}}\n                \n                <div class="ax-dialog-buttons">\n                    <div class="ax-button-wrap">\n                    {{#btns}}\n                        {{#@each}}\n                        <button type="button" data-dialog-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{@value.label}}</button>\n                        {{/@each}}\n                    {{/btns}}\n                    </div>\n                </div>\n            </div>\n        </div>  \n        ';
+        return ' \n        <div id="{{dialogId}}" data-dialog-els="root" class="ax5-ui-dialog {{theme}}">\n            <div class="ax-dialog-header" data-dialog-els="header">\n                {{{title}}}\n            </div>\n            <div class="ax-dialog-body" data-dialog-els="body">\n                <div class="ax-dialog-msg">{{{msg}}}</div>\n                \n                {{#input}}\n                <div class="ax-dialog-prompt">\n                    {{#@each}}\n                    <div class="form-group">\n                    {{#@value.label}}\n                    <label>{{#_crlf}}{{{.}}}{{/_crlf}}</label>\n                    {{/@value.label}}\n                    <input type="{{@value.type}}" placeholder="{{@value.placeholder}}" class="form-control {{@value.theme}}" data-dialog-prompt="{{@key}}" style="width:100%;" value="{{@value.value}}" />\n                    {{#@value.help}}\n                    <p class="help-block">{{#_crlf}}{{.}}{{/_crlf}}</p>\n                    {{/@value.help}}\n                    </div>\n                    {{/@each}}\n                </div>\n                {{/input}}\n                \n                <div class="ax-dialog-buttons" data-dialog-els="buttons">\n                    <div class="ax-button-wrap">\n                    {{#btns}}\n                        {{#@each}}\n                        <button type="button" data-dialog-btn="{{@key}}" class="btn btn-{{@value.theme}}">{{@value.label}}</button>\n                        {{/@each}}\n                    {{/btns}}\n                    </div>\n                </div>\n                \n                {{#additionalContent}}\n                <div data-dialog-els="additional-content">{{{.}}}</div>\n                {{/additionalContent}}\n            </div>\n        </div>  \n        ';
     };
 
     DIALOG.tmpl = {
@@ -3980,11 +4450,10 @@ ax5.ui = function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
-    var MASK;
+    var MASK = void 0;
 
     UI.addClass({
-        className: "mask",
-        version: "1.3.82"
+        className: "mask"
     }, function () {
         /**
          * @class ax5mask
@@ -4016,9 +4485,9 @@ ax5.ui = function () {
          * });
          * ```
          */
-        var ax5mask = function ax5mask() {
+        return function () {
             var self = this,
-                cfg;
+                cfg = void 0;
 
             this.instanceId = ax5.getGuid();
             this.config = {
@@ -4041,12 +4510,12 @@ ax5.ui = function () {
                 opts = null;
                 that = null;
                 return true;
-            },
-                getBodyTmpl = function getBodyTmpl(data) {
+            };
+            var getBodyTmpl = function getBodyTmpl(data) {
                 if (typeof data.templateName === "undefined") data.templateName = "defaultMask";
                 return MASK.tmpl.get.call(this, data.templateName, data);
-            },
-                setBody = function setBody(content) {
+            };
+            var setBody = function setBody(content) {
                 this.maskContent = content;
             };
 
@@ -4125,28 +4594,17 @@ ax5.ui = function () {
                 if (this.status === "on") this.close();
                 if (options && options.content) setBody.call(this, options.content);
                 if (options && typeof options.templateName === "undefined") options.templateName = "defaultMask";
-                self.maskConfig = {};
-
-                jQuery.extend(true, self.maskConfig, this.config, options);
+                self.maskConfig = jQuery.extend(true, {}, this.config, options);
 
                 var _cfg = self.maskConfig,
                     target = _cfg.target,
                     $target = jQuery(target),
                     maskId = 'ax-mask-' + ax5.getGuid(),
-                    $mask,
+                    $mask = void 0,
                     css = {},
                     that = {},
                     templateName = _cfg.templateName,
-
-                /*
-                 bodyTmpl = getBodyTmpl(),
-                 body = ax5.mustache.render(bodyTmpl, {
-                 theme: _cfg.theme,
-                 maskId: maskId,
-                 body: this.maskContent
-                 });
-                 */
-                body = getBodyTmpl({
+                    body = getBodyTmpl({
                     theme: _cfg.theme,
                     maskId: maskId,
                     body: this.maskContent,
@@ -4165,15 +4623,16 @@ ax5.ui = function () {
                         height: $target.outerHeight()
                     };
 
-                    if (typeof self.maskConfig.zIndex !== "undefined") {
-                        css["z-index"] = self.maskConfig.zIndex;
-                    }
                     $target.addClass("ax-masking");
 
                     // 마스크의 타겟이 html body가 아닌경우 window resize 이벤트를 추적하여 엘리먼트 마스크의 CSS 속성 변경
-                    jQuery(window).bind("resize.ax5mask-" + this.instanceId, function (_$target) {
+                    jQuery(window).on("resize.ax5mask-" + this.instanceId, function (_$target) {
                         this.align();
                     }.bind(this));
+                }
+
+                if (typeof self.maskConfig.zIndex !== "undefined") {
+                    css["z-index"] = self.maskConfig.zIndex;
                 }
 
                 this.$mask = $mask = jQuery("#" + maskId);
@@ -4222,31 +4681,27 @@ ax5.ui = function () {
              * ```
              */
             this.close = function (_delay) {
-                var _this2 = this;
-
                 if (this.$mask) {
-                    (function () {
-                        var _close = function _close() {
-                            this.status = "off";
-                            this.$mask.remove();
-                            this.$target.removeClass("ax-masking");
+                    var _close = function _close() {
+                        this.status = "off";
+                        this.$mask.remove();
+                        this.$target.removeClass("ax-masking");
 
-                            onStateChanged.call(this, null, {
-                                self: this,
-                                state: "close"
-                            });
+                        onStateChanged.call(this, null, {
+                            self: this,
+                            state: "close"
+                        });
 
-                            jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
-                        };
+                        jQuery(window).off("resize.ax5mask-" + this.instanceId);
+                    };
 
-                        if (_delay) {
-                            setTimeout(function () {
-                                _close.call(this);
-                            }.bind(_this2), _delay);
-                        } else {
-                            _close.call(_this2);
-                        }
-                    })();
+                    if (_delay) {
+                        setTimeout(function () {
+                            _close.call(this);
+                        }.bind(this), _delay);
+                    } else {
+                        _close.call(this);
+                    }
                 }
                 return this;
             };
@@ -4256,28 +4711,24 @@ ax5.ui = function () {
              * @returns {ax5mask}
              */
             this.fadeOut = function () {
-                var _this3 = this;
-
                 if (this.$mask) {
-                    (function () {
-                        var _close = function _close() {
-                            this.status = "off";
-                            this.$mask.remove();
-                            this.$target.removeClass("ax-masking");
+                    var _close = function _close() {
+                        this.status = "off";
+                        this.$mask.remove();
+                        this.$target.removeClass("ax-masking");
 
-                            onStateChanged.call(this, null, {
-                                self: this,
-                                state: "close"
-                            });
+                        onStateChanged.call(this, null, {
+                            self: this,
+                            state: "close"
+                        });
 
-                            jQuery(window).unbind("resize.ax5mask-" + this.instanceId);
-                        };
+                        jQuery(window).off("resize.ax5mask-" + this.instanceId);
+                    };
 
-                        _this3.$mask.addClass("fade-out");
-                        setTimeout(function () {
-                            _close.call(this);
-                        }.bind(_this3), cfg.animateTime);
-                    })();
+                    this.$mask.addClass("fade-out");
+                    setTimeout(function () {
+                        _close.call(this);
+                    }.bind(this), cfg.animateTime);
                 }
                 return this;
             };
@@ -4318,7 +4769,6 @@ ax5.ui = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5mask;
     }());
     MASK = ax5.ui.mask;
 })();
@@ -4347,8 +4797,7 @@ ax5.ui = function () {
     var TOAST;
 
     UI.addClass({
-        className: "toast",
-        version: "1.3.82"
+        className: "toast"
     }, function () {
         /**
          * @class ax5toast
@@ -4701,72 +5150,37 @@ ax5.ui = function () {
         }
     };
 })();
+/*
+ * Copyright (c) 2016. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 // ax5.ui.modal
 (function () {
-
     var UI = ax5.ui;
     var U = ax5.util;
-    var MODAL;
+    var MODAL = void 0;
 
     UI.addClass({
-        className: "modal",
-        version: "1.3.82"
+        className: "modal"
     }, function () {
         /**
          * @class ax5modal
          * @alias ax5.ui.modal
          * @author tom@axisj.com
-         * @example
-         * ```js
-         * var modal = new ax5.ui.modal({
-         *     iframeLoadingMsg: '<i class="fa fa-spinner fa-5x fa-spin" aria-hidden="true"></i>',
-         *     header: {
-         *         title: "MODAL TITLE",
-         *         btns: {
-         *             minimize: {
-         *                 label: '<i class="fa fa-minus-circle" aria-hidden="true"></i>', onClick: function () {
-         *                     modal.minimize();
-         *                 }
-         *             },
-         *             maximize: {
-         *                 label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function () {
-         *                     modal.maximize();
-         *                 }
-         *             },
-         *             close: {
-         *                 label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function () {
-         *                     modal.close();
-         *                 }
-         *             }
-         *         }
-         *     }
-         * });
-         *
-         * modal.open({
-         *     width: 800,
-         *     height: 600,
-         *     fullScreen: function(){
-         *         return ($(window).width() < 600);
-         *     },
-         *     iframe: {
-         *         method: "get",
-         *         url: "http://chequer-app:2017/html/login.html",
-         *         param: "callback=modalCallback"
-         *     }
-         * });
-         * ```
          */
-        var ax5modal = function ax5modal() {
+        return function () {
             var self = this,
                 cfg = void 0,
                 ENM = {
-                "mousedown": ax5.info.supportTouch ? "touchstart" : "mousedown",
-                "mousemove": ax5.info.supportTouch ? "touchmove" : "mousemove",
-                "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
+                mousedown: "mousedown",
+                mousemove: "mousemove",
+                mouseup: "mouseup"
             },
                 getMousePosition = function getMousePosition(e) {
                 var mouseObj = e;
-                if ('changedTouches' in e) {
+                if ("changedTouches" in e && e.changedTouches) {
                     mouseObj = e.changedTouches[0];
                 }
                 return {
@@ -4777,20 +5191,22 @@ ax5.ui = function () {
 
             this.instanceId = ax5.getGuid();
             this.config = {
-                id: 'ax5-modal-' + this.instanceId,
+                id: "ax5-modal-" + this.instanceId,
                 position: {
                     left: "center",
                     top: "middle",
                     margin: 10
                 },
                 minimizePosition: "bottom-right",
-                clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchstart" : "click"),
-                theme: 'default',
+                clickEventName: "ontouchstart" in document.documentElement ? "touchstart" : "click",
+                theme: "default",
                 width: 300,
                 height: 400,
                 closeToEsc: true,
                 disableDrag: false,
-                animateTime: 250
+                disableResize: false,
+                animateTime: 250,
+                iframe: false
             };
             this.activeModal = null;
             this.watingModal = false;
@@ -4799,6 +5215,20 @@ ax5.ui = function () {
             cfg = this.config; // extended config copy cfg
 
             var onStateChanged = function onStateChanged(opts, that) {
+                var eventProcessor = {
+                    resize: function resize(that) {
+                        if (opts && opts.onResize) {
+                            opts.onResize.call(that, that);
+                        } else if (this.onResize) {
+                            this.onResize.call(that, that);
+                        }
+                    },
+                    move: function move() {}
+                };
+                if (that.state in eventProcessor) {
+                    eventProcessor[that.state].call(this, that);
+                }
+
                 if (opts && opts.onStateChanged) {
                     opts.onStateChanged.call(that, that);
                 } else if (this.onStateChanged) {
@@ -4814,7 +5244,8 @@ ax5.ui = function () {
                     fullScreen: opts.fullScreen ? "fullscreen" : "",
                     styles: "",
                     iframe: opts.iframe,
-                    iframeLoadingMsg: opts.iframeLoadingMsg
+                    iframeLoadingMsg: opts.iframeLoadingMsg,
+                    disableResize: opts.disableResize
                 };
 
                 if (opts.zIndex) {
@@ -4834,13 +5265,12 @@ ax5.ui = function () {
                 var that = void 0;
                 jQuery(document.body).append(getContent.call(this, opts.id, opts));
 
-                this.activeModal = jQuery('#' + opts.id);
-
+                this.activeModal = jQuery("#" + opts.id);
                 // 파트수집
                 this.$ = {
-                    "root": this.activeModal,
-                    "header": this.activeModal.find('[data-modal-els="header"]'),
-                    "body": this.activeModal.find('[data-modal-els="body"]')
+                    root: this.activeModal,
+                    header: this.activeModal.find('[data-modal-els="header"]'),
+                    body: this.activeModal.find('[data-modal-els="body"]')
                 };
 
                 if (opts.iframe) {
@@ -4848,6 +5278,8 @@ ax5.ui = function () {
                     this.$["iframe"] = this.activeModal.find('[data-modal-els="iframe"]');
                     this.$["iframe-form"] = this.activeModal.find('[data-modal-els="iframe-form"]');
                     this.$["iframe-loading"] = this.activeModal.find('[data-modal-els="iframe-loading"]');
+                } else {
+                    this.$["body-frame"] = this.activeModal.find('[data-modal-els="body-frame"]');
                 }
 
                 //- position 정렬
@@ -4868,9 +5300,9 @@ ax5.ui = function () {
                     this.$["iframe"].css({ height: opts.height });
 
                     // iframe content load
-                    this.$["iframe-form"].attr({ "method": opts.iframe.method });
-                    this.$["iframe-form"].attr({ "target": opts.id + "-frame" });
-                    this.$["iframe-form"].attr({ "action": opts.iframe.url });
+                    this.$["iframe-form"].attr({ method: opts.iframe.method });
+                    this.$["iframe-form"].attr({ target: opts.id + "-frame" });
+                    this.$["iframe-form"].attr({ action: opts.iframe.url });
                     this.$["iframe"].on("load", function () {
                         that.state = "load";
                         if (opts.iframeLoadingMsg) {
@@ -4884,7 +5316,7 @@ ax5.ui = function () {
                     this.$["iframe-form"].submit();
                 }
 
-                if (callback) callback.call(that);
+                if (callback) callback.call(that, that);
 
                 if (!this.watingModal) {
                     onStateChanged.call(this, opts, that);
@@ -4896,17 +5328,12 @@ ax5.ui = function () {
                         onkeyup.call(this, e || window.event);
                     }.bind(this));
                 }
+
                 jQuery(window).bind("resize.ax-modal", function (e) {
                     this.align(null, e || window.event);
                 }.bind(this));
 
-                this.activeModal.find("[data-modal-header-btn]").on(cfg.clickEventName, function (e) {
-                    btnOnClick.call(this, e || window.event, opts);
-                }.bind(this));
-
-                this.$.header.bind(ENM["mousedown"], function (e) {
-                    if (opts.isFullScreen) return false;
-
+                this.$.header.off(ENM["mousedown"]).off("dragstart").on(ENM["mousedown"], function (e) {
                     /// 이벤트 필터링 추가 : 버튼엘리먼트로 부터 발생된 이벤트이면 moveModal 시작하지 않도록 필터링
                     var isButton = U.findParentNode(e.target, function (_target) {
                         if (_target.getAttribute("data-modal-header-btn")) {
@@ -4914,12 +5341,24 @@ ax5.ui = function () {
                         }
                     });
 
-                    if (!isButton && opts.disableDrag != true) {
+                    if (!opts.isFullScreen && !isButton && opts.disableDrag != true) {
                         self.mousePosition = getMousePosition(e);
                         moveModal.on.call(self);
                     }
-                }).bind("dragstart", function (e) {
-                    U.stopEvent(e);
+                    if (isButton) {
+                        btnOnClick.call(self, e || window.event, opts);
+                    }
+                }).on("dragstart", function (e) {
+                    U.stopEvent(e.originalEvent);
+                    return false;
+                });
+
+                this.activeModal.off(ENM["mousedown"]).off("dragstart").on(ENM["mousedown"], "[data-ax5modal-resizer]", function (e) {
+                    if (opts.disableDrag || opts.isFullScreen) return false;
+                    self.mousePosition = getMousePosition(e);
+                    resizeModal.on.call(self, this.getAttribute("data-ax5modal-resizer"));
+                }).on("dragstart", function (e) {
+                    U.stopEvent(e.originalEvent);
                     return false;
                 });
             },
@@ -4938,7 +5377,8 @@ ax5.ui = function () {
 
                     that = {
                         self: this,
-                        key: k, value: opts.header.btns[k],
+                        key: k,
+                        value: opts.header.btns[k],
                         dialogId: opts.id,
                         btnTarget: target
                     };
@@ -4977,93 +5417,502 @@ ax5.ui = function () {
                 }
             },
                 moveModal = {
-                "on": function on() {
+                on: function on() {
                     var modalZIndex = this.activeModal.css("z-index"),
-                        modalOffset = this.activeModal.position(),
+                        modalOffset = this.activeModal.offset(),
                         modalBox = {
-                        width: this.activeModal.outerWidth(), height: this.activeModal.outerHeight()
+                        width: this.activeModal.outerWidth(),
+                        height: this.activeModal.outerHeight()
                     },
                         windowBox = {
                         width: jQuery(window).width(),
-                        height: jQuery(window).height()
+                        height: jQuery(window).height(),
+                        scrollLeft: jQuery(document).scrollLeft(),
+                        scrollTop: jQuery(document).scrollTop()
                     },
                         getResizerPosition = function getResizerPosition(e) {
                         self.__dx = e.clientX - self.mousePosition.clientX;
                         self.__dy = e.clientY - self.mousePosition.clientY;
 
-                        var minX = 0;
-                        var maxX = windowBox.width - modalBox.width;
-                        var minY = 0;
-                        var maxY = windowBox.height - modalBox.height;
-
+                        /*
                         if (minX > modalOffset.left + self.__dx) {
-                            self.__dx = -modalOffset.left;
+                          self.__dx = -modalOffset.left;
                         } else if (maxX < modalOffset.left + self.__dx) {
-                            self.__dx = maxX - modalOffset.left;
+                          self.__dx = maxX - modalOffset.left;
                         }
-
-                        if (minY > modalOffset.top + self.__dy) {
-                            self.__dy = -modalOffset.top;
+                         if (minY > modalOffset.top + self.__dy) {
+                          self.__dy = -modalOffset.top;
                         } else if (maxY < modalOffset.top + self.__dy) {
-                            self.__dy = maxY - modalOffset.top;
+                          self.__dy = maxY - modalOffset.top;
                         }
+                          */
 
                         return {
-                            left: modalOffset.left + self.__dx + $(document).scrollLeft(),
-                            top: modalOffset.top + self.__dy + $(document).scrollTop()
+                            left: modalOffset.left + self.__dx,
+                            top: modalOffset.top + self.__dy
                         };
+                    };
+
+                    var minX = 0,
+                        maxX = windowBox.width - modalBox.width,
+                        minY = 0,
+                        maxY = windowBox.height - modalBox.height;
+
+                    self.__dx = 0; // 변화량 X
+                    self.__dy = 0; // 변화량 Y
+
+                    // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
+                    self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
+                    self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
+                    self.resizerBg.css({ zIndex: modalZIndex });
+                    self.resizer.css({
+                        left: modalOffset.left,
+                        top: modalOffset.top,
+                        width: modalBox.width,
+                        height: modalBox.height,
+                        zIndex: modalZIndex + 1
+                    });
+
+                    jQuery(document.body).append(self.resizerBg).append(self.resizer);
+
+                    self.activeModal.addClass("draged");
+
+                    jQuery(document.body).on(ENM["mousemove"] + ".ax5modal-move-" + this.instanceId, function (e) {
+                        self.resizer.css(getResizerPosition(e));
+                    }).on(ENM["mouseup"] + ".ax5modal-move-" + this.instanceId, function (e) {
+                        moveModal.off.call(self);
+                    }).on("mouseleave.ax5modal-move-" + this.instanceId, function (e) {
+                        moveModal.off.call(self);
+                    });
+
+                    jQuery(document.body).attr("unselectable", "on").css("user-select", "none").on("selectstart", false);
+                },
+                off: function off() {
+                    var setModalPosition = function setModalPosition() {
+                        var box = this.resizer.offset();
+                        if (!this.modalConfig.absolute) {
+                            box.left -= jQuery(document).scrollLeft();
+                            box.top -= jQuery(document).scrollTop();
+                        }
+                        this.activeModal.css(box);
+                        this.modalConfig.left = box.left;
+                        this.modalConfig.top = box.top;
+
+                        box = null;
+                    };
+
+                    this.activeModal.removeClass("draged");
+                    setModalPosition.call(this);
+
+                    this.resizer.remove();
+                    this.resizer = null;
+                    this.resizerBg.remove();
+                    this.resizerBg = null;
+                    //this.align();
+
+                    jQuery(document.body).off(ENM["mousemove"] + ".ax5modal-move-" + this.instanceId).off(ENM["mouseup"] + ".ax5modal-move-" + this.instanceId).off("mouseleave.ax5modal-move-" + this.instanceId);
+
+                    jQuery(document.body).removeAttr("unselectable").css("user-select", "auto").off("selectstart");
+
+                    onStateChanged.call(this, self.modalConfig, {
+                        self: this,
+                        state: "move"
+                    });
+                }
+            },
+                resizeModal = {
+                on: function on(resizerType) {
+                    var modalZIndex = this.activeModal.css("z-index"),
+                        modalOffset = this.activeModal.offset(),
+                        modalBox = {
+                        width: this.activeModal.outerWidth(),
+                        height: this.activeModal.outerHeight()
+                    },
+                        windowBox = {
+                        width: jQuery(window).width(),
+                        height: jQuery(window).height(),
+                        scrollLeft: jQuery(document).scrollLeft(),
+                        scrollTop: jQuery(document).scrollTop()
+                    },
+                        resizerProcessor = {
+                        top: function top(e) {
+                            if (minHeight > modalBox.height - self.__dy) {
+                                self.__dy = modalBox.height - minHeight;
+                            }
+
+                            if (e.shiftKey) {
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width,
+                                    height: modalBox.height - self.__dy * 2
+                                };
+                            } else if (e.altKey) {
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left + self.__dy,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width - self.__dy * 2,
+                                    height: modalBox.height - self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width,
+                                    height: modalBox.height - self.__dy
+                                };
+                            }
+                        },
+                        bottom: function bottom(e) {
+                            if (minHeight > modalBox.height + self.__dy) {
+                                self.__dy = -modalBox.height + minHeight;
+                            }
+
+                            if (e.shiftKey) {
+                                if (minHeight > modalBox.height + self.__dy * 2) {
+                                    self.__dy = (-modalBox.height + minHeight) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top - self.__dy,
+                                    width: modalBox.width,
+                                    height: modalBox.height + self.__dy * 2
+                                };
+                            } else if (e.altKey) {
+                                if (minHeight > modalBox.height + self.__dy * 2) {
+                                    self.__dy = (-modalBox.height + minHeight) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left - self.__dy,
+                                    top: modalOffset.top - self.__dy,
+                                    width: modalBox.width + self.__dy * 2,
+                                    height: modalBox.height + self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top,
+                                    width: modalBox.width,
+                                    height: modalBox.height + self.__dy
+                                };
+                            }
+                        },
+                        left: function left(e) {
+                            if (minWidth > modalBox.width - self.__dx) {
+                                self.__dx = modalBox.width - minWidth;
+                            }
+
+                            if (e.shiftKey) {
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top,
+                                    width: modalBox.width - self.__dx * 2,
+                                    height: modalBox.height
+                                };
+                            } else if (e.altKey) {
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top + self.__dx,
+                                    width: modalBox.width - self.__dx * 2,
+                                    height: modalBox.height - self.__dx * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top,
+                                    width: modalBox.width - self.__dx,
+                                    height: modalBox.height
+                                };
+                            }
+                        },
+                        right: function right(e) {
+                            if (minWidth > modalBox.width + self.__dx) {
+                                self.__dx = -modalBox.width + minWidth;
+                            }
+
+                            if (e.shiftKey) {
+                                if (minWidth > modalBox.width + self.__dx * 2) {
+                                    self.__dx = (-modalBox.width + minWidth) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left - self.__dx,
+                                    top: modalOffset.top,
+                                    width: modalBox.width + self.__dx * 2,
+                                    height: modalBox.height
+                                };
+                            } else if (e.altKey) {
+                                if (minWidth > modalBox.width + self.__dx * 2) {
+                                    self.__dx = (-modalBox.width + minWidth) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left - self.__dx,
+                                    top: modalOffset.top - self.__dx,
+                                    width: modalBox.width + self.__dx * 2,
+                                    height: modalBox.height + self.__dx * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top,
+                                    width: modalBox.width + self.__dx,
+                                    height: modalBox.height
+                                };
+                            }
+                        },
+                        "top-left": function topLeft(e) {
+                            if (minWidth > modalBox.width - self.__dx) {
+                                self.__dx = modalBox.width - minWidth;
+                            }
+
+                            if (minHeight > modalBox.height - self.__dy) {
+                                self.__dy = modalBox.height - minHeight;
+                            }
+
+                            if (e.shiftKey || e.altKey) {
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width - self.__dx * 2,
+                                    height: modalBox.height - self.__dy * 2
+                                };
+                            } else {
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width - self.__dx,
+                                    height: modalBox.height - self.__dy
+                                };
+                            }
+                        },
+                        "top-right": function topRight(e) {
+                            if (minWidth > modalBox.width + self.__dx) {
+                                self.__dx = -modalBox.width + minWidth;
+                            }
+
+                            if (minHeight > modalBox.height - self.__dy) {
+                                self.__dy = modalBox.height - minHeight;
+                            }
+
+                            if (e.shiftKey || e.altKey) {
+                                if (minHeight > modalBox.height - self.__dy * 2) {
+                                    self.__dy = (modalBox.height - minHeight) / 2;
+                                }
+                                if (minWidth > modalBox.width + self.__dx * 2) {
+                                    self.__dx = (-modalBox.width + minWidth) / 2;
+                                }
+
+                                return {
+                                    left: modalOffset.left - self.__dx,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width + self.__dx * 2,
+                                    height: modalBox.height - self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top + self.__dy,
+                                    width: modalBox.width + self.__dx,
+                                    height: modalBox.height - self.__dy
+                                };
+                            }
+                        },
+                        "bottom-left": function bottomLeft(e) {
+                            if (minWidth > modalBox.width - self.__dx) {
+                                self.__dx = modalBox.width - minWidth;
+                            }
+
+                            if (minHeight > modalBox.height + self.__dy) {
+                                self.__dy = -modalBox.height + minHeight;
+                            }
+
+                            if (e.shiftKey || e.altKey) {
+                                if (minWidth > modalBox.width - self.__dx * 2) {
+                                    self.__dx = (modalBox.width - minWidth) / 2;
+                                }
+                                if (minHeight > modalBox.height + self.__dy * 2) {
+                                    self.__dy = (-modalBox.height + minHeight) / 2;
+                                }
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top - self.__dy,
+                                    width: modalBox.width - self.__dx * 2,
+                                    height: modalBox.height + self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left + self.__dx,
+                                    top: modalOffset.top,
+                                    width: modalBox.width - self.__dx,
+                                    height: modalBox.height + self.__dy
+                                };
+                            }
+                        },
+                        "bottom-right": function bottomRight(e) {
+                            if (minWidth > modalBox.width + self.__dx) {
+                                self.__dx = -modalBox.width + minWidth;
+                            }
+
+                            if (minHeight > modalBox.height + self.__dy) {
+                                self.__dy = -modalBox.height + minHeight;
+                            }
+
+                            if (e.shiftKey || e.altKey) {
+                                if (minWidth > modalBox.width + self.__dx * 2) {
+                                    self.__dx = (-modalBox.width + minWidth) / 2;
+                                }
+                                if (minHeight > modalBox.height + self.__dy * 2) {
+                                    self.__dy = (-modalBox.height + minHeight) / 2;
+                                }
+                                return {
+                                    left: modalOffset.left - self.__dx,
+                                    top: modalOffset.top - self.__dy,
+                                    width: modalBox.width + self.__dx * 2,
+                                    height: modalBox.height + self.__dy * 2
+                                };
+                            } else {
+                                return {
+                                    left: modalOffset.left,
+                                    top: modalOffset.top,
+                                    width: modalBox.width + self.__dx,
+                                    height: modalBox.height + self.__dy
+                                };
+                            }
+                        }
+                    },
+                        getResizerPosition = function getResizerPosition(e) {
+                        self.__dx = e.clientX - self.mousePosition.clientX;
+                        self.__dy = e.clientY - self.mousePosition.clientY;
+
+                        return resizerProcessor[resizerType](e);
+                    };
+
+                    var minWidth = 100,
+                        minHeight = 100;
+
+                    var cursorType = {
+                        top: "row-resize",
+                        bottom: "row-resize",
+                        left: "col-resize",
+                        right: "col-resize",
+                        "top-left": "nwse-resize",
+                        "top-right": "nesw-resize",
+                        "bottom-left": "nesw-resize",
+                        "bottom-right": "nwse-resize"
                     };
 
                     self.__dx = 0; // 변화량 X
                     self.__dy = 0; // 변화량 Y
 
-                    if (!self.resizer) {
-                        // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
-                        self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
-                        self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
-                        self.resizerBg.css({ zIndex: modalZIndex });
-                        self.resizer.css({
-                            left: modalOffset.left,
-                            top: modalOffset.top,
-                            width: modalBox.width,
-                            height: modalBox.height,
-                            zIndex: modalZIndex + 1
-                        });
-                        jQuery(document.body).append(self.resizerBg).append(self.resizer);
-                        self.activeModal.addClass("draged");
-                    }
+                    // self.resizerBg : body 가 window보다 작을 때 문제 해결을 위한 DIV
+                    self.resizerBg = jQuery('<div class="ax5modal-resizer-background" ondragstart="return false;"></div>');
+                    self.resizer = jQuery('<div class="ax5modal-resizer" ondragstart="return false;"></div>');
+                    self.resizerBg.css({
+                        zIndex: modalZIndex,
+                        cursor: cursorType[resizerType]
+                    });
+                    self.resizer.css({
+                        left: modalOffset.left,
+                        top: modalOffset.top,
+                        width: modalBox.width,
+                        height: modalBox.height,
+                        zIndex: modalZIndex + 1,
+                        cursor: cursorType[resizerType]
+                    });
+                    jQuery(document.body).append(self.resizerBg).append(self.resizer);
+                    self.activeModal.addClass("draged");
 
-                    jQuery(document.body).bind(ENM["mousemove"] + ".ax5modal-" + cfg.id, function (e) {
+                    jQuery(document.body).bind(ENM["mousemove"] + ".ax5modal-resize-" + this.instanceId, function (e) {
                         self.resizer.css(getResizerPosition(e));
-                    }).bind(ENM["mouseup"] + ".ax5layout-" + this.instanceId, function (e) {
-                        moveModal.off.call(self);
-                    }).bind("mouseleave.ax5layout-" + this.instanceId, function (e) {
-                        moveModal.off.call(self);
+                    }).bind(ENM["mouseup"] + ".ax5modal-resize-" + this.instanceId, function (e) {
+                        resizeModal.off.call(self);
+                    }).bind("mouseleave.ax5modal-resize-" + this.instanceId, function (e) {
+                        resizeModal.off.call(self);
                     });
 
-                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+                    jQuery(document.body).attr("unselectable", "on").css("user-select", "none").bind("selectstart", false);
                 },
-                "off": function off() {
+                off: function off() {
                     var setModalPosition = function setModalPosition() {
-                        var box = this.activeModal.offset();
-                        box.left += this.__dx - $(document).scrollLeft();
-                        box.top += this.__dy - $(document).scrollTop();
+                        var box = this.resizer.offset();
+                        jQuery.extend(box, {
+                            width: this.resizer.width(),
+                            height: this.resizer.height()
+                        });
+                        if (!this.modalConfig.absolute) {
+                            box.left -= jQuery(document).scrollLeft();
+                            box.top -= jQuery(document).scrollTop();
+                        }
                         this.activeModal.css(box);
+
+                        this.modalConfig.left = box.left;
+                        this.modalConfig.top = box.top;
+                        this.modalConfig.width = box.width;
+                        this.modalConfig.height = box.height;
+                        this.$["body"].css({
+                            height: box.height - this.modalConfig.headerHeight
+                        });
+                        if (this.modalConfig.iframe) {
+                            this.$["iframe-wrap"].css({
+                                height: box.height - this.modalConfig.headerHeight
+                            });
+                            this.$["iframe"].css({
+                                height: box.height - this.modalConfig.headerHeight
+                            });
+                        }
+
+                        box = null;
                     };
 
-                    if (this.resizer) {
-                        this.activeModal.removeClass("draged");
-                        this.resizer.remove();
-                        this.resizer = null;
-                        this.resizerBg.remove();
-                        this.resizerBg = null;
-                        setModalPosition.call(this);
-                        //this.align();
-                    }
+                    this.activeModal.removeClass("draged");
+                    setModalPosition.call(this);
 
-                    jQuery(document.body).unbind(ENM["mousemove"] + ".ax5modal-" + cfg.id).unbind(ENM["mouseup"] + ".ax5modal-" + cfg.id).unbind("mouseleave.ax5modal-" + cfg.id);
+                    this.resizer.remove();
+                    this.resizer = null;
+                    this.resizerBg.remove();
+                    this.resizerBg = null;
 
-                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+                    onStateChanged.call(this, self.modalConfig, {
+                        self: this,
+                        state: "resize"
+                    });
+
+                    jQuery(document.body).unbind(ENM["mousemove"] + ".ax5modal-resize-" + this.instanceId).unbind(ENM["mouseup"] + ".ax5modal-resize-" + this.instanceId).unbind("mouseleave.ax5modal-resize-" + this.instanceId);
+
+                    jQuery(document.body).removeAttr("unselectable").css("user-select", "auto").unbind("selectstart");
                 }
             };
 
@@ -5074,15 +5923,72 @@ ax5.ui = function () {
              * @method ax5modal.setConfig
              * @param {Object} config - 클래스 속성값
              * @param {Number} [config.zIndex]
+             * @param {Object} [config.position]
+             * @param {String} [config.position.left="center"]
+             * @param {String} [config.position.top="middle"]
+             * @param {Number} [config.position.margin=10]
+             * @param {String} [config.minimizePosition="bottom-right"]
+             * @param {Number} [config.width=300]
+             * @param {Number} [config.height=400]
+             * @param {Boolean} [config.closeToEsc=true]
              * @param {Boolean} [config.absolute=false]
+             * @param {Boolean} [config.disableDrag=false]
+             * @param {Boolean} [config.disableResize=false]
+             * @param {Number} [config.animateTime=250]
+             * @param {Function} [config.fullScreen]
+             * @param {Function} [config.onStateChanged] - `onStateChanged` function can be defined in setConfig method or new ax5.ui.modal initialization method. However, you can us to define an event function after initialization, if necessary
+             * @param {Function} [config.onResize]
              * @returns {ax5modal}
              * @example
-             * ```
+             * ```js
+             * var modal = new ax5.ui.modal({
+             *     iframeLoadingMsg: '<i class="fa fa-spinner fa-5x fa-spin" aria-hidden="true"></i>',
+             *     header: {
+             *         title: "MODAL TITLE",
+             *         btns: {
+             *             minimize: {
+             *                 label: '<i class="fa fa-minus-circle" aria-hidden="true"></i>', onClick: function () {
+             *                     modal.minimize();
+             *                 }
+             *             },
+             *             maximize: {
+             *                 label: '<i class="fa fa-plus-circle" aria-hidden="true"></i>', onClick: function () {
+             *                     modal.maximize();
+             *                 }
+             *             },
+             *             close: {
+             *                 label: '<i class="fa fa-times-circle" aria-hidden="true"></i>', onClick: function () {
+             *                     modal.close();
+             *                 }
+             *             }
+             *         }
+             *     }
+             * });
+             *
+             * modal.open({
+             *     width: 800,
+             *     height: 600,
+             *     fullScreen: function(){
+             *         return ($(window).width() < 600);
+             *     },
+             *     iframe: {
+             *         method: "get",
+             *         url: "http://chequer-app:2017/html/login.html",
+             *         param: "callback=modalCallback"
+             *     },
+             *     onStateChanged: function(){
+             *          console.log(this);
+             *     },
+             *     onResize: function(){
+             *          console.log(this);
+             *     }
+             * });
              * ```
              */
             //== class body start
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
+                this.onResize = cfg.onResize;
             };
 
             /**
@@ -5091,7 +5997,14 @@ ax5.ui = function () {
              * @returns {ax5modal}
              * @example
              * ```
-             * my_modal.open();
+             * modal.open();
+             * modal.open({
+             *  width: 500,
+             *  height: 500
+             * });
+             * moaal.open({}, function(){
+             *  console.log(this);
+             * });
              * ```
              */
             this.open = function (opts, callback, tryCount) {
@@ -5106,6 +6019,9 @@ ax5.ui = function () {
                     setTimeout(function () {
                         this.open(opts, callback, tryCount + 1);
                     }.bind(this), cfg.animateTime);
+                } else {
+                    // 열기 시도 종료
+                    this.watingModal = false;
                 }
                 return this;
             };
@@ -5113,13 +6029,22 @@ ax5.ui = function () {
             /**
              * close the modal
              * @method ax5modal.close
+             * @param _option
              * @returns {ax5modal}
              * @example
              * ```
              * my_modal.close();
+             * my_modal.close({callback: function(){
+             *  // on close event
+             * });
+             * // close 함수에 callback을 전달하면 정확한 close 타이밍을 캐치할 수 있습니다
              * ```
              */
-            this.close = function (opts) {
+
+            this.close = function (_option) {
+                var opts = void 0,
+                    that = void 0;
+
                 if (this.activeModal) {
                     opts = self.modalConfig;
                     this.activeModal.addClass("destroy");
@@ -5127,37 +6052,48 @@ ax5.ui = function () {
                     jQuery(window).unbind("resize.ax-modal");
 
                     setTimeout(function () {
-                        if (this.activeModal) {
+                        // 프레임 제거
+                        if (opts.iframe) {
+                            var $iframe = this.$["iframe"]; // iframe jQuery Object
+                            if ($iframe) {
+                                var iframeObject = $iframe.get(0),
+                                    idoc = iframeObject.contentDocument ? iframeObject.contentDocument : iframeObject.contentWindow.document;
 
-                            // 프레임 제거
-                            if (opts.iframe) {
-                                var $iframe = this.$["iframe"]; // iframe jQuery Object
-                                if ($iframe) {
-                                    var iframeObject = $iframe.get(0),
-                                        idoc = iframeObject.contentDocument ? iframeObject.contentDocument : iframeObject.contentWindow.document;
+                                try {
+                                    $(idoc.body).children().each(function () {
+                                        $(this).remove();
+                                    });
+                                } catch (e) {}
+                                idoc.innerHTML = "";
+                                $iframe.attr("src", "about:blank").remove();
 
-                                    try {
-                                        $(idoc.body).children().each(function () {
-                                            $(this).remove();
-                                        });
-                                    } catch (e) {}
-                                    idoc.innerHTML = "";
-                                    $iframe.attr('src', 'about:blank').remove();
-
-                                    // force garbarge collection for IE only
-                                    window.CollectGarbage && window.CollectGarbage();
-                                }
+                                // force garbarge collection for IE only
+                                window.CollectGarbage && window.CollectGarbage();
                             }
-
-                            this.activeModal.remove();
-                            this.activeModal = null;
                         }
+
+                        this.activeModal.remove();
+                        this.activeModal = null;
+
                         // 모달 오픈 대기중이면 닫기 상태 전달 안함.
                         if (!this.watingModal) {
                             onStateChanged.call(this, opts, {
                                 self: this,
                                 state: "close"
                             });
+                        }
+
+                        if (_option && U.isFunction(_option.callback)) {
+                            that = {
+                                self: this,
+                                id: opts.id,
+                                theme: opts.theme,
+                                width: opts.width,
+                                height: opts.height,
+                                state: "close",
+                                $: this.$
+                            };
+                            _option.callback.call(that, that);
                         }
                     }.bind(this), cfg.animateTime);
                 }
@@ -5172,11 +6108,8 @@ ax5.ui = function () {
              * @returns {ax5modal}
              */
             this.minimize = function () {
-
                 return function (minimizePosition) {
-
                     if (this.minimized !== true) {
-
                         var opts = self.modalConfig;
                         if (typeof minimizePosition === "undefined") minimizePosition = cfg.minimizePosition;
 
@@ -5197,10 +6130,10 @@ ax5.ui = function () {
             }();
 
             /**
-             * @method ax5modal.maximize
+             * @method ax5modal.restore
              * @returns {ax5modal}
              */
-            this.maximize = function () {
+            this.restore = function () {
                 var opts = self.modalConfig;
                 if (this.minimized) {
                     this.minimized = false;
@@ -5226,16 +6159,14 @@ ax5.ui = function () {
             this.css = function (css) {
                 if (this.activeModal && !self.fullScreen) {
                     this.activeModal.css(css);
-                    if (css.width) {
-                        self.modalConfig.width = this.activeModal.width();
+                    if (typeof css.width !== "undefined") {
+                        self.modalConfig.width = css.width;
                     }
-                    if (css.height) {
-                        self.modalConfig.height = this.activeModal.height();
-                        if (this.$["iframe"]) {
-                            this.$["iframe-wrap"].css({ height: self.modalConfig.height });
-                            this.$["iframe"].css({ height: self.modalConfig.height });
-                        }
+                    if (typeof css.height !== "undefined") {
+                        self.modalConfig.height = css.height;
                     }
+
+                    this.align();
                 }
                 return this;
             };
@@ -5256,9 +6187,13 @@ ax5.ui = function () {
              * @param position
              * @param e
              * @returns {ax5modal}
+             * @example
+             * ```js
+             * modal.align({left:"center", top:"middle"});
+             * modal.align({left:"left", top:"top", margin: 20});
+             * ```
              */
             this.align = function () {
-
                 return function (position, e) {
                     if (!this.activeModal) return this;
 
@@ -5278,6 +6213,12 @@ ax5.ui = function () {
 
                     if (fullScreen) {
                         if (opts.header) this.$.header.show();
+                        if (opts.header) {
+                            opts.headerHeight = this.$.header.outerHeight();
+                            box.height += opts.headerHeight;
+                        } else {
+                            opts.headerHeight = 0;
+                        }
                         box.width = jQuery(window).width();
                         box.height = opts.height;
                         box.left = 0;
@@ -5318,21 +6259,31 @@ ax5.ui = function () {
                         }
                         if (box.left < 0) box.left = 0;
                         if (box.top < 0) box.top = 0;
+
+                        if (opts.absolute) {
+                            box.top += jQuery(window).scrollTop();
+                            box.left += jQuery(window).scrollLeft();
+                        }
                     }
 
                     this.activeModal.css(box);
 
+                    this.$["body"].css({
+                        height: box.height - (opts.headerHeight || 0)
+                    });
+
                     if (opts.iframe) {
-                        this.$["iframe-wrap"].css({ height: box.height - opts.headerHeight });
+                        this.$["iframe-wrap"].css({
+                            height: box.height - opts.headerHeight
+                        });
                         this.$["iframe"].css({ height: box.height - opts.headerHeight });
-                    }
+                    } else {}
                     return this;
                 };
             }();
 
             // 클래스 생성자
             this.main = function () {
-
                 UI.modal_instance = UI.modal_instance || [];
                 UI.modal_instance.push(this);
 
@@ -5341,7 +6292,6 @@ ax5.ui = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5modal;
     }());
 
     MODAL = ax5.ui.modal;
@@ -5352,7 +6302,7 @@ ax5.ui = function () {
     var MODAL = ax5.ui.modal;
 
     var content = function content() {
-        return ' \n        <div id="{{modalId}}" data-modal-els="root" class="ax5modal {{theme}} {{fullscreen}}" style="{{styles}}">\n            {{#header}}\n            <div class="ax-modal-header" data-modal-els="header">\n                {{{title}}}\n                {{#btns}}\n                    <div class="ax-modal-header-addon">\n                    {{#@each}}\n                    <button tabindex="-1" data-modal-header-btn="{{@key}}" class="{{@value.theme}}">{{{@value.label}}}</button>\n                    {{/@each}}\n                    </div>\n                {{/btns}}\n            </div>\n            {{/header}}\n            <div class="ax-modal-body" data-modal-els="body">\n            {{#iframe}}\n            \n                <div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">\n                    <table data-modal-els="iframe-loading" style="width:100%;height:100%;"><tr><td style="text-align: center;vertical-align: middle">{{{iframeLoadingMsg}}}</td></tr></table>\n                    <iframe name="{{modalId}}-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>\n                </div>\n                <form name="{{modalId}}-form" data-modal-els="iframe-form">\n                <input type="hidden" name="modalId" value="{{modalId}}" />\n                {{#param}}\n                {{#@each}}\n                <input type="hidden" name="{{@key}}" value="{{@value}}" />\n                {{/@each}}\n                {{/param}}\n                </form>\n            {{/iframe}}\n            </div>\n            <div class="ax-modal-body-mask"></div>\n        </div>\n        ';
+        return ' \n        <div id="{{modalId}}" data-modal-els="root" class="ax5modal {{theme}} {{fullscreen}}" style="{{styles}}">\n            {{#header}}\n            <div class="ax-modal-header" data-modal-els="header">\n                {{{title}}}\n                {{#btns}}\n                    <div class="ax-modal-header-addon">\n                    {{#@each}}\n                    <button tabindex="-1" data-modal-header-btn="{{@key}}" class="{{@value.theme}}">{{{@value.label}}}</button>\n                    {{/@each}}\n                    </div>\n                {{/btns}}\n            </div>\n            {{/header}}\n            <div class="ax-modal-body" data-modal-els="body">\n            {{#iframe}}\n                <div data-modal-els="iframe-wrap" style="-webkit-overflow-scrolling: touch; overflow: auto;position: relative;">\n                    <table data-modal-els="iframe-loading" style="width:100%;height:100%;"><tr><td style="text-align: center;vertical-align: middle">{{{iframeLoadingMsg}}}</td></tr></table>\n                    <iframe name="{{modalId}}-frame" src="" width="100%" height="100%" frameborder="0" data-modal-els="iframe" style="position: absolute;left:0;top:0;"></iframe>\n                </div>\n                <form name="{{modalId}}-form" data-modal-els="iframe-form">\n                <input type="hidden" name="modalId" value="{{modalId}}" />\n                {{#param}}\n                {{#@each}}\n                <input type="hidden" name="{{@key}}" value="{{@value}}" />\n                {{/@each}}\n                {{/param}}\n                </form>\n            {{/iframe}}\n            {{^iframe}}\n                <div data-modal-els="body-frame" style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>\n            {{/iframe}}\n            </div>\n            {{^disableResize}}\n            <div data-ax5modal-resizer="top"></div>\n            <div data-ax5modal-resizer="right"></div>\n            <div data-ax5modal-resizer="bottom"></div>\n            <div data-ax5modal-resizer="left"></div>\n            <div data-ax5modal-resizer="top-left"></div>\n            <div data-ax5modal-resizer="top-right"></div>\n            <div data-ax5modal-resizer="bottom-left"></div>\n            <div data-ax5modal-resizer="bottom-right"></div>\n            {{/disableResize}}\n        </div>\n        ';
     };
 
     MODAL.tmpl = {
@@ -5368,11 +6318,10 @@ ax5.ui = function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
-    var CALENDAR;
+    var CALENDAR = void 0;
 
     UI.addClass({
-        className: "calendar",
-        version: "1.3.82"
+        className: "calendar"
     }, function () {
 
         /**
@@ -5408,32 +6357,32 @@ ax5.ui = function () {
          *         height: 200
          *     },
          *
-         *         target: document.getElementById("calendar-target"),
-         *         displayDate: (new Date()),
-         *         mode: "day",
-         *         selectMode: "day",
+         *     target: document.getElementById("calendar-target"),
+         *     displayDate: (new Date()),
+         *     mode: "day",
+         *     selectMode: "day",
          *
-         *         marker: (function () {
-         *             var marker = {};
-         *             marker[_c_date(today, {'return': 'yyyy-MM-dd', 'add': {d: -1}})] = true;
-         *             marker[_c_date(today, {'return': 'yyyy-MM-dd', 'add': {d: 0}})] = true;
-         *             marker[_c_date(today, {'return': 'yyyy-MM-dd', 'add': {d: 1}})] = true;
+         *     marker: (function () {
+         *         var marker = {};
+         *         marker[_c_date(today, {'return': 'yyyy-MM-dd', 'add': {d: -1}})] = true;
+         *         marker[_c_date(today, {'return': 'yyyy-MM-dd', 'add': {d: 0}})] = true;
+         *         marker[_c_date(today, {'return': 'yyyy-MM-dd', 'add': {d: 1}})] = true;
          *
-        *             return marker;
-         *         })(),
-         *         onClick: function () {
-         *             console.log(myCalendar.getSelection());
-         *         },
-         *         onStateChanged: function () {
-         *             console.log(this);
-         *         }
-         *         , multipleSelect: 2
-         *     });
+        *         return marker;
+         *     })(),
+         *     onClick: function () {
+         *         console.log(myCalendar.getSelection());
+         *     },
+         *     onStateChanged: function () {
+         *         console.log(this);
+         *     }
+         *     , multipleSelect: 2
+         * });
          * ```
          */
-        var ax5calendar = function ax5calendar() {
+        return function () {
             var self = this,
-                cfg,
+                cfg = void 0,
                 selectableCount = 1;
 
             this.instanceId = ax5.getGuid();
@@ -5482,8 +6431,8 @@ ax5.ui = function () {
                 }
 
                 that = null;
-            },
-                getFrame = function getFrame() {
+            };
+            var getFrame = function getFrame() {
                 var data = jQuery.extend(true, {}, cfg, {
                     controlCSS: {},
                     controlButtonCSS: {}
@@ -5501,8 +6450,8 @@ ax5.ui = function () {
                 } finally {
                     data = null;
                 }
-            },
-                setDisplay = function setDisplay() {
+            };
+            var setDisplay = function setDisplay() {
                 var myDate = U.date(cfg.displayDate),
                     yy = "",
                     mm = "",
@@ -5552,8 +6501,8 @@ ax5.ui = function () {
                 yy1 = null;
                 yy2 = null;
                 return this;
-            },
-                printDay = function printDay(nowDate) {
+            };
+            var printDay = function printDay(nowDate) {
                 var dotDate = U.date(nowDate),
                     monthStratDate = new Date(dotDate.getFullYear(), dotDate.getMonth(), 1, 12),
                     _today = cfg.displayDate,
@@ -5691,8 +6640,8 @@ ax5.ui = function () {
                 frameHeight = null;
                 data = null;
                 tmpl = null;
-            },
-                printMonth = function printMonth(nowDate) {
+            };
+            var printMonth = function printMonth(nowDate) {
                 var dotDate = U.date(nowDate),
                     nMonth = dotDate.getMonth(),
                     itemStyles = {},
@@ -5729,7 +6678,7 @@ ax5.ui = function () {
                             row: i,
                             col: k,
                             isStartOfRow: k == 0,
-                            thisMonth: dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2),
+                            thisMonth: dotDate.getFullYear() + '-' + U.setDigit(m + 1, 2) + '-01', // + U.setDigit(dotDate.getDate(), 2),
                             thisMonthLabel: cfg.lang.months[m],
                             itemStyles: U.css(itemStyles),
                             addClass: function () {
@@ -5782,8 +6731,8 @@ ax5.ui = function () {
                 frameHeight = null;
                 data = null;
                 tmpl = null;
-            },
-                printYear = function printYear(nowDate) {
+            };
+            var printYear = function printYear(nowDate) {
                 var dotDate = U.date(nowDate),
                     nYear = dotDate.getFullYear(),
                     itemStyles = {},
@@ -5820,7 +6769,7 @@ ax5.ui = function () {
                             row: i,
                             col: k,
                             isStartOfRow: k == 0,
-                            thisYear: y + '-' + U.setDigit(dotDate.getMonth() + 1, 2) + '-' + U.setDigit(dotDate.getDate(), 2),
+                            thisYear: y + '-' + U.setDigit(dotDate.getMonth() + 1, 2) + '-01', // + U.setDigit(dotDate.getDate(), 2),
                             thisYearLabel: cfg.lang.yearTmpl.replace('%s', y),
                             itemStyles: U.css(itemStyles),
                             addClass: function () {
@@ -5872,8 +6821,8 @@ ax5.ui = function () {
                 frameHeight = null;
                 data = null;
                 tmpl = null;
-            },
-                onclick = function onclick(e, mode, target, value) {
+            };
+            var onclick = function onclick(e, mode, target, value) {
                 var removed, dt, selectable;
 
                 mode = mode || "date";
@@ -5965,8 +6914,8 @@ ax5.ui = function () {
                 removed = null;
                 dt = null;
                 selectable = null;
-            },
-                move = function move(e, target, value) {
+            };
+            var move = function move(e, target, value) {
                 target = U.findParentNode(e.target, function (target) {
                     if (target.getAttribute("data-calendar-move")) {
                         return true;
@@ -6000,8 +6949,8 @@ ax5.ui = function () {
 
                 target = null;
                 value = null;
-            },
-                applyMarkerMap = function applyMarkerMap() {
+            };
+            var applyMarkerMap = function applyMarkerMap() {
                 setTimeout(function () {
                     if (cfg.mode === "day" || cfg.mode === "d") {
                         for (var k in this.markerMap) {
@@ -6009,15 +6958,15 @@ ax5.ui = function () {
                         }
                     }
                 }.bind(this));
-            },
-                applySelectionMap = function applySelectionMap() {
+            };
+            var applySelectionMap = function applySelectionMap() {
                 setTimeout(function () {
                     for (var k in this.selectionMap) {
                         this.$["body"].find('[data-calendar-item-date="' + k + '"]').addClass("selected-day");
                     }
                 }.bind(this));
-            },
-                applyPeriodMap = function applyPeriodMap() {
+            };
+            var applyPeriodMap = function applyPeriodMap() {
                 setTimeout(function () {
                     if (cfg.mode === "day" || cfg.mode === "d") {
                         for (var k in this.periodMap) {
@@ -6028,8 +6977,8 @@ ax5.ui = function () {
                         }
                     }
                 }.bind(this));
-            },
-                clearPeriodMap = function clearPeriodMap() {
+            };
+            var clearPeriodMap = function clearPeriodMap() {
                 if (cfg.mode === "day" || cfg.mode === "d") {
                     for (var k in this.periodMap) {
                         this.$["body"].find('[data-calendar-item-date="' + k + '"]').find(".addon-footer").empty();
@@ -6392,7 +7341,6 @@ ax5.ui = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5calendar;
     }());
     CALENDAR = ax5.ui.calendar;
 })();
@@ -6430,11 +7378,10 @@ ax5.ui = function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
-    var PICKER;
+    var PICKER = void 0;
 
     UI.addClass({
-        className: "picker",
-        version: "1.3.82"
+        className: "picker"
     }, function () {
         /**
          * @class ax5picker
@@ -6465,7 +7412,7 @@ ax5.ui = function () {
          * });
          * ```
          */
-        var ax5picker = function ax5picker() {
+        return function () {
             var self = this,
                 cfg = void 0;
 
@@ -6488,7 +7435,8 @@ ax5.ui = function () {
                         right: ax5.def.picker.date_rightArrow || '&#x02192',
                         yearFirst: true
                     }
-                }
+                },
+                palette: {}
             };
             this.queue = [];
             this.activePicker = null;
@@ -6505,8 +7453,8 @@ ax5.ui = function () {
                     this.onStateChanged.call(that, that);
                 }
                 return true;
-            },
-                bindPickerTarget = function () {
+            };
+            var bindPickerTarget = function () {
 
                 var pickerEvent = {
                     'focus': function focus(queIdx, e) {
@@ -6537,9 +7485,6 @@ ax5.ui = function () {
                         inputLength = null;
                     },
                     'date': function date(queIdx, _input) {
-                        // 1. 이벤트 바인딩
-                        // 2. ui 준비
-
                         var item = this.queue[queIdx],
                             contentWidth = item.content ? item.content.width || 270 : 270,
                             contentMargin = item.content ? item.content.margin || 5 : 5,
@@ -6598,12 +7543,45 @@ ax5.ui = function () {
 
                         config = null;
                         inputLength = null;
+                    },
+                    'color': function color(queIdx, _input) {
+                        var item = this.queue[queIdx],
+                            contentWidth = item.content ? item.content.width || 270 : 270,
+                            contentMargin = item.content ? item.content.margin || 5 : 5,
+                            inputLength = _input.length,
+                            config = {
+                            contentWidth: contentWidth * inputLength + (inputLength - 1) * contentMargin,
+                            content: { width: contentWidth, margin: contentMargin },
+                            inputLength: inputLength || 1
+                        },
+                            $colorPreview = item.$target.find('[data-ax5picker-color="preview"]');
+
+                        if ($colorPreview.get(0)) {
+                            $colorPreview.css({ "background-color": "#" + U.color(_input.val() || "#000000").getHexValue() });
+                            // 컬러 피커인 경우 input의 값이 변경되면 preview를 수정
+                            _input.on("change", function () {
+                                $colorPreview.css({ "background-color": "#" + U.color(this.value || "#000000").getHexValue() });
+                            });
+                        }
+
+                        if (inputLength > 1 && !item.btns) {
+                            config.btns = {
+                                ok: { label: cfg.lang["ok"], theme: cfg.theme }
+                            };
+                        }
+
+                        this.queue[queIdx] = jQuery.extend(true, config, item);
+
+                        contentWidth = null;
+                        contentMargin = null;
+                        config = null;
+                        inputLength = null;
                     }
                 };
 
                 return function (queIdx) {
                     var item = this.queue[queIdx],
-                        input;
+                        input = void 0;
 
                     if (!item.content) {
                         console.log(ax5.info.getError("ax5picker", "501", "bind"));
@@ -6637,8 +7615,8 @@ ax5.ui = function () {
                     queIdx = null;
                     return this;
                 };
-            }(),
-                alignPicker = function alignPicker(append) {
+            }();
+            var alignPicker = function alignPicker(append) {
                 if (!this.activePicker) return this;
 
                 var _alignPicker = function _alignPicker(item) {
@@ -6727,8 +7705,8 @@ ax5.ui = function () {
                 setTimeout(function () {
                     _alignPicker.call(this, item);
                 }.bind(this));
-            },
-                onBodyClick = function onBodyClick(e, target) {
+            };
+            var onBodyClick = function onBodyClick(e, target) {
                 if (!this.activePicker) return this;
 
                 var item = this.queue[this.activePickerQueueIndex];
@@ -6746,8 +7724,8 @@ ax5.ui = function () {
                 }
                 //console.log("i'm picker");
                 return this;
-            },
-                onBtnClick = function onBtnClick(e, target) {
+            };
+            var onBtnClick = function onBtnClick(e, target) {
                 // console.log('btn click');
                 if (e.srcElement) e.target = e.srcElement;
 
@@ -6773,13 +7751,13 @@ ax5.ui = function () {
                         this.close();
                     }
                 }
-            },
-                onBodyKeyup = function onBodyKeyup(e) {
+            };
+            var onBodyKeyup = function onBodyKeyup(e) {
                 if (e.keyCode == ax5.info.eventKeys.ESC) {
                     this.close();
                 }
-            },
-                getQueIdx = function getQueIdx(boundID) {
+            };
+            var getQueIdx = function getQueIdx(boundID) {
                 if (!U.isString(boundID)) {
                     boundID = jQuery(boundID).data("data-axpicker-id");
                 }
@@ -6960,11 +7938,13 @@ ax5.ui = function () {
                     }
                 };
 
-                return function (boundID, inputIndex, val) {
+                return function (boundID, inputIndex, val, _option) {
 
                     var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID),
                         item = this.queue[queIdx],
                         _input = void 0;
+
+                    if (!_option) _option = {};
 
                     if (item) {
 
@@ -6973,6 +7953,11 @@ ax5.ui = function () {
 
                         if (!item.disableChangeTrigger) {
                             _input.trigger("change");
+                        } else {
+                            var $colorPreview = item.$target.find('[data-ax5picker-color="preview"]');
+                            if ($colorPreview.get(0)) {
+                                $colorPreview.css({ "background-color": val });
+                            }
                         }
 
                         // picker의 입력이 2개이상인 경우
@@ -7001,7 +7986,7 @@ ax5.ui = function () {
 
                         onStateChanged.call(this, item, that);
 
-                        if (item.inputLength == 1) {
+                        if (item.inputLength == 1 && !_option.doNotClose) {
                             this.close();
                         }
                     }
@@ -7010,6 +7995,30 @@ ax5.ui = function () {
                     boundID = null;
                     inputIndex = null;
                     val = null;
+                    return this;
+                };
+            }();
+
+            /**
+             * @method ax5picker.getContentValue
+             * @param {String} boundID
+             * @param {Number} inputIndex
+             * @returns {ax5picker} this
+             */
+            this.getContentValue = function () {
+                return function (boundID, inputIndex) {
+                    var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID),
+                        item = this.queue[queIdx],
+                        _input = void 0;
+
+                    if (item) {
+                        _input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : jQuery(item.$target.find('input[type]').get(inputIndex));
+                        return _input.val();
+                    }
+
+                    item = null;
+                    boundID = null;
+                    inputIndex = null;
                     return this;
                 };
             }();
@@ -7306,6 +8315,44 @@ ax5.ui = function () {
                                 });
                             });
                         });
+                    },
+                    'color': function color(queIdx) {
+                        var item = this.queue[queIdx],
+                            html = [],
+                            paletteConfig = jQuery.extend({}, cfg.palette),
+                            input = item.$target.get(0).tagName.toUpperCase() == "INPUT" ? item.$target : item.$target.find('input[type]');
+
+                        for (var i = 0; i < item.inputLength; i++) {
+                            html.push('<div ' + 'style="padding: 5px;width:' + U.cssNumber(item.content.width) + ';float:left;" ' + 'class="ax-picker-content-box" ' + 'data-palette-target="' + i + '" data-ax5palette="ax5picker-' + item.id + '"></div>');
+                            if (i < item.inputLength - 1) html.push('<div style="width:' + item.content.margin + 'px;float:left;height: 5px;"></div>');
+                        }
+                        html.push('<div style="clear:both;"></div>');
+                        item.pickerContent.html(html.join(''));
+
+                        // calendar bind
+                        item.pickerPalette = [];
+
+                        item.pickerContent.find('[data-palette-target]').each(function () {
+                            // calendarConfig extend ~
+                            var idx = this.getAttribute("data-palette-target"),
+                                dColor = input.get(idx).value;
+
+                            paletteConfig.selectedColor = dColor;
+                            paletteConfig = jQuery.extend(true, paletteConfig, item.content.config || {});
+                            paletteConfig.target = this;
+                            paletteConfig.onClick = function (color) {
+                                self.setContentValue(item.id, idx, color);
+                            };
+                            paletteConfig.onUpdateColor = function (color) {
+                                self.setContentValue(item.id, idx, color, { doNotClose: true });
+                            };
+
+                            item.pickerPalette.push({
+                                itemId: item.id,
+                                inputIndex: idx,
+                                ax5uiInstance: new ax5.ui.palette(paletteConfig)
+                            });
+                        });
                     }
                 };
 
@@ -7417,58 +8464,14 @@ ax5.ui = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5picker;
     }());
 
     PICKER = ax5.ui.picker;
 })();
 
-/**
- * ax5.ui.picker_instance
- * @type {ax5picker}
- * @example
- * ```js
- * // picker 기본 속성을 변경해야 한다면
- * ax5.ui.picker_instance.setConfig({
- * });
- *
- * ```
- */
-ax5.ui.picker_instance = new ax5.ui.picker();
-
-jQuery.fn.ax5picker = function () {
-    return function (config) {
-        if (ax5.util.isString(arguments[0])) {
-            var methodName = arguments[0];
-
-            switch (methodName) {
-                case "open":
-                    return ax5.ui.picker_instance.open(this);
-                    break;
-                case "close":
-                    return ax5.ui.picker_instance.close(this);
-                    break;
-                case "setValue":
-                    return ax5.ui.picker_instance.setContentValue(this, arguments[1], arguments[2]);
-                    break;
-                default:
-                    return this;
-            }
-        } else {
-            if (typeof config == "undefined") config = {};
-            jQuery.each(this, function () {
-                var defaultConfig = {
-                    target: this
-                };
-                config = jQuery.extend(true, config, defaultConfig);
-                ax5.ui.picker_instance.bind(config);
-            });
-        }
-        return this;
-    };
-}();
 // ax5.ui.picker.tmpl
 (function () {
+
     var PICKER = ax5.ui.picker;
     var U = ax5.util;
 
@@ -7484,15 +8487,61 @@ jQuery.fn.ax5picker = function () {
         }
     };
 })();
+/**
+ * ax5.ui.picker_instance
+ * @type {ax5picker}
+ * @example
+ * ```js
+ * // picker 기본 속성을 변경해야 한다면
+ * ax5.ui.picker_instance.setConfig({
+ * });
+ *
+ * ```
+ */
+if (ax5 && ax5.ui && ax5.ui.picker) {
+    ax5.ui.picker_instance = new ax5.ui.picker();
+
+    jQuery.fn.ax5picker = function () {
+        return function (config) {
+            if (ax5.util.isString(arguments[0])) {
+                var methodName = arguments[0];
+
+                switch (methodName) {
+                    case "open":
+                        return ax5.ui.picker_instance.open(this);
+                        break;
+                    case "close":
+                        return ax5.ui.picker_instance.close(this);
+                        break;
+                    case "setValue":
+                        return ax5.ui.picker_instance.setContentValue(this, arguments[1], arguments[2]);
+                        break;
+                    default:
+                        return this;
+                }
+            } else {
+                if (typeof config == "undefined") config = {};
+                jQuery.each(this, function () {
+                    var defaultConfig = {
+                        target: this
+                    };
+                    config = jQuery.extend(true, config, defaultConfig);
+                    ax5.ui.picker_instance.bind(config);
+                });
+            }
+            return this;
+        };
+    }();
+}
+
 // ax5.ui.formatter
 (function () {
     var UI = ax5.ui;
     var U = ax5.util;
-    var FORMATTER;
+    var FORMATTER = void 0;
 
     UI.addClass({
-        className: "formatter",
-        version: "1.3.82"
+        className: "formatter"
     }, function () {
         var TODAY = new Date();
         var setSelectionRange = function setSelectionRange(input, pos) {
@@ -7505,8 +8554,8 @@ jQuery.fn.ax5picker = function () {
             } else if (input.createTextRange) {
                 var range = input.createTextRange();
                 range.collapse(true);
-                range.moveEnd('character', pos);
-                range.moveStart('character', pos);
+                range.moveEnd("character", pos);
+                range.moveStart("character", pos);
                 range.select();
             } else if (input.selectionStart) {
                 input.focus();
@@ -7544,7 +8593,7 @@ jQuery.fn.ax5picker = function () {
          * });
          * ```
          */
-        var ax5formatter = function ax5formatter() {
+        return function () {
             var self = this,
                 cfg;
 
@@ -7560,11 +8609,11 @@ jQuery.fn.ax5picker = function () {
             cfg = this.config;
 
             var formatterEvent = {
-                'focus': function focus(opts, optIdx, e) {
+                focus: function focus(opts, optIdx, e) {
                     if (!opts.$input.data("__originValue__")) opts.$input.data("__originValue__", opts.$input.val());
                 },
                 /* 키 다운 이벤트에서 입력할 수 없는 키 입력을 방어 */
-                'keydown': function keydown(opts, optIdx, e) {
+                keydown: function keydown(opts, optIdx, e) {
                     var isStop = false;
                     if (!opts.enterableKeyCodes) {} else if (e.which && opts.enterableKeyCodes[e.which]) {} else if (!e.metaKey && !e.ctrlKey && !e.shiftKey) {
                         //console.log(e.which, opts.enterableKeyCodes);
@@ -7573,7 +8622,7 @@ jQuery.fn.ax5picker = function () {
                     if (isStop) ax5.util.stopEvent(e);
                 },
                 /* 키 업 이벤트에서 패턴을 적용 */
-                'keyup': function keyup(opts, optIdx, e) {
+                keyup: function keyup(opts, optIdx, e) {
                     var elem = opts.$input.get(0),
                         elemFocusPosition,
                         beforeValue,
@@ -7581,7 +8630,7 @@ jQuery.fn.ax5picker = function () {
                         selection,
                         selectionLength;
 
-                    if ('selectionStart' in elem) {
+                    if ("selectionStart" in elem) {
                         // Standard-compliant browsers
                         elemFocusPosition = elem.selectionStart;
                     } else if (document.selection) {
@@ -7589,7 +8638,7 @@ jQuery.fn.ax5picker = function () {
                         //elem.focus();
                         selection = document.selection.createRange();
                         selectionLength = document.selection.createRange().text.length;
-                        selection.moveStart('character', -elem.value.length);
+                        selection.moveStart("character", -elem.value.length);
                         elemFocusPosition = selection.text.length - selectionLength;
                     }
 
@@ -7605,7 +8654,7 @@ jQuery.fn.ax5picker = function () {
                         setSelectionRange(elem, elemFocusPosition + newValue.length - beforeValue.length);
                     }
                 },
-                'blur': function blur(opts, optIdx, e, _force) {
+                blur: function blur(opts, optIdx, e, _force) {
                     var elem = opts.$input.get(0),
                         beforeValue,
                         newValue;
@@ -7614,7 +8663,7 @@ jQuery.fn.ax5picker = function () {
 
                     beforeValue = elem.value;
                     if (opts.pattern in FORMATTER.formatter) {
-                        newValue = FORMATTER.formatter[opts.pattern].getPatternValue.call(this, opts, optIdx, e, elem.value, 'blur');
+                        newValue = FORMATTER.formatter[opts.pattern].getPatternValue.call(this, opts, optIdx, e, elem.value, "blur");
                     } else {
                         newValue = beforeValue;
                     }
@@ -7627,14 +8676,14 @@ jQuery.fn.ax5picker = function () {
                         }
                     }
                 }
-            },
-                bindFormatterTarget = function bindFormatterTarget(opts, optIdx) {
+            };
 
+            var bindFormatterTarget = function bindFormatterTarget(opts, optIdx) {
                 if (!opts.pattern) {
                     if (opts.$target.get(0).tagName == "INPUT") {
-                        opts.pattern = opts.$target.attr('data-ax5formatter');
+                        opts.pattern = opts.$target.attr("data-ax5formatter");
                     } else {
-                        opts.pattern = opts.$target.find('input[type="text"]').attr('data-ax5formatter');
+                        opts.pattern = opts.$target.find('input[type="text"]').attr("data-ax5formatter");
                     }
                     if (!opts.pattern) {
                         console.log(ax5.info.getError("ax5formatter", "501", "bind"));
@@ -7654,28 +8703,29 @@ jQuery.fn.ax5picker = function () {
                     opts.enterableKeyCodes = FORMATTER.formatter[opts.pattern].getEnterableKeyCodes.call(this, opts, optIdx);
                 }
 
-                opts.$input.unbind('focus.ax5formatter').bind('focus.ax5formatter', formatterEvent.focus.bind(this, this.queue[optIdx], optIdx));
+                opts.$input.unbind("focus.ax5formatter").bind("focus.ax5formatter", formatterEvent.focus.bind(this, this.queue[optIdx], optIdx));
 
-                opts.$input.unbind('keydown.ax5formatter').bind('keydown.ax5formatter', formatterEvent.keydown.bind(this, this.queue[optIdx], optIdx));
+                opts.$input.unbind("keydown.ax5formatter").bind("keydown.ax5formatter", formatterEvent.keydown.bind(this, this.queue[optIdx], optIdx));
 
-                opts.$input.unbind('keyup.ax5formatter').bind('keyup.ax5formatter', formatterEvent.keyup.bind(this, this.queue[optIdx], optIdx));
+                opts.$input.unbind("keyup.ax5formatter").bind("keyup.ax5formatter", formatterEvent.keyup.bind(this, this.queue[optIdx], optIdx));
 
-                opts.$input.unbind('blur.ax5formatter').bind('blur.ax5formatter', formatterEvent.blur.bind(this, this.queue[optIdx], optIdx));
+                opts.$input.unbind("blur.ax5formatter").bind("blur.ax5formatter", formatterEvent.blur.bind(this, this.queue[optIdx], optIdx));
 
                 formatterEvent.blur.call(this, this.queue[optIdx], optIdx);
 
                 return this;
-            },
-                getQueIdx = function getQueIdx(boundID) {
+            };
+
+            var getQueIdx = function getQueIdx(boundID) {
                 if (!U.isString(boundID)) {
                     boundID = jQuery(boundID).data("data-formatter");
                 }
                 /*
-                 if (!U.isString(boundID)) {
-                 console.log(ax5.info.getError("ax5formatter", "402", "getQueIdx"));
-                 return;
-                 }
-                 */
+                           if (!U.isString(boundID)) {
+                           console.log(ax5.info.getError("ax5formatter", "402", "getQueIdx"));
+                           return;
+                           }
+                           */
                 return U.search(this.queue, function () {
                     return this.id == boundID;
                 });
@@ -7694,7 +8744,7 @@ jQuery.fn.ax5picker = function () {
 
             this.bind = function (opts) {
                 var formatterConfig = {},
-                    optIdx;
+                    optIdx = void 0;
 
                 jQuery.extend(true, formatterConfig, cfg);
                 if (opts) jQuery.extend(true, formatterConfig, opts);
@@ -7723,7 +8773,7 @@ jQuery.fn.ax5picker = function () {
                 if (!opts.id) opts.id = opts.$input.data("ax5-formatter");
 
                 if (!opts.id) {
-                    opts.id = 'ax5-formatter-' + ax5.getGuid();
+                    opts.id = "ax5-formatter-" + ax5.getGuid();
                     opts.$input.data("ax5-formatter", opts.id);
                 }
                 optIdx = U.search(this.queue, function () {
@@ -7775,48 +8825,13 @@ jQuery.fn.ax5picker = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5formatter;
     }());
 
     FORMATTER = ax5.ui.formatter;
 })();
 
-ax5.ui.formatter_instance = new ax5.ui.formatter();
-
-jQuery.fn.ax5formatter = function () {
-    return function (config) {
-        if (ax5.util.isString(arguments[0])) {
-            var methodName = arguments[0];
-
-            switch (methodName) {
-                case "formatting":
-                    return ax5.ui.formatter_instance.formatting(this);
-                    break;
-
-                case "unbind":
-                    return ax5.ui.formatter_instance.unbind(this);
-                    break;
-
-                default:
-                    return this;
-            }
-        } else {
-            if (typeof config == "undefined") config = {};
-            jQuery.each(this, function () {
-                var defaultConfig = {
-                    target: this
-                };
-                config = jQuery.extend({}, config, defaultConfig);
-                ax5.ui.formatter_instance.bind(config);
-            });
-        }
-        return this;
-    };
-}();
-
 // ax5.ui.formatter.formatter
 (function () {
-
     var FORMATTER = ax5.ui.formatter;
     var U = ax5.util;
     var TODAY = new Date();
@@ -7853,41 +8868,59 @@ jQuery.fn.ax5formatter = function () {
         //"109" : "NUMPAD_SUBTRACT"
     };
     var numKeys = {
-        '48': 1, '49': 1, '50': 1, '51': 1, '52': 1, '53': 1, '54': 1, '55': 1, '56': 1, '57': 1,
-        '96': 1, '97': 1, '98': 1, '99': 1, '100': 1, '101': 1, '102': 1, '103': 1, '104': 1, '105': 1
+        "48": 1,
+        "49": 1,
+        "50": 1,
+        "51": 1,
+        "52": 1,
+        "53": 1,
+        "54": 1,
+        "55": 1,
+        "56": 1,
+        "57": 1,
+        "96": 1,
+        "97": 1,
+        "98": 1,
+        "99": 1,
+        "100": 1,
+        "101": 1,
+        "102": 1,
+        "103": 1,
+        "104": 1,
+        "105": 1
     };
     var pattern_money = {
         getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
             var enterableKeyCodes = {
-                '188': ','
+                "188": ","
             };
             if (_opts.patternArgument == "int") {
                 // 소수점 입력 안됨
             } else {
-                enterableKeyCodes['190'] = "."; // 소수점 입력 허용
+                enterableKeyCodes["190"] = "."; // 소수점 입력 허용
             }
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
         getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
             val = val.replace(/[^0-9^\.^\-]/g, "");
-            var regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
-                arrNumber = val.split('.'),
+            var regExpPattern = new RegExp("([0-9])([0-9][0-9][0-9][,.])"),
+                arrNumber = val.split("."),
                 returnValue;
 
-            arrNumber[0] += '.';
+            arrNumber[0] += ".";
 
             do {
-                arrNumber[0] = arrNumber[0].replace(regExpPattern, '$1,$2');
+                arrNumber[0] = arrNumber[0].replace(regExpPattern, "$1,$2");
             } while (regExpPattern.test(arrNumber[0]));
 
             if (arrNumber.length > 1) {
                 if (U.isNumber(_opts.maxRound)) {
                     returnValue = arrNumber[0] + U.left(arrNumber[1], _opts.maxRound);
                 } else {
-                    returnValue = arrNumber.join('');
+                    returnValue = arrNumber.join("");
                 }
             } else {
-                returnValue = arrNumber[0].split('.')[0];
+                returnValue = arrNumber[0].split(".")[0];
             }
 
             return returnValue;
@@ -7897,23 +8930,26 @@ jQuery.fn.ax5formatter = function () {
     var pattern_number = {
         getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
             var enterableKeyCodes = {
-                '190': '.'
+                "190": ".",
+                "110": "."
             };
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
         getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
             val = val.replace(/[^0-9^\.^\-]/g, "");
-            var arrNumber = val.split('.'),
+            var arrNumber = val.split("."),
                 returnValue;
+
+            arrNumber[0] += ".";
 
             if (arrNumber.length > 1) {
                 if (U.isNumber(_opts.maxRound)) {
                     returnValue = arrNumber[0] + U.left(arrNumber[1], _opts.maxRound);
                 } else {
-                    returnValue = arrNumber.join('');
+                    returnValue = arrNumber.join("");
                 }
             } else {
-                returnValue = arrNumber[0].split('.')[0];
+                returnValue = arrNumber[0].split(".")[0];
             }
 
             return returnValue;
@@ -7923,7 +8959,8 @@ jQuery.fn.ax5formatter = function () {
     var pattern_date = {
         getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
             var enterableKeyCodes = {
-                '189': '-', '191': '/'
+                "189": "-",
+                "191": "/"
             };
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
@@ -7944,29 +8981,29 @@ jQuery.fn.ax5formatter = function () {
                 returnValue = "",
                 inspectValue = function inspectValue(val, format, inspect, data) {
                 var _val = {
-                    'Y': function Y(v) {
+                    Y: function Y(v) {
                         if (typeof v == "undefined") v = TODAY.getFullYear();
-                        if (v == '' || v == '0000') v = TODAY.getFullYear();
+                        if (v == "" || v == "0000") v = TODAY.getFullYear();
                         return v.length < 4 ? U.setDigit(v, 4) : v;
                     },
-                    'M': function M(v) {
+                    M: function M(v) {
                         if (typeof v == "undefined") v = TODAY.getMonth() + 1;
-                        return v > 12 ? 12 : v == 0 ? '01' : U.setDigit(v, 2);
+                        return v > 12 ? 12 : v == 0 ? "01" : U.setDigit(v, 2);
                     },
-                    'D': function D(v) {
+                    D: function D(v) {
                         if (typeof v == "undefined") v = TODAY.getDate() + 1;
                         var dLen = U.daysOfMonth(data[1], data[2] - 1);
-                        return v > dLen ? dLen : v == 0 ? '01' : U.setDigit(v, 2);
+                        return v > dLen ? dLen : v == 0 ? "01" : U.setDigit(v, 2);
                     },
-                    'h': function h(v) {
+                    h: function h(v) {
                         if (!v) v = 0;
                         return v > 23 ? 23 : U.setDigit(v, 2);
                     },
-                    'm': function m(v) {
+                    m: function m(v) {
                         if (!v) v = 0;
                         return v > 59 ? 59 : U.setDigit(v, 2);
                     },
-                    's': function s(v) {
+                    s: function s(v) {
                         if (!v) v = 0;
                         return v > 59 ? 59 : U.setDigit(v, 2);
                     }
@@ -7981,23 +9018,23 @@ jQuery.fn.ax5formatter = function () {
                     nval.push(inspectValue(arguments[1], "Y", eType));
                 } else if (_opts.patternArgument == "month") {
                     nval.push(inspectValue(arguments[1], "Y", eType));
-                    if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
+                    if (arguments[2] || eType) nval.push("-" + inspectValue(arguments[2], "M", eType));
                 } else if (_opts.patternArgument == "time") {
                     nval.push(inspectValue(arguments[1], "Y", eType));
-                    if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
-                    if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
-                    if (arguments[4] || eType) nval.push(' ' + inspectValue(arguments[4], "h", eType));
-                    if (arguments[5] || eType) nval.push(':' + inspectValue(arguments[5], "m", eType));
-                    if (arguments[6] || eType) nval.push(':' + inspectValue(arguments[6], "s", eType));
+                    if (arguments[2] || eType) nval.push("-" + inspectValue(arguments[2], "M", eType));
+                    if (arguments[3] || eType) nval.push("-" + inspectValue(arguments[3], "D", eType, arguments));
+                    if (arguments[4] || eType) nval.push(" " + inspectValue(arguments[4], "h", eType));
+                    if (arguments[5] || eType) nval.push(":" + inspectValue(arguments[5], "m", eType));
+                    if (arguments[6] || eType) nval.push(":" + inspectValue(arguments[6], "s", eType));
                 } else {
                     nval.push(inspectValue(arguments[1], "Y", eType));
-                    if (arguments[2] || eType) nval.push('-' + inspectValue(arguments[2], "M", eType));
-                    if (arguments[3] || eType) nval.push('-' + inspectValue(arguments[3], "D", eType, arguments));
+                    if (arguments[2] || eType) nval.push("-" + inspectValue(arguments[2], "M", eType));
+                    if (arguments[3] || eType) nval.push("-" + inspectValue(arguments[3], "D", eType, arguments));
                 }
-                return nval.join('');
+                return nval.join("");
             });
 
-            if (eType == 'blur' && !matchedPattern) {
+            if (eType == "blur" && !matchedPattern) {
                 returnValue = function () {
                     var nval = [];
 
@@ -8005,20 +9042,20 @@ jQuery.fn.ax5formatter = function () {
                         nval.push(inspectValue(0, "Y", eType));
                     } else if (_opts.patternArgument == "month") {
                         nval.push(inspectValue(0, "Y", eType));
-                        nval.push('-' + inspectValue(0, "M", eType));
+                        nval.push("-" + inspectValue(0, "M", eType));
                     } else if (_opts.patternArgument == "time") {
                         nval.push(inspectValue(0, "Y", eType));
-                        nval.push('-' + inspectValue(0, "M", eType));
-                        nval.push('-' + inspectValue(0, "D", eType, arguments));
-                        nval.push(' ' + inspectValue(0, "h", eType));
-                        nval.push(':' + inspectValue(0, "m", eType));
-                        nval.push(':' + inspectValue(0, "s", eType));
+                        nval.push("-" + inspectValue(0, "M", eType));
+                        nval.push("-" + inspectValue(0, "D", eType, arguments));
+                        nval.push(" " + inspectValue(0, "h", eType));
+                        nval.push(":" + inspectValue(0, "m", eType));
+                        nval.push(":" + inspectValue(0, "s", eType));
                     } else {
                         nval.push(inspectValue(0, "Y", eType));
-                        nval.push('-' + inspectValue(0, "M", eType));
-                        nval.push('-' + inspectValue(0, "D", eType, arguments));
+                        nval.push("-" + inspectValue(0, "M", eType));
+                        nval.push("-" + inspectValue(0, "D", eType, arguments));
                     }
-                    return nval.join('');
+                    return nval.join("");
                 }();
             } else if (!matchedPattern) returnValue = returnValue.length > 4 ? U.left(returnValue, 4) : returnValue;
 
@@ -8029,7 +9066,7 @@ jQuery.fn.ax5formatter = function () {
     var pattern_time = {
         getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
             var enterableKeyCodes = {
-                '186': ':'
+                "186": ":"
             };
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
@@ -8040,9 +9077,9 @@ jQuery.fn.ax5formatter = function () {
             var matchedPattern = val.match(regExpPattern),
                 returnValue = val.replace(regExpPattern, function (a, b) {
                 var nval = [arguments[1]];
-                if (arguments[2]) nval.push(':' + arguments[2]);
-                if (arguments[3]) nval.push(':' + arguments[3]);
-                return nval.join('');
+                if (arguments[2]) nval.push(":" + arguments[2]);
+                if (arguments[3]) nval.push(":" + arguments[3]);
+                return nval.join("");
             });
 
             if (!matchedPattern) returnValue = returnValue.length > 2 ? U.left(returnValue, 2) : returnValue;
@@ -8054,7 +9091,7 @@ jQuery.fn.ax5formatter = function () {
     var pattern_bizno = {
         getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
             var enterableKeyCodes = {
-                '189': '-'
+                "189": "-"
             };
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
@@ -8075,18 +9112,29 @@ jQuery.fn.ax5formatter = function () {
     var pattern_phone = {
         getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
             var enterableKeyCodes = {
-                '189': '-', '188': ','
+                "189": "-",
+                "188": ",",
+                "107": "+",
+                "187": "+"
             };
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
-        getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
-            val = val.replace(/\D/g, "");
+        getPatternValue: function getPatternValue(_opts, optIdx, e, _val, eType) {
+            var val = _val.replace(/\D/g, "");
+
             var regExpPattern3 = /^([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
+
+            if (_val.substr(0, 1) == "+") {
+                val = "+" + _val.replace(/\D/g, "");
+                regExpPattern3 = /^\+?([0-9]{2}) ?([0-9]{3})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
+            }
             if (val.substr(0, 2) == "02") {
                 regExpPattern3 = /^([0-9]{2})\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?\-?([0-9]{1,4})?/;
             }
 
             var returnValue = val.replace(regExpPattern3, function (a, b) {
+                console.log(a, b);
+
                 var nval = [arguments[1]];
                 if (arguments[2]) nval.push(arguments[2]);
                 if (arguments[3]) nval.push(arguments[3]);
@@ -8101,7 +9149,7 @@ jQuery.fn.ax5formatter = function () {
     var pattern_credit = {
         getEnterableKeyCodes: function getEnterableKeyCodes(_opts) {
             var enterableKeyCodes = {
-                '189': '-'
+                "189": "-"
             };
             return jQuery.extend(enterableKeyCodes, FORMATTER.formatter.ctrlKeys, FORMATTER.formatter.numKeys);
         },
@@ -8130,7 +9178,11 @@ jQuery.fn.ax5formatter = function () {
         },
         getPatternValue: function getPatternValue(_opts, optIdx, e, val, eType) {
             if (_opts.getPatternValue) {
-                return _opts.getPatternValue.call(_opts, { event: e, $input: _opts.$input, value: val });
+                return _opts.getPatternValue.call(_opts, {
+                    event: e,
+                    $input: _opts.$input,
+                    value: val
+                });
             }
         }
     };
@@ -8148,6 +9200,46 @@ jQuery.fn.ax5formatter = function () {
         custom: pattern_custom
     };
 })();
+
+/*
+ * Copyright (c) 2017. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+ax5.ui.formatter_instance = new ax5.ui.formatter();
+
+jQuery.fn.ax5formatter = function () {
+    return function (config) {
+        if (ax5.util.isString(arguments[0])) {
+            var methodName = arguments[0];
+
+            switch (methodName) {
+                case "formatting":
+                    return ax5.ui.formatter_instance.formatting(this);
+                    break;
+
+                case "unbind":
+                    return ax5.ui.formatter_instance.unbind(this);
+                    break;
+
+                default:
+                    return this;
+            }
+        } else {
+            if (typeof config == "undefined") config = {};
+            jQuery.each(this, function () {
+                var defaultConfig = {
+                    target: this
+                };
+                config = jQuery.extend({}, config, defaultConfig);
+                ax5.ui.formatter_instance.bind(config);
+            });
+        }
+        return this;
+    };
+}();
+
 // ax5.ui.menu
 (function () {
     var UI = ax5.ui;
@@ -8155,8 +9247,7 @@ jQuery.fn.ax5formatter = function () {
     var MENU;
 
     UI.addClass({
-        className: "menu",
-        version: "1.3.82"
+        className: "menu"
     }, function () {
         /**
          * @class ax5.ui.menu
@@ -8281,7 +9372,7 @@ jQuery.fn.ax5formatter = function () {
          * });
          * ```
          */
-        var ax5menu = function ax5menu() {
+        return function () {
             var self = this,
                 cfg = void 0;
 
@@ -8311,24 +9402,27 @@ jQuery.fn.ax5formatter = function () {
 
             cfg = this.config;
 
-            var appEventAttach = function appEventAttach(active) {
+            var appEventAttach = function appEventAttach(active, opt) {
                 if (active) {
-                    jQuery(document).unbind("click.ax5menu-" + this.menuId).bind("click.ax5menu-" + this.menuId, clickItem.bind(this));
-                    jQuery(window).unbind("keydown.ax5menu-" + this.menuId).bind("keydown.ax5menu-" + this.menuId, function (e) {
+                    jQuery(document.body).off("click.ax5menu-" + this.instanceId).on("click.ax5menu-" + this.instanceId, clickItem.bind(this, opt));
+
+                    jQuery(window).off("keydown.ax5menu-" + this.instanceId).on("keydown.ax5menu-" + this.instanceId, function (e) {
                         if (e.which == ax5.info.eventKeys.ESC) {
                             self.close();
                         }
                     });
-                    jQuery(window).unbind("resize.ax5menu-" + this.menuId).bind("resize.ax5menu-" + this.menuId, function (e) {
+
+                    jQuery(window).on("resize.ax5menu-" + this.instanceId).on("resize.ax5menu-" + this.instanceId, function (e) {
                         self.close();
                     });
                 } else {
-                    jQuery(document).unbind("click.ax5menu-" + this.menuId);
-                    jQuery(window).unbind("keydown.ax5menu-" + this.menuId);
-                    jQuery(window).unbind("resize.ax5menu-" + this.menuId);
+                    jQuery(document.body).off("click.ax5menu-" + this.instanceId);
+                    jQuery(window).off("keydown.ax5menu-" + this.instanceId);
+                    jQuery(window).off("resize.ax5menu-" + this.instanceId);
                 }
-            },
-                onStateChanged = function onStateChanged(opts, that) {
+            };
+
+            var onStateChanged = function onStateChanged(opts, that) {
                 if (opts && opts.onStateChanged) {
                     opts.onStateChanged.call(that, that);
                 } else if (this.onStateChanged) {
@@ -8339,16 +9433,18 @@ jQuery.fn.ax5formatter = function () {
                 opts = null;
                 that = null;
                 return true;
-            },
-                onLoad = function onLoad(that) {
+            };
+
+            var onLoad = function onLoad(that) {
                 if (this.onLoad) {
                     this.onLoad.call(that, that);
                 }
 
                 that = null;
                 return true;
-            },
-                popup = function popup(opt, items, depth, path) {
+            };
+
+            var popup = function popup(opt, items, depth, path) {
                 var data = opt,
                     activeMenu = void 0,
                     removed = void 0;
@@ -8460,7 +9556,9 @@ jQuery.fn.ax5formatter = function () {
                         path = this.getAttribute("data-menu-item-path"),
                         _items = void 0;
 
-                    _items = self.queue[depth].data[cfg.columnKeys.items][index][cfg.columnKeys.items];
+                    if (path) {
+                        _items = self.queue[depth].data[cfg.columnKeys.items][index][cfg.columnKeys.items];
+                    }
                     if (_items && _items.length > 0) {} else {
                         jQuery(this).removeClass("hover");
                     }
@@ -8500,19 +9598,25 @@ jQuery.fn.ax5formatter = function () {
                 path = null;
 
                 return this;
-            },
-                clickItem = function clickItem(e, target, item) {
+            };
+
+            var clickItem = function clickItem(opt, e) {
+                var target = void 0,
+                    item = void 0;
+
                 target = U.findParentNode(e.target, function (target) {
                     if (target.getAttribute("data-menu-item-index")) {
                         return true;
                     }
                 });
                 if (target) {
+                    if (typeof opt === "undefined") opt = {};
                     item = function (path) {
                         if (!path) return false;
                         var item = void 0;
+
                         try {
-                            item = Function("", "return this.config.items[" + path.substring(5).replace(/\./g, '].' + cfg.columnKeys.items + '[') + "];").call(self);
+                            item = Function("", "return this[" + path.substring(5).replace(/\./g, '].' + cfg.columnKeys.items + '[') + "];").call(opt.items || cfg.items);
                         } catch (e) {
                             console.log(ax5.info.getError("ax5menu", "501", "menuItemClick"));
                         }
@@ -8559,7 +9663,9 @@ jQuery.fn.ax5formatter = function () {
                     }
 
                     if (self.onClick) {
-                        self.onClick.call(item, item);
+                        if (self.onClick.call(item, item, opt.param)) {
+                            self.close();
+                        }
                     }
                     if ((!item[cfg.columnKeys.items] || item[cfg.columnKeys.items].length == 0) && cfg.itemClickAndClose) self.close();
                 } else {
@@ -8569,8 +9675,9 @@ jQuery.fn.ax5formatter = function () {
                 target = null;
                 item = null;
                 return this;
-            },
-                align = function align(activeMenu, data) {
+            };
+
+            var align = function align(activeMenu, data) {
                 var $window = jQuery(window),
                     $document = jQuery(document),
                     wh = cfg.position == "fixed" ? $window.height() : $document.height(),
@@ -8612,8 +9719,6 @@ jQuery.fn.ax5formatter = function () {
             /// private end
 
             this.init = function () {
-                self.menuId = ax5.getGuid();
-
                 /**
                  * config에 선언된 이벤트 함수들을 this로 이동시켜 주어 나중에 인스턴스.on... 으로 처리 가능 하도록 변경
                  */
@@ -8701,6 +9806,7 @@ jQuery.fn.ax5formatter = function () {
 
                     var items = [].concat(cfg.items),
                         _filteringItem = void 0;
+                    opt.items = items;
 
                     if (opt.filter) {
                         _filteringItem = function filteringItem(_items) {
@@ -8715,15 +9821,16 @@ jQuery.fn.ax5formatter = function () {
                             });
                             return arr;
                         };
-                        items = _filteringItem(items);
+                        opt.items = items = _filteringItem(items);
                     }
 
                     if (items.length) {
+                        appEventAttach.call(this, false);
                         popup.call(this, opt, items, 0); // 0 is seq of queue
 
                         if (this.popupEventAttachTimer) clearTimeout(this.popupEventAttachTimer);
                         this.popupEventAttachTimer = setTimeout(function () {
-                            appEventAttach.call(this, true); // 이벤트 연결
+                            appEventAttach.call(this, true, opt); // 이벤트 연결
                         }.bind(this), 500);
                     }
 
@@ -8788,7 +9895,7 @@ jQuery.fn.ax5formatter = function () {
                         opt = getOption["object"].call(this, { left: offset.left, top: offset.top + height - scrollTop }, opt);
 
                         popup.call(self, opt, cfg.items[index][cfg.columnKeys.items], 0, 'root.' + target.getAttribute("data-menu-item-index")); // 0 is seq of queue
-                        appEventAttach.call(self, true); // 이벤트 연결
+                        appEventAttach.call(self, true, {}); // 이벤트 연결
                     }
 
                     target = null;
@@ -8954,7 +10061,6 @@ jQuery.fn.ax5formatter = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5menu;
     }());
 
     MENU = ax5.ui.menu;
@@ -8989,37 +10095,12 @@ jQuery.fn.ax5formatter = function () {
         SELECT = void 0;
 
     UI.addClass({
-        className: "select",
-        version: "1.3.82"
+        className: "select"
     }, function () {
         /**
          * @class ax5select
          * @classdesc
          * @author tom@axisj.com
-         * @example
-         * ```js
-         * var options = [];
-         * for (var i = 0; i < 20; i++) {
-         *     options.push({value: i, text: "optionText" + i});
-         * }
-          * var mySelect = new ax5.ui.select({
-         *     theme: "danger"
-         * });
-          * mySelect.bind({
-         *     theme: "primary",
-         *     target: $('[data-ax5select="select1"]'),
-         *     options: options,
-         *     onChange: function () {
-         *         console.log(this);
-         *     },
-         *     onClose: function () {
-         *         console.log(this);
-         *     },
-         *     onStateChanged: function () {
-         *         console.log(this);
-         *     }
-         * });
-         * ```
          */
         var ax5select = function ax5select() {
             var self = this,
@@ -9420,7 +10501,13 @@ jQuery.fn.ax5formatter = function () {
                 return function (queIdx) {
                     var item = this.queue[queIdx],
                         data = {};
+
+                    // find selected
                     item.selected = [];
+                    if (!item.options) item.options = [];
+                    item.options.forEach(function (n) {
+                        if (n[cfg.columnKeys.optionSelected]) item.selected.push(jQuery.extend({}, n));
+                    });
 
                     if (!item.$display) {
                         /// 템플릿에 전달할 오브젝트 선언
@@ -9536,7 +10623,6 @@ jQuery.fn.ax5formatter = function () {
                                 focusIndex++;
                             }
                         });
-
                         item.optionItemLength = focusIndex;
                         item.$select.html(po.join(''));
                     } else {
@@ -9597,7 +10683,28 @@ jQuery.fn.ax5formatter = function () {
              * @param {Object} config - 클래스 속성값
              * @returns {ax5select}
              * @example
-             * ```
+             * ```js
+             * var options = [];
+             * for (var i = 0; i < 20; i++) {
+            *     options.push({value: i, text: "optionText" + i});
+            * }
+              * var mySelect = new ax5.ui.select({
+            *     theme: "danger"
+            * });
+              * mySelect.bind({
+            *     theme: "primary",
+            *     target: $('[data-ax5select="select1"]'),
+            *     options: options,
+            *     onChange: function () {
+            *         console.log(this);
+            *     },
+            *     onClose: function () {
+            *         console.log(this);
+            *     },
+            *     onStateChanged: function () {
+            *         console.log(this);
+            *     }
+            * });
              * ```
              */
             this.init = function () {
@@ -9619,6 +10726,29 @@ jQuery.fn.ax5formatter = function () {
              * @param {Element} item.target
              * @param {Object[]} item.options
              * @returns {ax5select}
+             * @example
+             * ```js
+             * var mySelect = new ax5.ui.select();
+             * mySelect.bind({
+             *  columnKeys: {
+             *      optionValue: "value",
+             *      optionText: "text"
+             *  },
+             *  target: $('[data-ax5select="select1"]'),
+             *  options: [
+             *      {value: "", text: ""}
+             *  ],
+             *  onChange: function(){
+             *
+             *  },
+             *  onClose: function(){
+             *
+             *  },
+             *  onStateChanged: function(){
+             *
+             *  }
+             * });
+             * ```
              */
             this.bind = function (item) {
                 var selectConfig = {},
@@ -9840,6 +10970,20 @@ jQuery.fn.ax5formatter = function () {
             };
 
             /**
+             * @method ax5select.setOptions
+             * @param boundID
+             * @param options
+             * @returns {ax5select}
+             */
+            this.setOptions = function (boundID, options) {
+                var queIdx = getQueIdx.call(this, boundID);
+                this.queue[queIdx].selected = [];
+                this.queue[queIdx].options = options;
+                bindSelectTarget.call(this, queIdx);
+                return this;
+            };
+
+            /**
              * @method ax5select.val
              * @param {(String|Number|Element)} boundID
              * @param {(String|Object|Array)} [value]
@@ -9953,12 +11097,9 @@ jQuery.fn.ax5formatter = function () {
 
                 return function (boundID, value, selected, internal) {
                     var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
-                    if (queIdx === -1) {
-                        console.log(ax5.info.getError("ax5select", "402", "val"));
-                        return;
+                    if (!this.queue[queIdx]) {
+                        return this;
                     }
-
-                    // setValue 이면 현재 선택값 초기화
                     if (typeof value !== "undefined" && !this.queue[queIdx].multiple) {
                         clearSelected.call(this, queIdx);
                     }
@@ -10103,6 +11244,9 @@ jQuery.fn.ax5select = function () {
                 case "disable":
                     return ax5.ui.select_instance.disable(this);
                     break;
+                case "setOptions":
+                    return ax5.ui.select_instance.setOptions(this, arguments[1]);
+                    break;
                 default:
                     return this;
             }
@@ -10137,7 +11281,7 @@ jQuery.fn.ax5select = function () {
         return '\n<select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" {{#multiple}}multiple="multiple"{{/multiple}}></select>\n';
     };
     var optionsTmpl = function optionsTmpl(columnKeys) {
-        return '\n{{#waitOptions}}\n    <div class="ax-select-option-item">\n            <div class="ax-select-option-item-holder">\n                <span class="ax-select-option-item-cell ax-select-option-item-label">\n                    {{{lang.loading}}}\n                </span>\n            </div>\n        </div>\n{{/waitOptions}}\n{{^waitOptions}}\n    {{#options}}\n        {{#optgroup}}\n            <div class="ax-select-option-group">\n                <div class="ax-select-option-item-holder">\n                    <span class="ax-select-option-group-label">\n                        {{{.}}}\n                    </span>\n                </div>\n                {{#options}}\n                <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" \n                data-option-value="{{' + columnKeys.optionValue + '}}" \n                {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                    <div class="ax-select-option-item-holder">\n                        {{#multiple}}\n                        <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                        </span>\n                        {{/multiple}}\n                        <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n                    </div>\n                </div>\n                {{/options}}\n            </div>                            \n        {{/optgroup}}\n        {{^optgroup}}\n        <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n            <div class="ax-select-option-item-holder">\n                {{#multiple}}\n                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                    <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                </span>\n                {{/multiple}}\n                <span class="ax-select-option-item-cell ax-select-option-item-label">{{' + columnKeys.optionText + '}}</span>\n            </div>\n        </div>\n        {{/optgroup}}\n    {{/options}}\n    {{^options}}\n        <div class="ax-select-option-item">\n            <div class="ax-select-option-item-holder">\n                <span class="ax-select-option-item-cell ax-select-option-item-label">\n                    {{{lang.noOptions}}}\n                </span>\n            </div>\n        </div>\n    {{/options}}\n{{/waitOptions}}\n';
+        return '\n{{#waitOptions}}\n    <div class="ax-select-option-item">\n            <div class="ax-select-option-item-holder">\n                <span class="ax-select-option-item-cell ax-select-option-item-label">\n                    {{{lang.loading}}}\n                </span>\n            </div>\n        </div>\n{{/waitOptions}}\n{{^waitOptions}}\n    {{#options}}\n        {{#optgroup}}\n            <div class="ax-select-option-group">\n                <div class="ax-select-option-item-holder">\n                    <span class="ax-select-option-group-label">\n                        {{{.}}}\n                    </span>\n                </div>\n                {{#options}}\n                <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-group-index="{{@gindex}}" data-option-index="{{@index}}" \n                data-option-value="{{' + columnKeys.optionValue + '}}" \n                {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n                    <div class="ax-select-option-item-holder">\n                        {{#multiple}}\n                        <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                            <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                        </span>\n                        {{/multiple}}\n                        <span class="ax-select-option-item-cell ax-select-option-item-label">{{{' + columnKeys.optionText + '}}}</span>\n                    </div>\n                </div>\n                {{/options}}\n            </div>                            \n        {{/optgroup}}\n        {{^optgroup}}\n        <div class="ax-select-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n            <div class="ax-select-option-item-holder">\n                {{#multiple}}\n                <span class="ax-select-option-item-cell ax-select-option-item-checkbox">\n                    <span class="item-checkbox-wrap useCheckBox" data-option-checkbox-index="{{@i}}"></span>\n                </span>\n                {{/multiple}}\n                <span class="ax-select-option-item-cell ax-select-option-item-label">{{{' + columnKeys.optionText + '}}}</span>\n            </div>\n        </div>\n        {{/optgroup}}\n    {{/options}}\n    {{^options}}\n        <div class="ax-select-option-item">\n            <div class="ax-select-option-item-holder">\n                <span class="ax-select-option-item-cell ax-select-option-item-label">\n                    {{{lang.noOptions}}}\n                </span>\n            </div>\n        </div>\n    {{/options}}\n{{/waitOptions}}\n';
     };
 
     SELECT.tmpl = {
@@ -10160,13 +11304,12 @@ jQuery.fn.ax5select = function () {
 // ax5.ui.grid
 (function () {
 
-    var UI = ax5.ui,
-        U = ax5.util,
-        GRID = void 0;
+    var UI = ax5.ui;
+    var U = ax5.util;
+    var GRID = void 0;
 
     UI.addClass({
-        className: "grid",
-        version: "1.3.82"
+        className: "grid"
     }, function () {
         /**
          * @class ax5grid
@@ -10177,7 +11320,7 @@ jQuery.fn.ax5select = function () {
          * var myGrid = new ax5.ui.grid();
          * ```
          */
-        var ax5grid = function ax5grid() {
+        return function () {
             var self = this,
                 cfg = void 0,
                 ctrlKeys = {
@@ -10207,6 +11350,14 @@ jQuery.fn.ax5select = function () {
                 showLineNumber: false,
                 showRowSelector: false,
                 multipleSelect: true,
+                virtualScrollY: true,
+                virtualScrollX: true,
+                headerSelect: true,
+
+                // 스크롤될 때 body 페인팅 딜레이를 주어 성능이 좋은 않은 브라우저에서 반응을 빠르게 할 때 사용하는 옵션들
+                virtualScrollYCountMargin: 0,
+                virtualScrollAccelerated: true,
+                virtualScrollAcceleratedDelayTime: 10,
 
                 height: 0,
                 columnMinWidth: 100,
@@ -10216,10 +11367,12 @@ jQuery.fn.ax5select = function () {
                 remoteSort: false,
 
                 header: {
+                    display: true,
                     align: false,
                     columnHeight: 26,
                     columnPadding: 3,
-                    columnBorderWidth: 1
+                    columnBorderWidth: 1,
+                    selector: true
                 },
                 body: {
                     align: false,
@@ -10234,6 +11387,7 @@ jQuery.fn.ax5select = function () {
                 page: {
                     height: 25,
                     display: true,
+                    statusDisplay: true,
                     navigationItemCount: 5
                 },
                 scroller: {
@@ -10246,12 +11400,37 @@ jQuery.fn.ax5select = function () {
                     modified: '__modified__',
                     deleted: '__deleted__',
                     disableSelection: '__disable_selection__'
+                },
+                tree: {
+                    use: false,
+                    hashDigit: 8,
+                    indentWidth: 10,
+                    arrowWidth: 15,
+                    iconWidth: 18,
+                    icons: {
+                        openedArrow: '▾',
+                        collapsedArrow: '▸',
+                        groupIcon: '⊚',
+                        collapsedGroupIcon: '⊚',
+                        itemIcon: '⊙'
+                    },
+                    columnKeys: {
+                        parentKey: "pid",
+                        selfKey: "id",
+                        collapse: "collapse",
+                        hidden: "hidden",
+                        parentHash: "__hp__",
+                        selfHash: "__hs__",
+                        children: "__children__",
+                        depth: "__depth__"
+                    }
                 }
             };
             this.xvar = {
                 bodyTrHeight: 0, // 한줄의 높이
                 scrollContentWidth: 0, // 스크롤 될 내용물의 너비 (스크롤 될 내용물 : panel['body-scroll'] 안에 컬럼이 있는)
-                scrollContentHeight: 0 // 스크롤 된 내용물의 높이
+                scrollContentHeight: 0, // 스크롤 된 내용물의 높이
+                scrollTimer: null
             };
 
             // 그리드 데이터셋
@@ -10261,7 +11440,8 @@ jQuery.fn.ax5select = function () {
             this.bodyGrouping = {};
 
             this.list = []; // 그리드의 데이터
-            this.page = {}; // 그리드의 페이지 정보
+            this.proxyList = null; // 그리드 데이터의 대리자
+            this.page = null; // 그리드의 페이지 정보
             this.selectedDataIndexs = [];
             this.deletedList = [];
             this.sortInfo = {}; // 그리드의 헤더 정렬 정보
@@ -10269,6 +11449,8 @@ jQuery.fn.ax5select = function () {
             this.selectedColumn = {}; // 그리드 바디의 선택된 셀 정보
             this.isInlineEditing = false;
             this.inlineEditing = {};
+            this.listIndexMap = {}; // tree데이터 사용시 데이터 인덱싱 맵
+            this.contextMenu = null; // contentMenu 의 인스턴스
 
             // header
             this.headerTable = {};
@@ -10287,6 +11469,7 @@ jQuery.fn.ax5select = function () {
             this.leftBodyGroupingData = {};
             this.bodyGroupingData = {};
             this.rightBodyGroupingData = {};
+            this.bodyGroupingMap = {};
 
             // footSum
             this.footSumTable = {}; // footSum의 출력레이아웃
@@ -10296,15 +11479,7 @@ jQuery.fn.ax5select = function () {
 
             cfg = this.config;
 
-            var onStateChanged = function onStateChanged(_opts, _that) {
-                if (_opts && _opts.onStateChanged) {
-                    _opts.onStateChanged.call(_that, _that);
-                } else if (this.onStateChanged) {
-                    this.onStateChanged.call(_that, _that);
-                }
-                return true;
-            },
-                initGrid = function initGrid() {
+            var initGrid = function initGrid() {
                 // 그리드 템플릿에 전달하고자 하는 데이터를 정리합시다.
 
                 var data = {
@@ -10372,11 +11547,13 @@ jQuery.fn.ax5select = function () {
                 this.$["container"]["root"].css({ height: this.config.height || this.config._height });
 
                 return this;
-            },
-                initColumns = function initColumns(_columns) {
+            };
+            var initColumns = function initColumns(_columns) {
+                if (!U.isArray(_columns)) _columns = [];
                 this.columns = U.deepCopy(_columns);
+
                 this.headerTable = GRID.util.makeHeaderTable.call(this, this.columns);
-                this.xvar.frozenColumnIndex = cfg.frozenColumnIndex > this.columns.length ? this.columns.length : cfg.frozenColumnIndex;
+                this.xvar.frozenColumnIndex = cfg.frozenColumnIndex || 0;
 
                 this.bodyRowTable = GRID.util.makeBodyRowTable.call(this, this.columns);
                 this.bodyRowMap = GRID.util.makeBodyRowMap.call(this, this.bodyRowTable);
@@ -10397,8 +11574,8 @@ jQuery.fn.ax5select = function () {
                 }
 
                 return this;
-            },
-                onResetColumns = function onResetColumns() {
+            };
+            var onResetColumns = function onResetColumns() {
                 initColumns.call(this, this.config.columns);
                 resetColGroupWidth.call(this);
                 if (this.config.footSum) {
@@ -10410,13 +11587,14 @@ jQuery.fn.ax5select = function () {
                 GRID.header.repaint.call(this, true);
                 GRID.body.repaint.call(this, true);
                 GRID.scroller.resize.call(this);
-            },
-                resetColGroupWidth = function resetColGroupWidth() {
+            };
+            var resetColGroupWidth = function resetColGroupWidth() {
                 /// !! 그리드 target의 크기가 변경되면 이 함수를 호출하려 this.colGroup의 _width 값을 재 계산 하여야 함. [tom]
                 var CT_WIDTH = this.$["container"]["root"].width() - function () {
                     var width = 0;
                     if (cfg.showLineNumber) width += cfg.lineNumberColumnWidth;
                     if (cfg.showRowSelector) width += cfg.rowSelectorColumnWidth;
+                    width += cfg.scroller.size;
                     return width;
                 }(),
                     totalWidth = 0,
@@ -10441,16 +11619,16 @@ jQuery.fn.ax5select = function () {
                         colGroup[autoWidthColgroupIndexs[i]]._width = computedWidth;
                     }
                 }
-            },
-                initFootSum = function initFootSum(_footSum) {
+            };
+            var initFootSum = function initFootSum(_footSum) {
                 if (U.isArray(_footSum)) {
                     this.footSumTable = GRID.util.makeFootSumTable.call(this, this.footSumColumns = _footSum);
                 } else {
                     this.footSumColumns = [];
                     this.footSumTable = {};
                 }
-            },
-                initBodyGroup = function initBodyGroup(_grouping) {
+            };
+            var initBodyGroup = function initBodyGroup(_grouping) {
                 var grouping = jQuery.extend({}, _grouping);
                 if ("by" in grouping && "columns" in grouping) {
                     this.bodyGrouping = {
@@ -10478,9 +11656,13 @@ jQuery.fn.ax5select = function () {
                 } else {
                     cfg.body.grouping = false;
                 }
-            },
-                alignGrid = function alignGrid(_isFirst) {
-                // isFirst : 그리드 정렬 메소드가 처음 호출 되었는지 판단 하는 아규먼트
+            };
+            var alignGrid = function alignGrid(_isFirst) {
+                var list = this.proxyList ? this.proxyList : this.list;
+                // 대상이 크기가 컬럼의 최소 크기 보다 작업 금지
+                if (Math.min(this.$target.innerWidth(), this.$target.innerHeight()) < 5) {
+                    return false;
+                }
 
                 if (!this.config.height) {
                     this.$["container"]["root"].css({ height: this.config._height = this.$target.height() });
@@ -10507,7 +11689,7 @@ jQuery.fn.ax5select = function () {
                     horizontalScrollerHeight = void 0,
                     bodyHeight = void 0;
 
-                // todo : 우측 함계컬럼 넘비 계산
+                // todo : 우측 함계컬럼 너비 계산
                 var rightPanelWidth = 0,
                     frozenRowHeight = function (bodyTrHeight) {
                     return cfg.frozenRowIndex * bodyTrHeight;
@@ -10515,11 +11697,11 @@ jQuery.fn.ax5select = function () {
                     footSumHeight = function (bodyTrHeight) {
                     return this.footSumColumns.length * bodyTrHeight;
                 }.call(this, this.xvar.bodyTrHeight),
-                    headerHeight = this.headerTable.rows.length * cfg.header.columnHeight,
+                    headerHeight = cfg.header.display ? this.headerTable.rows.length * cfg.header.columnHeight : 0,
                     pageHeight = cfg.page.display ? cfg.page.height : 0;
 
                 (function () {
-                    verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
+                    verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight < list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
                     // 남은 너비가 colGroup의 너비보다 넓을때. 수평 스크롤 활성화.
                     horizontalScrollerHeight = function () {
                         var totalColGroupWidth = 0;
@@ -10533,7 +11715,7 @@ jQuery.fn.ax5select = function () {
                     }.call(this);
 
                     if (horizontalScrollerHeight > 0) {
-                        verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight - horizontalScrollerHeight < this.list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
+                        verticalScrollerWidth = CT_HEIGHT - headerHeight - pageHeight - footSumHeight - horizontalScrollerHeight < list.length * this.xvar.bodyTrHeight ? this.config.scroller.size : 0;
                     }
                 }).call(this);
 
@@ -10628,7 +11810,7 @@ jQuery.fn.ax5select = function () {
                         return this;
                     }
 
-                    panel.css(css);
+                    panel.show().css(css);
                     return this;
                 };
                 var scrollerDisplayProcess = function scrollerDisplayProcess(panel, scrollerWidth, scrollerHeight, containerType) {
@@ -10704,8 +11886,16 @@ jQuery.fn.ax5select = function () {
                 scrollerDisplayProcess.call(this, this.$["scroller"]["corner"], verticalScrollerWidth, horizontalScrollerHeight, "corner");
 
                 panelDisplayProcess.call(this, this.$["container"]["page"], "", "", "page");
-            },
-                sortColumns = function sortColumns(_sortInfo) {
+
+                // 각 패널의 사이즈 결정
+                /// 다른 패널의 사이즈 정보가 필요한 경우 여기서 정의해주고 사용함.
+                this.xvar.bodyHeight = this.$.panel["body"].height();
+                this.xvar.bodyWidth = this.$.panel["body"].width();
+                // scrollContentWidth 는 grid-header repaint에서 결정합니다. 까먹지 맙시다. > this.xvar.scrollContentWidth
+
+                return true;
+            };
+            var sortColumns = function sortColumns(_sortInfo) {
                 GRID.header.repaint.call(this);
 
                 if (U.isFunction(this.config.remoteSort)) {
@@ -10725,7 +11915,7 @@ jQuery.fn.ax5select = function () {
                     if (this.config.body.grouping) {
                         this.list = GRID.data.initData.call(this, GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list)));
                     } else {
-                        this.list = GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list));
+                        this.list = GRID.data.sort.call(this, _sortInfo, GRID.data.clearGroupingData.call(this, this.list), { resetLineNumber: true });
                     }
                     GRID.body.repaint.call(this, true);
                     GRID.scroller.resize.call(this);
@@ -10733,6 +11923,7 @@ jQuery.fn.ax5select = function () {
             };
             /// private end
 
+            /**
             /**
              * Preferences of grid UI
              * @method ax5grid.setConfig
@@ -10749,12 +11940,18 @@ jQuery.fn.ax5select = function () {
              * @param {Boolean} [_config.sortable=false]
              * @param {Boolean} [_config.multiSort=false]
              * @param {Function} [_config.remoteSort=false]
+             * @param {Boolean} [_config.virtualScrollY=true] - 세로축 가상스크롤 처리여부
+             * @param {Boolean} [_config.virtualScrollX=true] - 가로축 가상스크롤 처리여부
              * @param {Object} [_config.header]
+             * @param {Object} [_config.header.selector=true] - 헤더 checkbox 표시여부
              * @param {String} [_config.header.align]
              * @param {Number} [_config.header.columnHeight=25]
              * @param {Number} [_config.header.columnPadding=3]
              * @param {Number} [_config.header.columnBorderWidth=1]
              * @param {Object} [_config.body]
+             * @param {Function} [_config.body.onClick]
+             * @param {Function} [_config.body.onDBLClick]
+             * @param {Function} [_config.body.onDataChanged]
              * @param {String|Array} [_config.body.mergeCells=false] -
              * @param {String} [_config.body.align]
              * @param {Number} [_config.body.columnHeight=25]
@@ -10763,9 +11960,12 @@ jQuery.fn.ax5select = function () {
              * @param {Object} [_config.body.grouping]
              * @param {Array} [_config.body.grouping.by] - list grouping keys
              * @param {Array} [_config.body.grouping.columns] - list grouping columns
+             * @param {(String|Function)} [_config.body.trStyleClass]
+             *
              * @param {Object} [_config.page]
              * @param {Number} [_config.page.height=25]
-             * @param {Boolean} [_config.page.display=true]
+             * @param {Boolean} [_config.page.display=true] - grid page display
+             * @param {Boolean} [_config.page.statusDisplay=true] - grid status display
              * @param {Number} [_config.page.navigationItemCount=5]
              * @param {Object} [_config.scroller]
              * @param {Number} [_config.scroller.size=15]
@@ -10778,6 +11978,7 @@ jQuery.fn.ax5select = function () {
              * @param {String} _config.columns[].label
              * @param {Number} _config.columns[].width
              * @param {(String|Function)} _config.columns[].styleClass
+             * @param {(String|Function)} _config.columns[].headerStyleClass
              * @param {Boolean} _config.columns[].enableFilter
              * @param {Boolean} _config.columns[].sortable
              * @param {String} _config.columns[].align
@@ -10786,7 +11987,29 @@ jQuery.fn.ax5select = function () {
              * @param {String} _config.columns[].editor.type - text,number,money,date
              * @param {Object} _config.columns[].editor.config
              * @param {Array} _config.columns[].editor.updateWith
-             * @parem {Function} _config.columns[].editor.disabled - disable editor
+             * @param {Function} _config.columns[].editor.disabled - disable editor
+             * @param {Boolean} [_config.columns[].multiLine=false]
+             * @param {Object} [_config.tree]
+             * @param {Boolean} [_config.tree.use=false] - Whether tree-type data is used
+             * @param {Number} [_config.tree.hashDigit=8]
+             * @param {Number} [_config.tree.indentWidth=10]
+             * @param {Number} [_config.tree.arrowWidth=15]
+             * @param {Number} [_config.tree.iconWidth=18]
+             * @param {Object} [_config.tree.icons]
+             * @param {String} [_config.tree.icons.openedArrow='▾']
+             * @param {String} [_config.tree.icons.collapsedArrow='▸']
+             * @param {String} [_config.tree.icons.groupIcon='⊚']
+             * @param {String} [_config.tree.icons.collapsedGroupIcon='⊚']
+             * @param {String} [_config.tree.icons.itemIcon='⊙']
+             * @param {Object} [_config.tree.columnKeys]
+             * @param {String} [_config.tree.columnKeys.parentKey="pid"]
+             * @param {String} [_config.tree.columnKeys.selfKey="id"]
+             * @param {String} [_config.tree.columnKeys.collapse="collapse"]
+             * @param {String} [_config.tree.columnKeys.hidden="hidden"]
+             * @param {String} [_config.tree.columnKeys.parentHash="__hp__"]
+             * @param {String} [_config.tree.columnKeys.selfHash="__hs__"]
+             * @param {String} [_config.tree.columnKeys.children="__children__"]
+             * @param {String} [_config.tree.columnKeys.depth="__depth__"]
              * @returns {ax5grid}
              * @example
              * ```js
@@ -10844,12 +12067,29 @@ jQuery.fn.ax5select = function () {
              *         return this;
              *     },
              *     setData: function (_pageNo) {
-             *
              *         firstGrid.setData(sampleData);
-             *
              *         return this;
              *     }
              * };
+             *
+             * // onClick, onDBLClick, onDataChanged
+             * firstGrid.setConfig({
+             *      target: $('[data-ax5grid="first-grid"]'),
+             *      columns: [...],
+             *      body: {
+             *          onClick: function(){
+             *              console.log(this);
+             *          },
+             *          onDBLClick: function(){
+             *              console.log(this);
+             *              // If the column does not have an editor attribute, an event is raised.
+             *          },
+             *          onDataChanged: function(){
+             *              console.log(this);
+             *              // If change Data
+             *          }
+             *      }
+             * });
              * ```
              */
             this.init = function (_config) {
@@ -10862,6 +12102,7 @@ jQuery.fn.ax5select = function () {
                 // 그리드의 이벤트 정의 구간
                 this.onStateChanged = cfg.onStateChanged;
                 this.onClick = cfg.onClick;
+                //this.onDblClick = cfg.onDblClick;
                 this.onLoad = cfg.onLoad;
                 this.onDataChanged = cfg.body.onDataChanged;
                 // todo event에 대한 추가 정의 필요
@@ -10886,6 +12127,14 @@ jQuery.fn.ax5select = function () {
                     //this.id = 'ax5grid-' + ax5.getGuid();
                     this.id = 'ax5grid-' + this.instanceId;
                     this.$target.data("data-ax5grid-id", grid.id);
+                }
+
+                GRID.data.init.call(this);
+
+                if (this.config.tree.use) {
+                    // 트리라면
+                    this.sortInfo = {};
+                    this.sortInfo[this.config.tree.columnKeys.selfHash] = { orderBy: "asc", seq: 0, fixed: true };
                 }
 
                 ///========
@@ -10920,9 +12169,10 @@ jQuery.fn.ax5select = function () {
                 GRID.scroller.resize.call(this);
 
                 jQuery(window).bind("resize.ax5grid-" + this.id, function () {
-                    alignGrid.call(this);
-                    GRID.scroller.resize.call(this);
-                }.bind(this));
+                    alignGrid.call(self);
+                    GRID.scroller.resize.call(self);
+                    GRID.body.repaint.call(self); // window resize시 repaint 함수 호출
+                });
 
                 jQuery(document.body).on("click.ax5grid-" + this.id, function (e) {
                     var isPickerClick = false,
@@ -10966,18 +12216,32 @@ jQuery.fn.ax5select = function () {
                                 }
                             } else {
                                 if (ctrlKeys[e.which]) {
-                                    self.keyDown(ctrlKeys[e.which], e.originalEvent);
+                                    self.keyDown(ctrlKeys[e.which], e.originalEvent); // 키다운 이벤트 호출
                                     U.stopEvent(e);
                                 } else if (e.which == ax5.info.eventKeys.ESC) {
                                     if (self.focused) {
                                         GRID.body.blur.call(self);
                                     }
-                                } else if (e.which == ax5.info.eventKeys.RETURN) {
+                                } else if (e.which == ax5.info.eventKeys.RETURN || e.which == ax5.info.eventKeys.SPACE) {
                                     self.keyDown("RETURN", e.originalEvent);
                                 } else if (e.which == ax5.info.eventKeys.TAB) {
                                     //self.keyDown("RETURN", e.originalEvent);
                                     U.stopEvent(e);
-                                } else if (e.which != ax5.info.eventKeys.SPACE && Object.keys(self.focusedColumn).length) {
+                                } else if (Object.keys(self.focusedColumn).length) {
+                                    /*
+                                    self.keyDown("INLINE_EDIT", e.originalEvent);
+                                    */
+                                }
+                            }
+                        }
+                    }
+                });
+
+                jQuery(window).on("keyup.ax5grid-" + this.instanceId, function (e) {
+                    if (self.focused) {
+                        if (self.isInlineEditing) {} else {
+                            if (e.metaKey || e.ctrlKey) {} else {
+                                if (ctrlKeys[e.which]) {} else if (e.which == ax5.info.eventKeys.ESC) {} else if (e.which == ax5.info.eventKeys.RETURN || e.which == ax5.info.eventKeys.SPACE) {} else if (e.which == ax5.info.eventKeys.TAB) {} else if (Object.keys(self.focusedColumn).length) {
                                     self.keyDown("INLINE_EDIT", e.originalEvent);
                                 }
                             }
@@ -11000,9 +12264,31 @@ jQuery.fn.ax5select = function () {
              * align grid size
              * @method ax5grid.align
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.repaint();
+             * ```
              */
             this.align = function () {
-                alignGrid.call(this);
+                if (alignGrid.call(this)) {
+                    GRID.body.repaint.call(this);
+                    GRID.scroller.resize.call(this);
+                }
+                return this;
+            };
+
+            /**
+             * repaint grid
+             * @method ax5grid.repaint
+             * @return {ax5grid}
+             * @example
+             * ```js
+             * ax5Grid.repaint();
+             * ```
+             */
+            this.repaint = function () {
+                GRID.header.repaint.call(this);
+                GRID.body.repaint.call(this, true); // 강제로 다시 그리기
                 GRID.scroller.resize.call(this);
                 return this;
             };
@@ -11047,7 +12333,10 @@ jQuery.fn.ax5select = function () {
                         for (var columnKey in this.inlineEditing) {
                             activeEditLength++;
 
-                            GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey);
+                            if (!GRID.body.inlineEdit.keydown.call(this, "RETURN", columnKey)) {
+                                return false;
+                                U.stopEvent(_e);
+                            }
                             // next focus
                             if (activeEditLength == 1) {
                                 if (GRID.body.moveFocus.call(this, _e.shiftKey ? "UP" : "DOWN")) {
@@ -11057,7 +12346,8 @@ jQuery.fn.ax5select = function () {
                         }
                         if (activeEditLength == 0) {
                             GRID.body.inlineEdit.keydown.call(this, "RETURN");
-                        }
+                            U.stopEvent(_e);
+                        } else {}
                     },
                     "TAB": function TAB(_e) {
 
@@ -11132,7 +12422,7 @@ jQuery.fn.ax5select = function () {
                     copyText += r.join('\t') + "\n";
                 });
 
-                $clipBoard.get(0).innerText = copyText;
+                $clipBoard.get(0).value = copyText;
                 $clipBoard.select();
 
                 try {
@@ -11164,22 +12454,30 @@ jQuery.fn.ax5select = function () {
              * ```
              */
             this.setData = function (_data) {
+                var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined";
+
                 GRID.data.set.call(this, _data);
-                alignGrid.call(this);
                 GRID.body.repaint.call(this);
+                if (!isFirstPaint) GRID.body.scrollTo.call(this, { top: 0 });
+
+                // 가로/세로 스크롤바 show/hide 처리
+                alignGrid.call(this);
+                // 가로세로 스크롤바의 크기 재 계산.
                 GRID.scroller.resize.call(this);
                 GRID.page.navigationUpdate.call(this);
-                GRID.body.scrollTo.call(this, { top: 0 });
+
+                isFirstPaint = null;
                 return this;
             };
 
             /**
              * @method ax5grid.getList
-             * @param {String} _type
+             * @param {String} _type - selected|modified|deleted
              * @returns {Array}
              * @example
              * ```js
              * ax5Grid.getList();
+             * ax5Grid.getList("selected");
              * ax5Grid.getList("modified");
              * ax5Grid.getList("deleted");
              * ```
@@ -11216,18 +12514,32 @@ jQuery.fn.ax5select = function () {
              * @param {Number|String} [_dindex=last]
              * @param {Object} [_options] - options of addRow
              * @param {Boolean} [_options.sort] - sortData
+             * @param {Number|String} [_options.focus] - HOME|END|[dindex]
              * @returns {ax5grid}
              * @example
              * ```js
              * ax5Grid.addRow($.extend({}, {...}), "first");
+             * ax5Grid.addRow($.extend({}, {...}), "last", {focus: "END"});
+             * ax5Grid.addRow($.extend({}, {...}), "last", {focus: "HOME"});
+             * ax5Grid.addRow($.extend({}, {...}), "last", {focus: 10});
              * ```
              */
             this.addRow = function (_row, _dindex, _options) {
+                var _this2 = this;
+
                 GRID.data.add.call(this, _row, _dindex, _options);
                 alignGrid.call(this);
                 GRID.body.repaint.call(this, "reset");
-                GRID.body.moveFocus.call(this, this.config.body.grouping ? "START" : "END");
-                GRID.scroller.resize.call(this);
+
+                if (_options && _options.focus) {
+                    //GRID.body.moveFocus.call(this, (this.config.body.grouping) ? "START" : "END");
+                    setTimeout(function () {
+                        GRID.body.moveFocus.call(_this2, _options.focus);
+                    }, 1);
+                } else {
+                    GRID.scroller.resize.call(this);
+                }
+
                 return this;
             };
 
@@ -11260,6 +12572,7 @@ jQuery.fn.ax5select = function () {
              * ax5Grid.removeRow("first");
              * ax5Grid.removeRow("last");
              * ax5Grid.removeRow(1);
+             * ax5Grid.removeRow("selected");
              * ```
              */
             this.removeRow = function (_dindex) {
@@ -11276,12 +12589,44 @@ jQuery.fn.ax5select = function () {
              * @param {Object} _row
              * @param {Number} _dindex
              * @returns {ax5grid}
+             * @example
+             * ```js
+             * firstGrid.updateRow({price: 100, amount: 100, cost: 10000}, 1);
+             * ```
              */
             this.updateRow = function (_row, _dindex) {
                 GRID.data.update.call(this, _row, _dindex);
                 // todo : mergeCells 옵션에 따라 예외처리
 
                 GRID.body.repaintRow.call(this, _dindex);
+                return this;
+            };
+
+            /**
+             * @method ax5grid.updateChildRows
+             * @param {Number} _dindex
+             * @param {Object} _updateData
+             * @param {Object} [_options]
+             * @param {Function} [_options.filter]
+             * @returns {ax5grid}
+             * @example
+             * ```js
+             * onDataChanged: function () {
+             *      this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked});
+             * }
+             *
+             * onDataChanged: function () {
+             *      this.self.updateChildRows(this.dindex, {isChecked: this.item.isChecked}, {filter: function(){
+             *          return this.item.type == "A";
+             *      });
+             * }
+             * ```
+             */
+            this.updateChildRows = function (_dindex, _updateData, _options) {
+                GRID.data.updateChild.call(this, _dindex, _updateData, _options);
+                this.xvar.paintStartRowIndex = undefined;
+                this.xvar.paintStartColumnIndex = undefined;
+                GRID.body.repaint.call(this);
                 return this;
             };
 
@@ -11320,23 +12665,27 @@ jQuery.fn.ax5select = function () {
              */
             this.setValue = function (_dindex, _key, _value) {
                 // getPanelname;
-                if (GRID.data.setValue.call(this, _dindex, _key, _value)) {
-                    var repaintCell = function repaintCell(_panelName, _rows, __dindex, __key, __value) {
+                // let doindex = (typeof _doindex === "undefined") ? _dindex : _doindex;
+                // setValue를 doindex로 처리하는 상황이 아직 발생전으므로 선언만 하고 넘어감
+                var doindex = void 0;
+
+                if (GRID.data.setValue.call(this, _dindex, doindex, _key, _value)) {
+                    var repaintCell = function repaintCell(_panelName, _rows, __dindex, __doindex, __key, __value) {
                         for (var r = 0, rl = _rows.length; r < rl; r++) {
                             for (var c = 0, cl = _rows[r].cols.length; c < cl; c++) {
                                 if (_rows[r].cols[c].key == __key) {
                                     if (this.xvar.frozenRowIndex > __dindex) {
-                                        GRID.body.repaintCell.call(this, "top-" + _panelName, __dindex, r, c, __value);
+                                        GRID.body.repaintCell.call(this, "top-" + _panelName, __dindex, __doindex, r, c, __value);
                                     } else {
-                                        GRID.body.repaintCell.call(this, _panelName + "-scroll", __dindex, r, c, __value);
+                                        GRID.body.repaintCell.call(this, _panelName + "-scroll", __dindex, __doindex, r, c, __value);
                                     }
                                 }
                             }
                         }
                     };
 
-                    repaintCell.call(this, "left-body", this.leftBodyRowData.rows, _dindex, _key, _value);
-                    repaintCell.call(this, "body", this.bodyRowData.rows, _dindex, _key, _value);
+                    repaintCell.call(this, "left-body", this.leftBodyRowData.rows, _dindex, doindex, _key, _value);
+                    repaintCell.call(this, "body", this.bodyRowData.rows, _dindex, doindex, _key, _value);
                 }
 
                 return this;
@@ -11367,7 +12716,13 @@ jQuery.fn.ax5select = function () {
                         if (!U.isNumber(_cindex)) {
                             throw 'invalid argument _cindex';
                         }
-                        this.config.columns.splice(_cindex, [].concat(_column));
+                        if (U.isArray(_column)) {
+                            for (var _i = 0, _l = _column.length; _i < _l; _i++) {
+                                this.config.columns.splice(_cindex + _i, 0, _column[_i]);
+                            }
+                        } else {
+                            this.config.columns.splice(_cindex, 0, _column);
+                        }
                     }
                     onResetColumns.call(this); // 컬럼이 변경되었을 때.
                     return this;
@@ -11375,7 +12730,7 @@ jQuery.fn.ax5select = function () {
             }();
 
             /**
-             * @method ax5grid.removeCloumn
+             * @method ax5grid.removeColumn
              * @param {Number|String} [_cindex=last]
              * @returns {ax5grid}
              */
@@ -11510,9 +12865,29 @@ jQuery.fn.ax5select = function () {
                         }
                     }
 
-                    GRID.data.select.call(this, _dindex2, _options && _options.selected);
-                    GRID.body.updateRowState.call(this, ["selected"], _dindex2);
+                    GRID.data.select.call(this, _dindex2, undefined, _options && _options.selected);
+                    GRID.body.updateRowState.call(this, ["selected"], _dindex2, undefined);
                 }
+                return this;
+            };
+
+            /**
+             * @method firstGrid.clickBody
+             * @param {Number} _dindex
+             * @returns {ax5grid}
+             */
+            this.clickBody = function (_dindex) {
+                GRID.body.click.call(this, _dindex);
+                return this;
+            };
+
+            /**
+             * @method firstGrid.DBLClickBody
+             * @param {Number} _dindex
+             * @returns {ax5grid}
+             */
+            this.DBLClickBody = function (_dindex) {
+                GRID.body.dblClick.call(this, _dindex);
                 return this;
             };
 
@@ -11594,7 +12969,6 @@ jQuery.fn.ax5select = function () {
              * ```
              */
             this.focus = function (_pos) {
-                var _this4 = this;
 
                 if (GRID.body.moveFocus.call(this, _pos)) {
                     var focusedColumn = void 0;
@@ -11609,38 +12983,51 @@ jQuery.fn.ax5select = function () {
                     if (typeof this.selectedDataIndexs[0] === "undefined") {
                         this.select(0);
                     } else {
-                        (function () {
-                            var selectedIndex = _this4.selectedDataIndexs[0];
-                            var processor = {
-                                "UP": function UP() {
-                                    if (selectedIndex > 0) {
-                                        this.select(selectedIndex - 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex - 1);
-                                    }
-                                },
-                                "DOWN": function DOWN() {
-                                    if (selectedIndex < this.list.length - 1) {
-                                        this.select(selectedIndex + 1, { selectedClear: true });
-                                        GRID.body.moveFocus.call(this, selectedIndex + 1);
-                                    }
-                                },
-                                "HOME": function HOME() {
-                                    this.select(0, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, 0);
-                                },
-                                "END": function END() {
-                                    this.select(this.list.length - 1, { selectedClear: true });
-                                    GRID.body.moveFocus.call(this, this.list.length - 1);
-                                }
-                            };
+                        var selectedIndex = this.selectedDataIndexs[0];
 
-                            if (_pos in processor) {
-                                processor[_pos].call(_this4);
+                        var processor = {
+                            "UP": function UP() {
+                                if (selectedIndex > 0) {
+                                    this.select(selectedIndex - 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex - 1);
+                                }
+                            },
+                            "DOWN": function DOWN() {
+                                if (selectedIndex < this.list.length - 1) {
+                                    this.select(selectedIndex + 1, { selectedClear: true });
+                                    GRID.body.moveFocus.call(this, selectedIndex + 1);
+                                }
+                            },
+                            "HOME": function HOME() {
+                                this.select(0, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, 0);
+                            },
+                            "END": function END() {
+                                this.select(this.list.length - 1, { selectedClear: true });
+                                GRID.body.moveFocus.call(this, this.list.length - 1);
                             }
-                        })();
+                        };
+
+                        if (_pos in processor) {
+                            processor[_pos].call(this);
+                        }
                     }
                 }
                 return this;
+            };
+
+            /**
+             * @method ax5grid.destroy
+             * @returns {null}
+             */
+            this.destroy = function () {
+                var instanceId = this.instanceId;
+                this.$target.empty();
+                this.list = [];
+                UI.grid_instance = ax5.util.filter(UI.grid_instance, function () {
+                    return this.instanceId != instanceId;
+                });
+                return null;
             };
 
             // 클래스 생성자
@@ -11653,22 +13040,20 @@ jQuery.fn.ax5select = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5grid;
     }());
 
     GRID = ax5.ui.grid;
 })();
 
-// todo : destroy
-// todo : body menu
 // todo : filter
 // todo : column reorder
 // todo : editor 필수값 속성 지정
 // ax5.ui.grid.body
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var columnSelect = {
         focusClear: function focusClear() {
@@ -11708,6 +13093,7 @@ jQuery.fn.ax5select = function () {
             self.focusedColumn[column.dindex + "_" + column.colIndex + "_" + column.rowIndex] = {
                 panelName: column.panelName,
                 dindex: column.dindex,
+                doindex: column.doindex,
                 rowIndex: column.rowIndex,
                 colIndex: column.colIndex,
                 colspan: column.colspan
@@ -11726,6 +13112,7 @@ jQuery.fn.ax5select = function () {
                     return {
                         panelName: column.panelName,
                         dindex: column.dindex,
+                        doindex: column.doindex,
                         rowIndex: column.rowIndex,
                         colIndex: column.colIndex,
                         colspan: column.colspan
@@ -11741,7 +13128,11 @@ jQuery.fn.ax5select = function () {
         },
         update: function update(column) {
             var self = this;
-            var dindex, colIndex, rowIndex, trl;
+            var dindex = void 0,
+                doindex = void 0,
+                colIndex = void 0,
+                rowIndex = void 0,
+                trl = void 0;
 
             self.xvar.selectedRange["end"] = [column.dindex, column.rowIndex, column.colIndex, column.colspan - 1];
             columnSelect.clear.call(self);
@@ -11788,6 +13179,7 @@ jQuery.fn.ax5select = function () {
                 }
             }
             dindex = null;
+            doindex = null;
             colIndex = null;
             rowIndex = null;
 
@@ -11815,6 +13207,7 @@ jQuery.fn.ax5select = function () {
                     columnSelect.update.call(self, {
                         panelName: this.getAttribute("data-ax5grid-panel-name"),
                         dindex: Number(this.getAttribute("data-ax5grid-data-index")),
+                        doindex: Number(this.getAttribute("data-ax5grid-data-o-index")),
                         rowIndex: Number(this.getAttribute("data-ax5grid-column-rowIndex")),
                         colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                         colspan: Number(this.getAttribute("colspan"))
@@ -11837,31 +13230,54 @@ jQuery.fn.ax5select = function () {
         }
     };
 
-    var updateRowState = function updateRowState(_states, _dindex, _data) {
+    var updateRowState = function updateRowState(_states, _dindex, _doindex, _data) {
         var self = this,
             cfg = this.config,
             processor = {
-            "selected": function selected(_dindex) {
-                var i = this.$.livePanelKeys.length;
-                while (i--) {
-                    this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').attr("data-ax5grid-selected", this.list[_dindex][cfg.columnKeys.selected]);
-                }
-            },
-            "selectedClear": function selectedClear() {
-                var si = this.selectedDataIndexs.length;
-                while (si--) {
-                    var dindex = this.selectedDataIndexs[si];
+            "selected": function selected(_dindex, _doindex) {
+                if (this.list[_doindex]) {
                     var i = this.$.livePanelKeys.length;
                     while (i--) {
-                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').attr("data-ax5grid-selected", false);
-                        this.list[dindex][cfg.columnKeys.selected] = false;
+                        this.$.panel[this.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + _dindex + '"]').attr("data-ax5grid-selected", this.list[_doindex][cfg.columnKeys.selected]);
                     }
                 }
             },
-            "cellChecked": function cellChecked(_dindex, _data) {
-                var key = _data.key;
-                var rowIndex = _data.rowIndex;
-                var colIndex = _data.colIndex;
+            "selectedClear": function selectedClear() {
+                var di = this.list.length;
+                var pi = void 0;
+
+                if (!this.proxyList) {
+                    while (di--) {
+                        if (this.list[di][cfg.columnKeys.selected]) {
+                            pi = this.$.livePanelKeys.length;
+                            while (pi--) {
+                                this.$.panel[this.$.livePanelKeys[pi]].find('[data-ax5grid-tr-data-index="' + di + '"]').attr("data-ax5grid-selected", false);
+                            }
+                        }
+                        this.list[di][cfg.columnKeys.selected] = false;
+                    }
+                } else {
+                    while (di--) {
+                        this.list[di][cfg.columnKeys.selected] = false;
+                    }
+                    di = this.proxyList.length;
+                    while (di--) {
+                        if (this.list[doi][cfg.columnKeys.selected]) {
+                            pi = this.$.livePanelKeys.length;
+                            while (pi--) {
+                                this.$.panel[this.$.livePanelKeys[pi]].find('[data-ax5grid-tr-data-index="' + di + '"]').attr("data-ax5grid-selected", false);
+                            }
+                        }
+
+                        this.proxyList[di][cfg.columnKeys.selected] = false;
+                        var doi = this.proxyList[di].__original_index__;
+                    }
+                }
+            },
+            "cellChecked": function cellChecked(_dindex, _doindex, _data) {
+                var key = _data.key,
+                    rowIndex = _data.rowIndex,
+                    colIndex = _data.colIndex;
 
                 var panelName = function () {
                     var _panels = [];
@@ -11876,9 +13292,11 @@ jQuery.fn.ax5select = function () {
             }
         };
 
+        if (typeof _doindex === "undefined") _doindex = _dindex;
+
         _states.forEach(function (_state) {
             if (!processor[_state]) throw 'invaild state name';
-            processor[_state].call(self, _dindex, _data);
+            processor[_state].call(self, _dindex, _doindex, _data);
         });
     };
 
@@ -11906,6 +13324,7 @@ jQuery.fn.ax5select = function () {
                 row = void 0,
                 col = void 0,
                 dindex = void 0,
+                doindex = void 0,
                 rowIndex = void 0,
                 colIndex = void 0,
                 disableSelection = void 0,
@@ -11916,17 +13335,18 @@ jQuery.fn.ax5select = function () {
                         self: self,
                         page: self.page,
                         list: self.list,
-                        item: self.list[_column.dindex],
+                        item: self.list[_column.doindex],
                         dindex: _column.dindex,
+                        doindex: _column.doindex,
                         rowIndex: _column.rowIndex,
                         colIndex: _column.colIndex,
                         column: column,
                         value: self.list[_column.dindex][column.key]
                     };
 
-                    if (column.editor && column.editor.type == "checkbox") {
+                    if (column.editor && column.editor.type === "checkbox") {
                         // todo : GRID.inlineEditor에서 처리 할수 있도록 구문 변경 필요.
-                        var value = GRID.data.getValue.call(self, _column.dindex, column.key),
+                        var value = GRID.data.getValue.call(self, _column.dindex, _column.doindex, column.key),
                             checked = void 0,
                             newValue = void 0;
 
@@ -11940,34 +13360,39 @@ jQuery.fn.ax5select = function () {
                             newValue = checked = value == false || value == "false" || value < "1" ? "true" : "false";
                         }
 
-                        GRID.data.setValue.call(self, _column.dindex, column.key, newValue);
+                        GRID.data.setValue.call(self, _column.dindex, _column.doindex, column.key, newValue);
 
-                        updateRowState.call(self, ["cellChecked"], _column.dindex, {
+                        updateRowState.call(self, ["cellChecked"], _column.dindex, _column.doindex, {
                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                             editorConfig: column.editor.config, checked: checked
                         });
-                    } else {
-                        if (self.config.body.onClick) {
-                            self.config.body.onClick.call(that);
-                        }
+                    }
+
+                    if (self.config.body.onClick) {
+                        self.config.body.onClick.call(that, that, e);
                     }
                 },
                 "rowSelector": function rowSelector(_column) {
-                    if (self.list[_column.dindex][self.config.columnKeys.disableSelection]) {
+                    var item = self.list[_column.doindex];
+                    if (item[self.config.columnKeys.disableSelection]) {
                         return false;
                     }
 
-                    if (!self.config.multipleSelect && self.selectedDataIndexs[0] !== _column.dindex) {
-                        GRID.body.updateRowState.call(self, ["selectedClear"]);
+                    if (!self.config.multipleSelect && self.selectedDataIndexs[0] !== _column.doindex) {
+                        updateRowState.call(self, ["selectedClear"]);
                         GRID.data.clearSelect.call(self);
                     }
 
-                    GRID.data.select.call(self, _column.dindex, undefined, {
+                    GRID.data.select.call(self, _column.dindex, _column.doindex, undefined, {
                         internalCall: true
                     });
-                    updateRowState.call(self, ["selected"], _column.dindex);
+                    updateRowState.call(self, ["selected"], _column.dindex, _column.doindex);
                 },
-                "lineNumber": function lineNumber(_column) {}
+                "lineNumber": function lineNumber(_column) {},
+                "tree-control": function treeControl(_column, _el) {
+                    //console.log(_column);
+                    toggleCollapse.call(self, _column.dindex, _column.doindex);
+                }
             };
 
             panelName = this.getAttribute("data-ax5grid-panel-name");
@@ -11977,6 +13402,7 @@ jQuery.fn.ax5select = function () {
             rowIndex = Number(this.getAttribute("data-ax5grid-column-rowIndex"));
             colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
             dindex = Number(this.getAttribute("data-ax5grid-data-index"));
+            doindex = Number(this.getAttribute("data-ax5grid-data-o-index"));
 
             if (attr in targetClick) {
                 targetClick[attr]({
@@ -11985,9 +13411,10 @@ jQuery.fn.ax5select = function () {
                     row: row,
                     col: col,
                     dindex: dindex,
+                    doindex: doindex,
                     rowIndex: rowIndex,
                     colIndex: colIndex
-                });
+                }, this);
             }
         });
         this.$["container"]["body"].on("dblclick", '[data-ax5grid-column-attr]', function (e) {
@@ -11996,13 +13423,13 @@ jQuery.fn.ax5select = function () {
                 row = void 0,
                 col = void 0,
                 dindex = void 0,
+                doindex = void 0,
                 rowIndex = void 0,
                 colIndex = void 0,
-                targetClick = {
+                targetDBLClick = {
                 "default": function _default(_column) {
-
-                    if (this.isInlineEditing) {
-                        for (var columnKey in this.inlineEditing) {
+                    if (self.isInlineEditing) {
+                        for (var columnKey in self.inlineEditing) {
                             if (columnKey == _column.dindex + "_" + _column.colIndex + "_" + _column.rowIndex) {
                                 return this;
                             }
@@ -12013,10 +13440,31 @@ jQuery.fn.ax5select = function () {
                         value = "";
                     if (column) {
                         if (!self.list[dindex].__isGrouping) {
-                            value = GRID.data.getValue.call(self, dindex, column.key);
+                            value = GRID.data.getValue.call(self, dindex, doindex, column.key);
                         }
                     }
-                    GRID.body.inlineEdit.active.call(self, self.focusedColumn, e, value);
+
+                    var editor = self.colGroup[_column.colIndex].editor;
+                    if (U.isObject(editor)) {
+                        GRID.body.inlineEdit.active.call(self, self.focusedColumn, e, value);
+                    } else {
+                        // 더블클릭 실행
+                        if (self.config.body.onDBLClick) {
+                            var that = {
+                                self: self,
+                                page: self.page,
+                                list: self.list,
+                                item: self.list[_column.dindex],
+                                dindex: _column.dindex,
+                                doindex: _column.doindex,
+                                rowIndex: _column.rowIndex,
+                                colIndex: _column.colIndex,
+                                column: column,
+                                value: self.list[_column.dindex][column.key]
+                            };
+                            self.config.body.onDBLClick.call(that);
+                        }
+                    }
                 },
                 "rowSelector": function rowSelector(_column) {},
                 "lineNumber": function lineNumber(_column) {}
@@ -12029,37 +13477,92 @@ jQuery.fn.ax5select = function () {
             rowIndex = Number(this.getAttribute("data-ax5grid-column-rowIndex"));
             colIndex = Number(this.getAttribute("data-ax5grid-column-colIndex"));
             dindex = Number(this.getAttribute("data-ax5grid-data-index"));
+            doindex = Number(this.getAttribute("data-ax5grid-data-o-index"));
 
-            if (attr in targetClick) {
-                targetClick[attr]({
+            if (attr in targetDBLClick) {
+                targetDBLClick[attr]({
                     panelName: panelName,
                     attr: attr,
                     row: row,
                     col: col,
                     dindex: dindex,
+                    doindex: doindex,
                     rowIndex: rowIndex,
                     colIndex: colIndex
                 });
             }
         });
 
-        /* 사용안함. 나중을 위해 그냥 두자
-         this.$["container"]["body"].on("mouseover", "tr", function () {
-         let dindex = this.getAttribute("data-ax5grid-tr-data-index"),
-         i = self.$.livePanelKeys.length;
-         while (i--) {
-         if (typeof self.xvar.dataHoveredIndex !== "undefined") self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + self.xvar.dataHoveredIndex + '"]').removeClass("hover");
-         self.$.panel[self.$.livePanelKeys[i]].find('[data-ax5grid-tr-data-index="' + dindex + '"]').addClass("hover");
-         }
-         self.xvar.dataHoveredIndex = dindex;
-         });
-         */
+        if (this.config.contextMenu) {
+            this.$["container"]["body"].on("contextmenu", function (e) {
+                var target = void 0,
+                    dindex = void 0,
+                    doindex = void 0,
+                    rowIndex = void 0,
+                    colIndex = void 0,
+                    item = void 0,
+                    column = void 0,
+                    param = {};
+
+                target = U.findParentNode(e.target, function (t) {
+                    if (t.getAttribute("data-ax5grid-column-attr")) {
+                        return true;
+                    }
+                });
+
+                if (target) {
+                    // item 찾기
+                    rowIndex = Number(target.getAttribute("data-ax5grid-column-rowIndex"));
+                    colIndex = Number(target.getAttribute("data-ax5grid-column-colIndex"));
+                    dindex = Number(target.getAttribute("data-ax5grid-data-index"));
+                    doindex = Number(target.getAttribute("data-ax5grid-data-o-index"));
+                    column = self.bodyRowMap[rowIndex + "_" + colIndex];
+                    item = self.list[dindex];
+                }
+
+                if (!self.contextMenu) {
+                    self.contextMenu = new ax5.ui.menu();
+                }
+
+                self.contextMenu.setConfig(self.config.contextMenu);
+
+                param = {
+                    element: target,
+                    dindex: dindex,
+                    doindex: doindex,
+                    rowIndex: rowIndex,
+                    colIndex: colIndex,
+                    item: item,
+                    column: column,
+                    gridSelf: self
+                };
+
+                self.contextMenu.popup(e, {
+                    filter: function filter() {
+                        return self.config.contextMenu.popupFilter.call(this, this, param);
+                    },
+                    param: param
+                });
+
+                U.stopEvent(e.originalEvent);
+                target = null;
+                dindex = null;
+                doindex = null;
+                rowIndex = null;
+                colIndex = null;
+                item = null;
+                column = null;
+                param = null;
+            });
+        }
+
         this.$["container"]["body"].on("mousedown", '[data-ax5grid-column-attr="default"]', function (e) {
             if (self.xvar.touchmoved) return false;
             if (this.getAttribute("data-ax5grid-column-rowIndex")) {
                 columnSelector.on.call(self, {
                     panelName: this.getAttribute("data-ax5grid-panel-name"),
                     dindex: Number(this.getAttribute("data-ax5grid-data-index")),
+                    doindex: Number(this.getAttribute("data-ax5grid-data-o-index")),
                     rowIndex: Number(this.getAttribute("data-ax5grid-column-rowIndex")),
                     colIndex: Number(this.getAttribute("data-ax5grid-column-colIndex")),
                     colspan: Number(this.getAttribute("colspan"))
@@ -12071,6 +13574,25 @@ jQuery.fn.ax5select = function () {
         });
 
         resetFrozenColumn.call(this);
+
+        // 그리드 바디에 출력할 여유 카운트
+        this.xvar.paintRowCountMargin = this.config.virtualScrollYCountMargin;
+        this.xvar.paintRowCountTopMargin = this.config.virtualScrollYCountMargin - Math.floor(this.config.virtualScrollYCountMargin / 2);
+
+        if (this.config.virtualScrollAccelerated) {
+            this.__throttledScroll = U.throttle(function (css, opts) {
+                if (this.config.virtualScrollY && !opts.noRepaint && "top" in css) {
+                    repaint.call(this);
+                } else if (this.config.virtualScrollX && !opts.noRepaint && "left" in css) {
+                    repaint.call(this);
+                }
+                if (opts.callback) {
+                    opts.callback();
+                }
+            }, this.config.virtualScrollAcceleratedDelayTime);
+        } else {
+            this.__throttledScroll = false;
+        }
     };
 
     var resetFrozenColumn = function resetFrozenColumn() {
@@ -12113,6 +13635,9 @@ jQuery.fn.ax5select = function () {
 
             return data;
         }.call(this, this.bodyRowTable);
+
+        //console.log(dividedBodyRowObj);
+
         this.leftBodyRowData = dividedBodyRowObj.leftData;
         this.bodyRowData = dividedBodyRowObj.rightData;
 
@@ -12156,6 +13681,8 @@ jQuery.fn.ax5select = function () {
             }.call(this, this.bodyGroupingTable);
             this.leftBodyGroupingData = dividedBodyGroupingObj.leftData;
             this.bodyGroupingData = dividedBodyGroupingObj.rightData;
+
+            this.bodyGroupingMap = GRID.util.makeBodyRowMap.call(this, this.bodyGroupingTable);
         }
 
         this.leftFootSumData = {};
@@ -12168,6 +13695,7 @@ jQuery.fn.ax5select = function () {
     };
 
     var getFieldValue = function getFieldValue(_list, _item, _index, _col, _value, _returnPlainText) {
+
         var _key = _col.key,
             tagsToReplace = {
             '<': '&lt;',
@@ -12177,7 +13705,7 @@ jQuery.fn.ax5select = function () {
         if (_key === "__d-index__") {
             return typeof _item["__index"] !== "undefined" ? _item["__index"] + 1 : "";
         } else if (_key === "__d-checkbox__") {
-            return '<div class="checkBox"></div>';
+            return '<div class="checkBox" style="max-height: ' + (_col.width - 10) + 'px;min-height: ' + (_col.width - 10) + 'px;"></div>';
         } else {
             if (_col.editor && function (_editor) {
                 if (_editor.type in GRID.inlineEditor) {
@@ -12185,8 +13713,9 @@ jQuery.fn.ax5select = function () {
                 }
                 return false;
             }(_col.editor)) {
+                // editor가 inline타입이라면
 
-                _value = _value || GRID.data.getValue.call(this, _index, _key);
+                _value = _value || GRID.data.getValue.call(this, _index, _item.__origin_index__, _key);
 
                 if (U.isFunction(_col.editor.disabled)) {
                     if (_col.editor.disabled.call({
@@ -12203,33 +13732,69 @@ jQuery.fn.ax5select = function () {
                 // print editor
                 return _returnPlainText ? _value : GRID.inlineEditor[_col.editor.type].getHtml(this, _col.editor, _value);
             }
-            if (_col.formatter) {
-                var that = {
-                    key: _key,
-                    value: _value || GRID.data.getValue.call(this, _index, _key),
-                    dindex: _index,
-                    item: _item,
-                    list: _list
-                };
-                if (U.isFunction(_col.formatter)) {
-                    return _col.formatter.call(that);
-                } else {
-                    return GRID.formatter[_col.formatter].call(that);
-                }
-            } else {
-                var returnValue = "";
 
-                if (typeof _value !== "undefined") {
-                    returnValue = _value;
-                } else {
-                    _value = GRID.data.getValue.call(this, _index, _key);
-                    if (_value !== null && typeof _value !== "undefined") returnValue = _value;
-                }
+            var valueProcessor = {
+                "formatter": function formatter() {
+                    var that = {
+                        key: _key,
+                        value: _value || GRID.data.getValue.call(this, _index, _item.__origin_index__, _key),
+                        dindex: _index,
+                        item: _item,
+                        list: _list
+                    };
+                    if (U.isFunction(_col.formatter)) {
+                        return _col.formatter.call(that);
+                    } else {
+                        return GRID.formatter[_col.formatter].call(that);
+                    }
+                },
+                "default": function _default() {
+                    var returnValue = "";
 
-                return typeof returnValue === "number" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
-                    return tagsToReplace[tag] || tag;
-                });
+                    if (typeof _value !== "undefined") {
+                        returnValue = _value;
+                    } else {
+                        if (/[\.\[\]]/.test(_key)) {
+                            _value = GRID.data.getValue.call(this, _index, _item.__origin_index__, _key);
+                        } else {
+                            _value = _item[_key];
+                        }
+
+                        if (_value !== null && typeof _value !== "undefined") returnValue = _value;
+                    }
+
+                    // 키값이 Boolean일때 오류 발생하여 수정.
+                    return typeof returnValue !== "string" ? returnValue : returnValue.replace(/[<>]/g, function (tag) {
+                        return tagsToReplace[tag] || tag;
+                    });
+                },
+                "treeControl": function treeControl(__value) {
+                    var cfg = this.config,
+                        keys = this.config.tree.columnKeys,
+                        indentNodeHtml = '';
+
+                    if (_item[keys.children].length) {
+                        indentNodeHtml += '<a ' + 'data-ax5grid-data-index="' + _index + '" ' + 'data-ax5grid-column-attr="tree-control" ' + 'data-ax5grid-tnode-arrow="" ' + 'style="width: ' + cfg.tree.arrowWidth + 'px;padding-left:' + _item[keys.depth] * cfg.tree.indentWidth + 'px;"' + '>';
+                        indentNodeHtml += _item[keys.collapse] ? cfg.tree.icons.collapsedArrow : cfg.tree.icons.openedArrow;
+                        indentNodeHtml += '</a>';
+                    } else {
+                        indentNodeHtml += '<span ' + 'data-ax5grid-tnode-arrow="" ' + 'style="width: ' + cfg.tree.arrowWidth + 'px;padding-left:' + _item[keys.depth] * cfg.tree.indentWidth + 'px;"' + '>&nbsp;</span>';
+                    }
+
+                    indentNodeHtml += '<span ' + 'data-ax5grid-tnode-item="' + (_item[keys.children].length ? 'group' : 'item') + '" ' + 'style="width: ' + cfg.tree.iconWidth + 'px;"' + '>';
+                    indentNodeHtml += _item[keys.children].length ? _item[keys.collapse] ? cfg.tree.icons.collapsedGroupIcon : cfg.tree.icons.groupIcon : cfg.tree.icons.itemIcon;
+                    indentNodeHtml += '</span>';
+
+                    return indentNodeHtml + __value;
+                }
+            };
+
+            var returnValue = _col.formatter ? valueProcessor.formatter.call(this) : valueProcessor.default.call(this);
+            if (this.config.tree.use && _col.treeControl) {
+                returnValue = valueProcessor.treeControl.call(this, returnValue);
             }
+
+            return returnValue;
         }
     };
 
@@ -12324,21 +13889,66 @@ jQuery.fn.ax5select = function () {
     };
 
     var repaint = function repaint(_reset) {
+        // debugger;
         var cfg = this.config,
-            list = this.list;
+            list = this.proxyList ? this.proxyList : this.list;
 
         /// repaint reset 타입이면 고정컬럼을 재조정
         if (_reset) {
             resetFrozenColumn.call(this);
             // 틀고정 이 변경되면 출력 시작 인덱스 값을 초기화
             this.xvar.paintStartRowIndex = undefined;
+            this.xvar.paintStartColumnIndex = undefined;
         }
 
         /// 출력시작 인덱스
-        var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
-        if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
+        var paintStartRowIndex = void 0,
+            virtualPaintStartRowIndex = void 0;
+
+        if (this.config.virtualScrollY) {
+            virtualPaintStartRowIndex = paintStartRowIndex = Math.floor(-this.$.panel["body-scroll"].position().top / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex;
+            if (this.xvar.paintRowCountTopMargin < paintStartRowIndex) {
+                paintStartRowIndex -= this.xvar.paintRowCountTopMargin;
+            }
+        } else {
+            paintStartRowIndex = this.xvar.frozenRowIndex;
+        }
+
+        if (isNaN(paintStartRowIndex)) return this;
+
+        var paintStartColumnIndex = 0,
+            paintEndColumnIndex = 0,
+            nopaintLeftColumnsWidth = null,
+            nopaintRightColumnsWidth = null;
+        var bodyScrollLeft = -this.$.panel["body-scroll"].position().left;
+
+        if (this.config.virtualScrollX) {
+            // 페인트 시작컬럼위치와 종료컬럼위치 구하기
+            for (var ci = this.xvar.frozenColumnIndex; ci < this.colGroup.length; ci++) {
+                // bodyScrollLeft
+                this.colGroup[ci]._sx = ci == this.xvar.frozenColumnIndex ? 0 : this.colGroup[ci - 1]._ex;
+                this.colGroup[ci]._ex = this.colGroup[ci]._sx + this.colGroup[ci]._width;
+
+                if (this.colGroup[ci]._sx <= bodyScrollLeft && this.colGroup[ci]._ex >= bodyScrollLeft) {
+                    paintStartColumnIndex = ci;
+                }
+                if (this.colGroup[ci]._sx <= bodyScrollLeft + this.xvar.bodyWidth && this.colGroup[ci]._ex >= bodyScrollLeft + this.xvar.bodyWidth) {
+                    paintEndColumnIndex = ci;
+
+                    if (nopaintLeftColumnsWidth === null) nopaintLeftColumnsWidth = this.colGroup[paintStartColumnIndex]._sx;
+                    if (nopaintRightColumnsWidth === null) nopaintRightColumnsWidth = this.xvar.scrollContentWidth - this.colGroup[ci]._ex;
+                }
+            }
+
+            if (nopaintLeftColumnsWidth === null) nopaintLeftColumnsWidth = 0;
+            if (nopaintRightColumnsWidth === null) nopaintRightColumnsWidth = 0;
+            this.$.panel["top-body-scroll"].css({ "padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth });
+            this.$.panel["body-scroll"].css({ "padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth });
+            this.$.panel["bottom-body-scroll"].css({ "padding-left": nopaintLeftColumnsWidth, "padding-right": nopaintRightColumnsWidth });
+        }
 
         var isFirstPaint = typeof this.xvar.paintStartRowIndex === "undefined",
+            headerColGroup = this.headerColGroup,
             asideBodyRowData = this.asideBodyRowData,
             leftBodyRowData = this.leftBodyRowData,
             bodyRowData = this.bodyRowData,
@@ -12348,14 +13958,44 @@ jQuery.fn.ax5select = function () {
             leftBodyGroupingData = this.leftBodyGroupingData,
             bodyGroupingData = this.bodyGroupingData,
             bodyAlign = cfg.body.align,
-            paintRowCount = Math.ceil(this.$.panel["body"].height() / this.xvar.bodyTrHeight) + 1;
+            paintRowCount = void 0,
+            virtualPaintRowCount = void 0;
 
-        if (document.addEventListener && ax5.info.supportTouch) {
-            paintRowCount = paintRowCount * 2;
+        if (!this.config.virtualScrollY) {
+            virtualPaintRowCount = paintRowCount = list.length;
+        } else {
+            virtualPaintRowCount = Math.ceil(this.xvar.bodyHeight / this.xvar.bodyTrHeight);
+            paintRowCount = virtualPaintRowCount + (this.xvar.paintRowCountMargin || 1);
+        }
+
+        // 여유범위 안에 있으면 페인팅 안할수 있게 paintStartRowIndex 변경하지 않음.
+        if (this.xvar.paintRowCountTopMargin < paintStartRowIndex && Math.abs(this.xvar.paintStartRowIndex - paintStartRowIndex) <= this.xvar.paintRowCountTopMargin) {
+            paintStartRowIndex = this.xvar.paintStartRowIndex;
+        }
+
+        if (this.xvar.dataRowCount === list.length && this.xvar.paintStartRowIndex === paintStartRowIndex && this.xvar.paintRowCount === paintRowCount && this.xvar.paintStartColumnIndex === paintStartColumnIndex && this.xvar.paintEndColumnIndex === paintEndColumnIndex) return this; // 스크롤 포지션 변경 여부에 따라 프로세스 진행여부 결정
+
+        // bodyRowData 수정 : 페인트 컬럼 포지션이 달라지므로
+        if (nopaintLeftColumnsWidth || nopaintRightColumnsWidth) {
+            headerColGroup = [].concat(headerColGroup).splice(paintStartColumnIndex - this.xvar.frozenColumnIndex, paintEndColumnIndex - paintStartColumnIndex + 1 + this.xvar.frozenColumnIndex);
+            bodyRowData = GRID.util.getTableByStartEndColumnIndex(bodyRowData, paintStartColumnIndex, paintEndColumnIndex);
+
+            if (cfg.body.grouping) {
+                bodyGroupingData = GRID.util.getTableByStartEndColumnIndex(bodyGroupingData, paintStartColumnIndex, paintEndColumnIndex);
+            }
+            if (cfg.footSum) {
+                footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, paintStartColumnIndex, paintEndColumnIndex);
+            }
+            if (this.xvar.paintStartColumnIndex !== paintStartColumnIndex || this.xvar.paintEndColumnIndex !== paintEndColumnIndex) {
+                this.needToPaintSum = true;
+            }
         }
 
         /// 스크롤 컨텐츠의 높이 : 그리드 스크롤의 실제 크기와는 관계 없이 데이터 갯수에 따라 스크롤 컨텐츠 높이값 구해서 저장해두기.
-        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (this.list.length - this.xvar.frozenRowIndex);
+        // todo scrollContentHeight
+        this.xvar.scrollContentHeight = this.xvar.bodyTrHeight * (list.length - this.xvar.frozenRowIndex);
+        if (this.xvar.scrollContentHeight < 0) this.xvar.scrollContentHeight = 0;
+
         /// 사용된 패널들의 키 모음
         this.$.livePanelKeys = [];
 
@@ -12400,11 +14040,13 @@ jQuery.fn.ax5select = function () {
                 } else {
                     return true;
                 }
-            }();
+            }(),
+                stripeString = '#fff 0px, #fff ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px, #eee ' + (cfg.body.columnHeight - cfg.body.columnBorderWidth) + 'px, #eee ' + cfg.body.columnHeight + 'px';
 
             if (isScrolled) {
-                SS.push('<div style="font-size:0;line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+                SS.push('<div style="background:repeating-linear-gradient(to top, ' + stripeString + ');' + 'font-size:0;' + 'line-height:0;height: ' + (_scrollConfig.paintStartRowIndex - this.xvar.frozenRowIndex) * _scrollConfig.bodyTrHeight + 'px;"></div>');
             }
+
             SS.push('<table border="0" cellpadding="0" cellspacing="0">');
             SS.push('<colgroup>');
             for (cgi = 0, cgl = _colGroup.length; cgi < cgl; cgi++) {
@@ -12413,7 +14055,9 @@ jQuery.fn.ax5select = function () {
             SS.push('<col  />');
             SS.push('</colgroup>');
 
-            for (di = _scrollConfig.paintStartRowIndex, dl = function () {
+            di = _scrollConfig.paintStartRowIndex;
+
+            for (dl = function () {
                 var len = void 0;
                 len = _list.length;
                 if (_scrollConfig.paintRowCount + _scrollConfig.paintStartRowIndex < len) {
@@ -12422,73 +14066,83 @@ jQuery.fn.ax5select = function () {
                 return len;
             }(); di < dl; di++) {
 
-                var isGroupingRow = false,
-                    rowTable = void 0;
-                if (_groupRow && "__isGrouping" in _list[di]) {
-                    rowTable = _groupRow;
-                    isGroupingRow = true;
-                } else {
-                    rowTable = _bodyRow;
-                }
-
-                for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
-
-                    SS.push('<tr class="tr-' + di % 4 + '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
-                    for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
-                        col = rowTable.rows[tri].cols[ci];
-                        cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
-                        colAlign = col.align || bodyAlign;
-
-                        SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
-                            var attrs = "";
-                            if (_focusedColumn) {
-                                attrs += 'data-ax5grid-column-focused="true" ';
-                            }
-                            if (_selectedColumn) {
-                                attrs += 'data-ax5grid-column-selected="true" ';
-                            }
-                            return attrs;
-                        }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
-                            var tdCSS_class = "";
-                            if (_col.styleClass) {
-                                if (U.isFunction(_col.styleClass)) {
-                                    tdCSS_class += _col.styleClass.call({
-                                        column: _col,
-                                        key: _col.key,
-                                        item: _list[di],
-                                        index: di
-                                    }) + " ";
-                                } else {
-                                    tdCSS_class += _col.styleClass + " ";
-                                }
-                            }
-                            if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
-                            if (ci == cl - 1) tdCSS_class += "isLastColumn ";
-                            return tdCSS_class;
-                        }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
-
-                        SS.push(function (_cellHeight) {
-                            var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                            if (!col.multiLine) {
-                                _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                            }
-
-                            return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                        }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
-
-                        SS.push('</td>');
+                if (_list[di]) {
+                    var isGroupingRow = false,
+                        rowTable = void 0,
+                        odi = typeof _list[di].__origin_index__ !== "undefined" ? _list[di].__origin_index__ : di;
+                    if (_groupRow && "__isGrouping" in _list[di]) {
+                        rowTable = _groupRow;
+                        isGroupingRow = true;
+                    } else {
+                        rowTable = _bodyRow;
                     }
-                    SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
-                    SS.push('</tr>');
+
+                    for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+
+                        SS.push('<tr class="tr-' + di % 4 + '', cfg.body.trStyleClass ? U.isFunction(cfg.body.trStyleClass) ? ' ' + cfg.body.trStyleClass.call({
+                            item: _list[di],
+                            index: di
+                        }, _list[di], di) : ' ' + cfg.body.trStyleClass : '', '"', isGroupingRow ? ' data-ax5grid-grouping-tr="true"' : '', ' data-ax5grid-tr-data-index="' + di + '"', ' data-ax5grid-tr-data-o-index="' + odi + '"', ' data-ax5grid-selected="' + (_list[di][cfg.columnKeys.selected] || "false") + '"', ' data-ax5grid-disable-selection="' + (_list[di][cfg.columnKeys.disableSelection] || "false") + '"', '>');
+
+                        for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                            col = rowTable.rows[tri].cols[ci];
+                            cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                            colAlign = col.align || bodyAlign;
+
+                            SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-data-o-index="' + odi + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
+                                var attrs = "";
+                                if (_focusedColumn) {
+                                    attrs += 'data-ax5grid-column-focused="true" ';
+                                }
+                                if (_selectedColumn) {
+                                    attrs += 'data-ax5grid-column-selected="true" ';
+                                }
+                                return attrs;
+                            }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                                var tdCSS_class = "";
+                                if (_col.styleClass) {
+                                    if (U.isFunction(_col.styleClass)) {
+                                        tdCSS_class += _col.styleClass.call({
+                                            column: _col,
+                                            key: _col.key,
+                                            item: _list[di],
+                                            index: di
+                                        }) + " ";
+                                    } else {
+                                        tdCSS_class += _col.styleClass + " ";
+                                    }
+                                }
+                                if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                                if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                                return tdCSS_class;
+                            }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+
+                            SS.push(function (_cellHeight) {
+                                var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                                if (!col.multiLine) {
+                                    _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                                }
+
+                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
+                            }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
+
+                            SS.push('</td>');
+                        }
+                        SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-data-o-index="' + odi + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                        SS.push('</tr>');
+                    }
                 }
             }
             SS.push('</table>');
 
             if (isScrolled && _list.length) {
-                SS.push('<div style="font-size:0;line-height:0;height: ' + (_list.length - di) * _scrollConfig.bodyTrHeight + 'px;"></div>');
+                SS.push('<div style="background:repeating-linear-gradient(to bottom, ' + stripeString + ');' + 'font-size:0;' + 'line-height:0;height: ' + (_list.length - di) * _scrollConfig.bodyTrHeight + 'px;"></div>');
             }
 
-            _elTarget.empty().get(0).innerHTML = SS.join('');
+            _elTarget.empty();
+            SS = SS.join('');
+
+            _elTarget.get(0).innerHTML = SS;
 
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
@@ -12569,7 +14223,7 @@ jQuery.fn.ax5select = function () {
                             _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                         }
 
-                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
                     }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
                     SS.push('</td>');
@@ -12580,7 +14234,11 @@ jQuery.fn.ax5select = function () {
 
             SS.push('</table>');
 
-            _elTarget.empty().get(0).innerHTML = SS.join('');
+            _elTarget.empty();
+            SS = SS.join('');
+
+            _elTarget.get(0).innerHTML = SS;
+
             this.$.livePanelKeys.push(_elTargetKey); // 사용중인 패널키를 모아둠. (뷰의 상태 변경시 사용하려고)
             return true;
         };
@@ -12598,37 +14256,34 @@ jQuery.fn.ax5select = function () {
             var _elTarget = this.$.panel[_elTargetKey];
             var token = {},
                 hasMergeTd = void 0;
-            //console.log(_elTarget);
 
             // 테이블의 td들을 수잡하여 저장해두고 스크립트로 반복하여 정리.
             var tableTrs = _elTarget.find("tr");
             for (var ri = 0, rl = tableTrs.length; ri < rl; ri++) {
                 var tableTrTds = void 0,
                     trMaps = void 0;
+                tableTrTds = tableTrs[ri].childNodes;
+                trMaps = [];
 
-                if (!tableTrs[ri].getAttribute("data-ax5grid-grouping-tr")) {
-                    tableTrTds = tableTrs[ri].childNodes;
-                    trMaps = [];
-                    for (var ci = 0, cl = tableTrTds.length; ci < cl; ci++) {
-                        var tdObj = {
-                            "$": jQuery(tableTrTds[ci])
-                        };
+                for (var _ci = 0, cl = tableTrTds.length; _ci < cl; _ci++) {
+                    var tdObj = {
+                        "$": jQuery(tableTrTds[_ci])
+                    };
 
-                        if (tdObj["$"].attr("data-ax5grid-column-col") != "null") {
-                            tdObj.dindex = tdObj["$"].attr("data-ax5grid-data-index");
-                            tdObj.tri = tdObj["$"].attr("data-ax5grid-column-row");
-                            tdObj.ci = tdObj["$"].attr("data-ax5grid-column-col");
-                            tdObj.rowIndex = tdObj["$"].attr("data-ax5grid-column-rowIndex");
-                            tdObj.colIndex = tdObj["$"].attr("data-ax5grid-column-colIndex");
-                            tdObj.rowspan = tdObj["$"].attr("rowspan");
-                            tdObj.text = tdObj["$"].text();
-                            trMaps.push(tdObj);
-                        }
-
-                        tdObj = null;
+                    if (tdObj["$"].attr("data-ax5grid-column-col") != "null") {
+                        tdObj.dindex = tdObj["$"].attr("data-ax5grid-data-index");
+                        tdObj.tri = tdObj["$"].attr("data-ax5grid-column-row");
+                        tdObj.ci = tdObj["$"].attr("data-ax5grid-column-col");
+                        tdObj.rowIndex = tdObj["$"].attr("data-ax5grid-column-rowIndex");
+                        tdObj.colIndex = tdObj["$"].attr("data-ax5grid-column-colIndex");
+                        tdObj.rowspan = tdObj["$"].attr("rowspan");
+                        tdObj.text = tdObj["$"].text();
+                        trMaps.push(tdObj);
                     }
-                    tblRowMaps.push(trMaps);
+
+                    tdObj = null;
                 }
+                tblRowMaps.push(trMaps);
             }
 
             // 두줄이상 일 때 의미가 있으니.
@@ -12638,18 +14293,19 @@ jQuery.fn.ax5select = function () {
                 var _loop = function _loop(_ri, _rl) {
                     var prevTokenColIndexs = [];
 
-                    var _loop2 = function _loop2(_ci2, _cl2) {
+                    var _loop2 = function _loop2(_ci3, _cl2) {
                         // 적용 하려는 컬럼에 editor 속성이 없다면 머지 대상입니다.
-                        if (!_colGroup[_ci2].editor && function () {
+
+                        if (!_colGroup[_ci3].editor && function () {
                             if (U.isArray(cfg.body.mergeCells)) {
-                                return ax5.util.search(cfg.body.mergeCells, _colGroup[_ci2].key) > -1;
+                                return ax5.util.search(cfg.body.mergeCells, _colGroup[_ci3].key) > -1;
                             } else {
                                 return true;
                             }
                         }()) {
 
                             // 앞줄과 값이 같다면.
-                            if (token[_ci2] && function () {
+                            if (token[_ci3] && function () {
                                 if (prevTokenColIndexs.length > 0) {
                                     var hasFalse = true;
                                     prevTokenColIndexs.forEach(function (ti) {
@@ -12661,24 +14317,24 @@ jQuery.fn.ax5select = function () {
                                 } else {
                                     return true;
                                 }
-                            }() && token[_ci2].text == tblRowMaps[_ri][_ci2].text) {
-                                tblRowMaps[_ri][_ci2].rowspan = 0;
-                                tblRowMaps[token[_ci2].ri][_ci2].rowspan++;
+                            }() && token[_ci3].text == tblRowMaps[_ri][_ci3].text) {
+                                tblRowMaps[_ri][_ci3].rowspan = 0;
+                                tblRowMaps[token[_ci3].ri][_ci3].rowspan++;
                                 hasMergeTd = true;
                             } else {
-                                token[_ci2] = {
+                                token[_ci3] = {
                                     ri: _ri,
-                                    ci: _ci2,
-                                    text: tblRowMaps[_ri][_ci2].text
+                                    ci: _ci3,
+                                    text: tblRowMaps[_ri][_ci3].text
                                 };
                             }
 
-                            prevTokenColIndexs.push(_ci2);
+                            prevTokenColIndexs.push(_ci3);
                         }
                     };
 
-                    for (var _ci2 = 0, _cl2 = tblRowMaps[_ri].length; _ci2 < _cl2; _ci2++) {
-                        _loop2(_ci2, _cl2);
+                    for (var _ci3 = 0, _cl2 = tblRowMaps[_ri].length; _ci3 < _cl2; _ci3++) {
+                        _loop2(_ci3, _cl2);
                     }
                 };
 
@@ -12689,62 +14345,74 @@ jQuery.fn.ax5select = function () {
                 // rowspan을 다 구했으면 적용합니다.
                 if (hasMergeTd) {
                     for (var _ri2 = 0, _rl2 = tblRowMaps.length; _ri2 < _rl2; _ri2++) {
-                        for (var _ci = 0, _cl = tblRowMaps[_ri2].length; _ci < _cl; _ci++) {
-                            if (tblRowMaps[_ri2][_ci].rowspan == 0) {
-                                tblRowMaps[_ri2][_ci]["$"].remove();
-                            } else if (tblRowMaps[_ri2][_ci].rowspan > 1) {
-                                tblRowMaps[_ri2][_ci]["$"].attr("rowspan", tblRowMaps[_ri2][_ci].rowspan).addClass("merged");
+                        for (var _ci2 = 0, _cl = tblRowMaps[_ri2].length; _ci2 < _cl; _ci2++) {
+                            if (tblRowMaps[_ri2][_ci2].rowspan == 0) {
+                                tblRowMaps[_ri2][_ci2]["$"].remove();
+                            } else if (tblRowMaps[_ri2][_ci2].rowspan > 1) {
+                                tblRowMaps[_ri2][_ci2]["$"].attr("rowspan", tblRowMaps[_ri2][_ci2].rowspan).addClass("merged");
                             }
                         }
                     }
                 }
             }
         };
+
         var scrollConfig = {
             paintStartRowIndex: paintStartRowIndex,
             paintRowCount: paintRowCount,
-            bodyTrHeight: this.xvar.bodyTrHeight
+            paintStartColumnIndex: paintStartColumnIndex,
+            paintEndColumnIndex: paintEndColumnIndex,
+            nopaintLeftColumnsWidth: nopaintLeftColumnsWidth,
+            nopaintRightColumnsWidth: nopaintRightColumnsWidth,
+            bodyTrHeight: this.xvar.bodyTrHeight,
+            virtualScrollX: this.config.virtualScrollX,
+            virtualScrollY: this.config.virtualScrollY
         };
+        var frozenScrollConfig = jQuery.extend({}, scrollConfig, {
+            paintStartRowIndex: 0,
+            paintRowCount: this.xvar.frozenRowIndex
+        });
 
         // aside
         if (cfg.asidePanelWidth > 0) {
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                repaintBody.call(this, "top-aside-body", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                repaintBody.call(this, "top-aside-body", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), frozenScrollConfig);
             }
 
             repaintBody.call(this, "aside-body-scroll", this.asideColGroup, asideBodyRowData, asideBodyGroupingData, list, scrollConfig);
 
             if (cfg.footSum) {
                 // 바닥 요약 (footSum에 대한 aside 사용안함)
-                //repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, list);
+                repaintSum.call(this, "bottom-aside-body", this.asideColGroup, asideBodyRowData, null, this.list);
             }
         }
+
         // left
         if (this.xvar.frozenColumnIndex > 0) {
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                repaintBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+                repaintBody.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), frozenScrollConfig);
             }
 
             repaintBody.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyRowData, leftBodyGroupingData, list, scrollConfig);
 
             if (cfg.footSum && this.needToPaintSum) {
                 // 바닥 요약
-                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, this.list);
             }
         }
+
         // body
         if (this.xvar.frozenRowIndex > 0) {
             // 상단 행고정
-            repaintBody.call(this, "top-body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex));
+            repaintBody.call(this, "top-body-scroll", headerColGroup, bodyRowData, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), frozenScrollConfig);
         }
-
-        repaintBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
+        repaintBody.call(this, "body-scroll", headerColGroup, bodyRowData, bodyGroupingData, list, scrollConfig);
 
         // 바닥 요약
         if (cfg.footSum && this.needToPaintSum) {
-            repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+            repaintSum.call(this, "bottom-body-scroll", headerColGroup, footSumData, this.list, scrollConfig);
         }
         // right
         if (cfg.rightSum) {}
@@ -12752,7 +14420,7 @@ jQuery.fn.ax5select = function () {
 
 
         /// mergeCells
-        if (cfg.body.mergeCells && this.list.length) {
+        if (cfg.body.mergeCells && list.length) {
             // left
             if (this.xvar.frozenColumnIndex > 0) {
                 if (this.xvar.frozenRowIndex > 0) {
@@ -12771,14 +14439,21 @@ jQuery.fn.ax5select = function () {
             mergeCellsBody.call(this, "body-scroll", this.headerColGroup, bodyRowData, list, scrollConfig);
         }
 
+        this.xvar.virtualPaintStartRowIndex = virtualPaintStartRowIndex;
         this.xvar.paintStartRowIndex = paintStartRowIndex;
         this.xvar.paintRowCount = paintRowCount;
+        this.xvar.virtualPaintRowCount = virtualPaintRowCount;
+        this.xvar.paintStartColumnIndex = paintStartColumnIndex;
+        this.xvar.paintEndColumnIndex = paintEndColumnIndex;
+        this.xvar.nopaintLeftColumnsWidth = nopaintLeftColumnsWidth;
+        this.xvar.nopaintRightColumnsWidth = nopaintRightColumnsWidth;
         this.xvar.dataRowCount = list.length;
         this.needToPaintSum = false;
+
         GRID.page.statusUpdate.call(this);
     };
 
-    var repaintCell = function repaintCell(_panelName, _dindex, _rowIndex, _colIndex, _newValue) {
+    var repaintCell = function repaintCell(_panelName, _dindex, _doindex, _rowIndex, _colIndex, _newValue) {
         var self = this,
             cfg = this.config,
             list = this.list;
@@ -12807,9 +14482,9 @@ jQuery.fn.ax5select = function () {
         /// ~~~~~~
 
         var paintStartRowIndex = Math.floor(Math.abs(this.$.panel["body-scroll"].position().top) / this.xvar.bodyTrHeight) + this.xvar.frozenRowIndex,
+            headerColGroup = this.headerColGroup,
             leftFootSumData = this.leftFootSumData,
             footSumData = this.footSumData,
-            asideBodyGroupingData = this.asideBodyGroupingData,
             leftBodyGroupingData = this.leftBodyGroupingData,
             bodyGroupingData = this.bodyGroupingData,
             bodyAlign = cfg.body.align,
@@ -12819,6 +14494,16 @@ jQuery.fn.ax5select = function () {
             paintRowCount: paintRowCount,
             bodyTrHeight: this.xvar.bodyTrHeight
         };
+
+        if (this.xvar.nopaintLeftColumnsWidth || this.xvar.nopaintRightColumnsWidth) {
+            headerColGroup = [].concat(headerColGroup).splice(this.xvar.paintStartColumnIndex, this.xvar.paintEndColumnIndex - this.xvar.paintStartColumnIndex + 1);
+            if (cfg.body.grouping) {
+                bodyGroupingData = GRID.util.getTableByStartEndColumnIndex(bodyGroupingData, this.xvar.paintStartColumnIndex, this.xvar.paintEndColumnIndex);
+            }
+            if (cfg.footSum) {
+                footSumData = GRID.util.getTableByStartEndColumnIndex(footSumData, this.xvar.paintStartColumnIndex, this.xvar.paintEndColumnIndex);
+            }
+        }
 
         var repaintSum = function repaintSum(_elTargetKey, _colGroup, _bodyRow, _list, _scrollConfig) {
             var _elTarget = this.$.panel[_elTargetKey],
@@ -12881,7 +14566,7 @@ jQuery.fn.ax5select = function () {
                             _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                         }
 
-                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
                     }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
                     SS.push('</td>');
@@ -12916,7 +14601,7 @@ jQuery.fn.ax5select = function () {
                 }
                 return len;
             }(); di < dl; di++) {
-                if (_groupRow && "__isGrouping" in _list[di]) {
+                if (_list[di] && _groupRow && "__isGrouping" in _list[di]) {
                     var rowTable = _groupRow;
                     SS = [];
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
@@ -12959,7 +14644,7 @@ jQuery.fn.ax5select = function () {
                                     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
                                 }
 
-                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
                             }(cellHeight), getGroupingValue.call(this, _list[di], di, col), '</span>');
 
                             SS.push('</td>');
@@ -12977,38 +14662,38 @@ jQuery.fn.ax5select = function () {
             if (this.xvar.frozenColumnIndex > 0) {
                 if (this.xvar.frozenRowIndex > 0) {
                     // 상단 행고정
-                    replaceGroupTr.call(this, "top-left-body", this.leftHeaderColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                    replaceGroupTr.call(this, "top-left-body", headerColGroup, leftBodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
                         paintStartRowIndex: 0,
                         paintRowCount: this.xvar.frozenRowIndex,
                         bodyTrHeight: this.xvar.bodyTrHeight
                     });
                 }
-                replaceGroupTr.call(this, "left-body-scroll", this.leftHeaderColGroup, leftBodyGroupingData, list, scrollConfig);
+                replaceGroupTr.call(this, "left-body-scroll", headerColGroup, leftBodyGroupingData, list, scrollConfig);
             }
 
             // body
             if (this.xvar.frozenRowIndex > 0) {
                 // 상단 행고정
-                replaceGroupTr.call(this, "top-body-scroll", this.headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
+                replaceGroupTr.call(this, "top-body-scroll", headerColGroup, bodyGroupingData, list.slice(0, this.xvar.frozenRowIndex), {
                     paintStartRowIndex: 0,
                     paintRowCount: this.xvar.frozenRowIndex,
                     bodyTrHeight: this.xvar.bodyTrHeight
                 });
             }
 
-            replaceGroupTr.call(this, "body-scroll", this.headerColGroup, bodyGroupingData, list, scrollConfig);
+            replaceGroupTr.call(this, "body-scroll", headerColGroup, bodyGroupingData, list, scrollConfig);
         }
 
         if (this.xvar.frozenColumnIndex > 0) {
             if (cfg.footSum && this.needToPaintSum) {
                 // 바닥 요약
-                repaintSum.call(this, "bottom-left-body", this.leftHeaderColGroup, leftFootSumData, list);
+                repaintSum.call(this, "bottom-left-body", headerColGroup, leftFootSumData, list);
             }
         }
 
         if (cfg.footSum && this.needToPaintSum) {
             // 바닥 요약
-            repaintSum.call(this, "bottom-body-scroll", this.headerColGroup, footSumData, list, scrollConfig);
+            repaintSum.call(this, "bottom-body-scroll", headerColGroup, footSumData, list, scrollConfig);
         }
     };
 
@@ -13138,7 +14823,7 @@ jQuery.fn.ax5select = function () {
                 }
                 return len;
             }(); di < dl; di++) {
-                if (_groupRow && "__isGrouping" in _list[di]) {
+                if (_list[di] && _groupRow && "__isGrouping" in _list[di]) {
                     var rowTable = _groupRow;
                     SS = [];
                     for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
@@ -13202,56 +14887,59 @@ jQuery.fn.ax5select = function () {
                 col = void 0,
                 cellHeight = void 0,
                 colAlign = void 0,
-                rowTable = _bodyRow;
+                rowTable = _bodyRow,
+                odi = typeof _list[di].__origin_index__ !== "undefined" ? _list[di].__origin_index__ : di;
 
-            for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
-                for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
-                    col = rowTable.rows[tri].cols[ci];
-                    cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
-                    colAlign = col.align || bodyAlign;
+            var tr_element = _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0);
+            if (tr_element) {
+                for (tri = 0, trl = rowTable.rows.length; tri < trl; tri++) {
+                    for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
+                        col = rowTable.rows[tri].cols[ci];
+                        cellHeight = cfg.body.columnHeight * col.rowspan - cfg.body.columnBorderWidth;
+                        colAlign = col.align || bodyAlign;
 
-                    SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
-                        var attrs = "";
-                        if (_focusedColumn) {
-                            attrs += 'data-ax5grid-column-focused="true" ';
-                        }
-                        if (_selectedColumn) {
-                            attrs += 'data-ax5grid-column-selected="true" ';
-                        }
-                        return attrs;
-                    }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
-                        var tdCSS_class = "";
-                        if (_col.styleClass) {
-                            if (U.isFunction(_col.styleClass)) {
-                                tdCSS_class += _col.styleClass.call({
-                                    column: _col,
-                                    key: _col.key,
-                                    item: _list[di],
-                                    index: di
-                                }) + " ";
-                            } else {
-                                tdCSS_class += _col.styleClass + " ";
+                        SS.push('<td ', 'data-ax5grid-panel-name="' + _elTargetKey + '" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-data-o-index="' + odi + '" ', 'data-ax5grid-column-row="' + tri + '" ', 'data-ax5grid-column-col="' + ci + '" ', 'data-ax5grid-column-rowIndex="' + col.rowIndex + '" ', 'data-ax5grid-column-colIndex="' + col.colIndex + '" ', 'data-ax5grid-column-attr="' + (col.columnAttr || "default") + '" ', function (_focusedColumn, _selectedColumn) {
+                            var attrs = "";
+                            if (_focusedColumn) {
+                                attrs += 'data-ax5grid-column-focused="true" ';
                             }
-                        }
-                        if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
-                        if (ci == cl - 1) tdCSS_class += "isLastColumn ";
-                        return tdCSS_class;
-                    }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
+                            if (_selectedColumn) {
+                                attrs += 'data-ax5grid-column-selected="true" ';
+                            }
+                            return attrs;
+                        }(this.focusedColumn[di + "_" + col.colIndex + "_" + col.rowIndex], this.selectedColumn[di + "_" + col.colIndex + "_" + col.rowIndex]), 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
+                            var tdCSS_class = "";
+                            if (_col.styleClass) {
+                                if (U.isFunction(_col.styleClass)) {
+                                    tdCSS_class += _col.styleClass.call({
+                                        column: _col,
+                                        key: _col.key,
+                                        item: _list[di],
+                                        index: di
+                                    }) + " ";
+                                } else {
+                                    tdCSS_class += _col.styleClass + " ";
+                                }
+                            }
+                            if (cfg.body.columnBorderWidth) tdCSS_class += "hasBorder ";
+                            if (ci == cl - 1) tdCSS_class += "isLastColumn ";
+                            return tdCSS_class;
+                        }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
-                    SS.push(function (_cellHeight) {
-                        var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                        if (!col.multiLine) {
-                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                        }
+                        SS.push(function (_cellHeight) {
+                            var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
+                            if (!col.multiLine) {
+                                _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                            }
 
-                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
-                    }(cellHeight), getFieldValue.call(this, _list, _list[di], di, col), '</span>');
-                    SS.push('</td>');
+                            return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
+                        }(cellHeight), getFieldValue.call(this, _list, _list[di], di, col), '</span>');
+                        SS.push('</td>');
+                    }
+                    SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
                 }
-                SS.push('<td ', 'data-ax5grid-column-row="null" ', 'data-ax5grid-column-col="null" ', 'data-ax5grid-data-index="' + di + '" ', 'data-ax5grid-column-attr="' + "default" + '" ', 'style="height: ' + cfg.body.columnHeight + 'px;min-height: 1px;" ', '></td>');
+                tr_element.innerHTML = SS.join('');
             }
-
-            _elTarget.find('tr[data-ax5grid-tr-data-index="' + di + '"]').empty().get(0).innerHTML = SS.join('');
         };
 
         // left
@@ -13306,9 +14994,8 @@ jQuery.fn.ax5select = function () {
         }
     };
 
-    var scrollTo = function scrollTo(css, noRepaint) {
-        var cfg = this.config;
-
+    var scrollTo = function scrollTo(css, opts) {
+        if (typeof opts === "undefined") opts = { timeoutUnUse: false };
         if (this.isInlineEditing) {
             for (var key in this.inlineEditing) {
                 //if(this.inlineEditing[key].editor.type === "select") {}
@@ -13317,7 +15004,7 @@ jQuery.fn.ax5select = function () {
             }
         }
 
-        if (cfg.asidePanelWidth > 0 && "top" in css) {
+        if (this.config.asidePanelWidth > 0 && "top" in css) {
             this.$.panel["aside-body-scroll"].css({ top: css.top });
         }
         if (this.xvar.frozenColumnIndex > 0 && "top" in css) {
@@ -13329,13 +15016,23 @@ jQuery.fn.ax5select = function () {
 
         this.$.panel["body-scroll"].css(css);
 
-        if (cfg.footSum && "left" in css) {
+        if (this.config.footSum && "left" in css) {
             this.$.panel["bottom-body-scroll"].css({ left: css.left });
         }
 
-        if (!noRepaint && "top" in css) {
-            repaint.call(this);
-        } else {}
+        // 바디 리페인팅 this.__throttledScroll 은 body init 에서 초기화
+        if (this.__throttledScroll) {
+            this.__throttledScroll(css, opts);
+        } else {
+            if (this.config.virtualScrollY && !opts.noRepaint && "top" in css) {
+                repaint.call(this);
+            } else if (this.config.virtualScrollX && !opts.noRepaint && "left" in css) {
+                repaint.call(this);
+            }
+            if (opts.callback) {
+                opts.callback();
+            }
+        }
     };
 
     var blur = function blur() {
@@ -13352,7 +15049,8 @@ jQuery.fn.ax5select = function () {
                 var moveResult = true,
                     focusedColumn = void 0,
                     originalColumn = void 0,
-                    while_i = void 0;
+                    while_i = void 0,
+                    nPanelInfo = void 0;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -13366,22 +15064,26 @@ jQuery.fn.ax5select = function () {
                 columnSelect.clear.call(this);
 
                 if (_dy > 0) {
+                    // 아래로
                     if (focusedColumn.rowIndex + (originalColumn.rowspan - 1) + _dy > this.bodyRowTable.rows.length - 1) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.doindex = focusedColumn.doindex + _dy;
                         focusedColumn.rowIndex = 0;
                         if (focusedColumn.dindex > this.list.length - 1) {
-                            focusedColumn.dindex = this.list.length - 1;
+                            focusedColumn.dindex = focusedColumn.doindex = this.list.length - 1;
                             moveResult = false;
                         }
                     } else {
                         focusedColumn.rowIndex = focusedColumn.rowIndex + _dy;
                     }
                 } else {
+                    // 위로
                     if (focusedColumn.rowIndex + _dy < 0) {
                         focusedColumn.dindex = focusedColumn.dindex + _dy;
+                        focusedColumn.doindex = focusedColumn.doindex + _dy;
                         focusedColumn.rowIndex = this.bodyRowTable.rows.length - 1;
                         if (focusedColumn.dindex < 0) {
-                            focusedColumn.dindex = 0;
+                            focusedColumn.dindex = focusedColumn.doindex = 0;
                             moveResult = false;
                         }
                     } else {
@@ -13405,21 +15107,40 @@ jQuery.fn.ax5select = function () {
                     while_i++;
                 }
 
-                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
-                focusedColumn.panelName = nPanelInfo.panelName;
+                nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
 
-                // 포커스 컬럼의 위치에 따라 스크롤 처리.
-                (function () {
-                    if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
-                        if (focusedColumn.dindex <= this.xvar.paintStartRowIndex) {
-                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight });
-                            GRID.scroller.resize.call(this);
-                        } else if (focusedColumn.dindex + 1 > this.xvar.paintStartRowIndex + (this.xvar.paintRowCount - 2)) {
-                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.paintRowCount + 3) * this.xvar.bodyTrHeight });
-                            GRID.scroller.resize.call(this);
+                // if mergeCells
+                if (this.config.body.mergeCells && this.list.length) {
+                    while (!this.$.panel[nPanelInfo.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').get(0)) {
+
+                        if (_dy > 0) {
+                            focusedColumn.dindex++;
+                        } else {
+                            focusedColumn.dindex--;
+                        }
+
+                        if (focusedColumn.dindex < 0 || focusedColumn.dindex > this.list.length - 1) {
+                            break;
                         }
                     }
-                }).call(this);
+                    nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                }
+
+                focusedColumn.panelName = nPanelInfo.panelName;
+
+                // 포커스 컬럼의 위치에 따라 스크롤 처리.ㅊㅇ
+
+                if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
+                    if (focusedColumn.dindex <= this.xvar.virtualPaintStartRowIndex) {
+                        var newTop = (focusedColumn.dindex - this.xvar.frozenRowIndex - 1) * this.xvar.bodyTrHeight;
+                        if (newTop < 0) newTop = 0;
+                        scrollTo.call(this, { top: -newTop, timeoutUnUse: false });
+                        GRID.scroller.resize.call(this);
+                    } else if (focusedColumn.dindex + 1 > this.xvar.virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
+                        scrollTo.call(this, { top: (this.xvar.virtualPaintRowCount - 2 - focusedColumn.dindex) * this.xvar.bodyTrHeight, timeoutUnUse: false });
+                        GRID.scroller.resize.call(this);
+                    }
+                }
 
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
                 this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
@@ -13427,12 +15148,13 @@ jQuery.fn.ax5select = function () {
                 return moveResult;
             },
             "LR": function LR(_dx) {
-                var moveResult = true;
-                var focusedColumn;
-                var originalColumn;
-                var while_i = 0;
-                var isScrollPanel = false;
-                var containerPanelName = "";
+                var moveResult = true,
+                    focusedColumn = void 0,
+                    originalColumn = void 0,
+                    while_i = 0,
+                    isScrollPanel = false,
+                    containerPanelName = "",
+                    nPanelInfo = void 0;
 
                 for (var c in this.focusedColumn) {
                     focusedColumn = jQuery.extend({}, this.focusedColumn[c], true);
@@ -13452,7 +15174,7 @@ jQuery.fn.ax5select = function () {
                         moveResult = false;
                     }
                 } else {
-                    focusedColumn.colIndex = focusedColumn.colIndex + (originalColumn.colspan - 1) + _dx;
+                    focusedColumn.colIndex = focusedColumn.colIndex + _dx;
                     if (focusedColumn.colIndex > this.colGroup.length - 1) {
                         focusedColumn.colIndex = this.colGroup.length - 1;
                         moveResult = false;
@@ -13462,20 +15184,91 @@ jQuery.fn.ax5select = function () {
                 if (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
                     focusedColumn.rowIndex = 0;
                 }
-                while_i = 0;
-                while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
-                    focusedColumn.colIndex--;
-                    if (focusedColumn.rowIndex <= 0 && focusedColumn.colIndex <= 0) {
-                        // find fail
-                        moveResult = false;
-                        break;
+
+                if (this.list[focusedColumn.dindex] && this.list[focusedColumn.dindex].__isGrouping) {
+                    if (_dx < 0) {
+                        while (typeof this.bodyGroupingMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex--;
+                            if (focusedColumn.colIndex <= 0) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        while (typeof this.bodyGroupingMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex++;
+                            if (focusedColumn.colIndex >= this.colGroup.length) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
                     }
-                    while_i++;
+                } else {
+                    if (_dx < 0) {
+                        while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex--;
+                            if (focusedColumn.colIndex <= 0) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        while (typeof this.bodyRowMap[focusedColumn.rowIndex + "_" + focusedColumn.colIndex] === "undefined") {
+                            focusedColumn.colIndex++;
+                            if (focusedColumn.colIndex >= this.colGroup.length) {
+                                // find fail
+                                moveResult = false;
+                                break;
+                            }
+                        }
+                    }
                 }
 
-                var nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+
+                // if mergeCells
+                if (this.config.body.mergeCells && this.list.length && focusedColumn.dindex > 1) {
+                    while (!this.$.panel[nPanelInfo.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').get(0)) {
+
+                        focusedColumn.dindex--;
+
+                        if (focusedColumn.dindex < 0 || focusedColumn.dindex > this.list.length - 1) {
+                            break;
+                        }
+                    }
+                    nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
+                }
 
                 focusedColumn.panelName = nPanelInfo.panelName;
+
+                // 포커스 컬럼의 위치에 따라 스크롤 처리
+                var isScrollTo = function () {
+                    if (!this.config.virtualScrollX) return false;
+                    var scrollLeft = 0;
+                    if (focusedColumn.colIndex + 1 > this.xvar.frozenColumnIndex) {
+                        if (focusedColumn.colIndex <= this.xvar.paintStartColumnIndex && this.colGroup[focusedColumn.colIndex]) {
+                            scrollLeft = -this.colGroup[Number(focusedColumn.colIndex)]._sx;
+                            scrollTo.call(this, { left: scrollLeft });
+                            GRID.header.scrollTo.call(this, { left: scrollLeft });
+                            GRID.scroller.resize.call(this);
+                            return true;
+                        } else if (focusedColumn.colIndex >= this.xvar.paintEndColumnIndex && this.colGroup[Number(focusedColumn.colIndex)]) {
+                            if (this.colGroup[Number(focusedColumn.colIndex)]._ex > this.xvar.bodyWidth) {
+                                scrollLeft = this.colGroup[Number(focusedColumn.colIndex)]._ex - this.xvar.bodyWidth;
+                                scrollTo.call(this, { left: -scrollLeft });
+                                GRID.header.scrollTo.call(this, { left: -scrollLeft });
+                                GRID.scroller.resize.call(this);
+                            }
+                            return true;
+                        }
+                    }
+                    scrollLeft = null;
+                    return false;
+                }.call(this);
+
                 containerPanelName = nPanelInfo.containerPanelName;
                 isScrollPanel = nPanelInfo.isScrollPanel;
 
@@ -13483,8 +15276,9 @@ jQuery.fn.ax5select = function () {
 
                 var $column = this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
 
-                if ($column && isScrollPanel) {
+                if (!isScrollTo && $column && isScrollPanel) {
                     // 스크롤 패널 이라면~
+                    // todo : 컬럼이동할 때에도 scrollTo 체크
                     var newLeft = function () {
                         if ($column.position().left + $column.outerWidth() > Math.abs(this.$.panel[focusedColumn.panelName].position().left) + this.$.panel[containerPanelName].width()) {
                             return $column.position().left + $column.outerWidth() - this.$.panel[containerPanelName].width();
@@ -13494,8 +15288,6 @@ jQuery.fn.ax5select = function () {
                             return;
                         }
                     }.call(this);
-
-                    //console.log(newLeft);
 
                     if (typeof newLeft !== "undefined") {
                         GRID.header.scrollTo.call(this, { left: -newLeft });
@@ -13553,17 +15345,22 @@ jQuery.fn.ax5select = function () {
                 focusedColumn.panelName = nPanelInfo.panelName;
 
                 // 포커스 컬럼의 위치에 따라 스크롤 처리.
-                (function () {
+                {
                     if (focusedColumn.dindex + 1 > this.xvar.frozenRowIndex) {
-                        if (focusedColumn.dindex < this.xvar.paintStartRowIndex) {
+                        var virtualPaintStartRowIndex = this.xvar.virtualPaintStartRowIndex || 0;
+
+                        if (focusedColumn.dindex < virtualPaintStartRowIndex) {
                             scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex) * this.xvar.bodyTrHeight });
                             GRID.scroller.resize.call(this);
-                        } else if (focusedColumn.dindex + 1 > this.xvar.paintStartRowIndex + (this.xvar.paintRowCount - 2)) {
-                            scrollTo.call(this, { top: -(focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.paintRowCount + 3) * this.xvar.bodyTrHeight });
+                        } else if (focusedColumn.dindex + 1 > virtualPaintStartRowIndex + (this.xvar.virtualPaintRowCount - 2)) {
+                            //debugger;
+                            //console.log((focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3));
+                            var scrollTopValue = !this.config.virtualScrollY ? focusedColumn.dindex - this.xvar.frozenRowIndex : focusedColumn.dindex - this.xvar.frozenRowIndex - this.xvar.virtualPaintRowCount + 3;
+                            scrollTo.call(this, { top: -scrollTopValue * this.xvar.bodyTrHeight });
                             GRID.scroller.resize.call(this);
                         }
                     }
-                }).call(this);
+                }
 
                 this.focusedColumn[focusedColumn.dindex + "_" + focusedColumn.colIndex + "_" + focusedColumn.rowIndex] = focusedColumn;
                 this.$.panel[focusedColumn.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').attr('data-ax5grid-column-focused', "true");
@@ -13605,21 +15402,20 @@ jQuery.fn.ax5select = function () {
 
     var inlineEdit = {
         active: function active(_focusedColumn, _e, _initValue) {
-            var _this5 = this;
-
             var self = this,
-                dindex,
-                colIndex,
-                rowIndex,
-                panelName,
-                colspan,
-                col,
-                editor;
+                dindex = void 0,
+                doindex = void 0,
+                colIndex = void 0,
+                rowIndex = void 0,
+                panelName = void 0,
+                colspan = void 0,
+                col = void 0,
+                editor = void 0;
 
-            // this.inlineEditing = {};
             for (var key in _focusedColumn) {
                 panelName = _focusedColumn[key].panelName;
                 dindex = _focusedColumn[key].dindex;
+                doindex = _focusedColumn[key].doindex;
                 colIndex = _focusedColumn[key].colIndex;
                 rowIndex = _focusedColumn[key].rowIndex;
                 colspan = _focusedColumn[key].colspan;
@@ -13649,7 +15445,8 @@ jQuery.fn.ax5select = function () {
                 }(editor)) {
                     // 체크 박스 타입이면 값 변경 시도
                     if (editor.type == "checkbox") {
-                        var checked, newValue;
+                        var checked = void 0,
+                            newValue = void 0;
                         if (editor.config && editor.config.trueValue) {
                             if (checked = !(_initValue == editor.config.trueValue)) {
                                 newValue = editor.config.trueValue;
@@ -13660,8 +15457,8 @@ jQuery.fn.ax5select = function () {
                             newValue = checked = _initValue == false || _initValue == "false" || _initValue < "1" ? "true" : "false";
                         }
 
-                        GRID.data.setValue.call(self, dindex, col.key, newValue);
-                        updateRowState.call(self, ["cellChecked"], dindex, {
+                        GRID.data.setValue.call(self, dindex, doindex, col.key, newValue);
+                        updateRowState.call(self, ["cellChecked"], dindex, doindex, {
                             key: col.key, rowIndex: rowIndex, colIndex: colIndex,
                             editorConfig: col.editor.config, checked: checked
                         });
@@ -13675,6 +15472,7 @@ jQuery.fn.ax5select = function () {
                 if (key in this.inlineEditing) {
                     return false;
                 }
+
                 this.inlineEditing[key] = {
                     editor: editor,
                     panelName: panelName,
@@ -13685,31 +15483,25 @@ jQuery.fn.ax5select = function () {
                 this.isInlineEditing = true;
             }
             if (this.isInlineEditing) {
-                var _ret6 = function () {
 
-                    var originalValue = GRID.data.getValue.call(self, dindex, col.key),
-                        initValue = function (__value, __editor) {
-                        if (U.isNothing(__value)) {
-                            __value = U.isNothing(originalValue) ? "" : originalValue;
-                        }
+                var originalValue = GRID.data.getValue.call(self, dindex, doindex, col.key),
+                    initValue = function (__value, __editor) {
+                    if (U.isNothing(__value)) {
+                        __value = U.isNothing(originalValue) ? "" : originalValue;
+                    }
 
-                        if (__editor.type == "money") {
-                            return U.number(__value, { "money": true });
-                        } else {
-                            return __value;
-                        }
-                    }.call(_this5, _initValue, editor);
+                    if (__editor.type == "money") {
+                        return U.number(__value, { "money": true });
+                    } else {
+                        return __value;
+                    }
+                }.call(this, _initValue, editor);
 
-                    _this5.inlineEditing[key].$inlineEditorCell = _this5.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
+                this.inlineEditing[key].$inlineEditorCell = this.$["panel"][panelName].find('[data-ax5grid-tr-data-index="' + dindex + '"]').find('[data-ax5grid-column-rowindex="' + rowIndex + '"][data-ax5grid-column-colindex="' + colIndex + '"]').find('[data-ax5grid-cellholder]');
 
-                    _this5.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(_this5, key, editor, _this5.inlineEditing[key].$inlineEditorCell, initValue);
+                this.inlineEditing[key].$inlineEditor = GRID.inlineEditor[editor.type].init(this, key, editor, this.inlineEditing[key].$inlineEditorCell, initValue);
 
-                    return {
-                        v: true
-                    };
-                }();
-
-                if ((typeof _ret6 === 'undefined' ? 'undefined' : _typeof(_ret6)) === "object") return _ret6.v;
+                return true;
             }
         },
         deActive: function deActive(_msg, _key, _value) {
@@ -13718,6 +15510,7 @@ jQuery.fn.ax5select = function () {
 
             var panelName = this.inlineEditing[_key].panelName,
                 dindex = this.inlineEditing[_key].column.dindex,
+                doindex = this.inlineEditing[_key].column.doindex,
                 rowIndex = this.inlineEditing[_key].column.rowIndex,
                 colIndex = this.inlineEditing[_key].column.colIndex,
                 column = this.bodyRowMap[this.inlineEditing[_key].column.rowIndex + "_" + this.inlineEditing[_key].column.colIndex],
@@ -13745,33 +15538,36 @@ jQuery.fn.ax5select = function () {
                 "CANCEL": function CANCEL(_dindex, _column, _newValue) {
                     action["__clear"].call(this);
                 },
-                "RETURN": function RETURN(_dindex, _column, _newValue) {
-                    if (GRID.data.setValue.call(this, _dindex, _column.key, _newValue)) {
+                "RETURN": function RETURN(_dindex, _doindex, _column, _newValue) {
+                    if (GRID.data.setValue.call(this, _dindex, _doindex, _column.key, _newValue)) {
                         action["__clear"].call(this);
-                        GRID.body.repaintCell.call(this, panelName, dindex, rowIndex, colIndex, _newValue);
+                        GRID.body.repaintCell.call(this, panelName, _dindex, _doindex, rowIndex, colIndex, _newValue);
                     } else {
                         action["__clear"].call(this);
                     }
                 },
                 "__clear": function __clear() {
                     this.isInlineEditing = false;
-                    var bindedAx5ui = this.inlineEditing[_key].$inlineEditor.data("binded-ax5ui");
-                    if (bindedAx5ui == "ax5picker") {
-                        this.inlineEditing[_key].$inlineEditor.ax5picker("close");
-                    } else if (bindedAx5ui == "ax5select") {
-                        this.inlineEditing[_key].$inlineEditor.ax5select("close");
+
+                    if (this.inlineEditing[_key] && this.inlineEditing[_key].$inlineEditor) {
+                        var bindedAx5ui = this.inlineEditing[_key].$inlineEditor.data("binded-ax5ui");
+                        if (bindedAx5ui == "ax5picker") {
+                            this.inlineEditing[_key].$inlineEditor.ax5picker("close");
+                        } else if (bindedAx5ui == "ax5select") {
+                            this.inlineEditing[_key].$inlineEditor.ax5select("close");
+                        }
+                        this.inlineEditing[_key].$inlineEditor.remove();
+                        this.inlineEditing[_key].$inlineEditor = null;
+                        this.inlineEditing[_key].$inlineEditorCell = null;
                     }
 
-                    this.inlineEditing[_key].$inlineEditor.remove();
-                    this.inlineEditing[_key].$inlineEditor = null;
-                    this.inlineEditing[_key].$inlineEditorCell = null;
                     this.inlineEditing[_key] = undefined;
                     delete this.inlineEditing[_key]; // delete 지원안하는 브라우저 테스트..
                 }
             };
 
             if (_msg in action) {
-                action[_msg || "RETURN"].call(this, dindex, column, newValue);
+                action[_msg || "RETURN"].call(this, dindex, doindex, column, newValue);
             } else {
                 action["__clear"].call(this);
             }
@@ -13788,6 +15584,8 @@ jQuery.fn.ax5select = function () {
                         if (this.inlineEditing[columnKey] && this.inlineEditing[columnKey].useReturnToSave) {
                             // todo : 네이밍 검증 할 필요있음.
                             inlineEdit.deActive.call(this, "RETURN", columnKey);
+                        } else {
+                            return false;
                         }
                     } else {
 
@@ -13795,35 +15593,39 @@ jQuery.fn.ax5select = function () {
                             var _column = this.focusedColumn[k],
                                 column = this.bodyRowMap[_column.rowIndex + "_" + _column.colIndex],
                                 _dindex3 = _column.dindex,
+                                doindex = _column.doindex,
                                 value = "",
                                 col = this.colGroup[_column.colIndex];
-                            ;
 
                             if (column) {
                                 if (!this.list[_dindex3].__isGrouping) {
-                                    value = GRID.data.getValue.call(this, _dindex3, column.key);
+                                    value = GRID.data.getValue.call(this, _dindex3, doindex, column.key);
                                 }
                             }
 
                             if (col.editor && GRID.inlineEditor[col.editor.type].editMode === "inline") {
                                 if (_options && _options.moveFocus) {} else {
                                     if (column.editor && column.editor.type == "checkbox") {
-                                        value = GRID.data.getValue.call(this, _dindex3, column.key);
+                                        value = GRID.data.getValue.call(this, _dindex3, doindex, column.key);
 
                                         var checked = void 0,
                                             newValue = void 0;
                                         if (column.editor.config && column.editor.config.trueValue) {
-                                            if (checked = !(value == column.editor.config.trueValue)) {
+                                            // console.log(value, column.editor.config.trueValue);
+
+                                            if (value != column.editor.config.trueValue) {
                                                 newValue = column.editor.config.trueValue;
+                                                checked = true;
                                             } else {
                                                 newValue = column.editor.config.falseValue;
+                                                checked = false;
                                             }
                                         } else {
                                             newValue = checked = value == false || value == "false" || value < "1" ? "true" : "false";
                                         }
 
-                                        GRID.data.setValue.call(this, _column.dindex, column.key, newValue);
-                                        updateRowState.call(this, ["cellChecked"], _dindex3, {
+                                        GRID.data.setValue.call(this, _dindex3, doindex, column.key, newValue);
+                                        updateRowState.call(this, ["cellChecked"], _dindex3, doindex, {
                                             key: column.key, rowIndex: _column.rowIndex, colIndex: _column.colIndex,
                                             editorConfig: column.editor.config, checked: checked
                                         });
@@ -13834,6 +15636,7 @@ jQuery.fn.ax5select = function () {
                             }
                         }
                     }
+                    return true;
                 }
             };
 
@@ -13859,7 +15662,8 @@ jQuery.fn.ax5select = function () {
                 trl = void 0,
                 ci = void 0,
                 cl = void 0,
-                col = void 0;
+                col = void 0,
+                val = void 0;
 
             //SS.push('<table border="1">');
             for (di = 0, dl = _list.length; di < dl; di++) {
@@ -13877,8 +15681,7 @@ jQuery.fn.ax5select = function () {
                     SS.push('\n<tr>');
                     for (ci = 0, cl = rowTable.rows[tri].cols.length; ci < cl; ci++) {
                         col = rowTable.rows[tri].cols[ci];
-
-                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, undefined, "text"), '&nbsp;</td>');
+                        SS.push('<td ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', '>', (isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col, val, "text")) || '&nbsp;', '</td>');
                     }
                     SS.push('\n</tr>');
                 }
@@ -13923,6 +15726,50 @@ jQuery.fn.ax5select = function () {
         return po.join('');
     };
 
+    var toggleCollapse = function toggleCollapse(_dindex, _doindex, _collapse) {
+        if (GRID.data.toggleCollapse.call(this, _dindex, _doindex, _collapse)) {
+            this.proxyList = GRID.data.getProxyList.call(this, this.list);
+            this.align();
+        }
+    };
+
+    // todo : tree에서 dindex만으로 구현 했을 때 오류 발생 해결. (_doindex 이용)
+    var click = function click(_dindex, _doindex) {
+        var that = {
+            self: this,
+            page: this.page,
+            list: this.list,
+            item: this.list[_dindex],
+            dindex: _dindex
+        };
+
+        moveFocus.call(this, _dindex);
+        if (this.config.body.onClick) {
+            this.config.body.onClick.call(that, that);
+        }
+
+        that = null;
+        // console.log(this.$["panel"]["body-scroll"].find('[data-ax5grid-tr-data-index="' + _dindex + '"]>td:first-child'));
+    };
+
+    var dblClick = function dblClick(_dindex, _doindex) {
+        var that = {
+            self: this,
+            page: this.page,
+            list: this.list,
+            item: this.list[_dindex],
+            dindex: _dindex
+        };
+
+        moveFocus.call(this, _dindex);
+
+        if (this.config.body.onDBLClick) {
+            this.config.body.onDBLClick.call(that);
+        }
+
+        that = null;
+    };
+
     GRID.body = {
         init: init,
         repaint: repaint,
@@ -13934,14 +15781,18 @@ jQuery.fn.ax5select = function () {
         blur: blur,
         moveFocus: moveFocus,
         inlineEdit: inlineEdit,
-        getExcelString: getExcelString
+        getExcelString: getExcelString,
+        toggleCollapse: toggleCollapse,
+        click: click,
+        dblClick: dblClick
     };
 })();
 // ax5.ui.grid.collector
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var sum = function sum() {
         var value = 0,
@@ -13953,6 +15804,7 @@ jQuery.fn.ax5select = function () {
         }
         return value;
     };
+
     var avg = function avg() {
         var value = 0,
             i = this.list.length,
@@ -13996,13 +15848,18 @@ jQuery.fn.ax5select = function () {
 
     var initData = function initData(_list) {
         this.selectedDataIndexs = [];
+        // this.deletedList = [];
+        // todo : deletedList 초기화 시점이 언제로 하는게 좋은가. set 메소드에서 초기화 하는 것으로 수정
+
         var i = 0,
             l = _list.length,
             returnList = [],
             appendIndex = 0,
-            dataRealRowCount = 0;
+            dataRealRowCount = 0,
+            lineNumber = 0;
 
         if (this.config.body.grouping) {
+
             var groupingKeys = U.map(this.bodyGrouping.by, function () {
                 return {
                     key: this,
@@ -14011,6 +15868,7 @@ jQuery.fn.ax5select = function () {
                     list: []
                 };
             });
+
             var gi = 0,
                 gl = groupingKeys.length,
                 compareString = void 0,
@@ -14018,15 +15876,19 @@ jQuery.fn.ax5select = function () {
                 ari = void 0;
             for (; i < l + 1; i++) {
                 gi = 0;
+
                 if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
                     this.deletedList.push(_list[i]);
                 } else {
-                    compareString = "";
-                    appendRow = [];
+                    compareString = ""; // 그룹핑 구문검사용
+                    appendRow = []; // 현재줄 앞에 추가해줘야 하는 줄
+
+                    // 그룹핑 구문검사
                     for (; gi < gl; gi++) {
                         if (_list[i]) {
                             compareString += "$|$" + _list[i][groupingKeys[gi].key];
                         }
+
                         if (appendIndex > 0 && compareString != groupingKeys[gi].compareString) {
                             var appendRowItem = { keys: [], labels: [], list: groupingKeys[gi].list };
                             for (var ki = 0; ki < gi + 1; ki++) {
@@ -14036,37 +15898,52 @@ jQuery.fn.ax5select = function () {
                             appendRow.push(appendRowItem);
                             groupingKeys[gi].list = [];
                         }
+
                         groupingKeys[gi].list.push(_list[i]);
                         groupingKeys[gi].compareString = compareString;
                     }
 
+                    // 새로 추가해야할 그룹핑 row
                     ari = appendRow.length;
                     while (ari--) {
                         returnList.push({ __isGrouping: true, __groupingList: appendRow[ari].list, __groupingBy: { keys: appendRow[ari].keys, labels: appendRow[ari].labels } });
                     }
+                    //~ 그룹핑 구문 검사 완료
 
                     if (_list[i]) {
                         if (_list[i][this.config.columnKeys.selected]) {
                             this.selectedDataIndexs.push(i);
                         }
-                        dataRealRowCount = _list[i]["__index"] = i;
+                        // 그룹핑이 적용된 경우 오리지널 인덱스 의미 없음 : 정렬보다 그룹핑이 더 중요하므로.
+                        _list[i]["__original_index"] = _list[i]["__index"] = lineNumber;
                         returnList.push(_list[i]);
+
+                        dataRealRowCount++;
                         appendIndex++;
+                        lineNumber++;
                     }
                 }
             }
         } else {
             for (; i < l; i++) {
-                if (_list[i] && _list[i][this.config.columnKeys.deleted]) {
-                    this.deletedList.push(_list[i]);
-                } else if (_list[i]) {
-                    if (_list[i][this.config.columnKeys.selected]) {
-                        this.selectedDataIndexs.push(i);
+                if (_list[i]) {
+                    if (_list[i][this.config.columnKeys.deleted]) {
+                        this.deletedList.push(_list[i]);
+                    } else {
+
+                        if (_list[i][this.config.columnKeys.selected]) {
+                            this.selectedDataIndexs.push(i);
+                        }
+
+                        // __original_index 인덱스 키가 없다면 추가.
+                        if (typeof _list[i]["__original_index"] === "undefined") {
+                            _list[i]["__original_index"] = lineNumber;
+                        }
+                        _list[i]["__index"] = lineNumber;
+                        dataRealRowCount++;
+                        lineNumber++;
+                        returnList.push(_list[i]);
                     }
-                    // __index변수를 추가하여 lineNumber 에 출력합니다. (body getFieldValue 에서 출력함)
-                    _list[i]["__index"] = i;
-                    dataRealRowCount++;
-                    returnList.push(_list[i]);
                 }
             }
         }
@@ -14077,22 +15954,136 @@ jQuery.fn.ax5select = function () {
         return returnList;
     };
 
-    var set = function set(data) {
-        var self = this;
+    var arrangeData4tree = function arrangeData4tree(_list) {
+        this.selectedDataIndexs = [];
+        this.deletedList = [];
+        var i = 0,
+            seq = 0,
+            appendIndex = 0,
+            dataRealRowCount = 0,
+            lineNumber = 0;
 
+        var li = _list.length;
+        var keys = this.config.tree.columnKeys;
+        var hashDigit = this.config.tree.hashDigit;
+        var listIndexMap = {};
+
+        while (li--) {
+            delete _list[li][keys.parentHash];
+            delete _list[li][keys.selfHash];
+            //delete _list[li][keys.childrenLength];
+        }
+
+        /// 루트 아이템 수집
+        i = 0;
+        seq = 0;
+        li = _list.length;
+        for (; i < li; i++) {
+            if (_list[i]) {
+                listIndexMap[_list[i][keys.selfKey]] = i; // 인덱싱
+
+                if (U.isNothing(_list[i][keys.parentKey]) || _list[i][keys.parentKey] === "top") {
+                    // 최상위 아이템인 경우
+                    _list[i][keys.parentKey] = "top";
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
+                    _list[i][keys.selfHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.depth] = 0;
+                    _list[i][keys.hidden] = false;
+
+                    seq++;
+                }
+            }
+        }
+
+        /// 자식 아이템 수집
+        i = 0;
+        lineNumber = 0;
+        for (; i < li; i++) {
+            var _parent = void 0,
+                _parentHash = void 0;
+            if (_list[i] && _list[i][keys.parentKey] !== "top" && typeof _list[i][keys.parentHash] === "undefined") {
+
+                if (_parent = _list[listIndexMap[_list[i][keys.parentKey]]]) {
+                    _parentHash = _parent[keys.selfHash];
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = _parentHash;
+                    _list[i][keys.selfHash] = _parentHash + "." + U.setDigit(_parent[keys.children].length, hashDigit);
+                    _list[i][keys.depth] = _parent[keys.depth] + 1;
+                    if (_parent[keys.collapse] || _parent[keys.hidden]) _list[i][keys.hidden] = true;
+                    _parent[keys.children].push(_list[i][keys.selfKey]);
+                } else {
+                    _list[i][keys.parentKey] = "top";
+                    _list[i][keys.children] = [];
+                    _list[i][keys.parentHash] = U.setDigit("0", hashDigit);
+                    _list[i][keys.selfHash] = U.setDigit("0", hashDigit) + "." + U.setDigit(seq, hashDigit);
+                    _list[i][keys.hidden] = false;
+
+                    seq++;
+                }
+            }
+
+            if (_list[i]) {
+                if (_list[i][this.config.columnKeys.deleted]) {
+                    this.deletedList.push(_list[i]);
+                    _list[i][keys.hidden] = true;
+                } else if (_list[i][this.config.columnKeys.selected]) {
+                    this.selectedDataIndexs.push(i);
+                }
+
+                _list[i]["__index"] = lineNumber;
+                dataRealRowCount++;
+                lineNumber++;
+            }
+        }
+
+        this.listIndexMap = listIndexMap;
+        this.xvar.dataRealRowCount = dataRealRowCount;
+
+        return _list;
+    };
+
+    var getProxyList = function getProxyList(_list) {
+        var i = 0,
+            l = _list.length,
+            returnList = [];
+        for (; i < l; i++) {
+
+            if (_list[i] && !_list[i][this.config.tree.columnKeys.hidden]) {
+                _list[i].__origin_index__ = i;
+                returnList.push(_list[i]);
+            }
+        }
+        return returnList;
+    };
+
+    var set = function set(data) {
+
+        var list = void 0;
         if (U.isArray(data)) {
             this.page = null;
-            this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data) : data);
-            this.deletedList = [];
+            list = data;
         } else if ("page" in data) {
             this.page = jQuery.extend({}, data.page);
-            this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, data.list) : data.list);
-            this.deletedList = [];
+            list = data.list;
         }
+
+        // console.log(this.list.length);
+
+        if (this.config.tree.use) {
+            this.list = arrangeData4tree.call(this, list);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
+        } else {
+            this.proxyList = null;
+            this.list = initData.call(this, !this.config.remoteSort && Object.keys(this.sortInfo).length ? sort.call(this, this.sortInfo, list) : list);
+        }
+        this.selectedDataIndexs = [];
+        this.deletedList = [];
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
 
         if (this.config.body.grouping) {}
@@ -14108,20 +16099,22 @@ jQuery.fn.ax5select = function () {
 
     var getList = function getList(_type) {
         var returnList = [];
+        //let list = (this.proxyList) ? this.proxyList : this.list;
+        var list = this.list;
         var i = 0,
-            l = this.list.length;
+            l = list.length;
         switch (_type) {
             case "modified":
                 for (; i < l; i++) {
-                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.modified]) {
-                        returnList.push(jQuery.extend({}, this.list[i]));
+                    if (list[i] && !list[i]["__isGrouping"] && list[i][this.config.columnKeys.modified]) {
+                        returnList.push(jQuery.extend({}, list[i]));
                     }
                 }
                 break;
             case "selected":
                 for (; i < l; i++) {
-                    if (this.list[i] && !this.list[i]["__isGrouping"] && this.list[i][this.config.columnKeys.selected]) {
-                        returnList.push(jQuery.extend({}, this.list[i]));
+                    if (list[i] && !list[i]["__isGrouping"] && list[i][this.config.columnKeys.selected]) {
+                        returnList.push(jQuery.extend({}, list[i]));
                     }
                 }
                 break;
@@ -14130,7 +16123,7 @@ jQuery.fn.ax5select = function () {
                 returnList = [].concat(this.deletedList);
                 break;
             default:
-                returnList = GRID.data.clearGroupingData.call(this, this.list);
+                returnList = GRID.data.clearGroupingData.call(this, list);
         }
         return returnList;
     };
@@ -14146,31 +16139,44 @@ jQuery.fn.ax5select = function () {
             }
         };
 
-        if (typeof _dindex === "undefined") _dindex = "last";
-        if (_dindex in processor) {
-            _row[this.config.columnKeys.modified] = true;
-            processor[_dindex].call(this, _row);
+        if (this.config.tree.use) {
+            var _list2 = this.list.concat([].concat(_row));
+
+            this.list = arrangeData4tree.call(this, _list2);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
         } else {
-            if (!U.isNumber(_dindex)) {
-                throw 'invalid argument _dindex';
+            if (typeof _dindex === "undefined") _dindex = "last";
+            if (_dindex in processor) {
+                _row[this.config.columnKeys.modified] = true;
+                processor[_dindex].call(this, _row);
+            } else {
+                if (!U.isNumber(_dindex)) {
+                    throw 'invalid argument _dindex';
+                }
+                if (U.isArray(_row)) {
+                    for (var _i = 0, _l = _row.length; _i < _l; _i++) {
+                        list.splice(_dindex + _i, 0, _row[_i]);
+                    }
+                } else {
+                    list.splice(_dindex, 0, _row);
+                }
             }
-            //
-            list = list.splice(_dindex, [].concat(_row));
-        }
 
-        if (this.config.body.grouping) {
-            list = initData.call(this, sort.call(this, this.sortInfo, list));
-        } else if (_options && _options.sort && Object.keys(this.sortInfo).length) {
-            list = initData.call(this, sort.call(this, this.sortInfo, list));
-        } else {
-            list = initData.call(this, list);
-        }
+            if (this.config.body.grouping) {
+                list = initData.call(this, sort.call(this, this.sortInfo, list));
+            } else if (_options && _options.sort && Object.keys(this.sortInfo).length) {
+                list = initData.call(this, sort.call(this, this.sortInfo, list));
+            } else {
+                list = initData.call(this, list);
+            }
 
-        this.list = list;
+            this.list = list;
+        }
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
         return this;
     };
@@ -14183,11 +16189,52 @@ jQuery.fn.ax5select = function () {
         var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
         var processor = {
             "first": function first() {
-                list.splice(_dindex, 1);
+                if (this.config.tree.use) {
+                    processor.tree.call(this, 0);
+                } else {
+                    list.splice(0, 1);
+                }
             },
             "last": function last() {
-                var lastIndex = list.length - 1;
-                list.splice(lastIndex, 1);
+                if (this.config.tree.use) {
+                    processor.tree.call(this, list.length - 1);
+                } else {
+                    list.splice(list.length - 1, 1);
+                }
+            },
+            "index": function index(_dindex) {
+                if (this.config.tree.use) {
+                    processor.tree.call(this, _dindex);
+                } else {
+                    list.splice(_dindex, 1);
+                }
+            },
+            "selected": function selected() {
+                if (this.config.tree.use) {
+                    processor.tree.call(this, "selected");
+                } else {
+                    var __list = [],
+                        i = void 0,
+                        l = void 0;
+
+                    for (i = 0, l = list.length; i < l; i++) {
+                        if (!list[i][this.config.columnKeys.selected]) {
+                            __list.push(list[i]);
+                        }
+                    }
+                    list = __list;
+                    __list = null;
+                    i = null;
+                }
+            },
+            "tree": function tree(_dindex) {
+                var treeKeys = this.config.tree.columnKeys,
+                    selfHash = list[_dindex][this.config.tree.columnKeys.selfHash];
+                list = U.filter(list, function () {
+                    return this[treeKeys.selfHash].substr(0, selfHash.length) != selfHash;
+                });
+                treeKeys = null;
+                selfHash = null;
             }
         };
 
@@ -14198,23 +16245,27 @@ jQuery.fn.ax5select = function () {
             if (!U.isNumber(_dindex)) {
                 throw 'invalid argument _dindex';
             }
-            //
-            list.splice(_dindex, 1);
+            processor["index"].call(this, _dindex);
         }
 
-        if (this.config.body.grouping) {
-            list = initData.call(this, sort.call(this, this.sortInfo, list));
-        } else if (Object.keys(this.sortInfo).length) {
-            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        if (this.config.tree.use) {
+            this.list = arrangeData4tree.call(this, list);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
         } else {
-            list = initData.call(this, list);
+            if (this.config.body.grouping) {
+                list = initData.call(this, sort.call(this, this.sortInfo, list));
+            } else if (Object.keys(this.sortInfo).length) {
+                list = initData.call(this, sort.call(this, this.sortInfo, list));
+            } else {
+                list = initData.call(this, list);
+            }
+            this.list = list;
         }
-
-        this.list = list;
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
         return this;
     };
@@ -14227,22 +16278,76 @@ jQuery.fn.ax5select = function () {
         var list = this.config.body.grouping ? clearGroupingData.call(this, this.list) : this.list;
         var processor = {
             "first": function first() {
-                list[0][this.config.columnKeys.deleted] = true;
+                if (this.config.tree.use) {
+                    processor.tree.call(this, 0);
+                } else {
+                    list[0][this.config.columnKeys.deleted] = true;
+                }
             },
             "last": function last() {
-                list[list.length - 1][this.config.columnKeys.deleted] = true;
+                if (this.config.tree.use) {
+                    processor.tree.call(this, list.length - 1);
+                } else {
+                    list[list.length - 1][this.config.columnKeys.deleted] = true;
+                }
             },
             "selected": function selected() {
-                var i = list.length;
-                while (i--) {
-                    if (list[i][this.config.columnKeys.selected]) {
-                        list[i][this.config.columnKeys.deleted] = true;
+                if (this.config.tree.use) {
+                    processor.tree.call(this, "selected");
+                } else {
+                    var i = list.length;
+                    while (i--) {
+                        if (list[i][this.config.columnKeys.selected]) {
+                            list[i][this.config.columnKeys.deleted] = true;
+                        }
                     }
+                    i = null;
                 }
+            },
+            "tree": function tree(_dindex) {
+                var keys = this.config.columnKeys,
+                    treeKeys = this.config.tree.columnKeys;
+
+                if (_dindex === "selected") {
+
+                    var i = list.length;
+                    while (i--) {
+                        if (list[i][this.config.columnKeys.selected]) {
+                            list[i][this.config.columnKeys.deleted] = true;
+
+                            var selfHash = list[i][treeKeys.selfHash];
+                            var ii = list.length;
+
+                            while (ii--) {
+                                if (list[ii][treeKeys.selfHash].substr(0, selfHash.length) === selfHash) {
+                                    list[ii][keys.deleted] = true;
+                                }
+                            }
+
+                            selfHash = null;
+                            ii = null;
+                        }
+                    }
+                    i = null;
+                } else {
+                    var _selfHash = list[_dindex][treeKeys.selfHash];
+                    var _i2 = list.length;
+                    while (_i2--) {
+                        if (list[_i2][treeKeys.selfHash].substr(0, _selfHash.length) !== _selfHash) {
+                            list[_i2][keys.deleted] = true;
+                        }
+                    }
+                    _selfHash = null;
+                    _i2 = null;
+                }
+
+                keys = null;
+                treeKeys = null;
             }
         };
 
         if (typeof _dindex === "undefined") _dindex = "last";
+
         if (_dindex in processor) {
             processor[_dindex].call(this, _dindex);
         } else {
@@ -14252,19 +16357,25 @@ jQuery.fn.ax5select = function () {
             list[_dindex][this.config.columnKeys.deleted] = true;
         }
 
-        if (this.config.body.grouping) {
-            list = initData.call(this, sort.call(this, this.sortInfo, list));
-        } else if (Object.keys(this.sortInfo).length) {
-            list = initData.call(this, sort.call(this, this.sortInfo, list));
+        if (this.config.tree.use) {
+            this.list = arrangeData4tree.call(this, list);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
         } else {
-            list = initData.call(this, list);
-        }
+            if (this.config.body.grouping) {
+                list = initData.call(this, sort.call(this, this.sortInfo, list));
+            } else if (Object.keys(this.sortInfo).length) {
+                list = initData.call(this, sort.call(this, this.sortInfo, list));
+            } else {
+                list = initData.call(this, list);
+            }
 
-        this.list = list;
+            this.list = list;
+        }
 
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
         return this;
     };
@@ -14282,19 +16393,77 @@ jQuery.fn.ax5select = function () {
         }
     };
 
-    var setValue = function setValue(_dindex, _key, _value) {
-        var originalValue = getValue.call(this, _dindex, _key);
+    var updateChild = function updateChild(_dindex, _updateData, _options) {
+        var keys = this.config.tree.columnKeys,
+            selfHash = void 0,
+            originIndex = void 0;
+
+        if (typeof _dindex === "undefined") return false;
+        originIndex = this.proxyList[_dindex].__origin_index__;
+
+        if (this.list[originIndex][keys.children]) {
+            this.proxyList = []; // 리셋 프록시
+
+            if (_options && _options.filter) {
+                if (_options.filter.call({ item: this.list[originIndex], dindex: originIndex }, this.list[originIndex])) {
+                    for (var _k in _updateData) {
+                        this.list[originIndex][_k] = _updateData[_k];
+                    }
+                }
+            } else {
+                for (var _k2 in _updateData) {
+                    this.list[originIndex][_k2] = _updateData[_k2];
+                }
+            }
+
+            selfHash = this.list[originIndex][keys.selfHash];
+
+            var i = 0,
+                l = this.list.length;
+            for (; i < l; i++) {
+                if (this.list[i]) {
+                    if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
+
+                        if (_options && _options.filter) {
+                            if (_options.filter.call({ item: this.list[i], dindex: i }, this.list[i])) {
+                                for (var _k3 in _updateData) {
+                                    this.list[i][_k3] = _updateData[_k3];
+                                }
+                            }
+                        } else {
+                            for (var _k4 in _updateData) {
+                                this.list[i][_k4] = _updateData[_k4];
+                            }
+                        }
+                    }
+
+                    if (!this.list[i][keys.hidden]) {
+                        this.proxyList.push(this.list[i]);
+                    }
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    var setValue = function setValue(_dindex, _doindex, _key, _value) {
+        var originalValue = getValue.call(this, _dindex, _doindex, _key);
+        var list = this.list;
+        var listIndex = typeof _doindex === "undefined" ? _dindex : _doindex;
         this.needToPaintSum = true;
 
         if (originalValue !== _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
-                    this.list[_dindex][this.config.columnKeys.modified] = true;
-                    Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;").call(this.list[_dindex], _value);
+                    list[listIndex][this.config.columnKeys.modified] = true;
+                    Function("val", "this" + GRID.util.getRealPathForDataItem(_key) + " = val;").call(list[listIndex], _value);
                 } catch (e) {}
             } else {
-                this.list[_dindex][this.config.columnKeys.modified] = true;
-                this.list[_dindex][_key] = _value;
+                list[listIndex][this.config.columnKeys.modified] = true;
+                list[listIndex][_key] = _value;
             }
 
             if (this.onDataChanged) {
@@ -14302,6 +16471,7 @@ jQuery.fn.ax5select = function () {
                     self: this,
                     list: this.list,
                     dindex: _dindex,
+                    doindex: _doindex,
                     item: this.list[_dindex],
                     key: _key,
                     value: _value
@@ -14312,13 +16482,16 @@ jQuery.fn.ax5select = function () {
         return true;
     };
 
-    var getValue = function getValue(_dindex, _key, _value) {
+    var getValue = function getValue(_dindex, _doindex, _key, _value) {
+        var list = this.list;
+        var listIndex = typeof _doindex === "undefined" ? _dindex : _doindex;
+
         if (/[\.\[\]]/.test(_key)) {
             try {
-                _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(this.list[_dindex]);
+                _value = Function("", "return this" + GRID.util.getRealPathForDataItem(_key) + ";").call(list[listIndex]);
             } catch (e) {}
         } else {
-            _value = this.list[_dindex][_key];
+            _value = list[listIndex][_key];
         }
         return _value;
     };
@@ -14327,19 +16500,30 @@ jQuery.fn.ax5select = function () {
         this.selectedDataIndexs = [];
     };
 
-    var select = function select(_dindex, _selected, _options) {
+    var select = function select(_dindex, _doindex, _selected, _options) {
         var cfg = this.config;
 
-        if (this.list[_dindex].__isGrouping) return false;
-        if (this.list[_dindex][cfg.columnKeys.disableSelection]) return false;
+        if (typeof _doindex === "undefined") _doindex = _dindex;
+
+        if (!this.list[_doindex]) return false;
+        if (this.list[_doindex].__isGrouping) return false;
+        if (this.list[_doindex][cfg.columnKeys.disableSelection]) return false;
 
         if (typeof _selected === "undefined") {
-            if (this.list[_dindex][cfg.columnKeys.selected] = !this.list[_dindex][cfg.columnKeys.selected]) {
-                this.selectedDataIndexs.push(_dindex);
+            if (this.list[_doindex][cfg.columnKeys.selected] = !this.list[_doindex][cfg.columnKeys.selected]) {
+                this.selectedDataIndexs.push(_doindex);
+            } else {
+                this.selectedDataIndexs.splice(U.search(this.selectedDataIndexs, function () {
+                    return this == _doindex;
+                }), 1);
             }
         } else {
-            if (this.list[_dindex][cfg.columnKeys.selected] = _selected) {
-                this.selectedDataIndexs.push(_dindex);
+            if (this.list[_doindex][cfg.columnKeys.selected] = _selected) {
+                this.selectedDataIndexs.push(_doindex);
+            } else {
+                this.selectedDataIndexs.splice(U.search(this.selectedDataIndexs, function () {
+                    return this == _doindex;
+                }), 1);
             }
         }
 
@@ -14348,18 +16532,21 @@ jQuery.fn.ax5select = function () {
                 self: this,
                 list: this.list,
                 dindex: _dindex,
-                item: this.list[_dindex],
+                doindex: _doindex,
+                item: this.list[_doindex],
                 key: cfg.columnKeys.selected,
-                value: this.list[_dindex][cfg.columnKeys.selected]
+                value: this.list[_doindex][cfg.columnKeys.selected]
             });
         }
 
-        return this.list[_dindex][cfg.columnKeys.selected];
+        return this.list[_doindex][cfg.columnKeys.selected];
     };
 
     var selectAll = function selectAll(_selected, _options) {
         var cfg = this.config,
             dindex = this.list.length;
+
+        this.selectedDataIndexs = [];
 
         if (typeof _selected === "undefined") {
             while (dindex--) {
@@ -14401,10 +16588,11 @@ jQuery.fn.ax5select = function () {
         return this.list;
     };
 
-    var sort = function sort(_sortInfo, _list) {
+    var sort = function sort(_sortInfo, _list, _options) {
         var self = this,
             list = _list || this.list,
-            sortInfoArray = [];
+            sortInfoArray = [],
+            lineNumber = 0;
         var getKeyValue = function getKeyValue(_item, _key, _value) {
             if (/[\.\[\]]/.test(_key)) {
                 try {
@@ -14422,6 +16610,11 @@ jQuery.fn.ax5select = function () {
         sortInfoArray = U.filter(sortInfoArray, function () {
             return typeof this !== "undefined";
         });
+
+        // 정렬조건이 없으면 original_index값을 이용하여 정렬처리
+        if (_options && _options.resetLineNumber && sortInfoArray.length === 0) {
+            sortInfoArray[0] = { key: '__original_index', order: "asc" };
+        }
 
         var i = 0,
             l = sortInfoArray.length,
@@ -14445,11 +16638,21 @@ jQuery.fn.ax5select = function () {
             }
         });
 
+        if (_options && _options.resetLineNumber) {
+            i = 0, l = list.length, lineNumber = 0;
+            for (; i < l; i++) {
+                if (_list[i] && !_list[i]["__isGrouping"]) {
+                    _list[i]["__index"] = lineNumber++;
+                }
+            }
+        }
+
         if (_list) {
             return list;
         } else {
             this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
             this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+            this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
             GRID.page.navigationUpdate.call(this);
             return this;
         }
@@ -14457,7 +16660,16 @@ jQuery.fn.ax5select = function () {
 
     var append = function append(_list, _callback) {
         var self = this;
-        this.list = this.list.concat([].concat(_list));
+
+        if (this.config.tree.use) {
+            var list = this.list.concat([].concat(_list));
+
+            this.list = arrangeData4tree.call(this, list);
+            this.proxyList = getProxyList.call(this, sort.call(this, this.sortInfo, this.list));
+            list = null;
+        } else {
+            this.list = this.list.concat([].concat(_list));
+        }
 
         this.appendProgress = true;
         GRID.page.statusUpdate.call(this);
@@ -14494,7 +16706,45 @@ jQuery.fn.ax5select = function () {
         this.needToPaintSum = true;
         this.xvar.frozenRowIndex = this.config.frozenRowIndex > this.list.length ? this.list.length : this.config.frozenRowIndex;
         this.xvar.paintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
+        this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         GRID.page.navigationUpdate.call(this);
+    };
+
+    var toggleCollapse = function toggleCollapse(_dindex, _doindx, _collapse) {
+        var keys = this.config.tree.columnKeys,
+            selfHash = void 0,
+            originIndex = void 0;
+
+        if (typeof _dindex === "undefined") return false;
+        originIndex = this.proxyList[_dindex].__origin_index__;
+
+        if (this.list[originIndex][keys.children]) {
+            this.proxyList = []; // 리셋 프록시
+            if (typeof _collapse == "undefined") {
+                _collapse = !(this.list[originIndex][keys.collapse] || false);
+            }
+
+            this.list[originIndex][keys.collapse] = _collapse;
+            selfHash = this.list[originIndex][keys.selfHash];
+
+            var i = this.list.length;
+            while (i--) {
+                if (this.list[i]) {
+                    // console.log(this.list[i][keys.parentHash].substr(0, selfHash.length), selfHash);
+                    if (this.list[i][keys.parentHash].substr(0, selfHash.length) === selfHash) {
+                        this.list[i][keys.hidden] = _collapse;
+                    }
+
+                    if (!this.list[i][keys.hidden]) {
+                        this.proxyList.push(this.list[i]);
+                    }
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
     };
 
     GRID.data = {
@@ -14502,6 +16752,7 @@ jQuery.fn.ax5select = function () {
         set: set,
         get: get,
         getList: getList,
+        getProxyList: getProxyList,
         setValue: setValue,
         getValue: getValue,
         clearSelect: clearSelect,
@@ -14511,10 +16762,12 @@ jQuery.fn.ax5select = function () {
         remove: remove,
         deleteRow: deleteRow,
         update: update,
+        updateChild: updateChild,
         sort: sort,
         initData: initData,
         clearGroupingData: clearGroupingData,
-        append: append
+        append: append,
+        toggleCollapse: toggleCollapse
     };
 })();
 /*
@@ -14526,14 +16779,17 @@ jQuery.fn.ax5select = function () {
 // ax5.ui.grid.excel
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var base64 = function base64(s) {
         return window.btoa(unescape(encodeURIComponent(s)));
-    },
-        uri = "data:application/vnd.ms-excel;base64,",
-        getExcelTmpl = function getExcelTmpl() {
+    };
+
+    var uri = "data:application/vnd.ms-excel;base64,";
+
+    var getExcelTmpl = function getExcelTmpl() {
         return '\uFEFF\n{{#tables}}{{{body}}}{{/tables}}\n';
     };
 
@@ -14600,8 +16856,7 @@ jQuery.fn.ax5select = function () {
                 // If the [download] attribute is supported, try to use it
                 if ("download" in anchor) {
                     anchor.download = fileName;
-                    //anchor.href = URL.createObjectURL( blob );
-                    anchor.href = uri + base64(output);
+                    anchor.href = URL.createObjectURL(new Blob([output], { type: 'text/csv' }));
                     anchor.click();
                     document.body.removeChild(anchor);
                 }
@@ -14618,11 +16873,27 @@ jQuery.fn.ax5select = function () {
 // ax5.ui.grid.formatter
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var money = function money() {
-        return U.number(this.value, { "money": true });
+        if (typeof this.value !== "undefined") {
+            var val = ('' + this.value).replace(/[^0-9^\.^\-]/g, ""),
+                regExpPattern = new RegExp('([0-9])([0-9][0-9][0-9][,.])'),
+                arrNumber = val.split('.'),
+                returnValue = void 0;
+
+            arrNumber[0] += '.';
+
+            do {
+                arrNumber[0] = arrNumber[0].replace(regExpPattern, '$1,$2');
+            } while (regExpPattern.test(arrNumber[0]));
+
+            return arrNumber.length > 1 ? arrNumber[0] + U.left(arrNumber[1], 2) : arrNumber[0].split('.')[0];
+        } else {
+            return "";
+        }
     };
 
     GRID.formatter = {
@@ -14632,8 +16903,9 @@ jQuery.fn.ax5select = function () {
 // ax5.ui.grid.header
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var columnResizerEvent = {
         "on": function on(_columnResizer, _colIndex) {
@@ -14644,9 +16916,8 @@ jQuery.fn.ax5select = function () {
             self.xvar.columnResizerIndex = _colIndex;
             var resizeRange = {
                 min: -self.colGroup[_colIndex]._width + 2,
-                max: self.colGroup[_colIndex + 1] ? self.colGroup[_colIndex + 1]._width : self.$["container"]["root"].width() - 2
+                max: self.$["container"]["root"].width() - self.colGroup[_colIndex]._width
             };
-            //console.log(resizeRange);
 
             jQuery(document.body).bind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId, function (e) {
                 var mouseObj = GRID.util.getMousePosition(e);
@@ -14696,30 +16967,40 @@ jQuery.fn.ax5select = function () {
         this.$["container"]["header"].on("click", '[data-ax5grid-column-attr]', function (e) {
             var key = this.getAttribute("data-ax5grid-column-key"),
                 colIndex = this.getAttribute("data-ax5grid-column-colindex"),
-                rowIndex = this.getAttribute("data-ax5grid-column-rowindex"),
-                col = self.colGroup[colIndex];
 
-            if (key === "__checkbox_header__") {
+            //rowIndex = this.getAttribute("data-ax5grid-column-rowindex"),
+            col = self.colGroup[colIndex];
+
+            if (key === "__checkbox_header__" && self.config.header.selector) {
                 var selected = this.getAttribute("data-ax5grid-selected");
-                selected = U.isNothing(selected) ? true : selected === "true" ? false : true;
+                selected = U.isNothing(selected) ? true : selected !== "true";
 
                 $(this).attr("data-ax5grid-selected", selected);
                 self.selectAll({ selected: selected });
+
+                selected = null;
             } else {
-                if (key && col) {
-                    if ((col.sortable === true || self.config.sortable === true) && col.sortable !== false) {
-                        if (!col.sortFixed) toggleSort.call(self, col.key);
+                if (key && col && col.sortable !== false && !col.sortFixed) {
+                    if (col.sortable === true || self.config.sortable === true) {
+                        toggleSort.call(self, col.key);
                     }
                 }
             }
 
             GRID.body.blur.call(self);
+
+            key = null;
+            colIndex = null;
+            col = null;
         });
         this.$["container"]["header"].on("mousedown", '[data-ax5grid-column-resizer]', function (e) {
             var colIndex = this.getAttribute("data-ax5grid-column-resizer");
+
             self.xvar.mousePosition = GRID.util.getMousePosition(e);
             columnResizerEvent.on.call(self, this, Number(colIndex));
             U.stopEvent(e);
+
+            colIndex = null;
         }).on("dragstart", function (e) {
             U.stopEvent(e);
             return false;
@@ -14730,7 +17011,8 @@ jQuery.fn.ax5select = function () {
 
     var resetFrozenColumn = function resetFrozenColumn() {
         var cfg = this.config,
-            dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.config.frozenColumnIndex);
+            dividedHeaderObj = GRID.util.divideTableByFrozenColumnIndex(this.headerTable, this.xvar.frozenColumnIndex);
+
         this.asideHeaderData = function (dataTable) {
             var colGroup = [];
             var data = { rows: [] };
@@ -14765,30 +17047,21 @@ jQuery.fn.ax5select = function () {
                         colGroup.push(_col);
                         data.rows[i].cols.push(_col);
                     }
+
+                    col = null;
                 }
             }
 
             this.asideColGroup = colGroup;
             return data;
         }.call(this, this.headerTable);
+
         this.leftHeaderData = dividedHeaderObj.leftData;
         this.headerData = dividedHeaderObj.rightData;
     };
 
     var getFieldValue = function getFieldValue(_col) {
-        var cfg = this.config,
-            colGroup = this.colGroup,
-            _key = _col.key,
-            tagsToReplace = {
-            '<': '&lt;',
-            '>': '&gt;'
-        };
-
-        if (_key === "__checkbox_header__") {
-            return '<div class="checkBox"></div>';
-        } else {
-            return _col.label || "&nbsp;";
-        }
+        return _col.key === "__checkbox_header__" ? this.config.header.selector ? '<div class="checkBox" style="max-height: ' + (_col.width - 10) + 'px;min-height: ' + (_col.width - 10) + 'px;"></div>' : "&nbsp;" : _col.label || "&nbsp;";
     };
 
     var repaint = function repaint(_reset) {
@@ -14798,6 +17071,7 @@ jQuery.fn.ax5select = function () {
         if (_reset) {
             resetFrozenColumn.call(this);
             this.xvar.paintStartRowIndex = undefined;
+            this.xvar.virtualPaintStartRowIndex = undefined; // 스크롤 포지션 저장변수 초기화
         }
         var asideHeaderData = this.asideHeaderData,
             leftHeaderData = this.leftHeaderData,
@@ -14831,14 +17105,14 @@ jQuery.fn.ax5select = function () {
                         return typeof col.key !== "undefined" ? 'data-ax5grid-column-key="' + col.key + '" ' : '';
                     }(), 'data-ax5grid-column-colindex="' + col.colIndex + '" ', 'data-ax5grid-column-rowindex="' + col.rowIndex + '" ', 'colspan="' + col.colspan + '" ', 'rowspan="' + col.rowspan + '" ', 'class="' + function (_col) {
                         var tdCSS_class = "";
-                        if (_col.styleClass) {
-                            if (U.isFunction(_col.styleClass)) {
-                                tdCSS_class += _col.styleClass.call({
+                        if (_col.headerStyleClass) {
+                            if (U.isFunction(_col.headerStyleClass)) {
+                                tdCSS_class += _col.headerStyleClass.call({
                                     column: _col,
                                     key: _col.key
                                 }) + " ";
                             } else {
-                                tdCSS_class += _col.styleClass + " ";
+                                tdCSS_class += _col.headerStyleClass + " ";
                             }
                         }
                         if (cfg.header.columnBorderWidth) tdCSS_class += "hasBorder ";
@@ -14898,6 +17172,7 @@ jQuery.fn.ax5select = function () {
         if (cfg.frozenColumnIndex > 0) {
             repaintHeader.call(this, this.$.panel["left-header"], this.leftHeaderColGroup, leftHeaderData);
         }
+
         this.xvar.scrollContentWidth = repaintHeader.call(this, this.$.panel["header-scroll"], this.headerColGroup, headerData);
 
         if (cfg.rightSum) {}
@@ -15007,7 +17282,13 @@ jQuery.fn.ax5select = function () {
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function getHtml(_root, _columnKey, _editor, _value) {
-            return '<input type="text" data-ax5grid-editor="text" value="' + _value + '" >';
+            if (typeof _editor.attributes !== "undefined") {
+                var attributesText = "";
+                for (var k in _editor.attributes) {
+                    attributesText += ' ' + k + '=\'' + _editor.attributes[k] + '\'';
+                }
+            }
+            return '<input type="text" data-ax5grid-editor="text" value="' + _value + '" ' + attributesText + '>';
         },
         init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
@@ -15027,10 +17308,16 @@ jQuery.fn.ax5select = function () {
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function getHtml(_root, _columnKey, _editor, _value) {
-            return '<input type="text" data-ax5grid-editor="money" value="' + _value + '" >';
+            var attributesText = "";
+            if (typeof _editor.attributes !== "undefined") {
+                for (var k in _editor.attributes) {
+                    attributesText += ' ' + k + '=\'' + _editor.attributes[k] + '\'';
+                }
+            }
+            return '<input type="text" data-ax5grid-editor="money" value="' + _value + '" ' + attributesText + '" />';
         },
         init: function init(_root, _columnKey, _editor, _$parent, _value) {
-            var $el;
+            var $el = void 0;
             _$parent.append($el = jQuery(this.getHtml(_root, _columnKey, _editor, _value)));
             this.bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
             $el.on("blur", function () {
@@ -15040,9 +17327,9 @@ jQuery.fn.ax5select = function () {
         },
         bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             _$el.data("binded-ax5ui", "ax5formater");
-            _$el.ax5formatter({
+            _$el.ax5formatter($.extend(true, {
                 pattern: "money"
-            });
+            }, _editor.config));
             _$el.focus().select();
         }
     };
@@ -15051,7 +17338,13 @@ jQuery.fn.ax5select = function () {
         useReturnToSave: true,
         editMode: "popup",
         getHtml: function getHtml(_root, _columnKey, _editor, _value) {
-            return '<input type="text" data-ax5grid-editor="number" value="' + _value + '" >';
+            var attributesText = "";
+            if (typeof _editor.attributes !== "undefined") {
+                for (var k in _editor.attributes) {
+                    attributesText += ' ' + k + '=\'' + _editor.attributes[k] + '\'';
+                }
+            }
+            return '<input type="text" data-ax5grid-editor="number" value="' + _value + '" ' + attributesText + '" />';
         },
         init: function init(_root, _columnKey, _editor, _$parent, _value) {
             var $el;
@@ -15064,9 +17357,9 @@ jQuery.fn.ax5select = function () {
         },
         bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             _$el.data("binded-ax5ui", "ax5formater");
-            _$el.ax5formatter({
+            _$el.ax5formatter($.extend(true, {
                 pattern: "number"
-            });
+            }, _editor.config));
             _$el.focus().select();
         }
     };
@@ -15086,7 +17379,8 @@ jQuery.fn.ax5select = function () {
         bindUI: function bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
             var self = _root;
             _$el.data("binded-ax5ui", "ax5picker");
-            _$el.ax5picker({
+
+            _$el.ax5picker($.extend(true, {
                 direction: "auto",
                 content: {
                     type: 'date',
@@ -15101,7 +17395,8 @@ jQuery.fn.ax5select = function () {
                         GRID.body.inlineEdit.deActive.call(self, "RETURN", _columnKey);
                     }
                 }
-            });
+            }, _editor.config));
+
             _$el.focus().select();
         }
     };
@@ -15138,7 +17433,8 @@ jQuery.fn.ax5select = function () {
 
             var self = _root;
             _$el.data("binded-ax5ui", "ax5select");
-            _$el.ax5select({
+            _$el.ax5select($.extend(true, {
+                tabIndex: 1,
                 direction: "auto",
                 columnKeys: eConfig.columnKeys,
                 options: eConfig.options,
@@ -15151,7 +17447,7 @@ jQuery.fn.ax5select = function () {
                         GRID.body.inlineEdit.deActive.call(self, "ESC", _columnKey);
                     }
                 }
-            });
+            }, _editor.config));
             _$el.ax5select("open");
             _$el.ax5select("setValue", _value);
             _$el.find("a").focus();
@@ -15181,20 +17477,94 @@ jQuery.fn.ax5select = function () {
         }
     };
 
+    var edit_textarea = {
+        useReturnToSave: false,
+        editMode: "popup",
+        _getHtml: function _getHtml(_root, _columnKey, _editor, _value) {
+            // init 에서 사용하게 될 HTML 태그를 만들어 줍니다.
+            return '<div data-ax5grid-editor="textarea"></div>';
+        },
+        _bindUI: function _bindUI(_root, _columnKey, _$el, _editor, _$parent, _value) {
+            // 위치와 크기를 구합니다.
+            var offset = _$el.offset();
+            var box = {
+                width: _$el.width()
+            };
+            var editorHeight = 150;
+            var buttonHeight = 30;
+
+            // 새로운 엘리먼트 생성
+            var $newDiv = jQuery('<div data-ax5grid-popup="textarea" style="z-index: 9999;">\n    <textarea style="width:100%;height:' + (editorHeight - buttonHeight) + 'px;" class="form-control">' + _value + '</textarea>\n    <div style="height:' + buttonHeight + 'px;padding:5px;text-align: right;">\n        <button class="btn btn-default">OK</button>\n    </div>\n</div>');
+            var $newTextarea = $newDiv.find("textarea");
+            // 엘리먼트에 CSS 적용
+            $newDiv.css({
+                position: "absolute",
+                left: offset.left,
+                top: offset.top,
+                width: box.width,
+                height: editorHeight
+            });
+            $newDiv.find("textarea");
+
+            // 새로운 엘리먼트를 document.body에 append
+            jQuery(document.body).append($newDiv);
+            $newTextarea.focus().select();
+
+            $newTextarea.on("blur", function (e) {
+                GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey, this.value);
+                $newDiv.remove();
+                ax5.util.stopEvent(e.originalEvent);
+            });
+            $newTextarea.on("keydown", function (e) {
+                if (e.which == ax5.info.eventKeys.ESC) {
+                    GRID.body.inlineEdit.deActive.call(_root, "ESC", _columnKey);
+                    $newDiv.remove();
+                    ax5.util.stopEvent(e.originalEvent);
+                }
+            });
+
+            /// 값 변경
+            /// GRID.body.inlineEdit.deActive.call(_root, "RETURN", _columnKey, this.value[0][eConfig.columnKeys.optionValue]);
+            /// 에디팅 취소
+            /// GRID.body.inlineEdit.deActive.call(_root, "ESC", _columnKey);
+        },
+
+        init: function init(_root, _columnKey, _editor, _$parent, _value) {
+            // 인라인 에디팅 활성화 시작
+            /**
+             * _root : gridInstance
+             * _columnKey : di + "_" + col.colIndex + "_" + col.rowIndex
+             * _editor : col.editor
+             * _$parent : 셀
+             * _value : 값
+             */
+            var $el = void 0;
+            _$parent.append($el = jQuery(this._getHtml(_root, _columnKey, _editor, _value)));
+            // 셀에 HTML 컨텐츠 추가
+
+            this._bindUI(_root, _columnKey, $el, _editor, _$parent, _value);
+            // 이벤트 바인딩
+
+            return $el;
+        }
+    };
+
     GRID.inlineEditor = {
         "text": edit_text,
         "money": edit_money,
         "number": edit_number,
         "date": edit_date,
         "select": edit_select,
-        "checkbox": edit_checkbox
+        "checkbox": edit_checkbox,
+        "textarea": edit_textarea
     };
 })();
 // ax5.ui.grid.page
 (function () {
 
-    var GRID = ax5.ui.grid,
-        U = ax5.util;
+    var GRID = ax5.ui.grid;
+
+    var U = ax5.util;
 
     var onclickPageMove = function onclickPageMove(_act) {
         var callback = function callback(_pageNo) {
@@ -15252,11 +17622,13 @@ jQuery.fn.ax5select = function () {
             var navigationItemCount = this.config.page.navigationItemCount;
 
             page["@paging"] = function () {
-                var returns = [];
+                var returns = [],
+                    startI = void 0,
+                    endI = void 0;
 
-                var startI = page.currentPage - Math.floor(navigationItemCount / 2);
+                startI = page.currentPage - Math.floor(navigationItemCount / 2);
                 if (startI < 0) startI = 0;
-                var endI = page.currentPage + navigationItemCount;
+                endI = page.currentPage + navigationItemCount;
                 if (endI > page.totalPages) endI = page.totalPages;
 
                 if (endI - startI > navigationItemCount) {
@@ -15280,8 +17652,7 @@ jQuery.fn.ax5select = function () {
 
             this.$["page"]["navigation"].html(GRID.tmpl.get("page_navigation", page));
             this.$["page"]["navigation"].find("[data-ax5grid-page-move]").on("click", function () {
-                var act = this.getAttribute("data-ax5grid-page-move");
-                onclickPageMove.call(self, act);
+                onclickPageMove.call(self, this.getAttribute("data-ax5grid-page-move"));
             });
         } else {
             this.$["page"]["navigation"].empty();
@@ -15289,21 +17660,38 @@ jQuery.fn.ax5select = function () {
     };
 
     var statusUpdate = function statusUpdate() {
-        var fromRowIndex = this.xvar.paintStartRowIndex;
-        var toRowIndex = this.xvar.paintStartRowIndex + this.xvar.paintRowCount - 1;
-        //var totalElements = (this.page && this.page.totalElements) ? this.page.totalElements : this.xvar.dataRowCount;
-        var totalElements = this.xvar.dataRowCount;
-        if (toRowIndex > totalElements) {
-            toRowIndex = totalElements;
+        if (!this.config.page.statusDisplay) {
+            return;
         }
 
-        this.$["page"]["status"].html(GRID.tmpl.get("page_status", {
-            fromRowIndex: U.number(fromRowIndex + 1, { "money": true }),
-            toRowIndex: U.number(toRowIndex, { "money": true }),
-            totalElements: U.number(totalElements, { "money": true }),
-            dataRowCount: totalElements !== this.xvar.dataRealRowCount ? U.number(this.xvar.dataRealRowCount, { "money": true }) : false,
-            progress: this.appendProgress ? this.config.appendProgressIcon : ""
-        }));
+        var toRowIndex = void 0,
+            rangeCount = Math.min(this.xvar.dataRowCount, this.xvar.virtualPaintRowCount);
+        var data = {};
+
+        toRowIndex = this.xvar.virtualPaintStartRowIndex + rangeCount;
+
+        if (toRowIndex > this.xvar.dataRowCount) {
+            toRowIndex = this.xvar.dataRowCount;
+        }
+
+        data.fromRowIndex = U.number(this.xvar.virtualPaintStartRowIndex + 1, { "money": true });
+        data.toRowIndex = U.number(toRowIndex, { "money": true });
+        data.totalElements = false;
+        data.dataRealRowCount = this.xvar.dataRowCount !== this.xvar.dataRealRowCount ? U.number(this.xvar.dataRealRowCount, { "money": true }) : false;
+        data.dataRowCount = U.number(this.xvar.dataRowCount, { "money": true });
+        data.progress = this.appendProgress ? this.config.appendProgressIcon : "";
+
+        if (this.page) {
+            data.fromRowIndex_page = U.number(this.xvar.virtualPaintStartRowIndex + this.page.currentPage * this.page.pageSize + 1, { "money": true });
+            data.toRowIndex_page = U.number(this.xvar.virtualPaintStartRowIndex + rangeCount + this.page.currentPage * this.page.pageSize, { "money": true });
+            data.totalElements = U.number(this.page.totalElements, { "money": true });
+
+            if (data.toRowIndex_page > this.page.totalElements) {
+                data.toRowIndex_page = this.page.totalElements;
+            }
+        }
+
+        this.$["page"]["status"].html(GRID.tmpl.get("page_status", data));
     };
 
     GRID.page = {
@@ -15315,13 +17703,15 @@ jQuery.fn.ax5select = function () {
 (function () {
 
     var GRID = ax5.ui.grid;
+
     var U = ax5.util;
 
     var convertScrollPosition = {
         "vertical": function vertical(css, _var) {
-            var _content_height = _var._content_height - _var._panel_height;
-            var _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight;
-            var top = _content_height * css.top / _scroller_height;
+            var _content_height = _var._content_height - _var._panel_height,
+                _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight,
+                top = _content_height * css.top / _scroller_height;
+
             if (top < 0) top = 0;else if (_content_height < top) {
                 top = _content_height;
             }
@@ -15330,9 +17720,10 @@ jQuery.fn.ax5select = function () {
             };
         },
         "horizontal": function horizontal(css, _var) {
-            var _content_width = _var._content_width - _var._panel_width;
-            var _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth;
-            var left = _content_width * css.left / _scroller_width;
+            var _content_width = _var._content_width - _var._panel_width,
+                _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth,
+                left = _content_width * css.left / _scroller_width;
+
             if (left < 0) left = 0;else if (_content_width < left) {
                 left = _content_width;
             }
@@ -15341,18 +17732,21 @@ jQuery.fn.ax5select = function () {
             };
         }
     };
+
     var convertScrollBarPosition = {
         "vertical": function vertical(_top, _var) {
 
-            var type = "vertical";
-            var _content_height = _var._content_height - _var._panel_height;
-            var _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight;
-            var top = _scroller_height * _top / _content_height;
+            var self = this,
+                type = "vertical",
+                _content_height = _var._content_height - _var._panel_height,
+                _scroller_height = _var._vertical_scroller_height - _var.verticalScrollBarHeight,
+                top = _scroller_height * _top / _content_height,
+                scrollPositon = void 0;
 
             if (-top > _scroller_height) {
                 top = -_scroller_height;
 
-                var scrollPositon = convertScrollPosition[type].call(this, { top: -top }, {
+                scrollPositon = convertScrollPosition[type].call(this, { top: -top }, {
                     _content_width: _var._content_width,
                     _content_height: _var._content_height,
                     _panel_width: _var._panel_width,
@@ -15363,20 +17757,22 @@ jQuery.fn.ax5select = function () {
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
-                GRID.body.scrollTo.call(this, scrollPositon);
+                GRID.body.scrollTo.call(self, scrollPositon);
             }
 
             return -top;
         },
         "horizontal": function horizontal(_left, _var) {
-            var type = "horizontal";
-            var _content_width = _var._content_width - _var._panel_width;
-            var _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth;
-            var left = _scroller_width * _left / _content_width;
+            var self = this,
+                type = "horizontal",
+                _content_width = _var._content_width - _var._panel_width,
+                _scroller_width = _var._horizontal_scroller_width - _var.horizontalScrollBarWidth,
+                left = _scroller_width * _left / _content_width,
+                scrollPositon = void 0;
 
             if (-left > _scroller_width) {
                 left = -_scroller_width;
-                var scrollPositon = convertScrollPosition[type].call(this, { left: -left }, {
+                scrollPositon = convertScrollPosition[type].call(this, { left: -left }, {
                     _content_width: _var._content_width,
                     _content_height: _var._content_height,
                     _panel_width: _var._panel_width,
@@ -15387,13 +17783,14 @@ jQuery.fn.ax5select = function () {
                     horizontalScrollBarWidth: _var.horizontalScrollBarWidth
                 });
 
-                GRID.header.scrollTo.call(this, scrollPositon);
-                GRID.body.scrollTo.call(this, scrollPositon);
+                GRID.header.scrollTo.call(self, scrollPositon);
+                GRID.body.scrollTo.call(self, scrollPositon);
             }
 
             return -left;
         }
     };
+
     var scrollBarMover = {
         "click": function click(track, bar, type, e) {
 
@@ -15441,9 +17838,9 @@ jQuery.fn.ax5select = function () {
                     }
                     return { left: newLeft };
                 }
-            };
+            },
+                css = getScrollerPosition[type](e);
 
-            var css = getScrollerPosition[type](e);
             bar.css(css);
 
             var scrollPositon = convertScrollPosition[type].call(self, css, {
@@ -15458,6 +17855,8 @@ jQuery.fn.ax5select = function () {
             });
             if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
             GRID.body.scrollTo.call(self, scrollPositon);
+
+            scrollPositon = null;
         },
         "on": function on(track, bar, type, e) {
             var self = this,
@@ -15521,17 +17920,18 @@ jQuery.fn.ax5select = function () {
                 });
 
                 if (type === "horizontal") GRID.header.scrollTo.call(self, scrollPositon);
+
                 GRID.body.scrollTo.call(self, scrollPositon);
             }).bind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId, function (e) {
-                scrollBarMover.off.call(self);
+                scrollBarMover.off.call(self, e);
             }).bind("mouseleave.ax5grid-" + this.instanceId, function (e) {
-                scrollBarMover.off.call(self);
+                scrollBarMover.off.call(self, e);
             });
 
             jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
         },
-        "off": function off() {
-
+        "off": function off(e) {
+            ax5.util.stopEvent(e.originalEvent);
             GRID.scroller.moveout_timer = new Date().getTime();
 
             jQuery(document.body).unbind(GRID.util.ENM["mousemove"] + ".ax5grid-" + this.instanceId).unbind(GRID.util.ENM["mouseup"] + ".ax5grid-" + this.instanceId).unbind("mouseleave.ax5grid-" + this.instanceId);
@@ -15539,12 +17939,13 @@ jQuery.fn.ax5select = function () {
             jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
         }
     };
+
     var scrollContentMover = {
         "wheel": function wheel(delta) {
             var self = this,
                 _body_scroll_position = self.$["panel"]["body-scroll"].position(),
-                _panel_height = self.$["panel"]["body"].height(),
-                _panel_width = self.$["panel"]["body"].width(),
+                _panel_height = self.xvar.body_panel_height,
+                _panel_width = self.xvar.body_panel_width,
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth;
 
@@ -15584,18 +17985,20 @@ jQuery.fn.ax5select = function () {
                 if (delta.x == 0) _left_is_end = true;
             }
 
-            //self.$["panel"]["body-scroll"].css({left: newLeft, top: newTop});
-            GRID.header.scrollTo.call(this, { left: newLeft });
-            GRID.body.scrollTo.call(this, { left: newLeft, top: newTop });
-            resize.call(this);
+            GRID.header.scrollTo.call(self, { left: newLeft });
+            GRID.body.scrollTo.call(self, { left: newLeft, top: newTop }, {
+                callback: function callback() {
+                    resize.call(self);
+                }
+            });
 
             return !_top_is_end || !_left_is_end;
         },
         "on": function on() {
             var self = this,
                 _body_scroll_position = self.$["panel"]["body-scroll"].position(),
-                _panel_height = self.$["panel"]["body"].height(),
-                _panel_width = self.$["panel"]["body"].width(),
+                _panel_height = self.xvar.body_panel_height,
+                _panel_width = self.xvar.body_panel_width,
                 _content_height = self.xvar.scrollContentHeight,
                 _content_width = self.xvar.scrollContentWidth,
                 getContentPosition = function getContentPosition(e) {
@@ -15630,25 +18033,26 @@ jQuery.fn.ax5select = function () {
                 };
             };
 
-            this.xvar.__x_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
-            this.xvar.__y_da = 0; // 이동량 변수 초기화 (계산이 잘못 될까바)
+            this.xvar.__x_da = 0; // 이동량 변수 초기화
+            this.xvar.__y_da = 0; // 계산이 잘못 될까바
             this.xvar.touchmoved = false;
 
             jQuery(document.body).on("touchmove" + ".ax5grid-" + this.instanceId, function (e) {
-
                 var css = getContentPosition(e);
-                GRID.header.scrollTo.call(self, { left: css.left });
-                GRID.body.scrollTo.call(self, css, "noRepaint");
+
                 resize.call(self);
-                U.stopEvent(e);
+                GRID.header.scrollTo.call(self, { left: css.left });
+                GRID.body.scrollTo.call(self, css, { noRepaint: "noRepaint" });
+                U.stopEvent(e.originalEvent);
                 self.xvar.touchmoved = true;
             }).on("touchend" + ".ax5grid-" + this.instanceId, function (e) {
                 if (self.xvar.touchmoved) {
                     var css = getContentPosition(e);
+
+                    resize.call(self);
                     GRID.header.scrollTo.call(self, { left: css.left });
                     GRID.body.scrollTo.call(self, css);
-                    resize.call(self);
-                    U.stopEvent(e);
+                    U.stopEvent(e.originalEvent);
                     scrollContentMover.off.call(self);
                 }
             });
@@ -15667,8 +18071,13 @@ jQuery.fn.ax5select = function () {
         var self = this,
             margin = this.config.scroller.trackPadding;
 
-        this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
-        this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
+        if (margin == 0) {
+            this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size, left: -1 });
+            this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size, top: -1 });
+        } else {
+            this.$["scroller"]["vertical-bar"].css({ width: this.config.scroller.size - (margin + 1), left: margin / 2 });
+            this.$["scroller"]["horizontal-bar"].css({ height: this.config.scroller.size - (margin + 1), top: margin / 2 });
+        }
 
         this.$["scroller"]["vertical-bar"].on(GRID.util.ENM["mousedown"], function (e) {
             this.xvar.mousePosition = GRID.util.getMousePosition(e);
@@ -15719,12 +18128,15 @@ jQuery.fn.ax5select = function () {
             }
         }.bind(this));
 
-        if (document.addEventListener && ax5.info.supportTouch) {
+        if (ax5.info.supportTouch) {
             this.$["container"]["body"].on("touchstart", '[data-ax5grid-panel]', function (e) {
                 self.xvar.mousePosition = GRID.util.getMousePosition(e);
                 scrollContentMover.on.call(self);
             });
         }
+
+        this.xvar.body_panel_height = this.$["panel"]["body"].height();
+        this.xvar.body_panel_width = this.$["panel"]["body"].width();
     };
 
     var resize = function resize() {
@@ -15754,8 +18166,6 @@ jQuery.fn.ax5select = function () {
             height: verticalScrollBarHeight
         });
 
-        //console.log(horizontalScrollBarWidth);
-
         this.$["scroller"]["horizontal-bar"].css({
             left: convertScrollBarPosition.horizontal.call(this, this.$.panel["body-scroll"].position().left, {
                 _content_width: _content_width,
@@ -15769,6 +18179,9 @@ jQuery.fn.ax5select = function () {
             }),
             width: horizontalScrollBarWidth
         });
+
+        this.xvar.body_panel_height = _panel_height;
+        this.xvar.body_panel_width = _panel_width;
 
         _vertical_scroller_height = null;
         _horizontal_scroller_width = null;
@@ -15791,16 +18204,17 @@ jQuery.fn.ax5select = function () {
 (function () {
 
     var GRID = ax5.ui.grid;
+
     var main = function main() {
         return '<div data-ax5grid-container="root" data-ax5grid-instance="{{instanceId}}">\n            <div data-ax5grid-container="hidden">\n                <textarea data-ax5grid-form="clipboard"></textarea>\n            </div>\n            <div data-ax5grid-container="header">\n                <div data-ax5grid-panel="aside-header"></div>\n                <div data-ax5grid-panel="left-header"></div>\n                <div data-ax5grid-panel="header">\n                    <div data-ax5grid-panel-scroll="header"></div>\n                </div>\n                <div data-ax5grid-panel="right-header"></div>\n            </div>\n            <div data-ax5grid-container="body">\n                <div data-ax5grid-panel="top-aside-body"></div>\n                <div data-ax5grid-panel="top-left-body"></div>\n                <div data-ax5grid-panel="top-body">\n                    <div data-ax5grid-panel-scroll="top-body"></div>\n                </div>\n                <div data-ax5grid-panel="top-right-body"></div>\n                <div data-ax5grid-panel="aside-body">\n                    <div data-ax5grid-panel-scroll="aside-body"></div>\n                </div>\n                <div data-ax5grid-panel="left-body">\n                    <div data-ax5grid-panel-scroll="left-body"></div>\n                </div>\n                <div data-ax5grid-panel="body">\n                    <div data-ax5grid-panel-scroll="body"></div>\n                </div>\n                <div data-ax5grid-panel="right-body">\n                  <div data-ax5grid-panel-scroll="right-body"></div>\n                </div>\n                <div data-ax5grid-panel="bottom-aside-body"></div>\n                <div data-ax5grid-panel="bottom-left-body"></div>\n                <div data-ax5grid-panel="bottom-body">\n                    <div data-ax5grid-panel-scroll="bottom-body"></div>\n                </div>\n                <div data-ax5grid-panel="bottom-right-body"></div>\n            </div>\n            <div data-ax5grid-container="page">\n                <div data-ax5grid-page="holder">\n                    <div data-ax5grid-page="navigation"></div>\n                    <div data-ax5grid-page="status"></div>\n                </div>\n            </div>\n            <div data-ax5grid-container="scroller">\n                <div data-ax5grid-scroller="vertical">\n                    <div data-ax5grid-scroller="vertical-bar"></div>    \n                </div>\n                <div data-ax5grid-scroller="horizontal">\n                    <div data-ax5grid-scroller="horizontal-bar"></div>\n                </div>\n                <div data-ax5grid-scroller="corner"></div>\n            </div>\n            <div data-ax5grid-resizer="vertical"></div>\n            <div data-ax5grid-resizer="horizontal"></div>\n        </div>';
     };
 
     var page_navigation = function page_navigation() {
-        return '<div data-ax5grid-page-navigation="holder">\n            {{#hasPage}}\n            <div data-ax5grid-page-navigation="cell">    \n                {{#firstIcon}}<button data-ax5grid-page-move="first">{{{firstIcon}}}</button>{{/firstIcon}}\n                <button data-ax5grid-page-move="prev">{{{prevIcon}}}</button>\n            </div>\n            <div data-ax5grid-page-navigation="cell-paging">\n                {{#@paging}}\n                <button data-ax5grid-page-move="{{pageNo}}" data-ax5grid-page-selected="{{selected}}">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation="cell">\n                <button data-ax5grid-page-move="next">{{{nextIcon}}}</button>\n                {{#lastIcon}}<button data-ax5grid-page-move="last">{{{lastIcon}}}</button>{{/lastIcon}}\n            </div>\n            {{/hasPage}}\n        </div>';
+        return '<div data-ax5grid-page-navigation="holder">\n            {{#hasPage}}\n            <div data-ax5grid-page-navigation="cell">    \n                {{#firstIcon}}<button type="button" data-ax5grid-page-move="first">{{{firstIcon}}}</button>{{/firstIcon}}\n                <button type="button" data-ax5grid-page-move="prev">{{{prevIcon}}}</button>\n            </div>\n            <div data-ax5grid-page-navigation="cell-paging">\n                {{#@paging}}\n                <button type="button" data-ax5grid-page-move="{{pageNo}}" data-ax5grid-page-selected="{{selected}}">{{pageNo}}</button>\n                {{/@paging}}\n            </div>\n            <div data-ax5grid-page-navigation="cell">\n                <button type="button" data-ax5grid-page-move="next">{{{nextIcon}}}</button>\n                {{#lastIcon}}<button type="button" data-ax5grid-page-move="last">{{{lastIcon}}}</button>{{/lastIcon}}\n            </div>\n            {{/hasPage}}\n        </div>';
     };
 
     var page_status = function page_status() {
-        return '<span>{{{progress}}} {{fromRowIndex}} - {{toRowIndex}} of {{totalElements}}{{#dataRowCount}} ({{dataRowCount}}){{/dataRowCount}}</span>';
+        return '<span>{{{progress}}} {{fromRowIndex}} - {{toRowIndex}} of {{dataRowCount}} {{#totalElements}}&nbsp; Total {{.}}{{/totalElements}}</span>';
     };
 
     GRID.tmpl = {
@@ -15809,7 +18223,9 @@ jQuery.fn.ax5select = function () {
         "page_status": page_status,
 
         get: function get(tmplName, data, columnKeys) {
-            return ax5.mustache.render(GRID.tmpl[tmplName].call(this, columnKeys), data);
+            var template = GRID.tmpl[tmplName].call(this, columnKeys);
+            ax5.mustache.parse(template);
+            return ax5.mustache.render(template, data);
         }
     };
 })();
@@ -15817,6 +18233,7 @@ jQuery.fn.ax5select = function () {
 (function () {
 
     var GRID = ax5.ui.grid;
+
     var U = ax5.util;
 
     /**
@@ -15825,10 +18242,11 @@ jQuery.fn.ax5select = function () {
      * @param _frozenColumnIndex
      * @returns {{leftHeaderData: {rows: Array}, headerData: {rows: Array}}}
      */
-
     var divideTableByFrozenColumnIndex = function divideTableByFrozenColumnIndex(_table, _frozenColumnIndex) {
-        var tempTable_l = { rows: [] };
-        var tempTable_r = { rows: [] };
+
+        var tempTable_l = { rows: [] },
+            tempTable_r = { rows: [] };
+
         for (var r = 0, rl = _table.rows.length; r < rl; r++) {
             var row = _table.rows[r];
 
@@ -15836,8 +18254,8 @@ jQuery.fn.ax5select = function () {
             tempTable_r.rows[r] = { cols: [] };
 
             for (var c = 0, cl = row.cols.length; c < cl; c++) {
-                var col = jQuery.extend({}, row.cols[c]);
-                var colStartIndex = col.colIndex,
+                var col = jQuery.extend({}, row.cols[c]),
+                    colStartIndex = col.colIndex,
                     colEndIndex = col.colIndex + col.colspan;
 
                 if (colStartIndex < _frozenColumnIndex) {
@@ -15845,20 +18263,29 @@ jQuery.fn.ax5select = function () {
                         // 좌측편에 변형없이 추가
                         tempTable_l.rows[r].cols.push(col);
                     } else {
-                        var leftCol = jQuery.extend({}, col);
-                        var rightCol = jQuery.extend({}, leftCol);
+                        var leftCol = jQuery.extend({}, col),
+                            rightCol = jQuery.extend({}, leftCol);
+
                         leftCol.colspan = _frozenColumnIndex - leftCol.colIndex;
                         rightCol.colIndex = _frozenColumnIndex;
                         rightCol.colspan = col.colspan - leftCol.colspan;
 
                         tempTable_l.rows[r].cols.push(leftCol);
-                        tempTable_r.rows[r].cols.push(rightCol);
+                        if (rightCol.colspan) {
+                            tempTable_r.rows[r].cols.push(rightCol);
+                        }
                     }
                 } else {
                     // 오른편
                     tempTable_r.rows[r].cols.push(col);
                 }
+
+                col = null;
+                colStartIndex = null;
+                colEndIndex = null;
             }
+
+            row = null;
         }
 
         return {
@@ -15867,10 +18294,41 @@ jQuery.fn.ax5select = function () {
         };
     };
 
+    var getTableByStartEndColumnIndex = function getTableByStartEndColumnIndex(_table, _startColumnIndex, _endColumnIndex) {
+
+        var tempTable = { rows: [] };
+        for (var r = 0, rl = _table.rows.length; r < rl; r++) {
+            var row = _table.rows[r];
+
+            tempTable.rows[r] = { cols: [] };
+            for (var c = 0, cl = row.cols.length; c < cl; c++) {
+                var col = jQuery.extend({}, row.cols[c]),
+                    colStartIndex = col.colIndex,
+                    colEndIndex = col.colIndex + col.colspan;
+
+                if (_startColumnIndex <= colStartIndex || colEndIndex <= _endColumnIndex) {
+                    if (_startColumnIndex <= colStartIndex && colEndIndex <= _endColumnIndex) {
+                        // 변형없이 추가
+                        tempTable.rows[r].cols.push(col);
+                    } else if (_startColumnIndex > colStartIndex && colEndIndex > _startColumnIndex) {
+                        // 앞에서 걸친경우
+                        col.colspan = colEndIndex - _startColumnIndex;
+                        tempTable.rows[r].cols.push(col);
+                    } else if (colEndIndex > _endColumnIndex && colStartIndex <= _endColumnIndex) {
+                        tempTable.rows[r].cols.push(col);
+                    }
+                }
+            }
+        }
+
+        return tempTable;
+    };
+
     var getMousePosition = function getMousePosition(e) {
-        var mouseObj,
+        var mouseObj = void 0,
             originalEvent = e.originalEvent ? e.originalEvent : e;
-        mouseObj = 'changedTouches' in originalEvent ? originalEvent.changedTouches[0] : originalEvent;
+
+        mouseObj = 'changedTouches' in originalEvent && originalEvent.changedTouches ? originalEvent.changedTouches[0] : originalEvent;
         // clientX, Y 쓰면 스크롤에서 문제 발생
         return {
             clientX: mouseObj.pageX,
@@ -15885,20 +18343,21 @@ jQuery.fn.ax5select = function () {
     };
 
     var makeHeaderTable = function makeHeaderTable(_columns) {
-        var columns = U.deepCopy(_columns);
-        var cfg = this.config;
-        var table = {
+        var columns = _columns,
+            cfg = this.config,
+            table = {
             rows: []
-        };
-        var colIndex = 0;
-        var maekRows = function maekRows(_columns, depth, parentField) {
+        },
+            colIndex = 0,
+            maekRows = function maekRows(_columns, depth, parentField) {
             var row = { cols: [] };
             var i = 0,
                 l = _columns.length;
+            var colspan = 1;
 
             for (; i < l; i++) {
-                var field = _columns[i];
-                var colspan = 1;
+                var field = jQuery.extend({}, _columns[i]);
+                colspan = 1;
 
                 if (!field.hidden) {
                     field.colspan = 1;
@@ -15914,7 +18373,7 @@ jQuery.fn.ax5select = function () {
                         }
                     }();
 
-                    row.cols.push(field);
+                    row.cols.push(field); // 복제된 필드 삽입
 
                     if ('columns' in field) {
                         colspan = maekRows(field.columns, depth + 1, field);
@@ -15935,6 +18394,7 @@ jQuery.fn.ax5select = function () {
                 return colspan;
             }
         };
+
         maekRows(columns, 0);
 
         // set rowspan
@@ -15950,22 +18410,23 @@ jQuery.fn.ax5select = function () {
     };
 
     var makeBodyRowTable = function makeBodyRowTable(_columns) {
-        var columns = U.deepCopy(_columns);
-        var table = {
+        var columns = _columns,
+            table = {
             rows: []
-        };
-        var colIndex = 0;
-        var maekRows = function maekRows(_columns, depth, parentField) {
-            var row = { cols: [] };
-            var i = 0,
-                l = _columns.length;
+        },
+            colIndex = 0,
+            maekRows = function maekRows(_columns, depth, parentField) {
+            var row = { cols: [] },
+                i = 0,
+                l = _columns.length,
+                colspan = 1;
 
             var selfMakeRow = function selfMakeRow(__columns) {
                 var i = 0,
                     l = __columns.length;
                 for (; i < l; i++) {
-                    var field = __columns[i];
-                    var colspan = 1;
+                    var field = jQuery.extend({}, __columns[i]),
+                        _colspan = 1;
 
                     if (!field.hidden) {
 
@@ -15985,9 +18446,9 @@ jQuery.fn.ax5select = function () {
 
                             row.cols.push(field);
                             if ('columns' in field) {
-                                colspan = maekRows(field.columns, depth + 1, field);
+                                _colspan = maekRows(field.columns, depth + 1, field);
                             }
-                            field.colspan = colspan;
+                            field.colspan = _colspan;
                         } else {
                             if ('columns' in field) {
                                 selfMakeRow(field.columns, depth);
@@ -15998,8 +18459,8 @@ jQuery.fn.ax5select = function () {
             };
 
             for (; i < l; i++) {
-                var field = _columns[i];
-                var colspan = 1;
+                var field = jQuery.extend({}, _columns[i]);
+                colspan = 1;
 
                 if (!field.hidden) {
 
@@ -16028,6 +18489,8 @@ jQuery.fn.ax5select = function () {
                         }
                     }
                 } else {}
+
+                field = null;
             }
 
             if (row.cols.length > 0) {
@@ -16040,6 +18503,7 @@ jQuery.fn.ax5select = function () {
                 return colspan;
             }
         };
+
         maekRows(columns, 0);
 
         (function (table) {
@@ -16051,7 +18515,9 @@ jQuery.fn.ax5select = function () {
                     if (!('columns' in col)) {
                         col.rowspan = rl - r;
                     }
+                    col = null;
                 }
+                row = null;
             }
         })(table);
 
@@ -16074,11 +18540,13 @@ jQuery.fn.ax5select = function () {
         };
 
         for (var r = 0, rl = _footSumColumns.length; r < rl; r++) {
-            var footSumRow = _footSumColumns[r];
+            var footSumRow = _footSumColumns[r],
+                addC = 0;
+
             table.rows[r] = { cols: [] };
-            var addC = 0;
+
             for (var c = 0, cl = footSumRow.length; c < cl; c++) {
-                if (addC > this.columns.length) break;
+                if (addC > this.colGroup.length) break;
                 var colspan = footSumRow[c].colspan || 1;
                 if (footSumRow[c].label || footSumRow[c].key) {
                     table.rows[r].cols.push({
@@ -16101,19 +18569,23 @@ jQuery.fn.ax5select = function () {
                     });
                 }
                 addC += colspan;
+                colspan = null;
             }
 
-            if (addC < this.columns.length + 1) {
-                for (var c = addC; c < this.colGroup.length; c++) {
+            if (addC < this.colGroup.length) {
+                for (var _c = addC; _c < this.colGroup.length; _c++) {
                     table.rows[r].cols.push({
-                        colIndex: c + 1,
+                        colIndex: _c,
                         colspan: 1,
                         rowspan: 1,
                         label: "&nbsp;"
                     });
                 }
             }
+            footSumRow = null;
+            addC = null;
         }
+
         return table;
     };
 
@@ -16125,21 +18597,22 @@ jQuery.fn.ax5select = function () {
             addC = 0;
 
         table.rows[r] = { cols: [] };
-        for (var _c = 0, cl = _bodyGroupingColumns.length; _c < cl; _c++) {
-            if (addC > this.columns.length) break;
-            var colspan = _bodyGroupingColumns[_c].colspan || 1;
-            if (_bodyGroupingColumns[_c].label || _bodyGroupingColumns[_c].key) {
+        for (var _c2 = 0, cl = _bodyGroupingColumns.length; _c2 < cl; _c2++) {
+            if (addC > this.colGroup.length) break;
+
+            var colspan = _bodyGroupingColumns[_c2].colspan || 1;
+            if (_bodyGroupingColumns[_c2].label || _bodyGroupingColumns[_c2].key) {
                 table.rows[r].cols.push({
                     colspan: colspan,
                     rowspan: 1,
                     rowIndex: 0,
                     colIndex: addC,
                     columnAttr: "default",
-                    align: _bodyGroupingColumns[_c].align,
-                    label: _bodyGroupingColumns[_c].label,
-                    key: _bodyGroupingColumns[_c].key,
-                    collector: _bodyGroupingColumns[_c].collector,
-                    formatter: _bodyGroupingColumns[_c].formatter
+                    align: _bodyGroupingColumns[_c2].align,
+                    label: _bodyGroupingColumns[_c2].label,
+                    key: _bodyGroupingColumns[_c2].key,
+                    collector: _bodyGroupingColumns[_c2].collector,
+                    formatter: _bodyGroupingColumns[_c2].formatter
                 });
             } else {
                 table.rows[r].cols.push({
@@ -16157,7 +18630,7 @@ jQuery.fn.ax5select = function () {
             for (var c = addC; c < this.colGroup.length; c++) {
                 table.rows[r].cols.push({
                     rowIndex: 0,
-                    colIndex: c + 1,
+                    colIndex: c,
                     colspan: 1,
                     rowspan: 1,
                     label: "&nbsp;"
@@ -16203,6 +18676,7 @@ jQuery.fn.ax5select = function () {
 
     GRID.util = {
         divideTableByFrozenColumnIndex: divideTableByFrozenColumnIndex,
+        getTableByStartEndColumnIndex: getTableByStartEndColumnIndex,
         getMousePosition: getMousePosition,
         ENM: ENM,
         makeHeaderTable: makeHeaderTable,
@@ -16222,8 +18696,7 @@ jQuery.fn.ax5select = function () {
     var MEDIAVIEWER;
 
     UI.addClass({
-        className: "mediaViewer",
-        version: "1.3.82"
+        className: "mediaViewer"
     }, function () {
         /**
          * @class ax5mediaViewer
@@ -16315,7 +18788,7 @@ jQuery.fn.ax5select = function () {
                 "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
             },
                 getMousePosition = function getMousePosition(e) {
-                var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                 return {
                     clientX: mouseObj.clientX,
@@ -16328,7 +18801,7 @@ jQuery.fn.ax5select = function () {
             this.config = {
                 clickEventName: "click", //(('ontouchstart' in document.documentElement) ? "touchend" : "click"),
                 theme: 'default',
-                animateTime: 250,
+                animateTime: 500,
 
                 columnKeys: {
                     src: 'src',
@@ -16344,6 +18817,7 @@ jQuery.fn.ax5select = function () {
                     nextHandle: false,
                     ratio: 16 / 9
                 },
+                hideMediaList: false,
                 media: {
                     prevHandle: '<',
                     nextHandle: '>',
@@ -16497,7 +18971,7 @@ jQuery.fn.ax5select = function () {
                     // console.log(mousePosition);
                     var getSwipePosition = function getSwipePosition(e) {
                         var mouseObj = e;
-                        if ('changedTouches' in e.originalEvent) {
+                        if ('changedTouches' in e.originalEvent && e.changedTouches) {
                             mouseObj = e.originalEvent.changedTouches[0];
                         }
 
@@ -16598,6 +19072,7 @@ jQuery.fn.ax5select = function () {
                     "root": this.target.find('[data-ax5-ui-media-viewer]'),
                     "viewer-holder": this.target.find('[data-media-viewer-els="viewer-holder"]'),
                     "viewer": this.target.find('[data-media-viewer-els="viewer"]'),
+                    "viewer-prev": this.target.find('[data-media-viewer-els="viewer-prev"]'),
                     "viewer-loading": this.target.find('[data-media-viewer-els="viewer-loading"]'),
                     "list-holder": this.target.find('[data-media-viewer-els="media-list-holder"]'),
                     "list-prev-handle": this.target.find('[data-media-viewer-els="media-list-prev-handle"]'),
@@ -16676,17 +19151,49 @@ jQuery.fn.ax5select = function () {
             this.select = function () {
                 var mediaView = {
                     image: function image(obj, callback) {
-                        self.$["viewer-loading"].show();
-                        var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
-                        var img = new Image();
-                        img.src = obj.image[cfg.columnKeys.src];
-                        img.onload = function () {
-                            self.$["viewer-loading"].fadeOut();
-                            var h = dim[1];
-                            var w = h * img.width / img.height;
-                            callback(img, Math.floor(w), h);
-                        };
-                        return img;
+
+                        if (cfg.loading) {
+
+                            self.$["viewer-loading"].show();
+                            var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
+                            var img = new Image();
+                            img.src = obj.image[cfg.columnKeys.src];
+                            img.onload = function () {
+                                self.$["viewer-loading"].fadeOut();
+                                var h = dim[1];
+                                var w = h * img.width / img.height;
+                                callback(img, Math.floor(w), h);
+                            };
+                            return img;
+                        } else {
+                            var dim = [this.$["viewer"].width(), this.$["viewer"].height()];
+                            var img = new Image();
+                            img.src = obj.image[cfg.columnKeys.src];
+
+                            if (this.$["viewer"].find("img").get(0)) {
+
+                                self.$["viewer-prev"].html(this.$["viewer"].html()).addClass("slide-out");
+
+                                img.onload = function () {
+
+                                    var h = dim[1];
+                                    var w = h * img.width / img.height;
+                                    callback(img, Math.floor(w), h);
+
+                                    setTimeout(function () {
+                                        self.$["viewer-prev"].removeClass("slide-out");
+                                    }, cfg.animateTime);
+                                };
+                                return img;
+                            } else {
+                                img.onload = function () {
+                                    var h = dim[1];
+                                    var w = h * img.width / img.height;
+                                    callback(img, Math.floor(w), h);
+                                };
+                                return img;
+                            }
+                        }
                     },
                     video: function video(obj, callback) {
                         self.$["viewer-loading"].show();
@@ -16748,9 +19255,49 @@ jQuery.fn.ax5select = function () {
                 return this;
             };
 
+            this.move = function (direction) {
+                var processor = {
+                    'prev': function prev() {
+                        if (this.selectedIndex > 0) {
+                            this.select(this.selectedIndex - 1);
+                        } else {
+                            this.select(cfg.media.list.length - 1);
+                        }
+                    },
+                    'next': function next() {
+                        if (this.selectedIndex < cfg.media.list.length - 1) {
+                            this.select(this.selectedIndex + 1);
+                        } else {
+                            this.select(0);
+                        }
+                    }
+                };
+
+                if (!direction) direction = "next";
+
+                if (direction in processor) {
+                    processor[direction].call(this);
+                }
+            };
+
+            this.play = function (_opt) {
+                var opt = jQuery.extend({
+                    interval: 5000
+                }, _opt);
+
+                if (this.playTimer) clearTimeout(this.playTimer);
+                this.playTimer = setTimeout(function () {
+                    self.move("next");
+                    self.play(opt);
+                }, opt.interval);
+            };
+
+            this.stop = function () {
+                if (this.playTimer) clearTimeout(this.playTimer);
+            };
+
             // 클래스 생성자
             this.main = function () {
-
                 UI.mediaViewer_instance = UI.mediaViewer_instance || [];
                 UI.mediaViewer_instance.push(this);
 
@@ -16771,7 +19318,7 @@ jQuery.fn.ax5select = function () {
     var MEDIAVIEWER = ax5.ui.mediaViewer;
 
     var frame = function frame(columnKeys) {
-        return '\n            <div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">\n                <div data-media-viewer-els="viewer-holder">\n                <div data-media-viewer-els="viewer"></div>\n                </div>\n                <div data-media-viewer-els="viewer-loading">\n                <div class="ax5-ui-media-viewer-loading-holder">\n                <div class="ax5-ui-media-viewer-loading-cell">\n                {{{loading.icon}}}\n            {{{loading.text}}}\n            </div>\n            </div>\n            </div>\n            {{#media}}\n            <div data-media-viewer-els="media-list-holder">\n                <div data-media-viewer-els="media-list-prev-handle">{{{prevHandle}}}</div>\n            <div data-media-viewer-els="media-list">\n                <div data-media-viewer-els="media-list-table">\n                {{#list}}\n            <div data-media-viewer-els="media-list-table-td">\n                {{#image}}\n            <div data-media-thumbnail="{{@i}}">\n                <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                </div>\n                {{/image}}\n            {{#video}}\n            <div data-media-thumbnail="{{@i}}">{{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}{{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}</div>\n            {{/video}}\n            </div>\n                {{/list}}\n            </div>\n                </div>\n                <div data-media-viewer-els="media-list-next-handle">{{{nextHandle}}}</div>\n                </div>\n                {{/media}}\n            </div>\n        ';
+        return '\n<div data-ax5-ui-media-viewer="{{id}}" class="{{theme}}">\n    <div data-media-viewer-els="viewer-holder">\n        <div data-media-viewer-els="viewer"></div>\n    </div>\n    {{#loading}}\n    <div data-media-viewer-els="viewer-loading">\n        <div class="ax5-ui-media-viewer-loading-holder">\n            <div class="ax5-ui-media-viewer-loading-cell">\n            {{{loading.icon}}}\n            {{{loading.text}}}\n            </div>\n        </div>\n    </div>\n    {{/loading}}\n    {{^loading}}\n    <div data-media-viewer-els="viewer-prev"></div>\n    {{/loading}}\n    \n    {{#media}}\n    <div data-media-viewer-els="media-list-holder" {{#hideMediaList}}style="display:none;"{{/hideMediaList}}>\n        <div data-media-viewer-els="media-list-prev-handle">{{{prevHandle}}}</div>\n        <div data-media-viewer-els="media-list">\n            <div data-media-viewer-els="media-list-table">\n            {{#list}}\n                <div data-media-viewer-els="media-list-table-td">\n                {{#image}}\n                <div data-media-thumbnail="{{@i}}">\n                <img src="{{' + columnKeys.poster + '}}" data-media-thumbnail-image="{{@i}}" />\n                </div>\n                {{/image}}\n                {{#video}}\n                <div data-media-thumbnail="{{@i}}">{{#' + columnKeys.poster + '}}<img src="{{.}}" data-media-thumbnail-video="{{@i}}" />>{{/' + columnKeys.poster + '}}{{^' + columnKeys.poster + '}}<a data-media-thumbnail-video="{{@i}}">{{{media.' + columnKeys.poster + '}}}</a>{{/' + columnKeys.poster + '}}</div>\n                {{/video}}\n                </div>\n            {{/list}}\n            </div>\n        </div>\n        <div data-media-viewer-els="media-list-next-handle">{{{nextHandle}}}</div>\n    </div>\n    {{/media}}\n    \n</div>';
     };
 
     MEDIAVIEWER.tmpl = {
@@ -16790,8 +19337,7 @@ jQuery.fn.ax5select = function () {
     var UPLOADER = void 0;
 
     UI.addClass({
-        className: "uploader",
-        version: "1.3.82"
+        className: "uploader"
     }, function () {
 
         var ax5uploader = function ax5uploader() {
@@ -16902,7 +19448,11 @@ jQuery.fn.ax5select = function () {
 
                 /// selectedFiles에 현재 파일 정보 담아두기
                 if (length in files) {
-                    this.selectedFiles = U.toArray(files);
+                    if (files.length == 1) {
+                        this.selectedFiles = [files[0]];
+                    } else {
+                        this.selectedFiles = U.toArray(files);
+                    }
                 } else {
                     this.selectedFiles = [files];
                 }
@@ -17196,6 +19746,8 @@ jQuery.fn.ax5select = function () {
                             return this;
                         }
 
+                        if (uploadFile[0]) uploadFile = uploadFile[0];
+
                         var formData = new FormData();
                         //서버로 전송해야 할 추가 파라미터 정보 설정
 
@@ -17206,12 +19758,11 @@ jQuery.fn.ax5select = function () {
                         formData.append(cfg.form.fileName, uploadFile);
 
                         this.xhr = new XMLHttpRequest();
-                        this.xhr.open("post", cfg.form.action, true);
-
+                        this.xhr.open("post", U.isString(cfg.form.action) ? cfg.form.action : cfg.form.action(), true);
                         this.xhr.onload = function (e) {
                             var res = e.target.response;
                             try {
-                                if (typeof res == "string") res = U.parseJson(res);
+                                if (typeof res === "string") res = U.parseJson(res);
                             } catch (e) {
                                 return false;
                             }
@@ -17232,7 +19783,6 @@ jQuery.fn.ax5select = function () {
                             bound_uploaded(res);
                             self.send();
                         };
-
                         this.xhr.upload.onprogress = function (e) {
                             // console.log(e.loaded, e.total);
                             bound_updateProgressBar(e);
@@ -17243,6 +19793,7 @@ jQuery.fn.ax5select = function () {
                                 }, e);
                             }
                         };
+
                         this.xhr.send(formData); // multipart/form-data
                     },
                     "form": function form() {
@@ -17321,7 +19872,8 @@ jQuery.fn.ax5select = function () {
 
             var bound_uploaded = function (res) {
                 if (cfg.debug) console.log(res);
-                this.uploadedFiles.push(res);
+                //this.uploadedFiles.push(res);
+                this.uploadedFiles = this.uploadedFiles.concat(res);
                 bound_repaintUploadedBox(); // 업로드된 파일 출력
 
                 if (U.isFunction(cfg.onuploaded)) {
@@ -17542,7 +20094,7 @@ jQuery.fn.ax5select = function () {
             this.send = function () {
                 return function () {
                     // 업로드 시작
-                    if (U.isFunction(cfg.validateSelectedFiles)) {
+                    if (this.selectedFiles.length && U.isFunction(cfg.validateSelectedFiles)) {
                         var that = {
                             self: this,
                             uploadedFiles: this.uploadedFiles,
@@ -17619,6 +20171,16 @@ jQuery.fn.ax5select = function () {
             };
 
             /**
+             * clear uploadedFiles
+             * @method ax5uploader.clear
+             * @returns {ax5uploader}
+             */
+            this.clear = function () {
+                this.setUploadedFiles([]);
+                return this;
+            };
+
+            /**
              * Removes the object corresponding to the index passed to the argument from uploadedFiles.
              * @method ax5uploader.removeFile
              * @param {Number} _index
@@ -17681,15 +20243,6 @@ jQuery.fn.ax5select = function () {
 
     UPLOADER = ax5.ui.uploader;
 })();
-
-// todo :
-// html5용 업로드 - 구현완료
-// abort, 여러개의 파일이 올라가는 중간에 abort 하면 업로드된 파일은 두고. 안올라간 파일만 중지 -- ok
-// set uploded files
-// uploaded files display, needs columnKeys
-// delete file
-
-// dropFile support
 // ax5.ui.uploader.tmpl
 (function () {
 
@@ -17734,14 +20287,12 @@ jQuery.fn.ax5select = function () {
 })();
 // ax5.ui.combobox
 (function () {
-
     var UI = ax5.ui;
     var U = ax5.util;
-    var COMBOBOX;
+    var COMBOBOX = void 0;
 
     UI.addClass({
-        className: "combobox",
-        version: "1.3.82"
+        className: "combobox"
     }, function () {
         /**
          * @class ax5combobox
@@ -17766,24 +20317,24 @@ jQuery.fn.ax5select = function () {
          * });
          * ```
          */
-        var ax5combobox = function ax5combobox() {
+        return function () {
             var self = this,
                 cfg;
 
             this.instanceId = ax5.getGuid();
             this.config = {
-                theme: 'default',
+                theme: "default",
                 animateTime: 250,
-                removeIcon: 'X',
+                removeIcon: "X",
                 lang: {
-                    noSelected: '',
-                    noOptions: 'no options',
-                    loading: 'now loading..'
+                    noSelected: "",
+                    noOptions: "no options",
+                    loading: "now loading.."
                 },
                 columnKeys: {
-                    optionValue: 'value',
-                    optionText: 'text',
-                    optionSelected: 'selected'
+                    optionValue: "value",
+                    optionText: "text",
+                    optionSelected: "selected"
                 }
             };
 
@@ -17870,13 +20421,17 @@ jQuery.fn.ax5select = function () {
                             var displayTableHeightAdjust = function () {
                                 return U.number(item.$display.css("border-top-width")) + U.number(item.$display.css("border-bottom-width"));
                             }.call(this);
-                            item.$target.height('');
-                            item.$display.height('');
+                            item.$target.height("");
+                            item.$display.height("");
 
                             var displayTableHeight = item.$displayTable.outerHeight();
                             if (Math.abs(displayTableHeight - item.$target.height()) > displayTableHeightAdjust) {
-                                item.$target.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
-                                item.$display.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
+                                item.$target.css({
+                                    height: displayTableHeight + displayTableHeightAdjust + 4
+                                });
+                                item.$display.css({
+                                    height: displayTableHeight + displayTableHeightAdjust + 4
+                                });
                             }
                         }
                     }
@@ -17930,7 +20485,6 @@ jQuery.fn.ax5select = function () {
                 this.activecomboboxOptionGroup.css(function () {
                     if (pickerDirection == "top") {
                         if (pos.top + dim.height + pickerDim.height + positionMargin > pickerDim.winHeight) {
-
                             var newTop = pos.top + dim.height / 2 - pickerDim.height / 2;
                             if (newTop + pickerDim.height + positionMargin > pickerDim.winHeight) {
                                 newTop = 0;
@@ -17979,7 +20533,6 @@ jQuery.fn.ax5select = function () {
                     this.close();
                     return this;
                 } else if (clickEl === "optionItem") {
-
                     setOptionSelect.call(this, item.id, {
                         index: {
                             gindex: target.getAttribute("data-option-group-index"),
@@ -18017,7 +20570,7 @@ jQuery.fn.ax5select = function () {
                 printLabel = function printLabel(queIdx) {
                 var item = this.queue[queIdx];
 
-                item.$displayLabel.find('[data-ax5combobox-selected-label]').remove();
+                item.$displayLabel.find("[data-ax5combobox-selected-label]").remove();
                 item.$displayLabelInput.before(getLabel.call(this, queIdx));
             },
                 focusLabel = function focusLabel(queIdx) {
@@ -18027,7 +20580,7 @@ jQuery.fn.ax5select = function () {
                 this.queue[queIdx].$displayLabelInput.focus();
             },
                 clearLabel = function clearLabel(queIdx) {
-                this.queue[queIdx].$displayLabelInput.val('');
+                this.queue[queIdx].$displayLabelInput.val("");
             },
                 blurLabel = function blurLabel(queIdx) {
                 this.queue[queIdx].$displayLabel.trigger("blur");
@@ -18043,7 +20596,6 @@ jQuery.fn.ax5select = function () {
                     item: this.queue[queIdx],
                     searchWord: searchWord
                 }, function (O) {
-
                     var data = {};
                     var item = this.queue[this.activecomboboxQueueIndex];
                     if (!item) return false;
@@ -18108,13 +20660,16 @@ jQuery.fn.ax5select = function () {
                     while (l - i++) {
                         n = this.queue[queIdx].indexedOptions[i];
 
-                        if (('' + n.text).toLowerCase() == searchWord.toLowerCase()) {
-                            options = [{ '@findex': n['@findex'], optionsSort: 0 }];
+                        if (("" + n.text).toLowerCase() == searchWord.toLowerCase()) {
+                            options = [{ "@findex": n["@findex"], optionsSort: 0 }];
                             break;
                         } else {
-                            var sort = ('' + n.text).toLowerCase().search(searchWord.toLowerCase());
+                            var sort = ("" + n.text).toLowerCase().search(searchWord.toLowerCase());
                             if (sort > -1) {
-                                options.push({ '@findex': n['@findex'], optionsSort: sort });
+                                options.push({
+                                    "@findex": n["@findex"],
+                                    optionsSort: sort
+                                });
                                 if (options.length > 2) break;
                             }
                             sort = null;
@@ -18126,7 +20681,7 @@ jQuery.fn.ax5select = function () {
                 }
 
                 if (options && options.length > 0) {
-                    focusMove.call(this, queIdx, undefined, options[0]['@findex']);
+                    focusMove.call(this, queIdx, undefined, options[0]["@findex"]);
                 } else {
                     focusClear.call(this, queIdx);
                 }
@@ -18142,7 +20697,7 @@ jQuery.fn.ax5select = function () {
             },
                 focusClear = function focusClear(queIdx) {
                 if (this.activecomboboxOptionGroup) {
-                    this.activecomboboxOptionGroup.find('[data-option-focus-index]').removeClass("hover").removeAttr("data-option-selected");
+                    this.activecomboboxOptionGroup.find("[data-option-focus-index]").removeClass("hover").removeAttr("data-option-selected");
                 }
 
                 this.queue[queIdx].optionFocusIndex = -1;
@@ -18152,7 +20707,6 @@ jQuery.fn.ax5select = function () {
                 var item = this.queue[queIdx];
 
                 if (this.activecomboboxOptionGroup && item.options && item.options.length > 0) {
-
                     if (typeof findex !== "undefined") {
                         _focusIndex = findex;
                     } else {
@@ -18190,7 +20744,7 @@ jQuery.fn.ax5select = function () {
                     }
 
                     if (typeof _focusIndex !== "undefined") {
-                        this.activecomboboxOptionGroup.find('[data-option-focus-index]').removeClass("hover");
+                        this.activecomboboxOptionGroup.find("[data-option-focus-index]").removeClass("hover");
 
                         focusOptionEl = this.activecomboboxOptionGroup.find('[data-option-focus-index="' + _focusIndex + '"]').addClass("hover");
 
@@ -18223,10 +20777,10 @@ jQuery.fn.ax5select = function () {
                     } else {
                         this.queue[queIdx].selected.push(jQuery.extend({}, O));
                         /*
-                         콤보박스는 selected가 없을 때 options의 첫번째 아이템이 selected가 되지 않는다.
-                         if (this.queue[queIdx].multiple) this.queue[queIdx].selected.push(jQuery.extend({}, O));
-                         else this.queue[queIdx].selected[0] = jQuery.extend({}, O);
-                         */
+                                     콤보박스는 selected가 없을 때 options의 첫번째 아이템이 selected가 되지 않는다.
+                                     if (this.queue[queIdx].multiple) this.queue[queIdx].selected.push(jQuery.extend({}, O));
+                                     else this.queue[queIdx].selected[0] = jQuery.extend({}, O);
+                                     */
                     }
                 };
 
@@ -18250,35 +20804,35 @@ jQuery.fn.ax5select = function () {
                             /// @gindex : index of optionGroup
                             /// @index : index of options (if you use optionGroup then the index is not unique)
                             if (O.optgroup) {
-                                O['@gindex'] = OIndex;
+                                O["@gindex"] = OIndex;
                                 O.options.forEach(function (OO, OOIndex) {
-                                    OO['@index'] = OOIndex;
-                                    OO['@findex'] = focusIndex;
-                                    po.push('<option value="' + OO[item.columnKeys.optionValue] + '" ' + (OO[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + OO[item.columnKeys.optionText] + '</option>');
+                                    OO["@index"] = OOIndex;
+                                    OO["@findex"] = focusIndex;
+                                    po.push('<option value="' + OO[item.columnKeys.optionValue] + '" ' + (OO[item.columnKeys.optionSelected] ? ' selected="selected"' : "") + ">" + OO[item.columnKeys.optionText] + "</option>");
                                     if (OO[item.columnKeys.optionSelected]) {
                                         setSelected.call(self, queIdx, OO);
                                     }
 
                                     item.indexedOptions.push({
-                                        '@gindex': OIndex,
-                                        '@index': OOIndex,
-                                        '@findex': focusIndex,
+                                        "@gindex": OIndex,
+                                        "@index": OOIndex,
+                                        "@findex": focusIndex,
                                         value: OO[item.columnKeys.optionValue],
                                         text: OO[item.columnKeys.optionText]
                                     });
                                     focusIndex++;
                                 });
                             } else {
-                                O['@index'] = OIndex;
-                                O['@findex'] = focusIndex;
-                                po.push('<option value="' + O[item.columnKeys.optionValue] + '" ' + (O[item.columnKeys.optionSelected] ? ' selected="selected"' : '') + '>' + O[item.columnKeys.optionText] + '</option>');
+                                O["@index"] = OIndex;
+                                O["@findex"] = focusIndex;
+                                po.push('<option value="' + O[item.columnKeys.optionValue] + '" ' + (O[item.columnKeys.optionSelected] ? ' selected="selected"' : "") + ">" + O[item.columnKeys.optionText] + "</option>");
                                 if (O[item.columnKeys.optionSelected]) {
                                     setSelected.call(self, queIdx, O);
                                 }
 
                                 item.indexedOptions.push({
-                                    '@index': OIndex,
-                                    '@findex': focusIndex,
+                                    "@index": OIndex,
+                                    "@findex": focusIndex,
                                     value: O[item.columnKeys.optionValue],
                                     text: O[item.columnKeys.optionText]
                                 });
@@ -18286,7 +20840,7 @@ jQuery.fn.ax5select = function () {
                             }
                         });
                         item.optionItemLength = focusIndex;
-                        item.$select.html(po.join(''));
+                        item.$select.html(po.join(""));
                     } else {
                         /// select > options 태그로 스크립트 options를 만들어주는 역할
                         if (item.$select.get(0).options && item.$select.get(0).options.length) item.$select.get(0).options[0].selected = false;
@@ -18299,8 +20853,8 @@ jQuery.fn.ax5select = function () {
                             option[item.columnKeys.optionValue] = O.value;
                             option[item.columnKeys.optionText] = O.text;
                             option[item.columnKeys.optionSelected] = O.selected;
-                            option['@index'] = OIndex;
-                            option['@findex'] = focusIndex;
+                            option["@index"] = OIndex;
+                            option["@findex"] = focusIndex;
                             if (O.selected) setSelected.call(self, queIdx, option);
                             newOptions.push(option);
                             focusIndex++;
@@ -18354,13 +20908,12 @@ jQuery.fn.ax5select = function () {
             },
                 setOptionSelect = function () {
                 var processor = {
-                    'index': function index(queIdx, value, selected, setValueType) {
+                    index: function index(queIdx, value, selected, setValueType) {
                         // 클래스 내부에서 호출된 형태, 그런 이유로 옵션그룹에 대한 상태를 변경 하고 있다.
                         var item = this.queue[queIdx];
 
                         if (U.isString(value.index.gindex)) {
                             if (typeof item.options[value.index.gindex] !== "undefined") {
-
                                 item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.gindex].options[value.index.index][item.columnKeys.optionSelected], selected);
 
                                 if (self.activecomboboxOptionGroup) {
@@ -18369,7 +20922,6 @@ jQuery.fn.ax5select = function () {
                             }
                         } else {
                             if (typeof item.options[value.index.index] !== "undefined") {
-
                                 item.options[value.index.index][item.columnKeys.optionSelected] = getSelected(item, item.options[value.index.index][item.columnKeys.optionSelected], selected);
 
                                 if (self.activecomboboxOptionGroup) {
@@ -18383,7 +20935,7 @@ jQuery.fn.ax5select = function () {
                             alignComboboxOptionGroup.call(this);
                         }
                     },
-                    'arr': function arr(queIdx, values, selected, setValueType) {
+                    arr: function arr(queIdx, values, selected, setValueType) {
                         values.forEach(function (value) {
                             if (U.isString(value) || U.isNumber(value)) {
                                 processor.text.call(self, queIdx, value, selected, "justSetValue");
@@ -18400,7 +20952,7 @@ jQuery.fn.ax5select = function () {
                         syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
                         alignComboboxOptionGroup.call(this);
                     },
-                    'value': function value(queIdx, _value3, selected, setValueType) {
+                    value: function value(queIdx, _value3, selected, setValueType) {
                         var item = this.queue[queIdx];
                         var addOptions;
                         var optionIndex = U.search(item.options, function () {
@@ -18427,7 +20979,7 @@ jQuery.fn.ax5select = function () {
                             alignComboboxOptionGroup.call(this);
                         }
                     },
-                    'text': function text(queIdx, value, selected, setValueType) {
+                    text: function text(queIdx, value, selected, setValueType) {
                         var item = this.queue[queIdx];
                         var addOptions;
                         var optionIndex = U.search(item.options, function () {
@@ -18454,14 +21006,14 @@ jQuery.fn.ax5select = function () {
                             alignComboboxOptionGroup.call(this);
                         }
                     },
-                    'clear': function clear(queIdx) {
+                    clear: function clear(queIdx) {
                         clearSelected.call(this, queIdx);
                         syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
                         //focusLabel.call(this, queIdx);
                         focusClear.call(this, queIdx);
 
                         if (this.activecomboboxOptionGroup) {
-                            this.activecomboboxOptionGroup.find('[data-option-index]').attr("data-option-Selected", "false");
+                            this.activecomboboxOptionGroup.find("[data-option-index]").attr("data-option-Selected", "false");
                         }
                         this.queue[queIdx].optionSelectedIndex = -1;
                     }
@@ -18501,7 +21053,7 @@ jQuery.fn.ax5select = function () {
 
                     syncComboboxOptions.call(this, queIdx, this.queue[queIdx].options);
                     printLabel.call(this, queIdx);
-                    focusLabel.call(this, queIdx);
+                    // focusLabel.call(this, queIdx);
 
                     if (typeof value !== "undefined") {
                         if (_option && !_option.noStateChange) {
@@ -18533,7 +21085,7 @@ jQuery.fn.ax5select = function () {
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
                 this.onChange = cfg.onChange;
-                jQuery(window).bind("resize.ax5combobox-display-" + this.instanceId, function () {
+                jQuery(window).on("resize.ax5combobox-display-" + this.instanceId, function () {
                     alignComboboxDisplay.call(this);
                 }.bind(this));
             };
@@ -18561,7 +21113,7 @@ jQuery.fn.ax5select = function () {
                     };
 
                     var comboboxEvent = {
-                        'click': function click(queIdx, e) {
+                        click: function click(queIdx, e) {
                             var clickEl;
                             var target = U.findParentNode(e.target, function (target) {
                                 if (target.getAttribute("data-ax5combobox-remove")) {
@@ -18579,8 +21131,8 @@ jQuery.fn.ax5select = function () {
                                     var option = this.queue[queIdx].selected[selectedIndex];
                                     setOptionSelect.call(this, queIdx, {
                                         index: {
-                                            gindex: option['@gindex'],
-                                            index: option['@index']
+                                            gindex: option["@gindex"],
+                                            index: option["@index"]
                                         }
                                     }, false, true);
                                     alignComboboxDisplay.call(this);
@@ -18606,7 +21158,7 @@ jQuery.fn.ax5select = function () {
                                 }
                             }
                         },
-                        'keyUp': function keyUp(queIdx, e) {
+                        keyUp: function keyUp(queIdx, e) {
                             /// 약속된 키 이벤트가 발생하면 stopEvent를 통해 keyUp 이벤트가 발생되지 않도록 막아주는 센스
                             if (e.which == ax5.info.eventKeys.ESC && self.activecomboboxQueueIndex === -1) {
                                 // ESC키를 누르고 옵션그룹이 열려있지 않은 경우
@@ -18624,7 +21176,6 @@ jQuery.fn.ax5select = function () {
                                 "38": "KEY_UP"
                             };
                             if (!disableCtrlKeys[e.which]) {
-
                                 // backspace 감지 하여 input 값이 없으면 스탑이벤트 처리 할 것
                                 if (e.which == ax5.info.eventKeys.BACKSPACE && this.queue[queIdx].$displayLabelInput.val() == "") {
                                     // 마지막 아이템을 제거.
@@ -18632,8 +21183,8 @@ jQuery.fn.ax5select = function () {
                                         var option = this.queue[queIdx].selected[this.queue[queIdx].selected.length - 1];
                                         setOptionSelect.call(this, queIdx, {
                                             index: {
-                                                gindex: option['@gindex'],
-                                                index: option['@index']
+                                                gindex: option["@gindex"],
+                                                index: option["@index"]
                                             }
                                         }, false, true);
                                     }
@@ -18645,13 +21196,12 @@ jQuery.fn.ax5select = function () {
                                 }
                             }
                         },
-                        'keyDown': function keyDown(queIdx, e) {
+                        keyDown: function keyDown(queIdx, e) {
                             if (e.which == ax5.info.eventKeys.ESC) {
                                 clearLabel.call(this, queIdx);
                                 this.close();
                                 U.stopEvent(e);
                             } else if (e.which == ax5.info.eventKeys.RETURN) {
-
                                 setOptionSelect.call(this, item.id, {
                                     index: {
                                         gindex: item.indexedOptions[item.optionFocusIndex]["@gindex"],
@@ -18673,14 +21223,14 @@ jQuery.fn.ax5select = function () {
                                 U.stopEvent(e);
                             }
                         },
-                        'focus': function focus(queIdx, e) {
+                        focus: function focus(queIdx, e) {
                             //console.log(e);
                         },
-                        'blur': function blur(queIdx, e) {
+                        blur: function blur(queIdx, e) {
                             blurLabel.call(this, queIdx);
                             U.stopEvent(e);
                         },
-                        'selectChange': function selectChange(queIdx, e) {
+                        selectChange: function selectChange(queIdx, e) {
                             setOptionSelect.call(this, queIdx, { value: this.queue[queIdx].$select.val() }, true);
                         }
                     };
@@ -18738,16 +21288,15 @@ jQuery.fn.ax5select = function () {
 
                         alignComboboxDisplay.call(this);
 
-                        item.$display.unbind('click.ax5combobox').bind('click.ax5combobox', comboboxEvent.click.bind(this, queIdx));
+                        item.$display.off("click.ax5combobox").on("click.ax5combobox", comboboxEvent.click.bind(this, queIdx));
 
                         // combobox 태그에 대한 이벤트 감시
 
-
-                        item.$displayLabelInput.unbind("focus.ax5combobox").bind("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx)).unbind("blur.ax5combobox").bind("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx)).unbind('keyup.ax5combobox').bind('keyup.ax5combobox', comboboxEvent.keyUp.bind(this, queIdx)).unbind("keydown.ax5combobox").bind("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
+                        item.$displayLabelInput.off("focus.ax5combobox").on("focus.ax5combobox", comboboxEvent.focus.bind(this, queIdx)).off("blur.ax5combobox").on("blur.ax5combobox", comboboxEvent.blur.bind(this, queIdx)).off("keyup.ax5combobox").on("keyup.ax5combobox", comboboxEvent.keyUp.bind(this, queIdx)).off("keydown.ax5combobox").on("keydown.ax5combobox", comboboxEvent.keyDown.bind(this, queIdx));
 
                         // select 태그에 대한 change 이벤트 감시
 
-                        item.$select.unbind('change.ax5combobox').bind('change.ax5combobox', comboboxEvent.selectChange.bind(this, queIdx));
+                        item.$select.off("change.ax5combobox").on("change.ax5combobox", comboboxEvent.selectChange.bind(this, queIdx));
 
                         data = null;
                         item = null;
@@ -18769,7 +21318,7 @@ jQuery.fn.ax5select = function () {
 
                 if (!item.id) item.id = item.$target.data("data-ax5combobox-id");
                 if (!item.id) {
-                    item.id = 'ax5combobox-' + ax5.getGuid();
+                    item.id = "ax5combobox-" + ax5.getGuid();
                     item.$target.data("data-ax5combobox-id", item.id);
                 }
                 item.name = item.$target.attr("data-ax5combobox");
@@ -18846,10 +21395,10 @@ jQuery.fn.ax5select = function () {
                             data.lang = item.lang;
                             data.options = item.options;
                             /*
-                             this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
-                             ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)
-                             ));
-                             */
+                                       this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(
+                                       ax5.mustache.render(COMBOBOX.tmpl["options"].call(this, item.columnKeys), data)
+                                       ));
+                                       */
                             this.activecomboboxOptionGroup.find('[data-els="content"]').html(jQuery(COMBOBOX.tmpl.get.call(this, "options", data, item.columnKeys)));
                         }
                     }.bind(this));
@@ -18912,7 +21461,7 @@ jQuery.fn.ax5select = function () {
                     this.activecomboboxQueueIndex = queIdx;
 
                     alignComboboxOptionGroup.call(this, "append"); // alignComboboxOptionGroup 에서 body append
-                    jQuery(window).bind("resize.ax5combobox-" + this.instanceId, function () {
+                    jQuery(window).on("resize.ax5combobox-" + this.instanceId, function () {
                         alignComboboxOptionGroup.call(this);
                     }.bind(this));
 
@@ -18920,11 +21469,11 @@ jQuery.fn.ax5select = function () {
                         selectedOptionEl = this.activecomboboxOptionGroup.find('[data-option-index="' + item.selected[0]["@index"] + '"]');
                         if (selectedOptionEl.get(0)) {
                             focusTop = selectedOptionEl.position().top - this.activecomboboxOptionGroup.height() / 3;
-                            this.activecomboboxOptionGroup.find('[data-els="content"]').stop().animate({ scrollTop: focusTop }, item.animateTime, 'swing', function () {});
+                            this.activecomboboxOptionGroup.find('[data-els="content"]').stop().animate({ scrollTop: focusTop }, item.animateTime, "swing", function () {});
                         }
                     }
 
-                    jQuery(window).bind("click.ax5combobox-" + this.instanceId, function (e) {
+                    jQuery(window).on("click.ax5combobox-" + this.instanceId, function (e) {
                         e = e || window.event;
                         onBodyClick.call(this, e);
                         U.stopEvent(e);
@@ -18984,7 +21533,9 @@ jQuery.fn.ax5select = function () {
                     var _values = U.map(_value, function () {
                         return { value: this };
                     });
-                    setOptionSelect.call(this, queIdx, _values, _selected || true, { noStateChange: true });
+                    setOptionSelect.call(this, queIdx, _values, _selected || true, {
+                        noStateChange: true
+                    });
                 } else if (U.isString(_value) || U.isNumber(_value)) {
                     setOptionSelect.call(this, queIdx, { value: _value }, _selected || true, { noStateChange: true });
                 } else {
@@ -19016,7 +21567,9 @@ jQuery.fn.ax5select = function () {
                     return;
                 }
                 clearSelected.call(this, queIdx);
-                setOptionSelect.call(this, queIdx, _text, true, { noStateChange: true });
+                setOptionSelect.call(this, queIdx, _text, true, {
+                    noStateChange: true
+                });
                 blurLabel.call(this, queIdx);
                 alignComboboxDisplay.call(this);
 
@@ -19052,7 +21605,7 @@ jQuery.fn.ax5select = function () {
 
                 this.activecomboboxOptionGroup.addClass("destroy");
 
-                jQuery(window).unbind("resize.ax5combobox-" + this.instanceId).unbind("click.ax5combobox-" + this.instanceId).unbind("keyup.ax5combobox-" + this.instanceId);
+                jQuery(window).off("resize.ax5combobox-" + this.instanceId).off("click.ax5combobox-" + this.instanceId).off("keyup.ax5combobox-" + this.instanceId);
 
                 this.closeTimer = setTimeout(function () {
                     if (this.activecomboboxOptionGroup) this.activecomboboxOptionGroup.remove();
@@ -19145,6 +21698,29 @@ jQuery.fn.ax5select = function () {
                 return this;
             };
 
+            /**
+             * @method ax5combobox.clear
+             * @param {(jQueryObject|Element|Number)} _boundID
+             * @returns {ax5combobox}
+             */
+            this.clear = function (_boundID) {
+                var queIdx = U.isNumber(_boundID) ? _boundID : getQueIdx.call(this, _boundID);
+                if (queIdx === -1) {
+                    console.log(ax5.info.getError("ax5combobox", "402", "clear"));
+                    return;
+                }
+
+                clearSelected.call(this, queIdx);
+                setOptionSelect.call(this, queIdx, [], false, {
+                    noStateChange: false
+                });
+                printLabel.call(this, queIdx);
+                blurLabel.call(this, queIdx);
+                alignComboboxDisplay.call(this);
+
+                return this;
+            };
+
             // 클래스 생성자
             this.main = function () {
                 if (arguments && U.isObject(arguments[0])) {
@@ -19154,86 +21730,10 @@ jQuery.fn.ax5select = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5combobox;
     }());
 
     COMBOBOX = ax5.ui.combobox;
 })();
-
-/**
- * ax5combobox jquery extends
- * @namespace jQueryExtends
- */
-
-/**
- * @method jQueryExtends.ax5combobox
- * @param {String} methodName
- * @param [arguments]
- * @param [arguments]
- * @example
- * ```html
- * <div data-ax5combobox="ax1" data-ax5combobox-config='{
- *  multiple: true,
- *  editable: true,
- *  size: "",
- *  theme:""
- *  }'></div>
- * <script>
- * jQuery('[data-ax5combobox="ax1"]').ax5combobox();
- * $('[data-ax5combobox="ax1"]').ax5combobox("getSelectedOption");
- * $('[data-ax5combobox="ax1"]').ax5combobox("setValue", ["string", "number"]);
- * $('[data-ax5combobox="ax1"]').ax5combobox("enable");
- * $('[data-ax5combobox="ax1"]').ax5combobox("disable");
- * </script>
- * ```
- */
-
-ax5.ui.combobox_instance = new ax5.ui.combobox();
-jQuery.fn.ax5combobox = function () {
-    return function (config) {
-        if (ax5.util.isString(arguments[0])) {
-            var methodName = arguments[0];
-
-            switch (methodName) {
-                case "open":
-                    return ax5.ui.combobox_instance.open(this);
-                    break;
-                case "close":
-                    return ax5.ui.combobox_instance.close(this);
-                    break;
-                case "setValue":
-                    return ax5.ui.combobox_instance.setValue(this, arguments[1], arguments[2], arguments[3], arguments[4] || "justSetValue");
-                    break;
-                case "setText":
-                    return ax5.ui.combobox_instance.setText(this, arguments[1], arguments[2], arguments[3], arguments[4] || "justSetValue");
-                    break;
-                case "getSelectedOption":
-                    return ax5.ui.combobox_instance.getSelectedOption(this);
-                    break;
-                case "enable":
-                    return ax5.ui.combobox_instance.enable(this);
-                    break;
-                case "disable":
-                    return ax5.ui.combobox_instance.disable(this);
-                    break;
-                case "blur":
-                    return ax5.ui.combobox_instance.blur(this);
-                default:
-                    return this;
-            }
-        } else {
-            if (typeof config == "undefined") config = {};
-            jQuery.each(this, function () {
-                var defaultConfig = {
-                    target: this
-                };
-                config = jQuery.extend({}, config, defaultConfig);
-                ax5.ui.combobox_instance.bind(config);
-            });
-        }
-        return this;
-    };
-}();
 
 // ax5.ui.combobox.tmpl
 (function () {
@@ -19262,7 +21762,7 @@ jQuery.fn.ax5combobox = function () {
     };
 
     var label = function label(columnKeys) {
-        return '{{#selected}}<div tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}"><div data-ax5combobox-remove="true" \ndata-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}';
+        return '{{#selected}}<div tabindex="-1" data-ax5combobox-selected-label="{{@i}}" data-ax5combobox-selected-text="{{text}}"><div data-ax5combobox-remove="true" \ndata-ax5combobox-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{' + columnKeys.optionText + '}}</span></div>{{/selected}}';
     };
 
     COMBOBOX.tmpl = {
@@ -19370,34 +21870,103 @@ jQuery.fn.ax5combobox = function () {
         nodeTypeProcessor: nodeTypeProcessor
     };
 })();
+
+/*
+ * Copyright (c) 2017. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
+/**
+ * ax5combobox jquery extends
+ * @namespace jQueryExtends
+ */
+
+/**
+ * @method jQueryExtends.ax5combobox
+ * @param {String} methodName
+ * @param [arguments]
+ * @param [arguments]
+ * @example
+ * ```html
+ * <div data-ax5combobox="ax1" data-ax5combobox-config='{
+ *  multiple: true,
+ *  editable: true,
+ *  size: "",
+ *  theme:""
+ *  }'></div>
+ * <script>
+ * jQuery('[data-ax5combobox="ax1"]').ax5combobox();
+ * $('[data-ax5combobox="ax1"]').ax5combobox("getSelectedOption");
+ * $('[data-ax5combobox="ax1"]').ax5combobox("setValue", ["string", "number"]);
+ * $('[data-ax5combobox="ax1"]').ax5combobox("enable");
+ * $('[data-ax5combobox="ax1"]').ax5combobox("disable");
+ * </script>
+ * ```
+ */
+
+ax5.ui.combobox_instance = new ax5.ui.combobox();
+jQuery.fn.ax5combobox = function () {
+    return function (config) {
+        if (ax5.util.isString(arguments[0])) {
+            var methodName = arguments[0];
+
+            switch (methodName) {
+                case "open":
+                    return ax5.ui.combobox_instance.open(this);
+                    break;
+                case "close":
+                    return ax5.ui.combobox_instance.close(this);
+                    break;
+                case "setValue":
+                    return ax5.ui.combobox_instance.setValue(this, arguments[1], arguments[2], arguments[3], arguments[4] || "justSetValue");
+                    break;
+                case "setText":
+                    return ax5.ui.combobox_instance.setText(this, arguments[1], arguments[2], arguments[3], arguments[4] || "justSetValue");
+                    break;
+                case "getSelectedOption":
+                    return ax5.ui.combobox_instance.getSelectedOption(this);
+                    break;
+                case "enable":
+                    return ax5.ui.combobox_instance.enable(this);
+                    break;
+                case "disable":
+                    return ax5.ui.combobox_instance.disable(this);
+                    break;
+                case "blur":
+                    return ax5.ui.combobox_instance.blur(this);
+                case "clear":
+                    return ax5.ui.combobox_instance.clear(this);
+                default:
+                    return this;
+            }
+        } else {
+            if (typeof config == "undefined") config = {};
+            jQuery.each(this, function () {
+                var defaultConfig = {
+                    target: this
+                };
+                config = jQuery.extend({}, config, defaultConfig);
+                ax5.ui.combobox_instance.bind(config);
+            });
+        }
+        return this;
+    };
+}();
 // ax5.ui.layout
 (function () {
     var UI = ax5.ui;
     var U = ax5.util;
 
     UI.addClass({
-        className: "layout",
-        version: "1.3.82"
+        className: "layout"
     }, function () {
         /**
          * @class ax5layout
          * @alias ax5.ui.layout
          * @author tom@axisj.com
-         * @example
-         * ```js
-         * jQuery('[data-ax5layout="ax1"]').ax5layout({
-         *     onResize: function () {
-         *     }
-         * });
-         *
-         * jQuery('[data-ax5layout="ax1"]').ax5layout("resize", {
-         *     top: {height: 100},
-         *     bottom: 100,
-         *     left: 100,
-         *     right: 100
-         * });
-         * ```
          */
+
         var ax5layout = function ax5layout() {
             var self = this,
                 cfg,
@@ -19407,7 +21976,7 @@ jQuery.fn.ax5combobox = function () {
                 "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
             },
                 getMousePosition = function getMousePosition(e) {
-                var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
                 return {
                     clientX: mouseObj.clientX,
                     clientY: mouseObj.clientY
@@ -19419,7 +21988,7 @@ jQuery.fn.ax5combobox = function () {
                 theme: 'default',
                 animateTime: 250,
                 splitter: {
-                    size: 4
+                    size: 1
                 },
                 autoResize: true
             };
@@ -19713,10 +22282,10 @@ jQuery.fn.ax5combobox = function () {
                         });
                     }
                 };
-                var childResize = function childResize(item) {
+                var childResize = function childResize(item, callback, windowResize) {
                     var i = item.childQueIdxs.length;
                     while (i--) {
-                        alignLayout.call(this, item.childQueIdxs[i]);
+                        alignLayout.call(this, item.childQueIdxs[i], callback, windowResize);
                     }
                 };
 
@@ -19733,7 +22302,7 @@ jQuery.fn.ax5combobox = function () {
                         layoutProcessor[item.layout].call(this, item, windowResize);
                     }
 
-                    if (item.childQueIdxs) childResize.call(this, item, windowResize);
+                    if (item.childQueIdxs) childResize.call(this, item, callback, windowResize);
                     if (item.onResize) {
                         setTimeout(function () {
                             this.onResize.call(this, this);
@@ -19753,7 +22322,7 @@ jQuery.fn.ax5combobox = function () {
                     };
                     var getResizerPosition = {
                         "left": function left(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
                             var minWidth = panel.minWidth || 0;
@@ -19767,7 +22336,7 @@ jQuery.fn.ax5combobox = function () {
                             return { left: panel.$splitter.position().left + panel.__da };
                         },
                         "right": function right(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             panel.__da = mouseObj.clientX - panel.mousePosition.clientX;
                             var minWidth = panel.minWidth || 0;
@@ -19781,7 +22350,7 @@ jQuery.fn.ax5combobox = function () {
                             return { left: panel.$splitter.position().left + panel.__da };
                         },
                         "top": function top(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
                             var minHeight = panel.minHeight || 0;
@@ -19795,7 +22364,7 @@ jQuery.fn.ax5combobox = function () {
                             return { top: panel.$splitter.position().top + panel.__da };
                         },
                         "bottom": function bottom(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
                             var minHeight = panel.minHeight || 0;
@@ -19809,7 +22378,7 @@ jQuery.fn.ax5combobox = function () {
                             return { top: panel.$splitter.position().top + panel.__da };
                         },
                         "split": function split(e) {
-                            var mouseObj = 'changedTouches' in e.originalEvent ? e.originalEvent.changedTouches[0] : e;
+                            var mouseObj = 'changedTouches' in e.originalEvent && e.changedTouches ? e.originalEvent.changedTouches[0] : e;
 
                             if (item.orientation == "horizontal") {
                                 panel.__da = mouseObj.clientY - panel.mousePosition.clientY;
@@ -20110,7 +22679,7 @@ jQuery.fn.ax5combobox = function () {
                 this.queue[queIdx].childQueIdxs.push(childQueIdx);
                 this.queue[childQueIdx].parentQueIdx = queIdx;
             };
-            /// private end
+
             /**
              * Preferences of layout UI
              * @method ax5layout.setConfig
@@ -20122,6 +22691,17 @@ jQuery.fn.ax5combobox = function () {
              * @returns {ax5layout}
              * @example
              * ```js
+             * jQuery('[data-ax5layout="ax1"]').ax5layout({
+             *     onResize: function () {
+             *     }
+             * });
+             *
+             * jQuery('[data-ax5layout="ax1"]').ax5layout("resize", {
+             *     top: {height: 100},
+             *     bottom: 100,
+             *     left: 100,
+             *     right: 100
+             * });
              * ```
              */
             this.init = function () {
@@ -20201,6 +22781,7 @@ jQuery.fn.ax5combobox = function () {
                 var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
 
                 if (queIdx === -1) {
+
                     var i = this.queue.length;
                     while (i--) {
                         alignLayout.call(this, i, null, windowResize);
@@ -20329,6 +22910,18 @@ jQuery.fn.ax5combobox = function () {
                 };
             }();
 
+            this.getActiveTab = function (boundID) {
+                var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID);
+                if (queIdx === -1) {
+                    console.log(ax5.info.getError("ax5layout", "402", "tabOpen"));
+                    return;
+                }
+
+                if (typeof this.queue[queIdx].activePanelIndex != "undefined") {
+                    return this.queue[queIdx].tabPanel[this.queue[queIdx].activePanelIndex];
+                }
+            };
+
             /// 클래스 생성자
             this.main = function () {
                 if (arguments && U.isObject(arguments[0])) {
@@ -20342,6 +22935,12 @@ jQuery.fn.ax5combobox = function () {
     }());
 })();
 
+/*
+ * Copyright (c) 2017. tom@axisj.com
+ * - github.com/thomasjang
+ * - www.axisj.com
+ */
+
 ax5.ui.layout_instance = new ax5.ui.layout();
 
 /**
@@ -20354,10 +22953,14 @@ ax5.ui.layout_instance = new ax5.ui.layout();
  * @param {String} methodName
  * @example
  * ```js
- * jQuery('[data-ax5layout="ax1"]').ax5layout();
+ * jQuery('[data-ax5layout="ax1"]').ax5layout("align");
+ * jQuery('[data-ax5layout="ax1"]').ax5layout("resize");
+ * jQuery('[data-ax5layout="ax1"]').ax5layout("reset");
+ * jQuery('[data-ax5layout="ax1"]').ax5layout("hide");
+ * jQuery('[data-ax5layout="ax1"]').ax5layout("onResize");
+ * jQuery('[data-ax5layout="ax1"]').ax5layout("tabOpen", 1);
  * ```
  */
-
 jQuery.fn.ax5layout = function () {
     return function (config) {
         if (ax5.util.isString(arguments[0])) {
@@ -20382,6 +22985,9 @@ jQuery.fn.ax5layout = function () {
                 case "tabOpen":
                     return ax5.ui.layout_instance.tabOpen(this, arguments[1]);
                     break;
+                case "getActiveTab":
+                    return ax5.ui.layout_instance.getActiveTab(this, arguments[1]);
+                    break;
                 default:
                     return this;
             }
@@ -20405,8 +23011,7 @@ jQuery.fn.ax5layout = function () {
     var U = ax5.util;
 
     UI.addClass({
-        className: "binder",
-        version: "1.3.82"
+        className: "binder"
     }, function () {
 
         /**
@@ -20452,7 +23057,7 @@ jQuery.fn.ax5layout = function () {
          * myBinder.setModel(obj, $('#form-target'));
          * ```
          */
-        var ax5binder = function ax5binder() {
+        return function () {
 
             var self = this,
                 cfg;
@@ -20911,7 +23516,7 @@ jQuery.fn.ax5layout = function () {
                 }
 
                 // binding event to els
-                this.view_target.find('[data-ax-path]').unbind("change.axbinder").bind("change.axbinder", function (e) {
+                this.view_target.find('[data-ax-path]').off("change.axbinder").on("change.axbinder", function (e) {
 
                     var i,
                         hasItem = false,
@@ -21122,7 +23727,7 @@ jQuery.fn.ax5layout = function () {
                     index = target.attr("data-ax-repeat-i");
                 var list = Function("", "return this" + get_real_path(dataPath) + ";").call(this.model);
 
-                target.find('[data-ax-repeat-click]').unbind("click.axbinder").bind("click.axbinder", function (e) {
+                target.find('[data-ax-repeat-click]').off("click.axbinder").on("click.axbinder", function (e) {
                     var target = ax5.util.findParentNode(e.target, function (el) {
                         return el.getAttribute("data-ax-repeat-click");
                     });
@@ -21130,7 +23735,6 @@ jQuery.fn.ax5layout = function () {
                         var dom = $(target),
                             value = dom.attr("data-ax-repeat-click"),
                             repeat_path = dom.attr("data-ax-repeat-path");
-
                         var that = {
                             el: target,
                             jquery: dom,
@@ -21166,7 +23770,7 @@ jQuery.fn.ax5layout = function () {
                 });
 
                 // binding event to els
-                target.find('[data-ax-item-path]').unbind("change.axbinder").bind("change.axbinder", function (e) {
+                target.find('[data-ax-item-path]').off("change.axbinder").on("change.axbinder", function (e) {
                     var i,
                         hasItem = false,
                         checked,
@@ -21227,7 +23831,8 @@ jQuery.fn.ax5layout = function () {
 
                     dom.data("changedTime", new Date().getTime());
                 });
-                target.find('[data-ax-item-path]').unbind("blur.axbinder").bind("blur.axbinder", function (e) {
+
+                target.find('[data-ax-item-path]').off("blur.axbinder").on("blur.axbinder", function (e) {
                     var dom = $(e.target);
                     if (typeof dom.data("changedTime") == "undefined" || dom.data("changedTime") < new Date().getTime() - 10) dom.trigger("change");
                 });
@@ -21275,7 +23880,7 @@ jQuery.fn.ax5layout = function () {
                         var val, _val, is_error;
 
                         val = Function("", "return this" + get_real_path(dataPath) + ";").call(_this.model);
-                        if (typeof val === "undefined") val = "";
+                        if (typeof val === "undefined" || val === null) val = "";
                         _val = val.toString();
                         is_error = false;
 
@@ -21355,7 +23960,6 @@ jQuery.fn.ax5layout = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5binder;
     }());
 })();
 // ax5.ui.autocomplete
@@ -21363,11 +23967,10 @@ jQuery.fn.ax5layout = function () {
 
     var UI = ax5.ui;
     var U = ax5.util;
-    var AUTOCOMPLETE;
+    var AUTOCOMPLETE = void 0;
 
     UI.addClass({
-        className: "autocomplete",
-        version: "1.3.82"
+        className: "autocomplete"
     }, function () {
         /**
          * @class ax5autocomplete
@@ -21408,7 +24011,7 @@ jQuery.fn.ax5layout = function () {
          * });
          * ```
          */
-        var ax5autocomplete = function ax5autocomplete() {
+        return function () {
             var self = this,
                 cfg;
 
@@ -21516,7 +24119,8 @@ jQuery.fn.ax5layout = function () {
                             item.$display.height('');
 
                             var displayTableHeight = item.$displayTable.outerHeight();
-                            if (Math.abs(displayTableHeight - item.$target.height()) > displayTableHeightAdjust) {
+                            //debugger;
+                            if (Math.abs(displayTableHeight - item.$target.height()) >= displayTableHeightAdjust) {
                                 item.$target.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
                                 item.$display.css({ height: displayTableHeight + displayTableHeightAdjust + 4 });
                             }
@@ -21730,7 +24334,7 @@ jQuery.fn.ax5layout = function () {
                     data.multiple = item.multiple;
                     data.lang = item.lang;
                     data.options = item.options;
-                    this.activeautocompleteOptionGroup.find('[data-els="content"]').html(jQuery(AUTOCOMPLETE.tmpl.get.call(this, "options", data, item.columnKeys)));
+                    this.activeautocompleteOptionGroup.find('[data-els="content"]').html(AUTOCOMPLETE.tmpl.get.call(this, "options", data, item.columnKeys));
 
                     focusWord.call(this, this.activeautocompleteQueueIndex, searchWord);
                     alignAutocompleteOptionGroup.call(this);
@@ -22124,7 +24728,7 @@ jQuery.fn.ax5layout = function () {
             this.init = function () {
                 this.onStateChanged = cfg.onStateChanged;
                 this.onChange = cfg.onChange;
-                jQuery(window).bind("resize.ax5autocomplete-display-" + this.instanceId, function () {
+                jQuery(window).on("resize.ax5autocomplete-display-" + this.instanceId, function () {
                     alignAutocompleteDisplay.call(this);
                 }.bind(this));
             };
@@ -22192,7 +24796,7 @@ jQuery.fn.ax5layout = function () {
                         },
                         'keyUp': function keyUp(queIdx, e) {
                             /// 약속된 키 이벤트가 발생하면 stopEvent를 통해 keyUp 이벤트가 발생되지 않도록 막아주는 센스
-                            if (e.which == ax5.info.eventKeys.ESC && self.activeautocompleteQueueIndex === -1) {
+                            if (e.which == ax5.info.eventKeys.ESC && this.activeautocompleteQueueIndex === -1) {
                                 // ESC키를 누르고 옵션그룹이 열려있지 않은 경우
                                 U.stopEvent(e);
                                 return this;
@@ -22203,9 +24807,9 @@ jQuery.fn.ax5layout = function () {
                                 this.close();
                                 return this;
                             }
-                            if (self.activeautocompleteQueueIndex != queIdx) {
+                            if (this.activeautocompleteQueueIndex != queIdx) {
                                 // 닫힌 상태 인경우
-                                self.open(queIdx); // open and align
+                                this.open(queIdx); // open and align
                             }
                             if (ctrlKeys[e.which]) {
                                 U.stopEvent(e);
@@ -22311,15 +24915,14 @@ jQuery.fn.ax5layout = function () {
 
                         alignAutocompleteDisplay.call(this);
 
-                        item.$display.unbind('click.ax5autocomplete').bind('click.ax5autocomplete', autocompleteEvent.click.bind(this, queIdx));
+                        item.$display.off('click.ax5autocomplete').on('click.ax5autocomplete', autocompleteEvent.click.bind(this, queIdx));
 
                         // autocomplete 태그에 대한 이벤트 감시
-
-                        item.$displayLabelInput.off("focus.ax5autocomplete").on("focus.ax5autocomplete", autocompleteEvent.focus.bind(this, queIdx)).off("blur.ax5autocomplete").on("blur.ax5autocomplete", autocompleteEvent.blur.bind(this, queIdx)).off("keydown.ax5autocomplete").on("keydown.ax5autocomplete", autocompleteEvent.keyUp.bind(this, queIdx)).off("keyup.ax5autocomplete").on("keyup.ax5autocomplete", autocompleteEvent.keyDown.bind(this, queIdx));
+                        item.$displayLabelInput.off("focus.ax5autocomplete").on("focus.ax5autocomplete", autocompleteEvent.focus.bind(this, queIdx)).off("blur.ax5autocomplete").on("blur.ax5autocomplete", autocompleteEvent.blur.bind(this, queIdx)).off("keydown.ax5autocomplete").on("keydown.ax5autocomplete", autocompleteEvent.keyDown.bind(this, queIdx)).off("keyup.ax5autocomplete").on("keyup.ax5autocomplete", autocompleteEvent.keyUp.bind(this, queIdx));
 
                         // select 태그에 대한 change 이벤트 감시
 
-                        item.$select.unbind('change.ax5autocomplete').bind('change.ax5autocomplete', autocompleteEvent.selectChange.bind(this, queIdx));
+                        item.$select.off('change.ax5autocomplete').on('change.ax5autocomplete', autocompleteEvent.selectChange.bind(this, queIdx));
 
                         data = null;
                         item = null;
@@ -22429,11 +25032,11 @@ jQuery.fn.ax5layout = function () {
                     data.options = [];
 
                     this.activeautocompleteOptionGroup = jQuery(AUTOCOMPLETE.tmpl.get.call(this, "optionGroup", data, item.columnKeys));
-                    this.activeautocompleteOptionGroup.find('[data-els="content"]').html(jQuery(AUTOCOMPLETE.tmpl.get.call(this, "options", data, item.columnKeys)));
+                    this.activeautocompleteOptionGroup.find('[data-els="content"]').html(AUTOCOMPLETE.tmpl.get.call(this, "options", data, item.columnKeys));
                     this.activeautocompleteQueueIndex = queIdx;
 
                     alignAutocompleteOptionGroup.call(this, "append"); // alignAutocompleteOptionGroup 에서 body append
-                    jQuery(window).bind("resize.ax5autocomplete-" + this.instanceId, function () {
+                    jQuery(window).on("resize.ax5autocomplete-" + this.instanceId, function () {
                         alignAutocompleteOptionGroup.call(this);
                     }.bind(this));
 
@@ -22445,7 +25048,7 @@ jQuery.fn.ax5layout = function () {
                         }
                     }
 
-                    jQuery(window).bind("click.ax5autocomplete-" + this.instanceId, function (e) {
+                    jQuery(window).on("click.ax5autocomplete-" + this.instanceId, function (e) {
                         e = e || window.event;
                         onBodyClick.call(this, e);
                         U.stopEvent(e);
@@ -22556,7 +25159,7 @@ jQuery.fn.ax5layout = function () {
 
                 this.activeautocompleteOptionGroup.addClass("destroy");
 
-                jQuery(window).unbind("resize.ax5autocomplete-" + this.instanceId).unbind("click.ax5autocomplete-" + this.instanceId).unbind("keyup.ax5autocomplete-" + this.instanceId);
+                jQuery(window).off("resize.ax5autocomplete-" + this.instanceId).off("click.ax5autocomplete-" + this.instanceId).off("keyup.ax5autocomplete-" + this.instanceId);
 
                 this.closeTimer = setTimeout(function () {
                     if (this.activeautocompleteOptionGroup) this.activeautocompleteOptionGroup.remove();
@@ -22659,12 +25262,56 @@ jQuery.fn.ax5layout = function () {
                 }
             }.apply(this, arguments);
         };
-        return ax5autocomplete;
     }());
 
     AUTOCOMPLETE = ax5.ui.autocomplete;
 })();
 
+// todo : editable 지원.
+// 아이템 박스 안에서 제거 할때 디스플레이 정렬
+
+// ax5.ui.autocomplete.tmpl
+(function () {
+    var AUTOCOMPLETE = ax5.ui.autocomplete;
+    var U = ax5.util;
+
+    var optionGroup = function optionGroup(columnKeys) {
+        return '\n<div class="ax5autocomplete-option-group {{theme}} {{size}}" data-ax5autocomplete-option-group="{{id}}">\n    <div class="ax-autocomplete-body">\n        <div class="ax-autocomplete-option-group-content" data-els="content"></div>\n    </div>\n    <div class="ax-autocomplete-arrow"></div> \n</div>\n';
+    };
+
+    var autocompleteDisplay = function autocompleteDisplay(columnKeys) {
+        return ' \n<input tabindex="-1" type="text" data-input-dummy="" style="display: none;" />\n<div class="form-control {{formSize}} ax5autocomplete-display {{theme}}" \ndata-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">\n    <div class="ax5autocomplete-display-table" data-els="display-table">\n        <div data-ax5autocomplete-display="label-holder"> \n        <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n        data-ax5autocomplete-display="label"\n        spellcheck="false"><input type="text"data-ax5autocomplete-display="input" style="border:0px none;" /></a>\n        </div>\n        <div data-ax5autocomplete-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n';
+    };
+
+    var formSelect = function formSelect(columnKeys) {
+        return '\n<select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" multiple="multiple"></select>\n';
+    };
+
+    var formSelectOptions = function formSelectOptions(columnKeys) {
+        return '\n{{#selected}}\n<option value="{{' + columnKeys.optionValue + '}}" selected="true">{{' + columnKeys.optionText + '}}</option>\n{{/selected}}\n';
+    };
+
+    var options = function options(columnKeys) {
+        return '\n{{#waitOptions}}\n    <div class="ax-autocomplete-option-item">\n            <div class="ax-autocomplete-option-item-holder">\n                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">\n                    {{{lang.loading}}}\n                </span>\n            </div>\n        </div>\n{{/waitOptions}}\n{{^waitOptions}}\n    {{#options}}\n        {{^hide}}\n        <div class="ax-autocomplete-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n            <div class="ax-autocomplete-option-item-holder">\n                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">{{' + columnKeys.optionText + '}}</span>\n            </div>\n        </div>\n        {{/hide}}\n    {{/options}}\n    {{^options}}\n        <div class="ax-autocomplete-option-item">\n            <div class="ax-autocomplete-option-item-holder">\n                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">\n                    {{{lang.noOptions}}}\n                </span>\n            </div>\n        </div>\n    {{/options}}\n{{/waitOptions}}\n';
+    };
+
+    var label = function label(columnKeys) {
+        return '{{#selected}}\n<div tabindex="-1" data-ax5autocomplete-selected-label="{{@i}}" data-ax5autocomplete-selected-text="{{text}}">\n<div data-ax5autocomplete-remove="true" data-ax5autocomplete-remove-index="{{@i}}">{{{removeIcon}}}</div>\n<span>{{' + columnKeys.optionText + '}}</span>\n</div>{{/selected}}';
+    };
+
+    AUTOCOMPLETE.tmpl = {
+        "autocompleteDisplay": autocompleteDisplay,
+        "formSelect": formSelect,
+        "formSelectOptions": formSelectOptions,
+        "optionGroup": optionGroup,
+        "options": options,
+        "label": label,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(AUTOCOMPLETE.tmpl[tmplName].call(this, columnKeys), data);
+        }
+    };
+})();
 /**
  * autocomplete jquery extends
  * @namespace jQueryExtends
@@ -22722,6 +25369,8 @@ jQuery.fn.ax5autocomplete = function () {
                     break;
                 case "blur":
                     return ax5.ui.autocomplete_instance.blur(this);
+                case "align":
+                    return ax5.ui.autocomplete_instance.align(this);
                 default:
                     return this;
             }
@@ -22738,51 +25387,6 @@ jQuery.fn.ax5autocomplete = function () {
         return this;
     };
 }();
-
-// todo : editable 지원.
-// 아이템 박스 안에서 제거 할때 디스플레이 정렬
-// ax5.ui.autocomplete.tmpl
-(function () {
-    var AUTOCOMPLETE = ax5.ui.autocomplete;
-    var U = ax5.util;
-
-    var optionGroup = function optionGroup(columnKeys) {
-        return '\n<div class="ax5autocomplete-option-group {{theme}} {{size}}" data-ax5autocomplete-option-group="{{id}}">\n    <div class="ax-autocomplete-body">\n        <div class="ax-autocomplete-option-group-content" data-els="content"></div>\n    </div>\n    <div class="ax-autocomplete-arrow"></div> \n</div>\n';
-    };
-
-    var autocompleteDisplay = function autocompleteDisplay(columnKeys) {
-        return ' \n<input tabindex="-1" type="text" data-input-dummy="" style="display: none;" />\n<div class="form-control {{formSize}} ax5autocomplete-display {{theme}}" \ndata-ax5autocomplete-display="{{id}}" data-ax5autocomplete-instance="{{instanceId}}">\n    <div class="ax5autocomplete-display-table" data-els="display-table">\n        <div data-ax5autocomplete-display="label-holder"> \n        <a {{^tabIndex}}{{/tabIndex}}{{#tabIndex}}tabindex="{{tabIndex}}" {{/tabIndex}}\n        data-ax5autocomplete-display="label"\n        spellcheck="false"><input type="text"data-ax5autocomplete-display="input" style="border:0px none;" /></a>\n        </div>\n        <div data-ax5autocomplete-display="addon"> \n            {{#multiple}}{{#reset}}\n            <span class="addon-icon-reset" data-selected-clear="true">{{{.}}}</span>\n            {{/reset}}{{/multiple}}\n        </div>\n    </div>\n</a>\n';
-    };
-
-    var formSelect = function formSelect(columnKeys) {
-        return '\n<select tabindex="-1" class="form-control {{formSize}}" name="{{name}}" multiple="multiple"></select>\n';
-    };
-
-    var formSelectOptions = function formSelectOptions(columnKeys) {
-        return '\n{{#selected}}\n<option value="{{' + columnKeys.optionValue + '}}" selected="true">{{' + columnKeys.optionText + '}}</option>\n{{/selected}}\n';
-    };
-
-    var options = function options(columnKeys) {
-        return '\n{{#waitOptions}}\n    <div class="ax-autocomplete-option-item">\n            <div class="ax-autocomplete-option-item-holder">\n                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">\n                    {{{lang.loading}}}\n                </span>\n            </div>\n        </div>\n{{/waitOptions}}\n{{^waitOptions}}\n    {{#options}}\n        {{^hide}}\n        <div class="ax-autocomplete-option-item" data-option-focus-index="{{@findex}}" data-option-index="{{@index}}" data-option-value="{{' + columnKeys.optionValue + '}}" {{#' + columnKeys.optionSelected + '}}data-option-selected="true"{{/' + columnKeys.optionSelected + '}}>\n            <div class="ax-autocomplete-option-item-holder">\n                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">{{' + columnKeys.optionText + '}}</span>\n            </div>\n        </div>\n        {{/hide}}\n    {{/options}}\n    {{^options}}\n        <div class="ax-autocomplete-option-item">\n            <div class="ax-autocomplete-option-item-holder">\n                <span class="ax-autocomplete-option-item-cell ax-autocomplete-option-item-label">\n                    {{{lang.noOptions}}}\n                </span>\n            </div>\n        </div>\n    {{/options}}\n{{/waitOptions}}\n';
-    };
-
-    var label = function label(columnKeys) {
-        return '{{#selected}}<div tabindex="-1" data-ax5autocomplete-selected-label="{{@i}}" data-ax5autocomplete-selected-text="{{text}}"><div data-ax5autocomplete-remove="true" data-ax5autocomplete-remove-index="{{@i}}">{{{removeIcon}}}</div><span>{{text}}</span></div>{{/selected}}';
-    };
-
-    AUTOCOMPLETE.tmpl = {
-        "autocompleteDisplay": autocompleteDisplay,
-        "formSelect": formSelect,
-        "formSelectOptions": formSelectOptions,
-        "optionGroup": optionGroup,
-        "options": options,
-        "label": label,
-
-        get: function get(tmplName, data, columnKeys) {
-            return ax5.mustache.render(AUTOCOMPLETE.tmpl[tmplName].call(this, columnKeys), data);
-        }
-    };
-})();
 /*
  * Copyright (c) 2017. tom@axisj.com
  * - github.com/thomasjang
@@ -22791,12 +25395,13 @@ jQuery.fn.ax5autocomplete = function () {
 
 (function () {
 
-    var UI = ax5.ui,
-        U = ax5.util;
+    var UI = ax5.ui;
+    var U = ax5.util;
+
+    var DOCKER = void 0;
 
     UI.addClass({
-        className: "docker",
-        version: "1.3.82"
+        className: "docker"
     }, function () {
 
         /**
@@ -22808,35 +25413,125 @@ jQuery.fn.ax5autocomplete = function () {
          * var ax5docker = new ax5.ui.ax5docker();
          * ```
          */
-        var ax5docker = function ax5docker() {
-            var _this6 = this;
+        return function () {
+            var _this3 = this;
 
             var self = this,
                 cfg = void 0;
 
             this.instanceId = ax5.getGuid();
+
+            /**
+             * @member {Object} ax5docker.config
+             */
             this.config = {
                 theme: 'default',
                 animateTime: 250,
-                columnKeys: {}
+                columnKeys: {},
+                control: {},
+                icons: {
+                    close: 'X',
+                    more: '...'
+                },
+                labelDirection: 'top',
+                disableClosePanel: false,
+                disableDragPanel: false,
+                resizeDebounceTime: 100,
+                panelDebounceTime: 300
             };
+
+            /**
+             * @member {Object} ax5docker.xvar
+             */
+            this.xvar = {};
+            /**
+             * @member {Object} ax5docker.menu
+             */
+            this.menu = null;
+
+            this.onResize = null;
+
             // 패널 정보
+            /**
+             * @member {Array} ax5docker.panels
+             */
             this.panels = [];
+            /**
+             * @member {Number} ax5docker.panelId
+             */
             this.panelId = 0;
 
             // 패널의 컨텐츠 모듈
+            /**
+             * @member {Object} ax5docker.modules
+             */
             this.modules = {};
 
             cfg = this.config;
 
+            /**
+             * @private {Object} ax5docker.debouncer
+             */
+            var debouncer = {
+                resizeDebounceFn: ax5.util.debounce(function (fn) {
+                    fn();
+                }, cfg.resizeDebounceTime),
+                panelDebounceFn: ax5.util.debounce(function (fn) {
+                    fn();
+                }, cfg.panelDebounceTime)
+            };
+
+            /**
+             * @private {Function} fireEvent
+             * @param event
+             * @returns {ax5docker}
+             */
+            var fireEvent = function fireEvent(event) {
+                var eventProcessor = {
+                    "resize": function resize(e) {
+                        if (this.onResize) {
+
+                            debouncer.resizeDebounceFn(function () {
+                                var that = {
+                                    self: this,
+                                    resizer: e.target,
+                                    resizedDom: [e.target.prev(), e.target.next()]
+                                };
+                                this.onResize.call(that, that);
+                            }.bind(this));
+                        }
+                    }
+                };
+
+                if (event.eventName in eventProcessor) {
+                    eventProcessor[event.eventName].call(_this3, event);
+                }
+
+                return _this3;
+            };
+
             var getPanelId = function getPanelId() {
-                return _this6.panelId++;
+                return _this3.panelId++;
             };
 
-            var defaultModuleInit = function defaultModuleInit(container, state) {
-                container["$element"].html(state.name);
+            /**
+             * defaultModule은 패널의 모듈이 정의되지 않은 경우를 위해 준비된 오브젝트
+             */
+            var defaultModule = {
+                init: function init(container, state) {
+                    container["$element"].html(state.name);
+                },
+                active: function active(container, state) {},
+                deactive: function deactive(container, state) {},
+                destroy: function destroy(container, state) {}
             };
 
+            /**
+             * 부모패널과 패널인덱스 값으로 패널 패스를 구합니다.
+             * @param parent
+             * @param pIndex
+             * @returns {string}
+             */
             var getPanelPath = function getPanelPath(parent, pIndex) {
                 var paths = [];
                 if (parent && typeof parent.panelPath !== "undefined") {
@@ -22847,33 +25542,170 @@ jQuery.fn.ax5autocomplete = function () {
                 return paths.join(".");
             };
 
-            var getPanel = function getPanel(_root, _panelPath) {
+            /**
+             * 패널패스를 이용하여 패널을 가져옵니다
+             * @param _panelPath
+             * @returns {*}
+             */
+            var getPanel = function getPanel(_panelPath) {
                 var path = [],
-                    _path = [].concat(_panelPath.split(/[\.\[\]]/g));
+                    _path = U.isArray(_panelPath) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
+
                 _path.forEach(function (n) {
                     if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
                 });
 
-                // return (Function("val", "this" + _path.join('') + " = val;")).call(this.model, value);
-                return Function("", "return this" + path.join('') + ";").call(_root);
-            };
-
-            var buildPanel = function buildPanel(_pane) {
-                var moduleState = jQuery.extend(_pane.moduleState, {
-                    name: _pane.name
-                }),
-                    moduleContainer = {
-                    '$element': _pane.$item
-                };
-                if (_pane.moduleName in _this6.modules && 'init' in _this6.modules[_pane.moduleName]) {
-                    _this6.modules[_pane.moduleName].init(moduleContainer, moduleState);
-                } else {
-                    defaultModuleInit(moduleContainer, moduleState);
+                try {
+                    return Function("", "return this" + path.join('') + ";").call(_this3);
+                } catch (e) {
+                    return;
                 }
             };
 
-            var repaintPanels = function repaintPanels() {
+            /**
+             * 패널을 이용하여 패널의 부모 패널을 가져옵니다
+             * @param _panel
+             */
+            var getPanelParent = function getPanelParent(_panel) {
+                try {
+                    var _path = _panel.panelPath.substr(0, _panel.panelPath.lastIndexOf("."));
+                    return Function("", "return this." + _path + ";").call(_this3);
+                } catch (e) {
+                    return;
+                }
+            };
 
+            /**
+             * 패널패스를 이용하여 패널오브젝트에 값을 부여합니다.
+             * @param _panelPath
+             * @param _value
+             * @returns {*}
+             */
+            var setPanel = function setPanel(_panelPath, _value) {
+                var path = [],
+                    _path = U.isArray(_panelPath) ? [].concat(_panelPath) : [].concat(_panelPath.split(/[\.\[\]]/g));
+
+                _path.forEach(function (n) {
+                    if (n !== "") path.push("[\"" + n.replace(/['\"]/g, "") + "\"]");
+                });
+
+                return Function("val", "return this" + path.join('') + " = val;").call(_this3, _value);
+            };
+
+            /**
+             * get mouse position
+             * @param e
+             * @returns {{clientX, clientY}}
+             */
+            var getMousePosition = function getMousePosition(e) {
+                var mouseObj = void 0,
+                    originalEvent = e.originalEvent ? e.originalEvent : e;
+                mouseObj = 'changedTouches' in originalEvent && originalEvent.changedTouches ? originalEvent.changedTouches[0] : originalEvent;
+                // clientX, Y 쓰면 스크롤에서 문제 발생
+                return {
+                    clientX: mouseObj.pageX,
+                    clientY: mouseObj.pageY
+                };
+            };
+
+            /**
+             * 패널의 모듈이 초기화, 활성화, 비활성, 제거 되는 일들을 제어하는 함수.
+             * 모든 컨트롤은 실행되기전에 사용자가 정의한 control.before 함수의 결과에 따라 실행 여부를 결정합니다. 사용자가 control.before를 정의하지 않으면 무조건 실행합니다.
+             * @param {Object} _panel
+             * @param {String} _control - "init","active","deactive","destroy"
+             */
+            var controlPanel = function controlPanel(_panel, _control, _callback) {
+                var moduleState = jQuery.extend(_panel.moduleState, {
+                    name: _panel.name
+                }),
+                    moduleContainer = {
+                    '$element': _panel.$item
+                },
+                    module = void 0;
+
+                var processor = {
+                    init: function init() {
+                        _panel.builded = true;
+                        module = _panel.moduleName in _this3.modules && 'init' in _this3.modules[_panel.moduleName] ? _this3.modules[_panel.moduleName] : defaultModule;
+                        module.init(moduleContainer, moduleState);
+                    },
+                    active: function active() {
+                        _panel.active = true;
+                        _panel.$label.addClass("active");
+                        _panel.$item.addClass("active");
+
+                        var $pane = _panel.$label.parent();
+                        if ($pane.get(0) && $pane.get(0).clientWidth !== $pane.get(0).scrollWidth) {
+                            $pane.animate({ scrollLeft: _panel.$label.position().left }, 300);
+                        }
+
+                        module = _panel.moduleName in _this3.modules && 'active' in _this3.modules[_panel.moduleName] ? _this3.modules[_panel.moduleName] : defaultModule;
+                        module.active(moduleContainer, moduleState);
+                        $pane = null;
+                    },
+                    deactive: function deactive() {
+                        _panel.active = false;
+                        _panel.$label.removeClass("active");
+                        _panel.$item.removeClass("active");
+                        module = _panel.moduleName in _this3.modules && 'deactive' in _this3.modules[_panel.moduleName] ? _this3.modules[_panel.moduleName] : defaultModule;
+                        module.deactive(moduleContainer, moduleState);
+                    },
+                    destroy: function destroy() {
+                        module = _panel.moduleName in _this3.modules && 'destroy' in _this3.modules[_panel.moduleName] ? _this3.modules[_panel.moduleName] : defaultModule;
+                        module.destroy(moduleContainer, moduleState);
+
+                        // 패널 데이터 제거.
+                        setPanel(_panel.panelPath, null);
+                        // 현재 패널 정보를 검사하여 패널 정보를 재 구성합니다.
+                        arrangePanel();
+                    },
+                    remove: function remove() {
+                        module = _panel.moduleName in _this3.modules && 'destroy' in _this3.modules[_panel.moduleName] ? _this3.modules[_panel.moduleName] : defaultModule;
+                        module.destroy(moduleContainer, moduleState);
+
+                        // 패널 데이터 제거.
+                        setPanel(_panel.panelPath, null);
+                        // 현재 패널 정보를 검사하여 패널 정보를 재 구성합니다.
+                        arrangePanel();
+                    }
+                };
+
+                // 사용자정의 함수 control.before, control.after에 전달할 인자 = that
+                var that = {
+                    panel: _panel,
+                    controlType: _control
+                };
+
+                // 비동기 처리 상황에 대응하기 위해 runProcessor를 별도 처리
+                var runProcessor = function runProcessor() {
+                    processor[_control]();
+                    module = null;
+
+                    if (U.isFunction(cfg.control.after)) {
+                        cfg.control.after.call(that, that);
+                    }
+                };
+
+                if (processor[_control]) {
+                    if (U.isFunction(cfg.control.before)) {
+                        cfg.control.before.call(that, that, function (result) {
+                            if (typeof result === "undefined") result = true;
+                            if (result) runProcessor();
+
+                            if (U.isFunction(_callback)) {
+                                _callback(result);
+                            }
+                        });
+                    } else {
+                        runProcessor();
+                    }
+                }
+            };
+
+            /**
+             * 패널들의 패널 데이터 구조에 맞게 다시 그리기
+             */
+            var repaintPanels = function repaintPanels() {
                 var appendProcessor = {
                     stack: function stack($parent, parent, myself, pIndex) {
 
@@ -22881,17 +25713,29 @@ jQuery.fn.ax5autocomplete = function () {
                             activeIndex = -1;
                         myself.panelPath = getPanelPath(parent, pIndex);
 
-                        $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
+                        $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
+                            id: self.instanceId,
+                            name: myself.name,
+                            hasLabelColor: !U.isNothing(myself.color),
+                            color: myself.color,
+                            borderColor: myself.borderColor,
+                            panelPath: myself.panelPath,
+                            icons: cfg.icons,
+                            labelDirection: myself.labelDirection || cfg.labelDirection,
+                            disableClosePanel: cfg.disableClosePanel,
+                            disableDragPanel: cfg.disableDragPanel
+                        }, {}));
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, pIndex) {
-                                if (myself.active) activeIndex = pIndex;
+                                if (P.active) activeIndex = pIndex;
                             });
                             if (activeIndex === -1) activeIndex = 0;
                             myself.panels[activeIndex].active = true;
 
                             myself.panels.forEach(function (P, _pIndex) {
+                                P.panelIndex = _pIndex;
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
@@ -22902,37 +25746,61 @@ jQuery.fn.ax5autocomplete = function () {
                     panel: function panel($parent, parent, myself, pIndex) {
                         var $dom = void 0;
                         myself.panelPath = getPanelPath(parent, pIndex);
-                        myself.$label = jQuery('<li data-ax5docker-pane-tab="' + pIndex + '" data-ax5docker-path="' + myself.panelPath + '">' + '<div class="title">' + myself.name + '</div>' + '<div class="close-icon">' + cfg.icons.close + '</div>' + '</li>');
+                        myself.$label = jQuery(DOCKER.tmpl.get.call(this, "panel-label", {
+                            id: self.instanceId,
+                            pIndex: pIndex,
+                            name: myself.name,
+                            hasLabelColor: !U.isNothing(myself.color),
+                            color: myself.color,
+                            borderColor: myself.borderColor,
+                            panelPath: myself.panelPath,
+                            icons: cfg.icons,
+                            disableClosePanel: cfg.disableClosePanel,
+                            disableDragPanel: cfg.disableDragPanel
+                        }, {}));
 
                         if (!myself.$item) {
-                            myself.$item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '" data-ax5docker-pane-id="' + getPanelId() + '" data-ax5docker-path="' + myself.panelPath + '"></div>');
+                            myself.$item = jQuery('<div data-ax5docker-pane-item="' + pIndex + '" data-ax5docker-id="' + self.instanceId + '" data-ax5docker-pane-id="' + getPanelId() + '" data-ax5docker-path="' + myself.panelPath + '"></div>');
+                        } else {
+                            myself.$item.attr("data-ax5docker-path", myself.panelPath);
+                            myself.$item.attr("data-ax5docker-pane-item", pIndex);
                         }
 
                         if (parent && parent.type == "stack") {
                             if (myself.active) {
-                                buildPanel(myself);
-                                myself.$label.addClass("active");
-                                myself.$item.addClass("active");
+                                if (!myself.builded) controlPanel(myself, "init");
+                                controlPanel(myself, "active");
                             }
-                            $parent.find('[data-ax5docker-pane-tabs]').append(myself.$label);
-                            $parent.find('[data-ax5docker-pane-item-views]').append(myself.$item);
+                            $parent.find('[data-ax5docker-pane-tabs="' + self.instanceId + '"]').append(myself.$label);
+                            $parent.find('[data-ax5docker-pane-item-views="' + self.instanceId + '"]').append(myself.$item);
                         } else {
-                            $dom = jQuery('<div data-ax5docker-pane="" data-ax5docker-path="' + myself.panelPath + '">' + '<ul data-ax5docker-pane-tabs=""></ul>' + '<div data-ax5docker-pane-item-views=""></div>' + '</div>');
+                            $dom = jQuery(DOCKER.tmpl.get.call(this, "stack-panel", {
+                                id: self.instanceId,
+                                name: myself.name,
+                                hasLabelColor: !U.isNothing(myself.color),
+                                color: myself.color,
+                                borderColor: myself.borderColor,
+                                panelPath: myself.panelPath,
+                                flexGrow: myself.flexGrow,
+                                icons: cfg.icons,
+                                labelDirection: myself.labelDirection || cfg.labelDirection,
+                                disableClosePanel: cfg.disableClosePanel,
+                                disableDragPanel: cfg.disableDragPanel
+                            }, {}));
 
-                            buildPanel(myself);
-                            myself.$label.addClass("active");
-                            myself.$item.addClass("active");
+                            if (!myself.builded) controlPanel(myself, "init");
+                            controlPanel(myself, "active");
 
-                            $dom.find('[data-ax5docker-pane-tabs]').append(myself.$label);
-                            $dom.find('[data-ax5docker-pane-item-views]').append(myself.$item);
+                            $dom.find('[data-ax5docker-pane-tabs="' + self.instanceId + '"]').append(myself.$label);
+                            $dom.find('[data-ax5docker-pane-item-views="' + self.instanceId + '"]').append(myself.$item);
 
                             $parent.append($dom);
                         }
 
                         $dom = null;
                     },
-                    resizeHandel: function resizeHandel($parent, parent, myself) {
-                        var $dom = jQuery('<div data-ax5docker-resize-handle=""></div>');
+                    resizeHandle: function resizeHandle($parent, parent, myself, pIndex) {
+                        var $dom = jQuery('<div data-ax5docker-id="' + self.instanceId + '" data-ax5docker-resize-handle="' + parent.type + "/" + parent.panelPath + "/" + pIndex + '"></div>');
                         $parent.append($dom);
                         $dom = null;
                     },
@@ -22942,12 +25810,13 @@ jQuery.fn.ax5autocomplete = function () {
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="row" data-ax5docker-path="' + myself.panelPath + '"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="row" data-ax5docker-id="' + self.instanceId + '" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, _pIndex) {
-                                if (_pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself, _pIndex);
+                                if (_pIndex > 0) appendProcessor["resizeHandle"]($dom, myself, P, _pIndex);
+                                P.panelIndex = _pIndex;
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
@@ -22960,12 +25829,13 @@ jQuery.fn.ax5autocomplete = function () {
                         if (parent && parent.type == "stack") {
                             throw "The 'stack' type child nodes are allowed only for the 'panel' type.";
                         }
-                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-path="' + myself.panelPath + '"></div>');
+                        $dom = jQuery('<div data-ax5docker-pane-axis="column" data-ax5docker-id="' + self.instanceId + '" data-ax5docker-path="' + myself.panelPath + '" style="flex-grow: ' + (myself.flexGrow || 1) + ';"></div>');
                         $parent.append($dom);
 
                         if (U.isArray(myself.panels)) {
                             myself.panels.forEach(function (P, _pIndex) {
-                                if (pIndex > 0) appendProcessor["resizeHandel"]($dom, P, myself, _pIndex);
+                                if (_pIndex > 0) appendProcessor["resizeHandle"]($dom, myself, P, _pIndex);
+                                P.panelIndex = _pIndex;
                                 appendProcessor[P.type]($dom, myself, P, _pIndex);
                             });
                         }
@@ -22974,54 +25844,544 @@ jQuery.fn.ax5autocomplete = function () {
                     }
                 };
 
-                var $root = jQuery('<div data-ax5docker-panes=""></div>');
-                appendProcessor[_this6.panels[0].type]($root, null, _this6.panels[0], 0);
-                _this6.$target.html($root);
+                var $root = jQuery('<div data-ax5docker-panes="' + _this3.instanceId + '"></div>');
+                if (_this3.panels[0]) appendProcessor[_this3.panels[0].type]($root, null, _this3.panels[0], 0);
+                _this3.$target.html($root);
 
-                _this6.$target.off("click").on("click", "[data-ax5docker-pane-tab] .close-icon", function (e) {
-                    console.log("close icon");
+                _this3.$target.off("click.ax5docker-pane").on("click.ax5docker-pane", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-pane-tab] .close-icon', function (e) {
+                    self.removePanel($(this).parents('[data-ax5docker-pane-tab]').attr("data-ax5docker-path"));
                     U.stopEvent(e);
-                }).on("click", "[data-ax5docker-pane-tab]", function (e) {
-                    //console.log(e.originalEvent.target);
-                    //console.log("click pane-tab");
-                    //console.log($(this).parents('[data-ax5docker-pane]'));
+                }).on("click.ax5docker-pane", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-pane-tab]', function (e) {
+                    // pane, panelIndex 인자 변경.
+                    var $clickedLabel = jQuery(this);
+                    var pane = getPanel($clickedLabel.parents('[data-ax5docker-pane]').attr("data-ax5docker-path"));
+                    var panelIndex = $clickedLabel.attr("data-ax5docker-pane-tab");
 
-                    changeActivePanel(this);
+                    if (!$clickedLabel.hasClass("active")) {
+                        changeActiveStackPanel(pane, panelIndex);
+                    }
 
+                    $clickedLabel = null;
+                    pane = null;
+                    panelIndex = null;
+                    U.stopEvent(e);
+                }).on("click.ax5docker-pane", '[data-ax5docker-pane-tabs-more="' + _this3.instanceId + '"]', function (e) {
+                    openStackPanelMore($(this).parents('[data-ax5docker-pane]'), e);
                     U.stopEvent(e);
                 });
+
+                _this3.$target.off("mousedown.ax5docker-pane-resize").off("dragstart.ax5docker-pane-resize").on("dragstart.ax5docker-pane-resize", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-pane-tab]', function (e) {
+                    if (!cfg.disableDragPanel) {
+                        panelTabDragEvent.on(this);
+                    }
+                }).on("mousedown.ax5docker-pane-resize", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-resize-handle]', function (e) {
+                    var datas = this.getAttribute("data-ax5docker-resize-handle").split(/\//g);
+
+                    // panelResizerEvent.init
+                    self.xvar.mousePosition = getMousePosition(e);
+                    self.xvar.resizerType = datas[0];
+                    self.xvar.resizerPath = datas[1];
+                    self.xvar.resizerIndex = datas[2];
+                    // 주변 패널들
+                    self.xvar.resizer$dom = $(this);
+                    self.xvar.resizerParent$dom = self.xvar.resizer$dom.parent();
+                    self.xvar.resizerPrevGrow = U.number(self.xvar.resizer$dom.prev().css("flex-grow"));
+                    self.xvar.resizerNextGrow = U.number(self.xvar.resizer$dom.next().css("flex-grow"));
+
+                    if (self.xvar.resizerType == "row") {
+                        //self.xvar.resizerCanvasWidth = self.xvar.resizerParent$dom.innerWidth();
+                        self.xvar.resizerCanvasWidth = self.xvar.resizer$dom.prev().innerWidth() + self.xvar.resizer$dom.next().innerWidth() + self.xvar.resizer$dom.width();
+                    } else {
+                        //self.xvar.resizerCanvasHeight = self.xvar.resizerParent$dom.innerHeight();
+                        self.xvar.resizerCanvasHeight = self.xvar.resizer$dom.prev().innerHeight() + self.xvar.resizer$dom.next().innerHeight() + self.xvar.resizer$dom.height();
+                    }
+
+                    panelResizerEvent.on(this);
+                    U.stopEvent(e);
+                }).on("dragstart.ax5docker-pane-resize", '[data-ax5docker-id="' + self.instanceId + '"][data-ax5docker-resize-handle]', function (e) {
+                    U.stopEvent(e);
+                    return false;
+                });
+
+                // stackPane tabs 스크롤처리
+                alignStackPane();
                 $root = null;
             };
 
-            var changeActivePanel = function changeActivePanel(clickedLabel) {
-                var $clickedLabel = jQuery(clickedLabel),
-                    $pane = $clickedLabel.parents('[data-ax5docker-pane]'),
-                    labelIndex = $clickedLabel.attr("data-ax5docker-pane-tab");
+            /**
+             * repaintPanels이 작동할 때. 패널탭에 dragStart 이벤트를 연결합니다.
+             * 발생된 이벤트가 panelTabDragEvent.on를 작동.
+             */
+            var panelTabDragEvent = {
+                "on": function on(dragPanel) {
+                    if (_this3.panels[0] && _this3.panels[0].panels && _this3.panels[0].panels.length) {
 
-                if ($clickedLabel.hasClass("active")) {
-                    return false;
-                } else {
-                    $pane.find(".active").removeClass("active");
-                    //labelIndex
+                        _this3.xvar.dragger = {
+                            dragPanel: dragPanel,
+                            target: null,
+                            dragOverVertical: null,
+                            dragOverHorizontal: null
+                        };
 
-                    $pane.find('[data-ax5docker-pane-tab="' + labelIndex + '"]').addClass("active");
-                    $pane.find('[data-ax5docker-pane-item="' + labelIndex + '"]').addClass("active");
+                        _this3.$target.on("dragover.ax5docker-" + _this3.instanceId, '[data-ax5docker-id="' + _this3.instanceId + '"][data-ax5docker-path]', function (e) {
+                            // todo : dragover 구현
+                            // console.log("dargover", getMousePosition(e));
+                            // console.log(e.target);
+                            panelTabDragEvent.dragover(this, e);
+                            U.stopEvent(e);
+                        }).on("drop.ax5docker-" + _this3.instanceId, function (e) {
+                            panelTabDragEvent.off("drop");
+                            U.stopEvent(e);
+                        }).on("dragend.ax5docker-" + _this3.instanceId, function (e) {
+                            panelTabDragEvent.off();
+                            U.stopEvent(e);
+                        });
+                    }
+                },
+                "dragover": function dragover(dragoverDom, e) {
 
-                    // let pane = getPanel(this, $pane.attr("data-ax5docker-path"));
-                    // todo : build 여부 판단후 build 실행
-                    var panel = getPanel(_this6, $clickedLabel.attr("data-ax5docker-path"));
-                    buildPanel(panel);
-                    // buildPanel 여부 판단.
-                    //myself.$item 이 필요해..
+                    var $dragoverDom = jQuery(dragoverDom),
+                        box = {},
+                        mouse = getMousePosition(e),
+                        dragOverVertical = void 0,
+                        dragOverHorizontal = void 0;
+
+                    if (_this3.xvar.dragger.target == null || _this3.xvar.dragger.target.get(0) != $dragoverDom.get(0)) {
+                        if (_this3.xvar.dragger.target) _this3.xvar.dragger.target.removeAttr("data-dropper");
+
+                        _this3.xvar.dragger.target = $dragoverDom;
+                        _this3.xvar.dragger.dragOverVertical = null;
+                        _this3.xvar.dragger.dragOverHorizontal = null;
+                    }
+
+                    box = $dragoverDom.offset();
+                    box.width = $dragoverDom.width();
+                    box.height = $dragoverDom.height();
+
+                    if ($dragoverDom.attr("data-ax5docker-pane-tab")) {
+                        var halfWidth = box.width / 2;
+                        if (box.left <= mouse.clientX && box.left + halfWidth >= mouse.clientX) {
+                            dragOverHorizontal = "left";
+                        } else if (box.left + halfWidth <= mouse.clientX && box.left + halfWidth * 2 >= mouse.clientX) {
+                            dragOverHorizontal = "right";
+                        }
+                        if (_this3.xvar.dragger.dragOverHorizontal != dragOverHorizontal && typeof dragOverHorizontal != "undefined") {
+                            _this3.xvar.dragger.dragOverHorizontal = dragOverHorizontal;
+                            var _draggerProcessor = {
+                                "left": function left($target) {
+                                    $target.attr("data-dropper", "left");
+                                },
+                                "right": function right($target) {
+                                    $target.attr("data-dropper", "right");
+                                }
+                            };
+                            if (_this3.xvar.dragger.dragOverHorizontal in _draggerProcessor) {
+                                _draggerProcessor[_this3.xvar.dragger.dragOverHorizontal](_this3.xvar.dragger.target);
+                            }
+                        }
+                        halfWidth = null;
+                    } else if ($dragoverDom.attr("data-ax5docker-pane-tabs")) {
+                        //this.xvar.dragger.dragOverVertical = "center";
+                        _this3.xvar.dragger.dragOverHorizontal = "last-child";
+                        _this3.xvar.dragger.target.attr("data-dropper", "true");
+                    } else if ($dragoverDom.attr("data-ax5docker-pane-item")) {
+                        // panel dragover 포지션 구하기
+                        var threeQuarterHeight = box.height / 3;
+                        var threeQuarterWidth = box.width / 3;
+
+                        if (box.top <= mouse.clientY && box.top + threeQuarterHeight >= mouse.clientY) {
+                            dragOverVertical = "top";
+                        } else if (box.top + threeQuarterHeight <= mouse.clientY && box.top + threeQuarterHeight * 2 >= mouse.clientY) {
+                            dragOverVertical = "middle";
+                        } else if (box.top + threeQuarterHeight * 2 <= mouse.clientY && box.top + threeQuarterHeight * 3 >= mouse.clientY) {
+                            dragOverVertical = "bottom";
+                        }
+
+                        if (box.left <= mouse.clientX && box.left + threeQuarterWidth >= mouse.clientX) {
+                            dragOverHorizontal = "left";
+                        } else if (box.left + threeQuarterWidth <= mouse.clientX && box.left + threeQuarterWidth * 2 >= mouse.clientX) {
+                            dragOverHorizontal = "center";
+                        } else if (box.left + threeQuarterWidth * 2 <= mouse.clientX && box.left + threeQuarterWidth * 3 >= mouse.clientX) {
+                            dragOverHorizontal = "right";
+                        }
+
+                        if (_this3.xvar.dragger.dragOverVertical != dragOverVertical || _this3.xvar.dragger.dragOverHorizontal != dragOverHorizontal) {
+                            _this3.xvar.dragger.dragOverVertical = dragOverVertical;
+                            _this3.xvar.dragger.dragOverHorizontal = dragOverHorizontal;
+
+                            var draggerProcessor = {
+                                "left-top": function leftTop($target) {
+                                    $target.attr("data-dropper", "left");
+                                },
+                                "right-top": function rightTop($target) {
+                                    $target.attr("data-dropper", "right");
+                                },
+                                "center-top": function centerTop($target) {
+                                    $target.attr("data-dropper", "top");
+                                },
+                                "left-middle": function leftMiddle($target) {
+                                    $target.attr("data-dropper", "left");
+                                },
+                                "right-middle": function rightMiddle($target) {
+                                    $target.attr("data-dropper", "right");
+                                },
+                                "center-middle": function centerMiddle($target) {
+                                    $target.attr("data-dropper", "center");
+                                },
+                                "left-bottom": function leftBottom($target) {
+                                    $target.attr("data-dropper", "left");
+                                },
+                                "right-bottom": function rightBottom($target) {
+                                    $target.attr("data-dropper", "right");
+                                },
+                                "center-bottom": function centerBottom($target) {
+                                    $target.attr("data-dropper", "bottom");
+                                }
+                            };
+                            if (_this3.xvar.dragger.dragOverHorizontal + "-" + _this3.xvar.dragger.dragOverVertical in draggerProcessor) {
+                                draggerProcessor[_this3.xvar.dragger.dragOverHorizontal + "-" + _this3.xvar.dragger.dragOverVertical](_this3.xvar.dragger.target);
+                            }
+                        }
+
+                        threeQuarterHeight = null;
+                        threeQuarterWidth = null;
+                    }
+                },
+                "off": function off(isDrop) {
+                    if (isDrop) {
+                        var dragPanel = getPanel(_this3.xvar.dragger.dragPanel.getAttribute("data-ax5docker-path")),
+                            appendType = [];
+
+                        if (_this3.xvar.dragger.dragOverHorizontal) appendType.push(_this3.xvar.dragger.dragOverHorizontal);
+                        if (_this3.xvar.dragger.dragOverVertical) appendType.push(_this3.xvar.dragger.dragOverVertical);
+
+                        _this3.appendPanel(dragPanel, _this3.xvar.dragger.target.attr("data-ax5docker-path"), appendType);
+
+                        dragPanel = null;
+                        appendType = null;
+                    }
+
+                    alignStackPane();
+
+                    _this3.$target.off("dragover.ax5docker-" + _this3.instanceId).off("drop.ax5docker-" + _this3.instanceId).off("dragend.ax5docker-" + _this3.instanceId);
+
+                    _this3.xvar.dragger.target.removeAttr("data-dropper");
                 }
             };
 
-            var closePanel = function closePanel() {};
+            /**
+             * repaintPanels이 작동할 때. 리사이저에 mousedown 이벤트를 연결합니다.
+             * 발생된 이벤트가 panelResizerEvent.on 을 작동시켜 리사이저를 움직이게 합니다
+             */
+            var panelResizerEvent = {
+                "on": function on(_resizer) {
+
+                    jQuery(document.body).on("mousemove.ax5docker-" + _this3.instanceId, function (e) {
+                        var mouseObj = getMousePosition(e),
+                            da_grow = void 0;
+
+                        if (self.xvar.resizerLived) {
+                            if (self.xvar.resizerType == "row") {
+                                self.xvar.__da = mouseObj.clientX - self.xvar.mousePosition.clientX;
+                                da_grow = U.number(self.xvar.__da * 2 / self.xvar.resizerCanvasWidth, { round: 6 });
+
+                                self.xvar.resizer$dom.prev().css({ "flex-grow": self.xvar.resizerPrevGrow + da_grow });
+                                self.xvar.resizer$dom.next().css({ "flex-grow": self.xvar.resizerNextGrow - da_grow });
+                            } else {
+                                self.xvar.__da = mouseObj.clientY - self.xvar.mousePosition.clientY;
+                                da_grow = U.number(self.xvar.__da * 2 / self.xvar.resizerCanvasHeight, { round: 6 });
+
+                                self.xvar.resizer$dom.prev().css({ "flex-grow": self.xvar.resizerPrevGrow + da_grow });
+                                self.xvar.resizer$dom.next().css({ "flex-grow": self.xvar.resizerNextGrow - da_grow });
+                            }
+
+                            fireEvent({
+                                eventName: "resize",
+                                target: self.xvar.resizer$dom
+                            });
+                        } else {
+                            self.xvar.resizerLived = true;
+                        }
+
+                        mouseObj = null;
+                        da_grow = null;
+                    }).on("mouseup.ax5docker-" + _this3.instanceId, function (e) {
+                        panelResizerEvent.off();
+                        U.stopEvent(e);
+                    }).on("mouseleave.ax5docker-" + _this3.instanceId, function (e) {
+                        panelResizerEvent.off();
+                        U.stopEvent(e);
+                    });
+
+                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+                },
+                "off": function off() {
+                    self.xvar.resizerLived = false;
+
+                    if (typeof _this3.xvar.__da === "undefined") {} else {
+                        var $prevPanel = self.xvar.resizer$dom.prev(),
+                            $nextPanel = self.xvar.resizer$dom.next(),
+                            prevPane = getPanel($prevPanel.attr("data-ax5docker-path")),
+                            nextPane = getPanel($nextPanel.attr("data-ax5docker-path"));
+
+                        prevPane.flexGrow = U.number($prevPanel.css("flex-grow"));
+                        nextPane.flexGrow = U.number($nextPanel.css("flex-grow"));
+
+                        $prevPanel = null;
+                        $nextPanel = null;
+                        prevPane = null;
+                        nextPane = null;
+                    }
+
+                    alignStackPane();
+
+                    jQuery(document.body).off("mousemove.ax5docker-" + _this3.instanceId).off("mouseup.ax5docker-" + _this3.instanceId).off("mouseleave.ax5docker-" + _this3.instanceId);
+
+                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+                }
+            };
+
+            /**
+             * 액티브 패널 변경(stack인 상황에서)
+             * @param pane
+             * @param panelIndex
+             * @returns {boolean}
+             */
+            var changeActiveStackPanel = function changeActiveStackPanel(pane, panelIndex) {
+                var panel = pane.panels[panelIndex];
+
+                for (var p = 0, pl = pane.panels.length; p < pl; p++) {
+                    if (pane.panels[p].active) {
+                        controlPanel(pane.panels[p], "deactive");
+                    }
+                }
+
+                if (!panel.builded) controlPanel(panel, "init");
+                controlPanel(panel, "active");
+
+                pane = null;
+                panelIndex = null;
+                panel = null;
+                return _this3;
+            };
+
+            /**
+             * stackTab의 더보기 아이콘이 클릭되면~~~
+             * @param stackPane
+             * @param e
+             * @returns {ax5docker}
+             */
+            var openStackPanelMore = function openStackPanelMore(stackPane, e) {
+                var $stackPane = jQuery(stackPane),
+                    panePath = $stackPane.attr("data-ax5docker-path"),
+                    pane = getPanel(panePath);
+
+                if (_this3.menu) {
+                    var menuItems = U.map(pane.panels, function (index) {
+                        return {
+                            label: this.name,
+                            index: index,
+                            panePath: panePath
+                        };
+                    });
+
+                    _this3.menu.setConfig({
+                        items: menuItems,
+                        onClick: function onClick() {
+                            //console.log(pane);
+                            changeActiveStackPanel(getPanel(this.panePath), this.index);
+                        }
+                    });
+
+                    _this3.menu.popup(e);
+                } else {
+                    console.log(pane.panels);
+                    throw "'ax5ui-menu' is required to implement the function.";
+                }
+
+                $stackPane = null;
+                panePath = null;
+                pane = null;
+                return _this3;
+            };
+
+            /**
+             * stackPane이 리사이즈 되면 탭을 스크롤여부를 판단해야 합니다.
+             */
+            var alignStackPane = function alignStackPane() {
+                debouncer.panelDebounceFn(function () {
+                    this.$target.find('[data-ax5docker-pane-tabs="' + this.instanceId + '"]').each(function () {
+                        var $this = jQuery(this).parent();
+                        if (this.scrollWidth > this.clientWidth) {
+                            $this.addClass("tabs-scrolled");
+                        } else {
+                            $this.removeClass("tabs-scrolled");
+                        }
+                        $this = null;
+                    });
+                }.bind(_this3));
+            };
+
+            var panelsDeactive = function panelsDeactive(panels) {
+                if (U.isArray(panels)) {
+                    panels.forEach(function (p) {
+                        //p.active = false;
+                        //p.$item.removeClass("active");
+                        controlPanel(p, "deactive");
+                    });
+                } else {
+                    //panels.active = false;
+                    //panels.$item.removeClass("active");
+                    controlPanel(panels, "deactive");
+                }
+            };
+
+            /**
+             * 패널중에 null이 된 요소를 찾아 panels를 정리 합니다.
+             * @returns {*}
+             */
+            var arrangePanel = function arrangePanel() {
+                var processor = {
+                    stack: function stack(myself) {
+                        if (!U.isArray(myself.panels)) return false;
+
+                        var newObj = {
+                            type: "stack",
+                            panels: []
+                        };
+
+                        myself.panels.forEach(function (P, _pIndex) {
+                            if (P) {
+                                var _p = processor[P.type](P);
+                                if (_p) newObj.panels.push(_p);
+                                _p = null;
+                            }
+                        });
+
+                        if (newObj.panels.length == 0) {
+                            return null;
+                        } else if (newObj.panels.length < 2) {
+                            newObj = newObj.panels[0];
+                        }
+
+                        return newObj;
+                    },
+                    panel: function panel(myself) {
+                        //console.log(myself);
+                        return myself;
+                    },
+                    row: function row(myself) {
+
+                        if (!U.isArray(myself.panels)) return false;
+
+                        var newObj = {
+                            type: "row",
+                            panels: []
+                        };
+
+                        myself.panels.forEach(function (P, _pIndex) {
+                            if (P) {
+                                var _p = processor[P.type](P);
+                                if (_p) newObj.panels.push(_p);
+                                _p = null;
+                            }
+                        });
+
+                        if (newObj.panels.length == 0) {
+                            return null;
+                        } else if (newObj.panels.length < 2) {
+                            newObj = newObj.panels[0];
+                        }
+
+                        return newObj;
+                    },
+                    column: function column(myself) {
+                        if (!U.isArray(myself.panels)) return false;
+
+                        var newObj = {
+                            type: "column",
+                            panels: []
+                        };
+
+                        myself.panels.forEach(function (P, _pIndex) {
+                            if (P) {
+                                var _p = processor[P.type](P);
+                                if (_p) newObj.panels.push(_p);
+                                _p = null;
+                            }
+                        });
+
+                        if (newObj.panels.length == 0) {
+                            return null;
+                        } else if (newObj.panels.length < 2) {
+                            newObj = newObj.panels[0];
+                        }
+
+                        return newObj;
+                    }
+                };
+
+                if (_this3.panels[0]) {
+                    _this3.panels[0] = processor[_this3.panels[0].type](_this3.panels[0]);
+                    if (_this3.panels[0] && _this3.panels[0].type === "panel") {
+                        _this3.panels[0] = {
+                            type: "stack",
+                            panels: [_this3.panels[0]]
+                        };
+                    }
+                } else {
+                    _this3.panels = [];
+                }
+
+                repaintPanels();
+            };
 
             /**
              * @method ax5docker.setConfig
              * @param {Object} config
-             * @param {Array} config.panels
+             * @param {Element} config.target
+             * @param {Object[]} config.panels
+             * @param {String} config.panels[].type - panel, stack, row, column
+             * @param {String} config.panels[].name
+             * @param {String} [config.panels[].color]
+             * @param {String} [config.panels[].borderColor]
+             * @param {String} config.panels[].moduleName
+             * @param {Object} config.panels[].moduleState
+             * @param {Object[]} config.panels[].panels
+             * @param {Object} [config.icons]
+             * @param {String} [config.icons.close]
+             * @param {String} [config.icons.more]
+             * @param {Boolean} [config.disableClosePanel=false]
+             * @param {Boolean} [config.disableDragPanel=false]
+             * @param {Object} [config.control]
+             * @param {Function} [config.control.before]
+             * @param {Function} [config.control.after]
+             * @param {Object} [config.menu]
+             * @param {String} [config.menu.theme="default"]
+             * @param {String} [config.menu.position="absolute"]
+             * @param {Object} [config.menu.icons]
+             * @param {String} [config.menu.icons.arrow]
+             * @param {Number} [config.resizeDebounceTime=100]
+             * @param {Number} [config.panelDebounceTime=300]
+             * @example
+             * ```js
+             * var myDocker = new ax5.ui.docker();
+             * myDocker.setConfig({
+             *      target: $('[data-ax5docker="docker1"]'),
+             *      panels: [
+             *          {
+             *              type: "panel",
+             *              name: "panel name",
+             *              color: "#ff3300",
+             *              borderColor: "#000000",
+             *              moduleName: "content",
+             *              moduleState:{
+             *                  data: "data1"
+             *              }
+             *          }
+             *      ]
+             * });
+             * ```
              */
             this.init = function (_config) {
                 cfg = jQuery.extend(true, {}, cfg, _config);
@@ -23029,6 +26389,10 @@ jQuery.fn.ax5autocomplete = function () {
                     console.log(ax5.info.getError("ax5docker", "401", "init"));
                     return this;
                 }
+
+                // 이벤트 정의 영역
+                this.onResize = cfg.onResize;
+
                 // memory target
                 this.$target = jQuery(cfg.target);
                 // set panels
@@ -23038,7 +26402,23 @@ jQuery.fn.ax5autocomplete = function () {
                 this.onClick = cfg.onClick;
                 this.onLoad = cfg.onLoad;
                 this.onDataChanged = cfg.onDataChanged;
+
+                if (ax5.ui.menu) {
+                    this.menu = new ax5.ui.menu({
+                        theme: 'default',
+                        position: "absolute",
+                        icons: {
+                            'arrow': '▸'
+                        }
+                    });
+                }
+
+                jQuery(window).bind("resize.ax5docker-" + this.id, function () {
+                    // stackPane tabs 스크롤처리
+                    alignStackPane();
+                });
             };
+
             /**
              * @method ax5docker.setPanels
              * @returns {ax5docker}
@@ -23052,6 +26432,11 @@ jQuery.fn.ax5autocomplete = function () {
                 return this;
             };
 
+            /**
+             * @method ax5docker.addModule
+             * @param modules
+             * @returns {ax5docker}
+             */
             this.addModule = function (modules) {
                 if (U.isObject(modules)) {
                     jQuery.extend(true, this.modules, modules);
@@ -23059,43 +26444,1076 @@ jQuery.fn.ax5autocomplete = function () {
                 return this;
             };
 
+            /**
+             * repaint panels of docker
+             * @method ax5docker.repaint
+             * @returns {ax5docker}
+             */
             this.repaint = function () {
                 // 패널 다시 그리기
                 repaintPanels();
+                return this;
+            };
+
+            /**
+             * @method ax5docker.addPanel
+             * @param {String} _addPath - Position path to add panel
+             * @param _addType
+             * @param _panel
+             * @param _panelIndex
+             * @returns {ax5docker}
+             * @example
+             * ```js
+             * myDocker.addPanel('0.1', 'stack', {type:'panel', name:'addPanel', moduleName: 'content'});
+             *
+             * ```
+             */
+            this.addPanel = function (_addPath, _addType, _panel, _panelIndex) {
+                console.log(_addPath, _addType);
+                var addPath = "";
+                var pane = void 0;
+                var parent = void 0;
+
+                if (this.panels.length === 0 || !this.panels[0]) {
+                    return this.setPanels([{ type: "stack", panels: [_panel] }]);
+                } else {
+                    if (_addPath == "undefined") {
+                        addPath = "0";
+                    } else {
+                        addPath = _addPath.replace(/[a-zA-Z\[\]]+/g, "").replace(/(\d+)/g, function (a, b) {
+                            return "panels[" + a + "]";
+                        });
+                    }
+                    pane = getPanel(addPath);
+                    parent = getPanelParent(pane);
+                }
+
+                if (parent && parent.type == "stack") {
+                    // 부모패널로 ~
+                    //console.log(addPath, _addPath);
+                    pane = parent;
+                    addPath = pane.panelPath;
+                }
+
+                console.log(pane);
+                console.log(parent);
+                console.log(addPath);
+
+                var panelProcessor = {
+                    "stack": function stack(_pane, _addType, _panel, _panelIndex) {
+                        var copyPanel = jQuery.extend({}, _pane),
+                            addProcessor = {
+                            "stack": function stack(_pane, _panel) {
+                                if (_panel.active) {
+                                    panelsDeactive(_pane.panels);
+                                }
+                                _pane.panels.push(_panel);
+                                arrangePanel();
+                            },
+                            "stack-left": function stackLeft(_pane, _panel) {
+                                if (_panel.active) {
+                                    panelsDeactive(_pane.panels);
+                                }
+                                _pane.panels.splice(_panelIndex, 0, _panel);
+                                arrangePanel();
+                            },
+                            "stack-right": function stackRight(_pane, _panel) {
+                                if (_panel.active) {
+                                    panelsDeactive(_pane.panels);
+                                }
+                                _pane.panels.splice(Number(_panelIndex) + 1, 0, _panel);
+                                arrangePanel();
+                            },
+                            "row-left": function rowLeft(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "row") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(_panel);
+                                    _pane.panels.push(copyPanel);
+                                    arrangePanel();
+                                }
+                            },
+                            "row-right": function rowRight(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "row") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(copyPanel);
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                }
+                            },
+                            "column-top": function columnTop(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "column") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "column",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(_panel);
+                                    _pane.panels.push(copyPanel);
+                                    arrangePanel();
+                                }
+                            },
+                            "column-bottom": function columnBottom(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "column") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "column",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(copyPanel);
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                }
+                            }
+                        };
+                        if (_addType in addProcessor) {
+                            addProcessor[_addType].call(this, _pane, _panel);
+                        }
+
+                        copyPanel = null;
+                        addProcessor = null;
+                    },
+                    "row": function row(_pane, _addType, _panel, _panelIndex) {
+                        var copyPanel = jQuery.extend({}, _pane),
+                            addProcessor = {
+                            "stack": function stack(_pane, _panel) {
+                                // 처리 할 수 없는 상황 첫번째 자식을 찾아 재 요청
+                                if (_pane.panels[0] && _pane.panels[0].panelPath) {
+                                    this.addPanel(_pane.panels[0].panelPath, _addType, _panel);
+                                }
+                            },
+                            "row-left": function rowLeft(_pane, _panel, _panelIndex) {
+                                _pane.panels.splice(_panelIndex, 0, _panel);
+                                arrangePanel();
+                            },
+                            "row-right": function rowRight(_pane, _panel, _panelIndex) {
+                                _pane.panels.splice(_panelIndex + 1, 0, _panel);
+                                arrangePanel();
+                            },
+                            "column-top": function columnTop(_pane, _panel, _panelIndex) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "column") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "column",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(_panel);
+                                    _pane.panels.push(copyPanel);
+                                    arrangePanel();
+                                }
+                            },
+                            "column-bottom": function columnBottom(_pane, _panel, _panelIndex) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "column") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "column",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(copyPanel);
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                }
+                            }
+                        };
+                        if (_addType in addProcessor) {
+                            addProcessor[_addType].call(this, _pane, _panel, _panelIndex);
+                        }
+
+                        addProcessor = null;
+                        copyPanel = null;
+                    },
+                    "column": function column(_pane, _addType, _panel, _panelIndex) {
+                        var copyPanel = jQuery.extend({}, _pane),
+                            addProcessor = {
+                            "stack": function stack(_pane, _panel) {
+                                if (_pane.panels[0] && _pane.panels[0].panelPath) {
+                                    this.addPanel(_pane.panels[0].panelPath, _addType, _panel);
+                                }
+                            },
+                            "row-left": function rowLeft(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "row") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(_panel);
+                                    _pane.panels.push(copyPanel);
+                                    arrangePanel();
+                                }
+                            },
+                            "row-right": function rowRight(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "row") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(copyPanel);
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                }
+                            },
+                            "column-top": function columnTop(_pane, _panel) {
+                                _pane.panels.splice(_panelIndex, 0, _panel);
+                                arrangePanel();
+                            },
+                            "column-bottom": function columnBottom(_pane, _panel) {
+                                _pane.panels.splice(_panelIndex + 1, 0, _panel);
+                                arrangePanel();
+                            }
+                        };
+                        if (_addType in addProcessor) {
+                            addProcessor[_addType].call(this, _pane, _panel);
+                        }
+
+                        addProcessor = null;
+                        copyPanel = null;
+                    },
+                    "panel": function panel(_pane, _addType, _panel) {
+                        var copyPanel = jQuery.extend({}, _pane),
+                            addProcessor = {
+                            "stack": function stack(_pane, _panel) {
+                                // _pane stack으로 재구성
+                                _pane = setPanel(addPath, {
+                                    type: "stack",
+                                    panels: []
+                                });
+
+                                if (_panel.active) {
+                                    panelsDeactive(copyPanel);
+                                }
+
+                                _pane.panels.push(copyPanel);
+                                _pane.panels.push(_panel);
+                                arrangePanel();
+                            },
+                            "stack-left": function stackLeft(_pane, _panel) {
+                                // _pane stack으로 재구성
+                                _pane = setPanel(addPath, {
+                                    type: "stack",
+                                    panels: []
+                                });
+
+                                if (_panel.active) {
+                                    panelsDeactive(copyPanel);
+                                }
+                                _pane.panels.push(_panel);
+                                _pane.panels.push(copyPanel);
+                                arrangePanel();
+                            },
+                            "stack-right": function stackRight(_pane, _panel) {
+                                // _pane stack으로 재구성
+                                _pane = setPanel(addPath, {
+                                    type: "stack",
+                                    panels: []
+                                });
+
+                                if (_panel.active) {
+                                    panelsDeactive(copyPanel);
+                                }
+                                _pane.panels.push(copyPanel);
+                                _pane.panels.push(_panel);
+                                arrangePanel();
+                            },
+                            "row-left": function rowLeft(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "row" || parentPane.type == "column") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(_panel);
+                                    _pane.panels.push(copyPanel);
+                                    arrangePanel();
+                                }
+                            },
+                            "row-right": function rowRight(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "row" || parentPane.type == "column") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "row",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(copyPanel);
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                }
+                            },
+                            "column-top": function columnTop(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+                                if (parentPane && parentPane.type == "column" || parentPane.type == "row") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "column",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(_panel);
+                                    _pane.panels.push(copyPanel);
+                                    arrangePanel();
+                                }
+                            },
+                            "column-bottom": function columnBottom(_pane, _panel) {
+                                var parentPath = addPath.substr(0, addPath.lastIndexOf("."));
+                                var parentPane = getPanel(parentPath);
+
+                                if (parentPane && parentPane.type == "column" || parentPane.type == "row") {
+                                    this.addPanel(parentPane.panelPath, _addType, _panel, _pane.panelIndex);
+                                } else {
+                                    _pane = setPanel(addPath, {
+                                        type: "column",
+                                        panels: []
+                                    });
+                                    _pane.panels.push(copyPanel);
+                                    _pane.panels.push(_panel);
+                                    arrangePanel();
+                                }
+                            }
+                        };
+
+                        if (_addType in addProcessor) {
+                            addProcessor[_addType].call(this, _pane, _panel);
+                        }
+
+                        copyPanel = null;
+                        addProcessor = null;
+                    }
+                };
+
+                if (pane ? pane.type : "stack" in panelProcessor) {
+                    panelProcessor[pane ? pane.type : "stack"].call(this, pane, _addType, _panel, _panelIndex);
+                }
+
+                return this;
+            };
+
+            /**
+             * 패널 삭제하기
+             * @method ax5docker.removePanel
+             * @param {String} panelPath
+             * @param {Function} callback
+             * @returns {ax5docker}
+             * @example
+             * ```js
+             * function removePanel() {
+             *      var p = myDocker.searchPanel(function (panel) {
+             *          return (panel.key == "A");
+             *      });
+             *
+             *      if (p) {
+             *          myDocker.removePanel(p.panelPath, function () {
+             *              removePanel();
+             *          });
+             *      }
+             * }
+             * removePanel();
+             * ```
+             */
+            this.removePanel = function (panelPath, callback) {
+                var panel = getPanel(panelPath);
+
+                controlPanel(panel, "destroy", callback);
+
+                panel = null;
+                return this;
+            };
+
+            /**
+             * @method ax5docker.appendPanel
+             * @param _panel
+             * @param _appendPath
+             * @param _appendType
+             * @returns {ax5docker}
+             */
+            this.appendPanel = function (_panel, _appendPath, _appendType) {
+                console.log(_panel);
+                var copiedPanel = $.extend({}, _panel, { panelPath: "" }),
+                    addType = void 0;
+
+                var removePanelPath = _panel.panelPath;
+                var appendPanelIndex = U.right(_appendPath, ".").replace(/\D/g, "");
+
+                if (_appendType.length == 0) {
+                    return this;
+                }
+
+                if (_panel.panelPath === _appendPath) {
+                    var parentPath = _appendPath.substr(0, _appendPath.lastIndexOf("."));
+                    var parentPane = getPanel(parentPath);
+                    if (parentPane.type != "stack") {
+                        return this;
+                    }
+                }
+
+                if (_appendType.length == 1) {
+                    // stack
+                    addType = _appendType[0] == "last-child" ? "stack" : "stack-" + _appendType[0];
+                    copiedPanel.active = false;
+                    copiedPanel.$item.removeClass("active");
+                    controlPanel(copiedPanel, "deactive");
+                } else {
+                    switch (_appendType[0] + "-" + _appendType[1]) {
+                        case "left-top":
+                            addType = "row-left";
+                            break;
+                        case "left-middle":
+                            addType = "row-left";
+                            break;
+                        case "left-bottom":
+                            addType = "row-left";
+                            break;
+                        case "center-top":
+                            addType = "column-top";
+                            break;
+                        case "center-middle":
+                            addType = "stack";
+                            copiedPanel.active = false;
+                            copiedPanel.$item.removeClass("active");
+                            appendPanelIndex = undefined;
+                            controlPanel(copiedPanel, "deactive");
+                            break;
+                        case "center-bottom":
+                            addType = "column-bottom";
+                            break;
+                        case "right-top":
+                            addType = "row-right";
+                            break;
+                        case "right-middle":
+                            addType = "row-right";
+                            break;
+                        case "right-bottom":
+                            addType = "row-right";
+                            break;
+                    }
+                }
+
+                if (_panel.panelPath === _appendPath) {
+                    // 부모레벨로 이동
+                    _appendPath = U.left(_appendPath, ".");
+                }
+                // todo : deactive call
+
+                setPanel(removePanelPath, null);
+
+                console.log(_appendPath, addType, copiedPanel, appendPanelIndex);
+                this.addPanel(_appendPath, addType, copiedPanel, appendPanelIndex);
+
+                copiedPanel = null;
+                return this;
+            };
+
+            /**
+             * @method ax5docker.align
+             * @returns {ax5docker}
+             */
+            this.align = function () {
+                alignStackPane();
+                return this;
+            };
+
+            /**
+             * @method ax5docker.searchPanel
+             * @param _condition
+             * @returns {*}
+             * @example
+             * ```js
+             * var p = myDocker.searchPanel(function (panel) {
+             *  return (panel.id == "A");
+             * });
+             * ```
+             */
+            this.searchPanel = function (_condition) {
+                if (U.isFunction(_condition)) {
+
+                    var findPanel = function findPanel(_panels) {
+                        var i = 0,
+                            l = _panels.length,
+                            findResult = void 0;
+                        for (; i < l; i++) {
+                            if (_panels[i]) {
+                                if (_panels[i].type === "panel") {
+                                    if (_condition.call({
+                                        config: self.config,
+                                        panel: _panels[i]
+                                    }, _panels[i])) {
+                                        return _panels[i];
+                                    }
+                                } else {
+                                    if (findResult = findPanel(_panels[i].panels)) {
+                                        return findResult;
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    return findPanel(this.panels);
+                } else if (U.isString(_condition)) {
+
+                    return getPanel(_condition);
+                }
+            };
+
+            /**
+             * @method ax5docker.activePanel
+             * @param {String} _panelPath
+             * @param {Function} callback
+             * @returns {ax5docker}
+             * @example
+             * ```js
+             * myDocker.activePanel("0.1");
+             * myDocker.activePanel("0.0.1");
+             * ```
+             */
+            this.activePanel = function (_panelPath, callback) {
+                var activePanelPath = "";
+                var pane = void 0;
+                var parent = void 0;
+
+                if (this.panels.length === 0 || !this.panels[0]) {
+                    // 액티브 대상 없음.
+                    return this;
+                } else {
+                    if (typeof _panelPath == "undefined") {
+                        activePanelPath = "0";
+                    } else {
+                        activePanelPath = _panelPath.replace(/[a-zA-Z\[\]]+/g, "").replace(/(\d+)/g, function (a, b) {
+                            return "panels[" + a + "]";
+                        });
+                    }
+                    pane = getPanel(activePanelPath);
+                    parent = getPanelParent(pane);
+                }
+
+                changeActiveStackPanel(parent, pane.panelIndex);
+                return this;
             };
 
             // 클래스 생성자
             this.main = function () {
+                UI.docker_instance = UI.docker_instance || [];
+                UI.docker_instance.push(this);
+
                 if (arguments && U.isObject(arguments[0])) {
                     this.setConfig(arguments[0]);
                 }
             }.apply(this, arguments);
         };
-
-        return ax5docker;
     }());
+
+    DOCKER = ax5.ui.docker;
 })();
-
-// todo : active 된 패널만 표시하기 -- ok
-// todo : row > stack 구현 -- ok
-// todo : stack 패널 active change -- ok
-// todo : resize
-// todo : 패널 추가 / 삭제 / 재구성
-// todo : 패널 drag & drop
-
 // ax5.ui.docker.tmpl
 (function () {
 
     var DOCKER = ax5.ui.docker;
 
-    var panels = function panels(columnKeys) {
-        return ' \n{{#panels}}\n{{#panels}}\n{{/panels}}\n{{^panels}}\n{{/panels}}\n{{/panels}}\n        ';
+    var stack_panel = function stack_panel(columnKeys, data) {
+        if (data.labelDirection === "bottom") {
+            return '<div data-ax5docker-pane="{{id}}" data-ax5docker-label-direction="{{labelDirection}}" data-ax5docker-path="{{panelPath}}" style="flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};">\n    <div data-ax5docker-pane-item-views="{{id}}"></div>\n    <ul data-ax5docker-pane-tabs="{{id}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}"></ul>\n    <div data-ax5docker-pane-tabs-more="{{id}}">{{{icons.more}}}</div>\n</div>';
+        } else {
+            return '<div data-ax5docker-pane="{{id}}" data-ax5docker-label-direction="{{labelDirection}}" data-ax5docker-path="{{panelPath}}" style="flex-grow: {{#flexGrow}}{{.}}{{/flexGrow}}{{^flexGrow}}1{{/flexGrow}};">\n    <ul data-ax5docker-pane-tabs="{{id}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}"></ul>\n    <div data-ax5docker-pane-tabs-more="{{id}}">{{{icons.more}}}</div>\n    <div data-ax5docker-pane-item-views="{{id}}"></div>\n</div>';
+        }
+    };
+
+    var panel_label = function panel_label() {
+        return '<li data-ax5docker-pane-tab="{{pIndex}}" data-ax5docker-id="{{id}}" data-ax5docker-path="{{panelPath}}" class="{{#hasLabelColor}}hasLabelColor{{/hasLabelColor}}">\n    <div class="label-icon" style="{{#color}}background: {{color}};{{/color}}{{#borderColor}}border-color: {{borderColor}};{{/borderColor}}"></div>\n    <div class="title">{{{name}}}</div>\n    {{^disableClosePanel}}<div class="close-icon">{{{icons.close}}}</div>{{/disableClosePanel}}\n</li><li class="pane-tab-margin"></li>';
     };
 
     DOCKER.tmpl = {
-        "panels": panels,
+        "stack-panel": stack_panel,
+        "panel-label": panel_label,
+
         get: function get(tmplName, data, columnKeys) {
-            return ax5.mustache.render(DOCKER.tmpl[tmplName].call(this, columnKeys), data);
+            return ax5.mustache.render(DOCKER.tmpl[tmplName].call(this, columnKeys, data), data);
+        }
+    };
+})();
+// ax5.ui.palette
+(function () {
+
+    var UI = ax5.ui;
+    var U = ax5.util;
+    var PALETTE = void 0;
+
+    UI.addClass({
+        className: "palette"
+    }, function () {
+
+        /**
+         * @class ax5palette
+         * @classdesc
+         * @author tom@axisj.com
+         * @example
+         * ```js
+         * ```
+         */
+        return function () {
+            var _this4 = this;
+
+            var self = this,
+                cfg = void 0;
+
+            this.instanceId = ax5.getGuid();
+            this.target = null;
+            this.config = {
+                clickEventName: "click",
+                theme: 'default',
+                animateTime: 100,
+                colors: {
+                    preview: {
+                        width: 24,
+                        height: 24,
+                        cellWidth: 30
+                    },
+                    label: {
+                        width: 80
+                    },
+                    slider: {
+                        trackHeight: 8,
+                        amount: 32,
+                        handleWidth: 18,
+                        handleHeight: 18
+                    },
+                    list: [{ label: "red", value: "#ff0000" }, { label: "orange", value: "#ff9802" }, { label: "yellow", value: "#ffff00" }, { label: "green", value: "#00ff36" }, { label: "blue", value: "#0000ff" }, { label: "purple", value: "#ba00ff" },
+                    //{label: "skyblue", value: "#84e4ff"},
+                    //{label: "pink", value: "#ff77c4"},
+                    { label: "black", value: "#000000" }, { label: "white", value: "#ffffff" }]
+                },
+                controls: {
+                    height: 0
+                },
+                columnKeys: {}
+            };
+            this.xvar = {};
+            this.colors = [];
+
+            cfg = this.config;
+
+            var ENM = {
+                "mousedown": ax5.info.supportTouch ? "touchstart" : "mousedown",
+                "mousemove": ax5.info.supportTouch ? "touchmove" : "mousemove",
+                "mouseup": ax5.info.supportTouch ? "touchend" : "mouseup"
+            };
+
+            var onStateChanged = function onStateChanged(opts, that) {
+                if (opts && opts.onStateChanged) {
+                    opts.onStateChanged.call(that, that);
+                } else if (_this4.onStateChanged) {
+                    _this4.onStateChanged.call(that, that);
+                }
+
+                that = null;
+            };
+
+            /**
+             * get mouse position
+             * @param e
+             * @returns {{clientX, clientY}}
+             */
+            var getMousePosition = function getMousePosition(e) {
+                var mouseObj = void 0,
+                    originalEvent = e.originalEvent ? e.originalEvent : e;
+                mouseObj = 'changedTouches' in originalEvent && originalEvent.changedTouches ? originalEvent.changedTouches[0] : originalEvent;
+                // clientX, Y 쓰면 스크롤에서 문제 발생
+                return {
+                    clientX: mouseObj.pageX,
+                    clientY: mouseObj.pageY
+                };
+            };
+
+            var bindHandle = function bindHandle(item) {
+                item.originalTrackWidth = item.$track.width();
+                item.trackWidth = item.originalTrackWidth - cfg.colors.slider.handleWidth / 5;
+                var handleLeft = amountToHandleLeft(item, item._amount);
+
+                // handleLeft 가 범위를 벗어나면?
+                if (handleLeft < 0 || handleLeft > item.trackWidth) {
+                    var amount = void 0;
+                    handleLeft = handleLeft < 0 ? 0 : handleLeft > item.trackWidth ? item.trackWidth : handleLeft;
+                    amount = handleLeftToAmount(item, handleLeft);
+                    updatePreviewColor(item, amountToColor(item, amount));
+                }
+
+                item.$handle.css({ left: handleLeft });
+                item.$item.off(ENM["mousedown"]).on(ENM["mousedown"], '[data-panel="color-handle"]', function (e) {
+                    var mouseObj = getMousePosition(e);
+                    item._originalHandleClientX = mouseObj.clientX;
+                    item._originalHandleLeft = item.$handle.position().left;
+                    handleMoveEvent.on(item);
+                    U.stopEvent(e.originalEvent);
+                }).off("click").on("click", '[data-panel="color-label"], [data-panel="color-preview"]', function (e) {
+                    if (self.onClick) {
+                        self.onClick.call(item, '#' + item._selectedColor.toUpperCase(), e);
+                    }
+                }).on("click", '[data-panel="color-track"]', function (e) {
+                    if (e.target.getAttribute("data-panel") == "color-track") {
+                        var mouseObj = getMousePosition(e),
+                            newHandleLeft = mouseObj.clientX - item.$track.offset().left,
+                            _amount2 = handleLeftToAmount(item, newHandleLeft);
+
+                        item.$handle.css({ left: newHandleLeft });
+                        updatePreviewColor(item, amountToColor(item, _amount2), e);
+
+                        mouseObj = null;
+                        newHandleLeft = null;
+                        _amount2 = null;
+                    }
+                });
+            };
+
+            var updatePreviewColor = function updatePreviewColor(item, color, event) {
+                item.$preview.css({ "background-color": '#' + color });
+                item.$label.html('#' + color.toUpperCase());
+                item._selectedColor = color;
+
+                if (event && self.onUpdateColor) {
+                    self.onUpdateColor.call(item, '#' + item._selectedColor.toUpperCase());
+                }
+            };
+
+            var amountToColor = function amountToColor(item, amount) {
+                var processor = {
+                    "black": function black(_color, _amount) {
+                        return _color.lighten(cfg.colors.slider.amount / 2).darken(_amount).getHexValue();
+                    },
+                    "white": function white(_color, _amount) {
+                        return _color.darken(cfg.colors.slider.amount / 2).darken(_amount).getHexValue();
+                    },
+                    "normal": function normal(_color, _amount) {
+                        return _color.darken(_amount).getHexValue();
+                    }
+                };
+
+                if (item._uniqColor in processor) {
+                    return processor[item._uniqColor](item._color, amount);
+                } else {
+                    return processor["normal"](item._color, amount);
+                }
+            };
+
+            var colorToAmount = function colorToAmount(item, color) {
+                /// todo : 색상에 가까운 색 표현.
+                var processor = {
+                    "black": function black(_color, _diffColor) {
+                        var color1 = _color.lighten(cfg.colors.slider.amount / 2);
+                        return (color1.getHsl().l - _diffColor.getHsl().l) * 100;
+                    },
+                    "white": function white(_color, _diffColor) {
+                        var color1 = _color.darken(cfg.colors.slider.amount / 2);
+                        return (color1.getHsl().l - _diffColor.getHsl().l) * 100;
+                    },
+                    "normal": function normal(_color, _diffColor) {
+                        return (_color.getHsl().l - _diffColor.getHsl().l) * 100;
+                    }
+                };
+
+                if (item._uniqColor in processor) {
+                    return processor[item._uniqColor](item._color, color);
+                } else {
+                    return processor["normal"](item._color, color);
+                }
+            };
+
+            var handleLeftToAmount = function handleLeftToAmount(item, handleLeft) {
+                return cfg.colors.slider.amount * (handleLeft - item.trackWidth / 2) / (item.originalTrackWidth / 2);
+            };
+
+            var amountToHandleLeft = function amountToHandleLeft(item, amount) {
+                return amount * (item.originalTrackWidth / 2) / cfg.colors.slider.amount + item.trackWidth / 2;
+            };
+
+            var handleMoveEvent = {
+                "on": function on(item) {
+                    jQuery(document.body).on(ENM["mousemove"] + ".ax5palette-" + _this4.instanceId, function (e) {
+                        var mouseObj = getMousePosition(e),
+                            da = mouseObj.clientX - item._originalHandleClientX,
+                            newHandleLeft = item._originalHandleLeft + da,
+                            amount = void 0;
+
+                        newHandleLeft = newHandleLeft < 0 ? 0 : newHandleLeft > item.trackWidth ? item.trackWidth : newHandleLeft;
+                        item.$handle.css({ left: newHandleLeft });
+                        amount = handleLeftToAmount(item, newHandleLeft);
+
+                        updatePreviewColor(item, amountToColor(item, amount), e);
+
+                        mouseObj = null;
+                        da = null;
+                    }).on(ENM["mouseup"] + ".ax5palette-" + _this4.instanceId, function (e) {
+                        handleMoveEvent.off();
+                        U.stopEvent(e);
+                    }).on("mouseleave.ax5palette-" + _this4.instanceId, function (e) {
+                        handleMoveEvent.off();
+                        U.stopEvent(e);
+                    });
+
+                    jQuery(document.body).attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+                },
+                "off": function off() {
+                    self.xvar.resizerLived = false;
+
+                    jQuery(document.body).off(ENM["mousemove"] + ".ax5palette-" + _this4.instanceId).off(ENM["mouseup"] + ".ax5palette-" + _this4.instanceId).off("mouseleave.ax5palette-" + _this4.instanceId);
+
+                    jQuery(document.body).removeAttr('unselectable').css('user-select', 'auto').off('selectstart');
+                }
+            };
+
+            var repaint = function repaint(selectedColor) {
+                var box = {
+                    width: _this4.$target.innerWidth(),
+                    height: _this4.$target.innerHeight()
+                };
+
+                // 패널 프레임 초기화
+                _this4.$target.html(PALETTE.tmpl.get("frame", {}, cfg.columnKeys));
+
+                // 각 패널들을 캐싱~
+                _this4.$ = {
+                    "root": _this4.$target.find('[data-ax5palette-container="root"]'),
+                    "colors": _this4.$target.find('[data-ax5palette-container="colors"]'),
+                    "controls": _this4.$target.find('[data-ax5palette-container="controls"]')
+                };
+
+                // todo : controls 나중에 고민하여 구현
+                // this.$["controls"].css({height: cfg.controls.height});
+
+                /// colors.list 색상 범위 결정 / 초기화
+                cfg.colors.list.forEach(function (c) {
+                    c._color = U.color(c.value);
+                    c._selectedColor = c._color.getHexValue();
+                    if (c._color.r == 0 && c._color.g == 0 && c._color.b == 0) {
+                        c._amount = cfg.colors.slider.amount;
+                        c._uniqColor = "black";
+                        c._color0value = "#" + c._color.lighten(cfg.colors.slider.amount).getHexValue();
+                        c._color1value = "#" + c._color.lighten(cfg.colors.slider.amount / 2).getHexValue();
+                        c._color2value = "#" + c._color.getHexValue();
+                    } else if (c._color.r == 255 && c._color.g == 255 && c._color.b == 255) {
+                        c._amount = -cfg.colors.slider.amount;
+                        c._uniqColor = "white";
+                        c._color0value = "#" + c._color.getHexValue();
+                        c._color1value = "#" + c._color.darken(cfg.colors.slider.amount / 2).getHexValue();
+                        c._color2value = "#" + c._color.darken(cfg.colors.slider.amount).getHexValue();
+                    } else {
+                        c._amount = 0;
+                        c._color0value = "#" + c._color.lighten(cfg.colors.slider.amount).getHexValue();
+                        c._color1value = "#" + c._color.getHexValue();
+                        c._color2value = "#" + c._color.darken(cfg.colors.slider.amount).getHexValue();
+                    }
+                });
+
+                // 색생조절 핸들의 위치 조정cfg.colors.list[minDiffColorIndex]
+                cfg.colors.slider.handleLeft = -cfg.colors.slider.handleWidth / 2;
+                cfg.colors.slider.handleTop = -cfg.colors.slider.handleHeight / 2;
+
+                // 팔렛트 컬러 패널 초기화
+                _this4.$["colors"].html(PALETTE.tmpl.get("colors", cfg, cfg.columnKeys));
+
+                _this4.$["colors"].find('[data-ax5palette-color-index]').each(function () {
+                    var idx = this.getAttribute("data-ax5palette-color-index");
+                    var color = cfg.colors.list[idx];
+                    var item = jQuery.extend({}, color);
+                    item._index = idx;
+                    item.$item = jQuery(this);
+                    item.$preview = item.$item.find('[data-panel="color"]');
+                    item.$label = item.$item.find('[data-panel="color-label"]');
+                    item.$track = item.$item.find('[data-panel="color-track"]');
+                    item.$handle = item.$item.find('[data-panel="color-handle"]');
+                    bindHandle(item);
+                    /////
+                    self.colors.push(item);
+                });
+
+                if (selectedColor) {
+                    _this4.setSelectedColor(selectedColor);
+                }
+            };
+
+            /**
+             * Preferences of palette UI
+             * @method ax5palette.setConfig
+             * @param {Object} config
+             * @param {Element} config.target
+             * @param {String} [config.selectedColor]
+             * @param {Object} [config.colors]
+             * @param {Object} [config.colors.preview]
+             * @param {Number} [config.colors.preview.width=24]
+             * @param {Number} [config.colors.preview.height=24]
+             * @param {Number} [config.colors.preview.cellWidth=30]
+             * @param {Object} [config.colors.label]
+             * @param {Number} [config.colors.label.width=80]
+             * @param {Object} [config.colors.slider]
+             * @param {Number} [config.colors.slider.trackHeight=8]
+             * @param {Number} [config.colors.slider.amount=32]
+             * @param {Number} [config.colors.slider.handleWidth=18]
+             * @param {Number} [config.colors.slider.handleHeight=18]
+             * @param {Object[]} [config.colors.list=[red,orange,yellow,green,blue,purple,black,white]]
+             * @param {String} config.colors.list[].label
+             * @param {String} config.colors.list[].value
+             * @param {Object} [config.controls]
+             * @param {Number} [config.controls.height=0]
+             * @returns {ax5palette}
+             * @example
+             * ```js
+             * myPalette = new ax5.ui.palette({
+             *  target: $('[data-ax5palette="01"]'),
+             *  onClick: function (hexColor) {
+             *      alert(hexColor);
+             *  }
+             * });
+             *
+             * myPalette = new ax5.ui.palette({
+             *  target: $('[data-ax5palette="01"]'),
+             *  colors: {
+             *      list: [
+             *          {label: "red", value: "#ff0000"},
+             *          {label: "orange", value: "#ff9802"},
+             *          {label: "yellow", value: "#ffff00"},
+             *          {label: "skyblue", value: "#84e4ff"},
+             *          {label: "white", value: "#ffffff"}
+             *      ]
+             *  }
+             *  onClick: function (hexColor) {
+             *  }
+             * });
+             * ```
+             */
+            this.init = function () {
+                // after setConfig();
+                this.onStateChanged = cfg.onStateChanged;
+                this.onClick = cfg.onClick;
+                this.onUpdateColor = cfg.onUpdateColor;
+
+                if (!cfg.target) {
+                    console.log(ax5.info.getError("ax5palette", "401", "setConfig"));
+                }
+                this.$target = jQuery(cfg.target);
+
+                setTimeout(function () {
+                    repaint((cfg.selectedColor || "").trim()); // 팔렛트 그리기.
+                });
+            };
+
+            /**
+             * @method ax5palette.repaint
+             * @returns {ax5palette}
+             */
+            this.repaint = function () {
+                repaint();
+                return this;
+            };
+
+            /**
+             * @method ax5palette.setSelectedColor
+             * @param selectedColor
+             * @returns {ax5palette}
+             */
+            this.setSelectedColor = function (selectedColor) {
+
+                var sColor = U.color(selectedColor.trim());
+                // 지정된 색이 가장 가까운 파렛 검색
+                var minDiffColor = 255 * 3,
+                    minDiffColorIndex = -1;
+
+                self.colors.forEach(function (c, cidx) {
+                    var c1hsl = c._color.getHsl(),
+                        c2hsl = sColor.getHsl();
+                    var diffColor = Math.abs(c1hsl.h - c2hsl.h) + Math.abs(c1hsl.s - c2hsl.s) + Math.abs(c1hsl.l - c2hsl.l);
+                    if (diffColor < minDiffColor) {
+                        minDiffColor = diffColor;
+                        minDiffColorIndex = cidx;
+                    }
+                });
+
+                if (minDiffColorIndex > -1) {
+                    var amount = void 0,
+                        handleLeft = void 0,
+                        item = self.colors[minDiffColorIndex];
+
+                    item._amount = colorToAmount(item, sColor);
+                    handleLeft = amountToHandleLeft(item, item._amount);
+                    //handleLeft = handleLeft < 0 ? 0 : handleLeft > item.trackWidth ? item.trackWidth : handleLeft;
+                    item.$handle.css({ left: handleLeft });
+
+                    amount = handleLeftToAmount(item, handleLeft);
+                    updatePreviewColor(item, amountToColor(item, amount));
+                }
+
+                return this;
+            };
+
+            // 클래스 생성자
+            this.main = function () {
+
+                UI.palette_instance = UI.palette_instance || [];
+                UI.palette_instance.push(this);
+
+                if (arguments && U.isObject(arguments[0])) {
+                    this.setConfig(arguments[0]);
+                }
+            }.apply(this, arguments);
+        };
+    }());
+
+    PALETTE = ax5.ui.palette;
+})();
+// ax5.ui.calendar.tmpl
+(function () {
+
+    var PALETTE = ax5.ui.palette;
+
+    var tmpl_frame = function tmpl_frame(columnKeys) {
+        return '\n<div data-ax5palette-container="root">\n    <div data-ax5palette-container="colors"></div>\n    <div data-ax5palette-container="controls"></div>\n</div>\n';
+    };
+
+    var tmpl_colors = function tmpl_colors(columnKeys) {
+        return '\n{{#colors}}\n{{#list}}\n<div data-ax5palette-color="{{label}}" data-ax5palette-color-index="{{@i}}">\n    <div data-panel="color-preview" style="padding:{{preview.cellPadding}}px;width:{{preview.cellWidth}}px;">\n        <div data-panel="color-box" style="width:{{preview.width}}px;height:{{preview.height}}px;"><div data-panel="color" style="background-color:{{value}};"></div></div>\n    </div>\n    <div data-panel="color-label" style="width:{{label.width}}px;">{{label}}</div>\n    <div data-panel="color-slider">\n        <div data-panel="color-track" style="height:{{slider.trackHeight}}px;background: linear-gradient(90deg, {{_color0value}}, {{_color1value}}, {{_color2value}}); ">\n            <div data-panel="color-handle">\n                <div data-panel="color-handle-after" style="width:{{slider.handleWidth}}px;height:{{slider.handleWidth}}px;left:{{slider.handleLeft}}px;top:{{slider.handleLeft}}px;"></div>\n            </div>\n        </div>\n    </div>\n</div>\n{{/list}}\n{{/colors}}\n';
+    };
+
+    PALETTE.tmpl = {
+        "frame": tmpl_frame,
+        "colors": tmpl_colors,
+
+        get: function get(tmplName, data, columnKeys) {
+            return ax5.mustache.render(PALETTE.tmpl[tmplName].call(this, columnKeys), data);
         }
     };
 })();

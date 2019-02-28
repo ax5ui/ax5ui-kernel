@@ -1129,7 +1129,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     copyText += r.join('\t') + "\n";
                 });
 
-                $clipBoard.get(0).innerText = copyText;
+                $clipBoard.get(0).value = copyText;
                 $clipBoard.select();
 
                 try {
