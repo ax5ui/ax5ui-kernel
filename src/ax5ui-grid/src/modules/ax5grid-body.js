@@ -2307,7 +2307,7 @@
                 nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
 
                 // if mergeCells
-                if (this.config.body.mergeCells && this.list.length && focusedColumn.dindex > 1) {
+                if (this.config.body.mergeCells && this.list.length && focusedColumn.dindex >= 1) {
                     while (!this.$.panel[nPanelInfo.panelName]
                         .find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]')
                         .find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').get(0)) {
