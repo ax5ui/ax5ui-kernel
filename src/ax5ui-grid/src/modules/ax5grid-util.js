@@ -124,6 +124,7 @@
                 let row = {cols: []};
                 let i = 0, l = _columns.length;
                 let colspan = 1;
+                let subcolspan = 0;
 
                 for (; i < l; i++) {
                     let field = jQuery.extend({}, _columns[i]);
@@ -135,7 +136,7 @@
 
                         field.rowIndex = depth;
                         field.colIndex = (function () {
-                            if (!parentField) {
+                            if (!parentField || i != 0) {
                                 return colIndex++;
                             } else {
                                 colIndex = parentField.colIndex + i + 1;
@@ -151,6 +152,7 @@
                             field.width = ('width' in field) ? field.width : cfg.columnMinWidth;
                         }
                         field.colspan = colspan;
+                        subcolspan += colspan;
                     } else {
 
 
@@ -162,7 +164,7 @@
                         table.rows[depth] = {cols: []};
                     }
                     table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
-                    return (row.cols.length - 1) + colspan;
+                    return subcolspan;
                 } else {
                     return colspan;
                 }
