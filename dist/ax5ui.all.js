@@ -55,7 +55,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * ax5 version
          * @member {String} ax5.info.version
          */
-        var version = "1.4.127";
+        var version = "1.4.128";
 
         /**
          * ax5 library path
@@ -15230,7 +15230,7 @@ jQuery.fn.ax5select = function () {
                 nPanelInfo = GRID.util.findPanelByColumnIndex.call(this, focusedColumn.dindex, focusedColumn.colIndex);
 
                 // if mergeCells
-                if (this.config.body.mergeCells && this.list.length && focusedColumn.dindex > 1) {
+                if (this.config.body.mergeCells && this.list.length && focusedColumn.dindex >= 1) {
                     while (!this.$.panel[nPanelInfo.panelName].find('[data-ax5grid-tr-data-index="' + focusedColumn.dindex + '"]').find('[data-ax5grid-column-rowindex="' + focusedColumn.rowIndex + '"][data-ax5grid-column-colindex="' + focusedColumn.colIndex + '"]').get(0)) {
 
                         focusedColumn.dindex--;
@@ -18354,6 +18354,7 @@ jQuery.fn.ax5select = function () {
             var i = 0,
                 l = _columns.length;
             var colspan = 1;
+            var subcolspan = 0;
 
             for (; i < l; i++) {
                 var field = jQuery.extend({}, _columns[i]);
@@ -18365,7 +18366,7 @@ jQuery.fn.ax5select = function () {
 
                     field.rowIndex = depth;
                     field.colIndex = function () {
-                        if (!parentField) {
+                        if (!parentField || i != 0) {
                             return colIndex++;
                         } else {
                             colIndex = parentField.colIndex + i + 1;
@@ -18381,6 +18382,7 @@ jQuery.fn.ax5select = function () {
                         field.width = 'width' in field ? field.width : cfg.columnMinWidth;
                     }
                     field.colspan = colspan;
+                    subcolspan += colspan;
                 } else {}
             }
 
@@ -18389,7 +18391,7 @@ jQuery.fn.ax5select = function () {
                     table.rows[depth] = { cols: [] };
                 }
                 table.rows[depth].cols = table.rows[depth].cols.concat(row.cols);
-                return row.cols.length - 1 + colspan;
+                return subcolspan;
             } else {
                 return colspan;
             }
