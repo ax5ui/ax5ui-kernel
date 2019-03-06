@@ -247,10 +247,10 @@
                         'style="height: ' + cellHeight + 'px;min-height: 1px;">');
                     
                     SS.push((function () {
-                        var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth);
+                        // var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2);
                         return '<span data-ax5grid-cellHolder="" ' +
                             ((colAlign) ? 'data-ax5grid-text-align="' + colAlign + '"' : '') +
-                            ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                            ' >';
                     })(), (function () {
                         var _SS = "";
 

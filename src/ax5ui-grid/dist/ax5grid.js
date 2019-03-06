@@ -2825,12 +2825,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                             SS.push(function (_cellHeight) {
-                                var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                                if (!col.multiLine) {
-                                    _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                                }
-
-                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
+                                // let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2);
+                                // if (!col.multiLine) {
+                                //     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                                // }
+                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" >';
                             }(cellHeight), isGroupingRow ? getGroupingValue.call(this, _list[di], di, col) : getFieldValue.call(this, _list, _list[di], di, col), '</span>');
 
                             SS.push('</td>');
@@ -2925,12 +2924,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                     SS.push(function (_cellHeight) {
-                        var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                        if (!col.multiLine) {
-                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                        }
-
-                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
+                        // let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
+                        // if (!col.multiLine) {
+                        //     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                        // }
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" >';
                     }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
                     SS.push('</td>');
@@ -3268,12 +3266,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                     SS.push(function (_cellHeight) {
-                        var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                        if (!col.multiLine) {
-                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                        }
+                        // let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
+                        // if (!col.multiLine) {
+                        //     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                        // }
 
-                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" >';
                     }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
                     SS.push('</td>');
@@ -3346,12 +3344,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                             SS.push(function (_cellHeight) {
-                                var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                                if (!col.multiLine) {
-                                    _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                                }
+                                // let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
+                                // if (!col.multiLine) {
+                                //     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                                // }
 
-                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
+                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" >';
                             }(cellHeight), getGroupingValue.call(this, _list[di], di, col), '</span>');
 
                             SS.push('</td>');
@@ -3483,12 +3481,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                     SS.push(function (_cellHeight) {
-                        var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                        if (!col.multiLine) {
-                            _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                        }
+                        // var lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
+                        // if (!col.multiLine) {
+                        //     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                        // }
 
-                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                        return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" >';
                     }(cellHeight), getSumFieldValue.call(this, _list, col), '</span>');
 
                     SS.push('</td>');
@@ -3568,12 +3566,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                             }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                             SS.push(function (_cellHeight) {
-                                var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                                if (!col.multiLine) {
-                                    _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                                }
+                                // let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
+                                // if (!col.multiLine) {
+                                //     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                                // }
 
-                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;line-height: ' + lineHeight + 'px;">';
+                                return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" >';
                             }(cellHeight), getGroupingValue.call(this, _list[di], di, col), '</span>');
 
                             SS.push('</td>');
@@ -3634,12 +3632,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                         }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                         SS.push(function (_cellHeight) {
-                            var lineHeight = cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth;
-                            if (!col.multiLine) {
-                                _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
-                            }
-
-                            return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" style="height:' + _cellHeight + 'px;' + (col.multiLine ? '' : 'line-height: ' + lineHeight + 'px;') + '">';
+                            // let lineHeight = (cfg.body.columnHeight - cfg.body.columnPadding * 2 - cfg.body.columnBorderWidth);
+                            // if (!col.multiLine) {
+                            //     _cellHeight = cfg.body.columnHeight - cfg.body.columnBorderWidth;
+                            // }
+                            return '<span data-ax5grid-cellHolder="' + (col.multiLine ? 'multiLine' : '') + '" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + '" >';
                         }(cellHeight), getFieldValue.call(this, _list, _list[di], di, col), '</span>');
                         SS.push('</td>');
                     }
@@ -5828,8 +5825,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     }.call(this, col) + '" ', 'style="height: ' + cellHeight + 'px;min-height: 1px;">');
 
                     SS.push(function () {
-                        var lineHeight = cfg.header.columnHeight - cfg.header.columnPadding * 2 - cfg.header.columnBorderWidth;
-                        return '<span data-ax5grid-cellHolder="" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + ' style="height: ' + (cfg.header.columnHeight - cfg.header.columnBorderWidth) + 'px;line-height: ' + lineHeight + 'px;">';
+                        // var lineHeight = (cfg.header.columnHeight - cfg.header.columnPadding * 2);
+                        return '<span data-ax5grid-cellHolder="" ' + (colAlign ? 'data-ax5grid-text-align="' + colAlign + '"' : '') + ' >';
                     }(), function () {
                         var _SS = "";
 
@@ -6180,7 +6177,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             jQuery.extend(true, eConfig, _editor.config);
             eConfig.marginTop = (lineHeight - eConfig.height) / 2;
 
-            return '<div data-ax5grid-editor="checkbox" data-ax5grid-checked="' + checked + '" style="height:' + eConfig.height + 'px;width:' + eConfig.height + 'px;margin-top:' + eConfig.marginTop + 'px;"></div>';
+            return '<div data-ax5grid-editor="checkbox" data-ax5grid-checked="' + checked + '" style="height:' + eConfig.height + 'px;width:' + eConfig.height + 'px;"></div>';
         }
     };
 

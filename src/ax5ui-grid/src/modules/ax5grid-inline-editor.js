@@ -198,7 +198,7 @@
             jQuery.extend(true, eConfig, _editor.config);
             eConfig.marginTop = (lineHeight - eConfig.height) / 2;
 
-            return '<div data-ax5grid-editor="checkbox" data-ax5grid-checked="' + checked + '" style="height:' + eConfig.height + 'px;width:' + eConfig.height + 'px;margin-top:' + eConfig.marginTop + 'px;"></div>';
+            return '<div data-ax5grid-editor="checkbox" data-ax5grid-checked="' + checked + '" style="height:' + eConfig.height + 'px;width:' + eConfig.height + 'px;"></div>';
         }
     };
 

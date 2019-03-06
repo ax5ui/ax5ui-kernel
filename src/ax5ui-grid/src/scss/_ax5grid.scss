@@ -57,11 +57,11 @@
     &[data-ax5grid-column-attr="rowSelector"] {
         cursor: pointer;
         [data-ax5grid-cellHolder] {
-            padding: $ax5grid-cell-padding-row-selector;
+            //padding: $ax5grid-cell-padding-row-selector;
         }
 
         .checkBox {
-            display: inline-block;
+            display: block;
             position: relative;
             border: $ax5grid-cell-checkbox-border;
             border-radius: $ax5grid-cell-checkbox-border-radius;
@@ -101,7 +101,7 @@
         box-sizing: border-box;
         padding: $ax5grid-cell-padding;
         font-size: $ax5grid-font-size;
-
+        line-height: 1;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
