@@ -671,6 +671,7 @@
              */
             this.open = (function () {
 
+
                 let pickerContent = {
                     '@fn': function (queIdx, callback) {
                         let item = this.queue[queIdx];
@@ -1102,6 +1103,12 @@
                 return function (boundID, tryCount) {
                     let queIdx = (U.isNumber(boundID)) ? boundID : getQueIdx.call(this, boundID),
                         item = this.queue[queIdx];
+
+
+                    const disabled = item.$target.get(0).getAttribute("disabled");
+                    if (disabled && disabled !== "false") {
+                        return false;
+                    }
 
                     /**
                      다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문

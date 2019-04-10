@@ -243,7 +243,6 @@
                     return this;
                 };
             }();
-
             var alignPicker = function alignPicker(append) {
                 if (!this.activePicker) return this;
 
@@ -334,7 +333,6 @@
                     _alignPicker.call(this, item);
                 }.bind(this));
             };
-
             var onBodyClick = function onBodyClick(e, target) {
                 if (!this.activePicker) return this;
 
@@ -354,7 +352,6 @@
                 //console.log("i'm picker");
                 return this;
             };
-
             var onBtnClick = function onBtnClick(e, target) {
                 // console.log('btn click');
                 if (e.srcElement) e.target = e.srcElement;
@@ -382,13 +379,11 @@
                     }
                 }
             };
-
             var onBodyKeyup = function onBodyKeyup(e) {
                 if (e.keyCode == ax5.info.eventKeys.ESC) {
                     this.close();
                 }
             };
-
             var getQueIdx = function getQueIdx(boundID) {
                 if (!U.isString(boundID)) {
                     boundID = jQuery(boundID).data("data-axpicker-id");
@@ -991,6 +986,11 @@
                 return function (boundID, tryCount) {
                     var queIdx = U.isNumber(boundID) ? boundID : getQueIdx.call(this, boundID),
                         item = this.queue[queIdx];
+
+                    var disabled = item.$target.get(0).getAttribute("disabled");
+                    if (disabled && disabled !== "false") {
+                        return false;
+                    }
 
                     /**
                      다른 피커가 있는 경우와 다른 피커를 닫고 다시 오픈 명령이 내려진 경우에 대한 예외 처리 구문
